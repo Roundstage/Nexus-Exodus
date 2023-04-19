@@ -251,7 +251,6 @@ var/mob/max_speed_mob
 var/speedDelayMultMod = 2.3
 
 mob/proc/Speed_delay_mult(severity = 1)
-
 	var/average_speed_influence = (avg_speed / 100) * GLOBAL_MELEE_SPEED_OFFSET 
 	var/ratio = Spd / average_speed_influence
 	if(ratio < 0.01) ratio = 0.01

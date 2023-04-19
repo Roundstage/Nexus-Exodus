@@ -965,7 +965,7 @@ mob
 			grabber.grab_power-=grab_resist
 
 			if(is_saitama) grabber.grab_power=0
-			stam_drain = (100 / (grab_resist ** 0.3 * Clamp(grabber.recov,0.25,1)));
+			var/stam_drain = (100 / (grab_resist ** 0.3 * Clamp(grabber.recov,0.25,1)));
 			grabber.AddStamina(-stam_drain)
 			struggle_timer=1
 			spawn(20) struggle_timer=0

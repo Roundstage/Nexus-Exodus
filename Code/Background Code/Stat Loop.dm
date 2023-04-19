@@ -428,7 +428,7 @@ mob/proc
 	CanRechargeStamina()
 		if(ultra_instinct) return 1
 		if(usingSaiyanPower) return 1
-		if(saiya)
+		if(third_eye) return 1
 		if(world.time - last_stamina_drain < 15) return
 		if(world.time - last_input_move < 10) return
 		return 1
@@ -1015,9 +1015,12 @@ mob/proc
 		if(Race=="Onion Lad" && Onion_Lad_Star && Ki<ki_limit && BPpcnt<=100 && !KO && !Regen_Active() && !Overdrive && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
 
-		if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
+		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
+		//Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
+		//Has_Active_Freezes()||buffed_with_bp()||God_Fist_level||recov<=0 || SplitformCount()) return
+		if(strangling||Ki>=ki_limit||BPpcnt>100||attacking||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
 		Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
-		Has_Active_Freezes()||buffed_with_bp()||God_Fist_level||recov<=0 || SplitformCount()) return
+		Has_Active_Freezes()||buffed_with_bp()||buff_transform_bp||God_Fist_level||recov<=0 || Peebagging() || SplitformCount()) return
 		return 1
 
 mob/var/tmp/logout_timer_loop
@@ -1396,6 +1399,7 @@ mob/proc/PowerUpKnockAwayLoop(obj/Power_Control/A)
 			if(!Auto_Attack && world.time - last_attacked_mob_time > 35 && world.time - last_evade_key_press > 30 && world.time - last_block_key_press > 30 && !Giving_Power)
 				if(transing || (!charging_beam && !beaming && !attacking && stand_still_time() >= 20))
 					standing_powerup = 1
+					PowerupDamageGrabber(delay / 1)
 					//this line makes it so you cant just stand there aura knocking someone forever
 					if(BPpcnt < 100 + powerup_soft_cap() * 2)
 						for(var/mob/m in View(2, src))

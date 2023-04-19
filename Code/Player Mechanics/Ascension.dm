@@ -762,13 +762,13 @@ mob/proc/Third_Eye()
 	overlays+='Third Eye.dmi'
 	src<<"You concentrate on the power of your mind and unlock your third eye chakra, increasing your \
 	power significantly."
-	if(gravity_mastered<5) gravity_mastered=20
+	if(gravity_mastered<5) gravity_mastered=5
 
 mob/proc/Third_Eye_Revert()
 	if(!third_eye) return
 	third_eye = 0
 	bp_mult-=0.3
-    med_mod /=2
+	med_mod /= 2
 	mastery_mod/=thirdEyeMasteryMult
 	zenkai_mod*=5
 	overlays-='Third Eye.dmi'

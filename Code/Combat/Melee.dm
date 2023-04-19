@@ -1284,8 +1284,6 @@ mob/proc/CanMeleeDodge(mob/attacker)
 mob/proc/CanBlastDeflect(mob/attacker)
 	if(!client) return //quick dirty fix to stop dead bodies from dodging but it affects all npcs oh well tho
 	if(KO) return
-
-
 	if(stamina < DodgeStamCost(attacker)) return
 	if(!ultra_instinct)
 		if(world.time - last_input_move < 3) return

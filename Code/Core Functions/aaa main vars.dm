@@ -153,7 +153,7 @@ mob/var/energies
 
 var
 	ANGER_SYSTEM_TIME_BETWEEN_ANGERS	= 10 * 10 * 1	// 10 seconds //5 minutes (300 seconds)
-	GLOBAL_MELEE_SPEED_OFFSET			= 0				// directly sum into melee speed formula
+	GLOBAL_MELEE_SPEED_OFFSET			= 1				// directly sum into melee speed formula
 	GLOBAL_ACCURACY_EXPONENT 			= bp_exponent
 
 var
