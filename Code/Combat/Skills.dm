@@ -3056,6 +3056,7 @@ obj/SaiyanPower
 		25% Buff in recovery<br>\
 		25% Buff in Regen<br>\
 		50% Buff in Energy<br>\
+		Removes stamina effect <br>\
 		Unables the BPloss debuff<br>\
 		"
 
@@ -3083,8 +3084,9 @@ obj/SaiyanPower
 			usr.usingSaiyanPower=1
 			usr.recov *= 1.25
 			usr.regen *= 1.25
-			usr.max_ki *= 1.50
-			usr.Ki *= 1.50
+			usr.Eff *= 1.5
+			usr.max_ki *= 1.5
+			usr.Ki *= 1.5
 			usr.overlays+='saiyanPower.dmi'
 			usr << "You are now using the Saiyan Power"
 		else usr.SaiyanPower_Revert()
@@ -3094,8 +3096,9 @@ mob/proc/SaiyanPower_Revert() {
 		usingSaiyanPower=0
 		usr.recov /= 1.25
 		usr.regen /= 1.25
-		usr.max_ki /= 1.50
-		usr.Ki /= 1.50
+		usr.Eff /= 1.5
+		usr.max_ki /= 1.5
+		usr.Ki /= 1.5
 		usr.overlays-='saiyanPower.dmi'
 		usr << "You have stopped using Saiyan Power"
 	}

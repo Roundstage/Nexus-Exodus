@@ -136,7 +136,7 @@ mob/proc/Raise_BP(Amount=1,apply_hbtc_gains=1)
 	if(alt_rewards && AltCount() >= alts_needed_for_bp_reward) Amount *= alt_bp_reward
 
 	//also check the drone ai code because it ensures drones stay at 1 bp too
-	if(Race=="Android") // && bp_mod>Get_race_starting_bp_mod())
+	if(Race=="Android")
 		base_bp=1
 		hbtc_bp=1
 		highest_bp_ever_had=1
@@ -252,7 +252,7 @@ var/speedDelayMultMod = 2.3
 
 mob/proc/Speed_delay_mult(severity = 1)
 	var/average_speed_influence = (avg_speed / 100) * GLOBAL_MELEE_SPEED_OFFSET 
-	var/ratio = Spd / average_speed_influence
+	var/ratio = (Spd / average_speed_influence)**0.4
 	if(ratio < 0.01) ratio = 0.01
 
 	var/mod = 1 //1 = perfectly average
@@ -531,7 +531,6 @@ mob/proc/Leech(mob/P,N=1,no_adapt=0,give_as_hbtc_bp=0,android_matters=1,weights_
 	N*=decline_gains()
 	if(android_matters) if(P.Android) N /= 10
 	for(var/obj/items/Force_Field/ff in item_list) N/=2
-	if(OP_build()) N*=2
 	if(AtBattlegrounds()) N *= 2
 
 	N=ToOne(N)

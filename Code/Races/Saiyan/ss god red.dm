@@ -160,31 +160,6 @@ mob/proc
 #ifdef DEBUG
 mob
 	verb
-		Give_Me_SSG()
-			set category = "Yeet"
-			if(max_ki<(energy_cap*Eff))
-				max_ki=energy_cap*Eff
-			if(Race in list("Yasai","Half Yasai"))
-				src << "Unlocked Omega Yasai God"
-				if(!has_ssg)has_ssg=1
-				if(!has_god_ki)has_god_ki=1
-				if(!god_mode_on)god_mode_on=1
-				if(ssg_able>Year||!ssg_able) ssg_able=Year
-				if(!is_ssg) SSG()
-
-		Prepare_Ritual()
-			set category = "Yeet"
-			if(max_ki<(energy_cap*Eff)) max_ki=energy_cap*Eff
-			if(!locate(/obj/Give_Power) in src.contents)
-				src.contents += new/obj/Give_Power
-				src << "Learned Give Power."
-			if(!SSjAble || SSjAble > Year)
-				src << "Learned Omega Yasai."
-				SSjAble = Year
-			if(!SSj2Able || SSj2Able > Year)
-				src << "Learned Omega Yasai 2."
-				SSj2Able = Year
-
 		Free_SP()
 			set category = "Yeet"
 			Experience+=5000

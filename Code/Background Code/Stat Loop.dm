@@ -993,10 +993,8 @@ proc/Recover_energy_loop()
 				if(m.Action=="Meditating"&&world.time-m.last_shield_use>=200) n*=5
 				if(m.Dead) n*=1.2
 				if(m.z == Z_LEVEL_HBTC) n *= 2 //hbtc
-				if(m.OP_build()) n*=1.25
 				if(m.Internally_Injured()) n*=0.25
 				if(m.ki_shield_on()) n*=0.15
-				//if(m.ThingC()) n *= 1.26
 
 				m.Ki+= 0.5 * n*Server_Recovery*(m.max_ki/100) * m.recov**1.1 * m.Recov_Mult/m.Gravity_Health_Ratio()
 				if(m.Ki>m.max_ki) m.Ki=m.max_ki
@@ -1073,9 +1071,7 @@ proc/Recover_health_loop()
 				if(m.Dead) n*=1.2
 				if(m.z == Z_LEVEL_HBTC) n *= 2 //hbtc
 				n*=1 * m.RegenMod()
-				if(m.OP_build()) n*=1.25
 				n *= 2 * Server_Regeneration*m.Regen_Mult/m.Gravity_Health_Ratio()
-				//if(m.ThingC()) n *= 1.26
 				m.Health += n * 0.25
 				if(m.Health>100) m.Health=100
 		sleep(base_sleep_time)
@@ -1458,7 +1454,6 @@ mob/proc/Power_Control_Loop(obj/Power_Control/A)
 			if(BPpcnt>=100&&Stop_At_100)
 				src<<"You reach 100% power and stop powering up"
 				Stop_Powering_Up()
-			if(IsGreatApe()) Stop_Powering_Up()
 		else if(A&&A.Powerup==-1) BPpcnt*=0.9
 		if(prob(35)||first_loop) Aura_Overlays() //prob() as a cheap way to preserve some cpu til aura overlays is fixed
 		sleep(Amount*10)
@@ -1498,7 +1493,6 @@ proc/Powerup_drain()
 				m.Ki -= drain
 			else
 				if(m.BPpcnt > 100)
-					if(m.Race in list("Yasai","Half Yasai")) m.Revert()
 					m<<"You are too tired to power up any more"
 				for(var/obj/Attacks/a in m.ki_attacks) if(a.Wave && a.charging) m.BeamStream(a)
 				if(m.BPpcnt > 100) m.Stop_Powering_Up()

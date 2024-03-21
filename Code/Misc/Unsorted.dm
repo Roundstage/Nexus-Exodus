@@ -271,19 +271,6 @@ mob/Admin5/verb/Set_transform_size(mob/m in world)
 
 
 
-
-mob/proc/OP_build()
-
-	return
-
-	var/n="Magic Ultimate Armor"
-	if(armor_obj)
-		if(armor_obj.Armor==1.01)
-			armor_obj.name=n
-			armor_obj.can_blueprint=0
-			return 1
-		else if(armor_obj.name==n) name="Armor"
-
 //LOOK AT THIS HIDDEN GEM - efficient way to get all viewable projectiles within range of center. but we dont use it anywhere instead other places may use more inefficent ways
 proc/blast_view(dist=10,mob/center)
 	if(!center) return new/list
