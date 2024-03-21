@@ -952,7 +952,6 @@ mob
 
 			grab_resist *= Clamp((Def/grabber.Off)**0.35,1,2)
 			grab_resist *= 11 * grab_struggle_mod
-			//if(ThingC()) grab_resist *= 1.75
 
 			if(grabbed_from_behind && Tail)
 				//grab_resist /= 2**(1 / tail_level)

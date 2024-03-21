@@ -96,23 +96,10 @@ mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 	var/n = 1
 	if(target && ismob(target))
 		n *= GetRevengeDmgMod(target)
-	//if(ThingC() && Health < 100)
-	//	var/mult = Health / 100
-	//	mult = mult ** 0.5
-	//	if(mult < 0.4) mult = 0.4
-	//	n /= mult
 	return n
 
 mob/proc/TakeDamage(n = 0)
 	if(grabbedObject && strangling && GrabAbsorber()) n *= 1.3 //take way more damage if busy grab absorbing someone's energy
-
-	//if(ThingC() && Health < 100)
-	//	var/hp = Health
-	//	if(hp < 1) hp = 1 //prevent error
-	//	var/mult = hp / 100
-	//	mult = mult ** 0.5
-	//	if(mult < 0.4) mult = 0.4
-	//	n *= mult
 
 	if(stun_level || Frozen)
 		n *= stun_damage_mod
@@ -406,9 +393,6 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		dmg*=thing
 
 		if(ShouldOneShot(src, m) && allow_one_shot) dmg *= one_shot_dmg_mult
-
-		if(OP_build()) dmg*=1.3
-		if(m.OP_build()) dmg/=1.4
 
 		dmg *= AllAttacksDamageModifiers(m)
 
@@ -706,8 +690,6 @@ mob/proc/get_melee_accuracy(mob/m)
 		if(m.Action=="Meditating") accuracy*=10
 		if(m.KO || m.KB || m.Frozen || m.regenerator_obj) accuracy=100
 
-	if(OP_build()) accuracy*=2
-
 	if(!ismob(m)) return accuracy
 	else
 		if(m.evading && !lunge_attacking && !power_attacking) return 0
@@ -733,8 +715,6 @@ mob/proc/GetSkillDrain(mod = 1, is_energy = 0)
 	var/obj/items/Sword/s = using_sword()
 	if(s)
 		d *= 1 + (s.Damage - 1) * sword_drain_mult
-
-	//if(ThingC()) d *= 0.5
 
 	return d * mod
 

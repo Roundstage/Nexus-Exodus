@@ -3,10 +3,7 @@ atom/appearance_flags = TILE_BOUND
 
 
 
-//covert's perks. temporary whenever i feel like removing it. dont see why i should ever remove it since he has been such a great help to me
-/*mob/proc/ThingC() //named this so it doesnt appear in profiler
-	if(key == "EXGenesis") return 1
-*/
+
 obj/Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
 	. = ..()
 	if(light_obj)
@@ -802,7 +799,7 @@ mob/proc/Get_blast_homing_chance(mod = 1)
 	var/n=30
 	switch(Race)
 		if("Puranto") n=55
-		if("Android") n=24
+		if("Android") n=70
 		if("Kai") n=40
 		if("Majin") n=40
 		if("Human") n=40

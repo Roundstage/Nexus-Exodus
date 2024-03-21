@@ -47,7 +47,6 @@ mob
 				return
 			attacking = 1
 			last_dropkick = world.time
-			AlterInputDisabled(1)
 
 			player_view(15, src) << sound('throw.ogg', volume = 35)
 			Do_lunge_drawback_animation()
@@ -75,7 +74,6 @@ mob
 
 			if(!(m && hit)) 
 				AddStamina(-(20))
-				AlterInputDisabled(-1)
 				return
 
 			player_view(15,src) << sound('strongpunch.ogg', volume = 30)
@@ -117,7 +115,6 @@ mob
 				m.Knockback(src, Distance = dist, bypass_immunity = 1, from_lunge = 1)
 
 			AddStamina(-(20))
-			AlterInputDisabled(-1)
 
 		WolfFangFistCancelled(mob/m, moved = 1)
 			if(!m || getdist(src,m) <= 1 || !moved || !viewable(src,m,35))
