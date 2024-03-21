@@ -19,13 +19,13 @@ obj/Attacks/Genki_Dama/Supernova
 	sb_max_size = 2.1
 	sb_charge_time = 20
 	sb_speed_stat_influence = 0.36
-	max_dmg_range = 2 //how big the collision box is at full charge
+	max_dmg_range = 4 //how big the collision box is at full charge
 	sb_stun_level = 0
 
 	sb_initial_dmg = 5
-	sb_dmg_add = 1 //how much damage is gained per charge tick
+	sb_dmg_add = 1.5 //how much damage is gained per charge tick
 
-	sb_deflect_difficulty = 1
+	sb_deflect_difficulty = 10
 	sb_explosion_size = 5
 
 	self_cooldown = 0

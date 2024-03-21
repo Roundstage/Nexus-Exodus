@@ -25,11 +25,6 @@ world
 		spawn(50) name = "Game" //trying to fix the "3.5 simulator" bug where it keesp renaming it to that at the top of the window
 		RenameCopyrightSpawns()
 
-		//stops public hosting
-		/*spawn(50)
-			if(!(address in list("158.69.223.61", "155.138.208.89")))
-				shutdown()*/
-
 proc/RenameCopyrightSpawns()
 	for(var/obj/Spawn/s)
 		switch(s.name)

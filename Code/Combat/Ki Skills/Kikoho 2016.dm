@@ -113,7 +113,7 @@ mob/proc
 
 		var/dmg = a.KikohoDamageTo(src)
 		TakeDamage(dmg)
-		if(a.Fatal && Health <= 0) Death(a)
+		if(Health <= 0) KO(a)
 
 	KikohoKnockAwayNonTargets(mob/t) //t = target, usr = firer
 		set waitfor=0

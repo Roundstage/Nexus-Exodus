@@ -32,7 +32,6 @@ mob/var
 mob/proc/Great_Ape_revert() if(IsGreatApe())
 	var/obj/Great_Ape/O=Great_Ape_obj
 	O.suffix=null
-	lastGreatApeRevert = world.realtime
 	walk(src,0)
 	icon=O.icon
 	CenterIcon(src)
@@ -48,7 +47,6 @@ mob/proc/Great_Ape_revert() if(IsGreatApe())
 	defmod/=0.1
 	Spd/=0.1
 	spdmod/=0.1
-	Ki = 0
 	overlays.Add(Great_Ape_Overlays)
 	Great_Ape_Overlays.Remove(Great_Ape_Overlays)
 
@@ -92,7 +90,7 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 	spdmod*=0.1
 	BPpcnt=100
 	Stop_Powering_Up()
-	var/timer = 900
+	var/timer = 90000
 	if(!Great_Ape_control) timer = 450
 	spawn(timer) Great_Ape_revert()
 	if(Race!="Half Yasai"&&prob(Golden))

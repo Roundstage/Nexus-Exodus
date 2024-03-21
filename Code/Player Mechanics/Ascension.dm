@@ -476,6 +476,7 @@ mob/var/tmp/last_ssj_revert_or_retrans = 0 //world.realtime
 mob/proc/Revert()
 	SSj_Blue_Revert()
 	SSG_Revert()
+	Great_Ape_revert()
 	if(Race=="Frost Lord") icer_Revert()
 	else if(ssj>0&&!transing)
 		if(is_ussj) USSj() //toggle

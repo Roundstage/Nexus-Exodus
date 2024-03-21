@@ -53,14 +53,14 @@ mob/proc/Alien_Stuff()
 	"5x skill mastery (12 AP)"=12,\
 	"Breath in space (10 AP)"=10,\
 	"Split form (10 AP)"=10,\
-	//"Elite Alien +[Commas(Starting_BP)] BP (20 AP)"=20,
+	"Elite Alien +[Commas(Starting_BP)] BP (20 AP)"=20,
 	"Stretchy arms (10 AP)"=10,\
 	"Better blast homing (12 AP)"=12,\
 	"Less bp loss from low ki (10 AP)"=10,\
 	"Less bp loss from low health (10 AP)"=10,\
 	"Giant Form (15 AP)" = 15,\
 	"Imitate (8 AP)" = 8,\
-	//"Gyren Alien (50 AP)" = 50,
+	"Gyren Alien (50 AP)" = 50,
 	"Unlock Potential (25 AP)" = 25,\
 	)
 

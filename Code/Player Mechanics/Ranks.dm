@@ -1,7 +1,7 @@
 mob/proc/Give_Rank(mob/A)
 	set category="Admin"
 	var/list/Planets=list("Cancel","Earth","Puranto","Braal","Arconia","Ice Planet","Heaven","Hell",\
-	"Android Skill Master")//,"Z Character Skill Sets")
+	"Android Skill Master")
 	var/list/Ranks=new
 	switch(input(src,"Choose Planet Rank") in Planets)
 		if("Cancel") return

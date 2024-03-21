@@ -304,7 +304,7 @@ mob/proc
 		Disabled_Verb_Check()
 		if(!name||name=="") name=key
 		if(!Mob_ID) Mob_ID=get_mob_id()
-		//if(Race=="Demon"&&!(locate(/obj/Demon_Contract) in src)) contents+=new/obj/Demon_Contract
+		if(Race=="Demon"&&!(locate(/obj/Demon_Contract) in src)) contents+=new/obj/Demon_Contract
 		//if(key=="Super Yasai X") if(!(locate(/obj/SSX_Planet) in src)) contents+=new/obj/SSX_Planet
 		//if(key=="Sonku") if(!(locate(/obj/Sonku_Planet) in src)) contents+=new/obj/Sonku_Planet
 		Remove_Duplicate_Moves()
