@@ -4,7 +4,7 @@
 
 obj
 	Dropkick
-		desc = "Channel all your energy into 1 kick, leaving you powerless for 30 seconds but dealing massive damage. (Minimum 10% HP and 10% Ki)"
+		desc = "Channel all your energy into 1 kick, stunning your oponnent and causing a massive damage."
 
 		Cost_To_Learn = 20
 		Teach_Timer = 1
@@ -20,7 +20,7 @@ obj
 
 		verb
 			Dropkick()
-				//set category = "Skills"
+				set category = "Skills"
 				if(usr.Health>10&&(usr.Ki>usr.max_ki/10)) usr.Dropkick()
 
 mob/var
@@ -48,7 +48,11 @@ mob
 
 		Dropkick()
 			//if(attacking) return
-			if(world.time - last_dropkick < 600) return
+			if(world.time<last_dropkick+(300))
+				var/minutes_left=(last_dropkick+(300)-world.time)/(10*60)
+				usr<<"You can not use Dropkick another [round(minutes_left)] minutes and [round((minutes_left*60)%60)] \
+				seconds"
+				return
 			//if(!can_melee()) return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
 			var/mob/m = LungeTarget()
@@ -129,11 +133,11 @@ mob
 							m.Death(src)
 
 			last_dropkick_debuff_triggered = world.time
-			Health -=20
-			
+			m.TakeDamage(get_melee_damage(m, count_sword = 0) * 5)
+
 			if(Health < 0)
 				usr.KO(src)
-			AddStamina(-99999)
+			AddStamina(-25)
 			attacking = 0
 			sleep(3)
 			AlterInputDisabled(-1)

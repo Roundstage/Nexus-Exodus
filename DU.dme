@@ -92,6 +92,7 @@
 #define FILE_DIR "Icons/Unsorted/Other"
 #define FILE_DIR "Icons/Unsorted/Other/DBZ"
 #define FILE_DIR "Icons/VFX"
+#define FILE_DIR "Icons/VFX/WolfFangFist"
 #define FILE_DIR "Images"
 #define FILE_DIR "Sound"
 #define FILE_DIR "Sound/Lobby"
@@ -102,10 +103,13 @@
 #define FILE_DIR "Sound/Sound Effects/Combat"
 #define FILE_DIR "Sound/Sound Effects/Farts"
 #define FILE_DIR "Sound/Sound Effects/Guns"
+#define FILE_DIR "Sound/Sound Effects/PressurePunch"
+#define FILE_DIR "Sound/Sound Effects/WolfFangFist"
 #define FILE_DIR "Sound/Sound Effects/Zombies"
 // END_FILE_DIR
 
 // BEGIN_PREFERENCES
+#define DEBUG
 // END_PREFERENCES
 
 #define AI_PATHNODE_LIMIT 300
@@ -195,6 +199,8 @@
 #include "Code\Combat\Ki Skills\Sense 2017\dynamic sense arrows.dm"
 #include "Code\Combat\Ki Skills\Sense 2017\Sense.dm"
 #include "Code\Combat\Melee\Dragon Rush.dm"
+#include "Code\Combat\Melee\PressurePunch.dm"
+#include "Code\Combat\Melee\RoundhouseKick.dm"
 #include "Code\Combat\Melee\Super Dropkick.dm"
 #include "Code\Combat\Melee\WolfFangFist.dm"
 #include "Code\Combat\Targeting\Targeting Wrappers.dm"

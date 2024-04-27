@@ -2,7 +2,7 @@
 mob/proc/get_bp_loop()
 	set waitfor=0
 	while(src)
-		if(Race == "Half Yasai" && bp_mod > Yasai_bp_mod_after_ssj) bp_mod = Yasai_bp_mod_after_ssj
+		//if(Race == "Half Yasai" && bp_mod > Yasai_bp_mod_after_ssj) bp_mod = Yasai_bp_mod_after_ssj
 		if(energy_cap && max_ki / Eff > energy_cap) max_ki = energy_cap * Eff
 		//this doesnt really go here but im just rigging it up so oh well
 		if(world.time-last_attacked_time > 400) power_attack_meter=0
@@ -155,8 +155,7 @@ mob/proc/get_bp(factor_powerup=1)
 		if(sf_count) if(Race in list("Bio-Android","Majin")) bp*=1.25
 
 		//bp *= ki_mult() * hp_mult()
-		if(!usingSaiyanPower)
-			bp *= hp_ki_bp_loss_mult() 
+		bp *= hp_ki_bp_loss_mult() 
 
 		if(Ki > max_ki) bp *= (Ki / max_ki) ** 0.5
 
@@ -320,8 +319,6 @@ mob/proc/Player_Loops(start_delay)
 	Onion_Lad_Star()
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	SI_List()
-	Vampire_Infection_Rise()
-	Vampire_Power_Fall()
 	//AI_Train_Loop()
 	//GOOD
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
@@ -427,8 +424,6 @@ mob/proc
 
 	CanRechargeStamina()
 		if(ultra_instinct) return 1
-		if(usingSaiyanPower) return 1
-		if(third_eye) return 1
 		if(world.time - last_stamina_drain < 15) return
 		if(world.time - last_input_move < 10) return
 		return 1

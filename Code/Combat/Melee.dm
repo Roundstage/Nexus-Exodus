@@ -32,7 +32,6 @@ mob/proc/setOpponent(mob/M)
 
 	if(M.last_mob_attacked != src || M.sparring_mode == LETHAL_COMBAT && src.sparring_mode != LETHAL_COMBAT || M.sparring_mode != LETHAL_COMBAT && src.sparring_mode == LETHAL_COMBAT)
 		AlertSparringMode(M,src)
-		
 	Opponent = M
 	lastSetOpponent = world.time
 
@@ -87,30 +86,31 @@ proc/GetArmOrLegInjury()
 	if(prob(50)) return new/obj/Injuries/Arm
 	else return new/obj/Injuries/Leg
 
-
-
-
-
-
 mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 	var/n = 1
 	if(target && ismob(target))
 		n *= GetRevengeDmgMod(target)
 	return n
 
-mob/proc/TakeDamage(n = 0)
-	if(grabbedObject && strangling && GrabAbsorber()) n *= 1.3 //take way more damage if busy grab absorbing someone's energy
+mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
+	if(grabbedObject && strangling && GrabAbsorber()) dmg *= 1.3 //take way more damage if busy grab absorbing someone's energy
 
 	if(stun_level || Frozen)
-		n *= stun_damage_mod
+		dmg  *= stun_damage_mod
 
-	if(Class == "Legendary Yasai" && lssj_always_angry) n *= lssjTakeDmgMult //it was 0.5 but think about their regen shaving off some dmg think of it like this
+	if(Class == "Legendary Yasai" && lssj_always_angry) dmg *= lssjTakeDmgMult //it was 0.5 but think about their regen shaving off some dmg think of it like this
 	//they take 6% dmg per sec if taking normal dmg like anyone else but at half dmg its 3% per sec but they heal 2% per sec it becomes a difference of
 	//4% compared to 1%
-	if(Race == "Android") n *= android_dmg_taken_mult
-	if(jirenAlien) n *= jirenTakeDmgMult
+	if(Race == "Android") dmg *= android_dmg_taken_mult
+	if(jirenAlien) dmg *= jirenTakeDmgMult
 
-	Health -= n
+	if(Shielding())
+		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
+		if(Ki>=shield_drain)
+			Ki-=shield_drain
+			return
+
+	Health -= dmg
 
 mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate
 	var/mob/m = grabber
@@ -464,7 +464,7 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 				dmg=1.#INF
 				if(isturf(m) && !Is_wall_breaker()) dmg=0
 				if(m.Health == 1.#INF) dmg = 0
-			else if(!client)	
+			else if(!client)
 				if(drone_module) dmg=Turf_Strength * BP / 750 //npcs can gradually break anything
 				else dmg=Turf_Strength * BP / 7000
 	if(isFireFist)
@@ -487,7 +487,6 @@ mob/proc/SetSparringMode(mode = sparring_mode, show_message = TRUE)
 	var/sparring_mode_message = ""
 
 	sparring_mode = mode
-	
 	if(show_message)
 		if(mode == LETHAL_COMBAT)
 			sparring_mode_message = "[src] emanates <span style='color: red;'>killing intent!</span>"
@@ -518,7 +517,7 @@ mob/proc/AlertSparringMode(var/mob/attacker, var/mob/victim)
 				if(should_show_alert)
 					M << "[attacker] starts a [attacker.sparring_mode] with [victim]."
 
-		else 
+		else
 			if(attacker.sparring_mode == LETHAL_COMBAT)
 				if(should_show_alert)
 					M << "[attacker] attacks [victim] with <span style='color: red'>killing intent</span>!"
@@ -1153,7 +1152,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		if(isFireFist && prob(40))
 			target.BurnStack++
 
-			if(!target.isBurning) 
+			if(!target.isBurning)
 				target << "You are now Burning due to being hit by someone using Fire Fist!"
 
 			target.isBurning = TRUE;
