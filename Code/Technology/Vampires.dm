@@ -100,6 +100,8 @@ mob/var/Vampire
 mob/var/Vampire_Monster
 mob/var/Former_Vampire //Cured human if true
 mob/var/Vampire_Infection=0 //If this reaches 100% you turn into a monster
+mob/var/Vampires_eaten = 0;
+mob/var/Blood_Aquired = 0;
 mob/var/Vampire_Power //multiplies BP
 
 obj/Vampire_Bite
@@ -127,8 +129,8 @@ obj/Vampire_Bite
 		. = ..()
 
 var
-	vampire_power_mult=1.3
-	vampire_eater_mult=1.6
+	vampire_power_mult=1.2
+	vampire_eater_mult=1.4
 
 
 
@@ -156,23 +158,20 @@ mob/proc/Vampire_Bite(mob/P,obj/Vampire_Bite/V)
 			return
 		player_view(15,src)<<"[src] bites [P]!"
 		if((P.Vampire&&!Vampire_Monster)||P==src)
-			spawn blood_bags+=3
-			Vampire_Power=vampire_power_mult
-		else if(P.Former_Vampire) Vampire_Cure()
-		else
-			if(!Vampire_Monster)
-				Vampire_Power=vampire_power_mult
-				Vampire_Infection=0
-			else
-				Vampire_Power=vampire_eater_mult
-				Vampire_Infection=0
+			if(Blood_Aquired <= 10)
+				Blood_Aquired += 1
+				Vampire_Power += 0.15
+			Vampires_eaten +=1
+			if(Vampires_eaten > 4)
+				Become_Vampire_Monster()
+		else 	
+			if(Blood_Aquired <= 10)
+				Blood_Aquired += 1
+				Vampire_Power += 0.15
 		if(P!=src)
 			blood_bags=0
 			if(Health<100) Health=100
 			if(Ki<max_ki) Ki=max_ki
-
-		if(DO_VAMPIRES_INFECT_ON_BITE)
-			P.Become_Vampire()
 
 mob/proc/Become_Vampire_Monster() if(Vampire&&!Vampire_Monster)
 	if("vampire" in hell_agreements)
@@ -180,7 +179,8 @@ mob/proc/Become_Vampire_Monster() if(Vampire&&!Vampire_Monster)
 		Death(null,1)
 	else
 		Vampire_Monster=1
-		Vampire_Power=vampire_eater_mult
+		Vampire_Power = (vampire_eater_mult + (Blood_Aquired * 0.15))
+		regen *= 2;
 		Vampire_Infection=0
 		src<<"Your vampire infection has hit 100%, you have become a vampire monster, a vampire which can feed on \
 		other vampires. This makes you more powerful than ever, but if your infection hits 100% again you will die."
@@ -192,11 +192,11 @@ mob/proc/Become_Vampire() if(!Vampire&&!Former_Vampire)
 	var/obj/Vampire_Bite/V=new
 	V.icon=icon
 	contents+=V
-	//if(icon in list('BaseHumanTan.dmi','BaseHumanPale.dmi')) icon='Demon6.dmi'
-	//if(icon in list('New Tan Female.dmi','New Pale Female.dmi')) icon='Demon6, Female.dmi'
 	Vampire=1
 	Vampire_Power=vampire_power_mult
 	Vampire_Infection=0
+	regen *= 2
+	contents.Add(new/obj/Regeneration)
 	src<<"You are now a vampire. You are more powerful but must bite people to survive and refill your \
 	power."
 
@@ -209,8 +209,12 @@ mob/proc/Vampire_Revert() if(Vampire)
 	Vampire=0
 	Vampire_Power=0
 	Vampire_Infection=0
-	Vampire_Monster=0
 	blood_bags=0
+	if(Vampire_Monster)
+		Vampire_Monster=0
+		regen /= 4
+	else
+		regen /= 2
 	for(var/obj/Vampire_Bite/V in src)
 		icon=V.icon
 		del(V)
@@ -248,21 +252,6 @@ mob/proc/Vampire_Infection_Rise()
 
 			sleep((2*60*60*10)/100) //Reach max infection in 2 hours
 		else sleep(3000)
-
-
-mob/proc/Vampire_Power_Fall()
-	set waitfor=0
-	while(src)
-		if(Vampire)
-			if(!Vampire_Monster)
-				Vampire_Power-=0.00416 //240 minutes, 4 hours
-				if(Vampire_Power<1) Vampire_Power=1
-			else
-				Vampire_Power-=0.00624
-				if(Vampire_Power<0.2) Vampire_Power=0.2
-		if(VAMPIRE_POWER_FALL_INTERVAL > 150)
-			sleep(VAMPIRE_POWER_FALL_INTERVAL)
-		else sleep(150)
 
 mob/proc/Cured_Vampire_Ratio(N=0) //Shows the ratio of people online that are former vampires
 	if(!Player_Count()) return 0

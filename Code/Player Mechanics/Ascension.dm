@@ -172,16 +172,6 @@ proc/Ascension_loop()
 							m.base_bp = 10000000 * m.ascension_mod()
 		sleep(2*600)
 
-
-
-
-
-
-
-
-
-
-
 mob/proc/has_ssj_req(mod=1)
 	if(bp_tiers) return 1
 	var/bp_needed = ssjat * 0.5 * mod
@@ -269,9 +259,6 @@ proc/Make_Shockwave(mob/Origin,Range=7,Icon,sw_icon_size=256)
 			var/obj/Shockwave_Graphic/g = Get_shockwave_graphic()
 			g.loc=Origin.base_loc()
 			//g.Shockwave_go(sw_icon_size)
-
-
-
 			//convert to new shockwave sizes
 			var/new_size = rand(80,120) / 100
 			new_size *= 1.2
