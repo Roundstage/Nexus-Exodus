@@ -48,9 +48,9 @@ mob
 				return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
 			last_pressurePunch = world.time
-			var/list/targets = FindTargets(usr.dir,angle_limit=33, max_dist=3)
 			player_view(15,src) << sound('pressurePunchCharge.mp3', volume = 60)
 			sleep(20)
+			var/list/targets = FindTargets(usr.dir,angle_limit=33, max_dist=3)
 			PressurePunchFX()
 			if(targets)
 				for(var/mob/M in targets)

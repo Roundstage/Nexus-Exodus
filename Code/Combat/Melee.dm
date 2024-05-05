@@ -1067,7 +1067,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		omega_kb_used = 1
 	if(!dmg)
 		knockback=0
-	if(prob(GetCriticalChance(accuracy)))
+	if(prob(GetCriticalChance()))
 		dmg*=1.5
 		accuracy=100
 		player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
@@ -1319,8 +1319,9 @@ mob/proc
 		set waitfor=0
 		Knockback(m, kb_pow)
 
-mob/proc/GetCriticalChance(accuracy)
-	var/crit_chance = accuracy * 0.1
+mob/proc/GetCriticalChance()
+
+	var/crit_chance = Off * 0.1
 	if (crit_chance > 100)
 		crit_chance = 100
 	return crit_chance
