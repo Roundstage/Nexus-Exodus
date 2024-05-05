@@ -1209,8 +1209,8 @@ obj/Attacks/Time_Freeze
 			time_freeze_timer--
 			sleep(10)
 
-		for(var/mob/A in mob_view(15,usr)) if(A!=usr&&!A.Frozen&&A.client)
-			if(getdist(usr,A)<=12) if(get_dir(usr,A) in list(usr.dir,turn(usr.dir,45),turn(usr.dir,-45)))
+		for(var/mob/A in mob_view(30,usr)) if(A!=usr&&!A.Frozen&&A.client)
+			if(getdist(usr,A)<=20) if(get_dir(usr,A) in list(usr.dir,turn(usr.dir,45),turn(usr.dir,-45)))
 				player_view(10,usr)<<sound('reflect.ogg',volume=10)
 				A.Frozen=1
 				Missile('TimeFreeze.dmi',usr,A)

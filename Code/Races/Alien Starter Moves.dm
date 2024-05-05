@@ -40,7 +40,7 @@ mob/proc/Alien_Stuff()
 	var/list/L=list(\
 	"Done",\
 	"Genius (25 AP)"=25,\
-	"Alien transform (15 AP)"=15,\
+	"Alien transform (5 AP)"=5,\
 	"Time freeze (25 AP)"=25,\
 	"Limit breaker (15 AP)"=15,\
 	"Absorb (20 AP)"=20,\
@@ -50,7 +50,7 @@ mob/proc/Alien_Stuff()
 	"Zenkai (15 AP)"=15,\
 	"2.5x BP from meditating (15 AP)"=15,\
 	"Materialize (10 AP)"=10,\
-	"5x skill mastery (12 AP)"=12,\
+	"5x skill mastery (6 AP)"=6,\
 	"Breath in space (10 AP)"=10,\
 	"Split form (10 AP)"=10,\
 	"Elite Alien +[Commas(Starting_BP)] BP (20 AP)"=20,
@@ -101,7 +101,7 @@ mob/proc/Alien_Stuff()
 							goto retry
 					contents+=new/obj/Imitation
 					Alien_points-=L[choice]
-				if("Less bp loss from low ki (17 AP)")
+				if("Less bp loss from low ki (10 AP)")
 					switch(alert(src, "", "Options", "Yes", "No"))
 						if("No")
 							goto retry
