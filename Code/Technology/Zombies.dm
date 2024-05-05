@@ -574,8 +574,7 @@ obj/items/T_Fusion
 
 	desc="This will increase your battle power but it will slowly wear off. You will be immune to the t virus while \
 	this is active. No amount of damage you take will slow you down. The downside is that a bio field generator \
-	will kill you like it would a zombie, and there is a 10% chance that injecting this will kill you, and your \
-	BP gains will be lowered 10%."
+	will kill you like it would a zombie, and there is a 10% chance that injecting this will kill you."
 
 	icon='Item, Needle.dmi'
 
@@ -699,13 +698,6 @@ mob/proc/Zombie_Virus_Loop()
 
 		//if((z==7 && !Tournament) || Zombie_Virus < 0 || Zombie_Power || Android || Zombie_Immune) Zombie_Virus=0
 		if(Zombie_Virus < 0 || Zombie_Power || Android || Zombie_Immune) Zombie_Virus=0
-
-		if(Zombie_Power)
-			Zombie_Power*=0.9998
-			Zombie_Power-=1
-			if(Zombie_Power<1)
-				Zombie_Power=0
-				overlays-='Red Eyes.dmi'
 
 		sleep(delay)
 
@@ -1108,3 +1100,9 @@ obj/items/Antivirus
 			var/obj/o=new O.type
 			o.Move(usr)
 		else O.SafeTeleport(usr.loc)
+
+mob
+	var 
+		Zombie
+		Zombie_Monster
+		Zombies_eaten = 0;

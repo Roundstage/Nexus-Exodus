@@ -260,11 +260,18 @@ obj/Demon_Icons
 	Human suffix="Look like a Human"
 mob/proc/icer_Icons()
 	var/list/L=new
-	for(var/B in typesof(/obj/Icer)) L+=new B
-	while(!Form4Icon)
-		Grid(L)
-		if(!Form4Icon)
-			alert(src,"You must continue choosing icons for all your transformations")
+	if(!IsCooler)
+		for(var/B in typesof(/obj/Icer)) L+=new B
+		while(!Form4Icon)
+			Grid(L)
+			if(!Form4Icon)
+				alert(src,"You must continue choosing icons for all your transformations")
+	else
+		for(var/B in typesof(/obj/Icer)) L+=new B
+		while(!Form5Icon)
+			Grid(L)
+			if(!Form5Icon)
+				alert(src,"You must continue choosing icons for all your transformations")
 obj/Icer
 	name="Icon"
 	Givable=0
@@ -282,6 +289,10 @@ obj/Icer
 			usr.Form3Icon=icon
 		else if(!usr.Form4Icon)
 			usr.Form4Icon=icon
+			usr.Hide_Main_Grid()
+		else if (usr.IsCooler)
+			alert("Final form icon chosen. Now you go even beyond.")
+			usr.Form5Icon=icon
 			usr.Hide_Main_Grid()
 	C30 icon='C1.dmi'
 	C31 icon='C2.dmi'

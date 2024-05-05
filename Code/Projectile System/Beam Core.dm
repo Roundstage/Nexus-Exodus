@@ -79,7 +79,7 @@ mob/proc/get_beam_size()
 	if(ssj==1) beam_size+=0.3
 	if(ssj==2) beam_size+=0.5
 	if(ssj==3) beam_size+=0.85
-	if(ssj==4) beam_size+=0.62
+	if(ssj==4) beam_size+=1
 	if(IsGod()) beam_size += 0.35
 	if(is_ssj_blue) beam_size += 0.15
 	if(ultra_instinct) beam_size += 0.85
@@ -139,7 +139,7 @@ mob/proc/BeamStreamLoop(obj/Attacks/A)
 			B.dir=dir
 			B.BP=BP
 			var/dmg = 3.4
-			if(Class == "Spirit Doll" && A.type == /obj/Attacks/Dodompa)
+			if(Class == "Spirit Doll")
 				dmg *= 1.5
 			B.setStats(src, dmg * A.MoveDelay * A.WaveMult, Off_Mult=1, Explosion=0)
 			B.from_attack=A

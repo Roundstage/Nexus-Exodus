@@ -439,7 +439,7 @@ mob/proc/RaceBonusStatPoints()
 	if(Race == "Kai") return 8
 	if(Race == "Human") return 22
 	if(Race == "Tsujin") return 11
-	if(Race == "Alien") return 8
+	if(Race == "Alien") return 11
 	if(Race == "Android") return 11
 	return 0
 
@@ -471,7 +471,7 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets t
 			Raise_Recovery(-2)
 			Points += 20
 		else if(Race=="Yasai")
-			Points += 11
+			Points += 5
 
 	Max_Points=Points
 	Set_Minimum_Stats()

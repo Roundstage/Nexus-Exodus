@@ -272,10 +272,12 @@ obj/var/Taught=1 //if 1, you did not self learn the skill
 mob/proc/Destroy_Soul_Contracts(soul_percent=100)
 	if(locate(/obj/Contract_Soul) in src)
 		src<<"You have died. [soul_percent]% your soul contracts are now destroyed"
+		src.CollectedSouls = 0
 		for(var/obj/Contract_Soul/C in src) if(prob(soul_percent))
 			if(C.observed_mob) C.observed_mob<<"[src] has died and their contract on your soul has been destroyed"
 			C.reallyDelete = 1
 			del(C)
+			
 
 obj/Contract_Soul //Appears in the Souls tab
 	desc="Click this and you will be able to manipulate the soul. You do not need to RP any of these actions \
@@ -298,11 +300,14 @@ obj/Contract_Soul //Appears in the Souls tab
 		if(!observed_mob)
 			switch(input("They are offline. The only action you can do is to destroy the soul contract, do you want to \
 			do this?") in list("No","Yes"))
-				if("Yes") del(src)
+				if("Yes") 
+					del(src)
+					usr.CollectedSouls--
 			return
 		if(observed_mob == usr)
 			usr<<"Contract deleted. You can not use your own soul contract"
 			del(src)
+			usr.CollectedSouls--
 			return
 		if(!observed_mob.is_out_of_combat(victim = observed_mob) && usr.BP < observed_mob.BP * 10)
 			var/combat_timer = round((KO_SYSTEM_OUT_OF_COMBAT_TIMER - observed_mob.get_time_out_of_combat(victim = observed_mob)) / 10, 1)
@@ -313,7 +318,7 @@ obj/Contract_Soul //Appears in the Souls tab
 			return
 		var/list/L=list("Cancel","Permanent Teleport","Temporary Teleport","Teleport Back","Permanent Summon",\
 		"Temporary Summon","Send back","Kill","Absorb","Knock out","Leech soul","Alter soul's BP",\
-		"Use soul to extend your decline","Soul Info",/*"Take their soul contracts",*/"Destroy their soul contracts",\
+		"Use soul to extend your decline","Soul Info","Take their soul contracts","Destroy their soul contracts",\
 		"Destroy contract")
 		if(presummon_x) L-="Temporary Summon"
 		else L-="Send back"
@@ -353,6 +358,7 @@ obj/Contract_Soul //Appears in the Souls tab
 								S.name=C.name
 								S.suffix=C.suffix
 								usr.contents+=S
+								usr.CollectedSouls++
 
 			if("Soul Info")
 				usr<<"*[observed_mob]'s soul info*<br>\
@@ -511,6 +517,7 @@ obj/Contract_Soul //Appears in the Souls tab
 			if("Destroy contract")
 				player_view(15,usr)<<"[usr] destroys the soul contract of [observed_mob]"
 				del(src)
+				usr.CollectedSouls--
 
 			if("Alter soul's BP")
 				if(observed_mob)
@@ -660,6 +667,8 @@ mob/proc/Update_soul_contracts()
 	for(var/obj/Contract_Soul/sc in src)
 		for(var/mob/m in players) if(m.Mob_ID&&m.key==sc.Mob_ID) sc.Soul_Contract_Update(m)
 
+mob/var/CollectedSouls = 0
+
 obj/Demon_Contract
 	name="Soul Contract"
 	desc="You can offer someone a soul contract. If they accept, their soul will belong to you, and you will \
@@ -706,6 +715,7 @@ mob/proc/Soul_Contract(obj/Demon_Contract/SC)
 				var/obj/Contract_Soul/C=new
 				contents+=C
 				C.Soul_Contract_Update(P)
+				CollectedSouls++
 		if(SC) SC.Offering=0
 		return
 

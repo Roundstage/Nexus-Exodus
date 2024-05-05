@@ -4,6 +4,7 @@ mob/var/
 	icer_form1_mult=0.1
 	icer_form2_mult=0.2
 	icer_form3_mult=0.3
+	icer_form4_mult=0.6
 
 proc/ShouldOneShot(mob/a, mob/b) //a = attacker
 	if(!a || !b) return

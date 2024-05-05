@@ -118,6 +118,7 @@ mob/proc/get_bp(factor_powerup=1)
 		switch(Race)
 			if("Android") n*=1.5
 			if("Majin") n*=1.2
+			if("Demon") n*= 1 +(CollectedSouls * 0.1)
 		if(client)
 			var/sf_count=SplitformCount()
 			n/=sf_count+1
@@ -140,6 +141,7 @@ mob/proc/get_bp(factor_powerup=1)
 		var/bp = bp_mult * Body * (base_bp + hbtc_bp + unlockedBP) * ssj_bp_mult
 		if(anger<=100) bp*=available_potential
 		if(Vampire&&Vampire_Power) bp*=Vampire_Power
+		if(Race=="Demon") bp*= 1 +(CollectedSouls * 0.1)
 		if(Roid_Power) bp*=Roid_Power+1
 		bp += ssj_power() * bp_mult * Body
 		bp += Great_Ape_power()*Body
@@ -584,7 +586,6 @@ mob/proc
 		set waitfor=0
 		while(src)
 			IfInSpacePodDestroyPod()
-			if(Race=="Majin") return
 			var/area/a=get_area()
 			if(istype(a,/area/Braal_Core))
 				var/timer=2
@@ -1005,14 +1006,14 @@ mob/proc
 
 	Can_recover_ki(ki_limit=1.#INF)
 
-		if(Race=="Onion Lad" && Onion_Lad_Star && Ki<ki_limit && BPpcnt<=100 && !KO && !Regen_Active() && !Overdrive && \
+		if(Race=="Onion Lad" && Onion_Lad_Star && Ki<ki_limit && !KO && !Regen_Active() && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
 
 		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
 		//Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
 		//Has_Active_Freezes()||buffed_with_bp()||God_Fist_level||recov<=0 || SplitformCount()) return
 		if(strangling||Ki>=ki_limit||BPpcnt>100||attacking||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
-		Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
+		Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
 		Has_Active_Freezes()||buffed_with_bp()||buff_transform_bp||God_Fist_level||recov<=0 || Peebagging() || SplitformCount()) return
 		return 1
 
@@ -1333,14 +1334,13 @@ mob/proc/powerup_speed(n=1)
 mob/proc/powerup_soft_cap()
 	var/ki_mod = BufflessKiMod()
 	if(lssj_always_angry && Class == "Legendary Yasai") ki_mod /= lssj_ki_mult
-	if(has_modules) for(var/obj/Module/m in active_modules) if(m.Kix>1) ki_mod/=m.Kix
 	var/max_powerup = 27 * (ki_mod ** energy_mod_powerup_exponent) //+100
 	if(lssj_always_angry && Class == "Legendary Yasai") max_powerup *= 0.63
 	if(jirenAlien) max_powerup *= jirenAlienPowerupMult
 
-	if(ssj == 1) max_powerup *= 0.8
-	if(ssj == 2) max_powerup *= 0.65
-	if(ssj == 3) max_powerup *= 0.6
+	if(ssj == 1) max_powerup *= 1
+	if(ssj == 2) max_powerup *= 0.8
+	if(ssj == 3) max_powerup *= 0.65
 	if(ssj == 4) max_powerup *= ssj4_powerup_mod
 
 	return max_powerup
