@@ -645,9 +645,11 @@ obj/Contract_Soul //Appears in the Souls tab
 
 	New()
 		soul_contracts+=src
+		usr.CollectedSouls++
 
 	Del()
 		soul_contracts-=src
+		usr.CollectedSouls--
 		. = ..()
 
 	proc/Soul_Contract_Update(mob/M) if(M)
@@ -661,11 +663,9 @@ obj/Contract_Soul //Appears in the Souls tab
 var/list/soul_contracts=new
 
 mob/proc/Update_soul_contracts()
-	CollectedSouls=0
 	for(var/obj/Contract_Soul/sc in soul_contracts)
 		if(Mob_ID && key==sc.Mob_ID)
 			sc.Soul_Contract_Update(src)
-			CollectedSouls++
 	for(var/obj/Contract_Soul/sc in src)
 		for(var/mob/m in players) if(m.Mob_ID&&m.key==sc.Mob_ID) sc.Soul_Contract_Update(m)
 
