@@ -13,6 +13,8 @@ mob/proc/ChangeIcerFormIcon(form = 1)
 	if(form == 4)
 		Form4Icon = i
 	if(form == 5)
+		Form5Icon = i
+	if(form == 6)
 		goldFormIcon = i
 
 mob/var/tmp/tab_font_size = 10
@@ -107,11 +109,12 @@ mob/verb/Settings()
 			//	BuyPackages()
 
 			if("Use Custom Icer Form Icons")
-				switch(input(src, "Which form?", "Options") in list("Cancel","Base Form","2nd Form","3rd Form","Final Form","Golden Form"))
-					if("Base Form") ChangeIcerFormIcon(form = 1)
-					if("2nd Form") ChangeIcerFormIcon(form = 2)
-					if("3rd Form") ChangeIcerFormIcon(form = 3)
-					if("Final Form") ChangeIcerFormIcon(form = 4)
+				switch(input(src, "Which form?", "Options") in list("Cancel","Base Form","2nd Form","3rd Form","Final Form", "Cooler","Golden Form"))
+					if("Base Form") ChangeIcerFormIcon(form = 0)
+					if("2nd Form") ChangeIcerFormIcon(form = 1)
+					if("3rd Form") ChangeIcerFormIcon(form = 2)
+					if("Final Form") ChangeIcerFormIcon(form = 3)
+					if("Cooler") ChangeIcerFormIcon(form = 4)
 					if("Golden Form") ChangeIcerFormIcon(form = 5)
 
 			if("Hotkey Setup") Show_hotbar_grid()

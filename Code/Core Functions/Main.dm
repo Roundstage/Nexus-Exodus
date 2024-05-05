@@ -29,7 +29,7 @@ mob/proc/Get_race_starting_bp_mod()
 	if(Class == "Spirit Doll") return human_bp_mod * 0.9
 	switch(Race)
 		if("Yeet") return 1
-		if("Half Yasai") return 2.2
+		if("Half Yasai") return 2.5
 		if("Yasai") return 2
 		if("Human") return human_bp_mod
 		if("Tsujin") return 1.28
@@ -474,7 +474,7 @@ mob/proc
 		switch(src.Race)
 			if("Demon")
 				src.give_energy_type("Soul Energy")
-				
+
 		src.give_energy_type("Mental Energy")
 
 
@@ -550,7 +550,7 @@ mob/proc
 		if(world.maxz<5) return L
 		for(var/A in L)
 			var/Spawn
-			for(var/obj/Spawn/S in Spawn_List) 
+			for(var/obj/Spawn/S in Spawn_List)
 				if(S.name == A && !S.is_on_destroyed_planet())
 					var/turf/t=S.loc
 					if(t&&isturf(t)&&!t.density)
@@ -572,7 +572,7 @@ mob/proc
 			if(Frost_Lords > 5 / 100)
 				if(!icer_common_race)
 					Races-="Frost Lord"
-		
+
 		Races = Check_Spawn(Races) //Removes the entry from the list if there is no spawn for it
 
 		for(var/mob/P in players)
@@ -648,7 +648,7 @@ mob/proc/Human()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=20
 	Decline_Rate=1
-	Intelligence=0.8
+	Intelligence=1
 	knowledge_cap_rate=1
 	Regenerate=0
 	Lungs=0
@@ -657,7 +657,7 @@ mob/proc/Human()
 	zenkai_mod=1
 	base_bp=1
 	ascension_bp*=1
-	stun_resistance_mod=1.3
+	stun_resistance_mod=1
 
 mob/proc/Doll()
 	alert(src,"Spirit Dolls are puppets who were given souls, their stats are based off Humans, with \
@@ -666,13 +666,13 @@ mob/proc/Doll()
 	incline_age=10
 	incline_mod=0.3
 	Intelligence*=0.8
-	med_mod*=2
+	med_mod*=4
 	mastery_mod*=thirdEyeMasteryMult //same as third eye human since they dont get third eye
 	Decline=35
 	Decline_Rate=2
 	Class = "Spirit Doll"
 	if(START_WITH_RACIAL_SKILLS)
-		if(!(locate(/obj/Fly) in src)) 
+		if(!(locate(/obj/Fly) in src))
 			contents+=new/obj/Fly
 
 mob/proc/Tsujin()
@@ -685,7 +685,7 @@ mob/proc/Tsujin()
 	base_bp=10
 	Knowledge=600
 	knowledge_cap_rate*=1.3
-	stun_resistance_mod=1.2
+	stun_resistance_mod=1.6
 
 mob/proc/Majin()
 	Race="Majin"
@@ -824,20 +824,20 @@ mob/proc/Half_Yasai()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=20
 	Decline_Rate=1
-	Intelligence=0.8
+	Intelligence=1
 	knowledge_cap_rate=1
 	Regenerate=0
 	Lungs=0
 	leech_rate=1
 	med_mod=2
-	zenkai_mod=0.5
+	zenkai_mod=2
 	ssjat=rand(500000,700000)
 	ssj2at=rand(72000000,102000000)
 	ssj3at=rand(450000000,550000000)
 	ssjdrain /= 10
 	ssjmod*=4
 	ssj2mod*=2
-	ssj3mod*=0.5
+	ssj3mod*=1.5
 	base_bp=5
 	if(START_WITH_RACIAL_SKILLS)
 		contents.Add(new/obj/Attacks/Masenko)
@@ -863,13 +863,13 @@ mob/proc/Yasai(Can_Elite=1,force_elite,force_low_class)
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=30
 	Decline_Rate=1
-	Intelligence=0.6
+	Intelligence=0.4
 	knowledge_cap_rate=1
 	Regenerate=0
 	Lungs=0
 	leech_rate=1
 	med_mod=1
-	zenkai_mod=1.5
+	zenkai_mod=4
 	ssjat=rand(800000,1200000)
 	ssj2at=rand(102000000,132000000)
 	ssj3at=rand(360000000,440000000)
@@ -919,10 +919,22 @@ mob/proc/Elite_Yasai() if(Class!="Elite")
 	Gravity_Mod*=2
 	sp_mod*=1.2
 	Class="Elite"
+mob/proc/Cooler()
+	if(base_bp<1000) base_bp=1000
+	var/bp_get=rand(25000,65000)
+	if(base_bp<bp_get)
+		bp_get-=base_bp
+		if(bp_get>0) hbtc_bp+=bp_get
+	if(max_ki<800*Eff) max_ki=800*Eff
+	mastery_mod*=2
+	Gravity_Mod*=2
+	sp_mod*=1.2
+	IsCooler = 1
+	Class="Cooler"
 
 mob/proc/Legendary_Yasai()
 	Yasai(Can_Elite=0)
-	Intelligence=0.6
+	Intelligence=0.1
 	Gravity_Mod*=3
 	Class="Legendary Yasai"
 
@@ -938,6 +950,7 @@ mob/proc/Legendary_Yasai()
 	Decline -= 2
 	Decline_Rate = 4
 
+mob/var/IsCooler = 0
 mob/proc/Icer()
 	Race="Frost Lord"
 	incline_age=10
@@ -950,7 +963,7 @@ mob/proc/Icer()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=50
 	Decline_Rate=1
-	Intelligence=0.5
+	Intelligence=0.3
 	knowledge_cap_rate=2
 	Regenerate=0
 	Lungs=1
@@ -964,7 +977,12 @@ mob/proc/Icer()
 	base_bp=300
 	hbtc_bp=rand(900,1200)
 	ascension_bp*=1.35
-	stun_resistance_mod=0.9
+	stun_resistance_mod=1.4
+	if(prob(100))
+		switch(alert(src,"Do you want to be an Cooler Icer? This choice only appears in 1% \
+		of Icers, making you very especial. You will be stronger than a normal Icer and have an additional transformation",\
+		"options","No","Yes"))
+			if("Yes") Cooler()
 mob/proc/Kai()
 	Race="Kai"
 	incline_age=16
@@ -980,7 +998,7 @@ mob/proc/Kai()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=100
 	Decline_Rate=0.5
-	Intelligence=0.3
+	Intelligence=0.6
 	Regenerate=0
 	Lungs=0
 	leech_rate=2
@@ -1030,7 +1048,7 @@ mob/proc/Demon()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=30
 	Decline_Rate=10 //It's 10 because they decline fast if they leave hell, hell keeps them young
-	Intelligence=0.3
+	Intelligence=0.6
 	Regenerate=0
 	Lungs=0
 	leech_rate=1
@@ -1043,6 +1061,7 @@ mob/proc/Demon()
 	hbtc_bp=rand(0,300)
 	ascension_bp*=0.9
 	stun_resistance_mod=1.2
+
 mob/proc/Android()
 	Race="Android"
 	incline_age=0.1
@@ -1071,6 +1090,7 @@ mob/proc/Android()
 	Zanzoken=100
 	ascension_bp*=1.1
 	stun_resistance_mod=0.9
+
 mob/proc/Alien()
 	Race="Alien"
 	base_bp = rand(1800,2200)

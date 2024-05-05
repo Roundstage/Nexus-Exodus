@@ -148,7 +148,7 @@ obj/Mate
 		if(usr.KO) return
 		usr.Mate(src)
 mob/proc/Can_Mate()
-	//if(Roid_Power || Dead || (locate(/obj/Injuries/Dick) in injury_list) || !(locate(/obj/Mate) in src)) return
+	if(Roid_Power || Dead || (locate(/obj/Injuries/Dick) in injury_list) || !(locate(/obj/Mate) in src)) return
 	return 1
 
 obj/Egg
@@ -176,7 +176,7 @@ mob/proc/Mate(obj/Mate/M)
 		M.Next_Use=world.realtime+(60*60*10)
 	else
 		for(var/mob/P in Get_step(src,dir)) if(P.client)
-			if(!P.KO) switch(alert(P,"[src] wants to mate with you","","No","Yes"))
+			switch(alert(P,"[src] wants to mate with you","","No","Yes"))
 				if("No") return
 			if(getdist(src,P)>1) return
 			if(!Can_Mate())

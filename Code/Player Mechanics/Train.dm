@@ -13,7 +13,7 @@ mob/proc/Peebag_Gains(delay = 10) //delay is how often they were allowed to punc
 
 var/last_input=1
 
-mob/Admin5/verb/BP_Gain_Test()	
+mob/Admin5/verb/BP_Gain_Test()
 	var/hours=input(src,"hours of training?","options",last_input) as num
 	last_input=hours
 	hours *= 60 * 60
@@ -55,13 +55,12 @@ mob/proc/Train_Stats(Amount=1)
 	Raise_Stats(4)
 
 mob/proc/Shadow_Spar_Gains()
-	if(Race!="Majin") Raise_BP(1 * weights())
+	Raise_BP(1 * weights())
 	Raise_Ki(8)
 	Raise_Stats(4)
 	Raise_SP(3 / 60 / 60) //1 per 1 hour
 
 mob/proc/Flying_Gain(gain_mod=1)
-	if(Race=="Majin") return
 	Raise_BP(1 * weights() * gain_mod)
 	Raise_Ki(4 * gain_mod, "Energy")
 	Raise_Stats(prob(30)*gain_mod)
@@ -170,11 +169,7 @@ mob/proc/Raise_BP(Amount=1,apply_hbtc_gains=1)
 
 	RecordHighestBPEverGotten()
 
-	//if(cyber_bp || has_modules()) Amount /= 4
-	if(Zombie_Power) Amount*=0.9
 	if(Safezone) Amount*=0.25
-
-	//if(ultra_pack) Amount*=1.15
 
 	Amount*=decline_gains()
 
@@ -251,29 +246,21 @@ var/mob/max_speed_mob
 var/speedDelayMultMod = 2.3
 
 mob/proc/Speed_delay_mult(severity = 1)
-	var/average_speed_influence = (avg_speed / 100) * GLOBAL_MELEE_SPEED_OFFSET 
-	var/ratio = (Spd / average_speed_influence)**0.4
-	if(ratio < 0.01) ratio = 0.01
+	var/scalingFactor = (Spd/150) * GLOBAL_MELEE_SPEED_OFFSET  // Parâmetro de ajuste
+	var/ratio = 0.1 + (scalingFactor * Spd / (510 + Spd)) * 5.4
 
 	var/mod = 1 //1 = perfectly average
-	var/minMod = 0.45 //was 0.25
+	var/minMod = 0.25 //was 0.25
+
 	if(ratio > 1) //high speed
 		mod += 1 * (ratio**severity - 1)
 	else //low speed
 		mod *= ratio**severity
 		if(mod < minMod) mod = minMod
 	mod = 1 / mod //must be inverted to represent a "delay"
+
 	return mod * speedDelayMultMod
 
-	//DONT FORGET TO RETURN SOMETHING
-
-	/*//var/speed_mult = Clamp((Max_Speed/Spd)**severity, 1, 6**severity)
-	var/speed_mult = Clamp((Max_Speed/Spd)**severity, 1, 1 + (5 * severity))
-	//if(key in epic_list) speed_mult=1
-	*/
-	//var/speed_mult=Clamp((Max_Speed/Spd)**severity,1,10**severity)
-	//return speed_mult
-	
 
 mob/proc/Decline_Energy_Gain()
 	var/Amount=1
@@ -641,11 +628,6 @@ mob/proc/Meditate(from_ai_train)
 			if(Flying && !ultra_instinct) icon_state="Flight"
 
 mob/proc/Train(from_ai_train)
-
-	if(Race=="Majin")
-		src<<"Majins can not train. They do not gain any power from training."
-		return
-
 	if(Can_Train())
 		Land()
 		if(Action!="Training")

@@ -510,7 +510,7 @@ obj/Attacks/Blast
 	verb/Blast_Options()
 		set category="Other"
 		while(usr)
-			switch(input("These settings are for the 'Blast' ability") in list("Cancel","Firing Mode","Knockback","Explosiveness",\
+			switch(input("These settings are for the 'Blast' ability") in list("Cancel","Firing Mode","Knockback","Explosiveness","Amount of blasts",\
 			"Refire","Stun"))
 				if("Cancel") return
 				if("Stun")
@@ -584,7 +584,7 @@ mob/proc/blast_fire_loop()
 
 mob/proc/get_blast_refire()
 	if(!blast_obj) return 1
-	return TickMult(1 / blast_obj.blast_refire * Speed_delay_mult(severity=0.25))
+	return TickMult(1 / blast_obj.blast_refire * Speed_delay_mult(severity=0.5))
 
 mob/proc/get_shuriken_refire()
 	return TickMult(2.4 * Speed_delay_mult(severity=0.3))
@@ -596,8 +596,7 @@ mob/proc/Blast_Fire(obj/Attacks/Blast/B)
 	if(!B) B=blast_obj
 	if(!B) for(var/obj/Attacks/Blast/C in ki_attacks) B=C
 	if(!B) return
-
-	B.Blast_Count = 1
+	
 	//B.Blast_Count /= Speed_delay_mult(severity = 0.2)
 	B.Blast_Count = ToOne(B.Blast_Count)
 

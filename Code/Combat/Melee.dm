@@ -705,7 +705,6 @@ mob/proc/GetSkillDrain(mod = 1, is_energy = 0)
 
 	if(!is_energy) d += (Clamp(str_share()**1, 0.8, 1.#INF) - 1) * 1.4
 	else d += (Clamp(frc_share()**1, 0.8, 1.#INF) - 1) * 1.4
-
 	if(ismajin) d += 0.5
 	if(ismystic && is_energy) d -= 0.3
 

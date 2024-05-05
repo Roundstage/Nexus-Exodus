@@ -105,13 +105,13 @@ mob/proc/Alien_Stuff()
 					switch(alert(src, "", "Options", "Yes", "No"))
 						if("No")
 							goto retry
-					bp_loss_from_low_ki/=2
+					bp_loss_from_low_ki/=3
 					Alien_points-=L[choice]
 				if("Less bp loss from low health (10 AP)")
 					switch(alert(src, "", "Options", "Yes", "No"))
 						if("No")
 							goto retry
-					bp_loss_from_low_hp/=2
+					bp_loss_from_low_hp/=3
 					Alien_points-=L[choice]
 				if("Better blast homing (12 AP)")
 					switch(alert(src, "Your blasts will be able to home in on targets much better", "Options", "Yes", "No"))
@@ -134,7 +134,7 @@ mob/proc/Alien_Stuff()
 							goto retry
 					Intelligence=1
 					Alien_points-=L[choice]
-				if("Alien transform (15 AP)")
+				if("Alien transform (5 AP)")
 					switch(alert(src, "This gives you the ability to use a transformation that increases BP but drains energy", "Options", "Yes", "No"))
 						if("No")
 							goto retry
@@ -196,7 +196,7 @@ mob/proc/Alien_Stuff()
 							goto retry
 					contents+=new/obj/Materialization
 					Alien_points-=L[choice]
-				if("5x skill mastery (12 AP)")
+				if("5x skill mastery (6 AP)")
 					switch(alert(src, "", "Options", "Yes", "No"))
 						if("No")
 							goto retry

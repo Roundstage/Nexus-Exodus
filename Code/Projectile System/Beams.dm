@@ -70,7 +70,7 @@ obj/Attacks/Laser_Beam
 	student_point_cost = 20
 	Wave=1
 	icon='Energy Wave 1.dmi'
-	Drain=33.5
+	Drain=4.5
 	WaveMult=1.1
 	Range=60
 	MoveDelay=1
@@ -171,7 +171,7 @@ obj/Attacks/Kamehameha
 	WaveMult=1.7
 	Range=40
 	MoveDelay=1.5
-	Piercer=1
+	Piercer=0
 	deflect_difficulty=1.3
 
 	verb/Hotbar_use()
@@ -226,7 +226,7 @@ obj/Attacks/Final_Flash
 	MoveDelay=2
 	deflect_difficulty=3
 	gain_power_with_range=1
-	Piercer=1
+	Piercer=0
 
 	verb/Hotbar_use()
 		set hidden=1

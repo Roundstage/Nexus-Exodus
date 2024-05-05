@@ -135,18 +135,16 @@ mob/proc/USSj()
 
 mob/proc
 	ascension_mod()
-		var/n=1.15 //account for mystic boost to ssj2
-		n *= 1.1 //arbitrary
-		if(Race=="Alien") n*=0.92
-		if(Race=="Demigod") n*=1.1
+		var/n=1.265 //account for mystic boost to ssj2
+		if(Race=="Alien") n*=1.2
+		if(Race=="Demigod") n*=1.6
 		//if(Race=="Android") n*=1.15 //Androids dont ascend anymore as they have no base bp now only cyber bp
 		if(Race=="Majin") n*=1.3
 		if(Race=="Human")
-			if(Class == "Spirit Doll") n *= 0.6
-			else n *= 0.7
+			if(Class == "Spirit Doll") n *= 0.9
+			else n *= 1.15
 		if(Race=="Tsujin") n *= 0.8
-		if(Race=="Kai") n *= 0.9
-		if(Race=="Puranto") n *= 0.85
+		if(Race=="Kai") n *= 1.3
 		return n
 
 	AscendedBPMod()
@@ -387,6 +385,7 @@ mob/var
 	Form2Icon
 	Form3Icon
 	Form4Icon
+	Form5Icon
 
 
 
@@ -605,7 +604,11 @@ mob/proc/SSj4() if(!IsGreatApe() && !transing && !ssj && !ismystic)
 	SSj_Hair()
 
 mob/proc/Frost_Lord_Forms() if(Race=="Frost Lord")
-	if(Form == 3) PowerUpToGoldForm()
+	if(Form == 3 && !IsCooler) PowerUpToGoldForm()
+	else if(Form == 3 && IsCooler) 
+		Form=4
+		recov/=icer_recovery
+		icon=Form5Icon
 	if(Form==2)
 		Form=3
 		recov/=icer_recovery
@@ -656,7 +659,7 @@ mob/proc/Frost_Lord_Form_Addition(form)
 
 		N = peak_add * ((bp / peak_at) ** exponent) //Means +peak_add bp at peak_at base bp
 		if(N > peak_add) N = peak_add
-		if(N < bp * icer_form1_mult || bp_tiers) N = bp * icer_form1_mult
+		if(N < bp * icer_form2_mult || bp_tiers) N = bp * icer_form2_mult
 		if(N < 1500) N = 1500
 		N *= bp_mult
 		bp_add += N
@@ -671,7 +674,22 @@ mob/proc/Frost_Lord_Form_Addition(form)
 
 		N = peak_add * ((bp / peak_at) ** exponent) //Means +peak_add bp at peak_at base bp
 		if(N > peak_add) N = peak_add
-		if(N < bp * icer_form1_mult || bp_tiers) N = bp * icer_form1_mult
+		if(N < bp * icer_form3_mult || bp_tiers) N = bp * icer_form3_mult
+		if(N < 2000) N = 2000
+		N *= bp_mult
+		bp_add += N
+
+	if(form >= 4)
+		var/peak_add = 10000000
+		var/peak_at = 530000
+
+		var/exponent = 1
+		if(bp < peak_at) exponent = 12
+		else exponent = 0.5
+
+		N = peak_add * ((bp / peak_at) ** exponent) //Means +peak_add bp at peak_at base bp
+		if(N > peak_add) N = peak_add
+		if(N < bp * icer_form4_mult || bp_tiers) N = bp * icer_form4_mult
 		if(N < 2000) N = 2000
 		N *= bp_mult
 		bp_add += N
@@ -695,6 +713,10 @@ mob/proc/icer_Revert()
 	if(Form==3)
 		icon=Form3Icon
 		Form=2
+		recov*=icer_recovery
+	if(Form==4)
+		icon=Form4Icon
+		Form=3
 		recov*=icer_recovery
 
 mob/var/third_eye

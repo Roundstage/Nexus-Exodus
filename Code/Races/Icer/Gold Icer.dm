@@ -73,7 +73,10 @@ mob/proc
 
 		is_gold_form = 0
 		overlays -= gold_form_idle_aura
-		icon = Form4Icon
+		if(IsCooler)
+			icon = Form5Icon
+		else 
+			icon = Form4Icon
 		//SSj_Hair()
 
 	GoldFormDrain()
