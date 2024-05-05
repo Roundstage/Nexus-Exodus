@@ -1060,13 +1060,17 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/obj/Shield/ki_shield
 	if(ismob(target)) ki_shield=target.get_active_shield()
 	var/knockback=get_melee_knockback_distance(target)
-	//if(knockback) dmg*=1+(knockback/10)
+	if(knockback) dmg*=1+(knockback/10)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()
 		omega_kb_used = 1
 	if(!dmg)
 		knockback=0
+	if(prob(GetCriticalChance(accuracy)))
+		dmg*=1.5
+		accuracy=100
+		player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
 	last_melee_attack = world.time
 
 	if(ismob(target) && target.blocking)
@@ -1314,3 +1318,9 @@ mob/proc
 	MeleeRepelMob(mob/m, kb_pow = 1)
 		set waitfor=0
 		Knockback(m, kb_pow)
+
+mob/proc/GetCriticalChance(accuracy)
+	var/crit_chance = accuracy * 0.1
+	if (crit_chance > 100)
+		crit_chance = 100
+	return crit_chance
