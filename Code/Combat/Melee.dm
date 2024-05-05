@@ -1067,10 +1067,6 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		omega_kb_used = 1
 	if(!dmg)
 		knockback=0
-	if(prob(GetCriticalChance()))
-		dmg*=1.5
-		accuracy=100
-		player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
 	last_melee_attack = world.time
 
 	if(ismob(target) && target.blocking)
@@ -1159,12 +1155,18 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				target << "You are now Burning due to being hit by someone using Fire Fist!"
 
 			target.isBurning = TRUE;
-
+		if(prob(GetCriticalChance()))
+			dmg*=1.5
+			accuracy=100
+			knockback*=10
+			player_view(15,src) << sound('strongpunch.ogg', volume = 60)
+			player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
+		else
+			Play_Melee_Sound(sound_range=10,origin=src,sound_file=pick(sounds),sound_volume=20)
 		if(ismob(target) && Is_Darius()) target.Apply_Bleed()
 		Add_Hokuto_Shinken_Energy(target)
 		zombie_melee_infection(target)
 		if(using_sword()&&ismob(target)) target.check_lose_tail(dmg,src)
-		Play_Melee_Sound(sound_range=10,origin=src,sound_file=pick(sounds),sound_volume=20)
 		if(lunge_attacking) BigCrater(pos = target.base_loc(), minRangeFromOtherCraters = 3)
 
 		if(ismob(target))

@@ -274,7 +274,7 @@ mob/proc/Destroy_Soul_Contracts(soul_percent=100)
 		src<<"You have died. [soul_percent]% your soul contracts are now destroyed"
 		for(var/obj/Contract_Soul/C in src) if(prob(soul_percent))
 			if(C.observed_mob) C.observed_mob<<"[src] has died and their contract on your soul has been destroyed"
-
+			CollectedSouls--
 			C.reallyDelete = 1
 			del(C)
 
@@ -334,7 +334,6 @@ obj/Contract_Soul //Appears in the Souls tab
 					usr<<"All of [observed_mob]'s soul contracts have been destroyed"
 					observed_mob<<"[usr] has used the soul contract on you to destroy all of your soul contracts"
 					for(var/obj/Contract_Soul/CS in observed_mob) del(CS)
-					observed_mob.CollectedSouls = 0
 				else
 					usr<<"[observed_mob]'s soul contract on [S] is destroyed"
 					observed_mob<<"[usr] has used the soul contract on you to destroy your soul contract on [S]"
@@ -649,7 +648,7 @@ obj/Contract_Soul //Appears in the Souls tab
 
 	Del()
 		soul_contracts-=src
-		usr.CollectedSouls--
+		if(usr.CollectedSouls>0) usr.CollectedSouls--
 		. = ..()
 
 	proc/Soul_Contract_Update(mob/M) if(M)
