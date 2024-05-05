@@ -272,12 +272,12 @@ obj/var/Taught=1 //if 1, you did not self learn the skill
 mob/proc/Destroy_Soul_Contracts(soul_percent=100)
 	if(locate(/obj/Contract_Soul) in src)
 		src<<"You have died. [soul_percent]% your soul contracts are now destroyed"
-		src.CollectedSouls = 0
 		for(var/obj/Contract_Soul/C in src) if(prob(soul_percent))
 			if(C.observed_mob) C.observed_mob<<"[src] has died and their contract on your soul has been destroyed"
+
 			C.reallyDelete = 1
 			del(C)
-			
+
 
 obj/Contract_Soul //Appears in the Souls tab
 	desc="Click this and you will be able to manipulate the soul. You do not need to RP any of these actions \
@@ -300,14 +300,12 @@ obj/Contract_Soul //Appears in the Souls tab
 		if(!observed_mob)
 			switch(input("They are offline. The only action you can do is to destroy the soul contract, do you want to \
 			do this?") in list("No","Yes"))
-				if("Yes") 
+				if("Yes")
 					del(src)
-					usr.CollectedSouls--
 			return
 		if(observed_mob == usr)
 			usr<<"Contract deleted. You can not use your own soul contract"
 			del(src)
-			usr.CollectedSouls--
 			return
 		if(!observed_mob.is_out_of_combat(victim = observed_mob) && usr.BP < observed_mob.BP * 10)
 			var/combat_timer = round((KO_SYSTEM_OUT_OF_COMBAT_TIMER - observed_mob.get_time_out_of_combat(victim = observed_mob)) / 10, 1)
@@ -336,10 +334,12 @@ obj/Contract_Soul //Appears in the Souls tab
 					usr<<"All of [observed_mob]'s soul contracts have been destroyed"
 					observed_mob<<"[usr] has used the soul contract on you to destroy all of your soul contracts"
 					for(var/obj/Contract_Soul/CS in observed_mob) del(CS)
+					observed_mob.CollectedSouls = 0
 				else
 					usr<<"[observed_mob]'s soul contract on [S] is destroyed"
 					observed_mob<<"[usr] has used the soul contract on you to destroy your soul contract on [S]"
 					del(S)
+
 
 			if("Take their soul contracts")
 				switch(input("If [observed_mob] has any soul contracts of their own, you will have them as well.") in \
@@ -358,7 +358,6 @@ obj/Contract_Soul //Appears in the Souls tab
 								S.name=C.name
 								S.suffix=C.suffix
 								usr.contents+=S
-								usr.CollectedSouls++
 
 			if("Soul Info")
 				usr<<"*[observed_mob]'s soul info*<br>\
@@ -517,7 +516,6 @@ obj/Contract_Soul //Appears in the Souls tab
 			if("Destroy contract")
 				player_view(15,usr)<<"[usr] destroys the soul contract of [observed_mob]"
 				del(src)
-				usr.CollectedSouls--
 
 			if("Alter soul's BP")
 				if(observed_mob)
@@ -663,7 +661,11 @@ obj/Contract_Soul //Appears in the Souls tab
 var/list/soul_contracts=new
 
 mob/proc/Update_soul_contracts()
-	for(var/obj/Contract_Soul/sc in soul_contracts) if(Mob_ID && key==sc.Mob_ID) sc.Soul_Contract_Update(src)
+	CollectedSouls=0
+	for(var/obj/Contract_Soul/sc in soul_contracts)
+		if(Mob_ID && key==sc.Mob_ID)
+			sc.Soul_Contract_Update(src)
+			CollectedSouls++
 	for(var/obj/Contract_Soul/sc in src)
 		for(var/mob/m in players) if(m.Mob_ID&&m.key==sc.Mob_ID) sc.Soul_Contract_Update(m)
 
@@ -715,7 +717,6 @@ mob/proc/Soul_Contract(obj/Demon_Contract/SC)
 				var/obj/Contract_Soul/C=new
 				contents+=C
 				C.Soul_Contract_Update(P)
-				CollectedSouls++
 		if(SC) SC.Offering=0
 		return
 
@@ -740,7 +741,7 @@ obj/Soul_Weapon
 mob/proc/Soul_Weapon(obj/Soul_Weapon/soul_weapon)
 	set name = "Soul Weapon"
 	set desc = "Mold your Soul power into a weapon that affects the world in a variety of ways."
-	
+
 	var/mob/player = usr
 
 	if(soul_weapon.already_exists)
@@ -803,7 +804,7 @@ mob/proc/Soul_Attack(obj/Soul_Attack/Soul_Attack, range_y, range_x, duration)
 		src << "You are already using Soul Attack!"
 		return
 	Soul_Attack.is_active = TRUE
-	
+
 	var/mob/player = usr
 	var/x = player.x
 	var/y = player.y
@@ -1069,16 +1070,16 @@ mob/proc/Give_Power(obj/Give_Power/G)
 
 	var/list/Mobs=list("Cancel")
 
-	for(var/mob/M in player_view(15,src)) 
+	for(var/mob/M in player_view(15,src))
 		if(M.client&&M!=src) Mobs+=M
-	if(Mobs.len<=2) 
+	if(Mobs.len<=2)
 		Mobs-="Cancel"
 
 	var/mob/M=input(src,"Choose a target to give power to") in Mobs
 
 	if(Giving_Power) return
 	if(!M || M=="Cancel") return
-	
+
 	if(alignment_on&&alignment == "Good" && M.alignment == "Evil")
 		src<<"You can not give power to evil people"
 		return
@@ -1094,7 +1095,7 @@ mob/proc/Give_Power(obj/Give_Power/G)
 	spawn while(src&&Giving_Power&&M)
 		Missile(O,src,M)
 		sleep(1)
-		
+
 	while(src && M && Giving_Power && !KO && getdist(src,M)<=13 && locz()!=18 && M.locz()!=18)
 
 		dir=get_dir(src,M)
@@ -1109,7 +1110,7 @@ mob/proc/Give_Power(obj/Give_Power/G)
 		var/give_power_modifier = 2
 		var/waiting_period = 0
 
-		if(M.KO && M.Health>=100) 
+		if(M.KO && M.Health>=100)
 			M.set_healing_modifier(0.5, "being given power", victim = M)
 		if(KO)
 			Giving_Power=0
@@ -1128,7 +1129,7 @@ mob/proc/Give_Power(obj/Give_Power/G)
 			//M.Ki+=n
 			if(M.Ki <= 0) M.Ki = 1 //stop division by zero error
 			M.Ki+=(M.max_ki/100) * Clamp((M.max_ki / M.Ki)**3, 0, 1.5)
-			
+
 		if(power_given>=100)
 			if(M.gp_list.Find(src)) M.gp_list-=src
 			if(gp_target) gp_target=0
@@ -1461,8 +1462,8 @@ proc/Examine_List()
 	for(var/obj/O) if(O.desc&&O.examinable) L+=O
 	return L
 
-mob/verb/Examine(obj/A in Examine_List()) 
-	if(A) 
+mob/verb/Examine(obj/A in Examine_List())
+	if(A)
 		src<<"<br><br>[A.desc]"
 
 proc/Strongest_Person(mob/M)
@@ -2371,7 +2372,7 @@ proc/Get_self_destruct_damage(mob/a,mob/b)
 
 	if(a.Regenerate || (locate(/obj/Module/Rebuild) in a.active_modules)) dmg *= 0.5
 	return dmg;
-	
+
 mob/proc/AOE_auto_dodge(mob/attacker,turf/origin,min_dist=7,max_dist=10)
 	if(KO||KB||Frozen||Safezone) return
 	var/turf/original_loc=loc
@@ -2657,7 +2658,7 @@ obj/Taiyoken
 	hotbar_type="Ability"
 	verb/Solar_Flare()
 		set category="Skills"
-	
+
 		usr.TrySolarFlare()
 		return
 
@@ -2749,7 +2750,7 @@ obj/Imitation
 
 			var/list/People=new
 
-			for(var/mob/A in player_view(15,usr)) 
+			for(var/mob/A in player_view(15,usr))
 				People.Add(A)
 
 			var/Choice=input("Imitate who?") in People
@@ -2804,7 +2805,7 @@ mob/var
 	precog //for the blast avoidance...
 	precog_chance=100
 	precogs=1
-	
+
 mob/proc/precog_loop()
 	set waitfor=0
 	while(src)
@@ -3184,7 +3185,7 @@ mob/var
 	ismystic
 	isFireFist
 	usingSaiyanPower
-	
+
 mob/var/Restore_Youth=0 //How many times you have had youth restored
 
 obj/Restore_Youth
