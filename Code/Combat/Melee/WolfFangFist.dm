@@ -84,7 +84,7 @@ mob
 			player_view(15,src) << sound('strongpunch.ogg', volume = 30)
 			flick("Attack",src)
 			victim.ScreenShake(Amount = 15, Offset = 8)
-			var/dmg = get_melee_damage(victim, count_sword = 0) * 1.3
+			var/dmg = get_melee_damage(victim, count_sword = 0) * 0.8
 			victim.TakeDamage(dmg, 1);
 			var/hp_before_dmg = victim.Health;
 			if(dmg >= 100 + hp_before_dmg) victim.KO(src, allow_anger = 1)

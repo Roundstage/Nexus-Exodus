@@ -51,7 +51,7 @@ mob
 			var/list/targets = FindTargets(usr.dir,angle_limit=360, max_dist=3)
 			if(targets)
 				for(var/mob/M in targets)
-					var/dmg = 5 + get_melee_damage(usr, count_sword = 0) * 1.6
+					var/dmg = (15 + get_melee_damage(usr, count_sword = 0)) * 1.6
 					var/knockback = get_melee_knockback_distance(usr);
 					if(M != usr)
 						usr << "You rotate a powerful kick that knocks [M] away!"
