@@ -91,10 +91,9 @@ mob
 			else if(dmg >= hp_before_dmg) victim.KO(src)
 			var/remaining_dmg = dmg - hp_before_dmg
 			if(remaining_dmg > 0) victim.TakeDamage(remaining_dmg, 1)
-			dmg *= 1.5;
 			var/hitcount = 0
 			for(var/hits in 0 to numberOfHits)
-				var/hited = prob(get_melee_accuracy(victim) * 2)
+				var/hited = prob(get_melee_accuracy(victim))
 				if(!hited)
 					player_view(15,src) << sound('meleemiss3.ogg', volume = 35)
 					continue;

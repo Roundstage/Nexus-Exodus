@@ -1060,7 +1060,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/obj/Shield/ki_shield
 	if(ismob(target)) ki_shield=target.get_active_shield()
 	var/knockback=get_melee_knockback_distance(target)
-	if(knockback) dmg*=1+(knockback/10)
+	if(knockback) dmg*=1+(knockback/20)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()
@@ -1157,8 +1157,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 			target.isBurning = TRUE;
 		if(prob(GetCriticalChance()))
 			dmg*=1.5
-			accuracy=100
-			knockback*=10
+			knockback*=5
 			player_view(15,src) << sound('strongpunch.ogg', volume = 60)
 			player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
 		else
