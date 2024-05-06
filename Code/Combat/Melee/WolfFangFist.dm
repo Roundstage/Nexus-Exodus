@@ -49,7 +49,6 @@ mob
 			if(!victim)
 				src << "No target found"
 				return
-			attacking = 1
 			last_WolfFangFist = world.time
 
 			player_view(35,src) << sound('wolf_howl.mp3', volume = 35)
@@ -107,7 +106,6 @@ mob
 				var/remaining_dmg_hits = dmg - hp_before_dmg_hits
 				if(remaining_dmg_hits > 0) victim.TakeDamage(remaining_dmg_hits, 1)
 				sleep(1)
-			attacking = 0
 			world << "You have hit'em [hitcount] times"
 			sleep(2)
 			if(victim)

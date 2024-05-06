@@ -54,7 +54,7 @@ mob
 			PressurePunchFX()
 			if(targets)
 				for(var/mob/M in targets)
-					var/dmg = (20 + get_melee_damage(usr, count_sword = 0)) * 2.5
+					var/dmg = 20 + (get_melee_damage(usr, count_sword = 0) * 4)
 					var/knockback = get_melee_knockback_distance(usr)*10;
 					if(M != usr)
 						usr << "You concentrate your energy into a powerful punch that knocks [M] away!"
