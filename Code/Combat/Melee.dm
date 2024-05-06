@@ -398,7 +398,7 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 
 		if(m.KO) dmg*=2.5
 		dmg*=Defense_damage_reduction(src,m)
-		dmg *= GetSpeedDamageDecrease()
+		//dmg *= GetSpeedDamageDecrease()
 		if(m.regenerator_obj) dmg *= regenerator_damage_mod
 
 		//drone teamer debuff system
@@ -437,11 +437,11 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 				if(FF) resist_n=Avg_Res()
 				str_mult=((swordless_str*0.5)+(Pow*0.5))/resist_n
 				dmg *= energy_sword_damage_mod
-		if(str_mult>1)
-			str_mult=str_mult**superior_strength_exponent
-			//to nerf str whores without nerfing durability
-			if(for_strangle) str_mult=str_mult**0.3
-		else str_mult=str_mult**inferior_strength_exponent
+		//if(str_mult>1)
+		//	str_mult=str_mult**superior_strength_exponent
+		//	//to nerf str whores without nerfing durability
+		//	if(for_strangle) str_mult=str_mult**0.3
+		//else str_mult=str_mult**inferior_strength_exponent
 		if(for_strangle) str_mult=Clamp(str_mult,0,strangle_str_mult_cap)
 		dmg*=str_mult
 
