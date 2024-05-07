@@ -463,7 +463,7 @@ mob/proc/Stat_Stat() if(statpanel("Stats"))
 		stat("Accuracy",StatViewThing(Off, "Off"))
 		stat("Reflex",StatViewThing(Def, "Def"))
 
-		var/regenLabel = (regen + Regen_Mult - 1) * DuraRegenMod()
+		var/regenLabel = (regen + Regen_Mult - 1)
 		stat("Regeneration", round(regenLabel, 0.01))
 		//stat("Regeneration",round(regen + Regen_Mult-1,0.01))
 		stat("Recovery",round(recov + Recov_Mult-1,0.01))

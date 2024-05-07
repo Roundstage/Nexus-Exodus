@@ -64,10 +64,10 @@ var
 	melee_delay_severity = 0.75 //was 0.52
 	lowSpeedDmgAdd = 0.2
 
-	superior_force_exponent = 0.35 //was .4
+	superior_force_exponent = 0.7 //was .4
 	inferior_force_exponent = 0.45 //was .4
 
-	superior_strength_exponent = 0.35 //was .4
+	superior_strength_exponent = 0.8 //was .4
 	inferior_strength_exponent = 0.45 //was .4
 
 	defense_damage_reduction_exponent = 0.25 //was 0.25
@@ -89,23 +89,23 @@ var
 	grab_struggle_mod = 2 //1.8
 	grab_damage_mod = 2.5 //1.5 //put to about 1.3
 
-	hit_from_behind_dmg_mult = 1.2
+	hit_from_behind_dmg_mult = 2
 
 	speed_accuracy_mult_exponent = 0.25 //was 0.25
 	speed_accuracy_mult_min = 1
 	speed_accuracy_mult_max = 1.12 //was 1.12, 1 essentially is off
 
-	base_melee_accuracy = 70 //was 67. 100 for new combat
-	base_blast_accuracy = 25
-	superior_off_vs_def_mult_exponent = 0.5 //was 0.45
-	inferior_off_vs_def_mult_exponent = 0.5 //was 0.45
+	base_melee_accuracy = 67 //was 67. 100 for new combat
+	base_blast_accuracy = 40
+	superior_off_vs_def_mult_exponent = 0.6 //was 0.45
+	inferior_off_vs_def_mult_exponent = 0.45 //was 0.45
 
 	kb_superior_scaling_mod = 0.5
 	kb_inferior_scaling_mod = 1
 
 	defense_auto_combo_backhit_chance = 20
 	recovery_powerup_exponent = 1.3
-	energy_mod_powerup_exponent = 0.88 //was .84, determines max powerup % before massive slowdown begins, a soft cap
+	energy_mod_powerup_exponent = 0.90 //was .84, determines max powerup % before massive slowdown begins, a soft cap
 	powerup_softcap_scaledown_exponent = 3 //how fast powerup slows down past the soft cap. this is not the soft cap itself
 	health_regen_exponent = 1
 

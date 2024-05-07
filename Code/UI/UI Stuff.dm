@@ -184,7 +184,7 @@ mob/proc
 				winset(src, "statsOverlay.speedValue", "text='[StatViewThing(Spd, "Spd")]'")
 				winset(src, "statsOverlay.accValue", "text='[StatViewThing(Off, "Off")]'")
 				winset(src, "statsOverlay.refValue", "text='[StatViewThing(Def, "Def")]'")
-				var/regenLabel = (regen + Regen_Mult - 1) * DuraRegenMod()
+				var/regenLabel = (regen + Regen_Mult - 1)
 				winset(src, "statsOverlay.regValue", "text='[round(regenLabel, 0.01)]x'")
 				winset(src, "statsOverlay.recValue", "text='[round(recov + Recov_Mult-1,0.01)]x'")
 				winset(src, "statsOverlay.angerValue", "text='[max_anger / 100]x'")
