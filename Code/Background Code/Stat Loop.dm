@@ -1102,7 +1102,7 @@ mob/proc/RegenMod()
 			regen_mult += extra * 0.65
 		regen_mult = regen_mult ** health_regen_exponent
 
-		regen_mult *= DuraRegenMod() //we have this thing where more dura lowers healing rate because its like you have more "max health" to heal
+		//regen_mult *= DuraRegenMod() //we have this thing where more dura lowers healing rate because its like you have more "max health" to heal
 
 		return regen_mult
 

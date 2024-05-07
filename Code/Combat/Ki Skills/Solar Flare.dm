@@ -78,7 +78,7 @@ mob
 			client.screen += o
 			animate(o, alpha = 255, time = 20, flags = ANIMATION_PARALLEL)
 			var/timeMod = (regen / 1.6) ** 0.5
-			//if(a && a.Race == "Human") timeMod /= humanSolarFlareDuration
+			if(a && a.Race == "Human") timeMod /= humanSolarFlareDuration
 			sleep(65 / timeMod)
 			animate(o, alpha = 0, time = 20 / timeMod)
 			sleep(20 / timeMod)
