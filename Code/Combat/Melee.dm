@@ -1322,7 +1322,12 @@ mob/proc
 
 mob/proc/GetCriticalChance()
 
-	var/crit_chance = Off * 0.1
+	var/crit_chance = (1+Off) * 0.1
+	if(crit_chance < 40){
+		crit_chance * 0.4;
+	}else if (crit_chance < 25){
+		crit_chance * 0.3;
+	}
 	if (crit_chance > 100)
 		crit_chance = 100
 	return crit_chance
