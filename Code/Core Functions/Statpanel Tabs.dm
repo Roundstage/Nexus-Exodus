@@ -471,6 +471,7 @@ mob/proc/Stat_Stat() if(statpanel("Stats"))
 	if(has_god_ki || InGodKiRealm()) stat("God Ki Mastery %:", round(god_ki_mastery))
 	stat("Move Speed (pixels):", round(stepSizeLabel,0.1))
 	stat("Melee Speed:", round(1 / (Speed_delay_mult(severity = melee_delay_severity)/speedDelayMultMod), 0.01))
+	stat("Critical Chance:", round(GetCriticalChance()))
 
 	SleepTab(10)
 
