@@ -47,6 +47,7 @@ mob
 				seconds"
 				return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
+			if(usr.cant_blast()) return
 			last_pressurePunch = world.time
 			player_view(15,src) << sound('pressurePunchCharge.mp3', volume = 60)
 			sleep(20)
