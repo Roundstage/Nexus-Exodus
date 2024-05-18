@@ -44,6 +44,7 @@ mob
 				seconds"
 				return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
+			if(usr.cant_blast()) return
 			last_RoundhouseKick = world.time
 			player_view(15, src) << sound('throw.ogg', volume = 60)
 			sleep(10)

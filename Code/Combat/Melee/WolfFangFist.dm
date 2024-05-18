@@ -45,6 +45,7 @@ mob
 				seconds"
 				return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
+			if(usr.cant_blast()) return
 			var/mob/victim = LungeTarget()
 			if(!victim)
 				src << "No target found"
