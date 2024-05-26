@@ -801,7 +801,7 @@ mob/proc/Puranto()
 	Lungs=0
 	gravity_mastered=4
 	leech_rate=2
-	med_mod=4 //we hardcoded this to be nerfed. check at the end of new/load for the real Puranto mod
+	med_mod=6 //we hardcoded this to be nerfed. check at the end of new/load for the real Puranto mod
 	zenkai_mod=0.25
 	Regenerate=0.3
 	if(START_WITH_RACIAL_SKILLS)
@@ -931,6 +931,9 @@ mob/proc/Cooler()
 	sp_mod*=1.2
 	IsCooler = 1
 	Class="Cooler"
+	contents.Add(new/obj/Attacks/Genki_Dama/Death_Ball, new/obj/Attacks/Genki_Dama/Supernova, new/obj/Attacks/Ray, new/obj/Attacks/Spin_Blast, \
+			new/obj/Planet_Destroy, new/obj/Attacks/Kienzan, new/obj/Attacks/Explosion)
+	stun_resistance_mod=1.6
 
 mob/proc/Legendary_Yasai()
 	Yasai(Can_Elite=0)
@@ -949,6 +952,7 @@ mob/proc/Legendary_Yasai()
 	SSjAble = 1
 	Decline -= 2
 	Decline_Rate = 4
+	stun_resistance_mod=2.5
 
 mob/var/IsCooler = 0
 mob/proc/Icer()
@@ -977,7 +981,7 @@ mob/proc/Icer()
 	base_bp=300
 	hbtc_bp=rand(900,1200)
 	ascension_bp*=1.35
-	stun_resistance_mod=1.4
+	stun_resistance_mod=0.9
 	if(prob(100))
 		switch(alert(src,"Do you want to be an Cooler Icer? This choice only appears in 1% \
 		of Icers, making you very especial. You will be stronger than a normal Icer and have an additional transformation",\
