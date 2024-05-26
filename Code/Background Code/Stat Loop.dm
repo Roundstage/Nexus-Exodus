@@ -1333,9 +1333,7 @@ mob/proc/powerup_speed(n=1)
 
 mob/proc/powerup_soft_cap()
 	var/ki_mod = BufflessKiMod()
-	if(lssj_always_angry && Class == "Legendary Yasai") ki_mod /= lssj_ki_mult
 	var/max_powerup = 27 * (ki_mod ** energy_mod_powerup_exponent) //+100
-	if(lssj_always_angry && Class == "Legendary Yasai") max_powerup *= 0.63
 	if(jirenAlien) max_powerup *= jirenAlienPowerupMult
 
 	if(ssj == 1) max_powerup *= 1
