@@ -435,8 +435,8 @@ mob/proc/Raise_Anger(Amount=1)
 	C.max_anger+=10*Amount
 
 mob/proc/RaceBonusStatPoints()
-	if(Race == "Puranto") return 16
-	if(Race == "Kai") return 14
+	if(Race == "Puranto") return 8
+	if(Race == "Kai") return 8
 	if(Race == "Human") return 26
 	if(Race == "Tsujin") return 11
 	if(Race == "Alien") return 11
