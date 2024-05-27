@@ -435,12 +435,13 @@ mob/proc/Raise_Anger(Amount=1)
 	C.max_anger+=10*Amount
 
 mob/proc/RaceBonusStatPoints()
-	if(Race == "Puranto") return 8
-	if(Race == "Kai") return 8
-	if(Race == "Human") return 22
+	if(Race == "Puranto") return 16
+	if(Race == "Kai") return 14
+	if(Race == "Human") return 26
 	if(Race == "Tsujin") return 11
 	if(Race == "Alien") return 11
 	if(Race == "Android") return 11
+	if(Race == "Onion Lad") return 18
 	return 0
 
 mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets to do the stats on this mob.
