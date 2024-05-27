@@ -435,13 +435,15 @@ mob/proc/Raise_Anger(Amount=1)
 	C.max_anger+=10*Amount
 
 mob/proc/RaceBonusStatPoints()
-	if(Race == "Puranto") return 8
-	if(Race == "Kai") return 8
-	if(Race == "Human") return 26
+	if(Race == "Puranto") return 16
+	if(Race == "Kai") return 11
+	if(Race == "Human") return 28
 	if(Race == "Tsujin") return 11
 	if(Race == "Alien") return 11
 	if(Race == "Android") return 11
 	if(Race == "Onion Lad") return 18
+	if(Race == "Yasai") return 6
+	
 	return 0
 
 mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets to do the stats on this mob.
@@ -457,8 +459,8 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets t
 		DBZ_character_stats(dbz_character)
 	else
 		if(Race=="Android")
-			Raise_Regeneration(-2)
-			Raise_Recovery(-2)
+			Raise_Regeneration(-4)
+			Raise_Recovery(-4)
 		if(Race=="Alien")
 			Raise_Energy(-2)
 			Raise_Strength(-2)
@@ -471,8 +473,6 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets t
 			Raise_Regeneration(-2)
 			Raise_Recovery(-2)
 			Points += 20
-		else if(Race=="Yasai")
-			Points += 5
 
 	Max_Points=Points
 	Set_Minimum_Stats()
