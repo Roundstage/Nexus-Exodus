@@ -17,7 +17,6 @@ mob/proc
 	CanGetNextBioFormFrom(mob/m)
 		if(!m) return
 		if(m.Race == "Bio-Android" && m.bio_form > bio_form) return 1
-		if(m.Is_Cybernetic()) return 1
 		if((m.base_bp + m.hbtc_bp) / m.bp_mod > highest_base_and_hbtc_bp * 0.93) return 1
 
 	BioNextForm()
@@ -76,7 +75,7 @@ mob/proc
 		if(!CanBioRevert()) return
 		last_bio_revert = world.realtime
 		bio_form = 0
-		hbtc_bp = 0 //this is necessary or it will cause a bug where bios can stack their special era static boost over and over
+		//hbtc_bp = 0 //this is necessary or it will cause a bug where bios can stack their special era static boost over and over
 		BioEggGfx()
 		LarvaEvolveLoop()
 		if(icon in list('Bio1.dmi', 'Bio2.dmi', 'Bio3.dmi')) icon = 'Cell Larva Blue.dmi'
@@ -97,9 +96,9 @@ mob/proc
 		if(Race != "Bio-Android") return 1
 		switch(bio_form)
 			if(0) return 0.5
-			if(1) return 0.9
-			if(2) return 0.95
-			if(3) return 1
+			if(1) return 1
+			if(2) return 1.3
+			if(3) return 1.6
 		return 1
 
 	BioAndroidLogon()

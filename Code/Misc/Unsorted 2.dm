@@ -629,7 +629,7 @@ mob/proc
 			if("Puranto") return 0.2
 			if("Yasai") return 0.6
 			if("Half Yasai") return 0.4
-			if("Bio-Android") return 0.4
+			if("Bio-Android") return 0.2
 			if("Human") return 0.3
 			if("Tsujin") return 0.6
 			if("Demigod") return 0.8
@@ -641,6 +641,7 @@ mob/proc
 			if("Puranto") return 0.5
 			if("Yasai") return 0.6
 			if("Half Yasai") return 0.6
+			if("Bio-Android") return 0.5
 			if("Demon") return 0.1
 			if("Human") return 0.6
 			if("Demigod") return 0.8
