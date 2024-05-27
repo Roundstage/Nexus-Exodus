@@ -1,5 +1,6 @@
 mob/proc/GrabAbsorber()
 	if(grab_absorb_module) return 1
+	if(Race == "Bio-Android") return 1
 
 var/rebuild_cost = 2000000
 

@@ -877,6 +877,8 @@ mob/proc/Toggle_strangling()
 			overlays -= grab_absorb_overlay
 			overlays += grab_absorb_overlay
 			player_view(center=src) << "<font color=cyan>[src] grabs [grabbedObject] and begins absorbing their energy!"
+		else if (Race == "Bio-Android")
+			player_view(center=src)<<"<font color=red>[src] brutally perfurates [grabbedObject] with it's tail, [grabbedObject] begins to crumble."
 		else player_view(center=src)<<"<font color=red>[src] begins strangling [grabbedObject]!"
 
 		while(strangling && grabbedObject)
