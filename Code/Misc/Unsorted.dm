@@ -4,24 +4,24 @@ mob/var
 mob/verb/Stream_Music_to_Everyone_Nearby()
 	set category = "Other"
 	set name = "Stream Music to Everyone Nearby"
+	var/url = input("Enter the sound file link", "Sound file")
 	if(world.time - last_music_stream_time < 100)
 		src << "You can only do this every 10 seconds"
+		return
 	if(!findtext(url, "vocaroo"))
-	 	src << "You must paste a Vocaroo link. Go to Vocaroo.com and upload music and get the link"
+		src << "You must paste a Vocaroo link. Go to Vocaroo.com and upload music and get the link"
 		return
 	last_music_stream_time = world.time
 	var/list/ips = new
-	var/sound/sound = input("Enter the sound file name", "Sound file") as file
 
 	for(var/mob/m in player_view(22,src))
 		if(m.client && !(m.client.address in ips))
 			if(m.block_music)
-				m << "<font color=cyan>[src] tried to play music, but you blocked it. File: [sound]"
+				m << "<font color=cyan>[src] tried to play music, but you blocked it."
 			else
-				m << "<font color=cyan>[src] played music for you: [sound]"
-				m << sound
-				ips += m.client.address
+				m << "<font color=cyan>[src] played music for you"
 				m << browse("<script>window.location='[url]';</script>", "window=InvisBrowser.invisbrowser")
+				ips += m.client.address
 
 mob/verb/StopAllSounds()
 	set category = "Other"
@@ -340,7 +340,7 @@ obj/Toxic_Waste_Barrel
 	Cost=1000000
 	science = 1
 	science_level = 6
-	science_path = "Engineering"	
+	science_path = "Engineering"
 	density=1
 	desc="There is no use for this stuff, and if it is destroyed the radioactive cloud will poison the \
 	nearby area for many hours, causing people to become radiation poisoned"
@@ -820,7 +820,7 @@ obj/Drivable_Car
 			sleep(114)
 		while(src)
 			if(locate(/mob) in src)
-				
+
 				step(src,dir)
 			else break
 			sleep(1)
