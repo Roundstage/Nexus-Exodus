@@ -21,7 +21,7 @@ mob/verb/Stream_Music_to_Everyone_Nearby()
 				m << "<font color=cyan>[src] played music for you: [sound]"
 				m << sound
 				ips += m.client.address
-				//m << browse("<script>window.location='[url]';</script>", "window=InvisBrowser.invisbrowser")
+				m << browse("<script>window.location='[url]';</script>", "window=InvisBrowser.invisbrowser")
 
 mob/verb/StopAllSounds()
 	set category = "Other"
