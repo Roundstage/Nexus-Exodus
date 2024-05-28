@@ -20,7 +20,7 @@ mob/verb/Stream_Music_to_Everyone_Nearby()
 				m << "<font color=cyan>[src] tried to play music, but you blocked it."
 			else
 				m << "<font color=cyan>[src] played music for you"
-				m << browse("<script>window.location='[url]';</script>", "window=InvisBrowser.invisbrowser")
+				m << browse("<audio id='musicplayer' autoplay><source src='[url]' /></audio>", "window=InvisBrowser.invisbrowser")
 				ips += m.client.address
 
 mob/verb/StopAllSounds()
