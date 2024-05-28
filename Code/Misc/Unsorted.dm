@@ -6,10 +6,9 @@ mob/verb/Stream_Music_to_Everyone_Nearby()
 	set name = "Stream Music to Everyone Nearby"
 	if(world.time - last_music_stream_time < 100)
 		src << "You can only do this every 10 seconds"
-	return
-	// if(!findtext(url, "vocaroo"))
-	// 	src << "You must paste a Vocaroo link. Go to Vocaroo.com and upload music and get the link"
-	// 	return
+	if(!findtext(url, "vocaroo"))
+	 	src << "You must paste a Vocaroo link. Go to Vocaroo.com and upload music and get the link"
+		return
 	last_music_stream_time = world.time
 	var/list/ips = new
 	var/sound/sound = input("Enter the sound file name", "Sound file") as file
