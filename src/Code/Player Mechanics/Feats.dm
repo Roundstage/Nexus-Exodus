@@ -103,19 +103,19 @@ mob
 
 		SaveFeats()
 			if(!key) return
-			var/savefile/f = new("Feats/[key]")
+			var/savefile/f = new("data/Feats/[key]")
 			CheckBlankFeats()
 			f["feats"] << feats
 
 		LoadFeats()
 			//this proc also updates their feats to the latest version so no new feats are missing
-			if(key && !fexists("Feats/[key]"))
+			if(key && !fexists("data/Feats/[key]"))
 				feats = new/list
 				feats = master_feats
 
-			if(key && fexists("Feats/[key]"))
+			if(key && fexists("data/Feats/[key]"))
 
-				var/savefile/f = new("Feats/[key]")
+				var/savefile/f = new("data/Feats/[key]")
 				f["feats"] >> feats
 
 				for(var/v in master_feats) if(!(v in feats))

@@ -21,18 +21,18 @@ mob
 				<html>
 			"}
 
-			var/XXX=file("Logs/[path]/[ckey]Current.html")
+			var/XXX=file("data/Logs/[path]/[ckey]Current.html")
 			if(fexists(XXX))
 				var/list/File_List = list("Cancel")
 				var/last_line = ""
 
-				for(var/File in flist("Logs/[path]/[ckey]"))
+				for(var/File in flist("data/Logs/[path]/[ckey]"))
 					File_List+=File
 				if(admin)
 					var/File = input(admin, "Which [type] log do you want to view?") in File_List
 					if(!File || File=="Cancel") return
 
-					var/emotefile = file2text(file("Logs/[path]/[File]"))
+					var/emotefile = file2text(file("data/Logs/[path]/[File]"))
 					View += emotefile
 
 					if(player && overwrite_ckey != "none")
@@ -139,7 +139,7 @@ mob/proc
 		if(!key) return
 		last_emotelog_write = world.time
 
-		var/f = file("Logs/[type]/[ckey]Current.html")
+		var/f = file("data/Logs/[type]/[ckey]Current.html")
 
 		for(var/entry in unwritten_emotelogs)
 			text2file(entry, f)
@@ -149,9 +149,9 @@ mob/proc
 
 proc/Split_EmoteFile(the_key, type)
 	set waitfor=0
-	var/f=file("Logs/[type]/[the_key]Current.html")
+	var/f=file("data/Logs/[type]/[the_key]Current.html")
 	if(fexists(f))
 		if(length(f)>=100*1024) //100 MB
-			var/Y=length(flist("Logs/[type]/"))
-			fcopy(f,"Logs/[type]/[the_key][Y].html")
+			var/Y=length(flist("data/Logs/[type]/"))
+			fcopy(f,"data/Logs/[type]/[the_key][Y].html")
 			fdel(f)

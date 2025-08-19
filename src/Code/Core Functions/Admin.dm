@@ -1479,9 +1479,9 @@ mob/Admin4/verb/Purge_Old_Saves()
 	set category="Admin"
 	world<<"<font color=#FFFF00>Purging old saves. This may take a bit."
 	sleep(5)
-	for(var/File in flist("Save/"))
-		var/savefile/F=new("Save/[File]")
-		if(F["Last_Used"]<=world.realtime-864000*2) fdel("Save/[File]")
+	for(var/File in flist("data/Save/"))
+		var/savefile/F=new("data/Save/[File]")
+		if(F["Last_Used"]<=world.realtime-864000*2) fdel("data/Save/[File]")
 
 	admin_blame(src, "[key] has purged old savefiles.")
 	world<<"<font color=#FFFF00>Savefile purge complete"
@@ -1570,8 +1570,8 @@ proc/Delete_Save(mob/M)
 	del(M)
 	var/choice = alert(src, "Do you want to delete [Key]'s savefile?", "Delete Savefile", "Yes", "No")
 	if(choice == "No") return
-	if(Key&&fexists("Save/[Key]")) 
-		fdel("Save/[Key]")
+	if(Key&&fexists("data/Save/[Key]")) 
+		fdel("data/Save/[Key]")
 
 mob/verb/Races()
 	//set category="Other"
@@ -1831,10 +1831,10 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 	//for(var/mob/P in players) P.Savable=0
 	player_saving_on=0
 
-	fdel("Save/")
+	fdel("data/Save/")
 	fdel("DBZ Character Saves/")
 	sleep(10)
-	fdel("Save/")
+	fdel("data/Save/")
 	fdel("DBZ Character Saves/")
 	for(var/mob/player in players)
 		alert(player, "WIPE ALERT", "The server is wiping. Please save any work you have in progress and prepare yourself. You will be disconnected in 30 seconds.")
@@ -2159,17 +2159,6 @@ mob/Admin5/verb/Shutdown()
 				var/window_name = "SHUTDOWN ALERT"
 				player << browse("<html><head><title>[window_name]</title></head><body>[message]</body></html>", "window=[window_name]")
 
-/*mob/Admin5/verb/Ruin_Everything()
-	set category="Admin"
-	switch(input(src,"Really destroy it?") in list("No","Yes"))
-		if("Yes")
-			Log(src,"[key] ruined the server")
-			fdel("Save/")
-			fdel("RANK")
-			fdel("Empire.rsc")
-			fdel("Empire")
-			world<<"[key] ruined the server"
-			del(world)*/
 
 mob/Admin1/verb/Message(msg as message)
 	set category="Admin"
@@ -2262,9 +2251,9 @@ mob/Admin3/verb
 		if(!M.client) M.key=key
 		else
 			M.Save()
-			var/savefile/f=new("Save/[M.key]")
+			var/savefile/f=new("data/Save/[M.key]")
 			f["key"]<<key
-			fcopy("Save/[M.key]","Save/[key]")
+			fcopy("data/Save/[M.key]","data/Save/[key]")
 			Load()
 		admin_blame(src, "[key] has entered [M]'s character.")
 

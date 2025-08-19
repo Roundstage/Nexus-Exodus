@@ -34,7 +34,7 @@ mob/proc
 	Write_chatlogs(allow_splits=1)
 		if(!key) return
 		last_chatlog_write = world.time
-		var/f = file("Logs/ChatLogs/[ckey]Current.html")
+		var/f = file("data/Logs/ChatLogs/[ckey]Current.html")
 
 		for (var/entry in unwritten_chatlogs)
 			text2file(entry,f)
@@ -47,11 +47,11 @@ mob/proc
 
 proc/Split_File(the_key)
 	set waitfor=0
-	var/f=file("Logs/ChatLogs/[the_key]Current.html")
+	var/f=file("data/Logs/ChatLogs/[the_key]Current.html")
 	if(fexists(f))
 		if(length(f)>=100*1024) //100 MB
-			var/Y=length(flist("Logs/ChatLogs/"))
-			fcopy(f,"Logs/ChatLogs/[the_key][Y].html")
+			var/Y=length(flist("data/Logs/ChatLogs/"))
+			fcopy(f,"data/Logs/ChatLogs/[the_key][Y].html")
 			fdel(f)
 
 

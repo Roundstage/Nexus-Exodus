@@ -167,8 +167,6 @@
 #include "Code\_libs\texthandling\TextHandling.dm"
 #include "Code\_libs\time\Time.dm"
 #include "Code\_libs\upform\lib.dm"
-#include "Code\_libs\vectors\MatrixVectorSupport.dm"
-#include "Code\_libs\vectors\Vector.dm"
 #include "Code\Background Code\Alt Rewards.dm"
 #include "Code\Background Code\bug logs.dm"
 #include "Code\Background Code\Javascript Resolution Checker.dm"

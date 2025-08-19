@@ -147,7 +147,7 @@ proc/Monitor_Bugs()
 mob/var/suspicious_stats=0
 
 proc/Save_Bugs()
-	var/savefile/S=new("Bugs")
+	var/savefile/S=new("data/Bugs")
 	S["Bugs"]<<Bugs
 	S["bug_rsc_req"]<<bug_rsc_req
 	S["bug_ki_req"]<<bug_ki_req
@@ -159,8 +159,8 @@ proc/Save_Bugs()
 	S["bug_int_req"]<<bug_int_req
 	S["bug_knowledge_req"]<<bug_knowledge_req
 
-proc/Load_Bugs() if(fexists("Bugs"))
-	var/savefile/S=new("Bugs")
+proc/Load_Bugs() if(fexists("data/Bugs"))
+	var/savefile/S=new("data/Bugs")
 	S["Bugs"]>>Bugs
 	S["bug_rsc_req"]>>bug_rsc_req
 	S["bug_ki_req"]>>bug_ki_req

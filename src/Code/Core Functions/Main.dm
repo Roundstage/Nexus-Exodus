@@ -70,8 +70,8 @@ mob/proc/ban_alert(msg)
 	//spawn alert(src,msg)
 	src<<msg
 mob/proc/Carry_over_imprisonments()
-	if(!fexists("Save/[key]")) return
-	var/savefile/F=new("Save/[key]")
+	if(!fexists("data/Save/[key]")) return
+	var/savefile/F=new("data/Save/[key]")
 	F["Imprisonments"]>>Imprisonments
 
 mob/var/character_made_time = 0

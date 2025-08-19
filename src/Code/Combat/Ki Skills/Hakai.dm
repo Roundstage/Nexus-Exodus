@@ -89,7 +89,7 @@ proc/CheckHakaiDeleteCharacter(mob/m)
 	var/key = m.key
 	del(m)
 	sleep(10) //just a guess, may not be needed
-	fdel("Save/[key]")
+	fdel("data/Save/[key]")
 
 proc/HakaiOverlay(mob/m, hakai_time = 50)
 	set waitfor=0

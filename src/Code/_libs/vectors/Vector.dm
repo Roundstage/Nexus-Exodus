@@ -108,18 +108,6 @@ vector
 			Y() / vector.Y(),
 			Z() / vector.Z())
 
-	proc/Dot(vector/vector)
-		return \
-			X() * vector.X() + \
-			Y() * vector.Y() + \
-			Z() * vector.Z()
-
-	proc/Cross(vector/vector)
-		return new/vector(
-			Y() * vector.Z() - Z() * vector.Y(),
-			Z() * vector.X() - X() * vector.Z(),
-			CrossZ(vector))
-
 	proc/CrossZ(vector/vector)
 		return X() * vector.Y() - Y() * vector.X()
 
@@ -147,9 +135,6 @@ vector
 		var/cos = to_direction.Dot(from_direction)
 		var/sin = to_direction.CrossZ(from_direction)
 		return matrix(cos, sin, 0, -sin, cos, 0)
-
-	proc/Turn(clockwise_degrees)
-		return src * matrix(clockwise_degrees, MATRIX_ROTATE)
 
 	proc/WithLength(length)
 		return src * (length / Length())
@@ -190,8 +175,8 @@ vector
 
 	proc/Clamp(vector/lower, vector/upper)
 		return new/vector(
-			clamp(X(), lower.X(), upper.X()), 
-			clamp(Y(), lower.Y(), upper.Y()), 
+			clamp(X(), lower.X(), upper.X()),
+			clamp(Y(), lower.Y(), upper.Y()),
 			clamp(Z(), lower.Z(), upper.Z()))
 
 	proc/DegreesTo(vector/other)

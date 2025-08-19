@@ -236,15 +236,11 @@ proc/Save_Loop() while(1)
 
 mob/var/Can_Remake=1
 
-mob/proc/Cant_Remake() if(fexists("Save/[key]"))
-	var/savefile/F=new("Save/[key]")
+mob/proc/Cant_Remake() if(fexists("data/Save/[key]"))
+	var/savefile/F=new("data/Save/[key]")
 	F["Can_Remake"]>>Can_Remake
 	if(Can_Remake==0) return 1 //Cant use if(!Can_Vote) because if its 1 its the initial value and the entry is null
 
-/*mob/proc/AutoTrainInSave() if(client&&fexists("Save/[key]"))
-	var/savefile/F=new("Save/[key]")
-	//if(F["auto_train"]) return 1
-*/
 var/player_saving_on=1
 
 mob/proc/RemoveOverlaysThatDontSaveCorrectly()
@@ -280,7 +276,7 @@ mob/proc/Save()
 			saved_y = t.y
 			saved_z = t.z
 
-		var/savefile/F=new("Save/[key]")
+		var/savefile/F=new("data/Save/[key]")
 		F["Last_Used"]<<world.realtime
 		Write(F)
 		if(blocking) overlays+=block_shield
@@ -296,8 +292,8 @@ mob/proc/Save()
 		SaveFeats()
 
 mob/proc/Load() if(client)
-	if(fexists("Save/[key]") && Map_Loaded)
-		var/savefile/F = new("Save/[key]")
+	if(fexists("data/Save/[key]") && Map_Loaded)
+		var/savefile/F = new("data/Save/[key]")
 		Read(F)
 		SafeTeleport(locate(saved_x, saved_y, saved_z))
 		Other_Load_Stuff()
@@ -310,7 +306,7 @@ mob/proc/Load() if(client)
 
 mob/proc/HasSave()
 	if(!key) return
-	if(fexists("Save/[key]")) return 1
+	if(fexists("data/Save/[key]")) return 1
 
 var/banned_from_hosting
 
