@@ -14,19 +14,19 @@ mob/proc/LoadCharacterHotkeyThing()
 mob/proc
 	Has_hotkey_server_backup()
 		if(!client) return
-		if(fexists("HotkeyBackups/[ckey]")) return 1
+		if(fexists("data/HotkeyBackups/[ckey]")) return 1
 
 	Hotkey_server_backup_load()
-		if(!client || !fexists("HotkeyBackups/[ckey]"))
+		if(!client || !fexists("data/HotkeyBackups/[ckey]"))
 			src<<"ERROR: Hotkey backup NOT FOUND"
 			return
-		var/savefile/f=new("HotkeyBackups/[ckey]")
+		var/savefile/f=new("data/HotkeyBackups/[ckey]")
 		f["hotbar_ids"] >> hotbar_ids
 
 	Hotkey_server_backup_save()
 		if(!client || !hotbar_ids.len) return
 		if(client.connection != "seeker") return //i think web connections and such are corrupting their hotkey file and erasing their hotkeys
-		var/savefile/f = new("HotkeyBackups/[ckey]")
+		var/savefile/f = new("data/HotkeyBackups/[ckey]")
 		f["hotbar_ids"] << hotbar_ids
 
 obj/var/tmp

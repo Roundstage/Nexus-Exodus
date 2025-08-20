@@ -122,8 +122,8 @@ proc/DBZ_character_exists(n)
 
 mob/proc/Load_dbz_character(n, for_generation)
 	if(!dbz_character_mode) return
-	if(fexists("DBZ Character Saves/[n]") && !DBZ_character_exists(n))
-		var/savefile/f = new("DBZ Character Saves/[n]")
+	if(fexists("data/DBZ Character Saves/[n]") && !DBZ_character_exists(n))
+		var/savefile/f = new("data/DBZ Character Saves/[n]")
 		Read(f)
 		SafeTeleport(locate(saved_x,saved_y,saved_z))
 		dbz_characters += src
@@ -154,7 +154,7 @@ mob/proc/Save_dbz_character(first_time)
 	m.key=null
 	m.displaykey=null
 
-	var/savefile/F=new("DBZ Character Saves/[dbz_character]")
+	var/savefile/F=new("data/DBZ Character Saves/[dbz_character]")
 	F["Last_Used"]<<world.realtime
 	m.Write(F)
 	m.dbz_character=null

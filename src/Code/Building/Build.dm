@@ -12,7 +12,7 @@ proc/MapSave()
 	//set background = 1
 	var/Amount=0
 	var/E=1
-	var/savefile/F=new("Map[E]")
+	var/savefile/F=new("data/Map[E]")
 	var/list/Types=new
 	var/list/Healths=new
 	//var/list/Levels=new
@@ -69,14 +69,14 @@ proc/MapSave()
 proc/MapLoad()
 	//set background = 1
 	Map_Loaded=1
-	if(fexists("Map1"))
+	if(fexists("data/Map1"))
 		var/Amount=0
 		var/DebugAmount= 0
 		var/E=1
 		load
-		if(!fexists("Map[E]"))
+		if(!fexists("data/Map[E]"))
 			goto end
-		var/savefile/F=new("Map[E]")
+		var/savefile/F=new("data/Map[E]")
 		sleep(1)
 		var/list/Types=F["Types"]
 		var/list/Healths=F["Healths"]

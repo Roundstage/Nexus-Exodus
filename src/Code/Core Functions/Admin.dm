@@ -1794,21 +1794,21 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 	destroyed_planets=new/list
 	Year=1000
 	SaveWorld(save_map=0)
-	fdel("NPCs")
+	fdel("data/NPCs")
 	if(delete_map)
 		var/Map=1
-		while(fexists("Map[Map]"))
-			fdel("Map[Map]")
+		while(fexists("data/Map[Map]"))
+			fdel("data/Map[Map]")
 			Map++
-		fdel("Map")
-		fdel("Map Backup")
+		fdel("data/Map")
+		fdel("data/Map Backup")
 	else
 		for(var/turf/t in Turfs) t.Health=turf_health
 		for(var/obj/Turfs/Door/d in Built_Objs) d.Health=turf_health
 		MapSave()
-	fdel("Bodies")
+	fdel("data/Bodies")
 	if(delete_items)
-		fdel("ItemSave")
+		fdel("data/ItemSave")
 	else
 		for(var/obj/Egg/e) del(e) //leftover eggs hatching makes people OP?
 		if(cost_threshold)
@@ -1817,12 +1817,12 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 				else o.Item_upgrade_reset_for_wipe()
 		SaveItems()
 
-	if(delete_feats) fdel("Feats")
+	if(delete_feats) fdel("data/Feats")
 
-	fdel("Areas")
-	fdel("Blueprint")
-	fdel("Roleplayers")
-	fdel("Hero")
+	fdel("data/Areas")
+	fdel("data/Blueprint")
+	fdel("data/Roleplayers")
+	fdel("data/Hero")
 	Tech_BP=100
 	bank_list=new/list
 	banked_items=new/list

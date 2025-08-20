@@ -2,7 +2,7 @@ var/list/admin_objects = new
 
 proc/SaveAdminObjects()
 	//set background=1
-	var/savefile/f = new("Admin Placed Objects")
+	var/savefile/f = new("data/Admin Placed Objects")
 	for(var/obj/o in admin_objects)
 		o.saved_x = o.x
 		o.saved_y = o.y
@@ -11,7 +11,7 @@ proc/SaveAdminObjects()
 
 proc/LoadAdminObjects()
 	if(fexists("Admin Placed Objects"))
-		var/savefile/f = new("Admin Placed Objects")
+		var/savefile/f = new("data/Admin Placed Objects")
 		f["admin_objects"] >> admin_objects
 		for(var/obj/o in admin_objects)
 			o.x = o.saved_x
@@ -870,7 +870,7 @@ proc/Load_Vote() if(fexists("Votes"))
 	var/savefile/S=new("Votes");S["Vote Banned"]>>Vote_Banned;S["RP President"]>>RP_President;S["Head Admin"]>>Head_Admin
 
 proc/Save_Area()
-	var/savefile/F=new("Areas")
+	var/savefile/F=new("data/Areas")
 	for(var/area/Checkpoint/A in all_areas)
 		F["Checkpoint"]<<A.icon_state
 		F["Checkpoint Value"]<<A.Value
@@ -929,8 +929,8 @@ proc/Save_Area()
 	for(var/area/Kaioshin/A in all_areas)
 		F["Kaioshin"]<<A.icon_state
 		F["Kaioshin Value"]<<A.Value
-proc/Load_Area() if(fexists("Areas"))
-	var/savefile/F=new("Areas")
+proc/Load_Area() if(fexists("data/Areas"))
+	var/savefile/F=new("data/Areas")
 	for(var/area/Earth/A in all_areas)
 		F["Earth"]>>A.icon_state
 		F["Earth Value"]>>A.Value
@@ -978,7 +978,7 @@ proc/SaveItems()
 	set background=1
 	world<<"Saving items..."
 	var/foundobjects=0
-	var/savefile/F=new("ItemSave")
+	var/savefile/F=new("data/ItemSave")
 	var/list/L=new
 	for(var/obj/A) if(A.Savable && A.z)
 		if(!istype(A,/obj/Resources) || A:Value>=200000)
@@ -992,8 +992,8 @@ proc/SaveItems()
 
 proc/LoadItems()
 	var/amount=0
-	if(fexists("ItemSave"))
-		var/savefile/F=new("ItemSave")
+	if(fexists("data/ItemSave"))
+		var/savefile/F=new("data/ItemSave")
 		var/list/L=new
 		F["SavedItems"]>>L
 		for(var/obj/A in L)
@@ -1012,7 +1012,7 @@ atom/var
 	saved_z=1
 mob/var/Savable_NPC
 proc/Save_NPCs()
-	var/savefile/F=new("NPCs")
+	var/savefile/F=new("data/NPCs")
 	var/list/L=new
 	for(var/mob/B) if(B.z&&B.Savable_NPC&&!B.client&&!B.empty_player)
 		B.saved_x=B.x
@@ -1021,13 +1021,13 @@ proc/Save_NPCs()
 		L+=B
 	F<<L
 proc/Load_NPCs()
-	if(fexists("NPCs"))
-		var/savefile/F=new("NPCs")
+	if(fexists("data/NPCs"))
+		var/savefile/F=new("data/NPCs")
 		var/list/L=new
 		F>>L
 		for(var/mob/B in L) B.SafeTeleport(locate(B.saved_x,B.saved_y,B.saved_z))
 proc/Save_Bodies()
-	var/savefile/F=new("Bodies")
+	var/savefile/F=new("data/Bodies")
 	var/list/L=new
 	for(var/mob/Body/B)
 		if(B.z && B.displaykey && world.realtime < B.body_expire_time && B.body_expire_time)
@@ -1042,8 +1042,8 @@ proc/Save_Bodies()
 	clients << "[L.len] dead bodies saved"
 	F<<L
 proc/Load_Bodies()
-	if(fexists("Bodies"))
-		var/savefile/F=new("Bodies")
+	if(fexists("data/Bodies"))
+		var/savefile/F=new("data/Bodies")
 		var/list/L=new
 		F>>L
 		for(var/mob/B in L) B.SafeTeleport(locate(B.saved_x,B.saved_y,B.saved_z))

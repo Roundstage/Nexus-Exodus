@@ -1112,11 +1112,11 @@ proc/get_obj_copy(obj/o)
 	Load_Obj(o2)
 	return o2
 proc/Save_Obj(obj/O) if(O)
-	var/savefile/F=new("Blueprint")
+	var/savefile/F=new("data/Blueprint")
 	O.Write(F)
 	if(F["key"]) F["key"]<<null
 proc/Load_Obj(obj/O) if(O)
-	var/savefile/F=new("Blueprint")
+	var/savefile/F=new("data/Blueprint")
 	O.Read(F)
 
 obj/var/dna_protected
