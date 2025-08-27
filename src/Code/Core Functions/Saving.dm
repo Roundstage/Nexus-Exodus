@@ -30,7 +30,6 @@ var/can_login=0
 
 proc/Initialize()
 	RestrictedMapLoop()
-	AltRewardsLoop()
 	AutoBPResetLoop()
 	StartupScatterBigRocks()
 	StartupSpawnKingBraalThrone()
@@ -163,7 +162,7 @@ proc/Initialize()
 	world << "Started new KO System"
 	world << "Started Effect System"
 	world << "Started Energy System"
-	
+
 obj/var/referenceObject = 0 //if this object is intended for the Science tab, Make verb, etc, it is a referenceObject
 
 proc/DestroyShipsInShipsLoop()
@@ -248,7 +247,7 @@ mob/proc/RemoveOverlaysThatDontSaveCorrectly()
 	TakeOffShurikenOverlaysOnSave()
 	Remove_evil_overlay()
 	Aura_Overlays(remove_only=1)
-	overlays-=BlastCharge 	
+	overlays-=BlastCharge
 	overlays-=block_shield
 	overlays-='SBombGivePower.dmi'
 	overlays -= ssj_blue_idle_aura

@@ -1,4 +1,5 @@
 //mob/var/tmp/stat_sleep_time_this_frame = 0
+mob/var/tmp/last_logon = 0 //world.time
 
 var
 	tabStartupDelay = 10

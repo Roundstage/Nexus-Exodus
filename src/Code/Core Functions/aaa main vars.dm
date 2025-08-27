@@ -14,9 +14,8 @@ proc/ShouldOneShot(mob/a, mob/b) //a = attacker
 	if(ismob(a) && !a.client) return
 	if(ismob(b) && !b.client) return
 
-	var
-		a_bp = 1
-		b_bp = 1
+	var/a_bp = 1
+	var/b_bp = 1
 
 	if(ismob(a))
 		a_bp = a.base_bp * 3.5 + a.BP + a.cyber_bp

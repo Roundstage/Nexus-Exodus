@@ -130,10 +130,6 @@ mob/proc/Raise_BP(Amount=1,apply_hbtc_gains=1)
 		if(!trainingTime || trainingTime <= 0) return
 	lastRaiseBP = world.time
 
-	//if(auto_train) Amount *= 0.8
-
-	if(alt_rewards && AltCount() >= alts_needed_for_bp_reward) Amount *= alt_bp_reward
-
 	//also check the drone ai code because it ensures drones stay at 1 bp too
 	if(Race=="Android")
 		base_bp=1

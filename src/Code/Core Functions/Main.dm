@@ -447,8 +447,8 @@ mob/proc
 
 		bp_loss_from_low_ki=Get_bp_loss_from_low_ki()
 		bp_loss_from_low_hp=Get_bp_loss_from_low_hp()
-		if(Race!="Yeet")
-			Racial_Stats()
+		
+		Racial_Stats()
 
 		if(alignment_on) choose_alignment()
 		if(!dbz_character&&Race!="Yeet")
