@@ -30,7 +30,6 @@
 *.sqlite
 *.int
 *.sav
-*
 
 # OS generated files #
 ######################
@@ -47,3 +46,21 @@ Thumbs.db
 .vscode/tasks.json
 data/*
 data/Save/Roundstage
+assets/*
+icons/*
+fonts/*
+
+data/Save/Roundstage
+data/Save/Roundstage
+data/Feats/Roundstage
+data/NPCs
+data/Map1
+data/ItemSave
+data/Bugs
+data/Blueprint
+Year
+Votes
+Admin
+CustomDecors
+GAIN
+Misc
