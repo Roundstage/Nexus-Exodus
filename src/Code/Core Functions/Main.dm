@@ -35,7 +35,7 @@ mob/proc/Get_race_starting_bp_mod()
 		if("Tsujin") return 1.28
 		if("Majin") return new_majin_bp_mod
 		if("Bio-Android") return 2.1
-		if("Onion Lad") return 1.65
+		if("Onion Lad") return 1.85
 		if("Puranto") return 1.65
 		if("Frost Lord") return 2.1
 		if("Kai") return 1.8
@@ -155,9 +155,7 @@ mob/proc/Choose_Login() if(client)
 	Disabled_Verb_Check()
 	if(!name||name=="") name=key
 	if(!Mob_ID) Mob_ID=get_mob_id()
-	//if(Race=="Demon"&&!(locate(/obj/Demon_Contract) in src)) contents+=new/obj/Demon_Contract
-	if(key=="Super Saiyan X") if(!(locate(/obj/SSX_Planet) in src)) contents+=new/obj/SSX_Planet
-	if(key=="Sonku") if(!(locate(/obj/Sonku_Planet) in src)) contents+=new/obj/Sonku_Planet
+	if(Race=="Demon"&&!(locate(/obj/Demon_Contract) in src)) contents+=new/obj/Demon_Contract
 	Remove_Duplicate_Moves()
 	RP_President()
 	Add_Voting()

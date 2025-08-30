@@ -128,16 +128,6 @@ proc/MapLoad()
 
 		GenerateFeaturesOnPlayerTurfsOnMapLoad()
 
-
-mob/Admin4/verb/Load_External_Map_File()
-	set category = "Admin"
-	var/savefile/f = input("Choose a map file to load into the game on top of whatever is already here") as file|null
-	if(!f)
-		clients << "No file was chosen"
-		return
-	admin_blame(src, "[key] loaded an external map into the game.", TRUE)
-	MapLoadExternal(f)
-
 //load an external map file on top of everything that is already loaded, this is for like if admins are building special admin buildings on another server
 //and they want to then put what they built into the main player server they can just load it on top of that using the map files externally and also so
 //they dont have to shut down the server to do it

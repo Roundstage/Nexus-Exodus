@@ -45,5 +45,5 @@ Thumbs.db
 # Folders #
 ###########
 .vscode/tasks.json
-/data/*
-
+data/*
+data/Save/Roundstage

@@ -1,5 +1,5 @@
 mob/var/tmp/list/Minimum_Stats=list("Eff"=1,"Str"=1,"End"=1,"Pow"=1,"Res"=1,"Off"=1,"Def"=1,"Spd"=1,\
-"Reg"=1,"Rec"=1,"Ang"=1)
+"Reg"=0.6,"Rec"=0.6,"Ang"=1)
 
 mob/proc/Set_Minimum_Stats()
 	Minimum_Stats=list("Eff"=Eff,"Str"=strmod,"End"=endmod,"Pow"=formod,"Res"=resmod,\
@@ -283,7 +283,7 @@ mob/proc
 			if("Majin") cap = 999
 			if("Kai") cap = 1
 			if("Frost Lord") cap = 1
-			if("Demon") cap = 3
+			if("Demon") cap = 4
 			if("Tsujin") cap = 1
 		if(regen >= cap) return 1
 
@@ -326,7 +326,7 @@ mob/proc
 				if(Class == "Spirit Doll") cap = 130
 				else cap = 150
 			if("Puranto") cap = 130
-			if("Half Yasai") cap = 300
+			if("Half Yasai") cap = 400
 			if("Android") cap = 110
 			if("Alien") cap = 150
 			if("Demigod") cap = 200
@@ -335,7 +335,7 @@ mob/proc
 			if("Majin") cap = 160
 			if("Kai") cap = 120
 			if("Frost Lord") cap = 130
-			if("Demon") cap = 130
+			if("Demon") cap = 200
 			if("Tsujin") cap = 150
 		if(max_anger >= cap) return 1
 
@@ -447,7 +447,7 @@ mob/proc/RaceBonusStatPoints()
 	return 0
 
 mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets to do the stats on this mob.
-
+	src<< "Racial_Stats() called"
 	if(race_stats_only_mode) return
 
 	if(!P) P=src
@@ -455,24 +455,8 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets t
 	Points += RaceBonusStatPoints()
 	//Max_Points=55
 	C=src
-	if(dbz_character)
-		DBZ_character_stats(dbz_character)
-	else
-		if(Race=="Android")
-			Raise_Regeneration(-4)
-			Raise_Recovery(-4)
-		if(Race=="Alien")
-			Raise_Energy(-2)
-			Raise_Strength(-2)
-			Raise_Durability(-2)
-			Raise_Speed(-2)
-			Raise_Force(-2)
-			Raise_Resist(-2)
-			Raise_Offense(-2)
-			Raise_Defense(-2)
-			Raise_Regeneration(-2)
-			Raise_Recovery(-2)
-			Points += 20
+
+	ApplyRaceBuild(Race)
 
 	Max_Points=Points
 	Set_Minimum_Stats()
@@ -495,6 +479,98 @@ var
 	lssj_ki_mult = 2.5
 
 mob/var/Modless_Gain=1
+
+mob/proc/ApplyRaceBuild()
+
+	var/max_points = 44
+
+	var/list/race_stat_builds = list(
+		"Puranto" = list(
+			"Regeneration" = 12, "Recovery" = 10, "Force" = 12, "Energy" = 6, "Resist" = 4
+		),
+		"Kai" = list(
+			"Force" = 14, "Energy" = 10, "Resist" = 10, "Recovery" = 4, "Defense" = 6
+		),
+		"Human" = list(
+			"Strength" = 8, "Force" = 8, "Energy" = 6, "Durability" = 8, "Resist" = 6, "Speed" = 4, "Recovery" = 2, "Defense" = 2
+		),
+		"Tsujin" = list(
+			"Energy" = 12, "Force" = 6, "Speed" = 8, "Recovery" = 8, "Defense" = 6, "Resist" = 4
+		),
+		"Alien" = list( // Penalidade e pontos livres
+			"Energy" = -2, "Strength" = -2, "Durability" = -2, "Speed" = -2, "Force" = -2, "Resist" = -2,
+			"Offense" = -2, "Defense" = -2, "Regeneration" = -2, "Recovery" = -2,
+			"Points" = 34 // pontos livres
+		),
+		"Android" = list(
+			"Regeneration" = -2, "Recovery" = -2, "Strength" = 10, "Durability" = 12, "Defense" = 10, "Resist" = 6, "Energy" = 8,
+			"Points" = 2 // para fechar 44
+		),
+		"Bio-Android" = list(
+			"Regeneration" = 14, "Recovery" = 10, "Strength" = 8, "Force" = 4, "Durability" = 8
+		),
+		"Saiyan" = list(
+			"Strength" = 14, "Durability" = 10, "Speed" = 6, "Force" = 8, "Offense" = 6
+		),
+		"Half-saiyan" = list(
+			"Strength" = 10, "Durability" = 8, "Speed" = 8, "Force" = 8, "Energy" = 6, "Recovery" = 4
+		),
+		"Makyo" = list(
+			"Strength" = 14, "Force" = 8, "Energy" = 8, "Resist" = 8, "Defense" = 6
+		),
+		"Demon" = list(
+			"Force" = 10, "Resist" = 10, "Energy" = 8, "Strength" = 8, "Speed" = 4, "Recovery" = 4, "Regeneration" = 10
+		),
+		"Frost Lord" = list(
+			"Strength" = 10, "Force" = 12, "Energy" = 8, "Speed" = 8, "Defense" = 6
+		),
+		"Demigod" = list(
+			"Strength" = 14, "Durability" = 12, "Offense" = 8, "Speed" = 6, "Defense" = 4
+		)
+	)
+
+	var/list/valid_stats = list("Strength","Force","Energy","Durability","Resist","Recovery","Regeneration","Offense","Defense","Speed")
+
+	var/list/build = race_stat_builds[src.Race]
+
+	if(isnull(build))
+		// Raça não definida, não faz nada
+		return
+	
+	var total_points = 0
+	var total_negatives = 0
+
+	// Primeiro calcula o total de pontos usados e negativos
+	for(var/stat in build)
+		if(stat in valid_stats)
+			var value = build[stat]
+			if(value > 0)
+				total_points += value
+			else if(value < 0)
+				total_negatives += value
+
+	// Negativos são positivos para liberar pro jogador customizar
+	var usable_points = max_points - total_points + abs(total_negatives)
+	src.Points += usable_points
+
+
+	for(var/stat in build)
+		if(stat == "Points")
+			src.Points += build[stat]
+		else if(stat in valid_stats)
+			var value = build[stat]
+			switch(stat)
+				if("Strength")	src.Raise_Strength(value)
+				if("Force")		src.Raise_Force(value)
+				if("Energy")	src.Raise_Energy(value)
+				if("Durability")	src.Raise_Durability(value)
+				if("Resist")	src.Raise_Resist(value)
+				if("Recovery")	src.Raise_Recovery(value)
+				if("Regeneration") src.Raise_Regeneration(value)
+				if("Offense")	src.Raise_Offense(value)
+				if("Defense")	src.Raise_Defense(value)
+				if("Speed")		src.Raise_Speed(value)
+	return
 
 mob/proc/Modless_Stat_Check() if(Stat_Settings["Modless"])
 
