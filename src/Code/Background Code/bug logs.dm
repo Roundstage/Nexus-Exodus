@@ -16,18 +16,7 @@ proc/gains_limiter()
 
 		sleep(10)
 
-mob/Admin4/verb
-	wipe_bounty_list()
-		set category="Admin"
-		Bounties=list("Cancel")
-
 var/list/Bugs = new
-
-mob/Admin2/verb/Bug_Logs()
-	set category="Admin"
-	var/T={"<html><head><body><body bgcolor="#000000"><font size=3><b>"}
-	for(var/V in Bugs) T+="[V]<br>"
-	usr<<browse(T,"window= ;size=700x600")
 
 proc/LogBug(t, clr)
 	Bugs += "<font color=[clr]>[t] ([time2text(world.realtime,"Day DD hh:mm")])"
@@ -45,11 +34,6 @@ var
 	bug_knowledge_req=1000
 	bug_regen_req = 5
 	bug_recov_req = 5
-
-mob/Admin3/verb/Wipe_bug_logs()
-	set category="Admin"
-	src<<"bug log reset"
-	Wipebuglogs()
 
 proc/Wipebuglogs()
 	Bugs=new/list
