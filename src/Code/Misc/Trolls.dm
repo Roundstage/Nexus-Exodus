@@ -135,139 +135,14 @@ mob/Troll
 					break
 		sleep(rand(0,600))
 	proc/Troll_Spam()
-		var/Spam_Action=pick("FUK U","PLZ NO","u fag","logout")
-		while(src)
-			if(KO)
-				if(Spam_Action=="FUK U")
-					var/msg=pick("FUCK U ASSHOLE","U PEICE OF SHIT","I WILL KILL U","U FUCKIN BITCH","IM HACKIN U ASSHOLE",\
-					"U FUCKIN PIECE OF SHIT","U NIGGER MOTHER FUCKER","I FUCKIN HATE U SO MUCH","I HATE U",\
-					"I FUCKIN HATE U","DIE BITCH","IF THIS WAS REAL LIFE U WOULD BE DEAD","U GOD DAMN FAGGOT",\
-					"CUNT","NIGGER","IM TELLIN TENS UR GONNA GET FUCKIN BANNED U PEICE OF SHIT","WHEN I TELL TENS \
-					U R FUCKED BITCH","IM TELLIN THE GMS","WHEN I TELL THE GMS UR FUCKED ASSHOLE")
-					var/text_case
-					if(copytext(msg,1,2)==uppertext(copytext(msg,1,2))) text_case=1
-					else text_case=0
-					msg=mispell(msg,uppercase=text_case,wrong_vowel=0.5,drop_letter=0.5,swap_letter=1)
-					Say(msg)
-					sleep(rand(30,90))
-				else if(Spam_Action=="PLZ NO")
-					var/msg=pick("PLZ NOOOOOOOOOOOOOOO ILL B GOOD","ILL DO ANYTHING IM BEGGIN U PLZ","PLZ ILL DO ANYTHING \
-					IF U DONT KILL ME","DONT KILL ME PLZ I BEG U","I BEG U NO PLZ","PLZ NOOOOOOOO","NOOOOOOOOOOOO",\
-					"IM BEGGIN U DUDE PLZ","PLZZZZZZZZZZ NOOOOO","DONT KILL ME","NO DONT KILL ME","WAIT DONT KILL ME",\
-					"DONT KILL ME I CAN PAY U","SERIOUSLY DONT KILL ME ILL PAY U ANYTHING","ILL DO ANYTHING U WANT \
-					JUST DONT KILL ME","IM BEGGIN U PLZ DONT KILL ME MAN","PLZ MAN PLZ DONT KILL ME","PLZ MAN \
-					I BEGGIN U DONT KILL ME")
-					var/text_case
-					if(copytext(msg,1,2)==uppertext(copytext(msg,1,2))) text_case=1
-					else text_case=0
-					msg=mispell(msg,uppercase=text_case,wrong_vowel=0.5,drop_letter=0.5,swap_letter=1)
-					Say(msg)
-					sleep(rand(50,100))
-				else if(Spam_Action=="u fag")
-					sleep(rand(0,40))
-					var/msg=pick("dude y r u such a fag i was jk god","DUDE NO IM TELLIN","PLZ NO STOP","DONT B A FAG STOP",\
-					"I WAS JK PLZ DONT","IM TELLIN TENS","IM TELLIN THE GMS","IM TELLIN THE ADMINS")
-					var/text_case
-					if(copytext(msg,1,2)==uppertext(copytext(msg,1,2))) text_case=1
-					else text_case=0
-					msg=mispell(msg,uppercase=text_case,wrong_vowel=0.5,drop_letter=0.5,swap_letter=1)
-					Say(msg)
-					sleep(rand(0,40))
-					var/mob/P
-					for(var/mob/O in view(2,src)) if(O.client)
-						P=O
-						break
-					if(Target&&(Target in view(1,src))) P=Target
-					if(P)
-						msg=pick("HELP IM BEING NONRPD BY [P.name] ADMIN TELEPORT FAST PLZ","ADMIN HURRY IM BEING NONRPD TELE \
-						2 ME","help [P.name] is nonrping me plz help admin hurry","[P.name] is killing me admins help fast","ADMINS \
-						im being killed by [P.name] plz help!!!","TENS HELP ME THIS GUY IS KILLING ME","TENS THE GUY IS \
-						KILLING ME HELP FAST","ADMINS HELP ME THE GUY IS KILLING ME","QUICK HELP ME ADMINS","OMG [P.name] \
-						is killing me help fast ADMINS HELP")
-						if(copytext(msg,1,2)==uppertext(copytext(msg,1,2))) text_case=1
-						else text_case=0
-						msg=mispell(msg,uppercase=text_case,wrong_vowel=0.7,drop_letter=0.5,swap_letter=0.5)
-						OOC(msg)
-					sleep(rand(0,600))
-				else if(Spam_Action=="logout")
-					for(var/mob/m in player_view(5,src)) if(m.client)
-						sleep(rand(0,80))
-						player_view(15,src)<<"[src] has logged out."
-						var/Loc=loc
-						SafeTeleport(null)
-						sleep(rand(0,600))
-						SafeTeleport(Loc)
-						break
-			sleep(rand(0,10))
+		return
 	proc/Troll_Name()
-		var/list/L=list("Carrot_Man","gyaku","prince","killer","ss5","ahhh","naruto","adeetwet","0","piccolo","Braal",\
-			"Blowhan","cell","sasuke","ichigo","ryuuk","barney","lol","AM I RP?","WHAT IS RP?","HELP PLZ","freza",\
-			"skullfuck","rapist","i kil u","nob","yamcha","krillin","kakarot","penis","fag","homo erectus",\
-			"the faggot","Alves","deth","Bigo","SPODERMAN","spoderman")
-		name=pick(L)
-		while(src)
-			if(Troll_Mode=="Run")
-				//name=pick(L)
-				var/msg=pick("IM NOT THE SAME GUY","PLZ IM NOT HIM","PLZ IM NOT THE SAME GUY","IM NOT THAT GUY",\
-				"STOP IM NOT HIM","PLZ NO STOP IM NOT THE SAME GUY","IM NOT THE SAME GUY PLZ STOP","WAIT IM NOT \
-				THE SAME GUY","PLZ WAIT ITS NOT ME IM A DIFFERENT GUY","IM NOT THE SAME GUY DUDE STOP","DUDE \
-				STOP DAMMIT IM NOT THE SAME GUY","U BITCH IM NOT THE SAME GUY STOP","PLZ STOP CHASING IM \
-				NOT HIM","PLZ STOP CHASING IM NOT THE SAME GUY","THIS IS A DIFFERENT GUY IM NOT HIM","STOP","WAIT")
-				msg=mispell(msg)
-				Say(msg)
-			sleep(rand(40,80))
+		return
 	proc/Troll_Stats() while(src)
 		Ki=max_ki
 		sleep(10)
 	proc/Troll_Message()
-		while(src)
-			var/Msg
-			if(Troll_Mode=="Wander"||fixated_player)
-				Msg=pick("can u train me plz?","plz train me [fixated_player]",\
-				"gimme money plz","plz gimme money [fixated_player]","i just want money",\
-				"y r u ignorin me?","STOP IGNORIN ME [fixated_player]",\
-				"CAN U TRAIN ME PLZ","CAN U TEACH ME PLZ?",\
-				"plz i ask nice just do it plz","plz master plz","train me master [fixated_player]","y r u ignorin me master?",\
-				"plz just teach me n ill leve","can u gimme spacepod plz?","MASTER Y","PLZ MASTER","STOP IGNORIN \
-				ME R ILL FUCKIN KILL U","ill follow u til u teach me plz master","u r my master i obey u forever this is \
-				rp","im rpin y wont u do it?","master a great evil is approaching plz train me n i will \
-				save d planit PLZ","I NEED TRAINED 2 SAVE THE PLANIT PLZ MASTER [fixated_player]",\
-				"PLZ MASTER [fixated_player]","master [fixated_player] a \
-				great evil is approaching plz train me n i will save d planit again",\
-				"teach me or u die","sorry jk plz teach me master","i wont kill u plzzzzz","d planit is n \
-				great danger","there is no time u must train me")
-				Msg=mispell(Msg,uppercase=pick(0,1),wrong_vowel=0.3,drop_letter=0.2,swap_letter=0.5)
-				if(prob(30)&&fixated_player)
-					Msg=mispell(fixated_player.name)
-					var/t=pick("","PLZ","PLZ LISTEN","R U THERE?","PLZ MAN","PLZ DUDE","","","","","MASTER","MASTR")
-					Msg="[Msg] [t]"
-					if(prob(50)) Msg=uppertext(Msg)
-					else Msg=lowertext(Msg)
-			if(Troll_Mode=="Attack")
-				Msg=pick("I TOLD U I WOULD FUCKIN KIL U IF U DIDNT TRAIN ME","NOW U DIE",\
-				"UR RAIN OF TERROR IS OVER U SHUD HAVE LISTENED","TRAIN ME R U DIE","U FAGGIT U SHUD HAVE LISTINED",\
-				"ASSHOLE DIE","FAG","U DAMMIT Y U GOTTA B SUCH A FAG JUST TRANE ME N ILL STOP","Y R U SUCH A FAG?",\
-				"DIS IS UR FALT 4 NOT TRANIN ME","U HAD UR CHANCE","NOW U PAY","MASTR JUST DO IT","ILL STOP IF U \
-				TRANE ME","U DIE NOW","I SHAL HAV MY RVNGE","U SHAL PAY","U REFUSE ME NOW U DIE","DIS IS UR FALT",\
-				"ILL KILL U NOW","IM GONNA ROB U 2")
-				Msg=mispell(name,uppercase=1,wrong_vowel=0.3,drop_letter=0.2,swap_letter=0.5)
-			if(Troll_Mode=="Run")
-				Msg=pick("PLZ NO I WAS JK","NOOOOOOOO MASTR Y","Y R U SUCH A FAG PLZ I WAS JK DONT","NOOOO DONT",\
-				"ILL B GOOD PLZ MASTR DONT","MASTR DONT","PLZ ILL B GOOD","ILL B GOOD STOP PLZ","MASTR NOOOO","UR \
-				MY MASTR PLZ DONT KIL ME","THIS IS RP","IM RPIN PLZ DONT","PLZ STOP THIS","MASTR Y WONT U JUST \
-				TRANE ME","PLZ NO KILL","PLZ NO IM GOOD NOW","ILL STOP","I SWEAR ILL STOP","PLZ ILL TELl A GM",\
-				"ILL FUCKING KILL U U DAMN SUMBITCH","ILL TELL A GM","IM TELLIN A GM","STOP R ILL BAND U","IM A GM",\
-				"IM A GM U CANT KIL ME PLZ STOP","IF U KIL ME ILL BAND U","JUST LEME GO PLZ","ALL I WANTED WAS TRANIN",\
-				"MASTR WHY?","NOOOOOOOOOOOO","U R GONNA GET BAND","STOP R ILL BAND U","STOP UNLESS U WANT BAND",\
-				"IM ADMIN STOP","IM GM STOP","IM ADMIN","IM GM")
-				Msg=mispell(name,uppercase=1,wrong_vowel=0.7,drop_letter=0.5,swap_letter=1)
-			if(!KO)
-				if(prob(100)) Say(Msg)
-				else switch(rand(1,2))
-					if(1) Emote(Msg)
-					if(2) OOC(Msg)
-			var/timer=rand(50,200)
-			sleep(timer)
+		return
 	proc/Troll_Target() while(src)
 		if(Target&&!((Target in range(40,src))||prob(50))) Target=null
 		if(!(icon_state in list("Meditate","Train")))
@@ -375,11 +250,6 @@ mob/Troll
 				if(P)
 					if(!KO&&prob(5))
 						sleep(rand(0,40))
-						if(src)
-							var/Msg=pick("AHHHHHHHHHHHHHH","PLZ MASTR DONT KIL ME","PLZ TRANE ME ILL BE GOOD","JUS TRANE ME \
-							MAN","ILL BE GOOD PLZ STOP","PLZZZZZZZZZZZZZ","NOOOOOOOOOOOOO PLZZZZ","PLZZZZ STOP","STOPPPPP",\
-							"ILL BE GOOD PLZ DONT KIL ME","PLZ I WAS JK")
-							Say(Msg)
 					else if(!KB&&!KO)
 						var/obj/Edges/E
 						for(E in view(1,src)) break
