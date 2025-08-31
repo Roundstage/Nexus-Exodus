@@ -445,7 +445,7 @@ mob/proc
 
 		bp_loss_from_low_ki=Get_bp_loss_from_low_ki()
 		bp_loss_from_low_hp=Get_bp_loss_from_low_hp()
-		
+
 		Racial_Stats()
 
 		if(alignment_on) choose_alignment()
@@ -903,7 +903,7 @@ mob/proc/Elite_starting_bp()
 mob/proc/Elite_Saiyan() if(Class!="Elite")
 	if(START_WITH_RACIAL_SKILLS)
 		contents.Add(new/obj/Attacks/Charge,new/obj/Attacks/Explosion,new/obj/Attacks/Beam,\
-		new/obj/Attacks/Garlic Gun,new/obj/Attacks/Final_Flash,new/obj/Fly,new/obj/Attacks/Kienzan,\
+		new/obj/Attacks/Garlic_Gun,new/obj/Attacks/Final_Flash,new/obj/Fly,new/obj/Attacks/Kienzan,\
 		new/obj/Attacks/Shockwave,new/obj/Attacks/Blast)
 	base_bp=Elite_starting_bp()
 	if(base_bp<1000) base_bp=1000
