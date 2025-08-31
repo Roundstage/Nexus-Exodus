@@ -11,8 +11,10 @@ obj/Giant_Form
 	student_point_cost = 100
 	Cost_To_Learn=55
 	desc="Using this will make you bigger:<br>\
-	50% bp increase<br>\
-	25% speed decrease<br>\
+	20% bp increase (50% for makyos)<br>\
+	25% speed, reflex, offense decrease<br>\
+	25% strength, endurance, and resist increase<br>\
+	
 	"
 	var/tmp/next_use=0
 
@@ -54,11 +56,22 @@ mob/proc
 			giant_form_overlays=new/list
 			giant_form_overlays.Add(overlays)
 			overlays=null
+			bp_mult+=0.3
 		else
 			animate(src, transform = transform * 2, time = 6, easing = CUBIC_EASING)
-		bp_mult+=0.5
+		bp_mult+=0.2
+		Str*=1.25
+		strmod*=1.25
+		End*=1.25
+		endmod*=1.25
+		Res*=1.25
+		resmod*=1.25
 		Spd*=0.75
 		spdmod*=0.75
+		Off*=0.75
+		offmod*=0.75
+		Def*=0.75
+		defmod*=0.75
 		if(g) src << g.desc
 
 	Disable_giant_form(icon_change=1)
@@ -68,11 +81,23 @@ mob/proc
 			if(icon=='Big Garlic.dmi')
 				icon='Makyojin 2.dmi'
 				overlays.Add(giant_form_overlays)
+				bp_mult-=0.3
 		else if(icon_change)
 			animate(src, transform = transform * 0.5, time = 15, easing = CUBIC_EASING)
-		bp_mult-=0.5
+		bp_mult-=0.2
 		Spd/=0.75
 		spdmod/=0.75
+		bp_mult+=0.5
+		Str/=1.25
+		strmod/=1.25
+		End/=1.25
+		endmod/=1.25
+		Res/=1.25
+		resmod/=1.25
+		Off/=0.75
+		offmod/=0.75
+		Def/=0.75
+		defmod/=0.75
 
 mob/var/limit_breaker_on
 
