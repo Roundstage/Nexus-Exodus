@@ -223,7 +223,7 @@ obj/Voting
 			if("Vote for SSj")
 				if(!usr.Can_Vote(src)) return
 				var/Voting/V=new;var/Vote_Initiator=usr.displaykey;var/list/Candidates=new;Candidates+="Cancel"
-				for(var/mob/P in players) if(P.Race in list("Yasai","Half Yasai")) Candidates+=P.key
+				for(var/mob/P in players) if(P.Race in list("Saiyan","Half Saiyan")) Candidates+=P.key
 				var/Candidate_Key=input("Choose who will gain the new SSj level") in Candidates
 				if(Candidate_Key=="Cancel") return
 				var/Timer=60

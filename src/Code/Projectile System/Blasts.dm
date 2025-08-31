@@ -57,7 +57,7 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 		var/obj/Blast/A=get_cached_blast()
 
 		var/dmg_pct = 5
-		if(Class == "Legendary Yasai") dmg_pct *= 2
+		if(Class == "Legendary Saiyan") dmg_pct *= 2
 
 		A.setStats(src,Percent = dmg_pct,Off_Mult=1,Explosion=0)
 		A.weaker_obstacles_cant_destroy_blast = 1

@@ -1312,28 +1312,28 @@ obj/Trees
 					var/image/B=image(icon='turfs.dmi',icon_state="nt1")
 					overlays.Add(A,B)
 				if(2)
-					var/image/A=image(icon='Trees Puranto.dmi',icon_state="1 Bottom")
-					var/image/B=image(icon='Trees Puranto.dmi',icon_state="1 Middle",pixel_y=32)
-					var/image/C=image(icon='Trees Puranto.dmi',icon_state="1 Top",pixel_y=64)
+					var/image/A=image(icon='Trees Namekian.dmi',icon_state="1 Bottom")
+					var/image/B=image(icon='Trees Namekian.dmi',icon_state="1 Middle",pixel_y=32)
+					var/image/C=image(icon='Trees Namekian.dmi',icon_state="1 Top",pixel_y=64)
 					overlays.Add(A,B,C)
 				if(3)
-					var/image/A=image(icon='Trees Puranto.dmi',icon_state="2.0")
-					var/image/B=image(icon='Trees Puranto.dmi',icon_state="2.1",pixel_y=32)
-					var/image/C=image(icon='Trees Puranto.dmi',icon_state="2.2",pixel_y=64)
-					var/image/D=image(icon='Trees Puranto.dmi',icon_state="2.3",pixel_y=64,pixel_x=32)
+					var/image/A=image(icon='Trees Namekian.dmi',icon_state="2.0")
+					var/image/B=image(icon='Trees Namekian.dmi',icon_state="2.1",pixel_y=32)
+					var/image/C=image(icon='Trees Namekian.dmi',icon_state="2.2",pixel_y=64)
+					var/image/D=image(icon='Trees Namekian.dmi',icon_state="2.3",pixel_y=64,pixel_x=32)
 					overlays.Add(A,B,C,D)
 				if(4)
-					var/image/A=image(icon='Trees Puranto.dmi',icon_state="1")
-					var/image/B=image(icon='Trees Puranto.dmi',icon_state="2",pixel_y=32)
-					var/image/C=image(icon='Trees Puranto.dmi',icon_state="3",pixel_y=64)
-					var/image/D=image(icon='Trees Puranto.dmi',icon_state="4",pixel_y=32,pixel_x=32)
-					var/image/E=image(icon='Trees Puranto.dmi',icon_state="5",pixel_y=64,pixel_x=32)
+					var/image/A=image(icon='Trees Namekian.dmi',icon_state="1")
+					var/image/B=image(icon='Trees Namekian.dmi',icon_state="2",pixel_y=32)
+					var/image/C=image(icon='Trees Namekian.dmi',icon_state="3",pixel_y=64)
+					var/image/D=image(icon='Trees Namekian.dmi',icon_state="4",pixel_y=32,pixel_x=32)
+					var/image/E=image(icon='Trees Namekian.dmi',icon_state="5",pixel_y=64,pixel_x=32)
 					overlays.Add(A,B,C,D,E)
 			//. = ..()
 			*/
 
 
-	Puranto_Tree
+	Namekian_Tree
 		density=1
 		icon = 'NamekTrees.dmi'
 		icon_state = "A 1"
@@ -1992,7 +1992,7 @@ turf
 	GrassSluggo
 		//icon='turfs.dmi'
 		//icon_state="ngrass"
-		//icon='Puranto Grass 2016.dmi'
+		//icon='Namekian Grass 2016.dmi'
 		icon='NamekTiles.dmi'
 		icon_state="A 1"
 		cliff_type = /turf/Wall16

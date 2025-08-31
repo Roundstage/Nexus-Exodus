@@ -6,7 +6,7 @@ var
 		planets=new
 		destroyed_planets=new
 		destroyable_planets=list("Android","Arconia","Atlantis","Braal","Desert","Earth","Ice",\
-		"Jungle","Puranto") //also contains when the planet was last destroyed
+		"Jungle","Namekian") //also contains when the planet was last destroyed
 		planet_destroy_uses=new //a list of CIDs that used planet destroy and when they used it
 
 mob/Admin3/verb/Restore_planet()

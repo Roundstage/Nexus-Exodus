@@ -2080,7 +2080,7 @@ obj/items/Moon
 	Stealable=1
 	science = 1
 	science_level = 4
-	desc="Using this will turn nearby Yasais that still have tails into Great_Ape"
+	desc="Using this will turn nearby Saiyans that still have tails into Great_Ape"
 	var/Emitter
 	verb/Hotbar_use()
 		set hidden=1
@@ -2093,7 +2093,7 @@ obj/items/Moon
 		player_view(15,usr)<<"[usr] activates the [src]!"
 		view(10)<<'throw.ogg'
 		for(var/mob/A in player_view(12,src)) spawn if(A)
-			if(Emitter && A.ssjdrain>=300 && A.ssj2drain>=300 && A.SSj2Able && !A.SSj4Able && A.Race=="Yasai") A.Great_Ape(100)
+			if(Emitter && A.ssjdrain>=300 && A.ssj2drain>=300 && A.SSj2Able && !A.SSj4Able && A.Race=="Saiyan") A.Great_Ape(100)
 			else A.Great_Ape()
 			if(Emitter&&!A.Tail) A.Tail_Add()
 		spawn(100) if(src) del(src)

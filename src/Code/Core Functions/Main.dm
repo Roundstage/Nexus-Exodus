@@ -5,14 +5,14 @@ mob/proc/NewZenkaiMods()
 
 mob/proc/GetNewZenkaiMod()
 	switch(Race)
-		if("Half Yasai") return 1
-		if("Yasai") return 1
+		if("Half Saiyan") return 1
+		if("Saiyan") return 1
 		if("Human") return 0
 		if("Tsujin") return 0
 		if("Majin") return 0
 		if("Bio-Android") return 1
-		if("Onion Lad") return 0
-		if("Puranto") return 0
+		if("Makyo") return 0
+		if("Namekian") return 0
 		if("Frost Lord") return 0
 		if("Kai") return 0
 		if("Demigod") return 0
@@ -29,14 +29,14 @@ mob/proc/Get_race_starting_bp_mod()
 	if(Class == "Spirit Doll") return human_bp_mod * 0.9
 	switch(Race)
 		if("Yeet") return 1
-		if("Half Yasai") return 2.5
-		if("Yasai") return 2
+		if("Half Saiyan") return 2.5
+		if("Saiyan") return 2
 		if("Human") return human_bp_mod
 		if("Tsujin") return 1.28
 		if("Majin") return new_majin_bp_mod
 		if("Bio-Android") return 2.1
-		if("Onion Lad") return 1.85
-		if("Puranto") return 1.65
+		if("Makyo") return 1.85
+		if("Namekian") return 1.65
 		if("Frost Lord") return 2.1
 		if("Kai") return 1.8
 		if("Demigod") return 2.5
@@ -288,7 +288,7 @@ mob/proc
 		winset(src, "mainwindow.mainvsplit", "right=rpane")
 		src << sound(0)
 		spawn(200) Great_Ape_revert()
-		if(Race=="Puranto") verbs+=typesof(/mob/Puranto/verb)
+		if(Race=="Namekian") verbs+=typesof(/mob/Namekian/verb)
 		load_player_settings()
 		Check_if_counterpart_is_alive_or_dead()
 		if(Frozen)
@@ -303,7 +303,7 @@ mob/proc
 		if(!name||name=="") name=key
 		if(!Mob_ID) Mob_ID=get_mob_id()
 		if(Race=="Demon"&&!(locate(/obj/Demon_Contract) in src)) contents+=new/obj/Demon_Contract
-		//if(key=="Super Yasai X") if(!(locate(/obj/SSX_Planet) in src)) contents+=new/obj/SSX_Planet
+		//if(key=="Super Saiyan X") if(!(locate(/obj/SSX_Planet) in src)) contents+=new/obj/SSX_Planet
 		//if(key=="Sonku") if(!(locate(/obj/Sonku_Planet) in src)) contents+=new/obj/Sonku_Planet
 		Remove_Duplicate_Moves()
 		RP_President()
@@ -441,7 +441,7 @@ mob/proc
 		if(force_elite) force_low_class = 0 //cant be both
 
 		Race(force_race=force_race,force_elite=force_elite,force_low_class=force_low_class)
-		//Race(force_race = "Yasai", force_elite=force_elite,force_low_class=force_low_class)
+		//Race(force_race = "Saiyan", force_elite=force_elite,force_low_class=force_low_class)
 
 		bp_loss_from_low_ki=Get_bp_loss_from_low_ki()
 		bp_loss_from_low_hp=Get_bp_loss_from_low_hp()
@@ -483,7 +483,7 @@ mob/proc
 		LogYear=Year
 		Ki=max_ki
 		contents += GetCachedObject(/obj/Resources)
-		if(Race in list("Yasai","Half Yasai"))
+		if(Race in list("Saiyan","Half Saiyan"))
 			if(!Tail) Tail_Add()
 			contents+=new/obj/Great_Ape
 		Savable=1
@@ -574,24 +574,24 @@ mob/proc
 		Races = Check_Spawn(Races) //Removes the entry from the list if there is no spawn for it
 
 		for(var/mob/P in players)
-			if(P.Class == "Legendary Yasai" || world.time < 10 * 600 || world.realtime < next_lssj)
+			if(P.Class == "Legendary Saiyan" || world.time < 10 * 600 || world.realtime < next_lssj)
 				if(!lssj_common_race)
-					Races-="Legendary Yasai"
+					Races-="Legendary Saiyan"
 		//if(key=="EXGenesis") Races+= "Yeet"
-		var/Yasais=0
+		var/Saiyans=0
 		var/other=0
 		for(var/mob/m in players) if(m.z&&m.client&&m.Race)
-			if(m.Race in list("Half Yasai","Yasai")) Yasais++
+			if(m.Race in list("Half Saiyan","Saiyan")) Saiyans++
 			else other++
 
-		if(Yasais) //so it cant be 0
-			var/Yasai_percent=Yasais/(other+Yasais)*100
-			if(Yasai_percent>max_Yasai_percent)
-				Races-="Yasai"
-				Races-="Half Yasai"
-				Races-="Legendary Yasai"
-				alert(src,"The percentage of players playing Yasai has exceeded the cap set by admins. Yasai \
-				has been removed from the race selection. The max percent of Yasai allowed is [max_Yasai_percent]%")
+		if(Saiyans) //so it cant be 0
+			var/Saiyan_percent=Saiyans/(other+Saiyans)*100
+			if(Saiyan_percent>max_Saiyan_percent)
+				Races-="Saiyan"
+				Races-="Half Saiyan"
+				Races-="Legendary Saiyan"
+				alert(src,"The percentage of players playing Saiyan has exceeded the cap set by admins. Saiyan \
+				has been removed from the race selection. The max percent of Saiyan allowed is [max_Saiyan_percent]%")
 
 		if(!force_race)
 			force_race = input(src,"Choose a race. The most popular are at the top") in Races
@@ -604,18 +604,18 @@ mob/proc
 			if("Majin") Majin()
 			if("Bio-Android") Bio()
 			if("Android") Android()
-			if("Onion Lad") Onion_Lad()
+			if("Makyo") Onion_Lad()
 			if("Kai") Kai()
 			if("Spirit Doll") Doll()
 			if("Tsujin") Tsujin()
-			if("Puranto") Puranto()
-			if("Yasai") Yasai(force_elite=force_elite,force_low_class=force_low_class)
-			if("Half Yasai") Half_Yasai()
+			if("Namekian") Namekian()
+			if("Saiyan") Saiyan(force_elite=force_elite,force_low_class=force_low_class)
+			if("Half Saiyan") Half_Saiyan()
 			if("Frost Lord") Icer()
 			if("Demon") Demon()
 			if("Demigod") Demigod()
-			if("Legendary Yasai")
-				Legendary_Yasai()
+			if("Legendary Saiyan")
+				Legendary_Saiyan()
 				next_lssj = world.realtime + (10 * 60 * 600)
 		ascension_bp *= bp_mod
 
@@ -674,7 +674,7 @@ mob/proc/Doll()
 			contents+=new/obj/Fly
 
 mob/proc/Tsujin()
-	alert(src,"Tsujins share the same planet as the Yasai, and are very similar to Humans, but better with \
+	alert(src,"Tsujins share the same planet as the Saiyan, and are very similar to Humans, but better with \
 	technology and a bit less at fighting.")
 	Human()
 	Race="Tsujin"
@@ -757,7 +757,7 @@ mob/proc/Bio()
 	stun_resistance_mod=2
 
 mob/proc/Onion_Lad()
-	Race="Onion Lad"
+	Race="Makyo"
 	incline_age=8
 	incline_mod=0.6
 	Gravity_Mod=1.5
@@ -781,8 +781,8 @@ mob/proc/Onion_Lad()
 	base_bp=rand(120,150)
 	ascension_bp*=0.9
 
-mob/proc/Puranto()
-	Race="Puranto"
+mob/proc/Namekian()
+	Race="Namekian"
 	incline_age=5
 	incline_mod=0.25
 	arm_stretch=1
@@ -790,10 +790,10 @@ mob/proc/Puranto()
 	Gravity_Mod=0.7
 	sp_mod=1.3
 	mastery_mod=2
-	alert(src,"Purantos are a mostly peaceful race but also strong warriors with very unique racial \
-	abilities such as making Wish Orbs, fusing with other Purantos, having another Puranto as their \
+	alert(src,"Namekians are a mostly peaceful race but also strong warriors with very unique racial \
+	abilities such as making Wish Orbs, fusing with other Namekians, having another Namekian as their \
 	'counterpart' for shared power, stretching their arms out really \
-	far, and unique racial stats that can be seen in the Race Guide in the Other tab. Purantos are \
+	far, and unique racial stats that can be seen in the Race Guide in the Other tab. Namekians are \
 	probably one of the most unique races.")
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=80
@@ -803,7 +803,7 @@ mob/proc/Puranto()
 	Lungs=0
 	gravity_mastered=4
 	leech_rate=2
-	med_mod=6 //we hardcoded this to be nerfed. check at the end of new/load for the real Puranto mod
+	med_mod=6 //we hardcoded this to be nerfed. check at the end of new/load for the real Namekian mod
 	zenkai_mod=0.25
 	Regenerate=0.3
 	if(START_WITH_RACIAL_SKILLS)
@@ -814,15 +814,15 @@ mob/proc/Puranto()
 	ascension_bp*=0.7
 	stun_resistance_mod=2
 
-mob/proc/Half_Yasai()
-	Race="Half Yasai"
+mob/proc/Half_Saiyan()
+	Race="Half Saiyan"
 	incline_age-=1
 	incline_mod=0.3
 	Gravity_Mod=0.7
 	sp_mod=1
 	mastery_mod=2
 	Knowledge=300
-	//alert(src,"Half Yasais are a mix between Humans and Yasais")
+	//alert(src,"Half Saiyans are a mix between Humans and Saiyans")
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=20
 	Decline_Rate=1
@@ -846,8 +846,8 @@ mob/proc/Half_Yasai()
 
 var/elite_chance=8
 
-mob/proc/Yasai(Can_Elite=1,force_elite,force_low_class)
-	Race="Yasai"
+mob/proc/Saiyan(Can_Elite=1,force_elite,force_low_class)
+	Race="Saiyan"
 	incline_age=15
 	incline_mod=0.2
 	Gravity_Mod=1
@@ -855,10 +855,10 @@ mob/proc/Yasai(Can_Elite=1,force_elite,force_low_class)
 	mastery_mod=1
 
 	/*
-	alert(src,"Yasai are a warrior race gifted with the potential for great power. \
+	alert(src,"Saiyan are a warrior race gifted with the potential for great power. \
 	They have tails and when the moon comes out, they turn into giant ape \
-	creatures of great power. Also there is a legend of the Super Yasai, a form that would turn a \
-	normal Yasai into the most powerful being in the universe. Yasai have some \
+	creatures of great power. Also there is a legend of the Super Saiyan, a form that would turn a \
+	normal Saiyan into the most powerful being in the universe. Saiyan have some \
 	intelligence penalties and master skills slowly, but have the most powerful zenkai of any race.")
 	*/
 
@@ -882,25 +882,25 @@ mob/proc/Yasai(Can_Elite=1,force_elite,force_low_class)
 		hbtc_bp=0
 		ssjat*=0.9
 		Class="Low Class"
-	else if(force_elite) Elite_Yasai()
+	else if(force_elite) Elite_Saiyan()
 	else if(Can_Elite&&(world.time>3000))
 		var/elites=0
-		for(var/mob/m in players) if(m.Race=="Yasai"&&m.Class=="Elite") elites++
-		if((Yasai_Count()>=10&&elites/Yasai_Count()<elite_chance/100))
-			switch(alert(src,"Do you want to be an Elite Yasai? This choice only appears if less than [elite_chance]% \
-			of the Yasais online are already elite. The penalty is that Super Yasai will be harder to get \
+		for(var/mob/m in players) if(m.Race=="Saiyan"&&m.Class=="Elite") elites++
+		if((Saiyan_Count()>=10&&elites/Saiyan_Count()<elite_chance/100))
+			switch(alert(src,"Do you want to be an Elite Saiyan? This choice only appears if less than [elite_chance]% \
+			of the Saiyans online are already elite. The penalty is that Super Saiyan will be harder to get \
 			because the bp requirement is much higher. There are advantages, see the race guide for details.",\
 			"options","No","Yes"))
-				if("Yes") Elite_Yasai()
+				if("Yes") Elite_Saiyan()
 
 mob/proc/Elite_starting_bp()
-	if(!Player_Count()||!Yasai_Count()) return 1
+	if(!Player_Count()||!Saiyan_Count()) return 1
 	var/bp=0
-	for(var/mob/m in players) if(m.Race=="Yasai") bp+=m.base_bp/m.bp_mod
-	bp/=Yasai_Count()
+	for(var/mob/m in players) if(m.Race=="Saiyan") bp+=m.base_bp/m.bp_mod
+	bp/=Saiyan_Count()
 	return bp*bp_mod
 
-mob/proc/Elite_Yasai() if(Class!="Elite")
+mob/proc/Elite_Saiyan() if(Class!="Elite")
 	if(START_WITH_RACIAL_SKILLS)
 		contents.Add(new/obj/Attacks/Charge,new/obj/Attacks/Explosion,new/obj/Attacks/Beam,\
 		new/obj/Attacks/Onion_Gun,new/obj/Attacks/Final_Flash,new/obj/Fly,new/obj/Attacks/Kienzan,\
@@ -937,11 +937,11 @@ mob/proc/Cooler()
 			new/obj/Planet_Destroy, new/obj/Attacks/Kienzan, new/obj/Attacks/Explosion)
 	stun_resistance_mod=1.6
 
-mob/proc/Legendary_Yasai()
-	Yasai(Can_Elite=0)
+mob/proc/Legendary_Saiyan()
+	Saiyan(Can_Elite=0)
 	Intelligence=0.1
 	Gravity_Mod*=3
-	Class="Legendary Yasai"
+	Class="Legendary Saiyan"
 
 	lssj_ver=1
 

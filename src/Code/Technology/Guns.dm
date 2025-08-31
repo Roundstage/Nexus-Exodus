@@ -270,7 +270,7 @@ of sniper rifle that can shoot people from great distances.<p>
 Damage type is also important. If you choose Ballistic Damage then your bullet is made of some sort of physical
 material, for example metal, and it does damage based on your target's Durability. If you choose energy, it does damage
 based on your target's Resistance. This can provide a tactical advantage if you know your target's weaknesses, for
-instance a Yasai typically has higher durability than resistance, making energy weapons more effective against them.<p>
+instance a Saiyan typically has higher durability than resistance, making energy weapons more effective against them.<p>
 
 "}
 	verb/View()

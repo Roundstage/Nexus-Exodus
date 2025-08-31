@@ -335,7 +335,7 @@ obj/items/Dragon_Ball
 			time by their creator."
 			return
 		var/obj/Dragons/D
-		if(Home==/area/Puranto) D=new/obj/Dragons/Porunga
+		if(Home==/area/Namekian) D=new/obj/Dragons/Porunga
 		else D=new/obj/Dragons/Shenron
 		D.SafeTeleport(locate(x,y+1,z))
 		//COPYRIGHT

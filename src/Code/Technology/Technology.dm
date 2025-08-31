@@ -38,7 +38,7 @@ mob/proc/TryCreateScienceItem(obj/A)
 				O.Cost=Item_cost(src,A)
 				O.Builder=key
 
-				if(istype(O,/obj/Ships/Ship)&&Race=="Puranto")
+				if(istype(O,/obj/Ships/Ship)&&Race=="Namekian")
 					O.icon='Puran Ship.dmi'
 					CenterIcon(O)
 				if(istype(O,/obj/items/Scouter)&&Race=="Human")

@@ -22,7 +22,7 @@
 "av" = (/obj/Edges/Edge3E,/obj/Edges/Edge3N,/obj/Turfs/Plant37,/turf/Ground17,/area/Space)
 "aw" = (/obj/Edges/Edge3W,/obj/Turfs/Plant37,/turf/Ground17,/area/Space)
 "ax" = (/turf/Wall17,/area/Space)
-"ay" = (/obj/Planets/Puranto,/turf/Other/Stars,/area/Space)
+"ay" = (/obj/Planets/Namekian,/turf/Other/Stars,/area/Space)
 "az" = (/turf/RoofTech{FlyOverAble = 0; Health = 1.#INF; name = "Prison Wall"},/area/Space)
 "aA" = (/turf/Wall21,/area/Space)
 "aB" = (/obj/Turfs/Sign/Information_Panel{desc = "Visitors may enter the prison at their own risk. You will be able to exit, but prisoners will not."},/turf/Wall21,/area/Space)

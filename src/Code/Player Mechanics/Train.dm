@@ -321,7 +321,7 @@ mob/proc/Raise_Stats(Amount=1,F) //F = Stat Focus
 
 	if(race_stats_only_mode) return
 
-	if(Class == "Legendary Yasai")
+	if(Class == "Legendary Saiyan")
 		Def = 1
 
 	if(Safezone) Amount*=0.25

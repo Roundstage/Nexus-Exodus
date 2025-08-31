@@ -108,21 +108,21 @@ mob/proc
 	EnergyBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 4
-			if("Onion Lad") cap = 2.5
+			if("Makyo") cap = 2.5
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -134,21 +134,21 @@ mob/proc
 	StrengthBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -160,21 +160,21 @@ mob/proc
 	DuraBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -186,21 +186,21 @@ mob/proc
 	SpeedBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -212,21 +212,21 @@ mob/proc
 	ForceBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -238,21 +238,21 @@ mob/proc
 	ResBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 2
 					if("Low Class") cap = 2
 					if("Elite") cap = 2
-					if("Legendary Yasai") cap = 2.5
+					if("Legendary Saiyan") cap = 2.5
 			if("Human")
 				if(Class == "Spirit Doll") cap = 4
 				else cap = 2.5
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 2.5
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 2.5
 			if("Android") cap = 5
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -264,21 +264,21 @@ mob/proc
 	RegenBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 1.6
 					if("Low Class") cap = 1.6
 					if("Elite") cap = 1.6
-					if("Legendary Yasai") cap = 3.6
+					if("Legendary Saiyan") cap = 3.6
 			if("Human")
 				if(Class == "Spirit Doll") cap = 1.2
 				else cap = 1.2
-			if("Puranto") cap = 4
-			if("Half Yasai") cap = 1.6
+			if("Namekian") cap = 4
+			if("Half Saiyan") cap = 1.6
 			if("Android") cap = 3
 			if("Alien") cap = 4
 			if("Demigod") cap = 3
-			if("Onion Lad") cap = 2
+			if("Makyo") cap = 2
 			if("Bio-Android") cap = 6
 			if("Majin") cap = 999
 			if("Kai") cap = 1
@@ -290,21 +290,21 @@ mob/proc
 	RecovBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 1.6
 					if("Low Class") cap = 1.6
 					if("Elite") cap = 1.6
-					if("Legendary Yasai") cap = 2.2
+					if("Legendary Saiyan") cap = 2.2
 			if("Human")
 				if(Class == "Spirit Doll") cap = 2.4
 				else cap = 2
-			if("Puranto") cap = 1.6
-			if("Half Yasai") cap = 2.4
+			if("Namekian") cap = 1.6
+			if("Half Saiyan") cap = 2.4
 			if("Android") cap = 3
 			if("Alien") cap = 3
 			if("Demigod") cap = 3
-			if("Onion Lad") cap = 1.6
+			if("Makyo") cap = 1.6
 			if("Bio-Android") cap = 2
 			if("Majin") cap = 2.4
 			if("Kai") cap = 3
@@ -316,21 +316,21 @@ mob/proc
 	AngerBeyondRaceCap()
 		var/cap = 9999
 		switch(Race)
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if(null) cap = 160
 					if("Low Class") cap = 180
 					if("Elite") cap = 140
-					if("Legendary Yasai") cap = 180
+					if("Legendary Saiyan") cap = 180
 			if("Human")
 				if(Class == "Spirit Doll") cap = 130
 				else cap = 150
-			if("Puranto") cap = 130
-			if("Half Yasai") cap = 400
+			if("Namekian") cap = 130
+			if("Half Saiyan") cap = 400
 			if("Android") cap = 110
 			if("Alien") cap = 150
 			if("Demigod") cap = 200
-			if("Onion Lad") cap = 150
+			if("Makyo") cap = 150
 			if("Bio-Android") cap = 200
 			if("Majin") cap = 160
 			if("Kai") cap = 120
@@ -435,14 +435,14 @@ mob/proc/Raise_Anger(Amount=1)
 	C.max_anger+=10*Amount
 
 mob/proc/RaceBonusStatPoints()
-	if(Race == "Puranto") return 16
+	if(Race == "Namekian") return 16
 	if(Race == "Kai") return 11
 	if(Race == "Human") return 28
 	if(Race == "Tsujin") return 11
 	if(Race == "Alien") return 11
 	if(Race == "Android") return 11
-	if(Race == "Onion Lad") return 18
-	if(Race == "Yasai") return 6
+	if(Race == "Makyo") return 18
+	if(Race == "Saiyan") return 6
 	
 	return 0
 
@@ -470,7 +470,7 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1) //If P, P gets t
 	if(modless_check) Modless_Stat_Check()
 	stat_version=cur_stat_ver
 	Majin_Stats()
-	if(Class == "Legendary Yasai" && lssj_always_angry)
+	if(Class == "Legendary Saiyan" && lssj_always_angry)
 		Eff *= lssj_ki_mult
 		max_ki *= lssj_ki_mult
 	Rearrange_Mode_Check()
@@ -485,7 +485,7 @@ mob/proc/ApplyRaceBuild()
 	var/max_points = 44
 
 	var/list/race_stat_builds = list(
-		"Puranto" = list(
+		"Namekian" = list(
 			"Regeneration" = 12, "Recovery" = 10, "Force" = 12, "Energy" = 6, "Resist" = 4
 		),
 		"Kai" = list(
@@ -512,7 +512,7 @@ mob/proc/ApplyRaceBuild()
 		"Saiyan" = list(
 			"Strength" = 14, "Durability" = 10, "Speed" = 6, "Force" = 8, "Offense" = 6
 		),
-		"Half-saiyan" = list(
+		"Half-Saiyan" = list(
 			"Strength" = 10, "Durability" = 8, "Speed" = 8, "Force" = 8, "Energy" = 6, "Recovery" = 4
 		),
 		"Makyo" = list(

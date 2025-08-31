@@ -177,8 +177,8 @@ obj/items/DNA_Container
 		if(!A.Has_DNA)
 			usr<<"[A] has no usable DNA"
 			return
-		if(A.Class=="Legendary Yasai")
-			usr<<"The legendary Yasai gene is impossible to clone"
+		if(A.Class=="Legendary Saiyan")
+			usr<<"The legendary Saiyan gene is impossible to clone"
 			return
 		if(A.Race=="Majin")
 			usr<<"Majins are not clonable"

@@ -484,7 +484,7 @@ mob/proc
 		n2 /= 10
 		n *= n2
 		if(statName == "End" || statName == "Res")
-			if(Class == "Legendary Yasai") n /= lssjTakeDmgMult
+			if(Class == "Legendary Saiyan") n /= lssjTakeDmgMult
 			if(jirenAlien) n /= jirenTakeDmgMult
 			if(Race == "Android") n /= android_dmg_taken_mult
 		return round(n)
@@ -726,7 +726,7 @@ mob/proc
 		var/n=End/(Stat_Record*1.5)
 		n*=1.8
 
-		if(Class == "Legendary Yasai") n /= lssjTakeDmgMult
+		if(Class == "Legendary Saiyan") n /= lssjTakeDmgMult
 		if(jirenAlien) n /= jirenTakeDmgMult
 		if(Race == "Android") n /= android_dmg_taken_mult
 
@@ -769,7 +769,7 @@ mob/proc
 		var/n=Res/(Stat_Record*1.5)
 		n*=1.8
 
-		if(Class == "Legendary Yasai") n /= lssjTakeDmgMult
+		if(Class == "Legendary Saiyan") n /= lssjTakeDmgMult
 		if(jirenAlien) n /= jirenTakeDmgMult
 		if(Race == "Android") n /= android_dmg_taken_mult
 

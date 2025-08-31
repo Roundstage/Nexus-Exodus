@@ -23,13 +23,13 @@ mob/proc
 	Has_SSB_Req()
 		if(!has_god_ki) return
 		if(god_ki_mastery < god_mastery_required_for_ssb) return
-		if(!(Race in list("Yasai", "Half Yasai"))) return
+		if(!(Race in list("Saiyan", "Half Saiyan"))) return
 		return 1
 
 	SSj_Blue()
 		if(is_ssj_blue || transing || IsGreatApe() || ssj) return
 
-		if(Race in list("Yasai", "Half Yasai")) Revert()
+		if(Race in list("Saiyan", "Half Saiyan")) Revert()
 		Mystic_Revert()
 
 		transing = 1
@@ -70,7 +70,7 @@ mob/proc
 			if(ssj == 4) Revert()
 
 			var/d = (max_ki / 600) * (3500 / max_ki)**0.4
-			if(Class == "Legendary Yasai") d *= 1.4
+			if(Class == "Legendary Saiyan") d *= 1.4
 			Ki -= d
 			if(Ki < d)
 				Revert()

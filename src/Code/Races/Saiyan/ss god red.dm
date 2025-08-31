@@ -18,7 +18,7 @@ mob/proc
 		if(L.len>=4)
 			var/ritual=0
 			for(var/mob/M in src.gp_list)
-				if(M.Race in list("Yasai","Half Yasai"))
+				if(M.Race in list("Saiyan","Half Saiyan"))
 					if(M.has_ssj_req()&&M.gp_target==src)
 						ritual += 1
 					else if(M.gp_target==src)
@@ -113,7 +113,7 @@ mob/proc
 				if(world.time>ssg_time)
 					Revert()
 					player_view(15,src) << "[src]'s divine power wears off."
-			if(Class == "Legendary Yasai") d *= 1.3
+			if(Class == "Legendary Saiyan") d *= 1.3
 			Ki -= d
 			if(Ki < d)
 				Revert()

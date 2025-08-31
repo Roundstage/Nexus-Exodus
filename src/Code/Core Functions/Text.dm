@@ -237,15 +237,15 @@ Earth<br>
 	as the Cardinal Kaio and Kaioshin, as well as any other good-aligned afterlife rank, although they are
 	above him in status. Kami fulfills the purpose of protecting the earth from evil, although most times
 	indirectly, doing what is necessary to help earth defend itself from threats which are serious enough to
-	require Kami's attention. If Kami is a Puranto they must make Wish Orbs immediately and scatter them.<br>
+	require Kami's attention. If Kami is a Namekian they must make Wish Orbs immediately and scatter them.<br>
 - Korin: Korin is much like Kami, but of a slightly lesser status.<br>
 - Kame Sennin: Has no specific purpose, except to help the side of good when necessary. Kame Sennin has
 	knowledge of Korin and Kami.<br>
 - Tsuru Sennin: Has no specific purpose at all and is of any alignment. Tsuru Sennin has knowledge of
 	Kame Sennin.<br><br>
 
-Puranto<br>
-- Elder: The Puranto Elder is much like the Kami of Earth. He has knowledge of all Teachers on Puranto and
+Namekian<br>
+- Elder: The Namekian Elder is much like the Kami of Earth. He has knowledge of all Teachers on Namekian and
 	is of good alignment. The Elder must make Wish Orbs immediately and scatter them.<br><br>
 
 Afterlife<br>
@@ -286,7 +286,7 @@ Turtle Hermit:<br>
 Crane Hermit:<br>
 <br>
 
-*Puranto*<br>
+*Namekian*<br>
 Elder:<br>
 <br>
 
@@ -353,10 +353,10 @@ To-Do List for Admins at the start of a wipe:<p>
 <li>Assign Ranks. Do not delay assigning ranks when there are perfectly deserving people available. Give
 the ranks to those who deserve it as they appear without delay.<p>
 
-<li>Make at least 5 Skill Masters on each planet. For Braal, this means giving them Yasai Elite as well.
+<li>Make at least 5 Skill Masters on each planet. For Braal, this means giving them Saiyan Elite as well.
 If there are not 5 deserving people lower your standards a bit just don't give it to noobs who will nonrp
 people. If there are not 5 people at all, just don't worry about it. It is important to have at least 5
-Yasai Elites starting out because most people die/remake/become hermits anyway and odds are only 2 of them
+Saiyan Elites starting out because most people die/remake/become hermits anyway and odds are only 2 of them
 will remain long term in the wipe. Do not delay this for any reason, if worthy people are available
 give it to them immediately. There is no reason to wait.<p>
 
@@ -491,11 +491,11 @@ mob/proc/Race_Guide()
 proc/Race_Info(T,V)
 	var/mob/M=new
 	switch(V)
-		if("Half Yasai")
-			M.Half_Yasai()
-		if("Legendary Yasai")
-			M.Legendary_Yasai()
-			M.Race="Legendary Yasai"
+		if("Half Saiyan")
+			M.Half_Saiyan()
+		if("Legendary Saiyan")
+			M.Legendary_Saiyan()
+			M.Race="Legendary Saiyan"
 		if("Alien") M.Alien()
 		if("Android") M.Android()
 		if("Bio-Android") M.Bio()
@@ -508,18 +508,18 @@ proc/Race_Info(T,V)
 			M.Race="Cooler Icer"
 		if("Human") M.Human()
 		if("Kai") M.Kai()
-		if("Onion Lad") M.Onion_Lad()
+		if("Makyo") M.Onion_Lad()
 		if("Majin") M.Majin()
-		if("Puranto") M.Puranto()
+		if("Namekian") M.Namekian()
 		if("Spirit Doll")
 			M.Doll()
 			M.Race="Spirit Doll"
 		if("Tsujin") M.Tsujin()
-		if("Yasai") M.Yasai(0)
+		if("Saiyan") M.Saiyan(0)
 		if("Elite")
-			M.Yasai(0)
-			M.Elite_Yasai()
-			M.Race="Elite Yasai"
+			M.Saiyan(0)
+			M.Elite_Saiyan()
+			M.Race="Elite Saiyan"
 	M.Racial_Stats(M,0,modless_check=0)
 	M.UpdateRaceStatsOnlyModeStats()
 	M.DecideMaxStamina()
@@ -591,7 +591,7 @@ proc/Race_Info(T,V)
 		BP loss from low Ki: [M.Get_bp_loss_from_low_ki()]x (lower is better)<br>
 		BP loss from low Health: [M.Get_bp_loss_from_low_hp()]x (lower is better)<br>
 		"}
-	if(!(M.Race in list("Yasai","Half Yasai")))
+	if(!(M.Race in list("Saiyan","Half Saiyan")))
 		T+="Ascension BP: [Commas(M.Ascension_BP_Req()*M.bp_mod)]<br>"
 	if(incline_on)
 		T+="Incline Age: [M.incline_age]<br>\
@@ -638,7 +638,7 @@ Evil alignment:<br>
 <li>Unlock potential is half as effective on evil people
 <li>-10% leech rate when fighting evil people
 <li>-90% leech rate when fighting good people (Evil and Good are not really allowed to train together)
-<li>Can not get Puranto Elder, Turtle Hermit, or any Kai rank unless they got it before turning evil
+<li>Can not get Namekian Elder, Turtle Hermit, or any Kai rank unless they got it before turning evil
 <li>Can not get death anger because evil people do not care who dies
 <li>Depending on server settings evil people will have a damage penalty if there is too many evil people
 and not enough good people on the server, to force some evil people to switch to good. This damage penalty
@@ -654,7 +654,7 @@ Hero rank:<br>
 <li>Leech everyone 2x faster
 <li>Gets up from knockouts 30% quicker
 <li>Will always get anger when needed
-<li>Master all Super Yasai levels 2x faster
+<li>Master all Super Saiyan levels 2x faster
 <li>If the hero dies from anyone other than the villain they lose the hero rank
 <li>If the villain kills the hero there is a 50% chance the hero will lose the rank, and a 50%
 chance they will enter a 'training period', which lasts 30 minutes and has 10x bp gains
@@ -797,7 +797,7 @@ Using Planet Braal's Core:<br>
 <li>IMPORTANT: In an update it was made so that what stats you have no longer matter in the core, this was to make it so any build
 can core train, instead of just builds specially designed to core train. The damage from the smog and explosions no longer
 depends on stats like the information below will claim. Meaning there is no longer a need to put on armor or make a special core buff.
-<li>I go to Planet Braal's Core often as training, but only if I am a Yasai or a race with good zenkai,
+<li>I go to Planet Braal's Core often as training, but only if I am a Saiyan or a race with good zenkai,
 because zenkai influences gains
 there. Planet Braal's Core is a dangerous place meant for survival/torture training, there are explosions
 everywhere and acid smog, and strong monsters. Killing the monsters there will refill your health. The core and

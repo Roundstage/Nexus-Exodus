@@ -725,7 +725,7 @@ mob/Admin1/verb/where_is_everyone()
 		src<<"[n] players on [a]"
 
 var/skill_tournament_chance=33
-var/max_Yasai_percent=100
+var/max_Saiyan_percent=100
 var/ssj_voting
 
 var/alts="allowed"
@@ -1037,7 +1037,7 @@ mob/verb/View_Server_Details()
 	if(KO_Time!=1) T+="KO Time is [KO_Time]x default<br>"
 	if(Server_Regeneration!=1) T+="Health Regeneration is [Server_Regeneration]x default<br>"
 	if(Server_Recovery!=1) T+="Energy Recovery is [Server_Recovery]x default<br>"
-	if(SSj_Mastery!=1) T+="Super Yasai is mastered [SSj_Mastery]x faster than default<br>"
+	if(SSj_Mastery!=1) T+="Super Saiyan is mastered [SSj_Mastery]x faster than default<br>"
 	if(!Tournament_Timer) T+="Automatic Tournaments are off<br>"
 	else T+="Automatic Tournaments occur every [Tournament_Timer] minutes<br>"
 	if(auto_revive_timer)
@@ -1050,7 +1050,7 @@ mob/verb/View_Server_Details()
 	[leech_strongest]x the default rate to a max of [max_auto_leech]% their bp<br>"
 	T+="Alts are [alts]<br>"
 	if(incline_on) T+="Incline mode is on<br>"
-	if(max_Yasai_percent<100) T+="[max_Yasai_percent]% of players can be Yasai before the race becomes unchoosable<br>"
+	if(max_Saiyan_percent<100) T+="[max_Saiyan_percent]% of players can be Saiyan before the race becomes unchoosable<br>"
 	//if(BP_Cap) T+="BP is capped at [Commas(BP_Cap)]<br>"
 
 	//T+="<p>Illegal Science:<br>"
@@ -1309,6 +1309,7 @@ mob/verb/View_Admin_Logs()
 	admin_list += "all"
 
 	var/mob/admin = input("Select an admin to view their logs", "Admin Logs") in admin_list
+	src << "You are viewing the admin logs for [admin]"
 	ViewEmoteWindow(src, admin, "", "Admin log", "adminlogs")
 
 mob/verb/View_All_Admin_Logs()
@@ -1581,9 +1582,9 @@ mob/verb/Races()
 		Races+=A.Race
 		for(var/mob/B in players) if(B.Race==A.Race) Amount+=1
 		var/t="[A.Race]: [Amount]"
-		if(A.Race=="Yasai")
+		if(A.Race=="Saiyan")
 			var/elites=0
-			for(var/mob/m in players) if(m.Race=="Yasai"&&m.Class=="Elite") elites++
+			for(var/mob/m in players) if(m.Race=="Saiyan"&&m.Class=="Elite") elites++
 			t=t+" ([elites] Elites)"
 		src<<t
 
@@ -2095,11 +2096,11 @@ mob/Admin2/verb/Make(mob/A in world, Search as text)
 
 mob/Admin2/verb/Forms()
 	set category="Admin"
-	for(var/mob/m in players) if(m.client&&m.Class=="Legendary Yasai") usr<<"[m] is a Legendary Yasai"
-	for(var/mob/M in players) if(M.client&&M.Class!="Legendary Yasai") if(M.SSjAble&&M.SSjAble<=Year) usr<<"[M] is Super Yasai."
-	for(var/mob/M in players) if(M.client) if(M.SSj2Able&&M.SSj2Able<=Year) usr<<"[M] is Super Yasai 2."
-	for(var/mob/M in players) if(M.client) if(M.SSj3Able&&M.SSj3Able<=Year) usr<<"[M] is Super Yasai 3."
-	for(var/mob/M in players) if(M.client) if(M.SSj4Able&&M.SSj4Able<=Year) usr<<"[M] is Super Yasai 4."
+	for(var/mob/m in players) if(m.client&&m.Class=="Legendary Saiyan") usr<<"[m] is a Legendary Saiyan"
+	for(var/mob/M in players) if(M.client&&M.Class!="Legendary Saiyan") if(M.SSjAble&&M.SSjAble<=Year) usr<<"[M] is Super Saiyan."
+	for(var/mob/M in players) if(M.client) if(M.SSj2Able&&M.SSj2Able<=Year) usr<<"[M] is Super Saiyan 2."
+	for(var/mob/M in players) if(M.client) if(M.SSj3Able&&M.SSj3Able<=Year) usr<<"[M] is Super Saiyan 3."
+	for(var/mob/M in players) if(M.client) if(M.SSj4Able&&M.SSj4Able<=Year) usr<<"[M] is Super Saiyan 4."
 
 var/savingmap
 
@@ -2357,15 +2358,15 @@ mob/Admin2/verb
 				M.SafeTeleport(locate(xx,yy,zz))
 
 mob/Admin3/verb
-	Give_Super_Yasai(mob/A in world)
+	Give_Super_Saiyan(mob/A in world)
 		set category="Admin"
-		switch(alert(src,"Take [A] to the next Super Yasai level?","Options","No","Yes"))
+		switch(alert(src,"Take [A] to the next Super Saiyan level?","Options","No","Yes"))
 			if("Yes")
 				A.ssj_leechable=1
 				if(!A.ssj&&!A.SSjAble) A.SSj()
 				else if(A.ssj==1) A.SSj2()
 				else if(A.ssj==2) A.SSj3()
-				admin_blame(src, "[key] has given [A] super yasai")
+				admin_blame(src, "[key] has given [A] super Saiyan")
 
 mob/Admin1/verb/AdminHeal(mob/A in world)
 	set category="Admin"
@@ -2648,7 +2649,7 @@ var/list/editFilter = list("vars", "verbs")
 
 mob/Admin3/verb/Edit(atom/a in world)
 	set category = "Admin"
-	var/html = "<Edit><body bgcolor=#000000 text=#339999 link=#99FFFF>"
+	var/html = "<body><body bgcolor=#000000 text=#339999 link=#99FFFF>"
 
 	html += "[a]<br>[a.type]"
 	html += "<table width=10%>"
@@ -2671,7 +2672,8 @@ mob/Admin3/verb/Edit(atom/a in world)
 			html += "</td></tr>"
 		else 
 			html += "<td>[Value(encoded_var)]</td></tr>"
-
+	html += "</table></body>"
+	usr << "Aqui";
 	usr << browse(html, "window=[a];size=800x600")
 	
 	admin_blame(src, "[key] opened the edit sheet for [a]")

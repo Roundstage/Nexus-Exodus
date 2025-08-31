@@ -1,6 +1,6 @@
 mob/proc/Give_Rank(mob/A)
 	set category="Admin"
-	var/list/Planets=list("Cancel","Earth","Puranto","Braal","Arconia","Ice Planet","Heaven","Hell",\
+	var/list/Planets=list("Cancel","Earth","Namekian","Braal","Arconia","Ice Planet","Heaven","Hell",\
 	"Android Skill Master")
 	var/list/Ranks=new
 	switch(input(src,"Choose Planet Rank") in Planets)
@@ -31,17 +31,17 @@ mob/proc/Give_Rank(mob/A)
 				if("Turtle Hermit") A.Turtle_Hermit(src)
 				if("Crane Hermit") A.Crane_Hermit(src)
 				if("Teacher") A.Earth_Teacher(src)
-		if("Puranto")
+		if("Namekian")
 			Ranks.Add("Cancel","Elder","Teacher")
 			switch(input(src,"What Rank?") in Ranks)
 				if("Cancel") return
 				if("Elder") A.Elder(src)
-				if("Teacher") A.Puranto_Teacher(src)
+				if("Teacher") A.Namekian_Teacher(src)
 		if("Braal")
-			Ranks.Add("Cancel","Elite Yasai","Elite Alien")
+			Ranks.Add("Cancel","Elite Saiyan","Elite Alien")
 			switch(input(src,"What Rank?") in Ranks)
 				if("Cancel") return
-				if("Elite Yasai") A.Elite_Yasai(src)
+				if("Elite Saiyan") A.Elite_Saiyan(src)
 				if("Elite Alien") A.Elite_Alien(src)
 		if("Arconia")
 			Ranks.Add("Cancel","Yardrat Master","Skill Master")
@@ -89,7 +89,7 @@ mob/var/list/Ranks=new
 
 mob/proc/Rank_Check()
 	if(!Auto_Rank||src.Ranks.len||world.time<5*600) return
-	var/list/rank_tags=list("Elder","Daimao","Cardinal Kai","North Kai","Kaioshin","Yardrat","Puranto Teacher",\
+	var/list/rank_tags=list("Elder","Daimao","Cardinal Kai","North Kai","Kaioshin","Yardrat","Namekian Teacher",\
 	"Crane","Turtle","Korin","Popo","Guardian")
 	if(alignment_on)
 		if(alignment=="Evil") rank_tags.Remove("Elder","Cardinal Kai","North Kai","Kaioshin","Turtle",\
@@ -107,7 +107,7 @@ mob/proc/Rank_Check()
 						if("North Kai") North_Kai()
 						if("Kaioshin") Kaioshin()
 						if("Yardrat") Yardrat_Master()
-						if("Puranto Teacher") Puranto_Teacher()
+						if("Namekian Teacher") Namekian_Teacher()
 						if("Elder") Elder()
 						if("Crane") Crane_Hermit()
 						if("Turtle") Turtle_Hermit()
@@ -125,8 +125,8 @@ mob/proc/Race_can_have_rank(rank)
 		if("North Kai") if(Race!="Kai") return
 		if("Kaioshin") if(Race!="Kai") return
 		if("Yardrat") if(Race!="Alien") return
-		if("Puranto Teacher") if(Race!="Puranto") return
-		if("Elder") if(Race!="Puranto") return
+		if("Namekian Teacher") if(Race!="Namekian") return
+		if("Elder") if(Race!="Namekian") return
 		if("Crane") if(Race!="Human") return
 		if("Turtle") if(Race!="Human") return
 		if("Korin") if(z!=1) return
@@ -160,7 +160,7 @@ mob/proc
 		new/obj/Keep_Body,new/obj/Bind,new/obj/Attacks/Attack_Barrier,new/obj/Sense,new/obj/Advanced_Sense)
 		contents.Add(new/obj/Telepathy,new/obj/Observe,new/obj/Reincarnation,new/obj/Meditate_Level_2,\
 		new/obj/Shadow_Spar,new/obj/Hide_Energy)
-		if(Race=="Puranto") contents.Add(new/obj/Make_Dragon_Balls)
+		if(Race=="Namekian") contents.Add(new/obj/Make_Dragon_Balls)
 		contents+=new/obj/RankChat
 		Attack_Gain(2000,apply_hbtc_gains=0,include_weights=0)
 		if(base_bp<100) base_bp=100
@@ -226,27 +226,27 @@ mob/proc
 		Attack_Gain(1000,apply_hbtc_gains=0,include_weights=0)
 		src<<"<font color=yellow>You were given the Earth Teacher rank"
 	Elder(mob/P)
-		if(P) Log(P,"[P.key] gave [key] Puranto Elder")
+		if(P) Log(P,"[P.key] gave [key] Namekian Elder")
 		Can_Remake=0
 		Ranks+="Elder"
 		contents.Add(new/obj/Attacks/Charge,new/obj/Fly,new/obj/Heal,new/obj/Power_Control,\
 		new/obj/Materialization,new/obj/Unlock_Potential,new/obj/Give_Power,new/obj/Shield,\
-		new/obj/Meditate_Level_2,new/obj/Shadow_Spar,new/obj/Puranto_Fusion,new/obj/Hide_Energy)
-		if(Race=="Puranto") contents.Add(new/obj/Make_Dragon_Balls,new/obj/Reincarnation)
+		new/obj/Meditate_Level_2,new/obj/Shadow_Spar,new/obj/Namekian_Fusion,new/obj/Hide_Energy)
+		if(Race=="Namekian") contents.Add(new/obj/Make_Dragon_Balls,new/obj/Reincarnation)
 		contents.Add(new/obj/Telepathy,new/obj/Observe,new/obj/Sense,new/obj/Advanced_Sense, new/obj/Attacks/Masenko)
 		contents+=new/obj/RankChat
-		src<<"<font color=yellow>You were given the Puranto Elder rank"
-	Puranto_Teacher(mob/P)
-		if(P) Log(P,"[P.key] gave [key] Puranto Teacher")
-		Ranks+="Puranto Teacher"
+		src<<"<font color=yellow>You were given the Namekian Elder rank"
+	Namekian_Teacher(mob/P)
+		if(P) Log(P,"[P.key] gave [key] Namekian Teacher")
+		Ranks+="Namekian Teacher"
 		contents.Add(new/obj/Attacks/Blast,new/obj/Attacks/Charge,new/obj/Attacks/Beam,new/obj/Attacks/Masenko,\
 		new/obj/Attacks/Piercer,new/obj/Attacks/Sokidan,new/obj/Attacks/Scatter_Shot,\
 		new/obj/Attacks/Makosen,new/obj/Fly,new/obj/Zanzoken,\
 		new/obj/Power_Control,new/obj/SplitForm,new/obj/Heal,new/obj/Materialization,new/obj/Shield,\
 		new/obj/Give_Power,new/obj/Attacks/Shockwave,new/obj/Sense,new/obj/Advanced_Sense,new/obj/Meditate_Level_2)
-		contents.Add(new/obj/Telepathy,new/obj/Observe,new/obj/Shadow_Spar,new/obj/Puranto_Fusion)
+		contents.Add(new/obj/Telepathy,new/obj/Observe,new/obj/Shadow_Spar,new/obj/Namekian_Fusion)
 		Attack_Gain(1000,apply_hbtc_gains=0,include_weights=0)
-		src<<"<font color=yellow>You were given the Puranto Master rank"
+		src<<"<font color=yellow>You were given the Namekian Master rank"
 	Elite_Alien(mob/P)
 		if(P) Log(P,"[P.key] gave [key] Elite Alien")
 		Ranks+="Elite Alien"
@@ -490,7 +490,7 @@ mob/proc/Majin_Buu(mob/P)
 	new/obj/Unlock_Potential,new/obj/Sense,new/obj/Advanced_Sense)
 	Z_Character_Masteries()
 mob/proc/Z_Character_Masteries()
-	if(Race in list("Yasai","Half Yasai")) SSjAble=Year;ssjdrain=300;SSj2Able=Year;ssj2drain=300
+	if(Race in list("Saiyan","Half Saiyan")) SSjAble=Year;ssjdrain=300;SSj2Able=Year;ssj2drain=300
 	contents.Add(new/obj/Fly,new/obj/Power_Control,new/obj/Zanzoken,new/obj/Give_Power,new/obj/Attacks/Blast,\
 	new/obj/Attacks/Charge,new/obj/Attacks/Beam,new/obj/Telepathy,new/obj/Attacks/Sokidan)
 	for(var/obj/Fly/F in src) F.Mastery=1000

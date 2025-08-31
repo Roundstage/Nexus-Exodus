@@ -41,7 +41,7 @@ mob/proc
 
 		Frost_LordUnlockGodKi()
 
-		//if(Race in list("Yasai", "Half Yasai")) Revert()
+		//if(Race in list("Saiyan", "Half Saiyan")) Revert()
 		//Mystic_Revert()
 
 		transing = 1

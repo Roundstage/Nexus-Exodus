@@ -14,19 +14,19 @@ mob/proc/FullHeal()
 
 proc/SSj_Online()
 	var/n=0
-	for(var/mob/P in players) if(P.SSjAble && P.SSjAble <= Year && P.Class != "Legendary Yasai")
+	for(var/mob/P in players) if(P.SSjAble && P.SSjAble <= Year && P.Class != "Legendary Saiyan")
 		if(!n || P.SSjAble < n) n = P.SSjAble
 	return n
 
 proc/SSj2_Online()
 	var/n=0
-	for(var/mob/P in players) if(P.SSj2Able&&P.SSj2Able<=Year&&P.Class!="Legendary Yasai")
+	for(var/mob/P in players) if(P.SSj2Able&&P.SSj2Able<=Year&&P.Class!="Legendary Saiyan")
 		if(!n||P.SSj2Able<n) n=P.SSj2Able
 	return n
 
 proc/SSj3_Online()
 	var/n=0
-	for(var/mob/P in players) if(P.SSj3Able&&P.SSj3Able<=Year&&P.Class!="Legendary Yasai")
+	for(var/mob/P in players) if(P.SSj3Able&&P.SSj3Able<=Year&&P.Class!="Legendary Saiyan")
 		if(!n||P.SSj3Able<n) n=P.SSj3Able
 	return n
 
@@ -180,7 +180,7 @@ mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,f
 	if(transing) Distance /= 2
 
 	//because lssj has special half dmg perk but knockback dont take it into account without this
-	if(lssj_always_angry && Class == "Legendary Yasai") Distance *= 0.5
+	if(lssj_always_angry && Class == "Legendary Saiyan") Distance *= 0.5
 	if(jirenAlien) Distance *= jirenAlienKBresist
 
 	Distance = ToOne(Distance)
@@ -293,7 +293,7 @@ mob/proc/third_eye()
 
 mob/proc/can_anger()
 	if(Android) return
-	if(lssj_always_angry && Class == "Legendary Yasai") return
+	if(lssj_always_angry && Class == "Legendary Saiyan") return
 	if(jirenAlien && !jirenAlienCanAnger) return
 	if(Giving_Power) return
 	if(cant_anger_until_time > world.time) return
@@ -324,7 +324,7 @@ mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())
 	if(Health<100) Health=100
 	if(Ki<max_ki) Ki=max_ki
 	UpdateBP()
-	if(ssj_possible) if(Race in list("Yasai","Half Yasai"))
+	if(ssj_possible) if(Race in list("Saiyan","Half Saiyan"))
 		//no more randomness you either can get it or you cant
 		var/ssj_chance = 10000 * anger_mult**0.5 * (max_anger/100)**0.5
 		if(z == Z_LEVEL_PRISON) ssj_chance *= 2
@@ -495,9 +495,9 @@ mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)
 
 					if(!alignment_on||both_good(A,src))
 						A.anger(2,reason="death anger")
-						if(death_anger_gives_ssj&&A&&(A.Race in list("Half Yasai","Yasai")))
-							if(A.Race=="Half Yasai"&&!A.SSjAble)
-								//half Yasais can only get ssj1 thru inspire so they cant be the first
+						if(death_anger_gives_ssj&&A&&(A.Race in list("Half Saiyan","Saiyan")))
+							if(A.Race=="Half Saiyan"&&!A.SSjAble)
+								//half Saiyans can only get ssj1 thru inspire so they cant be the first
 							else
 								if((!SSj_Online()||ssj_easy)&&!A.SSjAble&&A.has_ssj_req())
 									spawn if(A) A.SSj()
@@ -769,7 +769,7 @@ mob/proc
 
 	StruggleAgainstBeamStun()
 
-		if(Class == "Legendary Yasai") beam_stun_immune = world.time + 11 //fully immune to beam lock
+		if(Class == "Legendary Saiyan") beam_stun_immune = world.time + 11 //fully immune to beam lock
 
 		var/struggle_every = 3 //how many 1/10th seconds you can struggle
 		if(world.time - last_struggle_against_beam_stun < struggle_every) return

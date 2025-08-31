@@ -44,7 +44,7 @@ mob/verb/Settings()
 		if(Race == "Frost Lord") Choices += "Use Custom Icer Form Icons"
 
 		if(has_god_ki)
-			if(Race in list("Yasai", "Half Yasai"))
+			if(Race in list("Saiyan", "Half Saiyan"))
 				if(god_mode_on) Choices += "Turn God Ki Off"
 				else if(CanTurnGodKiOn()) Choices += "Turn God Ki On"
 
@@ -90,7 +90,7 @@ mob/verb/Settings()
 		//just disabled this to remove clutter, it works, but no one really needs it
 		//Choices+="Change Sense/Scan Tab Ordering"
 
-		if(Race=="Yasai"||Race=="Half Yasai") Choices+="Alter Super Yasai Opening Graphics"
+		if(Race=="Saiyan"||Race=="Half Saiyan") Choices+="Alter Super Saiyan Opening Graphics"
 
 		if(block_music) Choices += "Unblock Music"
 		else Choices += "Block Music"
@@ -178,26 +178,26 @@ mob/verb/Settings()
 			if("Stop Ignoring League Invites") ignore_leagues=0
 			if("Stop Ignoring Soul Contracts") ignore_contracts=0
 			if("Ignore Soul Contracts") ignore_contracts=1
-			if("Alter Super Yasai Opening Graphics")
+			if("Alter Super Saiyan Opening Graphics")
 				switch(input(src,"Alter opening graphics for which form?") in \
-				list("Cancel","Super Yasai","Super Yasai 2","Super Yasai 3","Super Yasai 4"))
+				list("Cancel","Super Saiyan","Super Saiyan 2","Super Saiyan 3","Super Saiyan 4"))
 					if("Cancel") return
-					if("Super Yasai")
+					if("Super Saiyan")
 						switch(input(src,"Which do you want to do?") in list("Create opening transformation graphics",\
 						"Remove existing transformation graphic"))
 							if("Create opening transformation graphics") ssj_opening=usr.Add_Trans_Effects(ssj_opening)
 							if("Remove existing transformation graphic") ssj_opening=usr.Remove_Trans_Effects(ssj_opening)
-					if("Super Yasai 2")
+					if("Super Saiyan 2")
 						switch(input(src,"Which do you want to do?") in list("Create opening transformation graphics",\
 						"Remove existing transformation graphic"))
 							if("Create opening transformation graphics") ssj2_opening=usr.Add_Trans_Effects(ssj2_opening)
 							if("Remove existing transformation graphic") ssj2_opening=usr.Remove_Trans_Effects(ssj2_opening)
-					if("Super Yasai 3")
+					if("Super Saiyan 3")
 						switch(input(src,"Which do you want to do?") in list("Create opening transformation graphics",\
 						"Remove existing transformation graphic"))
 							if("Create opening transformation graphics") ssj3_opening=usr.Add_Trans_Effects(ssj3_opening)
 							if("Remove existing transformation graphic") ssj3_opening=usr.Remove_Trans_Effects(ssj3_opening)
-					if("Super Yasai 4")
+					if("Super Saiyan 4")
 						switch(input(src,"Which do you want to do?") in list("Create opening transformation graphics",\
 						"Remove existing transformation graphic"))
 							if("Create opening transformation graphics") ssj4_opening=usr.Add_Trans_Effects(ssj4_opening)

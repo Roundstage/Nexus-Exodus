@@ -1,0 +1,3580 @@
+macro "macro"
+	elem 
+		name = "Center+REP"
+		command = ".center"
+	elem 
+		name = "CTRL+Northeast"
+		command = ".lookNE"
+	elem 
+		name = "Northeast+REP"
+		command = ".northeast"
+	elem 
+		name = "CTRL+Southeast"
+		command = ".lookSE"
+	elem 
+		name = "Southeast+REP"
+		command = ".southeast"
+	elem 
+		name = "CTRL+Southwest"
+		command = ".lookSW"
+	elem 
+		name = "Southwest+REP"
+		command = ".southwest"
+	elem 
+		name = "CTRL+Northwest"
+		command = ".lookNW"
+	elem 
+		name = "Northwest+REP"
+		command = ".northwest"
+	elem 
+		name = "CTRL+West"
+		command = ".lookW"
+	elem 
+		name = "West+UP"
+		command = "WestReleased"
+	elem 
+		name = "West+REP"
+		command = ".west"
+	elem 
+		name = "CTRL+North"
+		command = ".lookN"
+	elem 
+		name = "North+UP"
+		command = "NorthReleased"
+	elem 
+		name = "North+REP"
+		command = ".north"
+	elem 
+		name = "CTRL+East"
+		command = ".lookE"
+	elem 
+		name = "East+UP"
+		command = "EastReleased"
+	elem 
+		name = "East+REP"
+		command = ".east"
+	elem 
+		name = "CTRL+South"
+		command = ".lookS"
+	elem 
+		name = "South+UP"
+		command = "SouthReleased"
+	elem 
+		name = "South+REP"
+		command = ".south"
+	elem 
+		name = "F1+REP"
+		command = ".options"
+	elem 
+		name = "F2+REP"
+		command = ".screenshot"
+
+macro "macro2"
+	elem 
+		name = "Center+REP"
+		command = ".center"
+	elem 
+		name = "CTRL+Northeast"
+		command = ".lookNE"
+	elem 
+		name = "Northeast+REP"
+		command = ".northeast"
+	elem 
+		name = "CTRL+Southeast"
+		command = ".lookSE"
+	elem 
+		name = "Southeast+REP"
+		command = ".southeast"
+	elem 
+		name = "CTRL+Southwest"
+		command = ".lookSW"
+	elem 
+		name = "Southwest+REP"
+		command = ".southwest"
+	elem 
+		name = "CTRL+Northwest"
+		command = ".lookNW"
+	elem 
+		name = "Northwest+REP"
+		command = ".northwest"
+	elem 
+		name = "CTRL+A"
+		command = ".lookW"
+	elem 
+		name = "A+UP"
+		command = "WestReleased"
+	elem 
+		name = "A+REP"
+		command = ".west"
+	elem 
+		name = "CTRL+D"
+		command = ".lookE"
+	elem 
+		name = "D+UP"
+		command = "EastReleased"
+	elem 
+		name = "D+REP"
+		command = ".east"
+	elem 
+		name = "CTRL+S"
+		command = ".lookS"
+	elem 
+		name = "S+UP"
+		command = "SouthReleased"
+	elem 
+		name = "S+REP"
+		command = ".south"
+	elem 
+		name = "CTRL+W"
+		command = ".lookN"
+	elem 
+		name = "W+UP"
+		command = "NorthReleased"
+	elem 
+		name = "W+REP"
+		command = ".north"
+	elem 
+		name = "F1+REP"
+		command = ".options"
+	elem 
+		name = "F2+REP"
+		command = ".screenshot"
+
+macro "macro3"
+	elem 
+		name = "Center+REP"
+		command = ".center"
+	elem 
+		name = "CTRL+Northeast"
+		command = ".lookNE"
+	elem 
+		name = "Northeast+REP"
+		command = ".northeast"
+	elem 
+		name = "CTRL+Southeast"
+		command = ".lookSE"
+	elem 
+		name = "Southeast+REP"
+		command = ".southeast"
+	elem 
+		name = "CTRL+Southwest"
+		command = ".lookSW"
+	elem 
+		name = "Southwest+REP"
+		command = ".southwest"
+	elem 
+		name = "CTRL+Northwest"
+		command = ".lookNW"
+	elem 
+		name = "Northwest+REP"
+		command = ".northwest"
+	elem 
+		name = "CTRL+West"
+		command = ".lookW"
+	elem 
+		name = "West+UP"
+		command = "WestReleased"
+	elem 
+		name = "West+REP"
+		command = ".west"
+	elem 
+		name = "CTRL+North"
+		command = ".lookN"
+	elem 
+		name = "North+UP"
+		command = "NorthReleased"
+	elem 
+		name = "North+REP"
+		command = ".north"
+	elem 
+		name = "CTRL+East"
+		command = ".lookE"
+	elem 
+		name = "East+UP"
+		command = "EastReleased"
+	elem 
+		name = "East+REP"
+		command = ".east"
+	elem 
+		name = "CTRL+South"
+		command = ".lookS"
+	elem 
+		name = "South+UP"
+		command = "SouthReleased"
+	elem 
+		name = "South+REP"
+		command = ".south"
+	elem 
+		name = "CTRL+A"
+		command = ".lookW"
+	elem 
+		name = "A+UP"
+		command = "WestReleased"
+	elem 
+		name = "A+REP"
+		command = ".west"
+	elem 
+		name = "CTRL+D"
+		command = ".lookE"
+	elem 
+		name = "D+UP"
+		command = "EastReleased"
+	elem 
+		name = "D+REP"
+		command = ".east"
+	elem 
+		name = "CTRL+S"
+		command = ".lookS"
+	elem 
+		name = "S+UP"
+		command = "SouthReleased"
+	elem 
+		name = "S+REP"
+		command = ".south"
+	elem 
+		name = "CTRL+W"
+		command = ".lookN"
+	elem 
+		name = "W+UP"
+		command = "NorthReleased"
+	elem 
+		name = "W+REP"
+		command = ".north"
+	elem 
+		name = "F1+REP"
+		command = ".options"
+	elem 
+		name = "F2+REP"
+		command = ".screenshot"
+
+
+menu "menu"
+	elem 
+		name = "&File"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "&Options and Messages...\tF1"
+		command = ".options"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "&Save screenshot...\tF2"
+		command = ".screenshot"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Customization"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "&Customization Options"
+		command = "Customization-Options"
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "Graphics Options"
+		command = "Graphics-Options"
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "&Profile Options"
+		command = "Profile-Options"
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "&Misc Options"
+		command = "Misc-Options"
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Customization"
+		saved-params = "is-checked"
+	elem "stretch"
+		name = "&Stretch to fit"
+		command = "SetMapIconSize 0"
+		category = "Customization"
+		is-checked = true
+		can-check = true
+		group = "size"
+		saved-params = "is-checked"
+	elem "icon64"
+		name = "&64x64"
+		command = "SetMapIconSize 64"
+		category = "Customization"
+		can-check = true
+		group = "size"
+		saved-params = "is-checked"
+	elem "icon32"
+		name = "&32x32"
+		command = "SetMapIconSize 32"
+		category = "Customization"
+		can-check = true
+		group = "size"
+		saved-params = "is-checked"
+	elem "size16"
+		name = "&16x16"
+		command = "SetMapIconSize 16"
+		category = "Customization"
+		can-check = true
+		group = "size"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "&Reset Map/Info"
+		command = ".winset \"mpanewindow.right=infowindow\""
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "&Stat Focus"
+		command = "Stat-Focus"
+		category = "Customization"
+		saved-params = "is-checked"
+	elem 
+		name = "Options"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Show Contacts"
+		command = "Show-Contacts"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Show Character Sheet"
+		command = "RefreshStatus"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Show Quest Log"
+		command = "Show-Quest-Log"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Create Faction"
+		command = "Create-Faction"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Spend Experience Points"
+		command = "Spend-Experience-Points"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Spend Milestone Points"
+		command = "Spend-Milestone-Points"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Show Milestones"
+		command = "Show-Milestones"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Refund Milestones"
+		command = "RefundMP"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Roll Die"
+		command = "RNG"
+		category = "Options"
+		saved-params = "is-checked"
+	elem 
+		name = "Help"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Check Updates"
+		command = "CheckUpdate"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Discord"
+		command = "Discord"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Races"
+		command = "Races"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Rules"
+		command = "Rules"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Server Info"
+		command = "Read-Login"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Story"
+		command = "Story"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Who"
+		command = "Who"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Admin Help"
+		command = "Admin-Help"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Admin Who"
+		command = "Admins"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = ""
+		command = ""
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Fix Hair"
+		command = "Fix-Hair"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Remove Overlays"
+		command = "Overlays"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Reset Stat Multipliers"
+		command = "Reset-Stat-Multipliers"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Reset XY"
+		command = "ResetXY"
+		category = "Help"
+		saved-params = "is-checked"
+	elem 
+		name = "Check Stat Points"
+		command = "Check-Stat-Points"
+		category = "Help"
+		saved-params = "is-checked"
+
+
+window "AhelpW"
+	elem "AhelpW"
+		type = MAIN
+		pos = 281,0
+		size = 515x377
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Admin Help"
+		statusbar = false
+		can-minimize = false
+		can-resize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 240
+		on-close = "ClearAhelpW"
+	elem "label4"
+		type = LABEL
+		pos = 0,0
+		size = 515x70
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #80ffff
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Please be descriptive in your admin help.  It is important to clearly state your issue and what you need help with. If it is to get something approved, be clear with what you want approved and why you feel it should be approved.  Include a link to a pastebin of the appropriate RP."
+		text-wrap = true
+	elem "AHELPin"
+		type = INPUT
+		pos = 0,70
+		size = 515x308
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "serif"
+		font-size = 10
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		command = "AHELPin"
+		multi-line = true
+	elem "button1"
+		type = BUTTON
+		pos = 448,350
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Submit"
+		command = "SendAHelp"
+
+window "Backstory"
+	elem "Backstory"
+		type = MAIN
+		pos = 291,0
+		size = 515x377
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Description"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 240
+	elem "emoteinput"
+		type = INPUT
+		pos = 0,0
+		size = 515x377
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "serif"
+		font-size = 10
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = sunken
+		saved-params = ""
+		command = "EmoteS"
+		multi-line = true
+	elem "button39"
+		type = BUTTON
+		pos = 5,345
+		size = 68x26
+		anchor1 = 0,100
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 15
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Clear"
+		command = "EmoteC"
+	elem "Proceed"
+		type = BUTTON
+		pos = 442,345
+		size = 68x26
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 15
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Post"
+		command = "BackstoryS"
+
+window "CharacterCreator"
+	elem "CharacterCreator"
+		type = MAIN
+		pos = 291,0
+		size = 600x534
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #2c2c2c
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "And Here Your Story Begins..."
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		transparent-color = #ff80ff
+	elem "bodyCC"
+		type = BUTTON
+		pos = 256,128
+		size = 104x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Select Body Size"
+		command = ".RedoBodySize"
+	elem "learnD"
+		type = LABEL
+		pos = 22,368
+		size = 139x122
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 8
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Learn List:"
+		text-wrap = true
+	elem "namec"
+		type = BUTTON
+		pos = 18,10
+		size = 190x35
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = "is-checked"
+		text = "Choose Name"
+		command = "namec"
+	elem "mapcc"
+		type = MAP
+		pos = 420,77
+		size = 154x196
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		border = line
+		drop-zone = false
+		saved-params = "zoom;letterbox;zoom-mode"
+		zoom = 4
+	elem "label23"
+		type = LABEL
+		pos = 217,511
+		size = 168x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 3
+		font-style = "bold"
+		text-color = #d2d200
+		background-color = #2c2c2c
+		is-transparent = true
+		saved-params = ""
+		text = "Created by RyuShinto and Chewyy"
+		text-wrap = true
+	elem "label22"
+		type = LABEL
+		pos = 224,7
+		size = 154x35
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 10
+		font-style = "bold underline"
+		text-color = #d2d200
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Roleplay Tenkaichi"
+		text-wrap = true
+	elem "agec"
+		type = BUTTON
+		pos = 400,10
+		size = 58x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Choose Age"
+		command = "agec"
+	elem "date"
+		type = LABEL
+		pos = 462,10
+		size = 130x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 8
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "November 31, Year 58"
+		text-wrap = true
+	elem "iconc"
+		type = BUTTON
+		pos = 533,252
+		size = 41x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Icon"
+		command = "iconc"
+	elem "racec"
+		type = BUTTON
+		pos = 224,323
+		size = 175x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Choose Race"
+		command = "racec"
+	elem "raceD"
+		type = LABEL
+		pos = 168,368
+		size = 411x122
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Click Choose Race to begin."
+		text-wrap = true
+	elem "button50"
+		type = BUTTON
+		pos = 2,78
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infoanger"
+	elem "button49"
+		type = BUTTON
+		pos = 2,55
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infobp"
+	elem "RaceBP"
+		type = LABEL
+		pos = 164,53
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "AngerLabel"
+		type = LABEL
+		pos = 164,75
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "label17"
+		type = LABEL
+		pos = 19,75
+		size = 141x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Anger"
+	elem "label16"
+		type = LABEL
+		pos = 19,53
+		size = 141x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Battle Power"
+		text-wrap = true
+	elem "genderc"
+		type = BUTTON
+		pos = 420,77
+		size = 41x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Gender"
+		command = "genderc"
+	elem "button38"
+		type = BUTTON
+		pos = 3,230
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".inforegen"
+	elem "button37"
+		type = BUTTON
+		pos = 3,208
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infodef"
+	elem "button36"
+		type = BUTTON
+		pos = 3,186
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infooff"
+	elem "button34"
+		type = BUTTON
+		pos = 3,252
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".inforecov"
+	elem "button33"
+		type = BUTTON
+		pos = 2,166
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infospd"
+	elem "button32"
+		type = BUTTON
+		pos = 2,144
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infoend"
+	elem "button31"
+		type = BUTTON
+		pos = 2,122
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infostr"
+	elem "button27"
+		type = BUTTON
+		pos = 2,100
+		size = 15x15
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "i"
+		command = ".infoenergy"
+	elem "hairc"
+		type = BUTTON
+		pos = 421,252
+		size = 41x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Hair"
+		command = "hairc"
+	elem "BodySizeLabel"
+		type = LABEL
+		pos = 256,147
+		size = 104x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "? ? ?"
+	elem "button29"
+		type = BUTTON
+		pos = 2,496
+		size = 91x35
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 11
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Back"
+		command = "BackChar"
+	elem "Efficiency"
+		type = LABEL
+		pos = 164,97
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Strength"
+		type = LABEL
+		pos = 164,119
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Endurance"
+		type = LABEL
+		pos = 164,141
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Speed"
+		type = LABEL
+		pos = 164,163
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Offense"
+		type = LABEL
+		pos = 164,184
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Defense"
+		type = LABEL
+		pos = 164,206
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Regeneration"
+		type = LABEL
+		pos = 164,228
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Recovery"
+		type = LABEL
+		pos = 164,250
+		size = 46x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Proceed"
+		type = BUTTON
+		pos = 507,496
+		size = 91x35
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 15
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Proceed"
+		command = "donec"
+	elem "label6"
+		type = LABEL
+		pos = 247,70
+		size = 119x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 9
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Points Remaining:"
+	elem "PointsRemaining"
+		type = LABEL
+		pos = 291,98
+		size = 30x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "0"
+	elem "Recov"
+		type = LABEL
+		pos = 19,250
+		size = 141x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Recovery"
+	elem "Regen"
+		type = LABEL
+		pos = 19,231
+		size = 141x17
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Regeneration"
+	elem "DEF"
+		type = LABEL
+		pos = 38,208
+		size = 103x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Defense"
+	elem "plusDEF"
+		type = BUTTON
+		pos = 141,206
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Defense\""
+	elem "minusDEF"
+		type = BUTTON
+		pos = 18,206
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Defense\""
+	elem "OFF"
+		type = LABEL
+		pos = 38,184
+		size = 103x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Offense"
+	elem "plusOFF"
+		type = BUTTON
+		pos = 141,184
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Offense\""
+	elem "minusOFF"
+		type = BUTTON
+		pos = 18,184
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Offense\""
+	elem "SPD"
+		type = LABEL
+		pos = 38,163
+		size = 103x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Speed"
+	elem "plusSPD"
+		type = BUTTON
+		pos = 141,163
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Speed\""
+	elem "minusSPD"
+		type = BUTTON
+		pos = 18,163
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Speed\""
+	elem "END"
+		type = LABEL
+		pos = 38,141
+		size = 103x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Endurance"
+	elem "plusEND"
+		type = BUTTON
+		pos = 141,141
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Endurance\""
+	elem "minusEND"
+		type = BUTTON
+		pos = 18,141
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Endurance\""
+	elem "STR"
+		type = LABEL
+		pos = 38,119
+		size = 103x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Might"
+	elem "plusSTR"
+		type = BUTTON
+		pos = 141,119
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Strength\""
+	elem "minusSTR"
+		type = BUTTON
+		pos = 18,119
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Strength\""
+	elem "EN"
+		type = LABEL
+		pos = 19,97
+		size = 141x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = line
+		saved-params = ""
+		text = "Energy"
+	elem "infocc"
+		type = LABEL
+		pos = 216,208
+		size = 189x112
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 8
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Weclome to our server.\nClicking on the various buttons will allow you to customize your character.\nRacial descriptions will be added for the next wipe."
+		text-wrap = true
+	elem "plusRecov"
+		type = BUTTON
+		pos = 141,97
+		size = 20x21
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "+"
+		command = ".Skill_Points \"+\" \"Recovery\""
+	elem "minusRecov"
+		type = BUTTON
+		pos = 18,97
+		size = 20x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "-"
+		command = ".Skill_Points \"-\" \"Recovery\""
+
+window "CharacterProfile"
+	elem "CharacterProfile"
+		type = MAIN
+		pos = 291,0
+		size = 450x540
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Character Profile"
+		statusbar = false
+		can-minimize = false
+		can-resize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		image = 'Icons\\Misc Icons\\profile3.jpg'
+		image-mode = center
+		keep-aspect = true
+	elem "cbackstory"
+		type = LABEL
+		pos = 8,320
+		size = 434x212
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Description"
+		align = top-left
+		text-wrap = true
+	elem "cweight"
+		type = LABEL
+		pos = 61,199
+		size = 72x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Weight"
+		align = left
+	elem "cportrait"
+		type = BROWSER
+		pos = 248,12
+		size = 192x266
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		border = line
+		saved-params = ""
+	elem "cheight"
+		type = LABEL
+		pos = 61,220
+		size = 72x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Height"
+		align = left
+	elem "cgender"
+		type = LABEL
+		pos = 61,178
+		size = 72x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Gender"
+		align = left
+	elem "cage"
+		type = LABEL
+		pos = 61,156
+		size = 72x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Age"
+		align = left
+	elem "cname"
+		type = LABEL
+		pos = 49,133
+		size = 164x18
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		font-size = 10
+		is-transparent = true
+		saved-params = ""
+		text = "Name"
+		align = left
+
+window "Combat"
+	elem "Combat"
+		type = MAIN
+		pos = 291,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Combat"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "Combatoutput"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ffff91
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "Combat2"
+	elem "Combat2"
+		type = MAIN
+		pos = 291,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Combat"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "Combatoutput2"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ffff91
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "Combat3"
+	elem "Combat3"
+		type = MAIN
+		pos = 291,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Combat"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "Combatoutput3"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ffff91
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "EmoteW"
+	elem "EmoteW"
+		type = MAIN
+		pos = 291,0
+		size = 515x377
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #2c2c2c
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Emote"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 240
+		on-close = "EmoteClose"
+	elem "emoteinput"
+		type = INPUT
+		pos = 0,0
+		size = 515x343
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "serif"
+		font-size = 10
+		text-color = #39bef0
+		background-color = #2c2c2c
+		border = sunken
+		saved-params = ""
+		command = "EmoteS"
+		multi-line = true
+	elem "WordCounter"
+		type = LABEL
+		pos = 215,350
+		size = 85x20
+		anchor1 = 0,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 8
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = ""
+		text = "Word Count: 0"
+		align = bottom
+		text-wrap = true
+	elem "button39"
+		type = BUTTON
+		pos = 5,345
+		size = 68x26
+		anchor1 = 0,100
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 15
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Clear"
+		command = "EmoteC"
+	elem "Proceed"
+		type = BUTTON
+		pos = 442,345
+		size = 68x26
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "Arial"
+		font-size = 15
+		font-style = "bold"
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Post"
+		command = "EmoteS"
+
+window "General"
+	elem "General"
+		type = MAIN
+		pos = 291,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "General"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "output"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		is-default = true
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "\nbody\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 0
+
+window "General2"
+	elem "General2"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "General"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "output2"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "General3"
+	elem "General3"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "General"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "output3"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "GenericSheet"
+	elem "GenericSheet"
+		type = MAIN
+		pos = 281,0
+		size = 633x580
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = ""
+		title = "RT"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+	elem "Grid"
+		type = GRID
+		pos = 0,0
+		size = 633x580
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ccecff
+		background-color = #292929
+		is-default = true
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 2x2
+		current-cell = 1,1
+		show-lines = none
+		link-color = #ff80ff
+		highlight-color = #000000
+
+window "Grid"
+	elem "Grid"
+		type = MAIN
+		pos = 291,0
+		size = 330x360
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		statusbar = false
+		can-close = false
+		can-minimize = false
+	elem "Done"
+		type = BUTTON
+		pos = 227,329
+		size = 103x31
+		anchor1 = 69,91
+		anchor2 = 100,100
+		font-family = "serif"
+		font-size = 12
+		text-color = #39bef0
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Finished"
+		command = ".CloseGrid"
+	elem "SelectedCustomize"
+		type = LABEL
+		pos = 0,329
+		size = 227x31
+		anchor1 = 0,91
+		anchor2 = 69,100
+		font-family = "serif"
+		font-size = 10
+		text-color = #f5f5f5
+		background-color = #484848
+		border = sunken
+		saved-params = ""
+		text = "Select an icon!"
+		image-mode = tile
+	elem "GridX"
+		type = GRID
+		pos = 0,0
+		size = 330x329
+		anchor1 = 0,0
+		anchor2 = 100,91
+		text-color = #f5f5f5
+		background-color = #595959
+		is-default = true
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 2x1
+		current-cell = 1,1
+		show-lines = none
+		link-color = #ff80ff
+		highlight-color = #000000
+
+window "Help"
+	elem "Help"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Help"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "helpoutput"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		is-default = true
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "IC"
+	elem "IC"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Local"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "ICoutput"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "IC2"
+	elem "IC2"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Local"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "ICoutput2"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "IC3"
+	elem "IC3"
+		type = MAIN
+		pos = 291,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "Local"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "ICoutput3"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "Inventory"
+	elem "Inventory"
+		type = MAIN
+		pos = 281,0
+		size = 372x492
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = ""
+		title = "Inventory"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 200
+	elem "button60"
+		type = BUTTON
+		pos = 294,14
+		size = 65x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #ccccff
+		background-color = #333333
+		saved-params = "is-checked"
+		text = "Show Clothes"
+		command = "InventoryClothes"
+	elem "button59"
+		type = BUTTON
+		pos = 222,14
+		size = 65x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #ff99cc
+		background-color = #333333
+		saved-params = "is-checked"
+		text = "Show Food"
+		command = "InventoryFood"
+	elem "button58"
+		type = BUTTON
+		pos = 150,14
+		size = 65x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #ffcc99
+		background-color = #333333
+		saved-params = "is-checked"
+		text = "Show Metal"
+		command = "InventoryMetal"
+	elem "button57"
+		type = BUTTON
+		pos = 78,14
+		size = 65x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #66ccff
+		background-color = #333333
+		saved-params = "is-checked"
+		text = "Show Items"
+		command = "InventoryItems"
+	elem "button56"
+		type = BUTTON
+		pos = 7,14
+		size = 65x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		text-color = #99ff66
+		background-color = #333333
+		saved-params = "is-checked"
+		text = "Show All"
+		command = "Inventory"
+	elem "Grid"
+		type = GRID
+		pos = 0,42
+		size = 372x450
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ccecff
+		background-color = #292929
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 2x2
+		current-cell = 1,1
+		show-lines = none
+		link-color = #ff80ff
+		highlight-color = #000000
+
+window "OOC"
+	elem "OOC"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "OOC"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "OOCoutput"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "OOC2"
+	elem "OOC2"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "OOC"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "OOCoutput2"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "OOC3"
+	elem "OOC3"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		title = "OOC"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "OOCoutput3"
+		type = OUTPUT
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #111111
+		saved-params = "max-lines"
+		link-color = #80ffff
+		visited-color = #008080
+		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
+		max-lines = 300
+
+window "Ping"
+	elem "Ping"
+		type = MAIN
+		pos = 291,0
+		size = 393x341
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #484848
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Player Ping"
+		statusbar = false
+		can-minimize = false
+		can-resize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		on-close = "StopPing"
+	elem "label12"
+		type = LABEL
+		pos = 35,23
+		size = 326x215
+		anchor1 = 9,7
+		anchor2 = 92,70
+		font-size = 96
+		text-color = #80ffff
+		background-color = #595959
+		border = sunken
+		saved-params = ""
+		text = "! ! !"
+	elem "From"
+		type = LABEL
+		pos = 3,265
+		size = 387x69
+		anchor1 = 1,78
+		anchor2 = 99,98
+		font-size = 12
+		text-color = #f5f5f5
+		background-color = #507cf1
+		border = line
+		saved-params = ""
+		text = "From:"
+
+window "QuestLog"
+	elem "QuestLog"
+		type = MAIN
+		pos = 281,0
+		size = 650x447
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = ""
+		title = "Quest Log"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+	elem "questinfo"
+		type = LABEL
+		pos = 235,1
+		size = 415x444
+		anchor1 = 36,0
+		anchor2 = 100,100
+		font-family = "Verdana"
+		text-color = #009999
+		background-color = #292929
+		border = sunken
+		saved-params = ""
+		text = "Quest Description"
+		align = top-left
+		text-wrap = true
+		allow-html = true
+	elem "QuestGrid"
+		type = GRID
+		pos = 0,1
+		size = 231x444
+		anchor1 = 0,0
+		anchor2 = 36,100
+		text-color = #f5f5f5
+		background-color = #484848
+		is-default = true
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 2x2
+		current-cell = 1,1
+		show-lines = none
+		link-color = #ff80ff
+		highlight-color = #000000
+
+window "ScanArea"
+	elem "ScanArea"
+		type = MAIN
+		pos = 291,0
+		size = 243x375
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #515151
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Scan Area"
+		statusbar = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		transparent-color = #3e3e3e
+		alpha = 210
+		on-close = "SenseClose"
+	elem "GridSA"
+		type = GRID
+		pos = 0,0
+		size = 243x375
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #f5f5f5
+		background-color = #484848
+		is-default = true
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 1x1
+		current-cell = 1,1
+		show-lines = horizontal
+		link-color = #ff80ff
+		highlight-color = #000000
+	elem "ScanArea"
+		type = BUTTON
+		pos = 176,351
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #c0c0c0
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Scan"
+		command = "Scan"
+
+window "SkillSheet"
+	elem "SkillSheet"
+		type = MAIN
+		pos = 281,0
+		size = 783x449
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = ""
+		title = "Character Sheet"
+		statusbar = false
+		can-minimize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+	elem "characterinfo"
+		type = LABEL
+		pos = 0,1
+		size = 235x447
+		anchor1 = 0,0
+		anchor2 = 26,96
+		font-family = "Verdana"
+		text-color = #009999
+		background-color = #292929
+		border = sunken
+		saved-params = ""
+		text = "Assess"
+		align = top-left
+		text-wrap = true
+		allow-html = true
+	elem "GridSS"
+		type = GRID
+		pos = 243,0
+		size = 542x449
+		anchor1 = 27,0
+		anchor2 = 100,96
+		text-color = #f5f5f5
+		background-color = #484848
+		is-default = true
+		border = line
+		drop-zone = false
+		saved-params = ""
+		cells = 2x2
+		current-cell = 1,1
+		show-lines = none
+		link-color = #ff80ff
+		highlight-color = #000000
+	elem "button55"
+		type = BUTTON
+		pos = 7,421
+		size = 60x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #009999
+		background-color = #1c1c1c
+		saved-params = "is-checked"
+		text = "Refresh"
+		command = "RefreshStatus"
+
+window "chat"
+	elem "chat"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "pos;size;is-minimized;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "OutputTabs"
+		type = TAB
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #2c2c2c
+		is-default = true
+		border = sunken
+		saved-params = ""
+		tabs = "OOC,IC,General,Help"
+		current-tab = "General"
+
+window "chat2"
+	elem "chat2"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "pos;size;is-minimized;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "OutputTabs2"
+		type = TAB
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #2c2c2c
+		is-default = true
+		border = sunken
+		saved-params = ""
+		tabs = "OOC2,IC2,General2,Combat2"
+		current-tab = "General2"
+
+window "chat3"
+	elem "chat3"
+		type = MAIN
+		pos = 281,0
+		size = 360x200
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Chat"
+		statusbar = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 215
+	elem "OutputTabs3"
+		type = TAB
+		pos = 0,0
+		size = 360x200
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #c0c0c0
+		background-color = #2c2c2c
+		is-default = true
+		border = sunken
+		saved-params = ""
+		tabs = "OOC3,IC3,General3,Combat3"
+		current-tab = "Combat3"
+
+window "mainwindow"
+	elem "mainwindow"
+		type = MAIN
+		pos = 291,0
+		size = 1280x800
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-default = true
+		saved-params = ""
+		statusbar = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		macro = "macro"
+		menu = "menu"
+	elem "button41"
+		type = BUTTON
+		pos = 423,780
+		size = 55x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Countdown"
+		command = "Countdown"
+	elem "button53"
+		type = BUTTON
+		pos = 478,780
+		size = 48x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "OOC"
+		command = "OOC"
+	elem "button52"
+		type = BUTTON
+		pos = 630,780
+		size = 52x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "Whisper"
+		command = "Whisper"
+	elem "button51"
+		type = BUTTON
+		pos = 578,780
+		size = 52x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "Say"
+		command = "Say"
+	elem "button48"
+		type = BUTTON
+		pos = 526,780
+		size = 52x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Emote"
+		command = "Emote"
+	elem "Health"
+		type = LABEL
+		pos = 770,780
+		size = 88x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Health"
+		align = left
+	elem "button23"
+		type = BUTTON
+		pos = 1144,780
+		size = 68x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Toggle LOOC"
+		command = ".ToggleLOOC"
+	elem "mainvsplit"
+		type = CHILD
+		pos = 0,0
+		size = 1280x775
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = #2c2c2c
+		saved-params = "splitter"
+		left = "mpane"
+		right = "rpane"
+		is-vert = true
+		splitter = 60
+	elem "input"
+		type = INPUT
+		pos = 0,779
+		size = 422x20
+		anchor1 = 0,100
+		anchor2 = 100,100
+		font-family = "serif"
+		text-color = #f5f5f5
+		background-color = #000000
+		is-default = true
+		border = sunken
+		saved-params = ""
+	elem "OOC"
+		type = BUTTON
+		pos = 1212,780
+		size = 68x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Toggle OOC"
+		command = ".ToggleOOC"
+	elem "Willpower"
+		type = LABEL
+		pos = 682,780
+		size = 88x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		text-color = #ff99ff
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Willpower"
+		align = left
+	elem "Energy"
+		type = LABEL
+		pos = 858,780
+		size = 88x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		text-color = #00ffff
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Energy"
+		align = left
+	elem "Power"
+		type = LABEL
+		pos = 946,780
+		size = 110x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		text-color = #80ff00
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Power"
+		align = left
+	elem "Gravity"
+		type = LABEL
+		pos = 1056,780
+		size = 88x20
+		anchor1 = 100,100
+		anchor2 = -1,-1
+		font-family = "serif"
+		text-color = #ffff00
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Gravity"
+		align = left
+
+window "mapwindow"
+	elem "mapwindow"
+		type = MAIN
+		pos = 291,0
+		size = 857x723
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		saved-params = "pos;size;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+		outer-size = 871x737
+		inner-size = 857x723
+	elem "mapSizeHelper"
+		type = BROWSER
+		pos = 0,0
+		size = 857x723
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #ffffff
+		background-color = none
+		is-visible = false
+		saved-params = ""
+	elem "map"
+		type = MAP
+		pos = -7,-1
+		size = 864x724
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #000000
+		is-default = true
+		saved-params = "icon-size"
+		style = ".overs {\t\nfont-size:4px;\nfont-size:xx-small;\ntext-shadow:\n\t\t-1px -1px 0 #000,\n\t\t1px -1px 0 #000,\n\t\t-1px 1px 0 #000,\n\t\t1px 1px 0 #000;\nbackground-color: #434747;\nopacity: 0.1;\n}\n"
+	elem "button35"
+		type = BUTTON
+		pos = 792,40
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		text-color = #ff80ff
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Auto-Attack"
+		command = "Toggle-Auto-Attack"
+	elem "button63"
+		type = BUTTON
+		pos = 792,104
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		font-size = 6
+		text-color = #99ccff
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Clear Target"
+		command = "Clear_Target"
+	elem "button62"
+		type = BUTTON
+		pos = 792,88
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		font-size = 9
+		text-color = #33cccc
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Character"
+		command = "RefreshStatus"
+	elem "yearDis"
+		type = LABEL
+		pos = 7,7
+		size = 182x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 10
+		text-color = #ffccff
+		background-color = #1c1c1c
+		border = line
+		saved-params = ""
+		text = "January Week 1 Year 1"
+	elem "AUTO"
+		type = LABEL
+		pos = 7,147
+		size = 77x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 12
+		text-color = #f5f5f5
+		background-color = #000080
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = "AUTO"
+	elem "lethalcombat"
+		type = LABEL
+		pos = 7,91
+		size = 77x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 12
+		text-color = #f5f5f5
+		background-color = #ff80ff
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = "COMBAT"
+	elem "button25"
+		type = BUTTON
+		pos = 792,72
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		text-color = #ffff91
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "AFK"
+		command = "AFK"
+	elem "button24"
+		type = BUTTON
+		pos = 792,24
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		text-color = #ff0000
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Lethal"
+		command = "Toggle-Lethality"
+	elem "button26"
+		type = BUTTON
+		pos = 792,8
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		text-color = #ff8000
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "RP Mode"
+		command = "RP-Mode"
+	elem "GLOVES"
+		type = LABEL
+		pos = 7,63
+		size = 77x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 12
+		text-color = #f5f5f5
+		background-color = #ff8000
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = "GLOVES"
+	elem "INVIS"
+		type = LABEL
+		pos = 7,35
+		size = 77x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 12
+		text-color = #2c2c2c
+		background-color = #00ff00
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = "INVIS"
+	elem "LETHAL"
+		type = LABEL
+		pos = 7,119
+		size = 77x21
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		font-family = "serif"
+		font-size = 12
+		text-color = #f5f5f5
+		background-color = #ff0000
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = "LETHAL"
+	elem "button28"
+		type = BUTTON
+		pos = 792,56
+		size = 60x14
+		anchor1 = 100,0
+		anchor2 = -1,-1
+		text-color = #11ace8
+		background-color = #2c2c2c
+		saved-params = "is-checked"
+		text = "Reset View"
+		command = "Reset-View"
+
+window "mpane"
+	elem "mpane"
+		type = MAIN
+		pos = 291,0
+		size = 956x706
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #484848
+		saved-params = "pos;size;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "mpanewindow"
+		type = CHILD
+		pos = 0,0
+		size = 956x706
+		anchor1 = 0,3
+		anchor2 = 100,100
+		background-color = #2c2c2c
+		saved-params = "splitter"
+		left = "mapwindow"
+		right = "infowindow"
+		is-vert = false
+		splitter = 80
+
+window "new_build"
+	elem "new_build"
+		type = MAIN
+		pos = 291,0
+		size = 580x630
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		border = line
+		saved-params = ""
+		title = "Build"
+		statusbar = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 200
+		on-close = ".OpenBuild"
+	elem "button47"
+		type = BUTTON
+		pos = 67,7
+		size = 88x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Custom Object"
+		command = "CustomObject"
+	elem "button46"
+		type = BUTTON
+		pos = 163,7
+		size = 88x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Custom Turf"
+		command = "CustomTurf"
+	elem "button45"
+		type = BUTTON
+		pos = 259,7
+		size = 88x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Default Obj Layer"
+		command = "ChangeBuildLayer"
+	elem "button44"
+		type = BUTTON
+		pos = 355,7
+		size = 88x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Inside / Outside"
+		command = "ChangeBuildOutside"
+	elem "button42"
+		type = BUTTON
+		pos = 452,7
+		size = 88x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Resource / Mana"
+		command = "ChangeBuildCost"
+	elem "button22"
+		type = BUTTON
+		pos = 332,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Misc"
+		command = "Misc"
+	elem "button21"
+		type = BUTTON
+		pos = 458,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Trees"
+		command = "Trees"
+	elem "button20"
+		type = BUTTON
+		pos = 458,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Plants"
+		command = "Plants"
+	elem "button19"
+		type = BUTTON
+		pos = 458,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Bushes"
+		command = "Bushes"
+	elem "button18"
+		type = BUTTON
+		pos = 206,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Surfs"
+		command = "Surf"
+	elem "button17"
+		type = BUTTON
+		pos = 143,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Edges"
+		command = "Edges"
+	elem "button16"
+		type = BUTTON
+		pos = 81,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Rocks"
+		command = "Rocks"
+	elem "button15"
+		type = BUTTON
+		pos = 395,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Signs"
+		command = "Signs"
+	elem "button14"
+		type = BUTTON
+		pos = 395,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Heat"
+		command = "Heat"
+	elem "button13"
+		type = BUTTON
+		pos = 395,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Tables"
+		command = "Tables"
+	elem "button12"
+		type = BUTTON
+		pos = 332,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Chairs"
+		command = "Chairs"
+	elem "button11"
+		type = BUTTON
+		pos = 269,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Terrain Misc"
+		command = "TerrainMisc"
+	elem "button10"
+		type = BUTTON
+		pos = 206,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Water"
+		command = "Water"
+	elem "button9"
+		type = BUTTON
+		pos = 143,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Tiles"
+		command = "Tiles"
+	elem "button8"
+		type = BUTTON
+		pos = 81,75
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Stairs"
+		command = "Stairs"
+	elem "button7"
+		type = BUTTON
+		pos = 332,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Special"
+		command = "Sky"
+	elem "button6"
+		type = BUTTON
+		pos = 269,32
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Ground"
+		command = "Ground"
+	elem "button5"
+		type = BUTTON
+		pos = 269,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Grass"
+		command = "Grass"
+	elem "button4"
+		type = BUTTON
+		pos = 206,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Doors"
+		command = "Doors"
+	elem "button3"
+		type = BUTTON
+		pos = 143,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Walls"
+		command = "Walls"
+	elem "button2"
+		type = BUTTON
+		pos = 81,55
+		size = 60x20
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		saved-params = "is-checked"
+		text = "Roofs"
+		command = "Roofs"
+	elem "new_build_grid"
+		type = GRID
+		pos = 48,97
+		size = 480x520
+		anchor1 = 0,0
+		anchor2 = 100,100
+		border = sunken
+		right-click = true
+		saved-params = ""
+		cells = 1x333
+		current-cell = 1,1
+		highlight-color = #000000
+
+window "rpane"
+	elem "rpane"
+		type = MAIN
+		pos = 291,0
+		size = 956x706
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #484848
+		saved-params = "pos;size;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "button61"
+		type = BUTTON
+		pos = 370,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #99ccff
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Inventory"
+		command = "Inventory"
+		group = "rpanemode"
+	elem "button54"
+		type = BUTTON
+		pos = 308,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #ccffff
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Popup Chat"
+		command = "PopupChat"
+		group = "rpanemode"
+	elem "button43"
+		type = BUTTON
+		pos = 121,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #c0c0c0
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Info"
+		command = ".winset \"rpanewindow.left=infowindow\""
+		group = "rpanemode"
+		button-type = pushbox
+	elem "Chatb"
+		type = BUTTON
+		pos = 59,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #c0c0c0
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Chat"
+		command = ".winset \"rpanewindow.left=chat2\""
+		group = "rpanemode"
+		button-type = pushbox
+	elem "rpanewindow"
+		type = CHILD
+		pos = 1,21
+		size = 954x686
+		anchor1 = 0,3
+		anchor2 = 100,100
+		background-color = #2c2c2c
+		saved-params = "splitter"
+		left = "chat2"
+		right = "chat"
+		is-vert = false
+	elem "techbutton"
+		type = BUTTON
+		pos = 245,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #ffcccc
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Create"
+		command = "CreateWindow"
+	elem "button_Build"
+		type = BUTTON
+		pos = 183,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #ffffcc
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Build"
+		command = ".OpenBuild"
+	elem "textb"
+		type = BUTTON
+		pos = -3,1
+		size = 62x20
+		anchor1 = 0,0
+		anchor2 = -1,-1
+		text-color = #c0c0c0
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "Text"
+		command = ".winset \"rpanewindow.left=;\""
+		is-checked = true
+		group = "rpanemode"
+		button-type = pushbox
+
+window "infowindow"
+	elem "infowindow"
+		type = MAIN
+		pos = 291,0
+		size = 640x462
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #464646
+		saved-params = "pos;size;is-maximized"
+		title = "Info"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "info"
+		type = INFO
+		pos = 0,0
+		size = 640x462
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = #39bef0
+		background-color = #2c2c2c
+		is-default = true
+		saved-params = ""
+		highlight-color = #912f00
+		tab-text-color = #dddddd
+		tab-background-color = #2c2c2c
+		tab-font-family = "serif"
+		tab-font-size = 10
+		prefix-color = #c0c0c0
+		suffix-color = #c0c0c0
+
+window "Charabox"
+	elem "Charabox"
+		type = MAIN
+		pos = 291,0
+		size = 180x180
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Vitals"
+		statusbar = false
+		can-minimize = false
+		can-resize = false
+		icon = 'Icons\\Scouter Icon.jpg'
+		alpha = 206
+		on-close = "Show-HUD"
+	elem "GravityT"
+		type = LABEL
+		pos = 36,136
+		size = 108x18
+		anchor1 = 20,76
+		anchor2 = 80,86
+		font-family = "Verdana"
+		text-color = #c0c0c0
+		background-color = #000000
+		saved-params = ""
+		text = "Gravity: 1x"
+	elem "PowerZ"
+		type = LABEL
+		pos = 40,105
+		size = 100x28
+		anchor1 = 22,58
+		anchor2 = 78,74
+		font-family = "Verdana"
+		font-size = 9
+		text-color = #cb57e3
+		background-color = #000000
+		saved-params = ""
+		text = "Power: 100%"
+		text-wrap = true
+	elem "BPBar"
+		type = BAR
+		pos = 18,56
+		size = 144x80
+		anchor1 = 10,31
+		anchor2 = 90,76
+		background-color = #c0c0c0
+		saved-params = ""
+		bar-color = #7e0160
+		is-slider = false
+		dir = east
+		angle1 = 90
+		angle2 = 270
+		value = 50
+	elem "EnergyZ"
+		type = LABEL
+		pos = 94,49
+		size = 63x35
+		anchor1 = 52,27
+		anchor2 = 87,47
+		font-family = "Verdana"
+		font-size = 9
+		text-color = #11ace8
+		background-color = #000000
+		saved-params = ""
+		text = "Energy: 100%"
+		text-wrap = true
+	elem "HealthZ"
+		type = LABEL
+		pos = 24,49
+		size = 63x35
+		anchor1 = 13,27
+		anchor2 = 48,47
+		font-family = "Verdana"
+		font-size = 9
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = ""
+		text = "Health: 100%"
+		text-wrap = true
+	elem "EnergyBar"
+		type = BAR
+		pos = 4,4
+		size = 171x171
+		anchor1 = 2,2
+		anchor2 = 97,97
+		background-color = #c0c0c0
+		saved-params = ""
+		bar-color = #11ace8
+		is-slider = false
+		dir = clockwise
+		value = 50
+	elem "HealthBar"
+		type = BAR
+		pos = 4,4
+		size = 171x171
+		anchor1 = 2,2
+		anchor2 = 97,97
+		background-color = #c0c0c0
+		saved-params = ""
+		bar-color = #ff0000
+		is-slider = false
+		dir = counterclockwise
+		value = 50
+
+window "AdminHelpWindow"
+	elem "AdminHelpWindow"
+		type = MAIN
+		pos = 291,0
+		size = 643x402
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #111111
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Admin Helps"
+	elem "button40"
+		type = BUTTON
+		pos = 546,42
+		size = 96x21
+		anchor1 = 85,14
+		anchor2 = 100,19
+		text-color = #80ffff
+		background-color = #4f4f4f
+		border = line
+		saved-params = "is-checked"
+		text = "Escalate"
+		command = "AdminHelpEscalate"
+	elem "TimeSubmitted"
+		type = LABEL
+		pos = 245,70
+		size = 296x16
+		anchor1 = 38,17
+		anchor2 = 84,21
+		text-color = #ffffff
+		background-color = #000000
+		saved-params = ""
+		text = ""
+		align = left
+	elem "lab122"
+		type = LABEL
+		pos = 122,70
+		size = 112x16
+		anchor1 = 19,17
+		anchor2 = 36,21
+		text-color = #e0e0e0
+		background-color = #507cf1
+		border = line
+		saved-params = ""
+		text = "Time Submitted:"
+	elem "Help_Character_Key"
+		type = LABEL
+		pos = 245,1
+		size = 296x16
+		anchor1 = 38,0
+		anchor2 = 84,4
+		text-color = #ffffff
+		background-color = #000000
+		saved-params = ""
+		text = ""
+		align = left
+	elem "Help_Character_Name"
+		type = LABEL
+		pos = 245,24
+		size = 296x16
+		anchor1 = 38,6
+		anchor2 = 84,10
+		text-color = #ffffff
+		background-color = #000000
+		saved-params = ""
+		text = ""
+		align = left
+	elem "Help_Unique_ID"
+		type = LABEL
+		pos = 245,47
+		size = 296x16
+		anchor1 = 38,12
+		anchor2 = 84,16
+		text-color = #ffffff
+		background-color = #000000
+		saved-params = ""
+		text = ""
+		align = left
+	elem "label3"
+		type = LABEL
+		pos = 122,47
+		size = 112x16
+		anchor1 = 19,12
+		anchor2 = 36,16
+		text-color = #e0e0e0
+		background-color = #507cf1
+		border = line
+		saved-params = ""
+		text = "Unique ID:"
+	elem "label2"
+		type = LABEL
+		pos = 122,24
+		size = 112x16
+		anchor1 = 19,6
+		anchor2 = 36,10
+		text-color = #e0e0e0
+		background-color = #507cf1
+		border = line
+		saved-params = ""
+		text = "Character Name"
+	elem "ActionLink"
+		type = OUTPUT
+		pos = 122,96
+		size = 519x24
+		anchor1 = 19,24
+		anchor2 = 100,30
+		text-color = #f5f5f5
+		background-color = #507cf1
+		border = line
+		saved-params = "max-lines"
+		link-color = #f5f5f5
+	elem "Help_Message"
+		type = OUTPUT
+		pos = 120,123
+		size = 524x279
+		anchor1 = 19,31
+		anchor2 = 100,100
+		text-color = #39bef0
+		background-color = #595959
+		border = sunken
+		saved-params = "max-lines"
+	elem "Help_OutPutMessages"
+		type = GRID
+		pos = 0,0
+		size = 120x402
+		anchor1 = 0,0
+		anchor2 = 19,100
+		text-color = #ffffff
+		background-color = #5b5b5b
+		border = sunken
+		saved-params = ""
+		cells = 1x0
+		current-cell = 1,1
+		show-lines = horizontal
+		highlight-color = #000000
+		is-list = true
+	elem "Delete_Button"
+		type = BUTTON
+		pos = 546,70
+		size = 96x21
+		anchor1 = 85,14
+		anchor2 = 100,19
+		text-color = #80ffff
+		background-color = #4f4f4f
+		border = line
+		saved-params = "is-checked"
+		text = "Delete/Resolved"
+		command = "DeleteAdminHelp"
+	elem "button30"
+		type = BUTTON
+		pos = 546,14
+		size = 96x21
+		anchor1 = 85,3
+		anchor2 = 100,9
+		text-color = #80ffff
+		background-color = #4f4f4f
+		border = line
+		saved-params = "is-checked"
+		text = "Refresh"
+		command = ".RefreshAHelp"
+	elem "label1"
+		type = LABEL
+		pos = 122,1
+		size = 112x16
+		anchor1 = 19,0
+		anchor2 = 36,4
+		text-color = #e0e0e0
+		background-color = #507cf1
+		border = line
+		saved-params = ""
+		text = "Character Key"
+

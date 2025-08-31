@@ -6,8 +6,8 @@ var
 mob/var
 	has_god_ki
 	god_ki_mastery = 0 //percent, 100% max
-	god_mastery_rate = 1 //Yasais should master it fastest probably
-	god_mode_on = 1 //this is whether a Yasai wants to use god ki or not. it will restrict their regular ssj forms if they have it on
+	god_mastery_rate = 1 //Saiyans should master it fastest probably
+	god_mode_on = 1 //this is whether a Saiyan wants to use god ki or not. it will restrict their regular ssj forms if they have it on
 
 proc
 	GodOnline()
@@ -55,12 +55,12 @@ mob/proc
 		boost = boost * (my_bp / scale_down_at)**0.3
 		boost *= bp_mod
 
-		//we measure the default boost for a Yasai on their ssj2 power not base power like for other races
-		if(Race in list("Yasai", "Half Yasai")) boost *= form1x * form2x
+		//we measure the default boost for a Saiyan on their ssj2 power not base power like for other races
+		if(Race in list("Saiyan", "Half Saiyan")) boost *= form1x * form2x
 
 		var/min_boost = effectiveBaseBp * (min_god_boost - 1)
 		//var/min_boost = (base_bp + hbtc_bp) * (min_god_boost - 1) //right now ssj1 and 2 give a 1.2 x 1.2 (44%) boost over base form so we never want
-			//the god ki boost to be less than what a Yasai would have in nongod ssj2 form. this goes for all races no less than 44% boost in god mode
+			//the god ki boost to be less than what a Saiyan would have in nongod ssj2 form. this goes for all races no less than 44% boost in god mode
 		boost = clamp(boost, min_boost, 1.#INF)
 
 		//if(is_ssj_blue)
@@ -82,7 +82,7 @@ mob/proc
 	BecomeGod()
 		set waitfor=0
 		if(has_god_ki || transing || !allow_god_ki) return
-		if(Race in list("Yasai", "Half Yasai"))
+		if(Race in list("Saiyan", "Half Saiyan"))
 			Revert()
 		has_god_ki = 1
 		god_mode_on = 1

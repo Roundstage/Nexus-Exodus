@@ -342,7 +342,7 @@ mob/Enemy
 		if(NPC_Leave_Body) Leave_Body()
 		. = ..()
 
-	Puranto_Amphibian
+	Namekian_Amphibian
 		icon='NamekAmphibian.dmi'
 		bp_mod = 1.5
 		enemyCanFly = 0
@@ -359,7 +359,7 @@ mob/Enemy
 			npc_move_delay *= 2
 			. = ..()
 
-	Puranto_Dino
+	Namekian_Dino
 		icon='NamekDino.dmi'
 		bp_mod = 3
 		enemyCanFly = 0
@@ -376,7 +376,7 @@ mob/Enemy
 			npc_move_delay *= 4
 			. = ..()
 
-	Puranto_Frog
+	Namekian_Frog
 		icon='NamekFrog.dmi'
 		bp_mod = 1
 		enemyCanFly = 0

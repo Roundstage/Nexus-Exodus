@@ -14,7 +14,7 @@ FEAT IDEAS:
 		restore planet using crystal
 		master high gravity
 		make league, join league, league something
-		become first Super Yasai
+		become first Super Saiyan
 
 		Win 30 fights, +3%, 1x
 		Beat someone very strong, +1%, 2x

@@ -1,13 +1,13 @@
 mob/var
-	Puranto_counterpart //key of a player
+	Namekian_counterpart //key of a player
 	last_counterpart_change=0 //realtime
 	counterpart_died
 
-mob/Puranto/verb
+mob/Namekian/verb
 	Reset_Counterpart()
 		set category="Other"
 		src<<"Counterpart reset"
-		Puranto_counterpart=null
+		Namekian_counterpart=null
 		counterpart_died=0
 
 	Set_As_Counterpart(mob/m in usr.Counterpart_list())
@@ -23,15 +23,15 @@ mob/Puranto/verb
 		if(m.client&&m.client.address==client.address)
 			src<<"Your alt can not be your counterpart"
 			return
-		if(m.Puranto_counterpart)
-			if(m.Puranto_counterpart==key)
+		if(m.Namekian_counterpart)
+			if(m.Namekian_counterpart==key)
 				src<<"They are already your counterpart"
 				return
 			else
 				src<<"[m] already has a counterpart"
 				return
-		if(Puranto_counterpart)
-			switch(alert(src,"You already have [Puranto_counterpart] as your counterpart, replace them?",\
+		if(Namekian_counterpart)
+			switch(alert(src,"You already have [Namekian_counterpart] as your counterpart, replace them?",\
 			"Options","No","Yes"))
 				if("No") return
 		src<<"Offering [m] the option to counterpart with you..."
@@ -45,23 +45,23 @@ mob/Puranto/verb
 			if("Accept")
 				player_view(15,m)<<"[m] is now [src]'s counterpart"
 				if(!(src in view(m))) src<<"[m] is now your counterpart"
-				Puranto_counterpart=m.key
-				m.Puranto_counterpart=key
+				Namekian_counterpart=m.key
+				m.Namekian_counterpart=key
 mob/proc
 	Tell_counterpart_i_died()
-		if(Dead) for(var/mob/m in players) if(key&&m.Puranto_counterpart==key&&!m.counterpart_died)
+		if(Dead) for(var/mob/m in players) if(key&&m.Namekian_counterpart==key&&!m.counterpart_died)
 			m.counterpart_died=1
-			m<<"Your Puranto counterpart has died. You will die soon too if they do not come back to life \
+			m<<"Your Namekian counterpart has died. You will die soon too if they do not come back to life \
 			before all of your energy drains"
 
 	Tell_counterpart_im_alive()
-		if(!Dead) for(var/mob/m in players) if(key&&m.Puranto_counterpart==key&&m.counterpart_died)
+		if(!Dead) for(var/mob/m in players) if(key&&m.Namekian_counterpart==key&&m.counterpart_died)
 			m.counterpart_died=0
-			m<<"Your Puranto counterpart has come back to life. You are no longer in danger of dying"
+			m<<"Your Namekian counterpart has come back to life. You are no longer in danger of dying"
 
 	Check_if_counterpart_is_alive_or_dead()
-		if(Puranto_counterpart)
-			for(var/mob/m in players) if(m.key&&Puranto_counterpart==m.key)
+		if(Namekian_counterpart)
+			for(var/mob/m in players) if(m.key&&Namekian_counterpart==m.key)
 				if(!m.Dead) counterpart_died=0
 				else counterpart_died=1
 
@@ -70,7 +70,7 @@ mob/proc
 		return
 
 		spawn while(src)
-			if(Race!="Puranto") return
+			if(Race!="Namekian") return
 			Tell_counterpart_i_died()
 			Tell_counterpart_im_alive()
 			sleep(300)
@@ -79,7 +79,7 @@ mob/proc
 			if(counterpart_died&&!Dead)
 				while(counterpart_died&&!Dead)
 					Ki-=max_ki/60
-					if(Ki<=0) Death("the loss of their Puranto counterpart",Force_Death=1)
+					if(Ki<=0) Death("the loss of their Namekian counterpart",Force_Death=1)
 					sleep(10)
 			else sleep(600)
 
@@ -90,10 +90,10 @@ mob/proc
 			sleep(600)
 
 	Match_counterpart()
-		if(Puranto_counterpart) for(var/mob/m in players) if(m.key==Puranto_counterpart)
-			if(m.Puranto_counterpart!=key||m.Race!=Race)
+		if(Namekian_counterpart) for(var/mob/m in players) if(m.key==Namekian_counterpart)
+			if(m.Namekian_counterpart!=key||m.Race!=Race)
 				src<<"[m] has dropped you as their counterpart"
-				Puranto_counterpart=null
+				Namekian_counterpart=null
 				return
 			if(bp_mod<m.bp_mod) bp_mod=m.bp_mod
 			if(base_bp < m.base_bp * 0.93) base_bp = m.base_bp * 0.93
@@ -106,7 +106,7 @@ mob/proc/Counterpart_list()
 	for(var/mob/m in player_view(20,src)) if(m!=src&&m.client&&m.Race==Race) L+=m
 	return L
 
-obj/Puranto_Fusion
+obj/Namekian_Fusion
 	teachable=0
 	Skill=1
 	race_teach_only=1
@@ -115,7 +115,7 @@ obj/Puranto_Fusion
 	hotbar_type="Ability"
 	can_hotbar=1
 	Cost_To_Learn=20
-	desc="Puranto fusion lets two Purantos fuse together for a power boost. The person who offers the \
+	desc="Namekian fusion lets two Namekians fuse together for a power boost. The person who offers the \
 	fusion has their character deleted and the other gets the boost."
 	var/Next_Use=0
 
@@ -124,20 +124,20 @@ obj/Puranto_Fusion
 	verb/Hotbar_use()
 		set hidden=1
 		set waitfor=0
-		Puranto_Fusion()
+		Namekian_Fusion()
 
-	verb/Puranto_Fusion()
+	verb/Namekian_Fusion()
 		set category="Skills"
-		usr.Puranto_Fusion()
+		usr.Namekian_Fusion()
 
 mob/var/last_fused_with=0 //realtime
-var/Puranto_fusion_wait_hours = 2.5
+var/Namekian_fusion_wait_hours = 2.5
 
-mob/proc/CanPurantoFuse(mob/fuser, showmsg)
-	if(world.realtime - last_fused_with < Puranto_fusion_wait_hours * 60 * 60 * 10)
-		var/hours = (last_fused_with + (Puranto_fusion_wait_hours * 60 * 60 * 10) - world.realtime) / (10 * 60 * 60)
+mob/proc/CanNamekianFuse(mob/fuser, showmsg)
+	if(world.realtime - last_fused_with < Namekian_fusion_wait_hours * 60 * 60 * 10)
+		var/hours = (last_fused_with + (Namekian_fusion_wait_hours * 60 * 60 * 10) - world.realtime) / (10 * 60 * 60)
 		if(showmsg)
-			src << "You can only fuse every [Puranto_fusion_wait_hours] hours. You must wait another [round(hours)] hours and [round(hours * 60 % 60)] minutes"
+			src << "You can only fuse every [Namekian_fusion_wait_hours] hours. You must wait another [round(hours)] hours and [round(hours * 60 % 60)] minutes"
 		return
 
 	if(body_swapped())
@@ -146,17 +146,17 @@ mob/proc/CanPurantoFuse(mob/fuser, showmsg)
 
 	if(fuser)
 		var/mob/P = fuser
-		if(world.realtime - P.last_fused_with < Puranto_fusion_wait_hours * 60 * 60 * 10)
-			var/hours = (P.last_fused_with + (Puranto_fusion_wait_hours * 60 * 60 * 10) - world.realtime) / (10 * 60 * 60)
+		if(world.realtime - P.last_fused_with < Namekian_fusion_wait_hours * 60 * 60 * 10)
+			var/hours = (P.last_fused_with + (Namekian_fusion_wait_hours * 60 * 60 * 10) - world.realtime) / (10 * 60 * 60)
 			if(showmsg)
-				src << "[P] has already had someone fuse with them in the last [Puranto_fusion_wait_hours] hours, they must wait \
+				src << "[P] has already had someone fuse with them in the last [Namekian_fusion_wait_hours] hours, they must wait \
 				another [round(hours)] hours and [round(hours * 60 % 60)] minutes"
 			return
 
 	return 1
 
-mob/proc/Puranto_Fusion()
-	if(!CanPurantoFuse(showmsg = 1)) return
+mob/proc/Namekian_Fusion()
+	if(!CanNamekianFuse(showmsg = 1)) return
 
 	var/mob/P=input(src,"Choose who you want to fuse with, they must be the same race as you") in Get_step(src,dir) as mob|null
 	if(!P||!ismob(P)) return
@@ -164,13 +164,13 @@ mob/proc/Puranto_Fusion()
 		src<<"[P] is not a [Race]"
 		return
 
-	if(!CanPurantoFuse(fuser = P, showmsg = 1)) return
+	if(!CanNamekianFuse(fuser = P, showmsg = 1)) return
 
 	switch(input(src,"Are you sure you want to fuse with [P]? You will lose your character.") in \
 	list("No","Yes"))
 		if("Yes")
 			if(P)
-				if(!CanPurantoFuse(fuser = P)) return
+				if(!CanNamekianFuse(fuser = P)) return
 
 				player_view(15,P)<<"[src] fuses with [P]!"
 				P.last_fused_with = world.realtime
@@ -185,7 +185,7 @@ mob/proc/Puranto_Fusion()
 				if(P.gravity_mastered<gravity_mastered) P.gravity_mastered=gravity_mastered
 				if(P.Health<100) P.Health=100
 				if(P.Ki<P.max_ki) P.Ki=P.max_ki
-				if(P.Puranto_counterpart == key && P.base_bp + P.hbtc_bp > 1500000)
+				if(P.Namekian_counterpart == key && P.base_bp + P.hbtc_bp > 1500000)
 					if(P.base_bp < 15000000) P.base_bp = 15000000
 					if(P.hbtc_bp < 15000000) P.hbtc_bp = 15000000
 
@@ -193,14 +193,14 @@ mob/proc/Puranto_Fusion()
 				if(P.hbtc_bp < min_hbtc_bp) P.hbtc_bp = min_hbtc_bp
 
 				Respawn()
-				P.Puranto_Fusion_Gfx()
+				P.Namekian_Fusion_Gfx()
 				available_potential=0.01
 				src<<"You have fused with [P] and were automatically reincarnated"
 
 mob/Admin5/verb/testnfg()
-	Puranto_Fusion_Gfx()
+	Namekian_Fusion_Gfx()
 
-mob/proc/Puranto_Fusion_Gfx()
+mob/proc/Namekian_Fusion_Gfx()
 	set waitfor=0
 	player_view(10,src)<<sound('Super Namek.ogg',volume=40)
 	var/N=6

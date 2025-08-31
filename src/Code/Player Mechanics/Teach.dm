@@ -17,7 +17,7 @@ mob/var
 mob/proc
 	RaiseStudentPoints(mob/m, amount=0)
 		if(!m || !m.client || !m.key) return
-		if(m.Race in list("Human", "Puranto")) amount *= 1.5
+		if(m.Race in list("Human", "Namekian")) amount *= 1.5
 		if(!(m.ckey in student_points))
 			student_points += m.ckey //attempt to fix a weird bad index error
 			student_points[m.ckey] = 0
@@ -164,7 +164,7 @@ mob/proc
 		if(o.type == /obj/Teleport && m.Race != "Kai") return
 		if(o.type == /obj/Demon_Contract && m.Race != "Demon") return
 		if(o.type == /obj/Unlock_Potential && !RaceCanHaveUnlockPotential(m.Race)) return
-		if(o.type == /obj/Attacks/Piercer && m.Race != "Puranto") return
+		if(o.type == /obj/Attacks/Piercer && m.Race != "Namekian") return
 
 		return 1
 
@@ -172,7 +172,7 @@ mob/proc
 		return o.student_point_cost * RaceSkillLearnDifficultyMod(o)
 
 proc/RaceCanHaveUnlockPotential(r)
-	if(r in list("Puranto", "Human")) return 1
+	if(r in list("Namekian", "Human")) return 1
 
 mob/verb
 	Teach()

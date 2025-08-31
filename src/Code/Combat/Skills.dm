@@ -49,7 +49,7 @@ mob/proc
 	Enable_giant_form(obj/Giant_Form/g)
 		if(using_giant_form) return
 		using_giant_form=1
-		if(Race=="Onion Lad")
+		if(Race=="Makyo")
 			icon='Big Garlic.dmi'
 			giant_form_overlays=new/list
 			giant_form_overlays.Add(overlays)
@@ -64,7 +64,7 @@ mob/proc
 	Disable_giant_form(icon_change=1)
 		if(!using_giant_form) return
 		using_giant_form=0
-		if(Race=="Onion Lad")
+		if(Race=="Makyo")
 			if(icon=='Big Garlic.dmi')
 				icon='Makyojin 2.dmi'
 				overlays.Add(giant_form_overlays)
@@ -1019,7 +1019,7 @@ obj/Regeneration
 		if(!usr.Regeneration_Skill)
 			usr.Regeneration_Skill=1
 			usr<<"You are now regenerating"
-			usr.Puranto_regen_loop()
+			usr.Namekian_regen_loop()
 		else
 			usr.Regeneration_Skill=0
 			usr<<"You stop regenerating"
@@ -1522,7 +1522,7 @@ mob/proc
 		if(Race=="Alien") return 0.6
 		if(Race=="Demon") return 0.6
 		if(Race=="Human") return 1
-		if(Race=="Puranto") return 0.2
+		if(Race=="Namekian") return 0.2
 		return 0.1
 	knowledge_absorb_mod()
 		if(Race=="Android") return 0.3
@@ -1828,7 +1828,7 @@ proc/Get_kt_spawn(area_name)
 		if("Heaven") kt_z=7
 		if("Arconia") kt_z=8
 		if("Earth") kt_z=1
-		if("Puranto") kt_z=3
+		if("Namekian") kt_z=3
 		if("Braal") kt_z=4
 		if("Ice") kt_z=12
 		if("Desert") kt_z=14
@@ -1867,7 +1867,7 @@ obj/Teleport
 		set category="Skills"
 		if(usr.Cant_Kai_Teleport()) return
 		var/list/Planets=new
-		Planets.Add("Cancel","Checkpoint","Heaven","Hell","Arconia","Earth","Puranto","Braal","Ice","Desert","Jungle",\
+		Planets.Add("Cancel","Checkpoint","Heaven","Hell","Arconia","Earth","Namekian","Braal","Ice","Desert","Jungle",\
 		"Android","Kaioshin","Space")
 
 		if(map_restriction_on)
@@ -1923,10 +1923,10 @@ mob/proc/IncreaseGod_FistLevel()
 	if(old_God_Fist_level == 20) PowerUpGoNextForm()
 	CheckSuperGod_Fist()
 
-mob/var/tmp/obj/Ultra_Super_Yasai/ussj_obj
+mob/var/tmp/obj/Ultra_Super_Saiyan/ussj_obj
 
 mob/proc/PowerUpGoNextForm()
-	if(SSjAble && SSjAble <= Year && !ussj_obj) ussj_obj = locate(/obj/Ultra_Super_Yasai) in src
+	if(SSjAble && SSjAble <= Year && !ussj_obj) ussj_obj = locate(/obj/Ultra_Super_Saiyan) in src
 	if(!IsGod())
 		if(ssj && SSjAble && SSjAble <= Year && SSj2Able && SSj2Able <= Year && has_ssg_req() && !has_ssg) SSG()
 		if(!ssj && SSjAble && SSjAble <= Year && has_ssj_req()) SSj()
@@ -1977,7 +1977,7 @@ obj/Power_Control
 	Cost_To_Learn=5
 	Mastery=1
 	desc="This allows you to power up and power down. Also, for certain forms, such as those of \
-	Yasais and Frost Lords, powering up twice will cause them to go into their next form, powering \
+	Saiyans and Frost Lords, powering up twice will cause them to go into their next form, powering \
 	down twice will cause them to revert. Powering up will increase your Battle Power, but drain your \
 	energy the higher you go. The more energy you have the higher you can power up without worrying \
 	about the drain sucking you back down again."
@@ -2128,7 +2128,7 @@ mob/proc/Aura_Overlays(remove_only)
 		var/image/I=image(icon=Auras.icon)
 		//var/obj/Transform/T=locate(/obj/Transform) in src
 		//if(T&&T.aura&&T.Active) I.icon=T.aura
-		if(Class=="Legendary Yasai")
+		if(Class=="Legendary Saiyan")
 			I.icon=Auras.Legend
 			if(ssj)
 				I.icon=Auras.LSSj
@@ -2186,7 +2186,7 @@ mob/proc/Add_Sparks()
 
 	if(BPpcnt>100&&(ismajin||Vampire||Race=="Demon")) overlays+='Demon Vampire Majin By Tobi Uchiha.dmi'
 	if(BPpcnt>100)
-		if(Class=="Legendary Yasai") overlays+='LSSJ powerz.dmi' //overlays+='Sparks LSSj.dmi'
+		if(Class=="Legendary Saiyan") overlays+='LSSJ powerz.dmi' //overlays+='Sparks LSSj.dmi'
 		if(ismystic) overlays+='Electric_Mystic.dmi'
 	if(ssj==2) overlays+='SSj2 Electric Tobi Uchiha.dmi'
 	if(ssj==3) overlays+='SSj3 Electric Tobi Uchiha.dmi'
@@ -2517,7 +2517,7 @@ obj/Heal
 
 			var/Health_Drain=50
 
-			if(usr.Race == "Puranto") Ki_Drain/=2
+			if(usr.Race == "Namekian") Ki_Drain/=2
 
 			usr.Health	-= Health_Drain
 			usr.Ki		-= usr.max_ki/usr.Eff
@@ -2552,10 +2552,10 @@ obj/Heal
 mob/var/next_unlock=0
 mob/proc/potential_mod()
 	if(Class=="Spirit Doll") return 2
-	if(Race=="Half Yasai") return 1.4
+	if(Race=="Half Saiyan") return 1.4
 	else if(Race=="Human") return 2
 	else if(Race=="Tsujin") return 1.8
-	else if(Race=="Puranto") return 1.25
+	else if(Race=="Namekian") return 1.25
 	else if(Race=="Android") return 0
 	else if(Race=="Frost Lord") return 0.6
 	else if(Race=="Kai") return 1.5
@@ -2932,11 +2932,11 @@ obj/Mystic
 		1.1x speed<br>\
 		20% faster power up rate<br>\
 		30% less drain from ki attacks<br>\
-		15% BP increase while in a Super Yasai form (excluding LSSj)<br>\
+		15% BP increase while in a Super Saiyan form (excluding LSSj)<br>\
 		15% anger boost decrease<br>\
-		No drain from Super Yasai 1+2<br>\
-		[(1 - lssj_mystic_drain_reduction)*100]% less drain from Legendary Super Yasai form<br>\
-		Loss of ability to use Super Yasai 3 and 4<br>\
+		No drain from Super Saiyan 1+2<br>\
+		[(1 - lssj_mystic_drain_reduction)*100]% less drain from Legendary Super Saiyan form<br>\
+		Loss of ability to use Super Saiyan 3 and 4<br>\
 		"
 
 	verb/Hotbar_use()
@@ -2953,11 +2953,11 @@ obj/Mystic
 			usr<<"You cant use this with Majin"
 			return
 		if(usr.ssj>=3)
-			usr<<"<font color=teal>This cannot be used with Super Yasai 3 or 4."
+			usr<<"<font color=teal>This cannot be used with Super Saiyan 3 or 4."
 			return
 
 		if(usr.is_ssj_blue)
-			usr << "<font color=#0099FF>Mystic can not be combined with Super Yasai Blue"
+			usr << "<font color=#0099FF>Mystic can not be combined with Super Saiyan Blue"
 			return
 
 		if(!usr.ismystic)

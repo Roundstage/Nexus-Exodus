@@ -79,17 +79,17 @@ mob/verb/Learn()
 				if(istype(B,/obj/Buff)&&Buff_count()>=max_buffs)
 					src<<"<font color=cyan>You can not have more than 8 custom buffs so that option has been removed from Learn"
 					continue
-				if(istype(B,/obj/Giant_Form)&&!(Race in list("Puranto","Onion Lad"))) continue
-				if(istype(B,/obj/Materialization)&&!(Race in list("Puranto","Kai","Majin"))) continue
+				if(istype(B,/obj/Giant_Form)&&!(Race in list("Namekian","Makyo"))) continue
+				if(istype(B,/obj/Materialization)&&!(Race in list("Namekian","Kai","Majin"))) continue
 				if(istype(B,/obj/Demon_Contract)&&Race!="Demon") continue
 				if(istype(B,/obj/Third_Eye)&&(Race!="Human"||Class=="Spirit Doll")) continue
-				if(istype(B,/obj/Puranto_Fusion)&&Race!="Puranto") continue
-				if(istype(B,/obj/Ultra_Super_Yasai)&&((Race!="Yasai"&&Race!="Half Yasai")||BP<ussj_bp_req||!SSjAble))
+				if(istype(B,/obj/Namekian_Fusion)&&Race!="Namekian") continue
+				if(istype(B,/obj/Ultra_Super_Saiyan)&&((Race!="Saiyan"&&Race!="Half Saiyan")||BP<ussj_bp_req||!SSjAble))
 					continue
-				if(istype(B,/obj/SaiyanPower)&&Race!="Yasai")
+				if(istype(B,/obj/SaiyanPower)&&Race!="Saiyan")
 					continue
 				if(istype(B, /obj/Unlock_Potential) && !RaceCanHaveUnlockPotential(Race)) continue
-				if(istype(B, /obj/Attacks/Piercer) && Race != "Puranto") continue //other races have to get it from db wish
+				if(istype(B, /obj/Attacks/Piercer) && Race != "Namekian") continue //other races have to get it from db wish
 
 				L["[B.name] ([CostToLearn(B)] SP)"] = B
 
@@ -187,7 +187,7 @@ mob/proc/RaceSkillLearnDifficultyMod(obj/o)
 		if(o.type == /obj/Zanzoken) return 1
 		if(o.type == /obj/Self_Destruct) return 1
 		if(o.type == /obj/Taiyoken) return 1
-	if(Race == "Yasai")
+	if(Race == "Saiyan")
 		if(Class == "Elite")
 			if(o.type == /obj/Buff) return 1
 			if(o.type == /obj/Final_Explosion) return 1
@@ -278,7 +278,7 @@ mob/proc/RaceSkillLearnDifficultyMod(obj/o)
 			if(o.type == /obj/Zanzoken) return 1
 			if(o.type == /obj/Self_Destruct) return 1
 			if(o.type == /obj/Taiyoken) return 1
-	if(Race == "Puranto")
+	if(Race == "Namekian")
 		if(o.type == /obj/Buff) return 1
 		if(o.type == /obj/Final_Explosion) return 1
 		if(o.type == /obj/Dropkick) return 1

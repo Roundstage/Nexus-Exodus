@@ -15,10 +15,10 @@ mob/var
 
 mob/proc/Apply_racial_aging_variables()
 	switch(Race)
-		if("Yasai")
+		if("Saiyan")
 		if("Human")
 			decline_gain=0.1
 			lifespan_gain=0.3
 			decline_slowdown_start_age=20
 
-		if("Puranto")
+		if("Namekian")

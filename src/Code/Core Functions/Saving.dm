@@ -134,7 +134,7 @@ proc/Initialize()
 	SaitamaRotationLoop()
 	EnableDragonBallsLoop()
 
-	ssj4_desc=new/obj/Super_Yasai_4_Description
+	ssj4_desc=new/obj/Super_Saiyan_4_Description
 
 	spawn(10) can_login=1
 
@@ -381,7 +381,7 @@ proc/Save_Misc()
 	S["alts"]<<alts
 	S["max_villains"]<<max_villains
 	S["ssj_voting"]<<ssj_voting
-	S["max_Yasai_percent"]<<max_Yasai_percent
+	S["max_Saiyan_percent"]<<max_Saiyan_percent
 	S["npcs_enabled"]<<npcs_enabled
 	S["skill_tournament_chance"]<<skill_tournament_chance
 	S["max_auto_leech"]<<max_auto_leech
@@ -636,7 +636,7 @@ proc/Load_Misc()
 	S["alts"]>>alts
 	S["max_villains"]>>max_villains
 	S["ssj_voting"]>>ssj_voting
-	S["max_Yasai_percent"]>>max_Yasai_percent
+	S["max_Saiyan_percent"]>>max_Saiyan_percent
 	S["npcs_enabled"]>>npcs_enabled
 	S["skill_tournament_chance"]>>skill_tournament_chance
 	S["max_auto_leech"]>>max_auto_leech
@@ -894,9 +894,9 @@ proc/Save_Area()
 		F["Earth"]<<A.icon_state
 		F["Earth Value"]<<A.Value
 		break
-	for(var/area/Puranto/A in all_areas)
-		F["Puranto"]<<A.icon_state
-		F["Puranto Value"]<<A.Value
+	for(var/area/Namekian/A in all_areas)
+		F["Namekian"]<<A.icon_state
+		F["Namekian Value"]<<A.Value
 		break
 	for(var/area/Braal/A in all_areas)
 		F["Braal"]<<A.icon_state
@@ -933,9 +933,9 @@ proc/Load_Area() if(fexists("data/Areas"))
 	for(var/area/Earth/A in all_areas)
 		F["Earth"]>>A.icon_state
 		F["Earth Value"]>>A.Value
-	for(var/area/Puranto/A in all_areas)
-		F["Puranto"]>>A.icon_state
-		F["Puranto Value"]>>A.Value
+	for(var/area/Namekian/A in all_areas)
+		F["Namekian"]>>A.icon_state
+		F["Namekian Value"]>>A.Value
 	for(var/area/Braal/A in all_areas)
 		F["Braal"]>>A.icon_state
 		F["Braal Value"]>>A.Value

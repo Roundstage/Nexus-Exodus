@@ -132,7 +132,7 @@ obj/items/Clothes
 		icon='Clothes Backpack.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Yasai_Uniform
+	Saiyan_Uniform
 		icon='Clothes Saiyan Suit.dmi'
 		Click() usr.Clothes_Proc(src)
 
@@ -228,7 +228,7 @@ obj/items/Clothes
 		icon='Clothes_Pants.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	PurantoScarf
+	NamekianScarf
 		icon='Clothes_NamekianScarf.dmi'
 		Click() usr.Clothes_Proc(src)
 		name="Scarf"
@@ -333,7 +333,7 @@ obj/items/Clothes
 		icon='Clothes, Daimaou Cape.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Yasai_Gloves
+	Saiyan_Gloves
 		icon='Clothes, Saiyan Gloves.dmi'
 		Click() usr.Clothes_Proc(src)
 
@@ -345,7 +345,7 @@ obj/items/Clothes
 		icon='Clothes, Book.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Yasai_Shoes
+	Saiyan_Shoes
 		icon='Clothes, Saiyan Shoes.dmi'
 		Click() usr.Clothes_Proc(src)
 
@@ -386,7 +386,7 @@ obj/items/Clothes
 		icon='Clothes Kaio Suit.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Puranto_Jacket
+	Namekian_Jacket
 		icon='Clothes Namek Jacket.dmi'
 		Click() usr.Clothes_Proc(src)
 

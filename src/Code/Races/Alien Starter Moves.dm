@@ -21,7 +21,7 @@ mob/proc/Alien_Stuff()
 	var/Starting_SP=round(15*SP_Multiplier**0.5)
 
 	var/Starting_BP=round(Avg_Base*bp_mod)
-	if(Starting_BP<6000) Starting_BP=6000 //aliens who choose this should start with more bp than an elite Yasai
+	if(Starting_BP<6000) Starting_BP=6000 //aliens who choose this should start with more bp than an elite Saiyan
 
 	var
 		elite_aliens = 0
@@ -178,7 +178,7 @@ mob/proc/Alien_Stuff()
 					Regenerate+=0.5
 					Alien_points-=L[choice]
 				if("Zenkai (15 AP)")
-					switch(alert(src, "Zenkai is the power Yasais have when they get knocked out or killed, they will sometimes grow stronger from it.", "Options", "Yes", "No"))
+					switch(alert(src, "Zenkai is the power Saiyans have when they get knocked out or killed, they will sometimes grow stronger from it.", "Options", "Yes", "No"))
 						if("No")
 							goto retry
 					zenkai_mod = 1

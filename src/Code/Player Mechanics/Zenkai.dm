@@ -2,7 +2,7 @@
 zenkai requires an extra special beating to unlock
 like you get below 50% ko'd bp but you survive it
 
-zenkai should accumulate as you train. like for a Yasai, keep their mod at 2x but then as they train their zenkai_bp rises by 40% of what
+zenkai should accumulate as you train. like for a Saiyan, keep their mod at 2x but then as they train their zenkai_bp rises by 40% of what
 their bp rises, but til you UNLOCK the zenkai_Bp it will hide that amount of bp from you. like if you have 100 bp and 0 zenkai bp your bp is 100,
 if you train to 200 bp and your zenkai bp is now 40, you have 160 bp, til you unlock the zenkai to see your real bp of 200
 */

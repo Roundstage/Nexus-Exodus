@@ -25,8 +25,8 @@ proc
 
 		/*switch(r)
 			if("Human") return 'Human race menu.png'
-			if("Puranto") return 'Puranto race menu.png'
-			if("Yasai") return 'Yasai race menu.png'*/
+			if("Namekian") return 'Namekian race menu.png'
+			if("Saiyan") return 'Saiyan race menu.png'*/
 
 	Get_race_desc(r)
 

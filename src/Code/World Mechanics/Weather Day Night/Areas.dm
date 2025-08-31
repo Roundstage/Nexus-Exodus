@@ -150,7 +150,7 @@ area
 		hours_of_night = 8
 		has_fireflies = 1
 
-	Puranto
+	Namekian
 		has_resources=1
 		can_has_dragonballs=1
 		resource_refill_mod=1000
@@ -324,22 +324,22 @@ proc/Weather() while(1)
 			else A.icon_state=pick("Storm","Fog")
 		if(istype(A,/area/Earth))
 			if(prob(90)) A.icon_state=""
-			else A.icon_state=pick("Rain","Puranto Rain","Snow","Dark","Fog","Storm","Night Snow")
-		if(istype(A,/area/Puranto))
+			else A.icon_state=pick("Rain","Namekian Rain","Snow","Dark","Fog","Storm","Night Snow")
+		if(istype(A,/area/Namekian))
 			if(prob(90)) A.icon_state=""
-			else A.icon_state=pick("Puranto Rain","Fog","Storm")
+			else A.icon_state=pick("Namekian Rain","Fog","Storm")
 		if(istype(A,/area/Braal))
 			if(prob(95)) A.icon_state=""
 			else A.icon_state=pick("Storm","Smog")
 		if(istype(A,/area/Arconia))
 			if(prob(90)) A.icon_state=""
-			else A.icon_state=pick("Rain","Puranto Rain","Storm","Dark","Snow","Night Snow")
+			else A.icon_state=pick("Rain","Namekian Rain","Storm","Dark","Snow","Night Snow")
 		if(istype(A,/area/Checkpoint))
 			if(prob(90)) A.icon_state=""
 			else A.icon_state=pick("Snow","Dark","Storm","Night Snow")
 		if(istype(A,/area/Heaven))
 			if(prob(90)) A.icon_state=""
-			else A.icon_state=pick("Rain","Puranto Rain","Snow","Dark","Storm","Night Snow")
+			else A.icon_state=pick("Rain","Namekian Rain","Snow","Dark","Storm","Night Snow")
 		if(istype(A,/area/Hell))
 			if(prob(70)) A.icon_state=""
 			else A.icon_state=pick("Blood Rain","Storm","Smog")

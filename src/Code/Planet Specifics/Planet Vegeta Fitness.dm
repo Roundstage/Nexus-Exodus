@@ -87,7 +87,7 @@ obj
 			little heads, it is completely safe. Heh heh heh...",\
 
 			"Come now, the past is the past, don't be angry. I may have exterminated your entire race before, but now I'm your friend, \
-			Yasai scum",\
+			Saiyan scum",\
 			)
 			var/freeza_text_color
 			New()

@@ -42,7 +42,7 @@ obj/Planets
 			CenterIcon(src)
 			walk_rand(src,50)
 			. = ..()
-	Puranto
+	Namekian
 		icon_state="Namek"
 		Planet_X=250
 		Planet_Y=250
@@ -789,7 +789,7 @@ turf/proc/Pod_Trail()
 	spawn(15) overlays-=pod_trail
 proc/Liftoff(obj/Ships/O) for(var/area/B in range(0,O))
 	if(B.type==/area/Earth) for(var/obj/Planets/Earth/A) if(A.z) O.loc=A.loc
-	else if(B.type==/area/Puranto) for(var/obj/Planets/Puranto/A) if(A.z) O.loc=A.loc
+	else if(B.type==/area/Namekian) for(var/obj/Planets/Namekian/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Braal) for(var/obj/Planets/Braal/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Arconia) for(var/obj/Planets/Arconia/A) if(A.z)O.loc=A.loc
 	else if(B.type==/area/Ice) for(var/obj/Planets/Ice/A) if(A.z) O.loc=A.loc

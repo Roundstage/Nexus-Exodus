@@ -94,7 +94,7 @@ mob/proc/Race_Z() //return the z plane that most of this race is located on
 mob/proc
 	Gender()
 		gender = "male"
-		if(!(Race in list("Bio-Android","Puranto","Android")))
+		if(!(Race in list("Bio-Android","Namekian","Android")))
 			var/Choice=alert(src,"Choose a gender","","Male","Female")
 			switch(Choice)
 				if("Female") gender="female"
@@ -133,7 +133,7 @@ mob/proc
 		else if(Class=="Spirit Doll")
 			//icon='Spirit Doll.dmi'
 			icon='White Kaio.dmi'
-		else if(Race=="Onion Lad") icon='Makyojin 2.dmi'
+		else if(Race=="Makyo") icon='Makyojin 2.dmi'
 		else if(Race in list("Phrexian","Kai"))
 			if(gender=="male") icon='Custom Male.dmi'
 			else icon='Custom Female.dmi'
@@ -151,13 +151,13 @@ mob/proc
 				icon='Majin.dmi'
 				Colorable=1
 			else icon = 'Female Majin.dmi'
-		else if(Race in list("Puranto","Ancient Puranto"))
+		else if(Race in list("Namekian","Ancient Namekian"))
 			icon='Namek Young.dmi'
-			/*switch(input(src,"Choose your skin color") in list("Light Green","Green","Dark Green","Dragon Clan","Foreign Puranto"))
+			/*switch(input(src,"Choose your skin color") in list("Light Green","Green","Dark Green","Dragon Clan","Foreign Namekian"))
 				if("Light Green") icon+=rgb(30,30,30)
 				if("Dark Green") icon-=rgb(30,30,30)
-				if("Dragon Clan") icon='Puranto Young.dmi'
-				if("Foreign Puranto") icon='Puranto 2.dmi'*/
+				if("Dragon Clan") icon='Namekian Young.dmi'
+				if("Foreign Namekian") icon='Namekian 2.dmi'*/
 		else
 			Human_Skins()
 			if(Race=="Demigod") icon+=rgb(60,60,60)
@@ -343,7 +343,7 @@ mob/proc/Choose_Hair(force_hair)
 		src<<"Wish Orbs characters can not change their hair"
 		return
 
-	if((Race in list("Majin","Bio-Android","Puranto","Android","Frost Lord"))&&!icon) return
+	if((Race in list("Majin","Bio-Android","Namekian","Android","Frost Lord"))&&!icon) return
 	switch(alert(src,"Custom icon?","Options","Default","Custom"))
 		if("Custom")
 			var/icon/I
@@ -360,10 +360,10 @@ mob/proc/Choose_Hair(force_hair)
 
 mob/proc/RandomHair()
 	if(dbz_character) return
-	if(Race in list("Majin","Bio-Android","Puranto","Android","Frost Lord")) return
+	if(Race in list("Majin","Bio-Android","Namekian","Android","Frost Lord")) return
 	var/obj/Hairs/h = pick(Hairs)
 	var/clr = rgb(1,1,1)
-	if(Race != "Yasai")
+	if(Race != "Saiyan")
 		if(prob(50)) clr = rgb(rand(0,255), rand(0,255), rand(0,255))
 	Apply_Hair(src, h, clr)
 
@@ -845,7 +845,7 @@ proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
 		P.ssj_god_hair = O.icon + rgb(200,0,0)
 
 		if(force_color) P.HairColor=force_color
-		else if(!P.dbz_character) if((P.Race!="Yasai"&&P.hair)||(P.Race=="Yasai"&&P.icon))
+		else if(!P.dbz_character) if((P.Race!="Saiyan"&&P.hair)||(P.Race=="Saiyan"&&P.icon))
 			P.HairColor=input(P,"Choose a hair color. Hit Cancel to have default color.") as color|null
 		if(P.HairColor) P.hair+=P.HairColor
 		P.ssj4hair='Hair_SSj4.dmi'

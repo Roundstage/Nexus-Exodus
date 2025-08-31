@@ -183,7 +183,7 @@ proc
 		var/stun = base_stun * (winner.BP / loser.BP)**bp_exponent * (winner.Str / loser.Res)**0.4
 		stun = Clamp(stun, 0, base_stun * 2)
 
-		if(loser.Class == "Legendary Yasai")
+		if(loser.Class == "Legendary Saiyan")
 			base_stun *= 2
 			dr_dmg *= 2
 

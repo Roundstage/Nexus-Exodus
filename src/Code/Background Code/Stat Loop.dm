@@ -2,7 +2,7 @@
 mob/proc/get_bp_loop()
 	set waitfor=0
 	while(src)
-		//if(Race == "Half Yasai" && bp_mod > Yasai_bp_mod_after_ssj) bp_mod = Yasai_bp_mod_after_ssj
+		//if(Race == "Half Saiyan" && bp_mod > Saiyan_bp_mod_after_ssj) bp_mod = Saiyan_bp_mod_after_ssj
 		if(energy_cap && max_ki / Eff > energy_cap) max_ki = energy_cap * Eff
 		//this doesnt really go here but im just rigging it up so oh well
 		if(world.time-last_attacked_time > 400) power_attack_meter=0
@@ -71,7 +71,7 @@ mob/proc
 	//because legendary has 0 defense force they get more bp
 	LegendaryZeroDefenseBPMult()
 		var/mult = 1
-		if(Class == "Legendary Yasai")
+		if(Class == "Legendary Saiyan")
 			mult *= 1.3
 			if(lssj_always_angry) mult += 0.25
 		//JIREN ALIEN
@@ -168,7 +168,7 @@ mob/proc/get_bp(factor_powerup=1)
 
 		//bp/=weights()**0.3
 		bp /= weights()
-		if(ismystic && ssj && Class != "Legendary Yasai") bp *= 1.15
+		if(ismystic && ssj && Class != "Legendary Saiyan") bp *= 1.15
 
 		var/shikonMod = 1
 		for(var/obj/items/Shikon_Jewel/S in shikon_jewels) if(S.loc==src) shikonMod += S.bp_mult - 1
@@ -317,7 +317,7 @@ mob/proc/Player_Loops(start_delay)
 	Knowledge_gain_loop()
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	Regenerator_loop()
-	Puranto_regen_loop()
+	Namekian_regen_loop()
 	Onion_Lad_Star()
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	SI_List()
@@ -388,15 +388,15 @@ mob/var
 
 mob/proc
 
-	//var/list/L=list("Half Yasai","Legendary Yasai","Alien","Android","Bio-Android",\
-	//"Demigod","Demon","Frost Lord","Human","Kai","Onion Lad","Majin","Puranto","Spirit Doll","Tsujin","Yasai")
+	//var/list/L=list("Half Saiyan","Legendary Saiyan","Alien","Android","Bio-Android",\
+	//"Demigod","Demon","Frost Lord","Human","Kai","Makyo","Majin","Namekian","Spirit Doll","Tsujin","Saiyan")
 
 	RaceStamBonus()
 		switch(Race)
 			if("Human") //includes spirit doll
 				if(Class == "Spirit Doll") return 50
 				else return 25
-			if("Onion Lad") return 35
+			if("Makyo") return 35
 			if("Demon") return 50
 			if("Tsujin") return 35
 			if("Kai") return 50
@@ -879,12 +879,12 @@ mob/proc/Network_Delay_Loop() while(src)
 	//if(client) call(".configure delay 0")
 	sleep(30)
 
-mob/var/tmp/Puranto_regen_looping
+mob/var/tmp/Namekian_regen_looping
 
-mob/proc/Puranto_regen_loop()
+mob/proc/Namekian_regen_loop()
 	set waitfor=0
-	if(Puranto_regen_looping) return
-	Puranto_regen_looping=1
+	if(Namekian_regen_looping) return
+	Namekian_regen_looping=1
 	while(Regeneration_Skill)
 		if(!KO && Health<100 && (current_area && !istype(current_area,/area/Braal_Core)))
 			if(Is_Cybernetic()) Regeneration_Skill=0
@@ -905,7 +905,7 @@ mob/proc/Puranto_regen_loop()
 				Health+=Percent
 				if(Health>100) Health=100
 		sleep(10)
-	Puranto_regen_looping=0
+	Namekian_regen_looping=0
 
 mob/var/tmp/nanite_repair_looping
 
@@ -1006,7 +1006,7 @@ mob/proc
 
 	Can_recover_ki(ki_limit=1.#INF)
 
-		if(Race=="Onion Lad" && Onion_Lad_Star && Ki<ki_limit && !KO && !Regen_Active() && \
+		if(Race=="Makyo" && Onion_Lad_Star && Ki<ki_limit && !KO && !Regen_Active() && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
 
 		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
@@ -1077,7 +1077,7 @@ mob/var/Overdrive
 mob/proc/Onion_Lad_Star()
 	set waitfor=0
 	var/obj/Shield/shield
-	while(src&&Race=="Onion Lad")
+	while(src&&Race=="Makyo")
 		if(Onion_Lad_Star)
 			if(!shield) if(shield_obj&&shield_obj.Using) shield=shield_obj
 			if(!shield||!shield.Using)
@@ -1333,9 +1333,9 @@ mob/proc/powerup_speed(n=1)
 
 mob/proc/powerup_soft_cap()
 	var/ki_mod = BufflessKiMod()
-	if(lssj_always_angry && Class == "Legendary Yasai") ki_mod /= lssj_ki_mult
+	if(lssj_always_angry && Class == "Legendary Saiyan") ki_mod /= lssj_ki_mult
 	var/max_powerup = 27 * (ki_mod ** energy_mod_powerup_exponent) //+100
-	if(lssj_always_angry && Class == "Legendary Yasai") max_powerup *= 0.83
+	if(lssj_always_angry && Class == "Legendary Saiyan") max_powerup *= 0.83
 	if(jirenAlien) max_powerup *= jirenAlienPowerupMult
 
 	if(ssj == 1) max_powerup *= 1
@@ -1603,12 +1603,12 @@ mob/proc/Poison_resist()
 	switch(Race)
 		if("Android") return 999
 		if("Majin") return 2
-		if("Puranto") return 1.5
+		if("Namekian") return 1.5
 		if("Demon") return 1.5
 		if("Human")
 			if(Class=="Spirit Doll") return 1.5
 		if("Frost Lord") return 0.5
-		if("Onion Lad") return 1.5
+		if("Makyo") return 1.5
 	return 1
 
 mob/proc/Diarea_Loop()

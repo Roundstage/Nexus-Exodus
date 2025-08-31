@@ -28,11 +28,11 @@ world
 proc/RenameCopyrightSpawns()
 	for(var/obj/Spawn/s)
 		switch(s.name)
-			if("Saiyan") s.name = "Yasai"
-			if("Namek") s.name = "Puranto"
-			if("Half Saiyan") s.name = "Half Yasai"
-			if("Legendary Saiyan") s.name = "Legendary Yasai"
-			if("Makyo") s.name = "Onion Lad"
+			if("Saiyan") s.name = "Saiyan"
+			if("Namek") s.name = "Namekian"
+			if("Half Saiyan") s.name = "Half Saiyan"
+			if("Legendary Saiyan") s.name = "Legendary Saiyan"
+			if("Makyo") s.name = "Makyo"
 
 proc/World_Status()
 	set waitfor=0
@@ -302,8 +302,8 @@ proc/Average_BP()
 		return Total
 
 proc/Race_List()
-	var/list/L=list("Half Yasai","Legendary Yasai","Alien","Android","Bio-Android",\
-	"Demigod","Demon","Frost Lord","Human","Kai","Onion Lad","Majin","Puranto","Spirit Doll","Tsujin","Yasai")
+	var/list/L=list("Half Saiyan","Legendary Saiyan","Alien","Android","Bio-Android",\
+	"Demigod","Demon","Frost Lord","Human","Kai","Makyo","Majin","Namekian","Spirit Doll","Tsujin","Saiyan")
 	for(var/V in L)
 		L[V]=0
 		for(var/mob/P in players) if(P.Race==V) L[V]++
@@ -390,8 +390,8 @@ proc/ZeroDelayLoop() while(1)
 
 //mob/proc/ZeroToOne() winset(src,null,"command=.configure delay 0")
 
-proc/Yasai_Count(Amount=1)
-	for(var/mob/P in players) if(P.Race=="Yasai") Amount++
+proc/Saiyan_Count(Amount=1)
+	for(var/mob/P in players) if(P.Race=="Saiyan") Amount++
 	return Amount
 
 proc/getdist(atom/a,atom/b)

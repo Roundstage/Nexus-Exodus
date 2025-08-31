@@ -13,7 +13,7 @@ mob/Admin4/verb/Reset_BP_To_Early_Levels()
 	if(!highest_era_bp)
 		alert("Wait for loading to complete")
 		return
-	switch(alert(src,"This will reset everyone's BP to early levels and remove Super Yasai and all that stuff","Options","Yes","No"))
+	switch(alert(src,"This will reset everyone's BP to early levels and remove Super Saiyan and all that stuff","Options","Yes","No"))
 		if("Yes")
 			Log(src,"[key] reset BP to early levels")
 			ResetBP()
@@ -92,7 +92,7 @@ mob/proc/LoginResetBP()
 			cs.Max_BP=1
 			del(cs)
 		Revert()
-		if(Class=="Legendary Yasai") ssjadd = 10000
+		if(Class=="Legendary Saiyan") ssjadd = 10000
 		offline_gains_info=0
 		offline_int_gains_info=0
 		base_bp /= era_bp_division / bp_mod * Get_race_starting_bp_mod() / 2 //divided by 2 beacuse base+hbtc can be twice the target bp
@@ -105,7 +105,7 @@ mob/proc/LoginResetBP()
 		Knowledge/=era_bp_division
 		highest_bp_ever_had=1
 		bp_mod=Get_race_starting_bp_mod()
-		if(Class != "Legendary Yasai")
+		if(Class != "Legendary Saiyan")
 			SSjAble=0
 			SSj2Able=0
 			SSj3Able=0

@@ -1074,7 +1074,7 @@ mob/proc/Shockwave_Knockback(Amount,turf/A, bypass_immunity)
 	if(regenerator_obj && regenerator_obj.base_loc() == base_loc()) return
 
 	if(transing) Amount/=2
-	if(Class == "Legendary Yasai" && lssj_always_angry) Amount *= 0.5
+	if(Class == "Legendary Saiyan" && lssj_always_angry) Amount *= 0.5
 	if(jirenAlien) Amount *= jirenAlienKBresist
 	Amount=ToOne(Amount)
 	if(Safezone||KB) return

@@ -28,22 +28,22 @@ mob/KOV/verb
 		PlanetBraalMsg(txt)
 		src << "Your message was sent out to everyone on Planet Braal"
 
-	KOV_Spawn_Yasai_NPC()
+	KOV_Spawn_Saiyan_NPC()
 		set category = "KOV"
-		if(Yasai_soldiers.len >= 30)
+		if(Saiyan_soldiers.len >= 30)
 			src << "Max amount of soldiers is 30"
 			return
-		new/mob/Yasai_Army/Yasai_Soldier(loc)
+		new/mob/Saiyan_Army/Saiyan_Soldier(loc)
 
 	KOV_Recall_All_Soldiers()
 		set category = "KOV"
-		for(var/mob/m in Yasai_soldiers) m.SafeTeleport(loc)
-		src << "All Yasai Soldiers have been recalled to you"
+		for(var/mob/m in Saiyan_soldiers) m.SafeTeleport(loc)
+		src << "All Saiyan Soldiers have been recalled to you"
 
 	KOV_Delete_All_Soldiers()
 		set category = "KOV"
-		for(var/mob/m in Yasai_soldiers) del(m)
-		src << "All Yasai Soldiers deleted"
+		for(var/mob/m in Saiyan_soldiers) del(m)
+		src << "All Saiyan Soldiers deleted"
 
 mob/proc
 	CheckKingOfBraalVerbs()
@@ -66,7 +66,7 @@ obj/King_of_Braal_Throne
 	icon = 'Throne 2.dmi'
 	icon_state = "gold"
 
-	desc = "Whoever sits in this throne becomes King of Braal and gains control of the Yasai Army. Get next to the throne \
+	desc = "Whoever sits in this throne becomes King of Braal and gains control of the Saiyan Army. Get next to the throne \
 	and click it for commands."
 
 	New()

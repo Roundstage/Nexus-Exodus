@@ -1131,7 +1131,7 @@ mob/proc/Can_alter_drone(mob/drone,display_message=1)
 obj/items/Robotics_Tools
 	desc="This is used to increase the cybernetic BP of a cyborg. If they are not already a cyborg, this will make \
 	them into one. There are disadvantages to having cybernetic BP, such as inability to ascend, slower training, \
-	and inability to turn Super Yasai. All of the negative effects will go away when your cybernetic BP \
+	and inability to turn Super Saiyan. All of the negative effects will go away when your cybernetic BP \
 	wears off."
 	Cost=100000
 	science = 1

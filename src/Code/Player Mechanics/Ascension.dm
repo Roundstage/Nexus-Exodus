@@ -16,7 +16,7 @@ mob/proc/ssj_power()
 	//mastered ss special boost
 	var/mss1_power = 0
 	//i enabled this boost to be for ussj too so that ussj and ssfp will be completely equal when all is said and done. no more individual ussj bp boost, just this
-	if(is_ussj || (ssjdrain >= max_ss_mastery && !is_ussj && has_ss_full_power && Class != "Legendary Yasai"))
+	if(is_ussj || (ssjdrain >= max_ss_mastery && !is_ussj && has_ss_full_power && Class != "Legendary Saiyan"))
 		mss1_power = 10000000
 		if(is_ussj) mss1_power += 5000000 //i decided ussj needs just a little more of an edge to be "equal" because of how slow they power up
 		if(base_bp > 20000000)
@@ -42,7 +42,7 @@ mob/proc/ssj_power()
 
 	return n
 
-obj/Ultra_Super_Yasai
+obj/Ultra_Super_Saiyan
 	Skill=1
 	Cost_To_Learn=50
 	teachable=0
@@ -52,25 +52,25 @@ obj/Ultra_Super_Yasai
 	can_hotbar=1
 
 	New()
-		desc="Ultra Super Yasai can be toggled on or off in the skills tab. It grants [ussj_bp+1]x bp, \
+		desc="Ultra Super Saiyan can be toggled on or off in the skills tab. It grants [ussj_bp+1]x bp, \
 		[ussj_ki]x energy, [ussj_str]x strength, [ussj_dur]x durability, [ussj_spd]x speed, [ussj_res]x resistance. \
 		To use it, have it toggled on, \
-		then just tranform into a Super Yasai, have over [Commas(ussj_bp_req)] BP available, \
-		then power up twice again to go Ultra Super Yasai."
+		then just tranform into a Super Saiyan, have over [Commas(ussj_bp_req)] BP available, \
+		then power up twice again to go Ultra Super Saiyan."
 
 	var/using_ussj=1
 
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		Toggle_Ultra_Super_Yasai()
+		Toggle_Ultra_Super_Saiyan()
 
-	verb/Toggle_Ultra_Super_Yasai()
+	verb/Toggle_Ultra_Super_Saiyan()
 		set category = "Other"
 		using_ussj=!using_ussj
-		if(using_ussj) usr<<"Ultra Super Yasai is now toggled on. To use it, just powerup twice after \
-		going Super Yasai and have over [Commas(ussj_bp_req)] BP available."
-		else usr << "Ultra Super Yasai is now toggled off"
+		if(using_ussj) usr<<"Ultra Super Saiyan is now toggled on. To use it, just powerup twice after \
+		going Super Saiyan and have over [Commas(ussj_bp_req)] BP available."
+		else usr << "Ultra Super Saiyan is now toggled off"
 var
 	ussj_bp = 0.4
 	ussj_ki = 0.67
@@ -89,10 +89,10 @@ mob/proc/USSj()
 			if(ssj3_opening) Trans_Graphics(ssj3_opening)
 			else Old_Trans_Graphics()
 		if(has_ss_full_power)
-			src << "<font color=cyan>You already have mastered Super Yasai which gives the same BP boost as Ultra Super Yasai, so there will be no \
+			src << "<font color=cyan>You already have mastered Super Saiyan which gives the same BP boost as Ultra Super Saiyan, so there will be no \
 			difference in your BP now, only a stat difference."
 		is_ussj=1
-		//bp_mult+=ussj_bp
+		bp_mult+=ussj_bp
 		Ki*=ussj_ki
 		max_ki*=ussj_ki
 		Eff*=ussj_ki
@@ -111,7 +111,7 @@ mob/proc/USSj()
 			if('BaseHumanDark.dmi') icon='Black Male Muscular 3.dmi'
 	else
 		is_ussj=0
-		//bp_mult-=ussj_bp
+		bp_mult-=ussj_bp
 		Ki/=ussj_ki
 		max_ki/=ussj_ki
 		Eff/=ussj_ki
@@ -161,7 +161,7 @@ proc/Ascension_loop()
 	set waitfor=0
 	while(1)
 		for(var/mob/m in players) if(m.Race != "Android")
-			if(m.Race && m.Race!="" && !(m.Race in list("Yasai", "Half Yasai")))
+			if(m.Race && m.Race!="" && !(m.Race in list("Saiyan", "Half Saiyan")))
 				if(m.effectiveBaseBp > m.Ascension_BP_Req())
 					var/max_mod = base_ascension_mod * m.ascension_mod()
 					if(m.bp_mod < max_mod)
@@ -405,7 +405,7 @@ now:
 	ssj3 20.6
 */
 var
-	Yasai_bp_mod_after_ssj = 11
+	Saiyan_bp_mod_after_ssj = 11
 	ssj_mults_ver = 3
 
 	ssj4_anger_mult = 1
@@ -420,7 +420,7 @@ mob/var/form_multiplier_overide=0
 mob/proc/AssignSSjMults()
 	if(form_multiplier_overide) return
 	if(ssj_mults_assigned == ssj_mults_ver) return
-	if(!(Race in list("Yasai", "Half Yasai"))) return
+	if(!(Race in list("Saiyan", "Half Saiyan"))) return
 
 	if(ssj) Revert()
 
@@ -428,8 +428,8 @@ mob/proc/AssignSSjMults()
 	ssj2add = 100000000
 	ssj3add = 250000000
 
-	if(Race == "Yasai")
-		if(Class == "Legendary Yasai")
+	if(Race == "Saiyan")
+		if(Class == "Legendary Saiyan")
 			form1x = 1.35 * 1.35
 		else if(Class == "Elite")
 			form1x=1.35
@@ -447,7 +447,7 @@ mob/proc/AssignSSjMults()
 			form3x=1.5
 			form4x=form1x*form2x*ssj4_bp_mult
 
-	if(Race == "Half Yasai")
+	if(Race == "Half Saiyan")
 		form1x=1.35
 		form2x=1.35
 		form3x=1.5
@@ -507,7 +507,7 @@ mob/proc/SSj_Hair()
 			if(ssj3hair=='Hair_GokuSSj3.dmi'&&ssj3drain>=300) overlays+='SSJ3 Mastered.dmi'
 			else overlays+=ssj3hair
 		else if(ssj==4) overlays+=ssj4hair
-	var/T='Fox Tail.dmi'
+	var/T=Tail
 	T+=rgb(120,120,60)
 	overlays-=T
 	if(Tail&&ssj&&ssj<4&&!ismystic) overlays+=T
@@ -517,10 +517,10 @@ mob/var/ssj_bp_mult=1
 
 mob/proc/SSj() if(!transing&&!ssj&&!IsGreatApe())
 
-	if(bp_mod < Yasai_bp_mod_after_ssj)
-		var/mult = Yasai_bp_mod_after_ssj / bp_mod
+	if(bp_mod < Saiyan_bp_mod_after_ssj)
+		var/mult = Saiyan_bp_mod_after_ssj / bp_mod
 		base_bp *= mult
-		bp_mod = Yasai_bp_mod_after_ssj
+		bp_mod = Saiyan_bp_mod_after_ssj
 
 	transing=1
 	ssj=1
@@ -535,7 +535,7 @@ mob/proc/SSj() if(!transing&&!ssj&&!IsGreatApe())
 	transing=0
 	ssj_drain_loop()
 
-mob/proc/SSj2() if(!transing&&ssj==1&&Class!="Legendary Yasai")
+mob/proc/SSj2() if(!transing&&ssj==1&&Class!="Legendary Saiyan")
 	if(is_ussj) USSj() //revert ussj...
 	transing=1
 	ssj=2
@@ -568,11 +568,11 @@ mob/var
 
 var/obj/ssj4_desc
 
-obj/Super_Yasai_4_Description
+obj/Super_Saiyan_4_Description
 	New()
 		ssj4_desc=src
 		desc="\
-		Super Yasai 4 has the following effects:<br>\
+		Super Saiyan 4 has the following effects:<br>\
 		[ssj4_bp_mult]x more BP than SSj2<br>\
 		[ssj4_anger_mult]x anger boost <br>\
 		[ssj4_speed_mult]x speed <br>\
@@ -605,7 +605,7 @@ mob/proc/SSj4() if(!IsGreatApe() && !transing && !ssj && !ismystic)
 
 mob/proc/Frost_Lord_Forms() if(Race=="Frost Lord")
 	if(Form == 3 && !IsCooler) PowerUpToGoldForm()
-	else if(Form == 3 && IsCooler) 
+	else if(Form == 3 && IsCooler)
 		Form=4
 		recov/=icer_recovery
 		icon=Form5Icon
@@ -809,12 +809,12 @@ mob/proc/ssj_inspire_loop()
 	set waitfor=0
 	sleep(ssj_inspire_timer)
 	while(src)
-		if(!ssj_leechable||Class=="Legendary Yasai") return
+		if(!ssj_leechable||Class=="Legendary Saiyan") return
 		if(ssj&&inspire_allowed) for(var/mob/m in player_view(15,src)) if(m.Opponent(65) == src)
-			if(m.client&&(m.Race in list("Yasai","Half Yasai"))&&m.ssj_inspired<ssj)
+			if(m.client&&(m.Race in list("Saiyan","Half Saiyan"))&&m.ssj_inspired<ssj)
 				if((ssj>=1&&!m.SSjAble)||(ssj>=2&&!m.SSj2Able)||(ssj>=3&&!m.SSj3Able))
 					if(1) //if(m.base_bp>=base_bp*0.8||bp_tiers)
-						//m<<"<font color=cyan>[src] has inspired you to work harder to achieve Super Yasai"
+						//m<<"<font color=cyan>[src] has inspired you to work harder to achieve Super Saiyan"
 						m.ssj_inspired=ssj
 		sleep(ssj_inspire_timer)
 
@@ -832,7 +832,7 @@ mob/proc/ssj_drain_loop()
 		var/Amount=3
 		var/Drain_Multiplier=0.3*Amount
 		if(ssj)
-			if(Class=="Legendary Yasai")
+			if(Class=="Legendary Saiyan")
 				ssjdrain=500 //so they get that 30% ssj_power() boost from mastered ssj1
 
 				if(lssj_ver==0)
@@ -862,7 +862,7 @@ mob/proc/ssj_drain_loop()
 					if(should_get_mssj && !has_ss_full_power)
 						has_ss_full_power = 1
 						ssjdrain = 300
-						NoWaitAlert("You have mastered Super Yasai")
+						NoWaitAlert("You have mastered Super Saiyan")
 					var/Drain=(max_ki/ssjdrain)*Drain_Multiplier * (3500/max_ki)**0.4
 					if(ssjdrain>=300||ismystic) Drain=0
 					if(Ki>Drain*10&&Drain) Ki-=Drain
@@ -876,7 +876,7 @@ mob/proc/ssj_drain_loop()
 					if(hero==key) Mastery *= 2
 					ssj2drain+=Mastery
 					if(ssj2drain >= 300 && ssj2drain - Mastery < 300)
-						NoWaitAlert("You have mastered Super Yasai 2")
+						NoWaitAlert("You have mastered Super Saiyan 2")
 					var/Drain=(max_ki/ssj2drain)*Drain_Multiplier
 					var/min_drain = 180
 					if(Drain < max_ki/min_drain) Drain=max_ki/min_drain
@@ -893,7 +893,7 @@ mob/proc/ssj_drain_loop()
 					if(hero==key) Mastery*=2
 					ssj3drain+=Mastery
 					if(ssj3drain >= 300 && ssj3drain - Mastery < 300)
-						NoWaitAlert("You have mastered Super Yasai 3")
+						NoWaitAlert("You have mastered Super Saiyan 3")
 					var/Drain=(max_ki/ssj3drain)*Drain_Multiplier
 
 					var/min_drain = 150

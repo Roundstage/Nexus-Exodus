@@ -4,7 +4,7 @@ mob/var/list/Great_Ape_Overlays=new
 mob/var/Tail
 mob/var/Tail_Icon
 
-mob/proc/Tail_Add() if(Race in list("Yasai","Half Yasai"))
+mob/proc/Tail_Add() if(Race in list("Saiyan","Half Saiyan"))
 	src<<"Your tail grew back!"
 	if(!Tail_Icon) Tail_Icon='Tail.dmi'+rgb(40,0,0)
 	overlays-=Tail_Icon
@@ -93,7 +93,7 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 	var/timer = 90000
 	if(!Great_Ape_control) timer = 450
 	spawn(timer) Great_Ape_revert()
-	if(Race!="Half Yasai"&&prob(Golden))
+	if(Race!="Half Saiyan"&&prob(Golden))
 		spawn(350) if(src && O && O.suffix && !SSj4Able && ssjdrain >= 300 && ssj2drain >= 300 && SSj2Able)
 			if(effectiveBaseBp >= ssj4_base_bp_req)
 				Great_Ape_revert()

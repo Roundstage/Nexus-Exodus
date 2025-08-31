@@ -98,7 +98,7 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
 	if(stun_level || Frozen)
 		dmg  *= stun_damage_mod
 
-	if(Class == "Legendary Yasai" && lssj_always_angry) dmg *= lssjTakeDmgMult //it was 0.5 but think about their regen shaving off some dmg think of it like this
+	if(Class == "Legendary Saiyan" && lssj_always_angry) dmg *= lssjTakeDmgMult //it was 0.5 but think about their regen shaving off some dmg think of it like this
 	//they take 6% dmg per sec if taking normal dmg like anyone else but at half dmg its 3% per sec but they heal 2% per sec it becomes a difference of
 	//4% compared to 1%
 	if(Race == "Android") dmg *= android_dmg_taken_mult
@@ -362,10 +362,10 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 	var/dmg=0
 	if(ismob(m))
 
-		//if(m.Class == "Legendary Yasai") count_sword = 0 //LSSJs have forced 0 defense and 2x swords tear them apart but now no matter what they
+		//if(m.Class == "Legendary Saiyan") count_sword = 0 //LSSJs have forced 0 defense and 2x swords tear them apart but now no matter what they
 		//only take normal punch damage from any sword
 		//nevermind instead of sword immunity they just get partial immunity
-		if(m.Class == "Legendary Yasai") swordMod = 0.40
+		if(m.Class == "Legendary Saiyan") swordMod = 0.40
 
 		var/obj/items/Sword/s = using_sword()
 		var/swordless_str = Swordless_strength()

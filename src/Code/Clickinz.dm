@@ -247,7 +247,7 @@ mob/Click()
 		while(src&&usr&&getdist(src,usr)<=1&&KO&&!usr.KO) sleep(4)
 		if(usr) usr.Lootables=null
 		return
-	if(Class!="Legendary Yasai"&&!ssj&&SSj4Able&&!usr.Target&&src==usr&&!transing&&!KO)
+	if(Class!="Legendary Saiyan"&&!ssj&&SSj4Able&&!usr.Target&&src==usr&&!transing&&!KO)
 		SSj4()
 		return
 	if(usr.Target==src||(usr==src&&usr.Target&&usr.Target!=src)) usr.Target=null
