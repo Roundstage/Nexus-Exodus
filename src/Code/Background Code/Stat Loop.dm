@@ -318,7 +318,7 @@ mob/proc/Player_Loops(start_delay)
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	Regenerator_loop()
 	Namekian_regen_loop()
-	Onion_Lad_Star()
+	Makyo_Star()
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	SI_List()
 	//AI_Train_Loop()
@@ -1006,7 +1006,7 @@ mob/proc
 
 	Can_recover_ki(ki_limit=1.#INF)
 
-		if(Race=="Makyo" && Onion_Lad_Star && Ki<ki_limit && !KO && !Regen_Active() && \
+		if(Race=="Makyo" && Makyo_Star && Ki<ki_limit && !KO && !Regen_Active() && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
 
 		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
@@ -1074,11 +1074,11 @@ proc/Recover_health_loop()
 
 mob/var/Overdrive
 
-mob/proc/Onion_Lad_Star()
+mob/proc/Makyo_Star()
 	set waitfor=0
 	var/obj/Shield/shield
 	while(src&&Race=="Makyo")
-		if(Onion_Lad_Star)
+		if(Makyo_Star)
 			if(!shield) if(shield_obj&&shield_obj.Using) shield=shield_obj
 			if(!shield||!shield.Using)
 				var/mode_mod=2

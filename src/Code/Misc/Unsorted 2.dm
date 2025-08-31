@@ -443,7 +443,7 @@ mob/proc
 				regen=1
 				recov=4
 				max_anger=100
-			if("Onion Lad")
+			if("Makyo")
 				Eff=1.8
 				Str=1000
 				End=1000
@@ -467,7 +467,7 @@ mob/proc
 				regen=12
 				recov=6
 				max_anger=100
-			if("Puranto")
+			if("Namekian")
 				Eff=2.2
 				Str=900
 				End=700
@@ -626,7 +626,7 @@ mob/proc
 	Get_bp_loss_from_low_ki()
 		if(Class=="Spirit Doll") return 0.3
 		switch(Race)
-			if("Puranto") return 0.2
+			if("Namekian") return 0.2
 			if("Saiyan") return 0.6
 			if("Half Saiyan") return 0.4
 			if("Bio-Android") return 0.2
@@ -638,7 +638,7 @@ mob/proc
 
 	Get_bp_loss_from_low_hp()
 		switch(Race)
-			if("Puranto") return 0.5
+			if("Namekian") return 0.5
 			if("Saiyan") return 0.6
 			if("Half Saiyan") return 0.6
 			if("Bio-Android") return 0.5
@@ -799,9 +799,9 @@ mob/proc/relative_kb_dist(obj/Blast/b,kb_dist=1)
 	return kb_dist
 
 mob/proc/Get_blast_homing_chance(mod = 1)
-	var/n=30
+	var/n=3
 	switch(Race)
-		if("Puranto") n=55
+		if("Namekian") n=55
 		if("Android") n=70
 		if("Kai") n=40
 		if("Majin") n=40

@@ -498,11 +498,11 @@ mob/proc/ApplyRaceBuild()
 			"Strength" = 10, "Durability" = 5, "Resist" = 5,
 			"Points" = -20
 		),
-		"Onion Lad" = list(
+		"Makyo" = list(
 			"Durability" = 7, "Speed" = 7,
 			"Points" = -14
 		),
-		"Puranto" = list(
+		"Namekian" = list(
 			"Regeneration" = 10, "Defense" = 5,
 			"Points" = -15
 		),

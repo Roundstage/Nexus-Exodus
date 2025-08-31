@@ -7,7 +7,7 @@ var/Year=1000
 mob/var/BirthYear=0
 mob/var/Decline_Rate=1
 mob/var/LogYear=0 //The last year you logged out
-var/Onion_Lad_Star
+var/Makyo_Star
 
 proc/Years()
 	set waitfor=0
@@ -22,11 +22,11 @@ proc/Years()
 					if(!M.Tail&&M.Age<16) M.Tail_Add()
 					if(M.Great_Ape_obj.Setting) M.Great_Ape()
 		if(round(Year-round(Year),0.1) in list(0,0.1,0.2,0.3,0.4))
-			if(!Onion_Lad_Star) world<<"<font color=red><font size=2>The Makyo Star is now visible"
-			Onion_Lad_Star=1
-		else if(Onion_Lad_Star)
+			if(!Makyo_Star) world<<"<font color=red><font size=2>The Makyo Star is now visible"
+			Makyo_Star=1
+		else if(Makyo_Star)
 			world<<"<font color=red><font size=2>The Makyo Star is now out of range"
-			Onion_Lad_Star=0
+			Makyo_Star=0
 
 mob/var/base_hair
 

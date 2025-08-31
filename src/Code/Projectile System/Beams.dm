@@ -237,7 +237,7 @@ obj/Attacks/Final_Flash
 		set name = "Final Flash"
 		usr.Beam_Macro(src)
 
-obj/Attacks/Onion_Gun
+obj/Attacks/Garlic Gun
 	name = "Galick Gun"
 	Cost_To_Learn=0
 	Wave=1

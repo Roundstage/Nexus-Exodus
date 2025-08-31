@@ -48,7 +48,7 @@ obj/items/Clothes
 		icon = 'Black Goku Suit Fixed.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Phoenix_Torso_Onion_Lad
+	Phoenix_Torso_Makyo
 		icon='Phoenix Torso (Makyo).dmi'
 		Click() usr.Clothes_Proc(src)
 
@@ -56,7 +56,7 @@ obj/items/Clothes
 		icon='Phoenix Torso.dmi'
 		Click() usr.Clothes_Proc(src)
 
-	Phoenix_Pauldrons_Onion_Lad
+	Phoenix_Pauldrons_Makyo
 		icon='Phoenix Pauldrons Makyo.dmi'
 		Click() usr.Clothes_Proc(src)
 

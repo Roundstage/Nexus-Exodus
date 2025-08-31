@@ -604,7 +604,7 @@ mob/proc
 			if("Majin") Majin()
 			if("Bio-Android") Bio()
 			if("Android") Android()
-			if("Makyo") Onion_Lad()
+			if("Makyo") Makyo()
 			if("Kai") Kai()
 			if("Spirit Doll") Doll()
 			if("Tsujin") Tsujin()
@@ -756,14 +756,14 @@ mob/proc/Bio()
 	ascension_bp *= 1.3
 	stun_resistance_mod=2
 
-mob/proc/Onion_Lad()
+mob/proc/Makyo()
 	Race="Makyo"
 	incline_age=8
 	incline_mod=0.6
 	Gravity_Mod=1.5
 	sp_mod=1.3
 	mastery_mod=2.5
-	alert(src,"Onion_Lads start on Earth, the most unique thing about them is that the Onion_Lad \
+	alert(src,"Makyos start on Earth, the most unique thing about them is that the Makyo \
 	star passes by, and gives them a big power boost and nearly unlimited energy.")
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=30
@@ -903,7 +903,7 @@ mob/proc/Elite_starting_bp()
 mob/proc/Elite_Saiyan() if(Class!="Elite")
 	if(START_WITH_RACIAL_SKILLS)
 		contents.Add(new/obj/Attacks/Charge,new/obj/Attacks/Explosion,new/obj/Attacks/Beam,\
-		new/obj/Attacks/Onion_Gun,new/obj/Attacks/Final_Flash,new/obj/Fly,new/obj/Attacks/Kienzan,\
+		new/obj/Attacks/Garlic Gun,new/obj/Attacks/Final_Flash,new/obj/Fly,new/obj/Attacks/Kienzan,\
 		new/obj/Attacks/Shockwave,new/obj/Attacks/Blast)
 	base_bp=Elite_starting_bp()
 	if(base_bp<1000) base_bp=1000

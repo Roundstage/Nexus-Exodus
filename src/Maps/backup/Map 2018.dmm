@@ -135,7 +135,7 @@
 "cE" = (/obj/Trees/Medium_Pine,/turf/Grass10,/area/Earth)
 "cF" = (/turf/GroundPebbles,/turf/Edges/Edge4E,/obj/Turfs/Plant37,/turf/Edges/Edge4N,/area/Earth)
 "cG" = (/turf/GroundPebbles,/turf/Edges/Edge4W,/obj/Turfs/LargeRock2,/turf/Edges/Edge4N,/area/Earth)
-"cH" = (/obj/Spawn{desc = "Onion Boi earth spawn"; name = "Onion Boi"},/turf/GroundPebbles,/area/Earth)
+"cH" = (/obj/Spawn{desc = "Makyo earth spawn"; name = "Makyo"},/turf/GroundPebbles,/area/Earth)
 "cI" = (/obj/Turfs/Fence,/turf/Ground14,/area/Earth)
 "cJ" = (/obj/Trees/Tree,/turf/Ground14,/area/Earth)
 "cK" = (/obj/Big_Rock/Big_Rock1,/turf/Ground14,/area/Earth)

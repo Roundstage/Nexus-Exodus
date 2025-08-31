@@ -508,7 +508,7 @@ proc/Race_Info(T,V)
 			M.Race="Cooler Icer"
 		if("Human") M.Human()
 		if("Kai") M.Kai()
-		if("Makyo") M.Onion_Lad()
+		if("Makyo") M.Makyo()
 		if("Majin") M.Majin()
 		if("Namekian") M.Namekian()
 		if("Spirit Doll")

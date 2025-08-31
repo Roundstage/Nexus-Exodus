@@ -411,7 +411,7 @@ mob/proc/Carrot_Man(mob/P)
 	Z_Character_Masteries()
 mob/proc/Braal(mob/P)
 	if(P) Log(P,"[P.key] gave [key] Braal Skills")
-	contents.Add(new/obj/Attacks/Explosion,new/obj/Attacks/Final_Flash,new/obj/Attacks/Onion_Gun,\
+	contents.Add(new/obj/Attacks/Explosion,new/obj/Attacks/Final_Flash,new/obj/Attacks/Garlic Gun,\
 	new/obj/Attacks/Ray,new/obj/Self_Destruct,new/obj/Shield,new/obj/Attacks/Spin_Blast,\
 	new/obj/Attacks/Kienzan,new/obj/Sense,new/obj/Advanced_Sense)
 	Age=43;real_age=143+Year;BirthYear=-141;Decline+=13
@@ -476,7 +476,7 @@ mob/proc/Cell(mob/P)
 	if(P) Log(P,"[P.key] gave [key] Cell Skills")
 	Age=10;real_age=110+Year;BirthYear=-110;Decline+=5;max_ki=8000*Eff
 	contents.Add(new/obj/Attacks/Kamehameha,new/obj/Attacks/Piercer,new/obj/Attacks/Genki_Dama/Death_Ball,\
-	new/obj/Attacks/Explosion,new/obj/Attacks/Onion_Gun,new/obj/Attacks/Scatter_Shot,\
+	new/obj/Attacks/Explosion,new/obj/Attacks/Garlic Gun,new/obj/Attacks/Scatter_Shot,\
 	new/obj/Attacks/Spin_Blast,new/obj/Planet_Destroy,new/obj/Self_Destruct,\
 	new/obj/Shunkan_Ido,new/obj/SplitForm,new/obj/Taiyoken,new/obj/Attacks/Kienzan,new/obj/Sense,\
 	new/obj/Advanced_Sense,new/obj/Meditate_Level_2,new/obj/Shadow_Spar)
