@@ -49,7 +49,7 @@ mob/Troll
 	Savable_NPC=1
 	max_ki=100
 	bp_mod=2
-	Race="Yasai"
+	Race="Saiyan"
 	var/Troll_Mode
 	leech_rate=5
 	Zanzoken=1000

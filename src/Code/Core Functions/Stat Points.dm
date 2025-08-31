@@ -480,97 +480,107 @@ var
 
 mob/var/Modless_Gain=1
 
+
 mob/proc/ApplyRaceBuild()
-
-	var/max_points = 44
-
 	var/list/race_stat_builds = list(
-		"Namekian" = list(
-			"Regeneration" = 12, "Recovery" = 10, "Force" = 12, "Energy" = 6, "Resist" = 4
-		),
-		"Kai" = list(
-			"Force" = 14, "Energy" = 10, "Resist" = 10, "Recovery" = 4, "Defense" = 6
-		),
-		"Human" = list(
-			"Strength" = 8, "Force" = 8, "Energy" = 6, "Durability" = 8, "Resist" = 6, "Speed" = 4, "Recovery" = 2, "Defense" = 2
-		),
-		"Tsujin" = list(
-			"Energy" = 12, "Force" = 6, "Speed" = 8, "Recovery" = 8, "Defense" = 6, "Resist" = 4
-		),
-		"Alien" = list( // Penalidade e pontos livres
-			"Energy" = -2, "Strength" = -2, "Durability" = -2, "Speed" = -2, "Force" = -2, "Resist" = -2,
-			"Offense" = -2, "Defense" = -2, "Regeneration" = -2, "Recovery" = -2,
-			"Points" = 34 // pontos livres
-		),
 		"Android" = list(
-			"Regeneration" = -2, "Recovery" = -2, "Strength" = 10, "Durability" = 12, "Defense" = 10, "Resist" = 6, "Energy" = 8,
-			"Points" = 2 // para fechar 44
+			"always_apply" = 1,
+			"Force" = -2, "Regeneration" = -2, "Recovery" = -2,
+			"Points" = 6
 		),
-		"Bio-Android" = list(
-			"Regeneration" = 14, "Recovery" = 10, "Strength" = 8, "Force" = 4, "Durability" = 8
-		),
-		"Saiyan" = list(
-			"Strength" = 14, "Durability" = 10, "Speed" = 6, "Force" = 8, "Offense" = 6
-		),
-		"Half-Saiyan" = list(
-			"Strength" = 10, "Durability" = 8, "Speed" = 8, "Force" = 8, "Energy" = 6, "Recovery" = 4
-		),
-		"Makyo" = list(
-			"Strength" = 14, "Force" = 8, "Energy" = 8, "Resist" = 8, "Defense" = 6
-		),
-		"Demon" = list(
-			"Force" = 10, "Resist" = 10, "Energy" = 8, "Strength" = 8, "Speed" = 4, "Recovery" = 4, "Regeneration" = 10
-		),
-		"Frost Lord" = list(
-			"Strength" = 10, "Force" = 12, "Energy" = 8, "Speed" = 8, "Defense" = 6
+		"Alien" = list(
+			"always_apply" = 1,
+			"Energy" = -2, "Strength" = -2, "Durability" = -2, "Speed" = -2, "Force" = -2, 
+			"Resist" = -2, "Offense" = -2, "Defense" = -2, "Regeneration" = -2, "Recovery" = -2,
+			"Points" = 20
 		),
 		"Demigod" = list(
-			"Strength" = 14, "Durability" = 12, "Offense" = 8, "Speed" = 6, "Defense" = 4
+			"Strength" = 10, "Durability" = 5, "Resist" = 5,
+			"Points" = -20
+		),
+		"Onion Lad" = list(
+			"Durability" = 7, "Speed" = 7,
+			"Points" = -14
+		),
+		"Puranto" = list(
+			"Regeneration" = 10, "Defense" = 5,
+			"Points" = -15
+		),
+		"Bio-Android" = list(
+			"Speed" = 4, "Resist" = 4, "Regeneration" = 5,
+			"Points" = -13
+		),
+		"Majin" = list(
+			"Regeneration" = 5, "Recovery" = 5,
+			"Points" = -10
+		),
+		"Kai" = list(
+			"Recovery" = 5, "Energy" = 3, "Speed" = 5,
+			"Points" = -13
+		),
+		"Frost Lord" = list(
+			"Durability" = 5, "Resist" = 5, "Speed" = 5,
+			"Points" = -15
+		)
+	)
+
+	// Saiyan com subclasses separadas
+	var/list/Saiyan_builds = list(
+		null = list(
+			"Strength" = 2, "Durability" = 4, "Force" = 2, "Resist" = 4, "Speed" = 2, "Regeneration" = 3,
+			"Points" = -17
+		),
+		"Low Class" = list(
+			"Durability" = 5, "Resist" = 5, "Regeneration" = 3,
+			"Points" = -13
+		),
+		"Elite" = list(
+			"Speed" = 6, "Strength" = 5, "Force" = 5,
+			"Points" = -16
+		),
+		"Legendary Saiyan" = list(
+			"Durability" = 8, "Resist" = 8,
+			"Points" = -16
 		)
 	)
 
 	var/list/valid_stats = list("Strength","Force","Energy","Durability","Resist","Recovery","Regeneration","Offense","Defense","Speed")
+	var/list/build
 
-	var/list/build = race_stat_builds[src.Race]
-
-	if(isnull(build))
-		// Raça não definida, não faz nada
+	// Saiyan especial com classes
+	if(src.Race == "Saiyan")
+		build = Saiyan_builds[src.Class]
+		if(!build) return
+		
+		if(!src.stat_build_unlocked)
+			ApplyBuildStats(build, valid_stats)
 		return
-	
-	var total_points = 0
-	var total_negatives = 0
 
-	// Primeiro calcula o total de pontos usados e negativos
-	for(var/stat in build)
-		if(stat in valid_stats)
-			var value = build[stat]
-			if(value > 0)
-				total_points += value
-			else if(value < 0)
-				total_negatives += value
+	// Outras raças
+	build = race_stat_builds[src.Race]
+	if(!build) return
 
-	// Negativos são positivos para liberar pro jogador customizar
-	var usable_points = max_points - total_points + abs(total_negatives)
-	src.Points += usable_points
+	// Android e Alien sempre aplicam
+	if(build["always_apply"] || !src.stat_build_unlocked)
+		ApplyBuildStats(build, valid_stats)
 
-
+mob/proc/ApplyBuildStats(list/build, list/valid_stats)
 	for(var/stat in build)
 		if(stat == "Points")
 			src.Points += build[stat]
 		else if(stat in valid_stats)
 			var value = build[stat]
 			switch(stat)
-				if("Strength")	src.Raise_Strength(value)
-				if("Force")		src.Raise_Force(value)
-				if("Energy")	src.Raise_Energy(value)
-				if("Durability")	src.Raise_Durability(value)
-				if("Resist")	src.Raise_Resist(value)
-				if("Recovery")	src.Raise_Recovery(value)
-				if("Regeneration") src.Raise_Regeneration(value)
-				if("Offense")	src.Raise_Offense(value)
-				if("Defense")	src.Raise_Defense(value)
-				if("Speed")		src.Raise_Speed(value)
-	return
+				if("Strength")      src.Raise_Strength(value)
+				if("Force")         src.Raise_Force(value)
+				if("Energy")        src.Raise_Energy(value)
+				if("Durability")    src.Raise_Durability(value)
+				if("Resist")        src.Raise_Resist(value)
+				if("Recovery")      src.Raise_Recovery(value)
+				if("Regeneration")  src.Raise_Regeneration(value)
+				if("Offense")       src.Raise_Offense(value)
+				if("Defense")       src.Raise_Defense(value)
+				if("Speed")         src.Raise_Speed(value)
 
 mob/proc/Modless_Stat_Check() if(Stat_Settings["Modless"])
 

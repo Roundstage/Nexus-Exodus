@@ -272,7 +272,7 @@ mob/proc
 		offmod=1
 		defmod=1
 		switch(Race)
-			if("Half Yasai")
+			if("Half Saiyan")
 				Eff=2
 				Str=900
 				End=800
@@ -284,7 +284,7 @@ mob/proc
 				regen=1.4
 				recov=2.6
 				max_anger=300
-			if("Yasai")
+			if("Saiyan")
 				switch(Class)
 					if("Elite")
 						Eff=1.5
@@ -298,7 +298,7 @@ mob/proc
 						regen=1.6
 						recov=1
 						max_anger=110
-					if("Legendary Yasai")
+					if("Legendary Saiyan")
 						Eff=1.8 //0.9x ultra half
 						Str=1500 //1950 ultra +30%
 						End=1500 //1950 ultra +30%
@@ -627,8 +627,8 @@ mob/proc
 		if(Class=="Spirit Doll") return 0.3
 		switch(Race)
 			if("Puranto") return 0.2
-			if("Yasai") return 0.6
-			if("Half Yasai") return 0.4
+			if("Saiyan") return 0.6
+			if("Half Saiyan") return 0.4
 			if("Bio-Android") return 0.2
 			if("Human") return 0.3
 			if("Tsujin") return 0.6
@@ -639,8 +639,8 @@ mob/proc
 	Get_bp_loss_from_low_hp()
 		switch(Race)
 			if("Puranto") return 0.5
-			if("Yasai") return 0.6
-			if("Half Yasai") return 0.6
+			if("Saiyan") return 0.6
+			if("Half Saiyan") return 0.6
 			if("Bio-Android") return 0.5
 			if("Demon") return 0.1
 			if("Human") return 0.6
@@ -807,7 +807,7 @@ mob/proc/Get_blast_homing_chance(mod = 1)
 		if("Majin") n=40
 		if("Human") n=40
 		if("Tsujin") n=40
-	if(Class=="Legendary Yasai") n+=5
+	if(Class=="Legendary Saiyan") n+=5
 	if(Class=="Spirit Doll") n = 50
 	n *= blast_homing_mod
 	n *= mod

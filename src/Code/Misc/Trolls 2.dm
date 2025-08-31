@@ -50,7 +50,7 @@ mob/new_troll
 	Savable_NPC = 0 //set this to 0 if you ever dont want them to save between reboots again
 	max_ki = 5000
 	bp_mod = 2
-	Race="Yasai"
+	Race="Saiyan"
 	leech_rate = 5
 	Zanzoken=1000
 	base_bp=1000
@@ -746,10 +746,10 @@ mob/new_troll
 								"train me","if you do not train me we will all die","im begging you",\
 								"i demand you train me","i am the chosen one","i am the chosen one plz",\
 								"nevermind","im the hero","im the hero train me plz","train me im the hero","someone train me please",\
-								"someone give me resources please","i will be the first Super Yasai god","i will be the first ssj",\
+								"someone give me resources please","i will be the first Super Saiyan god","i will be the first ssj",\
 								"can you train me plz?","whats that thing?","can i have that thing?","give me the thing plz?",\
-								"how do you become gold Frost Lord?","how do you become Super Yasai god?","how do you become god of destruction?",\
-								"how do you become admin?","i deserve admin", "i will be the first super Yasai god","i am the main hero","i am the main \
+								"how do you become gold Frost Lord?","how do you become Super Saiyan god?","how do you become god of destruction?",\
+								"how do you become admin?","i deserve admin", "i will be the first super Saiyan god","i am the main hero","i am the main \
 								hero that means you need to listen to me","im the main hero im more important than you plz","did anyone see that shit?","lol","lmao",\
 								"whoa","holy shit","how are you so strong?","wow","i wish i was admin","this game sucks","this game sucks ass","there could be [RandomInsultName()] here",\
 								"there could be niggers anywhere","with a car, you can go anywhere","i am the muscle man","Wish Orb super is coming out again",\

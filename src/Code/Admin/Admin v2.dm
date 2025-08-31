@@ -1016,7 +1016,7 @@ upForm
 					if("icer_common_race") setFormVar(fname, name, text2num(value))
 					if("majin_auto_learn") setFormVar(fname, name, text2num(value))
 					if("imitate_allowed") setFormVar(fname, name, text2num(value))
-					if("max_Yasai_percent") setFormVar(fname, name, text2num(value))
+					if("max_Saiyan_percent") setFormVar(fname, name, text2num(value))
 
 					if("DO_VAMPIRES_NEED_TO_FEED") setFormVar(fname, name, text2num(value))
 					if("DO_VAMPIRES_INFECT_ON_BITE") setFormVar(fname, name, text2num(value))
@@ -1072,11 +1072,11 @@ upForm
 			    <tr><td colspan="2"><hr /></td></tr>
 			    </table>
 			  </tr></td>
-				<tr height="1em" valign="top"><td width="30%"><b>Make Legendary Yasai Common: <td width="60%"><center>(0=Rare, 1=Common)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="lssj_common_race" value="[getFormVar("admin","lssj_common_race")]" size="3" maxlength="1"/><span class="error">[errors["lssj_common_race"]]</span></td></tr>
+				<tr height="1em" valign="top"><td width="30%"><b>Make Legendary Saiyan Common: <td width="60%"><center>(0=Rare, 1=Common)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="lssj_common_race" value="[getFormVar("admin","lssj_common_race")]" size="3" maxlength="1"/><span class="error">[errors["lssj_common_race"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Make Icer Common: <td width="60%"><center>(0=Rare, 1=Common)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="icer_common_race" value="[getFormVar("admin","icer_common_race")]" size="3" maxlength="1"/><span class="error">[errors["icer_common_race"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Enable Majin Auto-Learning: <td width="60%"><center>(0=Off, 1=On)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="majin_auto_learn" value="[getFormVar("admin","majin_auto_learn")]" size="3" maxlength="1"/><span class="error">[errors["majin_auto_learn"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Enable Imitate: <td width="60%"><center>(0=Off, 1=On)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="imitate_allowed" value="[getFormVar("admin","imitate_allowed")]" size="3" maxlength="1"/><span class="error">[errors["imitate_allowed"]]</span></td></tr>
-				<tr height="1em" valign="top"><td width="30%"><b>Max Yasai Percentage: <td width="60%"><center>(Limit on Yasai Population)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="max_Yasai_percent" value="[getFormVar("admin","max_Yasai_percent")]" size="3" maxlength="20"/><span class="error">[errors["max_Yasai_percent"]]</span></td></tr>
+				<tr height="1em" valign="top"><td width="30%"><b>Max Saiyan Percentage: <td width="60%"><center>(Limit on Saiyan Population)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="max_Saiyan_percent" value="[getFormVar("admin","max_Saiyan_percent")]" size="3" maxlength="20"/><span class="error">[errors["max_Saiyan_percent"]]</span></td></tr>
 
 				<tr height="1em" valign="top"><td width="30%"><b>Do Vampires Need to Feed? <td width="60%"><center>(0 = False, 1 = True)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="DO_VAMPIRES_NEED_TO_FEED" value="[getFormVar("admin","DO_VAMPIRES_NEED_TO_FEED")]" size="3" maxlength="1"/><span class="error">[errors["DO_VAMPIRES_NEED_TO_FEED"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Do Vampire Bites infect other players? <td width="60%"><center>(0=False, 1=True)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="DO_VAMPIRES_INFECT_ON_BITE" value="[getFormVar("admin","DO_VAMPIRES_INFECT_ON_BITE")]" size="3" maxlength="1"/><span class="error">[errors["DO_VAMPIRES_INFECT_ON_BITE"]]</span></td></tr>
