@@ -814,9 +814,9 @@ obj/Hairs
 		Click() Apply_Hair(usr,src)
 
 proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
-	//var/Had_Tail
-	//if(P.Tail) Had_Tail=1
-	//P.Tail_Remove()
+	var/Had_Tail
+	if(P.Tail) Had_Tail=1
+	P.Tail_Remove()
 	P.overlays-=P.hair
 	P.base_hair=null
 	P.hair=O.icon
@@ -852,7 +852,7 @@ proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
 		if(P.HairColor) P.ssj4hair+=P.HairColor
 		P.base_hair=P.hair
 		P.overlays+=P.hair
-	//if(Had_Tail) P.Tail_Add()
+	if(Had_Tail) P.Tail_Add()
 	//P<<"You have selected [O]"
 
 mob/proc/Choose_Android_Icon()

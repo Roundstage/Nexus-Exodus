@@ -54,18 +54,9 @@ mob/Admin5/verb/Override_Server_Name()
 	set category="Admin"
 	Status_Message=input(src,"This will put information about this server. For example if you want \
 	'Roleplay Server' to show on the hub, type it here.","Hub Message",Status_Message) as text
-	/*if(key=="EXGenesis")
-		hubfilter=0
-		world.status=Status_Message
-		Save_Misc()
-	*/
-proc/FilterServerName()
-	//word filter i was forced to add because BYOND blocks servers from appearing that have these type of words in it (when someone reports it)
-	var/list/words = list("nigger","jew","faggot","kike","spic","wetback","chink","holocaust","concentration","hitler","queer","trump","cum",\
-	"jizz","sex","tranny","blacked","fuck","shit","asshole","pussy","penis","boob","titties","porn","hentai","loli","little girl","false flag","official","offical","gringo","thudwaki","cunt","twat")
-	for(var/x in words)
-		Status_Message = replacetext(Status_Message, x, "X")
 
+proc/FilterServerName()
+	return //disabled for now
 
 var/list/players=new
 

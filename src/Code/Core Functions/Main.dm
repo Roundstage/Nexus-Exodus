@@ -245,7 +245,7 @@ mob/proc/ClickMakeNewCharacter()
 			src<<"<font size=3><font color=cyan>Press F5 to see what the buttons do. Press Escape to view Settings."
 
 	character_made_time = world.realtime
-	SpawnAtBattleGroundChoice()
+	//SpawnAtBattleGroundChoice()
 	if(Race == "Android" || Race == "Majin")
 		max_ki = energy_cap * Eff
 		Ki = max_ki
