@@ -234,47 +234,7 @@ mob/new_troll
 			can_talk = 1
 
 		TrollRunAwayMode()
-			set waitfor=0
-			if(trollRunAwayLoop) return
-			trollRunAwayLoop = 1
-			sleep(rand(10,25)) //perception delay. them running off the exact tick you hit them looks very unnatural
-			Fly()
-			runAwayUntil = world.time + rand(200,240)
-			var/randDir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
-			while(world.time < runAwayUntil)
-				while(KB) sleep(3)
-				if(!attacker) break
-				else
-					//if you are ko'd, yield the loop, then resume running away again when you get up
-					if(KO)
-						sleep(10)
-						runAwayUntil = world.time + rand(50,240)
-						if(prob(50)) runAwayUntil = 0 //sometimes they just give up on the running away after a nice ko session
-						continue
-					if(prob(10)) randDir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
-					//if(get_dist(src, attacker) > 15) randDir = get_dir(src, attacker)
-					if(!step(src, randDir))
-						randDir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
-					if(prob(1))
-						var/turf/t = locate(x + rand(-12,12), y + rand(-12,12), z)
-						TrollZanzo(t)
-						randDir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
-					//just stand still randomly
-					if(prob(1))
-						sleep(rand(10,22)) //more realistic because players do occasionally stop moving while running away to do something or type etc
-					//or alternatively stand still even longer to say something
-					else if(prob(1))
-						sleep(rand(25,40))
-						var/msg=pick(list("no plz i was jk","forgive me master","stop master","stop","wait master",\
-						"im not the same guy","stop im not the same guy","stop im not him","im not him","im not \
-						him stop","im not the same guy stop","stops its not me","wait","stop plz","plz wait",\
-						"stop chasing","plz stop chasing","im tellin tens he will band you","im reportin you if \
-						you dont stop","stop chasing me you [RandomInsultName()]","stop chasing me you jew i'm not a shekel", "please no", "please dont kill me",\
-						"im the main hero stop","you fucking [RandomInsultName()]","you fucking [uppertext(RandomInsultName())]"))
-						msg=mispell(msg,uppercase=pick(0,1),wrong_vowel=0.15,drop_letter=0.05,swap_letter=0.1)
-						TrollSay(msg)
-				sleep(world.tick_lag)
-			trollRunAwayLoop = 0
+			return
 
 		TrollGotAttacked(mob/m)
 			set waitfor=0
@@ -413,10 +373,7 @@ mob/new_troll
 					if(get_dist(src, player) <= followDist && viewable(src, player))
 						target_reached=1
 						if(!in_combat() && prob(20) && player && doesTalk)
-							var/msg=pick(list("hi","hello","listen","hey","hi master","plz", "master wait", "wait master", "hey guys",\
-							"listen", "wait listen", "wait plz", "listen", "hello i am back", "don't run from me", "stop leaving me", \
-							"bruh stop", "hello", "im good", "im peaceful", "hello friend", "my friend hello", "im friendly", "im not dangerous",\
-							"dude wait", "can you?", "wait", "stop", "im a friendly boy","have you seen that guy?"))
+							var/msg=null
 							if(prob(40)) msg = null //just say their name
 							if(prob(50))
 								if(prob(50))
@@ -663,92 +620,7 @@ mob/new_troll
 			return msg
 
 		start_talking()
-			set waitfor=0
-			if(!doesTalk) return
-			var/mob/m
-			while(src)
-				while(!can_talk)
-					sleep(rand(8,12))
-				if(can_talk && target_reached && player)
-					if(m != player)
-						m = player
-						talk_mode = 0
-					var/msg
-					var/KOspeak = (KO || Frozen)
-					if(KOspeak)
-						msg = pick(list("PLZ NO I WAS JK","NOOOOOOOO WHY","WHY ARE YOU SUCH A [uppertext(RandomInsultName())] PLZ I WAS JK DONT","NOOOO DONT",\
-						"ILL BE GOOD PLZ DONT","MASTER DONT","PLZ ILL BE GOOD","ILL B GOOD STOP PLZ","NOOOO","YOUR \
-						MY MASTER PLZ DONT KIL ME","THIS IS RP","IM RPIN PLZ DONT","PLZ STOP THIS","MASTER WHY WONT YOU JUST \
-						TRANE ME","PLZ NO KILL","PLZ NO IM GOOD NOW","ILL STOP","I SWEAR ILL STOP","PLZ ILL TELL AN ADMIN",\
-						"ILL FUCKING KILL YOU YOU DAMN [uppertext(RandomInsultName())]","ILL TELL A GM","IM TELLIN A ADMIN","STOP OR ILL BAND YOU","IM AN ADMIN",\
-						"IM A ADMIN YOU CANT KIL ME PLZ STOP","IF YOU KILL ME ILL BAND YOU","JUST LET ME GO PLZ","ALL I WANTED WAS TRAININ",\
-						"MASTER WHY?","NOOOOOOOOOOOO","YOU ARE GONNA GET BANNED","STOP OR ILL BANNED YOU","STOP UNLESS YOU WANT BANNED",\
-						"IM ADMIN STOP","IM ADMIN","YOU FUCKING [uppertext(RandomInsultName())]","YOU DIRTY [uppertext(RandomInsultName())]","[uppertext(RandomInsultName())] [uppertext(RandomInsultName())] ASS WHITE FUCK YOU","IM THE HERO STOP",\
-						"IM THE HERO YOU CANT KILL ME","STOP IM THE HERO","IM THE HERO","YOU CANT KILL THE HERO","YOU MAYONAISE LOVIN CRACKER",\
-						"PLEASE NO", "PLEASE DONT KILL ME","IM THE MAIN HERO YOU CANT KILL ME PLZ NO","HOLY SHIT NOOB","YOU FUCKING", "[uppertext(RandomInsultName())]"))
-
-					else if(running_away())
-						//WE MOVED THIS TYPE OF SPEECH TO TrollRunAwayMode()
-						sleep(5)
-
-						/*msg=pick(list("no plz i was jk","forgive me master","stop master","stop","wait master",\
-						"im not the same guy","stop im not the same guy","stop im not him","im not him","im not \
-						him stop","im not the same guy stop","stops its not me","wait","stop plz","plz wait",\
-						"stop chasing","plz stop chasing","im tellin tens he will band you","im reportin you if \
-						you dont stop","stop chasing me you [RandomInsultName()]","stop chasing me you jew i'm not a shekel", "please no", "please dont kill me",\
-						"im the main hero stop","you fucking [RandomInsultName()]","you fucking [uppertext(RandomInsultName())]"))*/
-
-					else if(in_combat() && !KO)
-						msg = get_troll_angry_message()
-					else
-						switch(talk_mode)
-							if(0) //ask for stuff, generalized statements of any kind, questions, etc
-								msg=null
-								if(prob(3) && trollTalksPissedIfYouDontTrain) talk_mode = 1 //progress to getting pissed at the person
-								if(prob(20)) msg = null //sometimes they only say the player's name
-
-							if(1) //get pissed
-								msg=null
-								if(prob(10) && trollAttacksIfYouDontTrain) talk_mode = 2 //progress to attacking them
-								if(prob(10)) talk_mode = 0 //sometimes they go back to being friendly if they think the angry route isnt working
-								if(prob(20)) msg = null //chance they only say the player's name
-
-							if(2) //attack
-								msg = get_troll_angry_message()
-								attacker = player
-								end_combat = 40
-
-					if(attacker && attacker.KO)
-						attacker=null
-						end_combat=0
-
-					if(player.KO) find_player()
-
-					if(prob(45) && player)
-						switch(rand(1,2))
-							if(1) msg="[TrollNickName(player.name)] [msg]"
-							if(2) msg="[msg] [TrollNickName(player.name)]"
-
-					if(msg)
-						msg=mispell(msg,uppercase=prob(20),wrong_vowel=0.15,drop_letter=0.05,swap_letter=0.1)
-						TrollSay(msg)
-						CantTalkFor(45)
-
-					var/timer=rand(160, 320)
-					if(in_combat() && !running_away()) timer += 100 //talk slower in combat
-					//disabled because why should the active ones go afk when we already have ones that are always afk?
-					/*if(prob(5) && !running_away() && !in_combat())
-						sleep(50)
-						if(prob(85))
-							TrollSay(pick(list("afk","sorry afk","gtg afk","gtg")))
-						//timer=rand(2 * 600, 8 * 600) //sometimes go "afk" and dont talk. but theyll still respond when talked to
-						timer = 600 //until we have a way to break the "afk"ness under certain conditions lets keep it short, it gets annoying
-						*/
-					if(running_away()) timer = rand(50,80)
-					if(KOspeak) timer = rand(130,200)
-					sleep(timer)
-				else
-					sleep(20)
+			return
 
 		stop_beaming()
 			if(beam.charging) Beam_Macro(beam)
