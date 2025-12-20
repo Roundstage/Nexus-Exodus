@@ -1,0 +1,1024 @@
+# Projectile System
+
+## Overview
+Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+
+## Files
+- `src/Code/Projectile System/Beam Core.dm`
+- `src/Code/Projectile System/Beams.dm`
+- `src/Code/Projectile System/Blasts.dm`
+- `src/Code/Projectile System/Projectile Core.dm`
+- `src/Code/Projectile System/Projectiles.dm`
+
+## Proc Reference
+
+### src/Code/Projectile System/Beam Core.dm
+
+#### obj/proc/beam_move_loop
+- Signature: `obj/proc/beam_move_loop(mob/m)`
+- Inputs: mob/m
+- Purpose: Handle beam move loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/get_beam_size
+- Signature: `mob/proc/get_beam_size()`
+- Inputs: None
+- Purpose: Return beam size.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/BeamSizeLoop
+- Signature: `mob/proc/BeamSizeLoop(obj/Attacks/a)`
+- Inputs: obj/Attacks/a
+- Purpose: Handle beam size loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStream
+- Signature: `mob/proc/BeamStream(obj/Attacks/A)`
+- Inputs: obj/Attacks/A
+- Purpose: Handle beam stream.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStreamLoop
+- Signature: `mob/proc/BeamStreamLoop(obj/Attacks/A)`
+- Inputs: obj/Attacks/A
+- Purpose: Handle beam stream loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamCharge
+- Signature: `mob/proc/BeamCharge(obj/Attacks/A)`
+- Inputs: obj/Attacks/A
+- Purpose: Handle beam charge.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStop
+- Signature: `mob/proc/BeamStop(obj/Attacks/A)`
+- Inputs: obj/Attacks/A
+- Purpose: Handle beam stop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStopThing2
+- Signature: `mob/proc/BeamStopThing2()`
+- Inputs: None
+- Purpose: Handle beam stop thing2.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Beam_Macro
+- Signature: `mob/proc/Beam_Macro(obj/Attacks/O)`
+- Inputs: obj/Attacks/O
+- Purpose: Handle beam macro.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/proc/calculate_beam_drain
+- Signature: `obj/Attacks/proc/calculate_beam_drain()`
+- Inputs: None
+- Purpose: Calculate beam drain.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### obj/Attacks/proc/calculate_beam_drain
+- Signature: `obj/Attacks/proc/calculate_beam_drain()`
+- Inputs: None
+- Purpose: Calculate beam drain.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+### src/Code/Projectile System/Beams.dm
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Noob_Ray
+- Signature: `verb/Noob_Ray()`
+- Inputs: None
+- Purpose: Handle noob ray.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Zanzoken_Mastery
+- Signature: `mob/proc/Zanzoken_Mastery(N=0.1)`
+- Inputs: N=0.1
+- Purpose: Handle zanzoken mastery.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/Skill_Increase
+- Signature: `obj/proc/Skill_Increase(Amount=1,mob/P)`
+- Inputs: Amount=1, mob/P
+- Purpose: Handle skill increase.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Laser
+- Signature: `verb/Laser()`
+- Inputs: None
+- Purpose: Handle laser.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Beam
+- Signature: `verb/Beam()`
+- Inputs: None
+- Purpose: Handle beam.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/DeathBeam
+- Signature: `verb/DeathBeam()`
+- Inputs: None
+- Purpose: Handle death beam.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Makankosappo
+- Signature: `verb/Makankosappo()`
+- Inputs: None
+- Purpose: Handle makankosappo.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Kamehameha
+- Signature: `verb/Kamehameha()`
+- Inputs: None
+- Purpose: Handle kamehameha.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Dodompa
+- Signature: `verb/Dodompa()`
+- Inputs: None
+- Purpose: Handle dodompa.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Final_Flash
+- Signature: `verb/Final_Flash()`
+- Inputs: None
+- Purpose: Handle final flash.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Galic_Gun
+- Signature: `verb/Galic_Gun()`
+- Inputs: None
+- Purpose: Handle galic gun.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Masenko
+- Signature: `verb/Masenko()`
+- Inputs: None
+- Purpose: Handle masenko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/proc/BeamDescription
+- Signature: `obj/Attacks/proc/BeamDescription()`
+- Inputs: None
+- Purpose: Handle beam description.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Projectile System/Blasts.dm
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Buster_Barrage
+- Signature: `verb/Buster_Barrage()`
+- Inputs: None
+- Purpose: Handle buster barrage.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Buster_Barrage
+- Signature: `mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)`
+- Inputs: obj/Attacks/Buster_Barrage/B
+- Purpose: Handle buster barrage.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/Buster_Barrage_Move
+- Signature: `obj/proc/Buster_Barrage_Move()`
+- Inputs: None
+- Purpose: Handle buster barrage move.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Attack_Barrier
+- Signature: `verb/Attack_Barrier()`
+- Inputs: None
+- Purpose: Handle attack barrier.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/attack_barrier_loop
+- Signature: `obj/Blast/proc/attack_barrier_loop()`
+- Inputs: None
+- Purpose: Handle attack barrier loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/MaxAttackBarrierBlasts
+- Signature: `mob/proc/MaxAttackBarrierBlasts()`
+- Inputs: None
+- Purpose: Handle max attack barrier blasts.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/UsingAttackBarrier
+- Signature: `mob/proc/UsingAttackBarrier()`
+- Inputs: None
+- Purpose: Handle using attack barrier.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Attack_Barrier
+- Signature: `mob/proc/Attack_Barrier(obj/Attacks/Attack_Barrier/B)`
+- Inputs: obj/Attacks/Attack_Barrier/B
+- Purpose: Handle attack barrier.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/Ki_Toggle
+- Signature: `mob/verb/Ki_Toggle()`
+- Inputs: None
+- Purpose: Handle ki toggle.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/AssignIconSize
+- Signature: `obj/proc/AssignIconSize()`
+- Inputs: None
+- Purpose: Handle assign icon size.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blasts/Click
+- Signature: `Click()`
+- Inputs: None
+- Purpose: Handle click.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Aura_Choices/Click
+- Signature: `Click()`
+- Inputs: None
+- Purpose: Handle click.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Charges/Click
+- Signature: `Click()`
+- Inputs: None
+- Purpose: Handle click.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/Blast/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Blast_Options
+- Signature: `verb/Blast_Options()`
+- Inputs: None
+- Purpose: Handle blast options.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Recalculate_blast_drain
+- Signature: `proc/Recalculate_blast_drain()`
+- Inputs: None
+- Purpose: Handle recalculate blast drain.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Blast
+- Signature: `verb/Blast()`
+- Inputs: None
+- Purpose: Handle blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/Blast_macro
+- Signature: `mob/verb/Blast_macro()`
+- Inputs: None
+- Purpose: Handle blast macro.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/blast_fire_loop
+- Signature: `mob/proc/blast_fire_loop()`
+- Inputs: None
+- Purpose: Handle blast fire loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/get_blast_refire
+- Signature: `mob/proc/get_blast_refire()`
+- Inputs: None
+- Purpose: Return blast refire.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/get_shuriken_refire
+- Signature: `mob/proc/get_shuriken_refire()`
+- Inputs: None
+- Purpose: Return shuriken refire.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Blast_Fire
+- Signature: `mob/proc/Blast_Fire(obj/Attacks/Blast/B)`
+- Inputs: obj/Attacks/Blast/B
+- Purpose: Handle blast fire.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/BlastAutoTargetGo
+- Signature: `obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0)`
+- Inputs: boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0
+- Purpose: Handle blast auto target go.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/BlastVectorWalk
+- Signature: `obj/Blast/proc/BlastVectorWalk(angle = 0)`
+- Inputs: angle = 0
+- Purpose: Handle blast vector walk.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/Blast_Move
+- Signature: `obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)`
+- Inputs: obj/Attacks/Blast/b, mob/m, skip_first_delay
+- Purpose: Handle blast move.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Disabled
+- Signature: `mob/proc/Disabled()`
+- Inputs: None
+- Purpose: Handle disabled.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Big_Bang
+- Signature: `verb/Big_Bang()`
+- Inputs: None
+- Purpose: Handle big bang.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Charge
+- Signature: `verb/Charge()`
+- Inputs: None
+- Purpose: Handle charge.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/blast_walk
+- Signature: `obj/proc/blast_walk(delay=1,start_dir)`
+- Inputs: delay=1, start_dir
+- Purpose: Handle blast walk.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/New
+- Signature: `obj/Attacks/New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/CyberCharge
+- Signature: `verb/CyberCharge()`
+- Inputs: None
+- Purpose: Handle cyber charge.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Kienzan
+- Signature: `verb/Kienzan()`
+- Inputs: None
+- Purpose: Handle kienzan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/SpinBlast
+- Signature: `verb/SpinBlast()`
+- Inputs: None
+- Purpose: Handle spin blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Makosen
+- Signature: `verb/Makosen()`
+- Inputs: None
+- Purpose: Handle makosen.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Time_Freeze_Energy/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/TF_Delete
+- Signature: `proc/TF_Delete()`
+- Inputs: None
+- Purpose: Handle tf delete.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Fill_Active_Freezes_List
+- Signature: `mob/proc/Fill_Active_Freezes_List()`
+- Inputs: None
+- Purpose: Handle fill active freezes list.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Time_Freeze
+- Signature: `verb/Time_Freeze()`
+- Inputs: None
+- Purpose: Handle time freeze.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/Explosion/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Explosion_Toggle
+- Signature: `verb/Explosion_Toggle()`
+- Inputs: None
+- Purpose: Handle explosion toggle.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *mob/proc/TryScatterShot
+- Signature: `TryScatterShot(obj/Attacks/Scatter_Shot/s)`
+- Inputs: obj/Attacks/Scatter_Shot/s
+- Purpose: Handle try scatter shot.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *mob/proc/CanScatterShot
+- Signature: `CanScatterShot(obj/Attacks/Scatter_Shot/s)`
+- Inputs: obj/Attacks/Scatter_Shot/s
+- Purpose: Return whether Scatter Shot.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### *mob/proc/StopScatterShotting
+- Signature: `StopScatterShotting(obj/Attacks/Scatter_Shot/s)`
+- Inputs: obj/Attacks/Scatter_Shot/s
+- Purpose: Stop Scatter Shotting.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### *mob/proc/ScatterShotInterrupted
+- Signature: `ScatterShotInterrupted(obj/Attacks/Scatter_Shot/s, ignore_low_ki)`
+- Inputs: obj/Attacks/Scatter_Shot/s, ignore_low_ki
+- Purpose: Handle scatter shot interrupted.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *mob/proc/ScatterShot
+- Signature: `ScatterShot(obj/Attacks/Scatter_Shot/s)`
+- Inputs: obj/Attacks/Scatter_Shot/s
+- Purpose: Handle scatter shot.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *mob/proc/FireScatterShotsLoop
+- Signature: `FireScatterShotsLoop(obj/Attacks/Scatter_Shot/s)`
+- Inputs: obj/Attacks/Scatter_Shot/s
+- Purpose: Handle fire scatter shots loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *mob/proc/NewScatterShotBlast
+- Signature: `NewScatterShotBlast(mob/m, obj/Attacks/Scatter_Shot/s)`
+- Inputs: mob/m, obj/Attacks/Scatter_Shot/s
+- Purpose: Handle new scatter shot blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/ScatterShotGoTo
+- Signature: `ScatterShotGoTo(turf/t)`
+- Inputs: turf/t
+- Purpose: Handle scatter shot go to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/ScatterShotInterruptedFlyOff
+- Signature: `ScatterShotInterruptedFlyOff()`
+- Inputs: None
+- Purpose: Handle scatter shot interrupted fly off.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/ScatterShotAttackTarget
+- Signature: `ScatterShotAttackTarget()`
+- Inputs: None
+- Purpose: Handle scatter shot attack target.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Attacks/Scatter_Shot/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Scatter_Shot
+- Signature: `verb/Scatter_Shot()`
+- Inputs: None
+- Purpose: Handle scatter shot.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Sokidan
+- Signature: `verb/Sokidan()`
+- Inputs: None
+- Purpose: Handle sokidan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Genocide
+- Signature: `verb/Genocide()`
+- Inputs: None
+- Purpose: Handle genocide.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Small_crater
+- Signature: `proc/Small_crater(turf/t)`
+- Inputs: turf/t
+- Purpose: Handle small crater.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Crater/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Crater/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Crater/proc/SmallCraterDel
+- Signature: `SmallCraterDel()`
+- Inputs: None
+- Purpose: Handle small crater del.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/BigCrater
+- Signature: `proc/BigCrater(turf/pos, maxSize, growTime, fadeTime, minRangeFromOtherCraters)`
+- Inputs: turf/pos, maxSize, growTime, fadeTime, minRangeFromOtherCraters
+- Purpose: Handle big crater.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/BigCrater/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/BigCrater/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/BigCrater/proc/CraterNew
+- Signature: `CraterNew()`
+- Inputs: None
+- Purpose: Handle crater new.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/BigCrater/proc/CraterDeleteTimer
+- Signature: `CraterDeleteTimer()`
+- Inputs: None
+- Purpose: Handle crater delete timer.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/BigCrater/proc/BigCraterDel
+- Signature: `BigCraterDel()`
+- Inputs: None
+- Purpose: Handle big crater del.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Shockwave
+- Signature: `verb/Shockwave()`
+- Inputs: None
+- Purpose: Handle shockwave.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Projectile System/Projectile Core.dm
+
+#### obj/Ability/proc/SetCooldown
+- Signature: `SetCooldown(mob/m)`
+- Inputs: mob/m
+- Purpose: Set Cooldown.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### obj/Ability/Blast/TestBlast/verb/Hotbar_use
+- Signature: `Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Ability/Blast/TestBlast/verb/TestBlast
+- Signature: `TestBlast()`
+- Inputs: None
+- Purpose: Handle test blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Projectile System/Projectiles.dm
+
+#### obj/Blast/proc/setStats
+- Signature: `obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1)`
+- Inputs: mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1
+- Purpose: Set Stats.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/fill_cached_blasts
+- Signature: `proc/fill_cached_blasts()`
+- Inputs: None
+- Purpose: Handle fill cached blasts.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/get_cached_blast
+- Signature: `proc/get_cached_blast()`
+- Inputs: None
+- Purpose: Return cached blast.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### obj/Blast/proc/cache_blast
+- Signature: `obj/Blast/proc/cache_blast()`
+- Inputs: None
+- Purpose: Handle cache blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/Del
+- Signature: `obj/Blast/Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Update_transform_size
+- Signature: `proc/Update_transform_size(new_size=1)`
+- Inputs: new_size=1
+- Purpose: Update transform size.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/Shrapnel
+- Signature: `proc/Shrapnel() if(Shrapnel)`
+- Inputs: None
+- Purpose: Handle shrapnel.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/Move
+- Signature: `Move()`
+- Inputs: None
+- Purpose: Handle move.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/CheckBlastHomingTarget
+- Signature: `proc/CheckBlastHomingTarget()`
+- Inputs: None
+- Purpose: Check Blast Homing Target.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Is_viable_homing_target
+- Signature: `proc/Is_viable_homing_target(mob/m)`
+- Inputs: mob/m
+- Purpose: Return whether viable homing target.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### proc/Blast_Homing
+- Signature: `proc/Blast_Homing()`
+- Inputs: None
+- Purpose: Handle blast homing.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Beam_Appearance
+- Signature: `proc/Beam_Appearance()`
+- Inputs: None
+- Purpose: Handle beam appearance.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Update_diagonal_overlays
+- Signature: `proc/Update_diagonal_overlays()`
+- Inputs: None
+- Purpose: Update diagonal overlays.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/Shield
+- Signature: `proc/Shield(mob/A)`
+- Inputs: mob/A
+- Purpose: Handle shield.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/GetSuckedIntoBeam
+- Signature: `proc/GetSuckedIntoBeam(mob/m)`
+- Inputs: mob/m
+- Purpose: Return Sucked Into Beam.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Beam
+- Signature: `proc/Beam()`
+- Inputs: None
+- Purpose: Handle beam.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Explode
+- Signature: `proc/Explode()`
+- Inputs: None
+- Purpose: Handle explode.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/BlastCross
+- Signature: `proc/BlastCross(mob/m, override_dir, override_delete)`
+- Inputs: mob/m, override_dir, override_delete
+- Purpose: Handle blast cross.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/BlastMobCross
+- Signature: `proc/BlastMobCross(mob/m, override_dir, override_delete)`
+- Inputs: mob/m, override_dir, override_delete
+- Purpose: Handle blast mob cross.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/Bump
+- Signature: `Bump(mob/A,override_dir,override_delete)`
+- Inputs: mob/A, override_dir, override_delete
+- Purpose: Handle bump.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/Bounce_Dir
+- Signature: `Bounce_Dir()`
+- Inputs: None
+- Purpose: Handle bounce dir.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/Shockwave_Knockback
+- Signature: `obj/proc/Shockwave_Knockback(Amount,turf/A)`
+- Inputs: Amount, turf/A
+- Purpose: Handle shockwave knockback.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Shockwave_Knockback
+- Signature: `mob/proc/Shockwave_Knockback(Amount,turf/A, bypass_immunity)`
+- Inputs: Amount, turf/A, bypass_immunity
+- Purpose: Handle shockwave knockback.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/BeamStruggleWinning
+- Signature: `BeamStruggleWinning(obj/Blast/a, obj/Blast/b)`
+- Inputs: obj/Blast/a, obj/Blast/b
+- Purpose: Handle beam struggle winning.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Blast/proc/BeamStrugglePower
+- Signature: `obj/Blast/proc/BeamStrugglePower()`
+- Inputs: None
+- Purpose: Handle beam struggle power.
+- Returns: none (implicit).
+- Side effects: see implementation.
