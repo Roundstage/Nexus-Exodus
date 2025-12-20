@@ -1,78 +1,53 @@
-//these will not be called at all when bumping into a turf so use bump for checking anything to do with turf colliding
-//actually byond says theyre called on turfs now in a new update
+atom/movable/proc/MovementCrossDecision(atom/movable/a)
+	//a = object attempting to cross (such as the player)
+	//src = the object 'a' is trying to cross
+	if(!density) return null
 
-mob
-	Cross(atom/movable/a) //a = the object attempting to overlap src - basically the opposite of what you would think
-		if(density)
-			if(ismob(a))
-				var/mob/m = a
-				//this is so npcs can never overlap a player because its wonky looking and makes fighting them hard
-				//maybe it should only be limited to mob/Enemy but idk right now
-				if(!m.client) return 0
-				if(m.client && istype(src, /mob/Enemy)) return 0 //this is so a flying player can not overlap a nonflying Enemy, because its just annoying for the player to
-					//fight npcs when flying if they are flying through them because the npc cant fly
-				if(!KB && m.Flying && !Flying)
-					//src << "1"
-					return 1
-			if(isobj(a))
-				if(istype(a, /obj/Blast))
-					var/obj/Blast/b = a
-					if(b.blast_go_over_owner && b.Owner == src) return 1
-		. = ..()
+	if(ismob(src))
+		var/mob/src_m = src
+		if(ismob(a))
+			var/mob/m = a
+			//this is so npcs can never overlap a player because its wonky looking and makes fighting them hard
+			//maybe it should only be limited to mob/Enemy but idk right now
+			if(!m.client) return 0
+			if(m.client && istype(src_m, /mob/Enemy)) return 0 //this is so a flying player can not overlap a nonflying Enemy, because its just annoying for the player to
+				//fight npcs when flying if they are flying through them because the npc cant fly
+			if(!src_m.KB && m.Flying && !src_m.Flying)
+				//src << "1"
+				return 1
+		if(isobj(a))
+			if(istype(a, /obj/Blast))
+				var/obj/Blast/b = a
+				if(b.blast_go_over_owner && b.Owner == src_m) return 1
 
-obj
-	Cross(atom/movable/a)
-		if(density)
-			if(ismob(a))
-				var/mob/m = a
-				if(!istype(src, /obj/Turfs/Door))
-					if(m.Flying || m.lunge_attacking || m.evading) return 1
-		. = ..()
-
-obj/Blast/Cross(atom/movable/a)
-	if(density)
+	if(istype(src, /obj/Blast))
+		var/obj/Blast/src_b = src
 		if(istype(a, /obj/Blast))
 			var/obj/Blast/b = a
-			if(b.pass_over_owners_blasts && b.Owner == Owner) return 1
+			if(b.pass_over_owners_blasts && b.Owner == src_b.Owner) return 1
 		if(ismob(a))
-			if(a.dir == dir) return 1 //you can cross over blasts as long as it is from behind
-	. = ..()
+			if(a.dir == src_b.dir) return 1 //you can cross over blasts as long as it is from behind
+	else if(isobj(src))
+		var/obj/src_o = src
+		if(ismob(a))
+			var/mob/m = a
+			if(!istype(src_o, /obj/Turfs/Door))
+				if(m.Flying || m.lunge_attacking || m.evading) return 1
 
-atom/movable
-	Cross(atom/movable/a)
-		//a = object attempting to cross (such as the player)
-		//src = the object 'a' is trying to cross
-		if(density)
-			if(istype(a,/obj/Blast))
-				var/obj/Blast/b = a
-				if(b.BlastCross(src)) return 1
-			if(ismob(a))
-				var/mob/m = a
-				if(m.MobCross(src)) return 1
-		. = ..()
+	if(istype(a,/obj/Blast))
+		var/obj/Blast/b = a
+		if(b.BlastCross(src)) return 1
+	if(ismob(a))
+		var/mob/m = a
+		if(m.MobCross(src)) return 1
+	return null
 
-/*atom/movable
-	Cross(atom/movable/a)
-		//clients << "[a] is attempting to cross [src]"
-		. = ..()
-
-	Crossed(atom/movable/a)
-		//clients << "[a] has crossed onto [src]"
-		. = ..()
-
-	Uncross(atom/movable/a)
-		//clients << "[a] has attempted to stop overlapping [src]"
-		. = ..()
-
-	Uncrossed(atom/movable/a)
-		//no default return value for Uncrossed!
-		//clients << "[a] has stopped overlapping [src]"
-*/
-
-atom/var/canSideStep = 1
+atom/var
+	can_side_step = 1
+	canSideStep = 1
 
 mob/proc/SideStep(obj/o)
-	if(!o.canSideStep) return
+	if(!o.can_side_step || !o.canSideStep) return
 	var
 		old_loc = loc
 		old_dir = dir
@@ -113,18 +88,16 @@ mob/proc
 					ApplyStun(time = stun)
 				del(o)
 
-//bump is still needed to detect turf collisions and a few other things
-mob/Bump(mob/A)
-	if(isturf(A))
-		for(var/obj/Controls/C in A)
-			C.Ship_Options(src)
-			break
-		for(var/obj/items/Simulator/s in A)
-			SimBump(s)
-			break
+	MovementBump(atom/A)
+		if(isturf(A))
+			for(var/obj/Controls/C in A)
+				C.Ship_Options(src)
+				break
+			for(var/obj/items/Simulator/s in A)
+				SimBump(s)
+				break
 
-turf/Enter(mob/m)
-	var/return_value = ..()
+turf/proc/MovementEnterResult(mob/m, return_value)
 	//allow flying over dense turfs
 	if(density && ismob(m) && type != /turf/Other/Blank && !istype(src, /turf/Teleporter))
 		if(FlyOverAble || build_category != BUILD_ROOF)
@@ -136,21 +109,6 @@ turf/Enter(mob/m)
 					for(d in src) if(d.density && d.Password) break
 					if(!d) return_value = 1
 	return return_value
-
-
-	//original code
-	/*. = ..()
-	//pass over dense turfs when flying
-	if(density)
-		if(ismob(m) && type != /turf/Other/Blank && !istype(src, /turf/Teleporter))
-			if(FlyOverAble || build_category != BUILD_ROOF)
-				if(m.Flying || m.lunge_attacking || m.evading)
-					var/mob/m2
-					for(m2 in src) if(m2 != m) break
-					if(!m2)
-						var/obj/Turfs/Door/d
-						for(d in src) if(d.density && d.Password) break
-						if(!d) return 1*/
 
 mob/proc/DoorPasswordAlert(obj/Turfs/Door/d)
 	set waitfor=0

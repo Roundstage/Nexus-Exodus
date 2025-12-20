@@ -1,14 +1,4 @@
-//we do this to fix the bug where you can make spacepods move at double speed to run away from someone if you add
-//.north .south .east .west macros to your byond macros and they'll stack together with our macros here causing you
-//to move really fast
-client
-	North() return 0
-	South() return 0
-	East() return 0
-	West() return 0
-
-
-//if you key up then key down in the same tick you still have to move 1 tile!
+//input state for movement and hotbar macros
 mob/var/tmp
 	north=0
 	south=0
@@ -47,9 +37,8 @@ mob/proc/Macro_direction()
 	if(west>=world.time) return WEST
 	if(east>=world.time) return EAST
 
-mob/verb/KeyDown(d as text)
+mob/proc/HandleKeyDown(d)
 	set waitfor=0
-	set hidden=1
 	set instant=1
 
 	/*if(!(d in list("north","south","east","west")))
@@ -81,11 +70,11 @@ mob/verb/KeyDown(d as text)
 
 		if(Digging)
 			Digging = 0
-			src << "You have stopped digging"
+			movement_port.sendMessage(src, "You have stopped digging")
 
 		if(Regeneration_Skill)
 			Regeneration_Skill = 0
-			src << "You stop regenerating"
+			movement_port.sendMessage(src, "You stop regenerating")
 
 		//if its the classic ui then the only way to do a double tap dash is to double tap, instead of ctrl + direction like the new way
 		//var/double_tapped
@@ -97,7 +86,7 @@ mob/verb/KeyDown(d as text)
 		var/warped
 		//instead of double tapping we have switched to Ctrl + Direction
 		//if(classic_ui && double_tapped) warped = DoubleTapWarp(d)
-		if(client && client.ctrl_button) warped = DoubleTapWarp(d)
+		if(movement_port.clientCtrlDown(src)) warped = DoubleTapWarp(d)
 		//Dash_Evade(Macro_direction(), from_double_tap=double_tapped)
 
 		if(!warped) move_loop()
@@ -124,10 +113,8 @@ mob/proc/HotbarKeyUpHandler(d)
 		if(o.is_for_moving)
 			ReleaseKey(o.move_macro_dir)
 
-
-mob/verb/KeyUp(d as text)
+mob/proc/HandleKeyUp(d)
 	set waitfor=0
-	set hidden=1
 	set instant=1
 	//world<<"KeyUp time: [world.time]"
 
@@ -205,7 +192,7 @@ mob/proc/move_loop()
 			var/turf/prev_loc = base_loc()
 			var/prevDir = dir
 			step(src,d)
-			if(client && client.shift) dir = prevDir //strafing
+			if(movement_port.clientShiftDown(src)) dir = prevDir //strafing
 			if(prev_loc != base_loc()) last_input_move = world.time
 			UpdateNextInputMoveTime(d)
 
@@ -248,33 +235,3 @@ mob/proc/move_loop()
 		if(west==2) west=0
 
 	move_looping=0
-
-
-
-client
-	var
-		tmp
-			ctrl_button = 0
-			shift = 0
-
-mob/verb
-	SetCtrlStatus(status as text)
-		set hidden = 1
-		if(status == "0") 
-			client.ctrl_button = 0
-			is_ctrl_down = 0		// Adds to global escope because fuck adding whatever needs it to the  proc above
-			
-		else 
-			client.ctrl_button = 1
-			is_ctrl_down = 1
-		
-
-	ShiftDown()
-		set hidden 		= 1
-		client.shift 	= 1
-		is_shift_down 	= 1
-
-	ShiftUp()
-		set hidden 		= 1
-		client.shift 	= 0
-		is_shift_down 	= 0
