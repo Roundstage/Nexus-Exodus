@@ -5,15 +5,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ## Files
 - `src/Code/Movement/Cross.dm`
-- `src/Code/Movement/Double Tap Warp.dm`
-- `src/Code/Movement/Move Delay.dm`
-- `src/Code/Movement/Move Macros.dm`
+- `src/Code/Movement/DoubleTapWarp.dm`
 - `src/Code/Movement/Move.dm`
-- `src/Code/Movement/Pixel Moving.dm`
+- `src/Code/Movement/MoveDelay.dm`
+- `src/Code/Movement/MoveMacros.dm`
+- `src/Code/Movement/PixelMoving.dm`
 - `src/Code/Movement/Tens Comments/Move.dm`
-- `src/Code/Movement/Tens Comments/Move_Delay.dm`
-- `src/Code/Movement/Tens Comments/Move_Macros.dm`
-- `src/Code/Movement/Tens Comments/Pixel_Moving.dm`
+- `src/Code/Movement/Tens Comments/MoveDelay.dm`
+- `src/Code/Movement/Tens Comments/MoveMacros.dm`
+- `src/Code/Movement/Tens Comments/PixelMoving.dm`
 
 ## Proc Reference
 
@@ -110,7 +110,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Movement/Double Tap Warp.dm
+### src/Code/Movement/DoubleTapWarp.dm
 
 #### mob/proc/TapWarpCantMoveTime
 - Signature: `TapWarpCantMoveTime()`
@@ -151,136 +151,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `TapWarpToDir(d, warp_dist = 12)`
 - Inputs: d, warp_dist = 12
 - Purpose: Handle tap warp to dir.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Movement/Move Delay.dm
-
-#### mob/proc/GetInputMoveDelay
-- Signature: `GetInputMoveDelay(d = NORTH, raw_mult_only)`
-- Inputs: d = NORTH, raw_mult_only
-- Purpose: Return Input Move Delay.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/UpdateNextInputMoveTime
-- Signature: `UpdateNextInputMoveTime(d = NORTH)`
-- Inputs: d = NORTH
-- Purpose: Update Next Input Move Time.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/CanInputMove
-- Signature: `CanInputMove()`
-- Inputs: None
-- Purpose: Return whether Input Move.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/AlterInputDisabled
-- Signature: `AlterInputDisabled(n = 1)`
-- Inputs: n = 1
-- Purpose: Handle alter input disabled.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/FearSlowDown
-- Signature: `FearSlowDown()`
-- Inputs: None
-- Purpose: Handle fear slow down.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/HealthSlowdown
-- Signature: `HealthSlowdown()`
-- Inputs: None
-- Purpose: Handle health slowdown.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Movement/Move Macros.dm
-
-#### mob/proc/Macro_direction
-- Signature: `mob/proc/Macro_direction()`
-- Inputs: None
-- Purpose: Handle macro direction.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/KeyDown
-- Signature: `mob/verb/KeyDown(d as text)`
-- Inputs: d as text
-- Purpose: Handle key down.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/HotbarUseHandler
-- Signature: `mob/proc/HotbarUseHandler(d)`
-- Inputs: d
-- Purpose: Handle hotbar use handler.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/HotbarKeyUpHandler
-- Signature: `mob/proc/HotbarKeyUpHandler(d)`
-- Inputs: d
-- Purpose: Handle hotbar key up handler.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/KeyUp
-- Signature: `mob/verb/KeyUp(d as text)`
-- Inputs: d as text
-- Purpose: Handle key up.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ReleaseKey
-- Signature: `mob/proc/ReleaseKey(d)`
-- Inputs: d
-- Purpose: Handle release key.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/move_dir
-- Signature: `mob/proc/move_dir()`
-- Inputs: None
-- Purpose: Handle move dir.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ClientPixelOffsetLoop
-- Signature: `ClientPixelOffsetLoop()`
-- Inputs: None
-- Purpose: Handle client pixel offset loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/move_loop
-- Signature: `mob/proc/move_loop()`
-- Inputs: None
-- Purpose: Handle move loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/SetCtrlStatus
-- Signature: `SetCtrlStatus(status as text)`
-- Inputs: status as text
-- Purpose: Set Ctrl Status.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/verb/ShiftDown
-- Signature: `ShiftDown()`
-- Inputs: None
-- Purpose: Handle shift down.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/ShiftUp
-- Signature: `ShiftUp()`
-- Inputs: None
-- Purpose: Handle shift up.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -433,7 +303,137 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Movement/Pixel Moving.dm
+### src/Code/Movement/MoveDelay.dm
+
+#### mob/proc/GetInputMoveDelay
+- Signature: `GetInputMoveDelay(d = NORTH, raw_mult_only)`
+- Inputs: d = NORTH, raw_mult_only
+- Purpose: Return Input Move Delay.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/UpdateNextInputMoveTime
+- Signature: `UpdateNextInputMoveTime(d = NORTH)`
+- Inputs: d = NORTH
+- Purpose: Update Next Input Move Time.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/CanInputMove
+- Signature: `CanInputMove()`
+- Inputs: None
+- Purpose: Return whether Input Move.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/AlterInputDisabled
+- Signature: `AlterInputDisabled(n = 1)`
+- Inputs: n = 1
+- Purpose: Handle alter input disabled.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/FearSlowDown
+- Signature: `FearSlowDown()`
+- Inputs: None
+- Purpose: Handle fear slow down.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/HealthSlowdown
+- Signature: `HealthSlowdown()`
+- Inputs: None
+- Purpose: Handle health slowdown.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Movement/MoveMacros.dm
+
+#### mob/proc/Macro_direction
+- Signature: `mob/proc/Macro_direction()`
+- Inputs: None
+- Purpose: Handle macro direction.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/KeyDown
+- Signature: `mob/verb/KeyDown(d as text)`
+- Inputs: d as text
+- Purpose: Handle key down.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/HotbarUseHandler
+- Signature: `mob/proc/HotbarUseHandler(d)`
+- Inputs: d
+- Purpose: Handle hotbar use handler.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/HotbarKeyUpHandler
+- Signature: `mob/proc/HotbarKeyUpHandler(d)`
+- Inputs: d
+- Purpose: Handle hotbar key up handler.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/KeyUp
+- Signature: `mob/verb/KeyUp(d as text)`
+- Inputs: d as text
+- Purpose: Handle key up.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ReleaseKey
+- Signature: `mob/proc/ReleaseKey(d)`
+- Inputs: d
+- Purpose: Handle release key.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/move_dir
+- Signature: `mob/proc/move_dir()`
+- Inputs: None
+- Purpose: Handle move dir.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ClientPixelOffsetLoop
+- Signature: `ClientPixelOffsetLoop()`
+- Inputs: None
+- Purpose: Handle client pixel offset loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/move_loop
+- Signature: `mob/proc/move_loop()`
+- Inputs: None
+- Purpose: Handle move loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/SetCtrlStatus
+- Signature: `SetCtrlStatus(status as text)`
+- Inputs: status as text
+- Purpose: Set Ctrl Status.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/verb/ShiftDown
+- Signature: `ShiftDown()`
+- Inputs: None
+- Purpose: Handle shift down.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/ShiftUp
+- Signature: `ShiftUp()`
+- Inputs: None
+- Purpose: Handle shift up.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Movement/PixelMoving.dm
 
 #### mob/Admin4/verb/FPS
 - Signature: `mob/Admin4/verb/FPS()`
@@ -605,7 +605,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Movement/Tens Comments/Move_Delay.dm
+### src/Code/Movement/Tens Comments/MoveDelay.dm
 
 #### mob/Admin4/verb/Set_Movement_Speed
 - Signature: `mob/Admin4/verb/Set_Movement_Speed()`
@@ -656,7 +656,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Movement/Tens Comments/Move_Macros.dm
+### src/Code/Movement/Tens Comments/MoveMacros.dm
 
 #### mob/proc/Macro_direction
 - Signature: `mob/proc/Macro_direction()`
@@ -742,7 +742,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Movement/Tens Comments/Pixel_Moving.dm
+### src/Code/Movement/Tens Comments/PixelMoving.dm
 
 #### mob/Admin4/verb/FPS
 - Signature: `mob/Admin4/verb/FPS()`

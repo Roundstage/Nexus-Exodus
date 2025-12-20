@@ -410,7 +410,7 @@ obj/Aura_Choices
 		if(C) icon+=C
 		usr.Auras.SSj4=initial(usr.Auras.SSj4)
 		if(C) usr.Auras.SSj4+=C
-		usr.FlightAura='Aura Fly.dmi'
+		usr.FlightAura='src/Icons/Ki/Auras/Aura Fly.dmi'
 		if(C) usr.FlightAura+=C
 		usr.Auras.icon=image(icon=icon,icon_state=icon_state)
 		usr.Auras.auraYoffset = auraYoffset
@@ -429,7 +429,7 @@ obj/Aura_Choices
 	Sparks icon='AbsorbSparks.dmi'
 	Electric icon='Aura, Bloo.dmi'
 	Electric_2 icon='Aura Electric.dmi'
-	Default icon='Aura.dmi'
+	Default icon='src/Icons/Ki/Auras/Aura.dmi'
 	Flowing icon='Aura Normal.dmi'
 	Demon_Flame icon='Black Demonflame.dmi'
 	Vampire_Aura icon='Aura 2.dmi'

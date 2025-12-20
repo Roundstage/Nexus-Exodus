@@ -4,23 +4,23 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Technology/Body Swap.dm`
+- `src/Code/Technology/BodySwap.dm`
 - `src/Code/Technology/Bombs.dm`
-- `src/Code/Technology/Cyber Drones.dm`
+- `src/Code/Technology/CyberDrones.dm`
 - `src/Code/Technology/Cybernetics.dm`
-- `src/Code/Technology/Gun Customization.dm`
+- `src/Code/Technology/GunCustomization.dm`
 - `src/Code/Technology/Guns.dm`
-- `src/Code/Technology/Land Mine.dm`
+- `src/Code/Technology/LandMine.dm`
+- `src/Code/Technology/NewDrones.dm`
 - `src/Code/Technology/Shurikens.dm`
-- `src/Code/Technology/Smoke Bomb.dm`
+- `src/Code/Technology/SmokeBomb.dm`
 - `src/Code/Technology/Technology.dm`
 - `src/Code/Technology/Vampires.dm`
 - `src/Code/Technology/Zombies.dm`
-- `src/Code/Technology/new drones.dm`
 
 ## Proc Reference
 
-### src/Code/Technology/Body Swap.dm
+### src/Code/Technology/BodySwap.dm
 
 #### proc/Switch_Bodies
 - Signature: `proc/Switch_Bodies(mob/A,mob/P,save_override)`
@@ -248,7 +248,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Technology/Cyber Drones.dm
+### src/Code/Technology/CyberDrones.dm
 
 #### mob/proc/Drone_initialize
 - Signature: `mob/proc/Drone_initialize()`
@@ -938,7 +938,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Technology/Gun Customization.dm
+### src/Code/Technology/GunCustomization.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -1208,7 +1208,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Technology/Land Mine.dm
+### src/Code/Technology/LandMine.dm
 
 #### obj/items/Land_Mine/New
 - Signature: `New()`
@@ -1287,6 +1287,43 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/Technology/NewDrones.dm
+
+#### mob/proc/Get_drone_module
+- Signature: `mob/proc/Get_drone_module()`
+- Inputs: None
+- Purpose: Return drone module.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Drone_initialize_new
+- Signature: `mob/proc/Drone_initialize_new()`
+- Inputs: None
+- Purpose: Handle drone initialize new.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Drone_AI
+- Signature: `mob/proc/Drone_AI()`
+- Inputs: None
+- Purpose: Handle drone ai.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/get_path
+- Signature: `proc/get_path(mob/a,mob/b)`
+- Inputs: mob/a, mob/b
+- Purpose: Return path.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/Admin5/verb/pathtest
+- Signature: `mob/Admin5/verb/pathtest(mob/m in world)`
+- Inputs: mob/m in world
+- Purpose: Handle pathtest.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
 ### src/Code/Technology/Shurikens.dm
 
 #### obj/items/Shuriken/New
@@ -1345,7 +1382,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Technology/Smoke Bomb.dm
+### src/Code/Technology/SmokeBomb.dm
 
 #### obj/items/Smoke_Bomb/New
 - Signature: `New()`
@@ -2232,42 +2269,5 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `verb/Synthesize()`
 - Inputs: None
 - Purpose: Handle synthesize.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Technology/new drones.dm
-
-#### mob/proc/Get_drone_module
-- Signature: `mob/proc/Get_drone_module()`
-- Inputs: None
-- Purpose: Return drone module.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Drone_initialize_new
-- Signature: `mob/proc/Drone_initialize_new()`
-- Inputs: None
-- Purpose: Handle drone initialize new.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Drone_AI
-- Signature: `mob/proc/Drone_AI()`
-- Inputs: None
-- Purpose: Handle drone ai.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/get_path
-- Signature: `proc/get_path(mob/a,mob/b)`
-- Inputs: mob/a, mob/b
-- Purpose: Return path.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/Admin5/verb/pathtest
-- Signature: `mob/Admin5/verb/pathtest(mob/m in world)`
-- Inputs: mob/m in world
-- Purpose: Handle pathtest.
 - Returns: none (implicit).
 - Side effects: see implementation.

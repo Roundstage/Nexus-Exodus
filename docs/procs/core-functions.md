@@ -4,37 +4,46 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Core Functions/DB Mode Characters.dm`
-- `src/Code/Core Functions/DB Mode Core.dm`
-- `src/Code/Core Functions/Energy_System.dm`
-- `src/Code/Core Functions/List Sorting 2018.dm`
-- `src/Code/Core Functions/Main - Creation.dm`
-- `src/Code/Core Functions/Main - World.dm`
+- `src/Code/Core Functions/AaaMainVars.dm`
+- `src/Code/Core Functions/DBModeCharacters.dm`
+- `src/Code/Core Functions/DBModeCore.dm`
+- `src/Code/Core Functions/EnergySystem.dm`
+- `src/Code/Core Functions/KoSystem.dm`
+- `src/Code/Core Functions/ListSorting2018.dm`
 - `src/Code/Core Functions/Main.dm`
+- `src/Code/Core Functions/MainCreation.dm`
+- `src/Code/Core Functions/MainWorld.dm`
 - `src/Code/Core Functions/Map.dm`
-- `src/Code/Core Functions/Monster AI revamp 2019.dm`
+- `src/Code/Core Functions/MonsterAIRevamp2019.dm`
 - `src/Code/Core Functions/NewCharacter.dm`
-- `src/Code/Core Functions/Pixel helpers.dm`
-- `src/Code/Core Functions/Races Rework.dm`
+- `src/Code/Core Functions/PathfindTest.dm`
+- `src/Code/Core Functions/PixelHelpers.dm`
+- `src/Code/Core Functions/RaceChoiceMenu.dm`
+- `src/Code/Core Functions/RacesRework.dm`
 - `src/Code/Core Functions/Saving.dm`
-- `src/Code/Core Functions/Security - Admin Banning.dm`
-- `src/Code/Core Functions/Security - Ban System 2.0.dm`
 - `src/Code/Core Functions/Security.dm`
-- `src/Code/Core Functions/Skill_System.dm`
-- `src/Code/Core Functions/Stat Points.dm`
-- `src/Code/Core Functions/Statpanel Tabs.dm`
-- `src/Code/Core Functions/Text Related.dm`
+- `src/Code/Core Functions/SecurityAdminBanning.dm`
+- `src/Code/Core Functions/SecurityBanSystem20.dm`
+- `src/Code/Core Functions/SkillSystem.dm`
+- `src/Code/Core Functions/StatPoints.dm`
+- `src/Code/Core Functions/StatpanelTabs.dm`
 - `src/Code/Core Functions/Text.dm`
+- `src/Code/Core Functions/TextRelated.dm`
 - `src/Code/Core Functions/_Game/Effects/EffectsLoops.dm`
 - `src/Code/Core Functions/_Game/Loop/MainGameLoop.dm`
-- `src/Code/Core Functions/aaa main vars.dm`
-- `src/Code/Core Functions/ko_system.dm`
-- `src/Code/Core Functions/pathfind test.dm`
-- `src/Code/Core Functions/race choice menu.dm`
 
 ## Proc Reference
 
-### src/Code/Core Functions/DB Mode Characters.dm
+### src/Code/Core Functions/AaaMainVars.dm
+
+#### proc/ShouldOneShot
+- Signature: `proc/ShouldOneShot(mob/a, mob/b) //a = attacker`
+- Inputs: mob/a, mob/b
+- Purpose: Handle should one shot.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/DBModeCharacters.dm
 
 #### proc/Generate_dbz_character
 - Signature: `proc/Generate_dbz_character(n,for_avatar,new_only)`
@@ -106,7 +115,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/DB Mode Core.dm
+### src/Code/Core Functions/DBModeCore.dm
 
 #### mob/proc/DBCharacterMenu
 - Signature: `DBCharacterMenu()`
@@ -199,7 +208,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/Energy_System.dm
+### src/Code/Core Functions/EnergySystem.dm
 
 #### Seal/proc/Seal
 - Signature: `Seal(reason, duration)`
@@ -320,7 +329,93 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/List Sorting 2018.dm
+### src/Code/Core Functions/KoSystem.dm
+
+#### mob/proc/Cause_Combat_KO
+- Signature: `Cause_Combat_KO(var/mob/victim, var/mob/attacker)`
+- Inputs: var/mob/victim, var/mob/attacker
+- Purpose: Handle cause combat ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/increase_combat_ko
+- Signature: `increase_combat_ko(var/reason_of_increase, quantity = 1, mob/victim)`
+- Inputs: var/reason_of_increase, quantity = 1, mob/victim
+- Purpose: Handle increase combat ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/decrease_combat_ko
+- Signature: `decrease_combat_ko(var/reason_of_decrease, quantity = 1, mob/victim)`
+- Inputs: var/reason_of_decrease, quantity = 1, mob/victim
+- Purpose: Handle decrease combat ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/get_time_out_of_combat
+- Signature: `get_time_out_of_combat(mob/victim)`
+- Inputs: mob/victim
+- Purpose: Return time out of combat.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/has_entered_combat
+- Signature: `has_entered_combat(mob/victim)`
+- Inputs: mob/victim
+- Purpose: Return whether entered combat.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/is_out_of_combat
+- Signature: `is_out_of_combat(mob/victim)`
+- Inputs: mob/victim
+- Purpose: Return whether out of combat.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/announce_combat_message
+- Signature: `announce_combat_message(var/message, var/mob/center)`
+- Inputs: var/message, var/mob/center
+- Purpose: Handle announce combat message.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/time_to_heal_ko
+- Signature: `time_to_heal_ko(mob/victim)`
+- Inputs: mob/victim
+- Purpose: Handle time to heal ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/set_healing_modifier
+- Signature: `set_healing_modifier(var/modifier, var/reason, var/is_cummulative = FALSE, mob/victim)`
+- Inputs: var/modifier, var/reason, var/is_cummulative = FALSE, mob/victim
+- Purpose: Set healing modifier.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/heal_spar_ko
+- Signature: `heal_spar_ko(mob/victim, time_to_heal)`
+- Inputs: mob/victim, time_to_heal
+- Purpose: Handle heal spar ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/initiate_healing
+- Signature: `initiate_healing(mob/victim, time_to_heal, healed_message)`
+- Inputs: mob/victim, time_to_heal, healed_message
+- Purpose: Handle initiate healing.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/try_healing_combat_ko
+- Signature: `try_healing_combat_ko(mob/victim)`
+- Inputs: mob/victim
+- Purpose: Handle try healing combat ko.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/ListSorting2018.dm
 
 #### proc/SortListOfObjectsAlphabetically
 - Signature: `SortListOfObjectsAlphabetically(list/l)`
@@ -378,7 +473,289 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Main - Creation.dm
+### src/Code/Core Functions/Main.dm
+
+#### mob/proc/NewZenkaiMods
+- Signature: `mob/proc/NewZenkaiMods()`
+- Inputs: None
+- Purpose: Handle new zenkai mods.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/GetNewZenkaiMod
+- Signature: `mob/proc/GetNewZenkaiMod()`
+- Inputs: None
+- Purpose: Return New Zenkai Mod.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Get_race_starting_bp_mod
+- Signature: `mob/proc/Get_race_starting_bp_mod()`
+- Inputs: None
+- Purpose: Return race starting bp mod.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Disabled_Verb_Check
+- Signature: `mob/proc/Disabled_Verb_Check()`
+- Inputs: None
+- Purpose: Handle disabled verb check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/code_banned
+- Signature: `mob/proc/code_banned()`
+- Inputs: None
+- Purpose: Handle code banned.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ban_alert
+- Signature: `mob/proc/ban_alert(msg)`
+- Inputs: msg
+- Purpose: Handle ban alert.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Carry_over_imprisonments
+- Signature: `mob/proc/Carry_over_imprisonments()`
+- Inputs: None
+- Purpose: Handle carry over imprisonments.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Choose_Login
+- Signature: `mob/proc/Choose_Login() if(client)`
+- Inputs: None
+- Purpose: Handle choose login.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ClickMakeNewCharacter
+- Signature: `mob/proc/ClickMakeNewCharacter()`
+- Inputs: None
+- Purpose: Handle click make new character.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/CodebanLoginCheck
+- Signature: `CodebanLoginCheck()`
+- Inputs: None
+- Purpose: Handle codeban login check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/UnsortedClientLoginStuff
+- Signature: `UnsortedClientLoginStuff()`
+- Inputs: None
+- Purpose: Handle unsorted client login stuff.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/StuffThatRunsIfYouClickNewOrLoad
+- Signature: `StuffThatRunsIfYouClickNewOrLoad()`
+- Inputs: None
+- Purpose: Handle stuff that runs if you click new or load.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ApplyStartingBP
+- Signature: `mob/proc/ApplyStartingBP()`
+- Inputs: None
+- Purpose: Apply Starting BP.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/New_Character
+- Signature: `New_Character(reincarnating,force_race,force_elite,dbz_hair,force_low_class)`
+- Inputs: reincarnating, force_race, force_elite, dbz_hair, force_low_class
+- Purpose: Handle new character.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Choose_Age
+- Signature: `Choose_Age()`
+- Inputs: None
+- Purpose: Handle choose age.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Race_Starting_Stats
+- Signature: `Race_Starting_Stats()`
+- Inputs: None
+- Purpose: Handle race starting stats.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Random_Colors
+- Signature: `Random_Colors()`
+- Inputs: None
+- Purpose: Handle random colors.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Name
+- Signature: `Name()`
+- Inputs: None
+- Purpose: Handle name.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Check_Spawn
+- Signature: `Check_Spawn(list/L)`
+- Inputs: list/L
+- Purpose: Check Spawn.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Race
+- Signature: `Race(force_race,force_elite,force_low_class)`
+- Inputs: force_race, force_elite, force_low_class
+- Purpose: Handle race.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Yeet
+- Signature: `mob/proc/Yeet()`
+- Inputs: None
+- Purpose: Handle yeet.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Human
+- Signature: `mob/proc/Human()`
+- Inputs: None
+- Purpose: Handle human.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Doll
+- Signature: `mob/proc/Doll()`
+- Inputs: None
+- Purpose: Handle doll.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Tsujin
+- Signature: `mob/proc/Tsujin()`
+- Inputs: None
+- Purpose: Handle tsujin.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Majin
+- Signature: `mob/proc/Majin()`
+- Inputs: None
+- Purpose: Handle majin.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Bio
+- Signature: `mob/proc/Bio()`
+- Inputs: None
+- Purpose: Handle bio.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Makyo
+- Signature: `mob/proc/Makyo()`
+- Inputs: None
+- Purpose: Handle makyo.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Namekian
+- Signature: `mob/proc/Namekian()`
+- Inputs: None
+- Purpose: Handle namekian.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Half_Saiyan
+- Signature: `mob/proc/Half_Saiyan()`
+- Inputs: None
+- Purpose: Handle half saiyan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Saiyan
+- Signature: `mob/proc/Saiyan(Can_Elite=1,force_elite,force_low_class)`
+- Inputs: Can_Elite=1, force_elite, force_low_class
+- Purpose: Handle saiyan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Elite_starting_bp
+- Signature: `mob/proc/Elite_starting_bp()`
+- Inputs: None
+- Purpose: Handle elite starting bp.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Elite_Saiyan
+- Signature: `mob/proc/Elite_Saiyan() if(Class!="Elite")`
+- Inputs: None
+- Purpose: Handle elite saiyan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Cooler
+- Signature: `mob/proc/Cooler()`
+- Inputs: None
+- Purpose: Handle cooler.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Legendary_Saiyan
+- Signature: `mob/proc/Legendary_Saiyan()`
+- Inputs: None
+- Purpose: Handle legendary saiyan.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Icer
+- Signature: `mob/proc/Icer()`
+- Inputs: None
+- Purpose: Handle icer.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Kai
+- Signature: `mob/proc/Kai()`
+- Inputs: None
+- Purpose: Handle kai.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Demigod
+- Signature: `mob/proc/Demigod()`
+- Inputs: None
+- Purpose: Handle demigod.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Demon
+- Signature: `mob/proc/Demon()`
+- Inputs: None
+- Purpose: Handle demon.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Android
+- Signature: `mob/proc/Android()`
+- Inputs: None
+- Purpose: Handle android.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Alien
+- Signature: `mob/proc/Alien()`
+- Inputs: None
+- Purpose: Handle alien.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/MainCreation.dm
 
 #### mob/proc/Get_spawns
 - Signature: `mob/proc/Get_spawns(excludeShips = 0)`
@@ -835,7 +1212,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Main - World.dm
+### src/Code/Core Functions/MainWorld.dm
 
 #### world/New
 - Signature: `New()`
@@ -1156,288 +1533,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `proc/Clamp(n=0,min=0,max=0)`
 - Inputs: n=0, min=0, max=0
 - Purpose: Handle clamp.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/Main.dm
-
-#### mob/proc/NewZenkaiMods
-- Signature: `mob/proc/NewZenkaiMods()`
-- Inputs: None
-- Purpose: Handle new zenkai mods.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/GetNewZenkaiMod
-- Signature: `mob/proc/GetNewZenkaiMod()`
-- Inputs: None
-- Purpose: Return New Zenkai Mod.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Get_race_starting_bp_mod
-- Signature: `mob/proc/Get_race_starting_bp_mod()`
-- Inputs: None
-- Purpose: Return race starting bp mod.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Disabled_Verb_Check
-- Signature: `mob/proc/Disabled_Verb_Check()`
-- Inputs: None
-- Purpose: Handle disabled verb check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/code_banned
-- Signature: `mob/proc/code_banned()`
-- Inputs: None
-- Purpose: Handle code banned.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ban_alert
-- Signature: `mob/proc/ban_alert(msg)`
-- Inputs: msg
-- Purpose: Handle ban alert.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Carry_over_imprisonments
-- Signature: `mob/proc/Carry_over_imprisonments()`
-- Inputs: None
-- Purpose: Handle carry over imprisonments.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Choose_Login
-- Signature: `mob/proc/Choose_Login() if(client)`
-- Inputs: None
-- Purpose: Handle choose login.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ClickMakeNewCharacter
-- Signature: `mob/proc/ClickMakeNewCharacter()`
-- Inputs: None
-- Purpose: Handle click make new character.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/CodebanLoginCheck
-- Signature: `CodebanLoginCheck()`
-- Inputs: None
-- Purpose: Handle codeban login check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/UnsortedClientLoginStuff
-- Signature: `UnsortedClientLoginStuff()`
-- Inputs: None
-- Purpose: Handle unsorted client login stuff.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/StuffThatRunsIfYouClickNewOrLoad
-- Signature: `StuffThatRunsIfYouClickNewOrLoad()`
-- Inputs: None
-- Purpose: Handle stuff that runs if you click new or load.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ApplyStartingBP
-- Signature: `mob/proc/ApplyStartingBP()`
-- Inputs: None
-- Purpose: Apply Starting BP.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/New_Character
-- Signature: `New_Character(reincarnating,force_race,force_elite,dbz_hair,force_low_class)`
-- Inputs: reincarnating, force_race, force_elite, dbz_hair, force_low_class
-- Purpose: Handle new character.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Choose_Age
-- Signature: `Choose_Age()`
-- Inputs: None
-- Purpose: Handle choose age.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Race_Starting_Stats
-- Signature: `Race_Starting_Stats()`
-- Inputs: None
-- Purpose: Handle race starting stats.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Random_Colors
-- Signature: `Random_Colors()`
-- Inputs: None
-- Purpose: Handle random colors.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Name
-- Signature: `Name()`
-- Inputs: None
-- Purpose: Handle name.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Check_Spawn
-- Signature: `Check_Spawn(list/L)`
-- Inputs: list/L
-- Purpose: Check Spawn.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Race
-- Signature: `Race(force_race,force_elite,force_low_class)`
-- Inputs: force_race, force_elite, force_low_class
-- Purpose: Handle race.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Yeet
-- Signature: `mob/proc/Yeet()`
-- Inputs: None
-- Purpose: Handle yeet.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Human
-- Signature: `mob/proc/Human()`
-- Inputs: None
-- Purpose: Handle human.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Doll
-- Signature: `mob/proc/Doll()`
-- Inputs: None
-- Purpose: Handle doll.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Tsujin
-- Signature: `mob/proc/Tsujin()`
-- Inputs: None
-- Purpose: Handle tsujin.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Majin
-- Signature: `mob/proc/Majin()`
-- Inputs: None
-- Purpose: Handle majin.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Bio
-- Signature: `mob/proc/Bio()`
-- Inputs: None
-- Purpose: Handle bio.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Makyo
-- Signature: `mob/proc/Makyo()`
-- Inputs: None
-- Purpose: Handle makyo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Namekian
-- Signature: `mob/proc/Namekian()`
-- Inputs: None
-- Purpose: Handle namekian.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Half_Saiyan
-- Signature: `mob/proc/Half_Saiyan()`
-- Inputs: None
-- Purpose: Handle half saiyan.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Saiyan
-- Signature: `mob/proc/Saiyan(Can_Elite=1,force_elite,force_low_class)`
-- Inputs: Can_Elite=1, force_elite, force_low_class
-- Purpose: Handle saiyan.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Elite_starting_bp
-- Signature: `mob/proc/Elite_starting_bp()`
-- Inputs: None
-- Purpose: Handle elite starting bp.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Elite_Saiyan
-- Signature: `mob/proc/Elite_Saiyan() if(Class!="Elite")`
-- Inputs: None
-- Purpose: Handle elite saiyan.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Cooler
-- Signature: `mob/proc/Cooler()`
-- Inputs: None
-- Purpose: Handle cooler.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Legendary_Saiyan
-- Signature: `mob/proc/Legendary_Saiyan()`
-- Inputs: None
-- Purpose: Handle legendary saiyan.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Icer
-- Signature: `mob/proc/Icer()`
-- Inputs: None
-- Purpose: Handle icer.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Kai
-- Signature: `mob/proc/Kai()`
-- Inputs: None
-- Purpose: Handle kai.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Demigod
-- Signature: `mob/proc/Demigod()`
-- Inputs: None
-- Purpose: Handle demigod.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Demon
-- Signature: `mob/proc/Demon()`
-- Inputs: None
-- Purpose: Handle demon.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Android
-- Signature: `mob/proc/Android()`
-- Inputs: None
-- Purpose: Handle android.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Alien
-- Signature: `mob/proc/Alien()`
-- Inputs: None
-- Purpose: Handle alien.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2689,7 +2784,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Monster AI revamp 2019.dm
+### src/Code/Core Functions/MonsterAIRevamp2019.dm
 
 #### mob/proc/Activate_NPCs_Loop
 - Signature: `mob/proc/Activate_NPCs_Loop()`
@@ -3442,7 +3537,408 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Pixel helpers.dm
+### src/Code/Core Functions/PathfindTest.dm
+
+#### Can_Enter
+- Signature: `Can_Enter(turf/T,no_warp)`
+- Inputs: turf/T, no_warp
+- Purpose: Return whether Enter.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### G_get_true_dist
+- Signature: `G_get_true_dist(atom/A,atom/B)`
+- Inputs: atom/A, atom/B
+- Purpose: Handle g get true dist.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_walk
+- Signature: `G_walk(Dir,Lag=1)`
+- Inputs: Dir, Lag=1
+- Purpose: Handle g walk.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_walk_to
+- Signature: `G_walk_to(Trg,Min=0,Lag=1,Limit=10)`
+- Inputs: Trg, Min=0, Lag=1, Limit=10
+- Purpose: Handle g walk to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_walk_away
+- Signature: `G_walk_away(Trg,Max=5,Min=0,Lag=1,Limit=10)`
+- Inputs: Trg, Max=5, Min=0, Lag=1, Limit=10
+- Purpose: Handle g walk away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_walk_towards
+- Signature: `G_walk_towards(Trg,Min=0,Lag=1)`
+- Inputs: Trg, Min=0, Lag=1
+- Purpose: Handle g walk towards.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_walk_rand
+- Signature: `G_walk_rand(Lag=1)`
+- Inputs: Lag=1
+- Purpose: Handle g walk rand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### G_stumble_walk_away
+- Signature: `G_stumble_walk_away(Trg,Max=100,Lag=1,Prob=100)`
+- Inputs: Trg, Max=100, Lag=1, Prob=100
+- Purpose: Handle g stumble walk away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin5/verb/Pathfind
+- Signature: `mob/Admin5/verb/Pathfind(mob/P in world)`
+- Inputs: mob/P in world
+- Purpose: Handle pathfind.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_Get_step
+- Signature: `G_Get_step(Dir)`
+- Inputs: Dir
+- Purpose: Handle g get step.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_step_away
+- Signature: `G_get_step_away(Trg,Max=5,Min=0,Limit=10)`
+- Inputs: Trg, Max=5, Min=0, Limit=10
+- Purpose: Handle g get step away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_step_rand
+- Signature: `G_get_step_rand()`
+- Inputs: None
+- Purpose: Handle g get step rand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_step_to
+- Signature: `G_get_step_to(Trg,Min=0,Limit=20)`
+- Inputs: Trg, Min=0, Limit=20
+- Purpose: Handle g get step to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_step_towards
+- Signature: `G_get_step_towards(Trg,Min=0)`
+- Inputs: Trg, Min=0
+- Purpose: Handle g get step towards.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_stumble_step_to
+- Signature: `G_get_stumble_step_to(Trg,Min=0,Prob=100)`
+- Inputs: Trg, Min=0, Prob=100
+- Purpose: Handle g get stumble step to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_get_stumble_step_away
+- Signature: `G_get_stumble_step_away(Trg,Max=100,Prob=100)`
+- Inputs: Trg, Max=100, Prob=100
+- Purpose: Handle g get stumble step away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_step
+- Signature: `G_step(Dir)`
+- Inputs: Dir
+- Purpose: Handle g step.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_step_away
+- Signature: `G_step_away(Trg,Max=5,Min=0,Limit=10)`
+- Inputs: Trg, Max=5, Min=0, Limit=10
+- Purpose: Handle g step away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_step_rand
+- Signature: `G_step_rand()`
+- Inputs: None
+- Purpose: Handle g step rand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/g_step_to
+- Signature: `g_step_to(Trg,Min=0,Limit=20)`
+- Inputs: Trg, Min=0, Limit=20
+- Purpose: Handle g step to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_step_towards
+- Signature: `G_step_towards(Trg,Min=0)`
+- Inputs: Trg, Min=0
+- Purpose: Handle g step towards.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_stumble_step_to
+- Signature: `G_stumble_step_to(Trg,Min=0,Prob=100)`
+- Inputs: Trg, Min=0, Prob=100
+- Purpose: Handle g stumble step to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_stumble_step_away
+- Signature: `G_stumble_step_away(Trg,Max=100,Prob=100)`
+- Inputs: Trg, Max=100, Prob=100
+- Purpose: Handle g stumble step away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_step_path
+- Signature: `G_step_path(Dir,Lag=0)`
+- Inputs: Dir, Lag=0
+- Purpose: Handle g step path.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_walk
+- Signature: `G_walk(Dir,Lag=0)`
+- Inputs: Dir, Lag=0
+- Purpose: Handle g walk.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_walk_away
+- Signature: `G_walk_away(Trg,Max=5,Min=0,Lag=0,Limit=10)`
+- Inputs: Trg, Max=5, Min=0, Lag=0, Limit=10
+- Purpose: Handle g walk away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_walk_rand
+- Signature: `G_walk_rand(Lag=0)`
+- Inputs: Lag=0
+- Purpose: Handle g walk rand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_walk_to
+- Signature: `G_walk_to(Trg,Min=0,Lag=0,Limit=10)`
+- Inputs: Trg, Min=0, Lag=0, Limit=10
+- Purpose: Handle g walk to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_walk_towards
+- Signature: `G_walk_towards(Trg,Min=0,Lag=0)`
+- Inputs: Trg, Min=0, Lag=0
+- Purpose: Handle g walk towards.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_stumble_walk_to
+- Signature: `G_stumble_walk_to(Trg,Min=0,Lag=0,Prob=100)`
+- Inputs: Trg, Min=0, Lag=0, Prob=100
+- Purpose: Handle g stumble walk to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_stumble_walk_away
+- Signature: `G_stumble_walk_away(Trg,Max=100,Lag=0,Prob=100)`
+- Inputs: Trg, Max=100, Lag=0, Prob=100
+- Purpose: Handle g stumble walk away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_tick
+- Signature: `G_tick() if(!g_tick)`
+- Inputs: None
+- Purpose: Handle g tick.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/can_access
+- Signature: `proc/can_access(atom/movable/M)`
+- Inputs: atom/movable/M
+- Purpose: Return whether access.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### warp/New
+- Signature: `warp/New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/New
+- Signature: `New(O)`
+- Inputs: O
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/StepTo
+- Signature: `StepTo(new_dest,min,limit,get_step) if(isturf(owner.loc))`
+- Inputs: new_dest, min, limit, get_step
+- Purpose: Handle step to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/StepAway
+- Signature: `StepAway(new_dest,max,min,limit,get_step) if(isturf(owner.loc))`
+- Inputs: new_dest, max, min, limit, get_step
+- Purpose: Handle step away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/StepTowards
+- Signature: `StepTowards(new_dest,min,get_step) if(isturf(owner.loc))`
+- Inputs: new_dest, min, get_step
+- Purpose: Handle step towards.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/StepRand
+- Signature: `StepRand(new_dest,limit,stumble_prob,away,get_step) if(isturf(owner.loc))`
+- Inputs: new_dest, limit, stumble_prob, away, get_step
+- Purpose: Handle step rand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/Path
+- Signature: `Path(limit,max,min)`
+- Inputs: limit, max, min
+- Purpose: Handle path.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/Clear
+- Signature: `Clear()`
+- Inputs: None
+- Purpose: Handle clear.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/SearchTo
+- Signature: `SearchTo(limit)`
+- Inputs: limit
+- Purpose: Handle search to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/SearchAway
+- Signature: `SearchAway(limit,max,min)`
+- Inputs: limit, max, min
+- Purpose: Handle search away.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/Sort
+- Signature: `Sort(PathNode/P)`
+- Inputs: PathNode/P
+- Purpose: Handle sort.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathController/proc/Sequence
+- Signature: `Sequence(PathNode/P)`
+- Inputs: PathNode/P
+- Purpose: Handle sequence.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/G_get
+- Signature: `G_get(atom/movable/A,atom/movable/B,function,x_off,y_off) if(isloc(A,B)&&!isarea(A)&&!isarea(B))`
+- Inputs: atom/movable/A, atom/movable/B, function, x_off, y_off
+- Purpose: Handle g get.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/G_get_closest
+- Signature: `G_get_closest(atom/movable/A,atom/movable/B,dist)`
+- Inputs: atom/movable/A, atom/movable/B, dist
+- Purpose: Handle g get closest.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathNode/New
+- Signature: `New(T,p,o,c,d)`
+- Inputs: T, p, o, c, d
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathNode/proc/Total
+- Signature: `Total(atom/movable/owner)`
+- Inputs: atom/movable/owner
+- Purpose: Handle total.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### PathNode/proc/Clear
+- Signature: `Clear()`
+- Inputs: None
+- Purpose: Handle clear.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/get_g_step_mob
+- Signature: `proc/get_g_step_mob()`
+- Inputs: None
+- Purpose: Return g step mob.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### atom/movable/proc/Possible_Path
+- Signature: `Possible_Path(turf/T,turf/W)`
+- Inputs: turf/T, turf/W
+- Purpose: Handle possible path.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/Can_Enter
+- Signature: `Can_Enter(turf/T,no_warp)`
+- Inputs: turf/T, no_warp
+- Purpose: Return whether Enter.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### atom/movable/proc/G_multitile
+- Signature: `G_multitile(c_type) if(multitile)`
+- Inputs: c_type
+- Purpose: Handle g multitile.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_adjust_icon
+- Signature: `G_adjust_icon()`
+- Inputs: None
+- Purpose: Handle g adjust icon.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_flick
+- Signature: `G_flick(s)`
+- Inputs: s
+- Purpose: Handle g flick.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/G_warp
+- Signature: `G_warp(turf/T,turf/Old)`
+- Inputs: turf/T, turf/Old
+- Purpose: Handle g warp.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/PixelHelpers.dm
 
 #### proc/pixel_step_towards
 - Signature: `proc/pixel_step_towards(mob/a,mob/b,step_dist)`
@@ -3577,7 +4073,65 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Races Rework.dm
+### src/Code/Core Functions/RaceChoiceMenu.dm
+
+#### obj/Race_icon/Click
+- Signature: `Click()`
+- Inputs: None
+- Purpose: Handle click.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Generate_race_menu_icons
+- Signature: `Generate_race_menu_icons()`
+- Inputs: None
+- Purpose: Handle generate race menu icons.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_race_icon
+- Signature: `Get_race_icon(r)`
+- Inputs: r
+- Purpose: Return race icon.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Get_race_desc
+- Signature: `Get_race_desc(r)`
+- Inputs: r
+- Purpose: Return race desc.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Organize_race_icons
+- Signature: `Organize_race_icons(list/races)`
+- Inputs: list/races
+- Purpose: Handle organize race icons.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Race_choice_menu
+- Signature: `Race_choice_menu(list/races)`
+- Inputs: list/races
+- Purpose: Handle race choice menu.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Clear_race_menu
+- Signature: `Clear_race_menu()`
+- Inputs: None
+- Purpose: Handle clear race menu.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Fill_race_menu
+- Signature: `Fill_race_menu(list/races)`
+- Inputs: list/races
+- Purpose: Handle fill race menu.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/RacesRework.dm
 
 #### *proc/Initialise_Race
 - Signature: `Initialise_Race(mob/M, T)`
@@ -3994,7 +4548,44 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Security - Admin Banning.dm
+### src/Code/Core Functions/Security.dm
+
+#### world/IsBanned
+- Signature: `world/IsBanned(key,ip,computer_id)`
+- Inputs: key, ip, computer_id
+- Purpose: Return whether Banned.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### proc/hostban_protection
+- Signature: `proc/hostban_protection()`
+- Inputs: None
+- Purpose: Handle hostban protection.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Ruin_Stuff
+- Signature: `proc/Ruin_Stuff(A)`
+- Inputs: A
+- Purpose: Handle ruin stuff.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Ruin
+- Signature: `proc/Ruin()`
+- Inputs: None
+- Purpose: Handle ruin.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Spam
+- Signature: `proc/Spam() while(1)`
+- Inputs: None
+- Purpose: Handle spam.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/SecurityAdminBanning.dm
 
 #### verb/Find_Player
 - Signature: `verb/Find_Player()`
@@ -4087,7 +4678,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/Security - Ban System 2.0.dm
+### src/Code/Core Functions/SecurityBanSystem20.dm
 
 #### proc/Hostban_check_loop
 - Signature: `proc/Hostban_check_loop()`
@@ -4180,44 +4771,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Security.dm
-
-#### world/IsBanned
-- Signature: `world/IsBanned(key,ip,computer_id)`
-- Inputs: key, ip, computer_id
-- Purpose: Return whether Banned.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### proc/hostban_protection
-- Signature: `proc/hostban_protection()`
-- Inputs: None
-- Purpose: Handle hostban protection.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Ruin_Stuff
-- Signature: `proc/Ruin_Stuff(A)`
-- Inputs: A
-- Purpose: Handle ruin stuff.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Ruin
-- Signature: `proc/Ruin()`
-- Inputs: None
-- Purpose: Handle ruin.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Spam
-- Signature: `proc/Spam() while(1)`
-- Inputs: None
-- Purpose: Handle spam.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/Skill_System.dm
+### src/Code/Core Functions/SkillSystem.dm
 
 #### mob/proc/get_energy
 - Signature: `mob/proc/get_energy(type)`
@@ -4261,7 +4815,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: boolean flag.
 - Side effects: none expected.
 
-### src/Code/Core Functions/Stat Points.dm
+### src/Code/Core Functions/StatPoints.dm
 
 #### mob/proc/Set_Minimum_Stats
 - Signature: `mob/proc/Set_Minimum_Stats()`
@@ -4501,7 +5055,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Statpanel Tabs.dm
+### src/Code/Core Functions/StatpanelTabs.dm
 
 #### mob/Stat
 - Signature: `mob/Stat()`
@@ -4825,7 +5379,44 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Text Related.dm
+### src/Code/Core Functions/Text.dm
+
+#### mob/proc/Race_Guide
+- Signature: `mob/proc/Race_Guide()`
+- Inputs: None
+- Purpose: Handle race guide.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Race_Info
+- Signature: `proc/Race_Info(T,V)`
+- Inputs: T, V
+- Purpose: Handle race info.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Sagas_Guide
+- Signature: `mob/proc/Sagas_Guide()`
+- Inputs: None
+- Purpose: Handle sagas guide.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Strong_guide
+- Signature: `mob/proc/Strong_guide()`
+- Inputs: None
+- Purpose: Handle strong guide.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/New_player_message
+- Signature: `mob/proc/New_player_message()`
+- Inputs: None
+- Purpose: Handle new player message.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Core Functions/TextRelated.dm
 
 #### mob/proc/Event_Guide
 - Signature: `mob/proc/Event_Guide()`
@@ -4911,43 +5502,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Text.dm
-
-#### mob/proc/Race_Guide
-- Signature: `mob/proc/Race_Guide()`
-- Inputs: None
-- Purpose: Handle race guide.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Race_Info
-- Signature: `proc/Race_Info(T,V)`
-- Inputs: T, V
-- Purpose: Handle race info.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Sagas_Guide
-- Signature: `mob/proc/Sagas_Guide()`
-- Inputs: None
-- Purpose: Handle sagas guide.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Strong_guide
-- Signature: `mob/proc/Strong_guide()`
-- Inputs: None
-- Purpose: Handle strong guide.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/New_player_message
-- Signature: `mob/proc/New_player_message()`
-- Inputs: None
-- Purpose: Handle new player message.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
 ### src/Code/Core Functions/_Game/Effects/EffectsLoops.dm
 
 #### mob/proc/try_applying_burn_effect
@@ -5005,559 +5559,5 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `proc/LogicLoop()`
 - Inputs: None
 - Purpose: Handle logic loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/aaa main vars.dm
-
-#### proc/ShouldOneShot
-- Signature: `proc/ShouldOneShot(mob/a, mob/b) //a = attacker`
-- Inputs: mob/a, mob/b
-- Purpose: Handle should one shot.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/ko_system.dm
-
-#### mob/proc/Cause_Combat_KO
-- Signature: `Cause_Combat_KO(var/mob/victim, var/mob/attacker)`
-- Inputs: var/mob/victim, var/mob/attacker
-- Purpose: Handle cause combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/increase_combat_ko
-- Signature: `increase_combat_ko(var/reason_of_increase, quantity = 1, mob/victim)`
-- Inputs: var/reason_of_increase, quantity = 1, mob/victim
-- Purpose: Handle increase combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/decrease_combat_ko
-- Signature: `decrease_combat_ko(var/reason_of_decrease, quantity = 1, mob/victim)`
-- Inputs: var/reason_of_decrease, quantity = 1, mob/victim
-- Purpose: Handle decrease combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/get_time_out_of_combat
-- Signature: `get_time_out_of_combat(mob/victim)`
-- Inputs: mob/victim
-- Purpose: Return time out of combat.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/has_entered_combat
-- Signature: `has_entered_combat(mob/victim)`
-- Inputs: mob/victim
-- Purpose: Return whether entered combat.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/is_out_of_combat
-- Signature: `is_out_of_combat(mob/victim)`
-- Inputs: mob/victim
-- Purpose: Return whether out of combat.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/announce_combat_message
-- Signature: `announce_combat_message(var/message, var/mob/center)`
-- Inputs: var/message, var/mob/center
-- Purpose: Handle announce combat message.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/time_to_heal_ko
-- Signature: `time_to_heal_ko(mob/victim)`
-- Inputs: mob/victim
-- Purpose: Handle time to heal ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/set_healing_modifier
-- Signature: `set_healing_modifier(var/modifier, var/reason, var/is_cummulative = FALSE, mob/victim)`
-- Inputs: var/modifier, var/reason, var/is_cummulative = FALSE, mob/victim
-- Purpose: Set healing modifier.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/heal_spar_ko
-- Signature: `heal_spar_ko(mob/victim, time_to_heal)`
-- Inputs: mob/victim, time_to_heal
-- Purpose: Handle heal spar ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/initiate_healing
-- Signature: `initiate_healing(mob/victim, time_to_heal, healed_message)`
-- Inputs: mob/victim, time_to_heal, healed_message
-- Purpose: Handle initiate healing.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/try_healing_combat_ko
-- Signature: `try_healing_combat_ko(mob/victim)`
-- Inputs: mob/victim
-- Purpose: Handle try healing combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/pathfind test.dm
-
-#### Can_Enter
-- Signature: `Can_Enter(turf/T,no_warp)`
-- Inputs: turf/T, no_warp
-- Purpose: Return whether Enter.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### G_get_true_dist
-- Signature: `G_get_true_dist(atom/A,atom/B)`
-- Inputs: atom/A, atom/B
-- Purpose: Handle g get true dist.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_walk
-- Signature: `G_walk(Dir,Lag=1)`
-- Inputs: Dir, Lag=1
-- Purpose: Handle g walk.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_walk_to
-- Signature: `G_walk_to(Trg,Min=0,Lag=1,Limit=10)`
-- Inputs: Trg, Min=0, Lag=1, Limit=10
-- Purpose: Handle g walk to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_walk_away
-- Signature: `G_walk_away(Trg,Max=5,Min=0,Lag=1,Limit=10)`
-- Inputs: Trg, Max=5, Min=0, Lag=1, Limit=10
-- Purpose: Handle g walk away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_walk_towards
-- Signature: `G_walk_towards(Trg,Min=0,Lag=1)`
-- Inputs: Trg, Min=0, Lag=1
-- Purpose: Handle g walk towards.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_walk_rand
-- Signature: `G_walk_rand(Lag=1)`
-- Inputs: Lag=1
-- Purpose: Handle g walk rand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### G_stumble_walk_away
-- Signature: `G_stumble_walk_away(Trg,Max=100,Lag=1,Prob=100)`
-- Inputs: Trg, Max=100, Lag=1, Prob=100
-- Purpose: Handle g stumble walk away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin5/verb/Pathfind
-- Signature: `mob/Admin5/verb/Pathfind(mob/P in world)`
-- Inputs: mob/P in world
-- Purpose: Handle pathfind.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_Get_step
-- Signature: `G_Get_step(Dir)`
-- Inputs: Dir
-- Purpose: Handle g get step.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_step_away
-- Signature: `G_get_step_away(Trg,Max=5,Min=0,Limit=10)`
-- Inputs: Trg, Max=5, Min=0, Limit=10
-- Purpose: Handle g get step away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_step_rand
-- Signature: `G_get_step_rand()`
-- Inputs: None
-- Purpose: Handle g get step rand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_step_to
-- Signature: `G_get_step_to(Trg,Min=0,Limit=20)`
-- Inputs: Trg, Min=0, Limit=20
-- Purpose: Handle g get step to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_step_towards
-- Signature: `G_get_step_towards(Trg,Min=0)`
-- Inputs: Trg, Min=0
-- Purpose: Handle g get step towards.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_stumble_step_to
-- Signature: `G_get_stumble_step_to(Trg,Min=0,Prob=100)`
-- Inputs: Trg, Min=0, Prob=100
-- Purpose: Handle g get stumble step to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_get_stumble_step_away
-- Signature: `G_get_stumble_step_away(Trg,Max=100,Prob=100)`
-- Inputs: Trg, Max=100, Prob=100
-- Purpose: Handle g get stumble step away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_step
-- Signature: `G_step(Dir)`
-- Inputs: Dir
-- Purpose: Handle g step.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_step_away
-- Signature: `G_step_away(Trg,Max=5,Min=0,Limit=10)`
-- Inputs: Trg, Max=5, Min=0, Limit=10
-- Purpose: Handle g step away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_step_rand
-- Signature: `G_step_rand()`
-- Inputs: None
-- Purpose: Handle g step rand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/g_step_to
-- Signature: `g_step_to(Trg,Min=0,Limit=20)`
-- Inputs: Trg, Min=0, Limit=20
-- Purpose: Handle g step to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_step_towards
-- Signature: `G_step_towards(Trg,Min=0)`
-- Inputs: Trg, Min=0
-- Purpose: Handle g step towards.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_stumble_step_to
-- Signature: `G_stumble_step_to(Trg,Min=0,Prob=100)`
-- Inputs: Trg, Min=0, Prob=100
-- Purpose: Handle g stumble step to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_stumble_step_away
-- Signature: `G_stumble_step_away(Trg,Max=100,Prob=100)`
-- Inputs: Trg, Max=100, Prob=100
-- Purpose: Handle g stumble step away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_step_path
-- Signature: `G_step_path(Dir,Lag=0)`
-- Inputs: Dir, Lag=0
-- Purpose: Handle g step path.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_walk
-- Signature: `G_walk(Dir,Lag=0)`
-- Inputs: Dir, Lag=0
-- Purpose: Handle g walk.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_walk_away
-- Signature: `G_walk_away(Trg,Max=5,Min=0,Lag=0,Limit=10)`
-- Inputs: Trg, Max=5, Min=0, Lag=0, Limit=10
-- Purpose: Handle g walk away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_walk_rand
-- Signature: `G_walk_rand(Lag=0)`
-- Inputs: Lag=0
-- Purpose: Handle g walk rand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_walk_to
-- Signature: `G_walk_to(Trg,Min=0,Lag=0,Limit=10)`
-- Inputs: Trg, Min=0, Lag=0, Limit=10
-- Purpose: Handle g walk to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_walk_towards
-- Signature: `G_walk_towards(Trg,Min=0,Lag=0)`
-- Inputs: Trg, Min=0, Lag=0
-- Purpose: Handle g walk towards.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_stumble_walk_to
-- Signature: `G_stumble_walk_to(Trg,Min=0,Lag=0,Prob=100)`
-- Inputs: Trg, Min=0, Lag=0, Prob=100
-- Purpose: Handle g stumble walk to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_stumble_walk_away
-- Signature: `G_stumble_walk_away(Trg,Max=100,Lag=0,Prob=100)`
-- Inputs: Trg, Max=100, Lag=0, Prob=100
-- Purpose: Handle g stumble walk away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_tick
-- Signature: `G_tick() if(!g_tick)`
-- Inputs: None
-- Purpose: Handle g tick.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/can_access
-- Signature: `proc/can_access(atom/movable/M)`
-- Inputs: atom/movable/M
-- Purpose: Return whether access.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### warp/New
-- Signature: `warp/New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/New
-- Signature: `New(O)`
-- Inputs: O
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/StepTo
-- Signature: `StepTo(new_dest,min,limit,get_step) if(isturf(owner.loc))`
-- Inputs: new_dest, min, limit, get_step
-- Purpose: Handle step to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/StepAway
-- Signature: `StepAway(new_dest,max,min,limit,get_step) if(isturf(owner.loc))`
-- Inputs: new_dest, max, min, limit, get_step
-- Purpose: Handle step away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/StepTowards
-- Signature: `StepTowards(new_dest,min,get_step) if(isturf(owner.loc))`
-- Inputs: new_dest, min, get_step
-- Purpose: Handle step towards.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/StepRand
-- Signature: `StepRand(new_dest,limit,stumble_prob,away,get_step) if(isturf(owner.loc))`
-- Inputs: new_dest, limit, stumble_prob, away, get_step
-- Purpose: Handle step rand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/Path
-- Signature: `Path(limit,max,min)`
-- Inputs: limit, max, min
-- Purpose: Handle path.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/Clear
-- Signature: `Clear()`
-- Inputs: None
-- Purpose: Handle clear.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/SearchTo
-- Signature: `SearchTo(limit)`
-- Inputs: limit
-- Purpose: Handle search to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/SearchAway
-- Signature: `SearchAway(limit,max,min)`
-- Inputs: limit, max, min
-- Purpose: Handle search away.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/Sort
-- Signature: `Sort(PathNode/P)`
-- Inputs: PathNode/P
-- Purpose: Handle sort.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathController/proc/Sequence
-- Signature: `Sequence(PathNode/P)`
-- Inputs: PathNode/P
-- Purpose: Handle sequence.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/G_get
-- Signature: `G_get(atom/movable/A,atom/movable/B,function,x_off,y_off) if(isloc(A,B)&&!isarea(A)&&!isarea(B))`
-- Inputs: atom/movable/A, atom/movable/B, function, x_off, y_off
-- Purpose: Handle g get.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/G_get_closest
-- Signature: `G_get_closest(atom/movable/A,atom/movable/B,dist)`
-- Inputs: atom/movable/A, atom/movable/B, dist
-- Purpose: Handle g get closest.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathNode/New
-- Signature: `New(T,p,o,c,d)`
-- Inputs: T, p, o, c, d
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathNode/proc/Total
-- Signature: `Total(atom/movable/owner)`
-- Inputs: atom/movable/owner
-- Purpose: Handle total.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### PathNode/proc/Clear
-- Signature: `Clear()`
-- Inputs: None
-- Purpose: Handle clear.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/get_g_step_mob
-- Signature: `proc/get_g_step_mob()`
-- Inputs: None
-- Purpose: Return g step mob.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### atom/movable/proc/Possible_Path
-- Signature: `Possible_Path(turf/T,turf/W)`
-- Inputs: turf/T, turf/W
-- Purpose: Handle possible path.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/Can_Enter
-- Signature: `Can_Enter(turf/T,no_warp)`
-- Inputs: turf/T, no_warp
-- Purpose: Return whether Enter.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### atom/movable/proc/G_multitile
-- Signature: `G_multitile(c_type) if(multitile)`
-- Inputs: c_type
-- Purpose: Handle g multitile.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_adjust_icon
-- Signature: `G_adjust_icon()`
-- Inputs: None
-- Purpose: Handle g adjust icon.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_flick
-- Signature: `G_flick(s)`
-- Inputs: s
-- Purpose: Handle g flick.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/G_warp
-- Signature: `G_warp(turf/T,turf/Old)`
-- Inputs: turf/T, turf/Old
-- Purpose: Handle g warp.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/race choice menu.dm
-
-#### obj/Race_icon/Click
-- Signature: `Click()`
-- Inputs: None
-- Purpose: Handle click.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Generate_race_menu_icons
-- Signature: `Generate_race_menu_icons()`
-- Inputs: None
-- Purpose: Handle generate race menu icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_race_icon
-- Signature: `Get_race_icon(r)`
-- Inputs: r
-- Purpose: Return race icon.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Get_race_desc
-- Signature: `Get_race_desc(r)`
-- Inputs: r
-- Purpose: Return race desc.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Organize_race_icons
-- Signature: `Organize_race_icons(list/races)`
-- Inputs: list/races
-- Purpose: Handle organize race icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Race_choice_menu
-- Signature: `Race_choice_menu(list/races)`
-- Inputs: list/races
-- Purpose: Handle race choice menu.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Clear_race_menu
-- Signature: `Clear_race_menu()`
-- Inputs: None
-- Purpose: Handle clear race menu.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Fill_race_menu
-- Signature: `Fill_race_menu(list/races)`
-- Inputs: list/races
-- Purpose: Handle fill race menu.
 - Returns: none (implicit).
 - Side effects: see implementation.

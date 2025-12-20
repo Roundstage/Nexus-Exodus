@@ -105,7 +105,7 @@ obj/Limit_Breaker
 	desc="x1.5 BP, x3 Regeneration, x3 Recovery. x3 Accuracy. When you activate this it lasts for a random period of time, at the end \
 	of which you will be knocked out. It is very powerful but it is a big gamble on your chances of winning or losing \
 	a fight."
-	icon='Burst.dmi'
+	icon='src/Icons/Ki/Auras/Burst.dmi'
 	//teachable=1
 	Skill=1
 	Teach_Timer=10
@@ -2075,19 +2075,19 @@ proc/GetHeight(O)
 	return I.Height()
 
 mob/var/icon
-	Aura='Aura.dmi'
-	FlightAura='Aura Fly.dmi'
-	BlastCharge='Charge1.dmi'
-	Burst='Burst.dmi'
-	SSj4Aura='Aura SSj4.dmi'
+	Aura='src/Icons/Ki/Auras/Aura.dmi'
+	FlightAura='src/Icons/Ki/Auras/Aura Fly.dmi'
+	BlastCharge='src/Icons/Ki/Blast Charging/Charge1.dmi'
+	Burst='src/Icons/Ki/Auras/Burst.dmi'
+	SSj4Aura='src/Icons/Ki/Auras/Aura SSj4.dmi'
 
 obj/Auras
-	icon='Aura, Big.dmi'
+	icon='src/Icons/Ki/Auras/Aura, Big.dmi'
 	Givable=0
 	can_change_icon=1
 	var/tmp/image/Old
-	var/God_Fist='Aura, Kaioken, Big.dmi'
-	var/SSj='Aura, SSj, Big.dmi'
+	var/God_Fist='src/Icons/Ki/Auras/Aura, Kaioken, Big.dmi'
+	var/SSj='src/Icons/Ki/Auras/Aura, SSj, Big.dmi'
 	var/USSj='USSj Aura.dmi'
 	var/SSj2='Aura, SSj, Big.dmi'
 	var/SSj3='ssj3 aura.dmi'

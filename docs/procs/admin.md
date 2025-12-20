@@ -4,447 +4,11 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Admin/Admin v2.dm`
 - `src/Code/Admin/Admin.dm`
+- `src/Code/Admin/AdminV2.dm`
 - `src/Code/Admin/AdminVerbs.dm`
 
 ## Proc Reference
-
-### src/Code/Admin/Admin v2.dm
-
-#### proc/isboolean
-- Signature: `proc/isboolean(test as num)`
-- Inputs: test as num
-- Purpose: Handle isboolean.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Debug
-- Signature: `proc/Debug(m as mob,t)`
-- Inputs: m as mob, t
-- Purpose: Handle debug.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/manage_deadzone_pressure_immune_races
-- Signature: `mob/proc/manage_deadzone_pressure_immune_races()`
-- Inputs: None
-- Purpose: Handle manage deadzone pressure immune races.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/manage_deadzone_pressure_resistant_races
-- Signature: `mob/proc/manage_deadzone_pressure_resistant_races()`
-- Inputs: None
-- Purpose: Handle manage deadzone pressure resistant races.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ServerSettings
-- Signature: `ServerSettings()`
-- Inputs: None
-- Purpose: Handle server settings.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin4/verb/Server_Control_Panel
-- Signature: `mob/Admin4/verb/Server_Control_Panel()`
-- Inputs: None
-- Purpose: Handle server control panel.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/viewinfo/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/viewinfo/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### *upForm/viewinfo/PreSettings
-- Signature: `PreSettings()`
-- Inputs: None
-- Purpose: Handle pre settings.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/viewinfo/GenerateBody
-- Signature: `GenerateBody()`
-- Inputs: None
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/Link
-- Signature: `Link(list/href_list)`
-- Inputs: list/href_list
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### *upForm/creation/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### *upForm/creation/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_panel/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_panel/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_panel/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_gains/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_gains/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_world/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_world/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_battlegrounds/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_battlegrounds/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_races/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_races/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_combat/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_combat/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/Link
-- Signature: `Link(list/href_list, client/C)`
-- Inputs: list/href_list, client/C
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/admin_science/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/admin_science/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
 
 ### src/Code/Admin/Admin.dm
 
@@ -1789,6 +1353,442 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `proc/find_target()`
 - Inputs: None
 - Purpose: Handle find target.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Admin/AdminV2.dm
+
+#### proc/isboolean
+- Signature: `proc/isboolean(test as num)`
+- Inputs: test as num
+- Purpose: Handle isboolean.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Debug
+- Signature: `proc/Debug(m as mob,t)`
+- Inputs: m as mob, t
+- Purpose: Handle debug.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/manage_deadzone_pressure_immune_races
+- Signature: `mob/proc/manage_deadzone_pressure_immune_races()`
+- Inputs: None
+- Purpose: Handle manage deadzone pressure immune races.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/manage_deadzone_pressure_resistant_races
+- Signature: `mob/proc/manage_deadzone_pressure_resistant_races()`
+- Inputs: None
+- Purpose: Handle manage deadzone pressure resistant races.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ServerSettings
+- Signature: `ServerSettings()`
+- Inputs: None
+- Purpose: Handle server settings.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin4/verb/Server_Control_Panel
+- Signature: `mob/Admin4/verb/Server_Control_Panel()`
+- Inputs: None
+- Purpose: Handle server control panel.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/viewinfo/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/viewinfo/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### *upForm/viewinfo/PreSettings
+- Signature: `PreSettings()`
+- Inputs: None
+- Purpose: Handle pre settings.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/viewinfo/GenerateBody
+- Signature: `GenerateBody()`
+- Inputs: None
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/Link
+- Signature: `Link(list/href_list)`
+- Inputs: list/href_list
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### *upForm/creation/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### *upForm/creation/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_panel/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_panel/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_panel/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_gains/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_gains/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_world/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_world/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_battlegrounds/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_battlegrounds/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_races/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_races/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_combat/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_combat/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/Link
+- Signature: `Link(list/href_list, client/C)`
+- Inputs: list/href_list, client/C
+- Purpose: Handle link.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/canDisplayForm
+- Signature: `canDisplayForm(client/C)`
+- Inputs: client/C
+- Purpose: Return whether Display Form.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### upForm/admin_science/FormInitTempVars
+- Signature: `FormInitTempVars()`
+- Inputs: None
+- Purpose: Handle form init temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/ProcessVariable
+- Signature: `ProcessVariable(fname, name, value)`
+- Inputs: fname, name, value
+- Purpose: Process Variable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/FormSetTempVars
+- Signature: `FormSetTempVars(fname)`
+- Inputs: fname
+- Purpose: Handle form set temp vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/FormSubmitSuccess
+- Signature: `FormSubmitSuccess(fname, client/C)`
+- Inputs: fname, client/C
+- Purpose: Handle form submit success.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### upForm/admin_science/GenerateBody
+- Signature: `GenerateBody(list/errors=list())`
+- Inputs: list/errors=list(
+- Purpose: Handle generate body.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

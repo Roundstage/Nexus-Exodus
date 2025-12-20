@@ -4,14 +4,17 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/World Mechanics/BP Resets.dm`
-- `src/Code/World Mechanics/Base Orbs.dm`
+- `src/Code/World Mechanics/BPResets.dm`
+- `src/Code/World Mechanics/BaseOrbs.dm`
 - `src/Code/World Mechanics/Battleground.dm`
 - `src/Code/World Mechanics/DeadZone.dm`
-- `src/Code/World Mechanics/Dragon Balls.dm`
+- `src/Code/World Mechanics/DragonBalls.dm`
 - `src/Code/World Mechanics/Gravity.dm`
-- `src/Code/World Mechanics/Leagues - Main Villain.dm`
-- `src/Code/World Mechanics/Orbiting Planet.dm`
+- `src/Code/World Mechanics/Leagues.dm`
+- `src/Code/World Mechanics/LeaguesMainVillain.dm`
+- `src/Code/World Mechanics/OrbitingPlanet.dm`
+- `src/Code/World Mechanics/PlanetDestroy.dm`
+- `src/Code/World Mechanics/Sagas.dm`
 - `src/Code/World Mechanics/Space.dm`
 - `src/Code/World Mechanics/Tournament.dm`
 - `src/Code/World Mechanics/Weather Day Night/Areas.dm`
@@ -19,13 +22,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/World Mechanics/Weather Day Night/Fireflies.dm`
 - `src/Code/World Mechanics/Weather Day Night/Lighting.dm`
 - `src/Code/World Mechanics/Years.dm`
-- `src/Code/World Mechanics/leagues.dm`
-- `src/Code/World Mechanics/planet destroy.dm`
-- `src/Code/World Mechanics/sagas.dm`
 
 ## Proc Reference
 
-### src/Code/World Mechanics/BP Resets.dm
+### src/Code/World Mechanics/BPResets.dm
 
 #### mob/Admin4/verb/Reset_BP_To_Early_Levels
 - Signature: `mob/Admin4/verb/Reset_BP_To_Early_Levels()`
@@ -55,7 +55,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Base Orbs.dm
+### src/Code/World Mechanics/BaseOrbs.dm
 
 #### obj/Base_Orb/New
 - Signature: `New()`
@@ -229,7 +229,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Dragon Balls.dm
+### src/Code/World Mechanics/DragonBalls.dm
 
 #### mob/proc/Drop_dragonballs
 - Signature: `mob/proc/Drop_dragonballs()`
@@ -485,7 +485,86 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Leagues - Main Villain.dm
+### src/Code/World Mechanics/Leagues.dm
+
+#### mob/verb/Create_League
+- Signature: `mob/verb/Create_League()`
+- Inputs: None
+- Purpose: Create League.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/Same_league_cant_kill
+- Signature: `proc/Same_league_cant_kill(mob/a,mob/b)`
+- Inputs: mob/a, mob/b
+- Purpose: Handle same league cant kill.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/League_turret_IDs
+- Signature: `mob/proc/League_turret_IDs()`
+- Inputs: None
+- Purpose: Handle league turret ids.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Get_league_drone_IDs
+- Signature: `mob/proc/Get_league_drone_IDs()`
+- Inputs: None
+- Purpose: Return league drone IDs.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Get_league_nully_IDs
+- Signature: `mob/proc/Get_league_nully_IDs()`
+- Inputs: None
+- Purpose: Return league nully IDs.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### obj/League/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/League/proc/league_update_loop
+- Signature: `league_update_loop()`
+- Inputs: None
+- Purpose: Handle league update loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/League/proc/update_league
+- Signature: `update_league()`
+- Inputs: None
+- Purpose: Update league.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### obj/League/proc/league_announce
+- Signature: `league_announce(msg)`
+- Inputs: msg
+- Purpose: Handle league announce.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/league_chat
+- Signature: `verb/league_chat(msg as text)`
+- Inputs: msg as text
+- Purpose: Handle league chat.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/League/Click
+- Signature: `Click() if(src in usr)`
+- Inputs: None
+- Purpose: Handle click.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/World Mechanics/LeaguesMainVillain.dm
 
 #### proc/Count_villain_league_members
 - Signature: `proc/Count_villain_league_members()`
@@ -529,7 +608,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Orbiting Planet.dm
+### src/Code/World Mechanics/OrbitingPlanet.dm
 
 #### obj/Orbiter/New
 - Signature: `New()`
@@ -542,6 +621,276 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `Orbit()`
 - Inputs: None
 - Purpose: Handle orbit.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/World Mechanics/PlanetDestroy.dm
+
+#### mob/Admin3/verb/Restore_planet
+- Signature: `mob/Admin3/verb/Restore_planet()`
+- Inputs: None
+- Purpose: Handle restore planet.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Planet_Destroy/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Planet_Destroy
+- Signature: `verb/Planet_Destroy()`
+- Inputs: None
+- Purpose: Handle planet destroy.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_lightning_strike
+- Signature: `proc/Get_lightning_strike()`
+- Inputs: None
+- Purpose: Return lightning strike.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Lightning_strike
+- Signature: `proc/Lightning_strike()`
+- Inputs: None
+- Purpose: Handle lightning strike.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Lightning_Strike/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Lightning_Strike/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/can_planet_destroy
+- Signature: `mob/proc/can_planet_destroy()`
+- Inputs: None
+- Purpose: Return whether planet destroy.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/Admin4/verb/Disable_planet
+- Signature: `mob/Admin4/verb/Disable_planet()`
+- Inputs: None
+- Purpose: Handle disable planet.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/hide_destroyed_planets
+- Signature: `proc/hide_destroyed_planets(planet)`
+- Inputs: planet
+- Purpose: Handle hide destroyed planets.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/unhide_restored_planets
+- Signature: `proc/unhide_restored_planets(planet)`
+- Inputs: planet
+- Purpose: Handle unhide restored planets.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/destroy_planet
+- Signature: `proc/destroy_planet(planet,power=1)`
+- Inputs: planet, power=1
+- Purpose: Handle destroy planet.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/restore_planet
+- Signature: `proc/restore_planet(planet)`
+- Inputs: planet
+- Purpose: Handle restore planet.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/restore_all_planets
+- Signature: `proc/restore_all_planets()`
+- Inputs: None
+- Purpose: Handle restore all planets.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/proc/is_on_destroyed_planet
+- Signature: `atom/proc/is_on_destroyed_planet()`
+- Inputs: None
+- Purpose: Return whether on destroyed planet.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/logged_in_on_destroyed_planet_check
+- Signature: `mob/proc/logged_in_on_destroyed_planet_check() if(is_on_destroyed_planet())`
+- Inputs: None
+- Purpose: Handle logged in on destroyed planet check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Ship_on_destroyed_planet_loop
+- Signature: `proc/Ship_on_destroyed_planet_loop()`
+- Inputs: None
+- Purpose: Handle ship on destroyed planet loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/World Mechanics/Sagas.dm
+
+#### proc/find_new_hero
+- Signature: `find_new_hero(mob/old_hero)`
+- Inputs: mob/old_hero
+- Purpose: Handle find new hero.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/find_new_villain
+- Signature: `find_new_villain(mob/old_villain,mob/villain_killer)`
+- Inputs: mob/old_villain, mob/villain_killer
+- Purpose: Handle find new villain.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/sagas_bonus
+- Signature: `sagas_bonus(mob/a,mob/b) //a = attacker. b = defender`
+- Inputs: mob/a, mob/b
+- Purpose: Handle sagas bonus.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ToggleIgnoreHero
+- Signature: `ToggleIgnoreHero()`
+- Inputs: None
+- Purpose: Toggle Ignore Hero.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/ToggleIgnoreVillain
+- Signature: `ToggleIgnoreVillain()`
+- Inputs: None
+- Purpose: Toggle Ignore Villain.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/ChangeAlignment
+- Signature: `ChangeAlignment(a = "Good")`
+- Inputs: a = "Good"
+- Purpose: Handle change alignment.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Hero_eligible
+- Signature: `Hero_eligible()`
+- Inputs: None
+- Purpose: Handle hero eligible.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Villain_eligible
+- Signature: `Villain_eligible()`
+- Inputs: None
+- Purpose: Handle villain eligible.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/killing_spree_loop
+- Signature: `killing_spree_loop()`
+- Inputs: None
+- Purpose: Handle killing spree loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/villain_timer
+- Signature: `villain_timer()`
+- Inputs: None
+- Purpose: Handle villain timer.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/hero_seniority_check
+- Signature: `hero_seniority_check()`
+- Inputs: None
+- Purpose: Handle hero seniority check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/villain_seniority_check
+- Signature: `villain_seniority_check()`
+- Inputs: None
+- Purpose: Handle villain seniority check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/hero_death
+- Signature: `hero_death(mob/killer) if(key && hero == key&&sagas)`
+- Inputs: mob/killer
+- Purpose: Handle hero death.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/villain_death
+- Signature: `villain_death(mob/m) if(key && villain==key && sagas)`
+- Inputs: mob/m
+- Purpose: Handle villain death.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/reset_villain_stuff
+- Signature: `reset_villain_stuff()`
+- Inputs: None
+- Purpose: Handle reset villain stuff.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/remove_villain_verbs
+- Signature: `remove_villain_verbs()`
+- Inputs: None
+- Purpose: Remove villain verbs.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/add_villain_verbs
+- Signature: `add_villain_verbs()`
+- Inputs: None
+- Purpose: Add villain verbs.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/training_period
+- Signature: `training_period(mob/d) //d = defender. src = attacker`
+- Inputs: mob/d
+- Purpose: Handle training period.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/can_threaten
+- Signature: `can_threaten()`
+- Inputs: None
+- Purpose: Return whether threaten.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/villain/verb/Threaten_Hero
+- Signature: `Threaten_Hero()`
+- Inputs: None
+- Purpose: Handle threaten hero.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1403,354 +1752,5 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `proc/Found_Most(var/list/L) if(L&&L.len)`
 - Inputs: var/list/L
 - Purpose: Handle found most.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/World Mechanics/leagues.dm
-
-#### mob/verb/Create_League
-- Signature: `mob/verb/Create_League()`
-- Inputs: None
-- Purpose: Create League.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### proc/Same_league_cant_kill
-- Signature: `proc/Same_league_cant_kill(mob/a,mob/b)`
-- Inputs: mob/a, mob/b
-- Purpose: Handle same league cant kill.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/League_turret_IDs
-- Signature: `mob/proc/League_turret_IDs()`
-- Inputs: None
-- Purpose: Handle league turret ids.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Get_league_drone_IDs
-- Signature: `mob/proc/Get_league_drone_IDs()`
-- Inputs: None
-- Purpose: Return league drone IDs.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Get_league_nully_IDs
-- Signature: `mob/proc/Get_league_nully_IDs()`
-- Inputs: None
-- Purpose: Return league nully IDs.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### obj/League/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/League/proc/league_update_loop
-- Signature: `league_update_loop()`
-- Inputs: None
-- Purpose: Handle league update loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/League/proc/update_league
-- Signature: `update_league()`
-- Inputs: None
-- Purpose: Update league.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### obj/League/proc/league_announce
-- Signature: `league_announce(msg)`
-- Inputs: msg
-- Purpose: Handle league announce.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/league_chat
-- Signature: `verb/league_chat(msg as text)`
-- Inputs: msg as text
-- Purpose: Handle league chat.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/League/Click
-- Signature: `Click() if(src in usr)`
-- Inputs: None
-- Purpose: Handle click.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/World Mechanics/planet destroy.dm
-
-#### mob/Admin3/verb/Restore_planet
-- Signature: `mob/Admin3/verb/Restore_planet()`
-- Inputs: None
-- Purpose: Handle restore planet.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Planet_Destroy/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Planet_Destroy
-- Signature: `verb/Planet_Destroy()`
-- Inputs: None
-- Purpose: Handle planet destroy.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_lightning_strike
-- Signature: `proc/Get_lightning_strike()`
-- Inputs: None
-- Purpose: Return lightning strike.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Lightning_strike
-- Signature: `proc/Lightning_strike()`
-- Inputs: None
-- Purpose: Handle lightning strike.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Lightning_Strike/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Lightning_Strike/Del
-- Signature: `Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/can_planet_destroy
-- Signature: `mob/proc/can_planet_destroy()`
-- Inputs: None
-- Purpose: Return whether planet destroy.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/Admin4/verb/Disable_planet
-- Signature: `mob/Admin4/verb/Disable_planet()`
-- Inputs: None
-- Purpose: Handle disable planet.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/hide_destroyed_planets
-- Signature: `proc/hide_destroyed_planets(planet)`
-- Inputs: planet
-- Purpose: Handle hide destroyed planets.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/unhide_restored_planets
-- Signature: `proc/unhide_restored_planets(planet)`
-- Inputs: planet
-- Purpose: Handle unhide restored planets.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/destroy_planet
-- Signature: `proc/destroy_planet(planet,power=1)`
-- Inputs: planet, power=1
-- Purpose: Handle destroy planet.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/restore_planet
-- Signature: `proc/restore_planet(planet)`
-- Inputs: planet
-- Purpose: Handle restore planet.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/restore_all_planets
-- Signature: `proc/restore_all_planets()`
-- Inputs: None
-- Purpose: Handle restore all planets.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/proc/is_on_destroyed_planet
-- Signature: `atom/proc/is_on_destroyed_planet()`
-- Inputs: None
-- Purpose: Return whether on destroyed planet.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/logged_in_on_destroyed_planet_check
-- Signature: `mob/proc/logged_in_on_destroyed_planet_check() if(is_on_destroyed_planet())`
-- Inputs: None
-- Purpose: Handle logged in on destroyed planet check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Ship_on_destroyed_planet_loop
-- Signature: `proc/Ship_on_destroyed_planet_loop()`
-- Inputs: None
-- Purpose: Handle ship on destroyed planet loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/World Mechanics/sagas.dm
-
-#### proc/find_new_hero
-- Signature: `find_new_hero(mob/old_hero)`
-- Inputs: mob/old_hero
-- Purpose: Handle find new hero.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/find_new_villain
-- Signature: `find_new_villain(mob/old_villain,mob/villain_killer)`
-- Inputs: mob/old_villain, mob/villain_killer
-- Purpose: Handle find new villain.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/sagas_bonus
-- Signature: `sagas_bonus(mob/a,mob/b) //a = attacker. b = defender`
-- Inputs: mob/a, mob/b
-- Purpose: Handle sagas bonus.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ToggleIgnoreHero
-- Signature: `ToggleIgnoreHero()`
-- Inputs: None
-- Purpose: Toggle Ignore Hero.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/ToggleIgnoreVillain
-- Signature: `ToggleIgnoreVillain()`
-- Inputs: None
-- Purpose: Toggle Ignore Villain.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/ChangeAlignment
-- Signature: `ChangeAlignment(a = "Good")`
-- Inputs: a = "Good"
-- Purpose: Handle change alignment.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Hero_eligible
-- Signature: `Hero_eligible()`
-- Inputs: None
-- Purpose: Handle hero eligible.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Villain_eligible
-- Signature: `Villain_eligible()`
-- Inputs: None
-- Purpose: Handle villain eligible.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/killing_spree_loop
-- Signature: `killing_spree_loop()`
-- Inputs: None
-- Purpose: Handle killing spree loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/villain_timer
-- Signature: `villain_timer()`
-- Inputs: None
-- Purpose: Handle villain timer.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/hero_seniority_check
-- Signature: `hero_seniority_check()`
-- Inputs: None
-- Purpose: Handle hero seniority check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/villain_seniority_check
-- Signature: `villain_seniority_check()`
-- Inputs: None
-- Purpose: Handle villain seniority check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/hero_death
-- Signature: `hero_death(mob/killer) if(key && hero == key&&sagas)`
-- Inputs: mob/killer
-- Purpose: Handle hero death.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/villain_death
-- Signature: `villain_death(mob/m) if(key && villain==key && sagas)`
-- Inputs: mob/m
-- Purpose: Handle villain death.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/reset_villain_stuff
-- Signature: `reset_villain_stuff()`
-- Inputs: None
-- Purpose: Handle reset villain stuff.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/remove_villain_verbs
-- Signature: `remove_villain_verbs()`
-- Inputs: None
-- Purpose: Remove villain verbs.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/add_villain_verbs
-- Signature: `add_villain_verbs()`
-- Inputs: None
-- Purpose: Add villain verbs.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/training_period
-- Signature: `training_period(mob/d) //d = defender. src = attacker`
-- Inputs: mob/d
-- Purpose: Handle training period.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/can_threaten
-- Signature: `can_threaten()`
-- Inputs: None
-- Purpose: Return whether threaten.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/villain/verb/Threaten_Hero
-- Signature: `Threaten_Hero()`
-- Inputs: None
-- Purpose: Handle threaten hero.
 - Returns: none (implicit).
 - Side effects: see implementation.

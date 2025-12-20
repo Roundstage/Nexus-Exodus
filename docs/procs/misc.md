@@ -4,22 +4,22 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Misc/60 FPS CONSTANT TRICK.dm`
-- `src/Code/Misc/Insta Leech.dm`
+- `src/Code/Misc/60FPSCONSTANTTRICK.dm`
+- `src/Code/Misc/InstaLeech.dm`
 - `src/Code/Misc/Jackson.dm`
 - `src/Code/Misc/Saitama.dm`
 - `src/Code/Misc/TEMP.dm`
+- `src/Code/Misc/TensVerbs.dm`
 - `src/Code/Misc/Testing.dm`
-- `src/Code/Misc/Trolls 2.dm`
 - `src/Code/Misc/Trolls.dm`
-- `src/Code/Misc/Unsorted 2.dm`
+- `src/Code/Misc/Trolls2.dm`
 - `src/Code/Misc/Unsorted.dm`
+- `src/Code/Misc/Unsorted2.dm`
 - `src/Code/Misc/Utilities.dm`
-- `src/Code/Misc/tens verbs.dm`
 
 ## Proc Reference
 
-### src/Code/Misc/60 FPS CONSTANT TRICK.dm
+### src/Code/Misc/60FPSCONSTANTTRICK.dm
 
 #### client/proc/MaxFPSTrick
 - Signature: `MaxFPSTrick()`
@@ -28,7 +28,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Misc/Insta Leech.dm
+### src/Code/Misc/InstaLeech.dm
 
 #### mob/proc/Omega_KB
 - Signature: `mob/proc/Omega_KB() for(var/obj/Omega_KB/S in src) if(S.Enabled)`
@@ -288,6 +288,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/Misc/TensVerbs.dm
+
+#### mob/proc/alter_resources
+- Signature: `alter_resources()`
+- Inputs: None
+- Purpose: Handle alter resources.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/alter_intelligence
+- Signature: `alter_intelligence()`
+- Inputs: None
+- Purpose: Handle alter intelligence.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
 ### src/Code/Misc/Testing.dm
 
 #### mob/proc/Flip
@@ -297,7 +313,135 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Misc/Trolls 2.dm
+### src/Code/Misc/Trolls.dm
+
+#### mob/Admin5/verb/oldTroll
+- Signature: `mob/Admin5/verb/oldTroll()`
+- Inputs: None
+- Purpose: Handle old troll.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Troll/proc/Troll_Blast_Response
+- Signature: `mob/Troll/proc/Troll_Blast_Response() while(src)`
+- Inputs: None
+- Purpose: Handle troll blast response.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Troll/proc/Troll_Beam_Response
+- Signature: `mob/Troll/proc/Troll_Beam_Response() while(src)`
+- Inputs: None
+- Purpose: Handle troll beam response.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Troll/New
+- Signature: `New() spawn(10) if(src&&!(src in Make_List))`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Initialize
+- Signature: `proc/Troll_Initialize()`
+- Inputs: None
+- Purpose: Handle troll initialize.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Grab_Struggle
+- Signature: `proc/Troll_Grab_Struggle() while(src)`
+- Inputs: None
+- Purpose: Handle troll grab struggle.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Zanzoken
+- Signature: `proc/Troll_Zanzoken() while(src)`
+- Inputs: None
+- Purpose: Handle troll zanzoken.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Spam
+- Signature: `proc/Troll_Spam()`
+- Inputs: None
+- Purpose: Handle troll spam.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Name
+- Signature: `proc/Troll_Name()`
+- Inputs: None
+- Purpose: Handle troll name.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Stats
+- Signature: `proc/Troll_Stats() while(src)`
+- Inputs: None
+- Purpose: Handle troll stats.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Message
+- Signature: `proc/Troll_Message()`
+- Inputs: None
+- Purpose: Handle troll message.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Target
+- Signature: `proc/Troll_Target() while(src)`
+- Inputs: None
+- Purpose: Handle troll target.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Fly
+- Signature: `proc/Troll_Fly()`
+- Inputs: None
+- Purpose: Handle troll fly.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Stand
+- Signature: `proc/Troll_Stand()`
+- Inputs: None
+- Purpose: Handle troll stand.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Action
+- Signature: `proc/Troll_Action() while(src)`
+- Inputs: None
+- Purpose: Handle troll action.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Attack
+- Signature: `proc/Troll_Attack()`
+- Inputs: None
+- Purpose: Handle troll attack.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Run
+- Signature: `proc/Troll_Run()`
+- Inputs: None
+- Purpose: Handle troll run.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Troll_Wander
+- Signature: `proc/Troll_Wander()`
+- Inputs: None
+- Purpose: Handle troll wander.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Misc/Trolls2.dm
 
 #### mob/Admin4/verb/newtroll
 - Signature: `mob/Admin4/verb/newtroll()`
@@ -613,472 +757,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Return whether symbol.
 - Returns: boolean flag.
 - Side effects: none expected.
-
-### src/Code/Misc/Trolls.dm
-
-#### mob/Admin5/verb/oldTroll
-- Signature: `mob/Admin5/verb/oldTroll()`
-- Inputs: None
-- Purpose: Handle old troll.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Troll/proc/Troll_Blast_Response
-- Signature: `mob/Troll/proc/Troll_Blast_Response() while(src)`
-- Inputs: None
-- Purpose: Handle troll blast response.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Troll/proc/Troll_Beam_Response
-- Signature: `mob/Troll/proc/Troll_Beam_Response() while(src)`
-- Inputs: None
-- Purpose: Handle troll beam response.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Troll/New
-- Signature: `New() spawn(10) if(src&&!(src in Make_List))`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Initialize
-- Signature: `proc/Troll_Initialize()`
-- Inputs: None
-- Purpose: Handle troll initialize.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Grab_Struggle
-- Signature: `proc/Troll_Grab_Struggle() while(src)`
-- Inputs: None
-- Purpose: Handle troll grab struggle.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Zanzoken
-- Signature: `proc/Troll_Zanzoken() while(src)`
-- Inputs: None
-- Purpose: Handle troll zanzoken.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Spam
-- Signature: `proc/Troll_Spam()`
-- Inputs: None
-- Purpose: Handle troll spam.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Name
-- Signature: `proc/Troll_Name()`
-- Inputs: None
-- Purpose: Handle troll name.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Stats
-- Signature: `proc/Troll_Stats() while(src)`
-- Inputs: None
-- Purpose: Handle troll stats.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Message
-- Signature: `proc/Troll_Message()`
-- Inputs: None
-- Purpose: Handle troll message.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Target
-- Signature: `proc/Troll_Target() while(src)`
-- Inputs: None
-- Purpose: Handle troll target.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Fly
-- Signature: `proc/Troll_Fly()`
-- Inputs: None
-- Purpose: Handle troll fly.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Stand
-- Signature: `proc/Troll_Stand()`
-- Inputs: None
-- Purpose: Handle troll stand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Action
-- Signature: `proc/Troll_Action() while(src)`
-- Inputs: None
-- Purpose: Handle troll action.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Attack
-- Signature: `proc/Troll_Attack()`
-- Inputs: None
-- Purpose: Handle troll attack.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Run
-- Signature: `proc/Troll_Run()`
-- Inputs: None
-- Purpose: Handle troll run.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Troll_Wander
-- Signature: `proc/Troll_Wander()`
-- Inputs: None
-- Purpose: Handle troll wander.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Misc/Unsorted 2.dm
-
-#### obj/Move
-- Signature: `obj/Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)`
-- Inputs: NewLoc, Dir = 0, step_x = 0, step_y = 0
-- Purpose: Handle move.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/proc/ObjectRespawn
-- Signature: `obj/proc/ObjectRespawn()`
-- Inputs: None
-- Purpose: Handle object respawn.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin5/verb/Diagnose_Deleted_Objects
-- Signature: `mob/Admin5/verb/Diagnose_Deleted_Objects()`
-- Inputs: None
-- Purpose: Handle diagnose deleted objects.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Del
-- Signature: `obj/Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/GarbageCollect
-- Signature: `proc/GarbageCollect()`
-- Inputs: None
-- Purpose: Handle garbage collect.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/GarbageCollectLoop
-- Signature: `proc/GarbageCollectLoop()`
-- Inputs: None
-- Purpose: Handle garbage collect loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/DeletePendingObjectsLoop
-- Signature: `proc/DeletePendingObjectsLoop()`
-- Inputs: None
-- Purpose: Delete Pending Objects Loop.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### proc/DeletePendingObjects
-- Signature: `proc/DeletePendingObjects()`
-- Inputs: None
-- Purpose: Delete Pending Objects.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/Del
-- Signature: `mob/Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/ActivatePixelMovement
-- Signature: `ActivatePixelMovement()`
-- Inputs: None
-- Purpose: Handle activate pixel movement.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/UpdateRaceStatsOnlyModeStatsLoop
-- Signature: `UpdateRaceStatsOnlyModeStatsLoop()`
-- Inputs: None
-- Purpose: Update Race Stats Only Mode Stats Loop.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/UpdateRaceStatsOnlyModeStats
-- Signature: `UpdateRaceStatsOnlyModeStats()`
-- Inputs: None
-- Purpose: Update Race Stats Only Mode Stats.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/Input
-- Signature: `mob/proc/Input(mob/m,msg,title,default,_type,list/l)`
-- Inputs: mob/m, msg, title, default, _type, list/l
-- Purpose: Handle input.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Opponent_move_slower_if_you_are_chasing_them
-- Signature: `mob/proc/Opponent_move_slower_if_you_are_chasing_them()`
-- Inputs: None
-- Purpose: Handle opponent move slower if you are chasing them.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Being_chased
-- Signature: `mob/proc/Being_chased()`
-- Inputs: None
-- Purpose: Handle being chased.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/TickMult
-- Signature: `proc/TickMult(n=1)`
-- Inputs: n=1
-- Purpose: Handle tick mult.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/ToOne
-- Signature: `proc/ToOne(delay = 1)`
-- Inputs: delay = 1
-- Purpose: Handle to one.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Get_bp_loss_from_low_ki
-- Signature: `Get_bp_loss_from_low_ki()`
-- Inputs: None
-- Purpose: Return bp loss from low ki.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Get_bp_loss_from_low_hp
-- Signature: `Get_bp_loss_from_low_hp()`
-- Inputs: None
-- Purpose: Return bp loss from low hp.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Set_flash_step_mob
-- Signature: `Set_flash_step_mob(mob/m)`
-- Inputs: mob/m
-- Purpose: Set flash step mob.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/Can_flash_step
-- Signature: `Can_flash_step()`
-- Inputs: None
-- Purpose: Return whether flash step.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/Get_flash_step_target
-- Signature: `Get_flash_step_target(mob/m)`
-- Inputs: mob/m
-- Purpose: Return flash step target.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Is_valid_flash_step_target
-- Signature: `Is_valid_flash_step_target(mob/m)`
-- Inputs: mob/m
-- Purpose: Return whether valid flash step target.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/Manually_find_flash_step_target
-- Signature: `Manually_find_flash_step_target()`
-- Inputs: None
-- Purpose: Handle manually find flash step target.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Get_flash_step_delay
-- Signature: `Get_flash_step_delay()`
-- Inputs: None
-- Purpose: Return flash step delay.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Flash_Step
-- Signature: `Flash_Step()`
-- Inputs: None
-- Purpose: Handle flash step.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin5/verb/test_overlays
-- Signature: `mob/Admin5/verb/test_overlays()`
-- Inputs: None
-- Purpose: Handle test overlays.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### turf/proc/ki_water
-- Signature: `turf/proc/ki_water(d)`
-- Inputs: d
-- Purpose: Handle ki water.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/relative_kb_dist
-- Signature: `mob/proc/relative_kb_dist(obj/Blast/b,kb_dist=1)`
-- Inputs: obj/Blast/b, kb_dist=1
-- Purpose: Handle relative kb dist.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Get_blast_homing_chance
-- Signature: `mob/proc/Get_blast_homing_chance(mod = 1)`
-- Inputs: mod = 1
-- Purpose: Return blast homing chance.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### obj/beam_redirector /when beams are deflected this object is placed down at the spot where it was/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/the_loop
-- Signature: `proc/the_loop()`
-- Inputs: None
-- Purpose: Handle the loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin5/verb/Diagnose_Effect_Icons
-- Signature: `Diagnose_Effect_Icons()`
-- Inputs: None
-- Purpose: Handle diagnose effect icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/GetEffect
-- Signature: `proc/GetEffect()`
-- Inputs: None
-- Purpose: Return Effect.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### obj/Effect/Del
-- Signature: `Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_explosion
-- Signature: `proc/Get_explosion()`
-- Inputs: None
-- Purpose: Return explosion.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Explosion
-- Signature: `proc/Explosion()`
-- Inputs: None
-- Purpose: Handle explosion.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Explosion/Del
-- Signature: `Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Initialize_explosion_icons
-- Signature: `proc/Initialize_explosion_icons()`
-- Inputs: None
-- Purpose: Initialize explosion icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Explosion_Graphics
-- Signature: `proc/Explosion_Graphics(obj/O,Distance=1,not_used=0)`
-- Inputs: obj/O, Distance=1, not_used=0
-- Purpose: Handle explosion graphics.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Explosion_Count
-- Signature: `proc/Explosion_Count(list/L)`
-- Inputs: list/L
-- Purpose: Handle explosion count.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### turf/proc/Make_Damaged_Ground
-- Signature: `turf/proc/Make_Damaged_Ground(Amount=1) if(!Water)`
-- Inputs: Amount=1
-- Purpose: Handle make damaged ground.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### turf/proc/Remove_Damaged_Ground
-- Signature: `turf/proc/Remove_Damaged_Ground(image/I)`
-- Inputs: image/I
-- Purpose: Remove Damaged Ground.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/Shielding
-- Signature: `mob/proc/Shielding()`
-- Inputs: None
-- Purpose: Handle shielding.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/check_lose_tail
-- Signature: `mob/proc/check_lose_tail(dmg=0,obj/culprit)`
-- Inputs: dmg=0, obj/culprit
-- Purpose: Check lose tail.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_projectile_shockwave_size
-- Signature: `proc/Get_projectile_shockwave_size(obj/Blast/b)`
-- Inputs: obj/Blast/b
-- Purpose: Return projectile shockwave size.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Apply_force_field_damage
-- Signature: `mob/proc/Apply_force_field_damage(obj/items/Force_Field/FF,dmg=0)`
-- Inputs: obj/items/Force_Field/FF, dmg=0
-- Purpose: Apply force field damage.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Tens
-- Signature: `proc/Tens(t)`
-- Inputs: t
-- Purpose: Handle tens.
-- Returns: none (implicit).
-- Side effects: see implementation.
 
 ### src/Code/Misc/Unsorted.dm
 
@@ -1474,6 +1152,344 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/Misc/Unsorted2.dm
+
+#### obj/Move
+- Signature: `obj/Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)`
+- Inputs: NewLoc, Dir = 0, step_x = 0, step_y = 0
+- Purpose: Handle move.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/proc/ObjectRespawn
+- Signature: `obj/proc/ObjectRespawn()`
+- Inputs: None
+- Purpose: Handle object respawn.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin5/verb/Diagnose_Deleted_Objects
+- Signature: `mob/Admin5/verb/Diagnose_Deleted_Objects()`
+- Inputs: None
+- Purpose: Handle diagnose deleted objects.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Del
+- Signature: `obj/Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/GarbageCollect
+- Signature: `proc/GarbageCollect()`
+- Inputs: None
+- Purpose: Handle garbage collect.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/GarbageCollectLoop
+- Signature: `proc/GarbageCollectLoop()`
+- Inputs: None
+- Purpose: Handle garbage collect loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/DeletePendingObjectsLoop
+- Signature: `proc/DeletePendingObjectsLoop()`
+- Inputs: None
+- Purpose: Delete Pending Objects Loop.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/DeletePendingObjects
+- Signature: `proc/DeletePendingObjects()`
+- Inputs: None
+- Purpose: Delete Pending Objects.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/Del
+- Signature: `mob/Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/ActivatePixelMovement
+- Signature: `ActivatePixelMovement()`
+- Inputs: None
+- Purpose: Handle activate pixel movement.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/UpdateRaceStatsOnlyModeStatsLoop
+- Signature: `UpdateRaceStatsOnlyModeStatsLoop()`
+- Inputs: None
+- Purpose: Update Race Stats Only Mode Stats Loop.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/UpdateRaceStatsOnlyModeStats
+- Signature: `UpdateRaceStatsOnlyModeStats()`
+- Inputs: None
+- Purpose: Update Race Stats Only Mode Stats.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/Input
+- Signature: `mob/proc/Input(mob/m,msg,title,default,_type,list/l)`
+- Inputs: mob/m, msg, title, default, _type, list/l
+- Purpose: Handle input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Opponent_move_slower_if_you_are_chasing_them
+- Signature: `mob/proc/Opponent_move_slower_if_you_are_chasing_them()`
+- Inputs: None
+- Purpose: Handle opponent move slower if you are chasing them.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Being_chased
+- Signature: `mob/proc/Being_chased()`
+- Inputs: None
+- Purpose: Handle being chased.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/TickMult
+- Signature: `proc/TickMult(n=1)`
+- Inputs: n=1
+- Purpose: Handle tick mult.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/ToOne
+- Signature: `proc/ToOne(delay = 1)`
+- Inputs: delay = 1
+- Purpose: Handle to one.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Get_bp_loss_from_low_ki
+- Signature: `Get_bp_loss_from_low_ki()`
+- Inputs: None
+- Purpose: Return bp loss from low ki.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Get_bp_loss_from_low_hp
+- Signature: `Get_bp_loss_from_low_hp()`
+- Inputs: None
+- Purpose: Return bp loss from low hp.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Set_flash_step_mob
+- Signature: `Set_flash_step_mob(mob/m)`
+- Inputs: mob/m
+- Purpose: Set flash step mob.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/Can_flash_step
+- Signature: `Can_flash_step()`
+- Inputs: None
+- Purpose: Return whether flash step.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/Get_flash_step_target
+- Signature: `Get_flash_step_target(mob/m)`
+- Inputs: mob/m
+- Purpose: Return flash step target.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Is_valid_flash_step_target
+- Signature: `Is_valid_flash_step_target(mob/m)`
+- Inputs: mob/m
+- Purpose: Return whether valid flash step target.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/Manually_find_flash_step_target
+- Signature: `Manually_find_flash_step_target()`
+- Inputs: None
+- Purpose: Handle manually find flash step target.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Get_flash_step_delay
+- Signature: `Get_flash_step_delay()`
+- Inputs: None
+- Purpose: Return flash step delay.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Flash_Step
+- Signature: `Flash_Step()`
+- Inputs: None
+- Purpose: Handle flash step.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin5/verb/test_overlays
+- Signature: `mob/Admin5/verb/test_overlays()`
+- Inputs: None
+- Purpose: Handle test overlays.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### turf/proc/ki_water
+- Signature: `turf/proc/ki_water(d)`
+- Inputs: d
+- Purpose: Handle ki water.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/relative_kb_dist
+- Signature: `mob/proc/relative_kb_dist(obj/Blast/b,kb_dist=1)`
+- Inputs: obj/Blast/b, kb_dist=1
+- Purpose: Handle relative kb dist.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Get_blast_homing_chance
+- Signature: `mob/proc/Get_blast_homing_chance(mod = 1)`
+- Inputs: mod = 1
+- Purpose: Return blast homing chance.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### obj/beam_redirector /when beams are deflected this object is placed down at the spot where it was/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/the_loop
+- Signature: `proc/the_loop()`
+- Inputs: None
+- Purpose: Handle the loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin5/verb/Diagnose_Effect_Icons
+- Signature: `Diagnose_Effect_Icons()`
+- Inputs: None
+- Purpose: Handle diagnose effect icons.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/GetEffect
+- Signature: `proc/GetEffect()`
+- Inputs: None
+- Purpose: Return Effect.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### obj/Effect/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_explosion
+- Signature: `proc/Get_explosion()`
+- Inputs: None
+- Purpose: Return explosion.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Explosion
+- Signature: `proc/Explosion()`
+- Inputs: None
+- Purpose: Handle explosion.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Explosion/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Initialize_explosion_icons
+- Signature: `proc/Initialize_explosion_icons()`
+- Inputs: None
+- Purpose: Initialize explosion icons.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Explosion_Graphics
+- Signature: `proc/Explosion_Graphics(obj/O,Distance=1,not_used=0)`
+- Inputs: obj/O, Distance=1, not_used=0
+- Purpose: Handle explosion graphics.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Explosion_Count
+- Signature: `proc/Explosion_Count(list/L)`
+- Inputs: list/L
+- Purpose: Handle explosion count.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### turf/proc/Make_Damaged_Ground
+- Signature: `turf/proc/Make_Damaged_Ground(Amount=1) if(!Water)`
+- Inputs: Amount=1
+- Purpose: Handle make damaged ground.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### turf/proc/Remove_Damaged_Ground
+- Signature: `turf/proc/Remove_Damaged_Ground(image/I)`
+- Inputs: image/I
+- Purpose: Remove Damaged Ground.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/Shielding
+- Signature: `mob/proc/Shielding()`
+- Inputs: None
+- Purpose: Handle shielding.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/check_lose_tail
+- Signature: `mob/proc/check_lose_tail(dmg=0,obj/culprit)`
+- Inputs: dmg=0, obj/culprit
+- Purpose: Check lose tail.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_projectile_shockwave_size
+- Signature: `proc/Get_projectile_shockwave_size(obj/Blast/b)`
+- Inputs: obj/Blast/b
+- Purpose: Return projectile shockwave size.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Apply_force_field_damage
+- Signature: `mob/proc/Apply_force_field_damage(obj/items/Force_Field/FF,dmg=0)`
+- Inputs: obj/items/Force_Field/FF, dmg=0
+- Purpose: Apply force field damage.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Tens
+- Signature: `proc/Tens(t)`
+- Inputs: t
+- Purpose: Handle tens.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
 ### src/Code/Misc/Utilities.dm
 
 #### proc/parse
@@ -1543,21 +1559,5 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `proc/arctanD(x,y)`
 - Inputs: x, y
 - Purpose: Handle arctan d.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Misc/tens verbs.dm
-
-#### mob/proc/alter_resources
-- Signature: `alter_resources()`
-- Inputs: None
-- Purpose: Handle alter resources.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/alter_intelligence
-- Signature: `alter_intelligence()`
-- Inputs: None
-- Purpose: Handle alter intelligence.
 - Returns: none (implicit).
 - Side effects: see implementation.

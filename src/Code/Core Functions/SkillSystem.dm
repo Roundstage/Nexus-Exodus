@@ -1,15 +1,7 @@
-// Useable energy types
-mob/var/Energy/Demonic_Energy = new("Demonic Energy")
-
-var/mob/energy_types = list(
-    "Demonic Energy" = Demonic_Energy
-)
-
 mob/proc/get_energy(type)
-    if(energy_types[type])
-        return energy_types[type]
-    else
-        return FALSE
+    if(src.energies && src.energies[type])
+        return src.energies[type]
+    return FALSE
 
 Skill
     var
@@ -46,9 +38,10 @@ Skill
         CanActivate()
             var/mob/player      = usr
             var/Energy/energy   = player.get_energy(src.energy_type)
+            if(!energy) return FALSE
             var/quantity        = energy.quantity
 
-            if(energy.sealed)
+            if(energy.seal.sealed)
                 player << "Your [src.energy_type] is sealed, so you can't use [src.name]."
                 return FALSE
 
@@ -56,8 +49,8 @@ Skill
                 player << "[src.name] is on cooldown. ([round(src.cooldown/10, 1)] seconds remaining."
                 return FALSE
 
-            if(energy < src.cost)
-                player << "You don't have enough [src.energy_type] to use [src.name] ([energy]/[src.cost])."
+            if(quantity < src.cost)
+                player << "You don't have enough [src.energy_type] to use [src.name] ([quantity]/[src.cost])."
                 return FALSE
 
             return TRUE
