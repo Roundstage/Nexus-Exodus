@@ -4,15 +4,73 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Background Code/Javascript Resolution Checker.dm`
-- `src/Code/Background Code/Object Cache.dm`
-- `src/Code/Background Code/Special Announcements Loop.dm`
-- `src/Code/Background Code/Stat Loop.dm`
-- `src/Code/Background Code/bug logs.dm`
+- `src/Code/Background Code/BugLogs.dm`
+- `src/Code/Background Code/JavascriptResolutionChecker.dm`
+- `src/Code/Background Code/ObjectCache.dm`
+- `src/Code/Background Code/SpecialAnnouncementsLoop.dm`
+- `src/Code/Background Code/StatLoop.dm`
 
 ## Proc Reference
 
-### src/Code/Background Code/Javascript Resolution Checker.dm
+### src/Code/Background Code/BugLogs.dm
+
+#### proc/gains_limiter
+- Signature: `proc/gains_limiter()`
+- Inputs: None
+- Purpose: Handle gains limiter.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/LogBug
+- Signature: `proc/LogBug(t, clr)`
+- Inputs: t, clr
+- Purpose: Handle log bug.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Wipebuglogs
+- Signature: `proc/Wipebuglogs()`
+- Inputs: None
+- Purpose: Handle wipebuglogs.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Total_Res
+- Signature: `mob/proc/Total_Res() //on you and in bank total`
+- Inputs: None
+- Purpose: Handle total res.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Monitor_Bugs
+- Signature: `proc/Monitor_Bugs()`
+- Inputs: None
+- Purpose: Handle monitor bugs.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Save_Bugs
+- Signature: `proc/Save_Bugs()`
+- Inputs: None
+- Purpose: Save Bugs.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### proc/Load_Bugs
+- Signature: `proc/Load_Bugs() if(fexists("data/Bugs"))`
+- Inputs: None
+- Purpose: Load Bugs.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/Bug_Keys
+- Signature: `mob/proc/Bug_Keys()`
+- Inputs: None
+- Purpose: Handle bug keys.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Background Code/JavascriptResolutionChecker.dm
 
 #### client/proc/JSresolutionCheck
 - Signature: `JSresolutionCheck()`
@@ -28,7 +86,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/Object Cache.dm
+### src/Code/Background Code/ObjectCache.dm
 
 #### proc/GetCachedObject
 - Signature: `GetCachedObject(obj_type, pos)`
@@ -44,7 +102,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/Special Announcements Loop.dm
+### src/Code/Background Code/SpecialAnnouncementsLoop.dm
 
 #### proc/SpecialAnnouncementsLoop
 - Signature: `SpecialAnnouncementsLoop()`
@@ -67,7 +125,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/Stat Loop.dm
+### src/Code/Background Code/StatLoop.dm
 
 #### mob/proc/get_bp_loop
 - Signature: `mob/proc/get_bp_loop()`
@@ -859,61 +917,3 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Update evade meter.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
-
-### src/Code/Background Code/bug logs.dm
-
-#### proc/gains_limiter
-- Signature: `proc/gains_limiter()`
-- Inputs: None
-- Purpose: Handle gains limiter.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/LogBug
-- Signature: `proc/LogBug(t, clr)`
-- Inputs: t, clr
-- Purpose: Handle log bug.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Wipebuglogs
-- Signature: `proc/Wipebuglogs()`
-- Inputs: None
-- Purpose: Handle wipebuglogs.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Total_Res
-- Signature: `mob/proc/Total_Res() //on you and in bank total`
-- Inputs: None
-- Purpose: Handle total res.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Monitor_Bugs
-- Signature: `proc/Monitor_Bugs()`
-- Inputs: None
-- Purpose: Handle monitor bugs.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Save_Bugs
-- Signature: `proc/Save_Bugs()`
-- Inputs: None
-- Purpose: Save Bugs.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### proc/Load_Bugs
-- Signature: `proc/Load_Bugs() if(fexists("data/Bugs"))`
-- Inputs: None
-- Purpose: Load Bugs.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/Bug_Keys
-- Signature: `mob/proc/Bug_Keys()`
-- Inputs: None
-- Purpose: Handle bug keys.
-- Returns: none (implicit).
-- Side effects: see implementation.

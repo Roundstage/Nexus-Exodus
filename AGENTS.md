@@ -13,8 +13,8 @@
 
 ## Coding Style & Naming Conventions
 - Language is BYOND DM. Use tabs for indentation and keep proc blocks compact.
-- Match nearby conventions: procs often `PascalCase()` while vars mix `snake_case` and `lowerCamelCase`.
-- Keep file names descriptive and aligned with their subsystem (e.g., `src/Code/Combat/Melee.dm`).
+- Functions/procs use `camelCase`, types/classes use `PascalCase`, and variables use `snake_case`.
+- File names use `PascalCase` with no spaces (e.g., `src/Code/Combat/SpeedDelay.dm`).
 - If you add assets, mirror existing folder structure and update references in `.dm` or `.dmf`.
 
 ## Testing Guidelines

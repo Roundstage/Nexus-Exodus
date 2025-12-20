@@ -4,13 +4,13 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Map Code/Ambient Occlusion.dm`
-- `src/Code/Map Code/Auto Edge.dm`
-- `src/Code/Map Code/Quadrant Generator.dm`
+- `src/Code/Map Code/AmbientOcclusion.dm`
+- `src/Code/Map Code/AutoEdge.dm`
+- `src/Code/Map Code/QuadrantGenerator.dm`
 
 ## Proc Reference
 
-### src/Code/Map Code/Ambient Occlusion.dm
+### src/Code/Map Code/AmbientOcclusion.dm
 
 #### turf/proc/IsAOCaster
 - Signature: `IsAOCaster()`
@@ -61,7 +61,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Map Code/Auto Edge.dm
+### src/Code/Map Code/AutoEdge.dm
 
 #### mob/Admin5/verb/TestAlpha
 - Signature: `TestAlpha(atom/t in world)`
@@ -98,7 +98,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Map Code/Quadrant Generator.dm
+### src/Code/Map Code/QuadrantGenerator.dm
 
 #### proc/round_up
 - Signature: `round_up(n = 1)`

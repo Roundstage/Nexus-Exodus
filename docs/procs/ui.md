@@ -8,11 +8,11 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/UI/HUD.dm`
 - `src/Code/UI/HelperQuests.dm`
 - `src/Code/UI/Hotkeys.dm`
-- `src/Code/UI/RP Window.dm`
+- `src/Code/UI/RPWindow.dm`
+- `src/Code/UI/SavePlayerSettings.dm`
 - `src/Code/UI/Tabs 2017/BuildTab.dm`
-- `src/Code/UI/UI Stuff.dm`
+- `src/Code/UI/UIStuff.dm`
 - `src/Code/UI/Wasted.dm`
-- `src/Code/UI/save player settings.dm`
 
 ## Proc Reference
 
@@ -535,7 +535,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/UI/RP Window.dm
+### src/Code/UI/RPWindow.dm
 
 #### mob/proc/ViewEmoteWindow
 - Signature: `ViewEmoteWindow(mob/admin, mob/player, unwritten, type = "Emote", path = "emotelogs", overwrite_ckey = "none")`
@@ -621,6 +621,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/UI/SavePlayerSettings.dm
+
+#### mob/proc/save_player_settings
+- Signature: `save_player_settings()`
+- Inputs: None
+- Purpose: Save player settings.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/load_player_settings
+- Signature: `load_player_settings()`
+- Inputs: None
+- Purpose: Load player settings.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
 ### src/Code/UI/Tabs 2017/BuildTab.dm
 
 #### mob/verb/MapFocus
@@ -651,7 +667,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/UI/UI Stuff.dm
+### src/Code/UI/UIStuff.dm
 
 #### client/Del
 - Signature: `client/Del()`
@@ -899,19 +915,3 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Initialize object state and register references.
 - Returns: none (implicit).
 - Side effects: see implementation.
-
-### src/Code/UI/save player settings.dm
-
-#### mob/proc/save_player_settings
-- Signature: `save_player_settings()`
-- Inputs: None
-- Purpose: Save player settings.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/load_player_settings
-- Signature: `load_player_settings()`
-- Inputs: None
-- Purpose: Load player settings.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.

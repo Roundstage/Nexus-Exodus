@@ -4,39 +4,40 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Combat/Bleed Damage.dm`
+- `src/Code/Combat/BleedDamage.dm`
+- `src/Code/Combat/Buffs.dm`
 - `src/Code/Combat/Evasion.dm`
-- `src/Code/Combat/Hokuto Shinken.dm`
+- `src/Code/Combat/HokutoShinken.dm`
 - `src/Code/Combat/Injuries.dm`
-- `src/Code/Combat/Ki Skills/Death Ball 2017.dm`
-- `src/Code/Combat/Ki Skills/Final Explosion.dm`
-- `src/Code/Combat/Ki Skills/Fusion System.dm`
+- `src/Code/Combat/Ki Skills/DeathBall2017.dm`
+- `src/Code/Combat/Ki Skills/FinalExplosion.dm`
+- `src/Code/Combat/Ki Skills/FusionSystem.dm`
 - `src/Code/Combat/Ki Skills/Hakai.dm`
-- `src/Code/Combat/Ki Skills/Kikoho 2016.dm`
+- `src/Code/Combat/Ki Skills/Kikoho2016.dm`
 - `src/Code/Combat/Ki Skills/Sense 2017/Sense.dm`
-- `src/Code/Combat/Ki Skills/Solar Flare.dm`
-- `src/Code/Combat/Ki Skills/Spirit Bomb 2016.dm`
+- `src/Code/Combat/Ki Skills/SolarFlare.dm`
+- `src/Code/Combat/Ki Skills/SpiritBomb2016.dm`
 - `src/Code/Combat/Ki Skills/Supernova.dm`
 - `src/Code/Combat/Math/CombatMath.dm`
-- `src/Code/Combat/Megaton Throw.dm`
+- `src/Code/Combat/MegatonThrow.dm`
 - `src/Code/Combat/Melee.dm`
-- `src/Code/Combat/Melee/Dragon Rush.dm`
+- `src/Code/Combat/Melee/DragonRush.dm`
 - `src/Code/Combat/Melee/PressurePunch.dm`
 - `src/Code/Combat/Melee/RoundhouseKick.dm`
-- `src/Code/Combat/Melee/Super Dropkick.dm`
+- `src/Code/Combat/Melee/SuperDropkick.dm`
 - `src/Code/Combat/Melee/WolfFangFist.dm`
-- `src/Code/Combat/Rare death effects.dm`
-- `src/Code/Combat/Revenge System.dm`
-- `src/Code/Combat/Rock Throw.dm`
+- `src/Code/Combat/RareDeathEffects.dm`
+- `src/Code/Combat/RevengeSystem.dm`
+- `src/Code/Combat/RockThrow.dm`
 - `src/Code/Combat/Skills.dm`
-- `src/Code/Combat/Split Forms.dm`
-- `src/Code/Combat/Targeting/Targeting Wrappers.dm`
+- `src/Code/Combat/SpeedDelay.dm`
+- `src/Code/Combat/SplitForms.dm`
 - `src/Code/Combat/Targeting/Targeting.dm`
-- `src/Code/Combat/buffs.dm`
+- `src/Code/Combat/Targeting/TargetingWrappers.dm`
 
 ## Proc Reference
 
-### src/Code/Combat/Bleed Damage.dm
+### src/Code/Combat/BleedDamage.dm
 
 #### mob/proc/BleedDamage
 - Signature: `BleedDamage(n = 0)`
@@ -51,6 +52,141 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Handle bleed loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/Combat/Buffs.dm
+
+#### mob/proc/Buff_Drain_Loop
+- Signature: `mob/proc/Buff_Drain_Loop()`
+- Inputs: None
+- Purpose: Handle buff drain loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/buffed
+- Signature: `mob/proc/buffed()`
+- Inputs: None
+- Purpose: Handle buffed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/buffed_with_bp
+- Signature: `mob/proc/buffed_with_bp()`
+- Inputs: None
+- Purpose: Handle buffed with bp.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Buff/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Buff/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Hotbar_use
+- Signature: `verb/Hotbar_use()`
+- Inputs: None
+- Purpose: Handle hotbar use.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Buff
+- Signature: `verb/Buff()`
+- Inputs: None
+- Purpose: Handle buff.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### verb/Buff_Options
+- Signature: `verb/Buff_Options()`
+- Inputs: None
+- Purpose: Handle buff options.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Buffless_recovery
+- Signature: `Buffless_recovery()`
+- Inputs: None
+- Purpose: Handle buffless recovery.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BufflessKiMod
+- Signature: `BufflessKiMod()`
+- Inputs: None
+- Purpose: Handle buffless ki mod.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Buff_Enable
+- Signature: `Buff_Enable(obj/Buff/O) if(!O.being_edited&&!Redoing_Stats)`
+- Inputs: obj/Buff/O
+- Purpose: Handle buff enable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Rebuff_timer_countdown
+- Signature: `Rebuff_timer_countdown()`
+- Inputs: None
+- Purpose: Handle rebuff timer countdown.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Buff_Disable
+- Signature: `Buff_Disable(obj/Buff/O) if(O&&O.suffix)`
+- Inputs: obj/Buff/O
+- Purpose: Handle buff disable.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/buff_point
+- Signature: `mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin`
+- Inputs: posneg as text, buff_stat as text
+- Purpose: Handle buff point.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/verb/buff_done
+- Signature: `mob/verb/buff_done() //verb called thru skin`
+- Inputs: None
+- Purpose: Handle buff done.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Refresh_Buff_Window
+- Signature: `mob/proc/Refresh_Buff_Window(obj/Buff/B) if(client)`
+- Inputs: obj/Buff/B
+- Purpose: Handle refresh buff window.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Trans_Graphics
+- Signature: `Trans_Graphics(list/L) if(L) for(var/V in L)`
+- Inputs: list/L
+- Purpose: Handle trans graphics.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Add_Trans_Effects
+- Signature: `Add_Trans_Effects(list/L)`
+- Inputs: list/L
+- Purpose: Add Trans Effects.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/Remove_Trans_Effects
+- Signature: `Remove_Trans_Effects(list/L)`
+- Inputs: list/L
+- Purpose: Remove Trans Effects.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
 
 ### src/Code/Combat/Evasion.dm
 
@@ -131,7 +267,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Combat/Hokuto Shinken.dm
+### src/Code/Combat/HokutoShinken.dm
 
 #### obj/Hokuto_Shinken/New
 - Signature: `New()`
@@ -219,7 +355,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Death Ball 2017.dm
+### src/Code/Combat/Ki Skills/DeathBall2017.dm
 
 #### obj/Attacks/Genki_Dama/Death_Ball/New
 - Signature: `New()`
@@ -242,7 +378,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Final Explosion.dm
+### src/Code/Combat/Ki Skills/FinalExplosion.dm
 
 #### mob/proc/FinalExplosionFollowOnMove
 - Signature: `mob/proc/FinalExplosionFollowOnMove()`
@@ -321,7 +457,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Fusion System.dm
+### src/Code/Combat/Ki Skills/FusionSystem.dm
 
 #### obj/Fusion_Dance/verb/Fusion_Dance
 - Signature: `Fusion_Dance(var/mob/M in orange(usr,1))`
@@ -430,7 +566,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Kikoho 2016.dm
+### src/Code/Combat/Ki Skills/Kikoho2016.dm
 
 #### mob/proc/IsValidKikohoTarget
 - Signature: `mob/proc/IsValidKikohoTarget(mob/m)`
@@ -770,7 +906,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Combat/Ki Skills/Solar Flare.dm
+### src/Code/Combat/Ki Skills/SolarFlare.dm
 
 #### mob/proc/TrySolarFlare
 - Signature: `TrySolarFlare()`
@@ -842,7 +978,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Spirit Bomb 2016.dm
+### src/Code/Combat/Ki Skills/SpiritBomb2016.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -1037,7 +1173,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Megaton Throw.dm
+### src/Code/Combat/MegatonThrow.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -1636,7 +1772,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Combat/Melee/Dragon Rush.dm
+### src/Code/Combat/Melee/DragonRush.dm
 
 #### mob/proc/CheckLungeDragonRush
 - Signature: `CheckLungeDragonRush(mob/a, mob/b)`
@@ -1796,7 +1932,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Melee/Super Dropkick.dm
+### src/Code/Combat/Melee/SuperDropkick.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -1877,7 +2013,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Rare death effects.dm
+### src/Code/Combat/RareDeathEffects.dm
 
 #### mob/proc/Rare_death_check
 - Signature: `mob/proc/Rare_death_check(mob/m) //m = the original mob. src = the body`
@@ -1900,7 +2036,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Revenge System.dm
+### src/Code/Combat/RevengeSystem.dm
 
 #### mob/proc/GetRevengeInfo
 - Signature: `GetRevengeInfo(mob/m)`
@@ -1930,7 +2066,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Rock Throw.dm
+### src/Code/Combat/RockThrow.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -3201,7 +3337,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Split Forms.dm
+### src/Code/Combat/SpeedDelay.dm
+
+#### mob/proc/Speed_delay_mult
+- Signature: `mob/proc/Speed_delay_mult(severity = 1)`
+- Inputs: severity = 1
+- Purpose: Handle speed delay mult.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Combat/SplitForms.dm
 
 #### proc/Get_cached_splitform
 - Signature: `proc/Get_cached_splitform()`
@@ -3420,57 +3565,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Targeting/Targeting Wrappers.dm
-
-#### mob/proc/FindHakaiTarget
-- Signature: `mob/proc/FindHakaiTarget()`
-- Inputs: None
-- Purpose: Handle find hakai target.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/IsViableHakaiTarget
-- Signature: `mob/proc/IsViableHakaiTarget(mob/m, max_dist = 5)`
-- Inputs: mob/m, max_dist = 5
-- Purpose: Return whether Viable Hakai Target.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### obj/Blast/proc/GetBlastHomingTarget
-- Signature: `obj/Blast/proc/GetBlastHomingTarget(d, angle)`
-- Inputs: d, angle
-- Purpose: Return Blast Homing Target.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Is_viable_lunge_target
-- Signature: `mob/proc/Is_viable_lunge_target(mob/m)`
-- Inputs: mob/m
-- Purpose: Return whether viable lunge target.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/LungeTarget
-- Signature: `mob/proc/LungeTarget(dist_override)`
-- Inputs: dist_override
-- Purpose: Handle lunge target.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/FindWarpTarget
-- Signature: `FindWarpTarget(dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0)`
-- Inputs: dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0
-- Purpose: Handle find warp target.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/IsValidWarpTarget
-- Signature: `IsValidWarpTarget(mob/m, max_dist=10)`
-- Inputs: mob/m, max_dist=10
-- Purpose: Return whether Valid Warp Target.
-- Returns: boolean flag.
-- Side effects: none expected.
-
 ### src/Code/Combat/Targeting/Targeting.dm
 
 #### atom/movable/proc/FindTarget
@@ -3536,137 +3630,53 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/buffs.dm
+### src/Code/Combat/Targeting/TargetingWrappers.dm
 
-#### mob/proc/Buff_Drain_Loop
-- Signature: `mob/proc/Buff_Drain_Loop()`
+#### mob/proc/FindHakaiTarget
+- Signature: `mob/proc/FindHakaiTarget()`
 - Inputs: None
-- Purpose: Handle buff drain loop.
+- Purpose: Handle find hakai target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/buffed
-- Signature: `mob/proc/buffed()`
-- Inputs: None
-- Purpose: Handle buffed.
+#### mob/proc/IsViableHakaiTarget
+- Signature: `mob/proc/IsViableHakaiTarget(mob/m, max_dist = 5)`
+- Inputs: mob/m, max_dist = 5
+- Purpose: Return whether Viable Hakai Target.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### obj/Blast/proc/GetBlastHomingTarget
+- Signature: `obj/Blast/proc/GetBlastHomingTarget(d, angle)`
+- Inputs: d, angle
+- Purpose: Return Blast Homing Target.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Is_viable_lunge_target
+- Signature: `mob/proc/Is_viable_lunge_target(mob/m)`
+- Inputs: mob/m
+- Purpose: Return whether viable lunge target.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/LungeTarget
+- Signature: `mob/proc/LungeTarget(dist_override)`
+- Inputs: dist_override
+- Purpose: Handle lunge target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/buffed_with_bp
-- Signature: `mob/proc/buffed_with_bp()`
-- Inputs: None
-- Purpose: Handle buffed with bp.
+#### mob/proc/FindWarpTarget
+- Signature: `FindWarpTarget(dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0)`
+- Inputs: dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0
+- Purpose: Handle find warp target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### obj/Buff/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Buff/Del
-- Signature: `Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Buff
-- Signature: `verb/Buff()`
-- Inputs: None
-- Purpose: Handle buff.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Buff_Options
-- Signature: `verb/Buff_Options()`
-- Inputs: None
-- Purpose: Handle buff options.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Buffless_recovery
-- Signature: `Buffless_recovery()`
-- Inputs: None
-- Purpose: Handle buffless recovery.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/BufflessKiMod
-- Signature: `BufflessKiMod()`
-- Inputs: None
-- Purpose: Handle buffless ki mod.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Buff_Enable
-- Signature: `Buff_Enable(obj/Buff/O) if(!O.being_edited&&!Redoing_Stats)`
-- Inputs: obj/Buff/O
-- Purpose: Handle buff enable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Rebuff_timer_countdown
-- Signature: `Rebuff_timer_countdown()`
-- Inputs: None
-- Purpose: Handle rebuff timer countdown.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Buff_Disable
-- Signature: `Buff_Disable(obj/Buff/O) if(O&&O.suffix)`
-- Inputs: obj/Buff/O
-- Purpose: Handle buff disable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/buff_point
-- Signature: `mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin`
-- Inputs: posneg as text, buff_stat as text
-- Purpose: Handle buff point.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/buff_done
-- Signature: `mob/verb/buff_done() //verb called thru skin`
-- Inputs: None
-- Purpose: Handle buff done.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Refresh_Buff_Window
-- Signature: `mob/proc/Refresh_Buff_Window(obj/Buff/B) if(client)`
-- Inputs: obj/Buff/B
-- Purpose: Handle refresh buff window.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Trans_Graphics
-- Signature: `Trans_Graphics(list/L) if(L) for(var/V in L)`
-- Inputs: list/L
-- Purpose: Handle trans graphics.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Add_Trans_Effects
-- Signature: `Add_Trans_Effects(list/L)`
-- Inputs: list/L
-- Purpose: Add Trans Effects.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/Remove_Trans_Effects
-- Signature: `Remove_Trans_Effects(list/L)`
-- Inputs: list/L
-- Purpose: Remove Trans Effects.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+#### mob/proc/IsValidWarpTarget
+- Signature: `IsValidWarpTarget(mob/m, max_dist=10)`
+- Inputs: mob/m, max_dist=10
+- Purpose: Return whether Valid Warp Target.
+- Returns: boolean flag.
+- Side effects: none expected.

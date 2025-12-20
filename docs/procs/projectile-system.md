@@ -4,15 +4,15 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Projectile System/Beam Core.dm`
+- `src/Code/Projectile System/BeamCore.dm`
 - `src/Code/Projectile System/Beams.dm`
 - `src/Code/Projectile System/Blasts.dm`
-- `src/Code/Projectile System/Projectile Core.dm`
+- `src/Code/Projectile System/ProjectileCore.dm`
 - `src/Code/Projectile System/Projectiles.dm`
 
 ## Proc Reference
 
-### src/Code/Projectile System/Beam Core.dm
+### src/Code/Projectile System/BeamCore.dm
 
 #### obj/proc/beam_move_loop
 - Signature: `obj/proc/beam_move_loop(mob/m)`
@@ -816,7 +816,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Projectile System/Projectile Core.dm
+### src/Code/Projectile System/ProjectileCore.dm
 
 #### obj/Ability/proc/SetCooldown
 - Signature: `SetCooldown(mob/m)`

@@ -86,17 +86,17 @@ mob
 			if(!CanMeleeFromOtherCauses()) return
 			if(usr.cant_blast()) return
 			last_PocketSand = world.time
-
+			
 			flick("Attack", usr)
 			PocketSandFX()
-
+			
 			var/list/targets = FindTargets(usr.dir, angle_limit = 90, max_dist = 1)
 			if(targets)
 				for(var/mob/M in targets)
 					if(M != usr)
 						var/dmg = get_melee_damage(usr, count_sword = 0) * 0.8
 						var/knockback = get_melee_knockback_distance(usr) * 0.5
-
+						
 						if(prob(70)) // Hit chance
 							usr << "You throw sand at [M]'s eyes!"
 							M << "Sand gets in your eyes from [usr]!"
@@ -132,19 +132,19 @@ mob
 			if(!CanMeleeFromOtherCauses()) return
 			if(usr.cant_blast()) return
 			last_ExplodingHeartStrike = world.time
-
+			
 			flick("Attack", usr)
-
+			
 			var/list/targets = FindTargets(usr.dir, angle_limit = 90, max_dist = 1)
 			if(targets)
 				for(var/mob/M in targets)
 					if(M != usr)
 						var/dmg = (get_melee_damage(usr, count_sword = 0) * 1.5) + 50
-
+						
 						if(prob(70)) // Hit chance
 							usr << "You strike [M]'s pressure point!"
 							M << "[usr] strikes a critical point on your body!"
-
+							
 							// Delayed damage effect
 							spawn(30) // 3 second delay
 								if(M && usr)
@@ -170,36 +170,36 @@ mob
 				return
 			if(!CanMeleeFromOtherCauses()) return
 			if(usr.cant_blast()) return
-
+			
 			// Check if grabbing someone
 			var/mob/grabbed_target = null
 			for(var/mob/M in get_step(usr, usr.dir))
 				if(M != usr)
 					grabbed_target = M
 					break
-
+			
 			if(!grabbed_target)
 				usr << "You need to be next to someone to grab and throw them!"
 				return
-
+				
 			last_MegatonThrow = world.time
 			MegatonToss(grabbed_target)
 
 		MegatonToss(mob/M)
 			set waitfor = 0
 			if(!M) return
-
+			
 			var/dmg = (get_melee_damage(usr, count_sword = 0) * 2.0) + 75
 			var/knockback = get_melee_knockback_distance(usr) * 2
-
+			
 			if(prob(80)) // High success rate for throws
 				usr << "You grab [M] and leap into the air!"
 				M << "[usr] grabs you and leaps into the air!"
-
+				
 				// Visual effects
 				underlays += 'Shadow.dmi'
 				M.underlays += 'Shadow.dmi'
-
+				
 				// Leap up animation
 				spawn()
 					var/i = 0
@@ -208,9 +208,9 @@ mob
 						pixel_y += 6
 						i++
 						sleep(1)
-
+				
 				sleep(16)
-
+				
 				// Throw down animation
 				spawn()
 					var/i = 0
@@ -218,9 +218,9 @@ mob
 						M.pixel_y -= 8
 						i++
 						sleep(1)
-
+				
 				sleep(8)
-
+				
 				// User comes down
 				spawn()
 					var/i = 0
@@ -228,22 +228,22 @@ mob
 						pixel_y -= 8
 						i++
 						sleep(1)
-
+				
 				sleep(12)
-
+				
 				// Clean up effects
 				underlays -= 'Shadow.dmi'
 				M.underlays -= 'Shadow.dmi'
-
+				
 				// Apply damage and knockback
 				//player_view(10, M) << sound('crash.ogg', volume = 70)
 				usr << "You slam [M] into the ground!"
 				M << "[usr] slams you into the ground!"
-
+				
 				var/hp_before_dmg = M.Health
 				M.TakeDamage(dmg, 2.5)
 				M.Knockback(usr, knockback, omega_kb = 1)
-
+				
 				if(dmg >= 200 + hp_before_dmg) M.KO(src, allow_anger = 0)
 				else if(dmg >= hp_before_dmg) M.KO(src)
 			else

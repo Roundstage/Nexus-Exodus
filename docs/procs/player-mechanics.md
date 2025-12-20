@@ -4,31 +4,40 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
+- `src/Code/Player Mechanics/Aging.dm`
 - `src/Code/Player Mechanics/Ascension.dm`
 - `src/Code/Player Mechanics/Clothes.dm`
 - `src/Code/Player Mechanics/Cooking.dm`
 - `src/Code/Player Mechanics/Crandal.dm`
 - `src/Code/Player Mechanics/Customize.dm`
+- `src/Code/Player Mechanics/Death.dm`
 - `src/Code/Player Mechanics/Debuffs.dm`
 - `src/Code/Player Mechanics/Diarea.dm`
 - `src/Code/Player Mechanics/Faction.dm`
 - `src/Code/Player Mechanics/Feats.dm`
-- `src/Code/Player Mechanics/God Ki Training.dm`
-- `src/Code/Player Mechanics/God Ki.dm`
+- `src/Code/Player Mechanics/GodKi.dm`
+- `src/Code/Player Mechanics/GodKiTraining.dm`
 - `src/Code/Player Mechanics/Grabbing.dm`
 - `src/Code/Player Mechanics/Inventory.dm`
 - `src/Code/Player Mechanics/Learn.dm`
-- `src/Code/Player Mechanics/Old_ko_system.dm`
+- `src/Code/Player Mechanics/OldKoSystem.dm`
 - `src/Code/Player Mechanics/Ranks.dm`
 - `src/Code/Player Mechanics/Reincarnation.dm`
 - `src/Code/Player Mechanics/Teach.dm`
 - `src/Code/Player Mechanics/Train.dm`
 - `src/Code/Player Mechanics/Voting.dm`
 - `src/Code/Player Mechanics/Zenkai.dm`
-- `src/Code/Player Mechanics/aging.dm`
-- `src/Code/Player Mechanics/death.dm`
 
 ## Proc Reference
+
+### src/Code/Player Mechanics/Aging.dm
+
+#### mob/proc/Apply_racial_aging_variables
+- Signature: `mob/proc/Apply_racial_aging_variables()`
+- Inputs: None
+- Purpose: Apply racial aging variables.
+- Returns: none (implicit).
+- Side effects: see implementation.
 
 ### src/Code/Player Mechanics/Ascension.dm
 
@@ -600,6 +609,372 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/Player Mechanics/Death.dm
+
+#### mob/proc/FixCantMoveDueToKiAttack
+- Signature: `mob/proc/FixCantMoveDueToKiAttack()`
+- Inputs: None
+- Purpose: Handle fix cant move due to ki attack.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/FullHeal
+- Signature: `mob/proc/FullHeal()`
+- Inputs: None
+- Purpose: Handle full heal.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/SSj_Online
+- Signature: `proc/SSj_Online()`
+- Inputs: None
+- Purpose: Handle ssj online.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/SSj2_Online
+- Signature: `proc/SSj2_Online()`
+- Inputs: None
+- Purpose: Handle ssj2 online.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/SSj3_Online
+- Signature: `proc/SSj3_Online()`
+- Inputs: None
+- Purpose: Handle ssj3 online.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_Warp
+- Signature: `proc/Get_Warp(mob/M,mob/P,Dir) if(Dir)`
+- Inputs: mob/M, mob/P, Dir
+- Purpose: Return Warp.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### proc/Get_Warp_Destination
+- Signature: `proc/Get_Warp_Destination(mob/M,mob/P)`
+- Inputs: mob/M, mob/P
+- Purpose: Return Warp Destination.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Warp_To
+- Signature: `mob/proc/Warp_To(turf/B,mob/M) if(B)`
+- Inputs: turf/B, mob/M
+- Purpose: Handle warp to.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/cant_blast
+- Signature: `mob/proc/cant_blast(ignore_attack_check)`
+- Inputs: ignore_attack_check
+- Purpose: Handle cant blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/can_melee
+- Signature: `mob/proc/can_melee(trying_to_power_attack)`
+- Inputs: trying_to_power_attack
+- Purpose: Return whether melee.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/CanMeleeFromOtherCauses
+- Signature: `mob/proc/CanMeleeFromOtherCauses()`
+- Inputs: None
+- Purpose: Return whether Melee From Other Causes.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/Get_attack_gains
+- Signature: `mob/proc/Get_attack_gains()`
+- Inputs: None
+- Purpose: Return attack gains.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/SparGainsAmount
+- Signature: `SparGainsAmount()`
+- Inputs: None
+- Purpose: Handle spar gains amount.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Attack_gain_loop
+- Signature: `mob/proc/Attack_gain_loop()`
+- Inputs: None
+- Purpose: Handle attack gain loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/TimedOverlay
+- Signature: `proc/TimedOverlay(turf/t, time = 100, Icon)`
+- Inputs: turf/t, time = 100, Icon
+- Purpose: Handle timed overlay.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### turf/proc/TempTurfOverlay
+- Signature: `turf/proc/TempTurfOverlay(image/i,timer=30)`
+- Inputs: image/i, timer=30
+- Purpose: Handle temp turf overlay.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/KnockbackNoWait
+- Signature: `mob/proc/KnockbackNoWait(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,from_lunge, omega_kb) //A is the Attacker who knockbacked src`
+- Inputs: mob/A, Distance=10, dirt_trail=1, override_dir, bypass_immunity, from_lunge, omega_kb
+- Purpose: Handle knockback no wait.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Knockback
+- Signature: `mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,from_lunge, omega_kb) //A is the Attacker who knockbacked src`
+- Inputs: mob/A, Distance=10, dirt_trail=1, override_dir, bypass_immunity, from_lunge, omega_kb
+- Purpose: Handle knockback.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/KB_Destroy
+- Signature: `mob/proc/KB_Destroy(mob/A,Dir) //A is the Attacker`
+- Inputs: mob/A, Dir
+- Purpose: Handle kb destroy.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/SetLastAttackedTime
+- Signature: `mob/proc/SetLastAttackedTime(mob/a) //a = attacker`
+- Inputs: mob/a
+- Purpose: Set Last Attacked Time.
+- Returns: none (implicit).
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/third_eye
+- Signature: `mob/proc/third_eye()`
+- Inputs: None
+- Purpose: Handle third eye.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/can_anger
+- Signature: `mob/proc/can_anger()`
+- Inputs: None
+- Purpose: Return whether anger.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/anger
+- Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
+- Inputs: anger_mult=1, ssj_possible=1, reason
+- Purpose: Handle anger.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Calm
+- Signature: `mob/proc/Calm()`
+- Inputs: None
+- Purpose: Handle calm.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Drop_Rsc
+- Signature: `mob/proc/Drop_Rsc(n=0) if(n)`
+- Inputs: n=0
+- Purpose: Handle drop rsc.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Drop_Stealables
+- Signature: `mob/proc/Drop_Stealables()`
+- Inputs: None
+- Purpose: Handle drop stealables.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/ObserveDeathSpot
+- Signature: `mob/proc/ObserveDeathSpot()`
+- Inputs: None
+- Purpose: Handle observe death spot.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Death
+- Signature: `mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)`
+- Inputs: mob/Z, Force_Death=0, drone_sd=0, lose_hero=1, lose_immortality=1
+- Purpose: Handle death.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Spam_kill_timer
+- Signature: `mob/proc/Spam_kill_timer()`
+- Inputs: None
+- Purpose: Handle spam kill timer.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Revive
+- Signature: `mob/proc/Revive()`
+- Inputs: None
+- Purpose: Handle revive.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Dust/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/Dust/Del
+- Signature: `Del()`
+- Inputs: None
+- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Dust
+- Signature: `proc/Dust(mob/a, start_size = 0.01, end_size = 1, time = 25, start_alpha = 255, easing = LINEAR_EASING, start_delay = 0)`
+- Inputs: mob/a, start_size = 0.01, end_size = 1, time = 25, start_alpha = 255, easing = LINEAR_EASING, start_delay = 0
+- Purpose: Handle dust.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### turf/proc/Destroy
+- Signature: `turf/proc/Destroy()`
+- Inputs: None
+- Purpose: Handle destroy.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Beam_stunned
+- Signature: `Beam_stunned(skip_immunity_check)`
+- Inputs: skip_immunity_check
+- Purpose: Handle beam stunned.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStunImmune
+- Signature: `BeamStunImmune()`
+- Inputs: None
+- Purpose: Handle beam stun immune.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/StruggleAgainstBeamStun
+- Signature: `StruggleAgainstBeamStun()`
+- Inputs: None
+- Purpose: Handle struggle against beam stun.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/BeamStruggling
+- Signature: `BeamStruggling(timer = 30)`
+- Inputs: timer = 30
+- Purpose: Handle beam struggling.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Allow_Move
+- Signature: `mob/proc/Allow_Move(D)`
+- Inputs: D
+- Purpose: Handle allow move.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Grab_Struggle
+- Signature: `proc/Grab_Struggle(D)`
+- Inputs: D
+- Purpose: Handle grab struggle.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Being_strangled
+- Signature: `mob/proc/Being_strangled()`
+- Inputs: None
+- Purpose: Handle being strangled.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/PunchGraphics
+- Signature: `mob/proc/PunchGraphics()`
+- Inputs: None
+- Purpose: Handle punch graphics.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Blast
+- Signature: `mob/proc/Blast()`
+- Inputs: None
+- Purpose: Handle blast.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/ResetVars
+- Signature: `proc/ResetVars(mob/m)`
+- Inputs: mob/m
+- Purpose: Handle reset vars.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Get_cached_body
+- Signature: `proc/Get_cached_body()`
+- Inputs: None
+- Purpose: Return cached body.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/Leave_Body
+- Signature: `mob/proc/Leave_Body()`
+- Inputs: None
+- Purpose: Handle leave body.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin4/verb/Make_Bodies
+- Signature: `mob/Admin4/verb/Make_Bodies()`
+- Inputs: None
+- Purpose: Handle make bodies.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Punch_Machine
+- Signature: `mob/proc/Punch_Machine()`
+- Inputs: None
+- Purpose: Handle punch machine.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Peebagging
+- Signature: `mob/proc/Peebagging()`
+- Inputs: None
+- Purpose: Handle peebagging.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/Peebag
+- Signature: `mob/proc/Peebag()`
+- Inputs: None
+- Purpose: Handle peebag.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/Admin4/verb/Revive_Orb_Settings
+- Signature: `mob/Admin4/verb/Revive_Orb_Settings()`
+- Inputs: None
+- Purpose: Handle revive orb settings.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/Auto_revive_loop
+- Signature: `proc/Auto_revive_loop()`
+- Inputs: None
+- Purpose: Handle auto revive loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
 ### src/Code/Player Mechanics/Debuffs.dm
 
 #### mob/proc/Check_if_kiting
@@ -916,58 +1291,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/God Ki Training.dm
-
-#### proc/GodKiRealmKillLoop
-- Signature: `GodKiRealmKillLoop()`
-- Inputs: None
-- Purpose: Handle god ki realm kill loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/LeechGodKi
-- Signature: `LeechGodKi(mob/m)`
-- Inputs: mob/m
-- Purpose: Handle leech god ki.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/GodKiRealmDeathCheck
-- Signature: `GodKiRealmDeathCheck()`
-- Inputs: None
-- Purpose: Handle god ki realm death check.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/GodKiRealmGains
-- Signature: `GodKiRealmGains(n=1)`
-- Inputs: n=1
-- Purpose: Handle god ki realm gains.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### atom/movable/proc/InGodKiRealm
-- Signature: `InGodKiRealm()`
-- Inputs: None
-- Purpose: Handle in god ki realm.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/God_Realm_Portal/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/God_Realm_Portal/proc/GodRealmPortalAppear
-- Signature: `GodRealmPortalAppear()`
-- Inputs: None
-- Purpose: Handle god realm portal appear.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Player Mechanics/God Ki.dm
+### src/Code/Player Mechanics/GodKi.dm
 
 #### proc/GodOnline
 - Signature: `GodOnline()`
@@ -1029,6 +1353,57 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `BecomeGod()`
 - Inputs: None
 - Purpose: Handle become god.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Player Mechanics/GodKiTraining.dm
+
+#### proc/GodKiRealmKillLoop
+- Signature: `GodKiRealmKillLoop()`
+- Inputs: None
+- Purpose: Handle god ki realm kill loop.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/LeechGodKi
+- Signature: `LeechGodKi(mob/m)`
+- Inputs: mob/m
+- Purpose: Handle leech god ki.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/GodKiRealmDeathCheck
+- Signature: `GodKiRealmDeathCheck()`
+- Inputs: None
+- Purpose: Handle god ki realm death check.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### mob/proc/GodKiRealmGains
+- Signature: `GodKiRealmGains(n=1)`
+- Inputs: n=1
+- Purpose: Handle god ki realm gains.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### atom/movable/proc/InGodKiRealm
+- Signature: `InGodKiRealm()`
+- Inputs: None
+- Purpose: Handle in god ki realm.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/God_Realm_Portal/New
+- Signature: `New()`
+- Inputs: None
+- Purpose: Initialize object state and register references.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### obj/God_Realm_Portal/proc/GodRealmPortalAppear
+- Signature: `GodRealmPortalAppear()`
+- Inputs: None
+- Purpose: Handle god realm portal appear.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2774,7 +3149,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Old_ko_system.dm
+### src/Code/Player Mechanics/OldKoSystem.dm
 
 #### mob/proc/anger_chance
 - Signature: `mob/proc/anger_chance(mod=1)`
@@ -3379,13 +3754,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/Speed_delay_mult
-- Signature: `mob/proc/Speed_delay_mult(severity = 1)`
-- Inputs: severity = 1
-- Purpose: Handle speed delay mult.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
 #### mob/proc/Decline_Energy_Gain
 - Signature: `mob/proc/Decline_Energy_Gain()`
 - Inputs: None
@@ -3702,380 +4070,5 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `mob/proc/zenkai_reset()`
 - Inputs: None
 - Purpose: Handle zenkai reset.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Player Mechanics/aging.dm
-
-#### mob/proc/Apply_racial_aging_variables
-- Signature: `mob/proc/Apply_racial_aging_variables()`
-- Inputs: None
-- Purpose: Apply racial aging variables.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Player Mechanics/death.dm
-
-#### mob/proc/FixCantMoveDueToKiAttack
-- Signature: `mob/proc/FixCantMoveDueToKiAttack()`
-- Inputs: None
-- Purpose: Handle fix cant move due to ki attack.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/FullHeal
-- Signature: `mob/proc/FullHeal()`
-- Inputs: None
-- Purpose: Handle full heal.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/SSj_Online
-- Signature: `proc/SSj_Online()`
-- Inputs: None
-- Purpose: Handle ssj online.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/SSj2_Online
-- Signature: `proc/SSj2_Online()`
-- Inputs: None
-- Purpose: Handle ssj2 online.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/SSj3_Online
-- Signature: `proc/SSj3_Online()`
-- Inputs: None
-- Purpose: Handle ssj3 online.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_Warp
-- Signature: `proc/Get_Warp(mob/M,mob/P,Dir) if(Dir)`
-- Inputs: mob/M, mob/P, Dir
-- Purpose: Return Warp.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Get_Warp_Destination
-- Signature: `proc/Get_Warp_Destination(mob/M,mob/P)`
-- Inputs: mob/M, mob/P
-- Purpose: Return Warp Destination.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Warp_To
-- Signature: `mob/proc/Warp_To(turf/B,mob/M) if(B)`
-- Inputs: turf/B, mob/M
-- Purpose: Handle warp to.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/cant_blast
-- Signature: `mob/proc/cant_blast(ignore_attack_check)`
-- Inputs: ignore_attack_check
-- Purpose: Handle cant blast.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/can_melee
-- Signature: `mob/proc/can_melee(trying_to_power_attack)`
-- Inputs: trying_to_power_attack
-- Purpose: Return whether melee.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/CanMeleeFromOtherCauses
-- Signature: `mob/proc/CanMeleeFromOtherCauses()`
-- Inputs: None
-- Purpose: Return whether Melee From Other Causes.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/Get_attack_gains
-- Signature: `mob/proc/Get_attack_gains()`
-- Inputs: None
-- Purpose: Return attack gains.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/SparGainsAmount
-- Signature: `SparGainsAmount()`
-- Inputs: None
-- Purpose: Handle spar gains amount.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Attack_gain_loop
-- Signature: `mob/proc/Attack_gain_loop()`
-- Inputs: None
-- Purpose: Handle attack gain loop.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/TimedOverlay
-- Signature: `proc/TimedOverlay(turf/t, time = 100, Icon)`
-- Inputs: turf/t, time = 100, Icon
-- Purpose: Handle timed overlay.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### turf/proc/TempTurfOverlay
-- Signature: `turf/proc/TempTurfOverlay(image/i,timer=30)`
-- Inputs: image/i, timer=30
-- Purpose: Handle temp turf overlay.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/KnockbackNoWait
-- Signature: `mob/proc/KnockbackNoWait(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,from_lunge, omega_kb) //A is the Attacker who knockbacked src`
-- Inputs: mob/A, Distance=10, dirt_trail=1, override_dir, bypass_immunity, from_lunge, omega_kb
-- Purpose: Handle knockback no wait.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Knockback
-- Signature: `mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,from_lunge, omega_kb) //A is the Attacker who knockbacked src`
-- Inputs: mob/A, Distance=10, dirt_trail=1, override_dir, bypass_immunity, from_lunge, omega_kb
-- Purpose: Handle knockback.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/KB_Destroy
-- Signature: `mob/proc/KB_Destroy(mob/A,Dir) //A is the Attacker`
-- Inputs: mob/A, Dir
-- Purpose: Handle kb destroy.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/SetLastAttackedTime
-- Signature: `mob/proc/SetLastAttackedTime(mob/a) //a = attacker`
-- Inputs: mob/a
-- Purpose: Set Last Attacked Time.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/third_eye
-- Signature: `mob/proc/third_eye()`
-- Inputs: None
-- Purpose: Handle third eye.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/can_anger
-- Signature: `mob/proc/can_anger()`
-- Inputs: None
-- Purpose: Return whether anger.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### mob/proc/anger
-- Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
-- Inputs: anger_mult=1, ssj_possible=1, reason
-- Purpose: Handle anger.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Calm
-- Signature: `mob/proc/Calm()`
-- Inputs: None
-- Purpose: Handle calm.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Drop_Rsc
-- Signature: `mob/proc/Drop_Rsc(n=0) if(n)`
-- Inputs: n=0
-- Purpose: Handle drop rsc.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Drop_Stealables
-- Signature: `mob/proc/Drop_Stealables()`
-- Inputs: None
-- Purpose: Handle drop stealables.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ObserveDeathSpot
-- Signature: `mob/proc/ObserveDeathSpot()`
-- Inputs: None
-- Purpose: Handle observe death spot.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Death
-- Signature: `mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)`
-- Inputs: mob/Z, Force_Death=0, drone_sd=0, lose_hero=1, lose_immortality=1
-- Purpose: Handle death.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Spam_kill_timer
-- Signature: `mob/proc/Spam_kill_timer()`
-- Inputs: None
-- Purpose: Handle spam kill timer.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Revive
-- Signature: `mob/proc/Revive()`
-- Inputs: None
-- Purpose: Handle revive.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Dust/New
-- Signature: `New()`
-- Inputs: None
-- Purpose: Initialize object state and register references.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Dust/Del
-- Signature: `Del()`
-- Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Dust
-- Signature: `proc/Dust(mob/a, start_size = 0.01, end_size = 1, time = 25, start_alpha = 255, easing = LINEAR_EASING, start_delay = 0)`
-- Inputs: mob/a, start_size = 0.01, end_size = 1, time = 25, start_alpha = 255, easing = LINEAR_EASING, start_delay = 0
-- Purpose: Handle dust.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### turf/proc/Destroy
-- Signature: `turf/proc/Destroy()`
-- Inputs: None
-- Purpose: Handle destroy.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Beam_stunned
-- Signature: `Beam_stunned(skip_immunity_check)`
-- Inputs: skip_immunity_check
-- Purpose: Handle beam stunned.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/BeamStunImmune
-- Signature: `BeamStunImmune()`
-- Inputs: None
-- Purpose: Handle beam stun immune.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/StruggleAgainstBeamStun
-- Signature: `StruggleAgainstBeamStun()`
-- Inputs: None
-- Purpose: Handle struggle against beam stun.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/BeamStruggling
-- Signature: `BeamStruggling(timer = 30)`
-- Inputs: timer = 30
-- Purpose: Handle beam struggling.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Allow_Move
-- Signature: `mob/proc/Allow_Move(D)`
-- Inputs: D
-- Purpose: Handle allow move.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Grab_Struggle
-- Signature: `proc/Grab_Struggle(D)`
-- Inputs: D
-- Purpose: Handle grab struggle.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Being_strangled
-- Signature: `mob/proc/Being_strangled()`
-- Inputs: None
-- Purpose: Handle being strangled.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/PunchGraphics
-- Signature: `mob/proc/PunchGraphics()`
-- Inputs: None
-- Purpose: Handle punch graphics.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Blast
-- Signature: `mob/proc/Blast()`
-- Inputs: None
-- Purpose: Handle blast.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/ResetVars
-- Signature: `proc/ResetVars(mob/m)`
-- Inputs: mob/m
-- Purpose: Handle reset vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_cached_body
-- Signature: `proc/Get_cached_body()`
-- Inputs: None
-- Purpose: Return cached body.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### mob/proc/Leave_Body
-- Signature: `mob/proc/Leave_Body()`
-- Inputs: None
-- Purpose: Handle leave body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin4/verb/Make_Bodies
-- Signature: `mob/Admin4/verb/Make_Bodies()`
-- Inputs: None
-- Purpose: Handle make bodies.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Punch_Machine
-- Signature: `mob/proc/Punch_Machine()`
-- Inputs: None
-- Purpose: Handle punch machine.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Peebagging
-- Signature: `mob/proc/Peebagging()`
-- Inputs: None
-- Purpose: Handle peebagging.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Peebag
-- Signature: `mob/proc/Peebag()`
-- Inputs: None
-- Purpose: Handle peebag.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin4/verb/Revive_Orb_Settings
-- Signature: `mob/Admin4/verb/Revive_Orb_Settings()`
-- Inputs: None
-- Purpose: Handle revive orb settings.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Auto_revive_loop
-- Signature: `proc/Auto_revive_loop()`
-- Inputs: None
-- Purpose: Handle auto revive loop.
 - Returns: none (implicit).
 - Side effects: see implementation.

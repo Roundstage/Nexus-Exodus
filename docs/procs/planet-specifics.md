@@ -4,17 +4,17 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Planet Specifics/Hell Effects.dm`
-- `src/Code/Planet Specifics/Mining Cave.dm`
-- `src/Code/Planet Specifics/Planet Vegeta Fitness.dm`
+- `src/Code/Planet Specifics/HellEffects.dm`
+- `src/Code/Planet Specifics/MiningCave.dm`
+- `src/Code/Planet Specifics/PlanetVegetaFitness.dm`
 - `src/Code/Planet Specifics/Prison.dm`
-- `src/Code/Planet Specifics/Saiyan King/Saiyan Army NPCs.dm`
-- `src/Code/Planet Specifics/Saiyan King/Saiyan King.dm`
-- `src/Code/Planet Specifics/time chamber.dm`
+- `src/Code/Planet Specifics/Saiyan King/SaiyanArmyNPCs.dm`
+- `src/Code/Planet Specifics/Saiyan King/SaiyanKing.dm`
+- `src/Code/Planet Specifics/TimeChamber.dm`
 
 ## Proc Reference
 
-### src/Code/Planet Specifics/Hell Effects.dm
+### src/Code/Planet Specifics/HellEffects.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -100,7 +100,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Mining Cave.dm
+### src/Code/Planet Specifics/MiningCave.dm
 
 #### turf/Mining_Rock/Enter
 - Signature: `Enter(atom/A)`
@@ -123,7 +123,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Planet Vegeta Fitness.dm
+### src/Code/Planet Specifics/PlanetVegetaFitness.dm
 
 #### mob/proc/FreezaRunnerCowardKill
 - Signature: `FreezaRunnerCowardKill()`
@@ -260,7 +260,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Saiyan King/Saiyan Army NPCs.dm
+### src/Code/Planet Specifics/Saiyan King/SaiyanArmyNPCs.dm
 
 #### proc/RandomHumanIcon
 - Signature: `RandomHumanIcon()`
@@ -290,7 +290,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Saiyan King/Saiyan King.dm
+### src/Code/Planet Specifics/Saiyan King/SaiyanKing.dm
 
 #### proc/SpawnKingBraalThrone
 - Signature: `SpawnKingBraalThrone()`
@@ -390,7 +390,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/time chamber.dm
+### src/Code/Planet Specifics/TimeChamber.dm
 
 #### proc/HBTC_Timer
 - Signature: `proc/HBTC_Timer() while(1)`

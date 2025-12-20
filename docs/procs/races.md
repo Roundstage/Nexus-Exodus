@@ -4,20 +4,20 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Races/Alien Starter Moves.dm`
+- `src/Code/Races/AlienStarterMoves.dm`
 - `src/Code/Races/Bio Android/Bios.dm`
-- `src/Code/Races/Icer/Gold Icer.dm`
-- `src/Code/Races/Majins/Goo Trap.dm`
+- `src/Code/Races/Icer/GoldIcer.dm`
+- `src/Code/Races/Majins/GooTrap.dm`
 - `src/Code/Races/Nameks.dm`
 - `src/Code/Races/Oozaru.dm`
-- `src/Code/Races/Saiyan/Royal Blue.dm`
-- `src/Code/Races/Saiyan/SS Blue.dm`
-- `src/Code/Races/Saiyan/ss god red.dm`
-- `src/Code/Races/Ultra Instinct.dm`
+- `src/Code/Races/Saiyan/RoyalBlue.dm`
+- `src/Code/Races/Saiyan/SSBlue.dm`
+- `src/Code/Races/Saiyan/SsGodRed.dm`
+- `src/Code/Races/UltraInstinct.dm`
 
 ## Proc Reference
 
-### src/Code/Races/Alien Starter Moves.dm
+### src/Code/Races/AlienStarterMoves.dm
 
 #### mob/proc/Auto_color_arm_stretch_icon
 - Signature: `mob/proc/Auto_color_arm_stretch_icon()`
@@ -105,7 +105,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Icer/Gold Icer.dm
+### src/Code/Races/Icer/GoldIcer.dm
 
 #### mob/proc/PowerUpToGoldForm
 - Signature: `PowerUpToGoldForm()`
@@ -170,7 +170,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Majins/Goo Trap.dm
+### src/Code/Races/Majins/GooTrap.dm
 
 #### obj/Goo_Trap/verb/Goo_Trap
 - Signature: `Goo_Trap()`
@@ -491,7 +491,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Saiyan/Royal Blue.dm
+### src/Code/Races/Saiyan/RoyalBlue.dm
 
 #### mob/proc/CanRoyalBlue
 - Signature: `CanRoyalBlue()`
@@ -514,7 +514,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Saiyan/SS Blue.dm
+### src/Code/Races/Saiyan/SSBlue.dm
 
 #### mob/proc/PowerUpToSSBlue
 - Signature: `PowerUpToSSBlue()`
@@ -558,7 +558,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Saiyan/ss god red.dm
+### src/Code/Races/Saiyan/SsGodRed.dm
 
 #### mob/proc/has_ssg_req
 - Signature: `has_ssg_req()`
@@ -609,7 +609,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Ultra Instinct.dm
+### src/Code/Races/UltraInstinct.dm
 
 #### mob/Admin4/verb/GoUltraInstinct
 - Signature: `mob/Admin4/verb/GoUltraInstinct(mob/m in world)`
