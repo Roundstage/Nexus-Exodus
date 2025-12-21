@@ -70,7 +70,7 @@ proc/get_cached_blast()
 
 		b.transform = matrix()
 		b.alpha = 255
-		b.step_size = initial(b.step_size)
+		b.vector_speed = initial(b.vector_speed)
 		b.bound_x = 0
 		b.bound_y = 0
 		b.bound_height = world.icon_size
@@ -209,6 +209,7 @@ obj/Blast
 	density=1
 	Grabbable=0
 	var/Distance=100
+	vector_speed = 32
 	var/deflected //sets to 1 if deflected so that controlled moves arent controllable any more
 	var/tmp/turf/last_object_shockwaved_against //to prevent shockwave spamming the same turf repeatedly, causing lag
 
@@ -315,7 +316,7 @@ obj/Blast
 				//if(get_dir(src,blast_homing_target) == dir) return
 				var/old_dir=dir
 				Can_Home=0
-				step(src,get_dir(src, blast_homing_target))
+				vector_step_dir(src, get_dir(src, blast_homing_target), vector_speed)
 				Can_Home=1
 				dir=old_dir
 				return 1

@@ -490,7 +490,6 @@ proc/Save_Misc()
 	S["battleground_spawn_choice_on"] << battleground_spawn_choice_on
 	S["auto_reset_bp_at"] << auto_reset_bp_at
 	S["allow_dragon_rush"] << allow_dragon_rush
-	S["force_32_pix_movement"] << force_32_pix_movement
 	S["global_stun_mod"] << global_stun_mod
 	S["allow_ultra_instinct"] << allow_ultra_instinct
 	S["explosions_off"] << explosions_off
@@ -795,7 +794,6 @@ proc/Load_Misc()
 	if("battleground_spawn_choice_on" in S) S["battleground_spawn_choice_on"] >> battleground_spawn_choice_on
 	if("auto_reset_bp_at" in S) S["auto_reset_bp_at"] >> auto_reset_bp_at
 	if("allow_dragon_rush" in S) S["allow_dragon_rush"] >> allow_dragon_rush
-	if("force_32_pix_movement" in S) S["force_32_pix_movement"] >> force_32_pix_movement
 	if("global_stun_mod" in S) S["global_stun_mod"] >> global_stun_mod
 	if("allow_ultra_instinct" in S) S["allow_ultra_instinct"] >> allow_ultra_instinct
 	if("explosions_off" in S) S["explosions_off"] >> explosions_off

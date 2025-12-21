@@ -17,6 +17,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Interface/Movement/Cross.dm`
 - `src/Code/Interface/Movement/Move.dm`
 - `src/Code/Interface/Movement/MoveMacros.dm`
+- `src/Code/Interface/Movement/ClientInput.dm`
 - `src/Code/Interface/Movement/PixelMoving.dm`
 - `src/Code/Infrastructure/Movement/MovementPortsByond.dm`
 
@@ -119,6 +120,41 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
+#### mob/proc/UsingVectorMovement
+- Signature: `UsingVectorMovement()`
+- Inputs: None
+- Purpose: Return whether vector movement is enabled for the mob.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/GetVectorMovePixels
+- Signature: `GetVectorMovePixels(d = NORTH)`
+- Inputs: d = NORTH
+- Purpose: Return computed vector move distance in pixels.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/VectorMoveDir
+- Signature: `VectorMoveDir(d, loop_mult = 1)`
+- Inputs: d, loop_mult = 1
+- Purpose: Move the mob using vector movement for a direction.
+- Returns: boolean flag or null.
+- Side effects: mutates game state and/or world resources.
+
+#### mob/proc/GetVectorMoveLoopMult
+- Signature: `GetVectorMoveLoopMult(speed)`
+- Inputs: speed
+- Purpose: Return loop multiplier for vector movement based on speed.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
+#### mob/proc/GetVectorGlideSize
+- Signature: `GetVectorGlideSize(speed)`
+- Inputs: speed
+- Purpose: Return glide size for vector movement smoothing.
+- Returns: computed value (see implementation).
+- Side effects: none expected.
+
 #### mob/proc/UpdateNextInputMoveTime
 - Signature: `UpdateNextInputMoveTime(d = NORTH)`
 - Inputs: d = NORTH
@@ -162,6 +198,27 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Return whether Move.
 - Returns: boolean flag.
 - Side effects: none expected.
+
+#### mob/proc/Allow_Move
+- Signature: `mob/proc/Allow_Move(D)`
+- Inputs: D
+- Purpose: Handle allow move.
+- Returns: boolean flag.
+- Side effects: see implementation.
+
+#### mob/proc/_allow_move_handle_kiting_and_finalize
+- Signature: `mob/proc/_allow_move_handle_kiting_and_finalize(D)`
+- Inputs: D
+- Purpose: Handle kiting checks and update directional state.
+- Returns: boolean flag.
+- Side effects: see implementation.
+
+#### mob/proc/_allow_move_prechecks
+- Signature: `mob/proc/_allow_move_prechecks(D)`
+- Inputs: D
+- Purpose: Handle allow move prechecks.
+- Returns: boolean flag.
+- Side effects: see implementation.
 
 #### mob/proc/Edge_Check
 - Signature: `mob/proc/Edge_Check(turf/old_loc)`
@@ -507,6 +564,64 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `ShiftUp()`
 - Inputs: None
 - Purpose: Handle shift up.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+### src/Code/Interface/Movement/ClientInput.dm
+
+#### client/North
+- Signature: `client/North()`
+- Inputs: None
+- Purpose: Handle client north input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/South
+- Signature: `client/South()`
+- Inputs: None
+- Purpose: Handle client south input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/East
+- Signature: `client/East()`
+- Inputs: None
+- Purpose: Handle client east input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/West
+- Signature: `client/West()`
+- Inputs: None
+- Purpose: Handle client west input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/Northwest
+- Signature: `client/Northwest()`
+- Inputs: None
+- Purpose: Handle client northwest input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/Northeast
+- Signature: `client/Northeast()`
+- Inputs: None
+- Purpose: Handle client northeast input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/Southwest
+- Signature: `client/Southwest()`
+- Inputs: None
+- Purpose: Handle client southwest input.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### client/Southeast
+- Signature: `client/Southeast()`
+- Inputs: None
+- Purpose: Handle client southeast input.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

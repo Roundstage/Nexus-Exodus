@@ -438,7 +438,7 @@ datum/SkillEngine
 				base_speed = 32
 				max_speed_bonus = 32 - base_speed
 				step_speed = base_speed + (max_speed_bonus / user.Speed_delay_mult(severity = 0.5))
-			a.step_size = step_speed
+			a.vector_speed = step_speed
 
 			a.from_attack = skill_obj
 			a.icon = skill_obj.icon
@@ -449,14 +449,14 @@ datum/SkillEngine
 			a.SafeTeleport(user.loc)
 
 			var/turf/t = get_step(a.loc, a.dir)
-			if(!t || t.density) a.step_size = 32
+			if(!t || t.density) a.vector_speed = 32
 
 			a.bound_height = 16
 			a.bound_width = 16
 			a.bound_y = (32 - a.bound_height) / 2
 			a.bound_x = (32 - a.bound_width) / 2
 			a.Can_Home = 0
-			a.step_size = 44
+			a.vector_speed = 44
 			a.Distance = 47
 			var/angle = dir_to_angle_0_360(a.dir)
 			var/mob/targ
@@ -499,7 +499,7 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			a.dir = user.dir
 			a.loc = user.loc
-			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 27, dist = 60, randomAngle = 0)
+			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 27, dist = 60, randomAngle = 0)
 		user.attacking = 0
 		skill_obj.charging = 0
 		return 1
@@ -530,7 +530,7 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			a.dir = user.dir
 			a.loc = user.loc
-			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 20, dist = 47, randomAngle = 0)
+			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 20, dist = 47, randomAngle = 0)
 		user.attacking = 0
 		user.moving_charge = 0
 		return 1
@@ -555,7 +555,7 @@ datum/SkillEngine
 			a.setStats(user, Percent = 10, Off_Mult = 2, Explosion = 1)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
-			a.step_size = 32
+			a.vector_speed = 32
 			a.dir = user.dir
 			a.loc = user.loc
 			if(a) a.blast_walk(world.tick_lag)
@@ -642,7 +642,7 @@ datum/SkillEngine
 			skill_obj.scatter_shot_blasts += a
 			a.Distance = 70
 			a.density = 0
-			a.step_size = 22
+			a.vector_speed = 22
 			a.icon = skill_obj.icon
 			if(prob(100)) a.Explosive = 1
 			a.Shockwave = 3
@@ -1216,7 +1216,7 @@ datum/SkillEngine
 		A.loc = Get_step(user, NORTH)
 		A.Shockwave = 2
 		A.Piercer = 0
-		A.step_size = 22
+		A.vector_speed = 22
 		var/dmgPercent = 23
 		if(user.Race == "Human") dmgPercent *= 1.5
 		A.setStats(user, Percent = dmgPercent, Off_Mult = 3, Explosion = 2, homing_mod = 2)
@@ -1283,7 +1283,7 @@ datum/SkillEngine
 		if(user.Race == "Human") dmgPercent *= 1.5
 		A.setStats(user, Percent = dmgPercent, Off_Mult = 15, Explosion = 0)
 		A.from_attack = skill_obj
-		A.step_size = 22
+		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1
 
 		sleep(TickMult(12 * user.Speed_delay_mult(severity = 0.3)))

@@ -179,51 +179,26 @@ mob/proc/move_loop()
 	set waitfor=0
 	if(move_looping) return
 	move_looping=1
+	var/using_vector = UsingVectorMovement()
 	var/first_step=1
-	if(!Shadow_Sparring) sleep(world.tick_lag)
+	if(!Shadow_Sparring && !using_vector) sleep(world.tick_lag)
 	while(north || south || east || west)
 		var/d = move_dir()
+		var/vector_speed
 
 		last_direction_pressed = d
 
 		if(d && Allow_Move(d) && z)
-			//var/turf/pos = loc
-
 			var/turf/prev_loc = base_loc()
 			var/prevDir = dir
-			step(src,d)
+			if(UsingVectorMovement())
+				dir = d
+				vector_speed = GetVectorMovePixels(d)
+				glide_size = GetVectorGlideSize(vector_speed)
+				vector_step(src, dir_to_angle_0_360(d), vector_speed)
 			if(movement_port.clientShiftDown(src)) dir = prevDir //strafing
 			if(prev_loc != base_loc()) last_input_move = world.time
 			UpdateNextInputMoveTime(d)
-
-			/*if(loc != pos && client)
-				var
-					x_dist_moved = 0
-					y_dist_moved = 0
-
-				switch(d)
-					if(NORTH) y_dist_moved = 32
-					if(SOUTH) y_dist_moved = -32
-					if(EAST) x_dist_moved = 32
-					if(WEST) x_dist_moved = -32
-					if(NORTHEAST)
-						y_dist_moved = 32
-						x_dist_moved = 32
-					if(NORTHWEST)
-						y_dist_moved = 32
-						x_dist_moved = -32
-					if(SOUTHEAST)
-						y_dist_moved = -32
-						x_dist_moved = 32
-					if(SOUTHWEST)
-						y_dist_moved = -32
-						x_dist_moved = -32
-
-				client.pixel_x-=x_dist_moved
-				client.pixel_y-=y_dist_moved
-
-				ClientPixelOffsetLoop()*/
-
 		if(first_step && !Shadow_Sparring) sleep(world.tick_lag * 2)
 		else sleep(world.tick_lag)
 

@@ -54,9 +54,9 @@ obj
 		density = 1
 		leaves_big_crater = 1
 		big_explosion_on_delete = 1
-		stun_when_knocked_through = 1
 
 		var
+			stun_when_knocked_through = 1
 			min_rock_size = 0.5
 			max_rock_size = 0.8
 

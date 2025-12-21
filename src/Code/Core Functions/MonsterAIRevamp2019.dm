@@ -125,7 +125,7 @@ mob/proc/Attack_Target(mob/P)
 				//pathfinding
 				if(world.time < pathfindUntil)
 					//success = g_step_to(Target) //im not even sure g_step_to returns a success or not
-					success = step_to(src, Target, 0, step_size)
+					success = step_to(src, Target, 0, vector_speed)
 					view(10,src) << "pathfind step"
 					if(!success)
 						unreachable_targets += Target
@@ -332,11 +332,11 @@ mob/Enemy
 		Enlargement_Chance=0
 		npc_money_mod=1
 	Has_DNA=0
-	step_size = 10
+	vector_speed = 10
 	New()
 		EnemyNew()
-		step_size /= npc_move_delay
-		step_size *= rand(85,115) / 100 //it looks really unnatural if all npcs of the same species move at the exact same speed
+		vector_speed /= npc_move_delay
+		vector_speed *= rand(85,115) / 100 //it looks really unnatural if all npcs of the same species move at the exact same speed
 		. = ..()
 	Del()
 		if(NPC_Leave_Body) Leave_Body()

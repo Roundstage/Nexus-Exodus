@@ -141,10 +141,7 @@ atom/movable
 				fractional_y += Y
 				ry = round(fractional_y, 1)
 				fractional_y -= ry
-			var s = step_size
-			step_size = max(abs(rx), abs(ry)) + 1
 			. = (rx || ry) ? Move(loc, dir, step_x + rx, step_y + ry) : TRUE
-			step_size = s
 
 		/* Slides this movable atom by a given polar vector.
 
