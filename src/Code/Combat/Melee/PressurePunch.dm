@@ -30,8 +30,8 @@ mob
 			var/obj/Effect/e = GetEffect()
 			e.loc = loc
 			e.dir = dir
-			e.step_size = 64
-			step(e, e.dir)
+			e.vector_speed = 64
+			vector_step_dir(e, e.dir, e.vector_speed)
 			e.icon = 'PressurePunch.dmi'
 			var/anim_time = 10
 			e.transform *=3

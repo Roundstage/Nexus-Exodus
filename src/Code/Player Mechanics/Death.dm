@@ -740,14 +740,6 @@ turf/proc/Destroy()
 			R.Savable=0
 			Timed_Delete(R,rand(600,900))
 
-client/North() if(mob.Allow_Move(NORTH)) return . = ..()
-client/South() if(mob.Allow_Move(SOUTH)) return . = ..()
-client/East() if(mob.Allow_Move(EAST)) return . = ..()
-client/West() if(mob.Allow_Move(WEST)) return . = ..()
-client/Northwest() if(mob.Allow_Move(NORTHWEST)) return . = ..()
-client/Northeast() if(mob.Allow_Move(NORTHEAST)) return . = ..()
-client/Southwest() if(mob.Allow_Move(SOUTHWEST)) return . = ..()
-client/Southeast() if(mob.Allow_Move(SOUTHEAST)) return . = ..()
 var
 	beam_stun_start = 4
 	beam_stun_time = 10 //frozen for 1 second after being hit by a beam
@@ -792,149 +784,6 @@ mob/proc
 mob/var/tmp
 	list/ki_attacks=new
 	last_beam_turn = -999
-
-mob/var/tmp
-	last_allow_move_result=0
-	last_allow_move_result_time=0
-	last_bank_bump = 0
-
-mob/proc/Allow_Move(D)
-	Debug("Moving: Step 1.")
-
-	if(using_scattershot)
-		dir = D
-		return
-	if(!CanInputMove()) return
-	if(strangling) return
-	if(cant_move_due_to_hakai) return
-	//if(regenerator_obj && loc == regenerator_obj.loc && Health < 100) return
-
-	if(world.time - last_bank_bump < 10) return
-	//if(world.time - last_shield_use < 10) return //makes it so upon deactivating shield you still cant move for 1 second
-
-	if(world.time <= last_tap_warp + TapWarpCantMoveTime()) return
-
-	//if(key == "Tens of DU") src << "2"
-
-	//prevent allow_move from being called a ridiculous number of times in a short period by just returning the most recent result again
-	//unless theyre in a pod cuz it slows pods down
-	if(!Ship) if(world.time - last_allow_move_result_time < 3)
-		return last_allow_move_result
-
-	last_allow_move_result_time=world.time
-	last_allow_move_result=0
-
-	if(Race=="Majin"&&majin_stat_version <= cur_majin_stat_version) return
-	if(stat_version<cur_stat_ver) return
-
-	stand_still_time=world.time
-
-	//if(key == "Tens of DU") src << "3"
-
-	//to make combo teleporting more reliable so you/others dont instantly/accidently move and break it
-	if(world.time-last_combo_teleport<=6)
-		dir=D
-		return //remember its in TENTHS of seconds, so 5 = 0.5 seconds
-
-	if(lunge_attacking || evading) return
-
-	if(IsGreatApe()&&!Great_Ape_control) return
-	if(BeamStruggling() || shockwaving||Giving_Power) return
-	if(!Shadow_Sparring&&!Ship) Cease_training()
-
-	if(dash_attacking)
-		if(D==turn(dir,90)) desired_dash_dir=turn(dir,45)
-		if(D==turn(dir,-90)) desired_dash_dir=turn(dir,-45)
-		return
-
-	//if(key == "Tens of DU") src << "4"
-
-	if(!allow_diagonal_movement)
-		if(D in list(NORTHEAST,NORTHWEST,SOUTHWEST,SOUTHEAST)) return
-
-	if(Beam_stunned())
-		StruggleAgainstBeamStun()
-		return
-
-	if(!struggle_timer&&grabber&&!KO)
-		spawn Grab_Struggle()
-		return
-
-	if(moving_charge==1)
-		if(dir!=D)
-			dir=D
-			return
-		else moving_charge=2
-
-	if(attack_barrier_obj && attack_barrier_obj.Firing_Attack_Barrier)
-		dir=D
-		return
-	//if(key == "Tens of DU") src << "5"
-
-	for(var/obj/Attacks/A in ki_attacks) if(A.charging||A.streaming||A.Using)
-		if(A.streaming) //if its a beam
-			if(world.time - last_beam_turn > 12)
-				last_beam_turn = world.time
-				dir = D
-				return
-		else dir = D
-		return
-
-	for(var/obj/Blast/B in Get_step(src,D))
-		//if(B.dir in list(D,turn(D,45),turn(D,-45))) step(B,B.dir)
-		if(B.dir!=turn(D,180)) step(B,B.dir)
-		else if(B.density) return
-
-	if(blocking || power_attacking || Regeneration_Skill)
-		dir=D
-		return
-
-	/*if(ki_shield_on())
-		dir = D
-		return*/
-
-	if(Shadow_Sparring)
-		dir=D
-		return
-
-	//if(key == "Tens of DU") src << "6"
-
-	if(Ship)
-		if(Ship.type==/obj/Ships/Spacepod && loc != Ship) SafeTeleport(Ship)
-		if(!Ship.Moving&&Ship.Ki>0&&!KO)
-			Ship.Move_Randomly=0
-			Ship.Moving=1
-			Ship.MoveReset()
-			step(Ship,D)
-			if(Ship) Ship.Fuel()
-		return
-	if(car) car.dir=D
-
-
-	//if(key == "Tens of DU") src << "7"
-
-	if(!Can_Move()) return
-	if(icon_state=="KB"||KB||!move) return
-
-	if(is_kiting && Opponent(150))
-		Check_if_kiting()
-		if(is_kiting)
-			if(D in list(get_dir(src,Opponent),turn(get_dir(src,Opponent),45),turn(get_dir(src,Opponent),-45)))
-				Reset_kiting()
-
-	//if(key == "Tens of DU") src << "9"
-
-	last_allow_move_result=1
-
-	if(D in list(NORTH,SOUTH))
-		if(last_directional_key_pressed in list(EAST,WEST)) last_cardinal_change = world.time
-	else if(D in list(EAST,WEST))
-		if(last_directional_key_pressed in list(NORTH,SOUTH)) last_cardinal_change = world.time
-	last_directional_key_pressed = D
-
-	//if(key == "Tens of DU") src << "10"
-
-	return 1
 mob
 	proc/Grab_Struggle(D)
 		if(Race=="Majin")
@@ -974,10 +823,6 @@ mob
 			else
 				player_view(15,src)<<"[src] struggles against [grabber]!"
 				return
-mob/var/tmp
-	last_directional_key_pressed
-	last_cardinal_change = 0
-
 mob/proc/Being_strangled()
 	if(grabber&&grabber.strangling) return 1
 

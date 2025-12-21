@@ -71,7 +71,7 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 		A.pixel_x+=rand(-10,10)
 		A.pixel_y+=rand(-10,10)
 		A.Shockwave=3
-		A.step_size = 32
+		A.vector_speed = 32
 		if(prob(10)) A.Explosive=2
 		A.dir=pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST)
 		A.loc=loc
@@ -546,14 +546,14 @@ mob/proc/Blast_Fire(obj/Attacks/Blast/B)
 	return 0
 
 //this just gives the blast a target when it is first spawned and makes it take a pixel vector directly to that target
-obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0)
+obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 18, dist = 47, randomAngle = 0)
 	set waitfor=0
 	Can_Home = 0 //old system interferes with this new system and makes it look bad too
 	bound_height = boundHeight
 	bound_width = boundWidth
 	bound_y = (32 - bound_height) * 0.5
 	bound_x = (32 - bound_width) * 0.5
-	step_size = stepSize
+	vector_speed = vectorSpeed
 	Distance = dist
 	var/angle = dir_to_angle_0_360(dir)
 	var/mob/targ = GetBlastHomingTarget(dir, angle = angleLimit)
@@ -565,7 +565,7 @@ obj/Blast/proc/BlastVectorWalk(angle = 0)
 	set waitfor=0
 	sleep(world.tick_lag) //JUNE 12 2019
 	while(z && !deflected && in_use)
-		vector_step(src, angle)
+		vector_step(src, angle, vector_speed)
 		sleep(world.tick_lag)
 
 obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)
@@ -573,6 +573,7 @@ obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)
 	var
 		steps = 0
 		spread_step = rand(1,4)
+		move_speed = vector_speed || 32
 
 	if(b.Spread == 3) spread_step = rand(0,8)
 
@@ -581,12 +582,12 @@ obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)
 	while(src && z && !deflected)
 		var/old_dir = dir
 		if(b && b.Spread == 2 && steps == spread_step && prob(67))
-			step(src,turn(dir,pick(-45,45)))
+			vector_step_dir(src, turn(dir, pick(-45,45)), move_speed)
 			dir = old_dir
 		else if(b && b.Spread == 3 && steps == spread_step && prob(90))
 			dir = pick(turn(dir,45),turn(dir,-45))
-			step(src,dir)
-		else step(src,dir)
+			vector_step_dir(src, dir, move_speed)
+		else vector_step_dir(src, dir, move_speed)
 		steps++
 		sleep(world.tick_lag)
 
@@ -636,7 +637,7 @@ obj/Attacks/Big_Bang_Attack
 			A.from_attack=src
 			A.Shockwave=1
 			//A.Distance=50
-			A.step_size = 32 * 1
+			A.vector_speed = 32 * 1
 			A.icon=icon
 			A.dir=usr.dir
 			A.loc=usr.loc
@@ -698,7 +699,7 @@ obj/Attacks/Charge
 			A.icon=icon
 			A.dir=usr.dir
 			A.loc=usr.loc
-			A.step_size = 32 * 1
+			A.vector_speed = 32 * 1
 			//step(A,A.dir)
 			if(A&&A.z)
 				A.blast_walk(world.tick_lag)
@@ -710,7 +711,8 @@ obj/proc/blast_walk(delay=1,start_dir)
 	set waitfor=0
 	if(start_dir) dir=start_dir
 	while(src&&z)
-		step(src,dir)
+		var/move_speed = vector_speed || 32
+		vector_step_dir(src, dir, move_speed)
 		var/t = TickMult(delay)
 		sleep(t)
 
@@ -798,7 +800,7 @@ obj/Attacks/Spin_Blast
 			A.icon=icon
 			A.setStats(usr,Percent = 1.8, Off_Mult=1, Explosion=rand(2,3))
 			A.from_attack=src
-			A.step_size = ToOne(32 * 0.67)
+			A.vector_speed = ToOne(32 * 0.67)
 			A.Shockwave=Shockwave
 			A.dir=pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHEAST,SOUTHWEST)
 			A.loc=usr.loc
@@ -1050,12 +1052,12 @@ obj/Blast
 	proc
 		ScatterShotGoTo(turf/t)
 			set waitfor=0
-			step_size = 19
+			vector_speed = 19
 			while(loc != t && z && !scattershot_attacking_target)
 				density = 0
-				vector_step(src, get_global_angle(src,t), step_size)
+				vector_step(src, get_global_angle(src,t), vector_speed)
 				density = 1
-				if(pixel_dist(src,t) * 32 <= step_size) break
+				if(pixel_dist(src,t) * 32 <= vector_speed) break
 				sleep(world.tick_lag)
 
 		ScatterShotInterruptedFlyOff()
@@ -1073,10 +1075,10 @@ obj/Blast
 			if(!m || m.z != z)
 				ScatterShotInterruptedFlyOff()
 				return
-			step_size = rand(19,25)
+			vector_speed = rand(19,25)
 			var/angle = get_global_angle(src,m)
 			while(z)
-				vector_step(src, angle, step_size)
+				vector_step(src, angle, vector_speed)
 				sleep(world.tick_lag)
 
 obj/Attacks/Scatter_Shot

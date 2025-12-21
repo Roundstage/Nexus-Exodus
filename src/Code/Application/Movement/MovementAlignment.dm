@@ -3,6 +3,7 @@ mob/var/tmp/stepSizeLabel = 32 //for displaying in tabs
 
 mob/proc/AlignToTile()
 	set waitfor=0
+	if(UsingVectorMovement()) return
 	if(!client) return
 	if(last_north_up == world.time)
 		if(step_y > 0)
@@ -19,6 +20,7 @@ mob/proc/AlignToTile()
 
 mob/proc/LerpToTile(d, dist)
 	set waitfor=0
+	if(UsingVectorMovement()) return
 	if(dist == 0) return
 	while(dist > 0)
 		var/step_dist = dist
@@ -31,6 +33,7 @@ mob/proc/LerpToTile(d, dist)
 		sleep(world.tick_lag)
 
 mob/proc/ResetStepXY()
+	if(UsingVectorMovement()) return
 	if(lastResetStepXY == world.time) return //prevent infinite step() loops
 	lastResetStepXY = world.time
 	var/prevDir = dir
@@ -63,29 +66,14 @@ mob/proc/UpdateStepSpeed()
 	set waitfor=0
 	if(last_move == world.time) return
 
-	if(force_32_pix_movement)
-		step_size = 32
-		step_x = 0
-		step_y = 0
-		return
-
 	if(ultra_instinct)
-		step_size = 32
+		glide_size = GetVectorGlideSize(32)
 		return
 
-	var/minSpeed = 16
-	var/lowMaxAdd = 10
-	var/normalSpeed = minSpeed + lowMaxAdd
-	var/ratio = Spd / avg_speed
-	var/speed = minSpeed
-	if(ratio < 1)
-		speed += ratio * lowMaxAdd
-	else
-		speed = normalSpeed
-		speed += (ratio - 1) * 6
+	var/speed = GetVectorMovePixels(move_dir())
 	stepSizeLabel = speed
-	var/delay_mult = GetInputMoveDelay(move_dir(), raw_mult_only = 1)
-	speed /= delay_mult
-	speed *= 20 / world.fps
-	if(speed > 32) speed = 32
-	step_size = speed
+	if(UsingVectorMovement())
+		glide_size = GetVectorGlideSize(speed)
+		return
+	glide_size = 0
+	return

@@ -4,7 +4,8 @@
 
 //dont use this one its not as good
 proc/pixel_step_towards(mob/a,mob/b,step_dist)
-	if(!step_dist) step_dist=a.step_size
+	if(!step_dist && a) step_dist = a.vector_speed
+	if(!step_dist) return
 	//this extra code prevents jittering from overshooting the target due to step size exceeding distance needed
 	var/step_y_diff=abs((a.step_y + a.y * world.icon_size) - (b.step_y + b.y * world.icon_size))
 	var/step_x_diff=abs((a.step_x + a.x * world.icon_size) - (b.step_x + b.x * world.icon_size))

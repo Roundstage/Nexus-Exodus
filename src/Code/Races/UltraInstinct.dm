@@ -243,7 +243,7 @@ proc/Ultra_Instinct_Rising_Aura(obj/T,N=50)
 	while(T&&T.z&&N)
 		N--
 		var/obj/Rising_Aura_Ultra_Instinct/A = new(T.loc)
-		A.step_size = 10
+		A.vector_speed = 10
 		A.icon = i
 		sleep(1)
 
@@ -270,5 +270,5 @@ obj/Rising_Aura_Ultra_Instinct
 		set waitfor=0
 		while(src)
 			//step(src,NORTH)
-			step_y += step_size
+			step_y += vector_speed
 			sleep(world.tick_lag)

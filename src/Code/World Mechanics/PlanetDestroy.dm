@@ -64,8 +64,8 @@ obj/Planet_Destroy
 				usr.overlays-=A
 				var/obj/Blast/B=new(usr.loc)
 				B.icon='14.dmi'
-				B.step_size = 8
-				walk(B, SOUTH, 0, B.step_size)
+				B.vector_speed = 8
+				walk(B, SOUTH, 0, B.vector_speed)
 				sleep(25)
 				if(!B)
 					if(usr.client) planet_destroy_uses-=usr.client.computer_id

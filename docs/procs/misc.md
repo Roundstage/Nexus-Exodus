@@ -1542,9 +1542,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### proc/vector_step
-- Signature: `proc/vector_step(mob/a, ang = 0, step_speed)`
-- Inputs: mob/a, ang = 0, step_speed
+- Signature: `proc/vector_step(atom/movable/a, ang = 0, step_speed)`
+- Inputs: atom/movable/a, ang = 0, step_speed
 - Purpose: Handle vector step.
+- Returns: none (implicit).
+- Side effects: see implementation.
+
+#### proc/vector_step_dir
+- Signature: `proc/vector_step_dir(atom/movable/a, d, step_speed)`
+- Inputs: atom/movable/a, d, step_speed
+- Purpose: Handle vector step by direction.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

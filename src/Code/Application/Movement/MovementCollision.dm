@@ -1,6 +1,7 @@
 atom/movable/proc/MovementCrossDecision(atom/movable/a)
 	//a = object attempting to cross (such as the player)
 	//src = the object 'a' is trying to cross
+	if(a == src) return 1
 	if(!density) return null
 
 	if(ismob(src))
@@ -47,115 +48,70 @@ atom/var
 	canSideStep = 1
 
 mob/proc/SideStep(obj/o)
+	if(!o) return
+	if(!can_side_step || !canSideStep) return
 	if(!o.can_side_step || !o.canSideStep) return
-	var
-		old_loc = loc
-		old_dir = dir
-	var/d = get_dir(src,o)
-	if(dir != d) return
-	var/list/where = list(turn(d,45), turn(d,-45))
-	where = shuffle(where)
-	step(src, pick(where), 32)
-	if(loc == old_loc) dir = old_dir
+	var/turf/old_loc = loc
+	var/list/dirs = list(turn(dir,90), turn(dir,-90))
+	for(var/d in dirs)
+		step(src, d)
+		if(loc != old_loc) return
 
-atom/movable/var
-	tmp
-		explode_on_kb
-		stun_when_knocked_through
+mob/proc/BumpKnockbackDestroyObjectCheck(obj/o)
+	if(!o || !KB) return
+	if(!isobj(o)) return
+	if(!o.density) return
+	if(!isnum(o.Health)) return
+	if(o.Health == 1.#INF) return
+	if(!knockbacker_bp || knockbacker_bp < o.Health) return
+	Dust(o, end_size = 1, time = 10)
+	del(o)
 
-obj/Trees
-	explode_on_kb = 1
-	mapObject = 1
-obj/Turfs
-	explode_on_kb = 1
-	mapObject = 1
-obj/Big_Rock
-	explode_on_kb = 1
-	mapObject = 1
-
-mob/proc
-	BumpKnockbackDestroyObjectCheck(obj/o)
-		set waitfor=0
-		if(!isobj(o)) return
-		if(KB && o.explode_on_kb)
-			if(o.takes_gradual_damage) o.Health -= knockbacker_bp
-			else if(o.Health < knockbacker_bp) o.Health = 0
-			if(o.Health <= 0)
-				if(o.stun_when_knocked_through)
-					var/base_stun = 30
-					var/stun = base_stun * (knockbacker_bp / BP)
-					stun = Clamp(stun, 0, base_stun * 3)
-					ApplyStun(time = stun)
-				del(o)
-
-	MovementBump(atom/A)
-		if(isturf(A))
-			for(var/obj/Controls/C in A)
-				C.Ship_Options(src)
-				break
-			for(var/obj/items/Simulator/s in A)
-				SimBump(s)
-				break
+mob/proc/MovementBump(atom/A)
+	if(!A || A == src) return
+	if(isobj(A))
+		BumpKnockbackDestroyObjectCheck(A)
+	if(last_bump != world.time)
+		last_bump = world.time
+		last_bumped_obj = A
 
 turf/proc/MovementEnterResult(mob/m, return_value)
-	//allow flying over dense turfs
-	if(density && ismob(m) && type != /turf/Other/Blank && !istype(src, /turf/Teleporter))
-		if(FlyOverAble || build_category != BUILD_ROOF)
-			if(m.Flying || m.lunge_attacking || m.evading)
-				var/mob/m2
-				for(m2 in src) if(m2 != m) break
-				if(!m2)
-					var/obj/Turfs/Door/d
-					for(d in src) if(d.density && d.Password) break
-					if(!d) return_value = 1
 	return return_value
 
 mob/proc/DoorPasswordAlert(obj/Turfs/Door/d)
 	set waitfor=0
-	if(!d) return
-	if("door password" in active_prompts) return
-	active_prompts += "door password"
-	var/guess = input(src, "You must know the password to enter here") as text
-	active_prompts -= "door password"
-	if(!d) return
-	if(guess != d.Password) return
-	d.Open()
+	if(!d || !client) return
+	if(!(src in range(1,d))) return
+	if("door" in active_prompts) return
+	active_prompts += "door"
+	var/pw = input(src,"Enter the door password","Door") as text
+	if(!d)
+		active_prompts -= "door"
+		return
+	if(pw == d.Password)
+		d.Open()
+	else
+		src<<"Access denied"
+	active_prompts -= "door"
 
-//in this proc "src" is the one attempting to cross "A", even though in BYOND's built in cross its the opposite
 mob/proc/MobCross(mob/A)
+	if(A == src) return 1
 
-	if(istype(A,/obj/items/Simulator)) SimBump(A) //bump even when flying, thats why
+	if(istype(A,/obj/items/Simulator))
+		SimBump(A)
 
+	// non-solid objects allow crossing
 	if(!A.density)
-		//src << "2"
 		return 1
+
 	var/return_value = 0
 
-	if(istype(A, /obj/Turfs/Door))
-		var/obj/Turfs/Door/d = A
-		if(isturf(d)) d = locate(/obj/Turfs/Door) in d
-		if(d)
-			if(client && InBattleCantEnterCave())
-			else
-				var/needs_password = 1
-				if(drone_module && drone_module.Password == d.Password)
-					d.Open()
-					return_value = 1
-					needs_password = 0
-				for(var/obj/items/Door_Pass/dp in item_list) if(dp.Password == d.Password)
-					d.Open()
-					return_value = 1
-					needs_password = 0
-				for(var/obj/items/Door_Hacker/dh in item_list) if(dh.BP >= d.Health)
-					player_view(15,d)<<"[src] hacks the door and it opens"
-					d.Open()
-					return_value = 1
-					needs_password = 0
-				if(d.is_hbtc_door && anyone_can_enter_hbtc) needs_password = 0
-				if(needs_password && client && d.Password && !KB) DoorPasswordAlert(d)
-				if(!d.Password || (d.is_hbtc_door && anyone_can_enter_hbtc))
-					d.Open()
-					return_value = 1
+	// door handling extracted
+	var/door_result = _mobcross_handle_door(A)
+	if(door_result)
+		return 1
+	else if(door_result == 0)
+		return 0
 
 	BumpKnockbackDestroyObjectCheck(A)
 
@@ -164,21 +120,16 @@ mob/proc/MobCross(mob/A)
 			if(!(locate(/mob) in A.loc))
 				SideStep(A)
 
-	//if(ismob(A)) Pixel_Align(A)
-
 	if(A && A.type == /obj/King_of_Braal_Throne)
 		BumpKingBraalThrone()
 
-	//for blasts with blast_go_over_owner
-	if(A && istype(A,/obj/Blast) && A.Owner && A.Owner == src)
-		var/obj/Blast/b = A
-		if(b.blast_go_over_owner)
-			var/turf/t = get_step(src,dir)
-			if(t && !t.density)
-				return_value = 1
+	// blast-specific checks extracted
+	var/blast_result = _mobcross_handle_blast(A)
+	if(blast_result) return 1
 
 	A.ExplodeLandMines()
 
+	// other object-specific handlers
 	if(istype(A,/obj/Planet_Restore_Crystal))
 		var/obj/Planet_Restore_Crystal/prc = A
 		if(!destroyed_planets.len)
@@ -189,10 +140,7 @@ mob/proc/MobCross(mob/A)
 			spawn restore_planet(planet)
 			prc.DespawnRespawn()
 
-	//if(istype(A,/obj/items/Simulator)) SimBump(A)
-
 	if(istype(A,/obj/items/Regenerator))
-		//SafeTeleport(A.loc)
 		Regenerator_loop(A)
 		if(grabbedObject && ismob(grabbedObject))
 			grabbedObject.SafeTeleport(loc)
@@ -248,12 +196,6 @@ mob/proc/MobCross(mob/A)
 				else if(!drone_module)
 					Melee(A)
 
-		//DISABLED TO TEST A BUG WHERE YOU PASS THRU PEOPLE ON JAN 27 2019
-		//if(client && Flying && dir == A.dir) SafeTeleport(A.loc)
-		//if(client && Flying && dir == A.dir)
-			//return_value = 1
-			//src << "3"
-
 		if(IsGreatApe()) Melee(A)
 
 	if(istype(A,/obj/Planets)) Bump_Planet(A,src)
@@ -270,18 +212,10 @@ mob/proc/MobCross(mob/A)
 		var/obj/Controls/C=A
 		C.Ship_Options(src)
 
-	//right now we only use this for npcs but maybe we should use it on players too im just not sure yet
 	if(!client && !return_value)
-		if(last_bump != world.time) //only allow this to be called once per tick or it can be an infinite loop that crashes the game instantly i saw it
+		if(last_bump != world.time)
 			var/prevDir = dir
-			/*var/bumpDir = cardinal_pixel_dir(src, A)
-			//go back to where you were
-			if(bumpDir == WEST)
-				step(src, EAST, step_size)
-			if(bumpDir == SOUTH)
-				step(src, NORTH, step_size)*/
-			//now set step_x/y to 0
-			ResetStepXY() //pretty sure ResetStepXY now essentially fulfills the purpose of what was above
+			ResetStepXY()
 			dir = prevDir
 
 	if(!return_value)
@@ -289,3 +223,41 @@ mob/proc/MobCross(mob/A)
 		if(A) last_bumped_obj = A
 
 	return return_value
+
+// Helper: door handling for MobCross. Returns 1 = allowed, 0 = blocked, null = not a door
+mob/proc/_mobcross_handle_door(atom/A)
+	if(!istype(A, /obj/Turfs/Door)) return
+	var/obj/Turfs/Door/d = A
+	if(isturf(d)) d = locate(/obj/Turfs/Door) in d
+	if(!d) return
+	if(client && InBattleCantEnterCave()) return
+	var/needs_password = 1
+	if(drone_module && drone_module.Password == d.Password)
+		d.Open()
+		return 1
+	for(var/obj/items/Door_Pass/dp in item_list)
+		if(dp.Password == d.Password)
+			d.Open()
+			return 1
+	for(var/obj/items/Door_Hacker/dh in item_list)
+		if(dh.BP >= d.Health)
+			player_view(15,d)<<"[src] hacks the door and it opens"
+			d.Open()
+			return 1
+	if(d.is_hbtc_door && anyone_can_enter_hbtc) needs_password = 0
+	if(needs_password && client && d.Password && !KB)
+		DoorPasswordAlert(d)
+	if(!d.Password || (d.is_hbtc_door && anyone_can_enter_hbtc))
+		d.Open()
+		return 1
+	return 0
+
+// Helper: blast-specific crossing rules. Returns 1 if allowed, null otherwise
+mob/proc/_mobcross_handle_blast(atom/A)
+	if(!istype(A,/obj/Blast)) return
+	var/obj/Blast/b = A
+	if(b.BlastCross(src)) return 1
+	if(b.Owner && b.Owner == src && b.blast_go_over_owner)
+		var/turf/t = get_step(src,dir)
+		if(t && !t.density) return 1
+	return

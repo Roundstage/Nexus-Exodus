@@ -76,9 +76,9 @@ obj
 						var/obj/Effect/e = new(usr.loc)
 						e.density = 0
 						e.icon = icon
-						e.step_size = rand(1,2)
+						e.vector_speed = rand(1,2)
 						var/mob/m = locate(/mob) in oview(20,usr)
 						var/angle = get_global_angle(e,m.loc)
 						while(e && m)
-							vector_step(e, angle)
+							vector_step(e, angle, e.vector_speed)
 							sleep(world.tick_lag)

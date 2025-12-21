@@ -85,6 +85,9 @@ mob
 atom/movable/var/tmp
 	fraction_x=0
 	fraction_y=0
+	vector_fraction_x=0
+	vector_fraction_y=0
+	vector_speed=0
 
 atom/movable/proc/MoveByAngle(ang=0)
 	var
@@ -108,16 +111,43 @@ atom/movable/proc/MoveByAngle(ang=0)
 	Move(loc, dir, step_x + xx, step_y + yy)
 
 proc/vector_step_toward(mob/a,mob/b,step_speed)
-	if(!step_speed) step_speed = a.step_size
+	if(!step_speed && a) step_speed = a.vector_speed
+	if(!step_speed) return
 	var/ang = get_global_angle(a,b)
 	return vector_step(a,ang,step_speed)
 
-proc/vector_step(mob/a, ang = 0, step_speed)
+proc/vector_step(atom/movable/a, ang = 0, step_speed)
 	if(!a) return
-	if(!step_speed) step_speed = a.step_size
-	var/xx = ToOne(step_speed * sin(ang))
-	var/yy = ToOne(step_speed * cos(ang))
-	return a.Move(a.loc, a.dir, a.step_x + xx, a.step_y + yy)
+	if(!step_speed) step_speed = a.vector_speed
+	if(!step_speed) return
+	var/dx = step_speed * sin(ang)
+	var/dy = step_speed * cos(ang)
+
+	var/max_step = 32
+	var/max_component = max(abs(dx), abs(dy))
+	var/steps = 1
+	if(max_component > max_step)
+		steps = round(max_component / max_step)
+		if(steps < 1) steps = 1
+		if(steps * max_step < max_component) steps++
+	var/step_dx = dx / steps
+	var/step_dy = dy / steps
+	var/moved
+	for(var/i in 1 to steps)
+		a.vector_fraction_x += step_dx
+		a.vector_fraction_y += step_dy
+		var/xx = round(a.vector_fraction_x)
+		var/yy = round(a.vector_fraction_y)
+		a.vector_fraction_x -= xx
+		a.vector_fraction_y -= yy
+		if(xx || yy)
+			moved = a.Move(a.loc, a.dir, a.step_x + xx, a.step_y + yy)
+			if(!moved) return moved
+	return moved
+
+proc/vector_step_dir(atom/movable/a, d, step_speed)
+	if(!a || !d) return
+	return vector_step(a, dir_to_angle_0_360(d), step_speed)
 	//a.dir = angle_to_dir(ang)
 
 //where north is 0 and it goes clockwise to 360. if b is directly above a then it will be 0

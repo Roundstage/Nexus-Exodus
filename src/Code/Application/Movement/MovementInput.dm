@@ -6,7 +6,7 @@ and town would seem more legitimate instead of being able to reach anything in 1
 starters.
 */
 
-world/fps = 20
+world/fps = 60
 
 var/BASE_MOVE_DELAY = 1
 
@@ -17,31 +17,86 @@ mob/var
 		input_disabled = 0 //+1 for each thing disabling input
 
 var/epsilon = 0.0001
+var/use_vector_movement = 1
+var/vector_move_max_pixels = 256
+var/vector_move_min_sleep_mult = 0.1
+var/vector_glide_min = 1
+var/vector_glide_target = 0
+var/vector_glide_max = 0
+var/vector_glide_high_speed_scale = 1
 
 mob/proc
 	GetInputMoveDelay(d = NORTH, raw_mult_only)
 		var/t = BASE_MOVE_DELAY
 		if(!d) return t
-		//t += 0.25 * (Speed_delay_mult(severity = 0.2) - 1)
 
-		/*if(Being_chased())
-			if(t < 1) t = 1
-			t += 0.35*/
-		//if(senzu_overload) t += 0.35
-		if(sight) t += 0.5
-		//if(fearful) t += FearSlowDown() //they just didnt like it
-		if(!Flying) for(var/obj/Injuries/Leg/i in injury_list) t += 0.5
-		if(stun_level) t += stun_level * 4
-		//t += HealthSlowdown() //people just didnt like how slow it made them so i turned it off
+		// apply small, focused modifiers via helpers to reduce nesting
+		t = _GetInputMoveDelay_apply_basic_modifiers(t)
 
-		if(d && !force_32_pix_movement) if(d in list(NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST))
-			t *= 1.15
+		if(d && d in list(NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST))
+			t = _GetInputMoveDelay_diagonal_mult(t)
 
 		if(!raw_mult_only)
-			t *= world.tick_lag
-			t = TickMult(t) //so we can add decimals above. such as +0.5 move delay
-			t -= epsilon //get rid of floating point errors
+			t = _GetInputMoveDelay_apply_tick_and_clean(t)
 
+		return t
+
+	UsingVectorMovement()
+		if(!client) return
+		return 1
+
+	GetVectorMovePixels(d = NORTH)
+		if(!d) d = NORTH
+		// debug: force a high base speed (pixels per second) instead of stat-based scaling
+		var/speed = 70
+		var/delay_mult = GetInputMoveDelay(d, raw_mult_only = 1)
+		if(delay_mult) speed /= delay_mult
+		speed *= world.tick_lag
+		if(speed < 1) speed = 1
+		if(vector_move_min_sleep_mult)
+			var/max_pixels_for_loop = 32 / vector_move_min_sleep_mult
+			if(speed > max_pixels_for_loop) speed = max_pixels_for_loop
+		if(vector_move_max_pixels && speed > vector_move_max_pixels) speed = vector_move_max_pixels
+		return speed
+
+	GetVectorMoveLoopMult(speed)
+		var/mult = 1
+		if(speed > 32) mult = 32 / speed
+		if(vector_move_min_sleep_mult && mult < vector_move_min_sleep_mult) mult = vector_move_min_sleep_mult
+		return mult
+
+	GetVectorGlideSize(speed)
+		var/glide = speed
+		if(vector_glide_target && speed > vector_glide_target)
+			glide = vector_glide_target + (speed - vector_glide_target) * vector_glide_high_speed_scale
+		if(vector_glide_min && glide < vector_glide_min) glide = vector_glide_min
+		if(vector_glide_max && glide > vector_glide_max) glide = vector_glide_max
+		return glide
+
+	VectorMoveDir(d, loop_mult = 1)
+		if(!d) return
+		var/pixels = GetVectorMovePixels(d) * loop_mult
+		if(pixels <= 0) return
+		return vector_step(src, dir_to_angle_0_360(d), pixels)
+
+	// helper: apply sight, injuries and stun modifiers
+	_GetInputMoveDelay_apply_basic_modifiers(t)
+		if(sight) t += 0.5
+		if(!Flying)
+			for(var/obj/Injuries/Leg/i in injury_list)
+				t += 0.5
+		if(stun_level) t += stun_level * 4
+		return t
+
+	// helper: diagonal movement multiplier
+	_GetInputMoveDelay_diagonal_mult(t)
+		return t * 1.15
+
+	// helper: apply tick scaling and clean floating point
+	_GetInputMoveDelay_apply_tick_and_clean(t)
+		t *= world.tick_lag
+		t = TickMult(t)
+		t -= epsilon
 		return t
 
 	UpdateNextInputMoveTime(d = NORTH)
@@ -51,8 +106,6 @@ mob/proc
 		if(input_disabled) return
 		if(in_dragon_rush) return
 		if(stun_level && stun_stops_movement) return
-		if(force_32_pix_movement)
-			if(world.time >= next_input_move_time) return 1
 		else return 1 //and remove this line if you enable the above line
 
 	AlterInputDisabled(n = 1)
@@ -67,8 +120,6 @@ mob/proc
 	//non-core stuff
 
 	FearSlowDown()
-
-		return 0 //disabled due to vote
 
 		var/fear_slow_down = 1
 		if(chaser && getdist(src, chaser) > 20) fear_slow_down += 0.5
