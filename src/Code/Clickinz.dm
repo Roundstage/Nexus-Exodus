@@ -109,67 +109,9 @@ turf/Click(turf/T) if(isturf(T))
 		if(usr in src) return
 
 		//EXPLOSION
-		if(!usr.attack_barrier_obj||!usr.attack_barrier_obj.Firing_Attack_Barrier) for(var/obj/Attacks/Explosion/K in usr.ki_attacks) if(K.On)
-			if(getdist(usr, T) > 20) return
-			if(getdist(usr, src) > 20) return
-			if(usr.BeamStruggling()) return
-			if(usr.tournament_override()) return
-
-			if(usr.attacking||usr.grabber) return
-			if(usr.Charging_or_Streaming()) return
-			if(usr.Ki>=5)
-				if(world.time - K.last_use < 20 * usr.Speed_delay_mult(severity = 0.35)) return
-				K.last_use = world.time
-				K.Skill_Increase(5,usr)
-				if(K.Level<=2) player_view(10,src)<<sound('kiplosion.ogg',volume=40)
-				else player_view(10,src)<<sound('Explosion 2.wav',volume=40)
-				var/list/l = TurfCircle(7,T)
-				var/total_mobs_exploded=0
-				var/total_objs_exploded=0
-
-				for(var/turf/A in view(K.Level,T)) if((A in l) && prob(100))
-					spawn for(var/v in 1 to 3) if(prob(15)||(A==T&&v==1))
-						sleep(rand(2,4))
-						Explosion_Graphics(A,rand(2,4))
-					var/n=0
-					var/craterAlready
-					for(var/obj/B in A) if(!istype(B,/obj/Explosion))
-						n++
-						total_objs_exploded++
-						if(total_objs_exploded>50) break
-						if(n>10) break
-						if(B.Health<=usr.BP)
-							if(!craterAlready)
-								BigCrater(pos = locate(B.x,B.y,B.z), minRangeFromOtherCraters = 3)
-								craterAlready = 1
-							del(B)
-					n=0
-					for(var/mob/B in A) if(B!=usr)
-						n++
-						if(n>5) break
-						total_mobs_exploded++
-						if(total_mobs_exploded>50) break
-						if(!B.AOE_auto_dodge(usr,Get_step(B,get_dir(B,T))))
-							var/dmg = 10 * ((usr.BP / B.BP) ** 0.7) * ki_power
-							var/pow_vs_res = usr.Pow / B.Res
-							if(pow_vs_res>1) pow_vs_res = pow_vs_res ** 0.3
-							dmg *= pow_vs_res
-
-							dmg *= sagas_bonus(usr,B)
-							usr.training_period(B)
-
-							if(!B.shield_obj || !B.shield_obj.Using) B.TakeDamage(dmg)
-							if(B.Health<=0)
-								if(!B.client) B.Death(usr)
-								else B.KO("[usr]")
-							if(B&&B.drone_module) B.Drone_Attack(usr,lethal=1)
-					if((A.Health<usr.WallBreakPower())&&usr.Is_wall_breaker())
-						if(A.Health != 1.#INF)
-							A.Health=0
-							A.Destroy()
-				usr.Ki -= 150
-			else usr<<"You do not have enough energy."
-			return
+		if(!usr.attack_barrier_obj || !usr.attack_barrier_obj.Firing_Attack_Barrier)
+			for(var/obj/Attacks/Explosion/K in usr.ki_attacks) if(K.On)
+				if(skill_engine && skill_engine.handleExplosionClick(usr, T, K)) return
 		if(locate(/obj/Turfs/Door) in src) return
 
 		if(usr.CanInputMove() && !usr.attack_barrier_obj || (usr.attack_barrier_obj && !usr.attack_barrier_obj.Firing_Attack_Barrier))

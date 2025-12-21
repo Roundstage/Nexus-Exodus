@@ -30,6 +30,7 @@ var/can_login=0
 
 proc/Initialize()
 	RestrictedMapLoop()
+	initializeSkillEngine()
 	AutoBPResetLoop()
 	StartupScatterBigRocks()
 	StartupSpawnKingBraalThrone()

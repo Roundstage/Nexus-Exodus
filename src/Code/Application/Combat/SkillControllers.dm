@@ -1,0 +1,89 @@
+var/global/datum/SkillControllerRegistry/skill_controller_registry = new
+
+datum/SkillControllerRegistry
+	var/list/controllers = list()
+
+	New()
+		controllers = list()
+		register(new /datum/SkillController/GuidedBlast)
+		register(new /datum/SkillController/GuidedBomb)
+
+	proc/register(datum/SkillController/controller)
+		if(!controller || !controller.id) return
+		controllers[controller.id] = controller
+
+	proc/get(id)
+		return controllers[id]
+
+datum/SkillController
+	var/id
+
+datum/SkillController/GuidedBlast
+	id = SKILL_CONTROLLER_GUIDED_BLAST
+
+	proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)
+		if(!user || !blast) return
+		var/control_range = def ? def.control_range : 0
+		if(!control_range) control_range = 25
+		var/bump_limit = def ? def.control_bumps : 0
+		var/allow_bump = bump_limit > 0
+		var/loop_delay = def ? def.control_delay : 0
+		if(!loop_delay) loop_delay = world.tick_lag
+		var/avoid_owner = def ? def.control_avoid_owner : 0
+		var/avoid_owner_chance = def ? def.control_avoid_owner_chance : 0
+		if(!avoid_owner_chance) avoid_owner_chance = 85
+		var/stop_on_deflect = def ? def.control_stop_on_deflect : 0
+		var/bumps = bump_limit
+
+		while(blast && blast.z && user && getdist(blast, user) < control_range)
+			if(stop_on_deflect && blast.deflected) break
+			if(source_skill && ("Using" in source_skill.vars))
+				source_skill.vars["Using"] = 1
+			var/turf/next_step = Get_step(blast, user.dir)
+			if(avoid_owner && blast.Owner && next_step && (blast.Owner in next_step) && prob(avoid_owner_chance))
+				step(blast, pick(turn(user.dir,45),turn(user.dir,-45)))
+			else if(allow_bump && next_step && (locate(/mob) in next_step))
+				for(var/mob/m in next_step)
+					if(m == blast.Owner && prob(avoid_owner_chance))
+						step(blast, pick(turn(blast.dir,45),turn(blast.dir,-45)))
+					else
+						var/bump_dir
+						if(prob(50)) bump_dir = get_dir(m, user)
+						else bump_dir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
+						blast.Bump(m, override_delete = bumps, override_dir = bump_dir)
+						if(blast && m) step_away(blast, m)
+						bumps--
+			else
+				step(blast, user.last_direction_pressed)
+			if(blast) blast.density = 1
+			if(user.KO && blast) del(blast)
+			sleep(loop_delay)
+
+		if(blast && blast.z)
+			walk(blast, blast.dir)
+
+datum/SkillController/GuidedBomb
+	id = SKILL_CONTROLLER_GUIDED_BOMB
+
+	proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)
+		if(!user || !blast) return
+		var/max_steps = def ? def.control_max_steps : 0
+		if(!max_steps) max_steps = 80
+		var/max_distance = def ? def.control_range : 0
+		if(!max_distance) max_distance = 30
+
+		if("sb_moving" in blast.vars)
+			blast.vars["sb_moving"] = 1
+
+		for(var/v in 1 to max_steps)
+			var/step_delay = 1
+			if("sb_move_speed" in blast.vars) step_delay = blast.vars["sb_move_speed"]
+			step(blast, user.last_direction_pressed)
+			sleep(TickMult(step_delay))
+			if(!blast || !blast.z || blast.Owner != user) break
+			if(getdist(user, blast) > max_distance) break
+			if(def && def.control_stop_on_deflect && blast.deflected) break
+
+		if(blast && blast.z && blast.Owner == user)
+			if(hascall(blast, "SpiritBombGoOffSomewhere"))
+				call(blast, "SpiritBombGoOffSomewhere")()

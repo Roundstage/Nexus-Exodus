@@ -29,7 +29,7 @@ obj/Attacks/Noob_Ray
 		Noob_Ray()
 	verb/Noob_Ray()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks
 	teachable=1
@@ -82,7 +82,7 @@ obj/Attacks/Laser_Beam
 		Laser()
 	verb/Laser()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Beam
 	Teach_Timer=0.3
@@ -103,7 +103,7 @@ obj/Attacks/Beam
 		Beam()
 	verb/Beam()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Ray
 	name="Death Beam"
@@ -127,7 +127,7 @@ obj/Attacks/Ray
 
 	verb/DeathBeam()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Piercer
 	name="Makankosappo"
@@ -155,7 +155,7 @@ obj/Attacks/Piercer
 
 	verb/Makankosappo()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Kamehameha
 	name = "Kamehameha"
@@ -181,7 +181,7 @@ obj/Attacks/Kamehameha
 	verb/Kamehameha()
 		set category="Skills"
 		set name = "kamehameha"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Dodompa
 	name = "Dodompa"
@@ -207,7 +207,7 @@ obj/Attacks/Dodompa
 	verb/Dodompa()
 		set category="Skills"
 		set name = "Doo Doo Beam"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Final_Flash
 	name = "Final flash"
@@ -235,7 +235,7 @@ obj/Attacks/Final_Flash
 	verb/Final_Flash()
 		set category="Skills"
 		set name = "Final Flash"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Garlic_Gun
 	name = "Galick Gun"
@@ -260,7 +260,7 @@ obj/Attacks/Garlic_Gun
 	verb/Galic_Gun()
 		set category="Skills"
 		set name = "Onion Gun"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Masenko
 	Cost_To_Learn=0
@@ -282,7 +282,7 @@ obj/Attacks/Masenko
 		Masenko()
 	verb/Masenko()
 		set category="Skills"
-		usr.Beam_Macro(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/var
 	Wave

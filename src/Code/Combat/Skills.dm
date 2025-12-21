@@ -212,7 +212,7 @@ obj/Dash_Attack
 
 	verb/Dash_Attack()
 		set category="Skills"
-		usr.Dash_Attack()
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp
 	dash_attacking
@@ -221,57 +221,8 @@ mob/var/tmp
 	lastDashAttack = 0
 
 mob/proc/Dash_Attack()
-
-	var/turf/t = loc
-	if(!istype(t,/turf)) return
-
-	if(dash_attacking || lunge_attacking || grabbedObject || in_dragon_rush) return
-	if(world.time - lastDashAttack < 100) return
-	if(tournament_override()) return
-	var/Drain = 145 * (max_ki / 3000)**0.5
-	if(Ki<Drain)
-		src<<"You do not have enough energy"
-		return
-	if(Beam_stunned()) return
-	dash_attacking = 1
-	var/damage_mult = 1
-	original_dash_dir=dir
-	lastDashAttack = world.time
-	for(var/steps in 1 to 25)
-		if(KB) break; //causes a bug where the person hits the target many many times doing massive damage
-		var/turf/old_loc=loc
-		var/dash_dir=original_dash_dir
-		if(desired_dash_dir&&round(steps/3)==steps/3)
-			dash_dir=desired_dash_dir
-			desired_dash_dir=0
-		step(src,dash_dir)
-		for(var/mob/P in mob_view(1,usr))
-			if(P != usr)
-				if(P && ismob(P))
-					var/Damage = damage_mult * get_melee_damage(P, allow_one_shot = 0)
-					var/Acc = get_melee_accuracy(P) * 2
-					Damage *= BP / P.BP
-					var/KB_Distance = (BP/P.BP)*(Str/P.End)*5
-					if(prob(Acc))
-						flick("Attack",src)
-						if(P.ki_shield_on())
-							P.Ki -= Damage * P.ShieldDamageReduction() * (P.max_ki/100)/(P.Eff**shield_exponent)*P.Generator_reduction(is_melee=1)
-						else
-							if(P.dir == dir) Damage *= 2 //hit from behind
-							P.TakeDamage(Damage)
-						if(P.Health <= 0 || P.Ki <= 0) P.KO(src)
-						if(P) P.DashAttackPart2(src, KB_Distance)
-						Ki-=Drain
-						dash_attacking=0
-						return;
-					else
-						flick('Zanzoken.dmi',P)
-						step(P,turn(dir,pick(90,-90)))
-		AfterImage(20)
-		damage_mult += 0.3
-		sleep(TickMult(0.7 * Speed_delay_mult(severity=0.25)))
-	Ki-=Drain
-	dash_attacking=0
+	if(skill_engine) return skill_engine.castDashAttack(src)
+	return 0
 
 mob/proc/DashAttackPart2(mob/a, KB_Distance) //a = attacker
 	set waitfor=0
@@ -1268,18 +1219,11 @@ obj/Shield
 
 	verb/Shield()
 		set category="Skills"
-		usr.Toggle_ki_shield(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/proc/Toggle_ki_shield(obj/Shield/s)
-	if(!s) s=locate(/obj/Shield) in src
-	if(!s) return
-	if(KO) return
-	if(!s.Using)
-		if(CanUseKiShield())
-			s.Using=1
-			Shield()
-			Ki_shield_revert_loop()
-	else Shield_Revert()
+	if(skill_engine) return skill_engine.castShield(src, s)
+	return 0
 
 mob/proc/CanUseKiShield()
 	if(LastSpiritBombValid()) return
@@ -2676,14 +2620,13 @@ obj/Taiyoken
 		set waitfor=0
 		set hidden=1
 		//Solar_Flare()
-		usr.TrySolarFlare() //new version
+		if(skill_engine) skill_engine.castSkill(usr, src) //new version
 
 	can_hotbar=1
 	hotbar_type="Ability"
 	verb/Solar_Flare()
 		set category="Skills"
-
-		usr.TrySolarFlare()
+		if(skill_engine) skill_engine.castSkill(usr, src)
 		return
 
 		if(usr.tournament_override(fighters_can=1)) return
