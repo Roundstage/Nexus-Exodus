@@ -46,4 +46,4 @@ obj/Attacks/Genki_Dama/Death_Ball
 
 	verb/Death_Ball()
 		set category = "Skills"
-		usr.TrySpiritBomb2017(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)

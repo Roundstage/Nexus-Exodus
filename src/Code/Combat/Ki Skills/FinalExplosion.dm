@@ -31,7 +31,7 @@ obj/Final_Explosion
 
 		Final_Explosion()
 			//set category = "Skills"
-			usr.Final_Explosion()
+			if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob
 	var
@@ -45,14 +45,8 @@ mob
 	proc
 		Final_Explosion()
 			set waitfor=0
-			if(!charging_final_explosion && !using_final_explosion)
-				if(cant_blast()) return
-				if(tournament_override(fighters_can = 1)) return
-				src << "Tap again to unleash the explosion"
-				BeginChargingFinalExplosion()
-			else
-				if(charging_final_explosion)
-					DoFinalExplosion()
+			if(skill_engine) return skill_engine.castFinalExplosion(src)
+			return
 
 		DoFinalExplosion()
 			set waitfor=0

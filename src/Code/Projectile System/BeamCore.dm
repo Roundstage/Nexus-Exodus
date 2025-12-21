@@ -249,28 +249,8 @@ mob/proc/BeamStopThing2()
 mob/var/tmp/last_beam_charge=0
 
 mob/proc/Beam_Macro(obj/Attacks/O)
-	if(!z) return //cant fire beams in spacepods
-	if(cant_blast(ignore_attack_check = 1)) return
-	if(using_final_explosion) return
-	for(var/obj/Attacks/A in ki_attacks) if(A != O) if(A.charging || A.streaming) return
-
-	//if(!O.charging && !attacking)
-	if(!O.charging && !O.streaming)
-		if(attacking <= 1)
-			if(Ki < GetSkillDrain(mod = O.Drain, is_energy = 1)) return
-			last_beam_charge=world.time
-			BeamCharge(O)
-
-	else if(!O.streaming && O.charging)
-		if(attacking)
-			if(O.say_name_when_fired && last_beam_charge + 30 <= world.time)
-				if(O.name=="Beam") Say("HAAAAAAAAAA!!!")
-				else Say("[uppertext(O.name)]!!")
-			BeamStream(O)
-
-	else if(O.streaming) BeamStop(O)
-
-	O.calculate_beam_drain()
+	if(skill_engine) return skill_engine.castBeam(src, O)
+	return
 
 /*
 obj/Attacks/proc/calculate_beam_drain()

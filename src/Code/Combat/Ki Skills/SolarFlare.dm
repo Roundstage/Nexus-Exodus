@@ -13,6 +13,7 @@ mob
 			last_solar_flare = 0
 	proc
 		TrySolarFlare()
+			if(skill_engine) return skill_engine.castSolarFlare(src)
 			if(CanSolarFlare()) SolarFlare()
 
 		CanSolarFlare()

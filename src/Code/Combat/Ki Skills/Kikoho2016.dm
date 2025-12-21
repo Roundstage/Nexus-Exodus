@@ -34,7 +34,7 @@ obj/Attacks/Kikoho
 		set category="Skills"
 		if(usr.Stunned()) 
 			return
-		usr.FireKikoho(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var
 	kikoho_damage = 0 //kikoho's damage over time to the user
@@ -146,55 +146,8 @@ mob/proc
 		return dmg
 
 	FireKikoho(obj/Attacks/Kikoho/k)
-		if(cant_blast()) return
-		if(Ki < GetSkillDrain(mod = k.Drain, is_energy = 1)) return
-
-		var/target_was_hit
-		var/mob/m = GetKikohoTarget()
-		if(!m)
-			src << "You must have a proper target in front of you"
-			return
-
-		attacking=3
-		k.charging=1
-		KikohoAtmosphereEffect()
-		KikohoChargeupEffect(grow_til = 0.6) //THIS AND THE FIRST sleep(KikohoRefire(0.7)) MUST HAVE MATCHING NUMBERS!!!!!!!!!!!!! (OR CLOSE TO IT)
-
-		var
-			chargeup_time = KikohoRefire(0.5)
-			elapsed_time = 0
-			interrupted
-			turf/start_loc = loc
-
-		while(elapsed_time < chargeup_time)
-			elapsed_time++
-			if(KB || Frozen || loc != start_loc)
-				interrupted=1
-				ApplyStun(time = 15, no_immunity = 1, stun_power = 6)
-				break
-			else sleep(TickMult(1))
-
-		if(!interrupted)
-			m = GetKikohoTarget()
-			if(m && !cant_blast(ignore_attack_check = 1))
-				dir = get_dir(src,m)
-				Ki -= GetSkillDrain(mod = k.Drain, is_energy = 1)
-				k.Skill_Increase(1,src)
-
-				target_was_hit = 1
-				player_view(20,src) << sound('wallhit.ogg',volume=40)
-				m.GetHitByKikoho(src)
-				KikohoKnockAwayNonTargets(m)
-
-				kikoho_damage += kikoho_self_dmg
-				KikohoDamageLoop()
-
-		if(target_was_hit)
-			sleep(KikohoRefire(0.5)) //ALL INSTANCES MUST ADD UP TO 1 IN THIS PROC!!!!!!!!!!!!!!!!!!!!!!!!
-			if(interrupted) sleep(KikohoRefire(2))
-
-		attacking=0
-		k.charging=0
+		if(skill_engine) return skill_engine.castKikoho(src, k)
+		return 0
 
 	KikohoRefire(mult = 1)
 		return mult * (5 + (11 * Speed_delay_mult(severity=0.4)))

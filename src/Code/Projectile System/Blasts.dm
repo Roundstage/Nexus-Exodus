@@ -117,7 +117,7 @@ obj/Attacks/Attack_Barrier
 	var/tmp/Firing_Attack_Barrier
 	verb/Attack_Barrier()
 		set category="Skills"
-		usr.Attack_Barrier(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Blast/proc/attack_barrier_loop()
 	set waitfor=0
@@ -158,56 +158,8 @@ mob/proc/UsingAttackBarrier()
 	if(attack_barrier_obj.Firing_Attack_Barrier) return 1
 
 mob/proc/Attack_Barrier(obj/Attacks/Attack_Barrier/B)
-	attack_barrier_obj=B
-	if(B.Firing_Attack_Barrier)
-		B.Firing_Attack_Barrier=0
-		src<<"You stop using Attack Barrier"
-		return
-	if(!B) for(var/obj/Attacks/Attack_Barrier/C in ki_attacks) B=C
-	if(!B) return
-	if(cant_blast()) return
-	if(Ki<GetSkillDrain(mod = B.Drain, is_energy = 1)) return
-	attacking=3
-	B.Experience+=0.05
-	//for(var/obj/Blast/Attack_Barrier/O) if(O.Owner==src) del(O)
-	B.Firing_Attack_Barrier=1
-
-	overlays += BlastCharge
-	player_view(10,src) << sound('basicbeam_charge.ogg',volume=20)
-	sleep(15 + (2 * Speed_delay_mult(severity = 0.5)))
-
-	while(B.Firing_Attack_Barrier)
-		var/max_blasts = MaxAttackBarrierBlasts()
-		while(B && src && B.Firing_Attack_Barrier && attack_barrier_blasts >= max_blasts)
-			sleep(5)
-		if(Ki<GetSkillDrain(mod = B.Drain, is_energy = 1)) B.Firing_Attack_Barrier=0
-		else if(cant_blast(ignore_attack_check = 1) || KB || KO || Stunned()) B.Firing_Attack_Barrier=0
-		else
-			B.Skill_Increase(0.6,src)
-			Ki -= GetSkillDrain(mod = B.Drain, is_energy = 1)
-			flick("Blast",src)
-			player_view(10,src)<<sound('Blast.wav',0,1,0,15)
-			attack_barrier_blasts++
-			var/obj/Blast/A=get_cached_blast()
-			spawn(rand(600,900)) if(A&&A.z) del(A)
-			A.Shockwave = 4
-			A.blast_go_over_obstacles_if_cant_destroy = 1
-			A.blast_go_over_owner = 1
-			A.pass_over_owners_blasts = 1
-			A.density=0
-			A.Distance=99999999999
-			A.pixel_x=rand(-16,16)
-			A.pixel_y=rand(-16,16)
-			A.icon=B.icon
-			A.setStats(src,Percent = 2,Off_Mult = 1,Explosion = 0)
-			A.from_attack=B
-			//A.Shockwave=prob(33)
-			A.dir=dir
-			A.loc=loc
-			A.attack_barrier_loop()
-			sleep(TickMult(1*Speed_delay_mult(severity=0.3)))
-	attacking=0
-	overlays -= BlastCharge
+	if(skill_engine) return skill_engine.castAttackBarrier(src, B)
+	return 0
 
 atom/var/Fatal=0
 
@@ -562,7 +514,7 @@ obj/Attacks/Blast
 
 	verb/Blast()
 		set category="Skills"
-		usr.Blast_Fire(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp
 	blast_fire_loop
@@ -590,104 +542,8 @@ mob/proc/get_shuriken_refire()
 	return TickMult(2.4 * Speed_delay_mult(severity=0.3))
 
 mob/proc/Blast_Fire(obj/Attacks/Blast/B)
-
-	//return //disabled to see if it is crashing things
-
-	if(!B) B=blast_obj
-	if(!B) for(var/obj/Attacks/Blast/C in ki_attacks) B=C
-	if(!B) return
-	
-	//B.Blast_Count /= Speed_delay_mult(severity = 0.2)
-	B.Blast_Count = ToOne(B.Blast_Count)
-
-	if(beaming || Beam_stunned()) return
-	if(cant_blast()) return
-	if(Ki<GetSkillDrain(mod = B.Drain, is_energy = 1)) return
-	B.Skill_Increase(1/B.blast_refire,src)
-	attacking=3
-	var/Delay=get_blast_refire()
-	if(!client) Delay=1
-	spawn(Delay) attacking=0
-	B.Experience+=0.05/B.blast_refire
-	if(world.time - B.lastBlastSfx > 1.5)
-		B.lastBlastSfx = world.time
-		player_view(10,src) << sound('Blast.wav',volume = 10)
-
-	var/Amount = B.Blast_Count
-	//PROBLEM: i commented out these lines because it makes up close blasting way too OP. if you set it to barrage, as long as you fire
-	//them up close, you do 2x damage compared to normal blast. literally took 80% of my health in 2 seconds when i got caught up close
-	//if(B.Spread==2) Amount=ToOne(Amount * 1.35)
-	//if(B.Spread==3) Amount=ToOne(Amount * 2)
-
-	while(Amount)
-
-		Ki -= GetSkillDrain(mod = B.Drain, is_energy = 1)
-
-		var/obj/Blast/A = get_cached_blast()
-		var/percent = 1.5 / B.blast_refire ** 0.75 //was 3
-		var/off_mod = 1 //was 1
-		if(B.Stun) percent *= 1
-		//if(B.Spread==3) off_mod*=0.7
-		A.Stun = B.Stun
-		A.setStats(src, Percent=percent, Off_Mult=off_mod, Explosion=0)
-		var
-			base_speed = 32
-			max_speed_bonus = 32 - base_speed
-			step_speed = base_speed + (max_speed_bonus / Speed_delay_mult(severity = 0.5))
-		A.step_size = step_speed
-
-		A.from_attack=B
-		//A.Distance=150
-		A.icon=B.icon
-		CenterIcon(A)
-		/*spawn(2) if(A)
-			A.pixel_x+=rand(-14,14)
-			A.pixel_y+=rand(-14,14)*/
-		A.Shockwave = ToOne(1.4 * B.Shockwave / B.blast_refire**0.4)
-		if(prob(100)) A.Explosive=B.Explosive
-		A.dir = dir
-
-		//it graphically looks like its shooting too far out from your character so im just gonna rig it like this now
-		var
-			pixX = 0
-			pixY = 0
-			pix = 16
-		if(dir == NORTH || dir == NORTHEAST || dir == NORTHWEST) pixY = -pix
-		if(dir == SOUTH || dir == SOUTHEAST || dir == SOUTHWEST) pixY = pix
-		if(dir == WEST || dir == SOUTHWEST || dir == NORTHWEST) pixX = pix
-		if(dir == EAST || dir == SOUTHEAST || dir == NORTHEAST) pixX = -pix
-		//A.pixel_x += pixX
-		//A.pixel_y += pixY
-
-		A.SafeTeleport(loc)
-
-		//prevent bug where you can apparently fire thru walls if you zig zag back and forth near it spamming blast
-		var/turf/t = get_step(A.loc, A.dir)
-		if(!t || t.density) A.step_size = 32
-
-		//A.Blast_Move(B, src, skip_first_delay = 1)
-
-		//this stuff is mostly the same as BlastAutoTargetFire() but i had to change it to limit the retargeting rate since this fires way more blasts
-		//at once than BlastAutoTargetFire() was intended for, it would lag.
-		A.bound_height = 16
-		A.bound_width = 16
-		A.bound_y = (32 - A.bound_height) / 2
-		A.bound_x = (32 - A.bound_width) / 2
-		A.Can_Home = 0
-		A.step_size = 44
-		A.Distance = 47
-		var/angle = dir_to_angle_0_360(A.dir)
-		var/mob/targ
-		if(world.time - B.last_retarget > 3)
-			targ = A.GetBlastHomingTarget(dir, angle = 18)
-			B.last_retarget = world.time
-			if(targ) B.last_blast_targ = targ
-		else if(B.last_blast_targ && A.Is_viable_homing_target(B.last_blast_targ)) targ = B.last_blast_targ
-		if(targ) angle = get_global_angle(A,targ)
-		angle += rand(-4,4)
-		A.BlastVectorWalk(angle)
-
-		Amount--
+	if(skill_engine) return skill_engine.castBlast(src, B)
+	return 0
 
 //this just gives the blast a target when it is first spawned and makes it take a pixel vector directly to that target
 obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0)
@@ -753,33 +609,7 @@ obj/Attacks/Big_Bang_Attack
 
 	verb/Big_Bang()
 		set category="Skills"
-		if(usr.cant_blast()) return
-		if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		if(prob(10)&&Experience<1) Experience+=0.1
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(2,usr)
-		usr.attacking=3
-		charging=1
-		usr.overlays+=usr.BlastCharge
-		player_view(10,usr)<<sound('basicbeam_charge.ogg',volume=30)
-		var/turf/fire_location=usr.loc
-		sleep(TickMult(18 * usr.Speed_delay_mult(severity=0.4)))
-		usr.overlays-=usr.BlastCharge
-		if(!usr.cant_blast(ignore_attack_check = 1))
-			player_view(10,usr)<<sound('Blast.wav',volume=70)
-			usr.Say("BIG BANG ATTACK!!")
-			var/obj/Blast/A=get_cached_blast()
-			var/dmg=54
-			if(usr.loc==fire_location) dmg*=1.5
-			A.setStats(usr,Percent=dmg,Off_Mult=1,Explosion=4)
-			A.from_attack=src
-			A.Shockwave=1
-			A.icon=icon
-			A.dir=usr.dir
-			A.loc=usr.loc
-			A.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 27, dist = 60, randomAngle = 0)
-		usr.attacking=0
-		charging=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 	/*verb/Big_Bang()
 		set category="Skills"
@@ -839,32 +669,7 @@ obj/Attacks/Charge
 
 	verb/Charge()
 		set category="Skills"
-		if(usr.cant_blast()) return
-		if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		if(prob(10)&&Experience<1) Experience+=0.1
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(2,usr)
-		usr.attacking=3
-		usr.moving_charge=1
-		usr.overlays+=usr.BlastCharge
-		player_view(10,usr)<<sound('basicbeam_charge.ogg',volume=20)
-		var/turf/fire_location=usr.loc
-		sleep(TickMult(7.5 * usr.Speed_delay_mult(severity=0.6)))
-		usr.overlays-=usr.BlastCharge
-		if(!usr.cant_blast(ignore_attack_check = 1))
-			player_view(10,usr)<<sound('Blast.wav',volume=40)
-			var/obj/Blast/A=get_cached_blast()
-			var/dmg=20
-			if(usr.loc==fire_location) dmg*=1.5
-			A.setStats(usr,Percent=dmg,Off_Mult=2,Explosion=2)
-			A.from_attack=src
-			A.Shockwave=1
-			A.icon=icon
-			A.dir=usr.dir
-			A.loc=usr.loc
-			A.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 20, dist = 47, randomAngle = 0)
-		usr.attacking=0
-		usr.moving_charge=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 	/*verb/Charge()
 		set category="Skills"
@@ -937,30 +742,7 @@ obj/Attacks/Cyber_Charge
 		CyberCharge()
 	verb/CyberCharge()
 		set category="Skills"
-		if(usr.cant_blast()) return
-		if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		if(prob(10)&&Experience<1) Experience+=0.1
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(2,usr)
-		usr.attacking=3
-		charging=1
-		usr.overlays+=usr.BlastCharge
-		player_view(10,usr)<<sound('basicbeam_charge.ogg',volume=20)
-		sleep(TickMult(5 * usr.Speed_delay_mult(severity=0.6)))
-		usr.overlays-=usr.BlastCharge
-		if(!usr.cant_blast(ignore_attack_check = 1))
-			player_view(10,usr)<<sound('Blast.wav',volume=30)
-			var/obj/Blast/A=get_cached_blast()
-			A.icon=icon
-			A.setStats(usr,Percent=10,Off_Mult=2,Explosion=1)
-			A.from_attack=src
-			A.step_size = 32 * 1
-			A.dir=usr.dir
-			A.loc=usr.loc
-			//step(A,A.dir)
-			if(A) A.blast_walk(world.tick_lag)
-		usr.attacking=0
-		charging=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Kienzan
 	icon='Blast - Destructo Disk.dmi'
@@ -978,60 +760,7 @@ obj/Attacks/Kienzan
 
 	verb/Kienzan()
 		set category="Skills"
-		if(usr.cant_blast()) return
-		if(!usr.move || usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		var/turf/t=Get_step(usr,NORTH)
-		if(t)
-			var/obstacle
-			for(var/obj/o in t) if(o.density&&!istype(o,/obj/Blast))
-				obstacle=1
-				break
-			if(t.density) obstacle=1
-			if(obstacle)
-				usr<<"You can not use this here because there is an obstacle above you"
-				return
-		Using=1
-		usr.attacking=3
-		if(usr.h1_overhead_gfx)
-			usr.icon_state="1H Overhead Charge"
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(3,usr)
-		player_view(10,usr)<<sound('destructodisc_charge.ogg',volume=35)
-
-		var/obj/Blast/A=get_cached_blast()
-		A.Sokidan=1
-		A.Distance=180
-		A.blast_go_over_obstacles_if_cant_destroy = 1
-		A.icon=icon
-		A.loc=Get_step(usr,NORTH)
-		A.Shockwave=0
-		A.Piercer=1
-		A.slice_attack=1
-		var/dmgPercent = 45
-		if(usr.Race == "Human") dmgPercent *= 1.5
-		A.setStats(usr,Percent = dmgPercent, Off_Mult = 15, Explosion = 0)
-		A.from_attack=src
-		A.step_size = 22
-		A.weaker_obstacles_cant_destroy_blast = 1
-
-		sleep(TickMult(12*usr.Speed_delay_mult(severity=0.3)))
-		if(usr && usr.h1_overhead_gfx)
-			usr.icon_state=""
-		if(A)
-			player_view(10,usr)<<sound('disc_fire.ogg',volume=35)
-			if(usr.dir == SOUTH) A.density=0 //so it goes over the user without damaging them
-			flick("Attack",usr)
-			while(A && A.z && usr && getdist(A,usr) < 27 && !A.deflected)
-				Using=1
-				if(prob(87) && Owner && (Owner in Get_step(A,usr.dir)))
-					step(A, pick(turn(usr.dir,45),turn(usr.dir,-45)))
-				else step(A,usr.last_direction_pressed)
-				if(A) A.density=1
-				if(usr.KO && A) del(A)
-				sleep(world.tick_lag)
-			if(A&&A.z) walk(A,A.dir)
-		Using=0
-		if(usr) usr.attacking=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Spin_Blast
 	Experience=1
@@ -1103,53 +832,7 @@ obj/Attacks/Makosen
 
 	verb/Makosen()
 		set category="Skills"
-		if(usr.cant_blast()) return
-		if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		usr.attacking=3
-		usr.overlays+=usr.BlastCharge
-		player_view(10,usr)<<sound('basicbeam_charge.ogg',volume=20)
-		charging=1
-		sleep(TickMult(0.1 * ChargeTime * usr.Speed_delay_mult(severity=0.4)))
-		if(usr) usr.overlays-=usr.BlastCharge
-		if(!usr.cant_blast(ignore_attack_check = 1))
-			player_view(10,usr)<<sound('basicbeam_fire.ogg',volume=10)
-			var/Amount=ToOne(17*usr.Eff**0.25)
-			while(Amount)
-				Amount-=1
-				var/obj/Blast/A=get_cached_blast()
-				A.Can_Home=0
-				A.icon=icon
-				var/Os=5
-				while(Os)
-					Os-=1
-					var/image/I=image(icon=A.icon,icon_state=A.icon_state,pixel_x=rand(-32,32),pixel_y=rand(-32,32))
-					A.overlays+=I
-				A.Deflectable=0
-				A.apply_short_range_beam_knock=0
-				A.layer=4
-				A.setStats(usr, Percent = 17, Off_Mult = 1,Explosion = 0)
-				A.deflect_difficulty=4
-				A.from_attack=src
-				if(prob(ExplosiveChance)) A.Explosive=Explosiveness
-				A.dir=usr.dir
-				A.pixel_x+=rand(-32,32)
-				A.pixel_y+=rand(-32,32)
-				A.Distance=35
-				A.is_makosen=1
-				A.loc=Get_step(usr,usr.dir)
-				A.loc=pick(Get_step(usr,usr.dir),Get_step(usr,turn(usr.dir,45)),Get_step(usr,turn(usr.dir,-45)))
-
-				//to keep makosen from shooting thru 1 tile thick walls when you fire it right next to it
-				var/turf/t=A.loc
-				if(t && isturf(t) && t.Owner && t.Health>A.BP) del(A)
-
-				if(A) A.Beam()
-				spawn if(A && A.z) walk(A,A.dir,ShotSpeed * world.tick_lag)
-				sleep(TickMult(1))
-			usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-			Skill_Increase(2,usr)
-		usr.attacking=0
-		charging=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Time_Freeze_Energy
 	var/TF_Timer=600
@@ -1245,12 +928,7 @@ obj/Attacks/Explosion
 
 	verb/Explosion_Toggle()
 		set category="Skills"
-		if(!On)
-			usr<<"Explosion skill is now activated, click the ground to trigger."
-			On=1
-		else
-			usr<<"Explosion deactivated. Now when you click the ground you will warp there instead."
-			On=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp/last_scattershot=0 //world.time
 
@@ -1426,76 +1104,7 @@ obj/Attacks/Scatter_Shot
 
 	verb/Scatter_Shot()
 		set category="Skills"
-		//usr.TryScatterShot(src)
-
-		if(usr.beaming||usr.Beam_stunned()) return
-		if("Scatter shot" in usr.active_prompts) return
-
-		var/minutes=1
-		if(world.time<usr.last_scattershot+(minutes*60*10))
-			var/minutes_left=(usr.last_scattershot+(minutes*60*10)-world.time)/(10*60)
-			usr<<"You can not use scattershot for another [round(minutes_left)] minutes and [round((minutes_left*60)%60)] \
-			seconds"
-			return
-
-		for(var/obj/o in scatter_shot_blasts) if(!o.z) scatter_shot_blasts-=o
-
-		if(usr.cant_blast()) return
-		if(!usr.move || usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-
-		var/mob/B=usr.LungeTarget()
-		if(!B)
-			usr<<"No target found"
-			return
-		//if(!B) B=usr
-
-		usr.attacking=3
-		var/amount=ToOne(40*sqrt(usr.Eff))
-		Using=1
-		usr.last_scattershot=world.time
-		while(amount&&!usr.cant_blast(ignore_attack_check = 1))
-			player_view(10,usr)<<sound('Blast.wav',volume=20)
-			amount-=1
-			flick("Attack",usr)
-			var/obj/Blast/A=get_cached_blast()
-			scatter_shot_blasts+=A
-			A.Distance=70
-			A.density=0
-			A.step_size = 22
-			A.icon=icon
-			if(prob(100)) A.Explosive=1
-			A.Shockwave=3
-			A.setStats(usr,Percent=3.1,Off_Mult=1,Explosion=ToOne(0.3))
-			A.from_attack=src
-			A.loc=usr.loc
-			var/turf/Spot
-			var/list/Spots
-			for(var/turf/T in Circle(9,B)) if(!T.density)
-				if(!Spots) Spots=new/list
-				Spots+=T
-			if(Spots)
-				Spot=pick(Spots)
-				A.Can_Home=0
-				walk_towards(A,Spot,1)
-				spawn(rand(20,25)*usr.Speed_delay_mult(severity=0.5)) if(A&&A.z&&A.Owner==usr)
-					A.density=1
-					if(B) walk_towards(A,B,TickMult(1))
-					spawn while(B&&A&&A.z&&A.Owner==usr)
-						if(usr&&(usr.KB||usr.KO))
-							walk(A,pick(A.dir,turn(A.dir,45),turn(A.dir,-45),turn(A.dir,90),turn(A.dir,-90)))
-						if(B in range(0,A)) A.Bump(B,override_dir=pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHWEST,SOUTHEAST))
-						sleep(TickMult(1))
-				spawn if(A&&A.z&&A.Owner==usr)
-					while(A&&A.z&&B) sleep(TickMult(2))
-					if(A&&A.z)
-						walk_rand(A)
-						spawn(rand(1,50)) if(A) del(A)
-				sleep(TickMult(0.3))
-			else if(A) del(A)
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(5,usr)
-		usr.attacking=0
-		spawn(30+usr.Speed_delay_mult(severity=0.5)*4) if(src) Using=0
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp/lastSokidan = 0 //world.time
 
@@ -1516,84 +1125,7 @@ obj/Attacks/Sokidan
 
 	verb/Sokidan()
 		set category="Skills"
-		if(world.time - usr.lastSokidan < 20) return
-		if(usr.cant_blast()) return
-		if(!usr.move || usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		var/turf/t=Get_step(usr,NORTH)
-		if(t)
-			var/obstacle
-			for(var/obj/o in t) if(o.density&&!istype(o,/obj/Blast))
-				obstacle=1
-				break
-			if(t.density) obstacle=1
-			if(obstacle)
-				usr<<"You can not use this here because there is an obstacle above you"
-				return
-		Using=1
-
-		usr.attacking=3
-
-		if(usr.h1_overhead_gfx)
-			usr.icon_state="1H Overhead Charge"
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		Skill_Increase(3,usr)
-		player_view(10,usr)<<sound('basicbeam_charge.ogg',volume=20)
-
-		var/obj/Blast/A=get_cached_blast()
-		A.Sokidan=1
-		A.blast_go_over_obstacles_if_cant_destroy = 1
-		A.Stun = 2
-		A.Distance=180
-		A.icon=icon
-		A.loc=Get_step(usr,NORTH)
-		A.Shockwave=2
-		A.Piercer=0
-		A.step_size = 22
-		var/dmgPercent = 23
-		if(usr.Race == "Human") dmgPercent *= 1.5
-		A.setStats(usr,Percent = dmgPercent, Off_Mult = 3, Explosion = 2, homing_mod = 2)
-		A.from_attack=src
-		A.weaker_obstacles_cant_destroy_blast = 1
-
-		sleep(TickMult(7*usr.Speed_delay_mult(severity=0.7)))
-
-		if(usr.h1_overhead_gfx)
-			usr.icon_state=""
-
-		if(A && A.z)
-			player_view(10,usr)<<sound('Blast.wav',volume=40)
-			if(usr.dir == SOUTH) A.density=0
-			flick("Attack",usr)
-			var/controlling=1
-			var/bumps=5
-
-			//while(A && A.z && usr && getdist(A,usr) < 25 && !A.deflected && controlling)
-			while(A && A.z && usr && getdist(A,usr) < 25 && controlling)
-				Using=1
-				if(locate(/mob) in Get_step(A,usr.dir))
-					for(var/mob/m in Get_step(A,usr.dir))
-						if(m == A.Owner && prob(85))
-							step(A,pick(turn(A.dir,45),turn(A.dir,-45)))
-						else
-							//controlling=0
-							var/bump_dir
-							if(prob(50)) bump_dir=get_dir(m,usr)
-							else bump_dir=pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
-							A.Bump(m,override_delete=bumps,override_dir=bump_dir)
-							if(A&&m) step_away(A,m)
-							bumps--
-				else step(A,usr.last_direction_pressed)
-				if(A) A.density=1
-				if(usr.KO&&A) del(A)
-				sleep(world.tick_lag)
-
-			if(A && A.z)
-				//if(A.deflected) A.Distance=30
-				walk(A,A.dir)
-
-		Using=0
-		usr.attacking=0
-		usr.lastSokidan = world.time
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Genocide
 	var/Charging
@@ -1630,6 +1162,7 @@ obj/Attacks/Genocide
 							A.Distance=500
 							A.icon=icon
 							A.setStats(usr,Percent=1.5,Off_Mult=1,Explosion=0)
+							if(skill_engine) skill_engine.applyHomingSettings(usr, A, null, src)
 							A.from_attack=src
 							A.loc=usr.loc
 							A.dir=NORTH
@@ -1796,68 +1329,6 @@ obj/Attacks/Shockwave
 
 	verb/Shockwave()
 		set category="Skills"
-		if(usr.beaming||usr.Beam_stunned()) return
-		if(usr.tournament_override(fighters_can=1)) return
-		if(usr.cant_blast()) return
-		if(usr.dash_attacking||usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
-		if(world.time<usr.next_shockwave)
-			var/seconds=(usr.next_shockwave-world.time)/10
-			usr<<"You can not use this for another [round(seconds,0.1)] seconds"
-			return
-		usr.ReleaseGrab()
-		Skill_Increase(1.5,usr)
-		usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
-		//usr.attacking=3
-		usr.shockwaving=1
-		var/Amount = 7
-		player_view(10,usr)<<sound('wallhit.ogg',volume=25)
-		spawn if(usr) while(Amount)
-			Amount-=1
-			Make_Shockwave(usr,7,sw_icon_size=256)
-			for(var/turf/T in oview(7,usr))
-				if(prob(10)&&!T.density&&!T.Water)
-					var/Dirts=prob(40)
-					while(Dirts)
-						Dirts-=1
-						var/image/I=image(icon='Damaged Ground.dmi',pixel_x=rand(-16,16),pixel_y=rand(-16,16))
-						T.overlays+=I
-						T.Remove_Damaged_Ground(I)
-			spawn for(var/mob/P in mob_view(10,usr)) if(P.z&&P!=usr&&P.grabbedObject!=usr)
-				if(!P.AOE_auto_dodge(usr,usr.loc))
-					var/Distance = 7 * (((usr.Pow + usr.Str) / (P.Res + P.End)) ** 0.5) * ((usr.BP / P.BP) ** 0.5)
-					Distance=round(Distance)
-					if(Distance>30) Distance=30
-					P.Shockwave_Knockback(Distance,usr.loc, bypass_immunity = 1)
-					var/dmg=2*(usr.BP/P.BP)**bp_exponent*((usr.Pow+usr.Swordless_strength())/(P.Res+P.End))**0.4 * (ki_power+melee_power)/2
-
-					dmg*=sagas_bonus(usr,P)
-					usr.training_period(P)
-
-					if(P.ki_shield_on())
-						dmg*=(P.max_ki/100) * P.ShieldDamageReduction() / (P.Eff**shield_exponent)*P.Generator_reduction()
-						P.Ki-=dmg
-					else P.TakeDamage(dmg)
-					spawn if(P&&P.drone_module) P.Drone_Attack(usr,lethal=1)
-			spawn if(usr)
-				var/n=0
-				for(var/obj/O in view(7,usr)) if(O.z && !O.Bolted && !istype(O,/obj/Turfs/Door))
-					n++
-					if(n>10) break
-					if(istype(O,/obj/Blast))
-						var/obj/Blast/b = O
-						if(b.Beam)
-							if(usr.BP > O.BP * 1.35) del(O)
-							else n--
-						else
-							var/p = 80 * (usr.BP / O.BP)**0.4
-							if(prob(p)) del(O)
-							else n--
-					else
-						if(O.Health<=usr.BP) del(O)
-						if(O) O.Shockwave_Knockback(10,usr.loc)
-			sleep(5)
-
-			if(!Amount&&usr) usr.shockwaving=0
-		if(usr) usr.next_shockwave=world.time + 70 * usr.Speed_delay_mult(severity=0.25)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp/next_shockwave=0

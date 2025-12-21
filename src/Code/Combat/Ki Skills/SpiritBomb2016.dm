@@ -39,7 +39,7 @@ obj/Attacks/Genki_Dama
 	verb/Genki_Dama()
 		set category="Skills"
 		set name = "Omega Bomb"
-		usr.TrySpiritBomb2017(src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 
 
@@ -108,7 +108,11 @@ mob/proc
 		flick("Attack",src)
 		Ki -= GetSkillDrain(mod = sb.Genki_Dama_drain, is_energy = 1)
 		player_view(10,src) << sound('basicbeam_fire.ogg',volume=15)
-		SpiritBombGuidedMovement()
+		var/controlled = 0
+		if(skill_engine && last_Genki_Dama)
+			controlled = skill_engine.controlBlast(src, last_Genki_Dama, sb)
+		if(!controlled)
+			SpiritBombGuidedMovement()
 		SpiritBombDone(sb)
 
 	SpiritBombGuidedMovement()

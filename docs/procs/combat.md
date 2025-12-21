@@ -4,6 +4,9 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
+- `src/Code/Application/Combat/SkillActors.dm`
+- `src/Code/Application/Combat/SkillControllers.dm`
+- `src/Code/Application/Combat/SkillEngine.dm`
 - `src/Code/Combat/BleedDamage.dm`
 - `src/Code/Combat/Buffs.dm`
 - `src/Code/Combat/Evasion.dm`
@@ -34,8 +37,484 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Combat/SplitForms.dm`
 - `src/Code/Combat/Targeting/Targeting.dm`
 - `src/Code/Combat/Targeting/TargetingWrappers.dm`
+- `src/Code/Domain/Combat/SkillBehaviors.dm`
+- `src/Code/Domain/Combat/SkillCategories.dm`
 
 ## Proc Reference
+
+### src/Code/Application/Combat/SkillEngine.dm
+
+#### proc/initializeSkillEngine
+- Signature: `initializeSkillEngine()`
+- Inputs: None
+- Purpose: Initialize the skill engine registry.
+- Returns: none (implicit).
+- Side effects: builds skill definitions.
+
+#### datum/SkillRegistry/proc/register
+- Signature: `datum/SkillRegistry/proc/register(datum/SkillDefinition/def)`
+- Inputs: datum/SkillDefinition/def
+- Purpose: Register a skill definition.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillRegistry/proc/get
+- Signature: `datum/SkillRegistry/proc/get(id)`
+- Inputs: id
+- Purpose: Fetch a skill definition by id.
+- Returns: datum/SkillDefinition or null.
+- Side effects: none expected.
+
+#### datum/SkillRegistry/proc/all
+- Signature: `datum/SkillRegistry/proc/all()`
+- Inputs: None
+- Purpose: Return all registered skill definitions.
+- Returns: list of definitions.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/bootstrap
+- Signature: `datum/SkillEngine/proc/bootstrap()`
+- Inputs: None
+- Purpose: Build the skill registry.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillEngine/proc/startLoop
+- Signature: `datum/SkillEngine/proc/startLoop()`
+- Inputs: None
+- Purpose: Start the skill engine world loop.
+- Returns: none (implicit).
+- Side effects: spawns a loop that ticks actors.
+
+#### datum/SkillEngine/proc/stopLoop
+- Signature: `datum/SkillEngine/proc/stopLoop()`
+- Inputs: None
+- Purpose: Stop the skill engine world loop.
+- Returns: none (implicit).
+- Side effects: halts actor ticking.
+
+#### datum/SkillEngine/proc/engineLoop
+- Signature: `datum/SkillEngine/proc/engineLoop()`
+- Inputs: None
+- Purpose: Run the actor tick loop.
+- Returns: none (implicit).
+- Side effects: ticks active actors.
+
+#### datum/SkillEngine/proc/registerActor
+- Signature: `datum/SkillEngine/proc/registerActor(datum/SkillActor/actor)`
+- Inputs: datum/SkillActor/actor
+- Purpose: Register an actor with the engine.
+- Returns: none (implicit).
+- Side effects: adds to actor lists.
+
+#### datum/SkillEngine/proc/removeActor
+- Signature: `datum/SkillEngine/proc/removeActor(datum/SkillActor/actor)`
+- Inputs: datum/SkillActor/actor
+- Purpose: Remove an actor from the engine.
+- Returns: none (implicit).
+- Side effects: removes from actor lists.
+
+#### datum/SkillEngine/proc/tickActors
+- Signature: `datum/SkillEngine/proc/tickActors()`
+- Inputs: None
+- Purpose: Tick all active actors and cleanup completed ones.
+- Returns: none (implicit).
+- Side effects: mutates actor lists.
+
+### src/Code/Application/Combat/SkillActors.dm
+
+#### datum/SkillActorRegistry/proc/register
+- Signature: `datum/SkillActorRegistry/proc/register(datum/SkillActor/actor)`
+- Inputs: datum/SkillActor/actor
+- Purpose: Register an actor globally.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillActorRegistry/proc/unregister
+- Signature: `datum/SkillActorRegistry/proc/unregister(datum/SkillActor/actor)`
+- Inputs: datum/SkillActor/actor
+- Purpose: Unregister an actor globally.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillActor/proc/tick
+- Signature: `datum/SkillActor/proc/tick(delta)`
+- Inputs: delta
+- Purpose: Update an actor for one engine tick.
+- Returns: truthy when still active.
+- Side effects: actor-specific.
+
+#### datum/SkillActor/proc/cleanup
+- Signature: `datum/SkillActor/proc/cleanup()`
+- Inputs: None
+- Purpose: Cleanup after actor removal.
+- Returns: none (implicit).
+- Side effects: actor-specific.
+#### datum/SkillEngine/proc/registerLegacySkills
+- Signature: `datum/SkillEngine/proc/registerLegacySkills()`
+- Inputs: None
+- Purpose: Register legacy skill objects into the registry.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillEngine/proc/resolveCategory
+- Signature: `datum/SkillEngine/proc/resolveCategory(path, hotbar_type)`
+- Inputs: path, hotbar_type
+- Purpose: Resolve the category for a skill type.
+- Returns: category string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/getDefinitionForObj
+- Signature: `datum/SkillEngine/proc/getDefinitionForObj(obj/skill_obj)`
+- Inputs: obj/skill_obj
+- Purpose: Fetch a registered skill definition by object type.
+- Returns: datum/SkillDefinition or null.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControllerType
+- Signature: `datum/SkillEngine/proc/resolveControllerType(path, category)`
+- Inputs: path, category
+- Purpose: Resolve controller type for a category.
+- Returns: controller string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveHomingMode
+- Signature: `datum/SkillEngine/proc/resolveHomingMode(path, category)`
+- Inputs: path, category
+- Purpose: Resolve homing mode for a category.
+- Returns: homing mode string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveHomingMod
+- Signature: `datum/SkillEngine/proc/resolveHomingMod(path)`
+- Inputs: path
+- Purpose: Resolve homing modifier for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlRange
+- Signature: `datum/SkillEngine/proc/resolveControlRange(path, category)`
+- Inputs: path, category
+- Purpose: Resolve control range for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlBumps
+- Signature: `datum/SkillEngine/proc/resolveControlBumps(path, category)`
+- Inputs: path, category
+- Purpose: Resolve allowed bump count for guided control.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlDelay
+- Signature: `datum/SkillEngine/proc/resolveControlDelay(category)`
+- Inputs: category
+- Purpose: Resolve control loop delay for guided control.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlMaxSteps
+- Signature: `datum/SkillEngine/proc/resolveControlMaxSteps(path, category)`
+- Inputs: path, category
+- Purpose: Resolve guided controller max steps for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlAvoidOwner
+- Signature: `datum/SkillEngine/proc/resolveControlAvoidOwner(path, category)`
+- Inputs: path, category
+- Purpose: Resolve whether guided control should avoid the owner.
+- Returns: number (0/1).
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlAvoidOwnerChance
+- Signature: `datum/SkillEngine/proc/resolveControlAvoidOwnerChance(path, category)`
+- Inputs: path, category
+- Purpose: Resolve chance for owner-avoid steering.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlStopOnDeflect
+- Signature: `datum/SkillEngine/proc/resolveControlStopOnDeflect(path, category)`
+- Inputs: path, category
+- Purpose: Resolve whether guided control stops on deflect.
+- Returns: number (0/1).
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/applyHomingSettings
+- Signature: `datum/SkillEngine/proc/applyHomingSettings(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/skill_obj)`
+- Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/skill_obj
+- Purpose: Apply homing settings from a skill definition to a blast.
+- Returns: none (implicit).
+- Side effects: mutates blast homing values.
+
+#### datum/SkillEngine/proc/controlBlast
+- Signature: `datum/SkillEngine/proc/controlBlast(mob/user, obj/Blast/blast, obj/skill_obj, datum/SkillDefinition/def)`
+- Inputs: mob/user, obj/Blast/blast, obj/skill_obj, datum/SkillDefinition/def
+- Purpose: Execute a controller for a guided blast.
+- Returns: 1 when handled, else 0.
+- Side effects: steps blast movement and may call walk().
+
+#### datum/SkillEngine/proc/castSkill
+- Signature: `datum/SkillEngine/proc/castSkill(mob/user, obj/skill_obj)`
+- Inputs: mob/user, obj/skill_obj
+- Purpose: Route skill activation through the engine.
+- Returns: 1 when handled, else 0.
+- Side effects: consumes resources and spawns projectiles.
+
+#### datum/SkillEngine/proc/castSokidan
+- Signature: `datum/SkillEngine/proc/castSokidan(mob/user, obj/skill_obj)`
+- Inputs: mob/user, obj/skill_obj
+- Purpose: Execute Sokidan using engine-owned behavior.
+- Returns: 1 on success, else 0.
+- Side effects: spawns guided blast and updates cooldowns.
+
+#### datum/SkillEngine/proc/castKienzan
+- Signature: `datum/SkillEngine/proc/castKienzan(mob/user, obj/skill_obj)`
+- Inputs: mob/user, obj/skill_obj
+- Purpose: Execute Kienzan using engine-owned behavior.
+- Returns: 1 on success, else 0.
+- Side effects: spawns guided blast and handles control loop.
+
+#### datum/SkillEngine/proc/isBeamSkill
+- Signature: `datum/SkillEngine/proc/isBeamSkill(path)`
+- Inputs: path
+- Purpose: Identify beam skill types for routing.
+- Returns: 1 when beam type, else 0.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/castBeam
+- Signature: `datum/SkillEngine/proc/castBeam(mob/user, obj/Attacks/skill_obj)`
+- Inputs: mob/user, obj/Attacks/skill_obj
+- Purpose: Execute beam charge/stream/stop flow via engine.
+- Returns: 1 on success, else 0.
+- Side effects: drains Ki and spawns beam segments.
+
+#### datum/SkillEngine/proc/castBlast
+- Signature: `datum/SkillEngine/proc/castBlast(mob/user, obj/Attacks/Blast/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Blast/skill_obj
+- Purpose: Fire basic blast patterns using engine logic.
+- Returns: 1 on success, else 0.
+- Side effects: drains Ki, spawns blasts, updates refire.
+
+#### datum/SkillEngine/proc/castBigBang
+- Signature: `datum/SkillEngine/proc/castBigBang(mob/user, obj/Attacks/Big_Bang_Attack/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Big_Bang_Attack/skill_obj
+- Purpose: Charge and fire Big Bang Attack.
+- Returns: 1 on success, else 0.
+- Side effects: spawns blast, plays VFX/SFX.
+
+#### datum/SkillEngine/proc/castCharge
+- Signature: `datum/SkillEngine/proc/castCharge(mob/user, obj/Attacks/Charge/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Charge/skill_obj
+- Purpose: Charge and fire Charge blast.
+- Returns: 1 on success, else 0.
+- Side effects: spawns blast, plays VFX/SFX.
+
+#### datum/SkillEngine/proc/castCyberCharge
+- Signature: `datum/SkillEngine/proc/castCyberCharge(mob/user, obj/Attacks/Cyber_Charge/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Cyber_Charge/skill_obj
+- Purpose: Execute Cyber Charge attack.
+- Returns: 1 on success, else 0.
+- Side effects: spawns blast, plays VFX/SFX.
+
+#### datum/SkillEngine/proc/castMakosen
+- Signature: `datum/SkillEngine/proc/castMakosen(mob/user, obj/Attacks/Makosen/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Makosen/skill_obj
+- Purpose: Execute Makosen multi-shot burst.
+- Returns: 1 on success, else 0.
+- Side effects: spawns multiple blasts and drains Ki.
+
+#### datum/SkillEngine/proc/castScatterShot
+- Signature: `datum/SkillEngine/proc/castScatterShot(mob/user, obj/Attacks/Scatter_Shot/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Scatter_Shot/skill_obj
+- Purpose: Execute Scatter Shot ring-and-collide behavior.
+- Returns: 1 on success, else 0.
+- Side effects: spawns multiple homing blasts.
+
+#### datum/SkillEngine/proc/castAttackBarrier
+- Signature: `datum/SkillEngine/proc/castAttackBarrier(mob/user, obj/Attacks/Attack_Barrier/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Attack_Barrier/skill_obj
+- Purpose: Toggle Attack Barrier and emit barrier blasts.
+- Returns: 1 on success, else 0.
+- Side effects: spawns orbiting blasts and drains Ki.
+
+#### datum/SkillEngine/proc/castShockwave
+- Signature: `datum/SkillEngine/proc/castShockwave(mob/user, obj/Attacks/Shockwave/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Shockwave/skill_obj
+- Purpose: Emit shockwave knockback and damage.
+- Returns: 1 on success, else 0.
+- Side effects: applies AoE damage/knockback and VFX.
+
+#### datum/SkillEngine/proc/toggleExplosion
+- Signature: `datum/SkillEngine/proc/toggleExplosion(mob/user, obj/Attacks/Explosion/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Explosion/skill_obj
+- Purpose: Toggle Explosion click-cast mode.
+- Returns: 1 on success, else 0.
+- Side effects: updates skill state and notifies player.
+
+#### datum/SkillEngine/proc/handleExplosionClick
+- Signature: `datum/SkillEngine/proc/handleExplosionClick(mob/user, turf/target, obj/Attacks/Explosion/skill_obj)`
+- Inputs: mob/user, turf/target, obj/Attacks/Explosion/skill_obj
+- Purpose: Resolve Explosion ground-click behavior.
+- Returns: 1 when explosion triggers, else 0.
+- Side effects: spawns VFX, damages mobs/objects, drains Ki.
+
+#### datum/SkillEngine/proc/castGenkiDama
+- Signature: `datum/SkillEngine/proc/castGenkiDama(mob/user, obj/Attacks/Genki_Dama/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Genki_Dama/skill_obj
+- Purpose: Execute Genki Dama family casting flow.
+- Returns: 1 on success, else 0.
+- Side effects: spawns and controls bomb blasts.
+
+#### datum/SkillEngine/proc/castKikoho
+- Signature: `datum/SkillEngine/proc/castKikoho(mob/user, obj/Attacks/Kikoho/skill_obj)`
+- Inputs: mob/user, obj/Attacks/Kikoho/skill_obj
+- Purpose: Execute Kikoho charge and hit logic.
+- Returns: 1 on success, else 0.
+- Side effects: applies damage, stun, and VFX.
+
+#### datum/SkillEngine/proc/castDashAttack
+- Signature: `datum/SkillEngine/proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)`
+- Inputs: mob/user, obj/Dash_Attack/skill_obj
+- Purpose: Execute Dash Attack rush behavior.
+- Returns: 1 on success, else 0.
+- Side effects: moves user, applies melee damage and knockback.
+
+#### datum/SkillEngine/proc/castWolfFangFist
+- Signature: `datum/SkillEngine/proc/castWolfFangFist(mob/user, obj/WolfFangFist/skill_obj)`
+- Inputs: mob/user, obj/WolfFangFist/skill_obj
+- Purpose: Execute Wolf Fang Fist lunge combo.
+- Returns: 1 on success, else 0.
+- Side effects: applies multi-hit melee damage and VFX.
+
+#### datum/SkillEngine/proc/castDropkick
+- Signature: `datum/SkillEngine/proc/castDropkick(mob/user, obj/Dropkick/skill_obj)`
+- Inputs: mob/user, obj/Dropkick/skill_obj
+- Purpose: Execute Dropkick lunge attack.
+- Returns: 1 on success, else 0.
+- Side effects: applies heavy melee damage and stun.
+
+#### datum/SkillEngine/proc/castShield
+- Signature: `datum/SkillEngine/proc/castShield(mob/user, obj/Shield/skill_obj)`
+- Inputs: mob/user, obj/Shield/skill_obj
+- Purpose: Toggle the ki shield on/off via engine.
+- Returns: 1 on success, else 0.
+- Side effects: mutates shield state and overlays.
+
+#### datum/SkillEngine/proc/castSolarFlare
+- Signature: `datum/SkillEngine/proc/castSolarFlare(mob/user, obj/Taiyoken/skill_obj)`
+- Inputs: mob/user, obj/Taiyoken/skill_obj
+- Purpose: Execute Solar Flare effect sequence.
+- Returns: 1 on success, else 0.
+- Side effects: blinds nearby clients and plays VFX.
+
+#### datum/SkillEngine/proc/castFinalExplosion
+- Signature: `datum/SkillEngine/proc/castFinalExplosion(mob/user, obj/Final_Explosion/skill_obj)`
+- Inputs: mob/user, obj/Final_Explosion/skill_obj
+- Purpose: Toggle/execute Final Explosion charge and detonate.
+- Returns: 1 on success, else 0.
+- Side effects: drains energy, spawns VFX, deals AoE damage.
+
+### src/Code/Application/Combat/SkillControllers.dm
+
+#### datum/SkillControllerRegistry/proc/register
+- Signature: `datum/SkillControllerRegistry/proc/register(datum/SkillController/controller)`
+- Inputs: datum/SkillController/controller
+- Purpose: Register a controller by id.
+- Returns: none (implicit).
+- Side effects: mutates registry state.
+
+#### datum/SkillControllerRegistry/proc/get
+- Signature: `datum/SkillControllerRegistry/proc/get(id)`
+- Inputs: id
+- Purpose: Fetch a controller by id.
+- Returns: datum/SkillController or null.
+- Side effects: none expected.
+
+#### datum/SkillController/proc/execute
+- Signature: `datum/SkillController/proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)`
+- Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill
+- Purpose: Execute controller-specific movement logic.
+- Returns: none (implicit).
+- Side effects: varies by controller.
+
+#### datum/SkillController/GuidedBlast/proc/execute
+- Signature: `datum/SkillController/GuidedBlast/proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)`
+- Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill
+- Purpose: Apply Sokidan-style guided control to a blast.
+- Returns: none (implicit).
+- Side effects: steps blast movement and may delete it.
+
+#### datum/SkillController/GuidedBomb/proc/execute
+- Signature: `datum/SkillController/GuidedBomb/proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)`
+- Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill
+- Purpose: Apply Genki Dama-style guided control to a blast.
+- Returns: none (implicit).
+- Side effects: steps blast movement and may force detonation.
+
+#### datum/SkillEngine/proc/resolveBehavior
+- Signature: `datum/SkillEngine/proc/resolveBehavior(category)`
+- Inputs: category
+- Purpose: Resolve behavior type for a category.
+- Returns: behavior string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveMovement
+- Signature: `datum/SkillEngine/proc/resolveMovement(category)`
+- Inputs: category
+- Purpose: Resolve movement type for a category.
+- Returns: movement string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveSizeClass
+- Signature: `datum/SkillEngine/proc/resolveSizeClass(category)`
+- Inputs: category
+- Purpose: Resolve size class for a category.
+- Returns: size string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveControlMode
+- Signature: `datum/SkillEngine/proc/resolveControlMode(category)`
+- Inputs: category
+- Purpose: Resolve control mode for a category.
+- Returns: control string.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveIcon
+- Signature: `datum/SkillEngine/proc/resolveIcon(path)`
+- Inputs: path
+- Purpose: Resolve the skill icon asset for a type.
+- Returns: icon reference or null.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveDamage
+- Signature: `datum/SkillEngine/proc/resolveDamage(path)`
+- Inputs: path
+- Purpose: Resolve base damage for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveDamageAdd
+- Signature: `datum/SkillEngine/proc/resolveDamageAdd(path)`
+- Inputs: path
+- Purpose: Resolve per-charge damage add for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveMaxCharge
+- Signature: `datum/SkillEngine/proc/resolveMaxCharge(path)`
+- Inputs: path
+- Purpose: Resolve max charge sizing/value for a skill type.
+- Returns: number.
+- Side effects: none expected.
+
+#### datum/SkillEngine/proc/resolveChargeTime
+- Signature: `datum/SkillEngine/proc/resolveChargeTime(path)`
+- Inputs: path
+- Purpose: Resolve charge time for a skill type.
+- Returns: number.
+- Side effects: none expected.
 
 ### src/Code/Combat/BleedDamage.dm
 
