@@ -9,7 +9,7 @@ mob/proc/IsAttackMovementLocked()
 	if(dash_attacking) return 1
 	if(attack_barrier_obj && attack_barrier_obj.Firing_Attack_Barrier) return 1
 	for(var/obj/Attacks/A in ki_attacks)
-		if(A.charging || A.streaming || A.Using) return 1
+		if(A.charging || A.streaming || A.Using) return A
 	return 0
 
 mob/proc/Can_Move()
@@ -23,7 +23,13 @@ mob/proc/Allow_Move(D)
 	// fallback to existing behavior if service missing
 	Debug("Moving: Step 1.")
 	if(_allow_move_prechecks(D)) return
-	if(!Can_Move()) return
+	if(!Can_Move())
+		// If movement is blocked, check if we can still aim (turn) for specific attacks
+		var/obj/Attacks/A = IsAttackMovementLocked()
+		if(A && istype(A))
+			if(A.streaming || istype(A, /obj/Attacks/Big_Bang_Attack) || istype(A, /obj/Attacks/Makosen))
+				dir = D // Allow turning
+		return
 	if(icon_state=="KB"||KB||!move) return
 	if(_allow_move_handle_kiting_and_finalize(D)) return
 

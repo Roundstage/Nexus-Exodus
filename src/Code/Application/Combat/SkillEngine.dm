@@ -447,6 +447,9 @@ datum/SkillEngine
 			if(prob(100)) a.Explosive = skill_obj.Explosive
 			a.dir = user.dir
 			a.SafeTeleport(user.loc)
+			// Apply character's pixel offset for vectorial positioning
+			a.step_x = user.step_x
+			a.step_y = user.step_y
 
 			var/turf/t = get_step(a.loc, a.dir)
 			if(!t || t.density) a.vector_speed = 32
@@ -499,6 +502,9 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			a.dir = user.dir
 			a.loc = user.loc
+			// Apply character's pixel offset for vectorial positioning
+			a.step_x = user.step_x
+			a.step_y = user.step_y
 			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 27, dist = 60, randomAngle = 0)
 		user.attacking = 0
 		skill_obj.charging = 0
@@ -530,6 +536,9 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			a.dir = user.dir
 			a.loc = user.loc
+			// Apply character's pixel offset for vectorial positioning
+			a.step_x = user.step_x
+			a.step_y = user.step_y
 			a.BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 20, dist = 47, randomAngle = 0)
 		user.attacking = 0
 		user.moving_charge = 0
@@ -558,6 +567,9 @@ datum/SkillEngine
 			a.vector_speed = 32
 			a.dir = user.dir
 			a.loc = user.loc
+			// Apply character's pixel offset for vectorial positioning
+			a.step_x = user.step_x
+			a.step_y = user.step_y
 			if(a) a.blast_walk(world.tick_lag)
 		user.attacking = 0
 		skill_obj.charging = 0
@@ -599,6 +611,9 @@ datum/SkillEngine
 				a.Distance = 35
 				a.is_makosen = 1
 				a.loc = pick(Get_step(user, user.dir), Get_step(user, turn(user.dir, 45)), Get_step(user, turn(user.dir, -45)))
+				// Apply character's pixel offset for vectorial positioning
+				a.step_x = user.step_x
+				a.step_y = user.step_y
 				var/turf/t = a.loc
 				if(t && isturf(t) && t.Owner && t.Health > a.BP) del(a)
 				if(a) a.Beam()
@@ -650,6 +665,9 @@ datum/SkillEngine
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.loc = user.loc
+			// Apply character's pixel offset for vectorial positioning
+			a.step_x = user.step_x
+			a.step_y = user.step_y
 			var/turf/spot
 			var/list/spots
 			for(var/turf/t in Circle(9, target)) if(!t.density)
@@ -726,6 +744,9 @@ datum/SkillEngine
 				a.from_attack = skill_obj
 				a.dir = user.dir
 				a.loc = user.loc
+				// Apply character's pixel offset for vectorial positioning
+				a.step_x = user.step_x
+				a.step_y = user.step_y
 				a.attack_barrier_loop()
 				sleep(TickMult(1 * user.Speed_delay_mult(severity = 0.3)))
 		user.attacking = 0
