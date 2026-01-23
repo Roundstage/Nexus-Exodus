@@ -32,8 +32,13 @@ atom/movable/proc/MovementCrossDecision(atom/movable/a)
 		var/obj/src_o = src
 		if(ismob(a))
 			var/mob/m = a
-			if(!istype(src_o, /obj/Turfs/Door))
-				if(m.Flying || m.lunge_attacking || m.evading) return 1
+			// Flying characters can pass all objects except doors
+			if(m.Flying || m.lunge_attacking || m.evading)
+				if(!istype(src_o, /obj/Turfs/Door))
+					return 1
+			// Regular characters can pass small objects (not Trees, Big_Rock, Turfs, or Doors)
+			else if(!istype(src_o, /obj/Trees) && !istype(src_o, /obj/Big_Rock) && !istype(src_o, /obj/Turfs))
+				return 1
 
 	if(istype(a,/obj/Blast))
 		var/obj/Blast/b = a
