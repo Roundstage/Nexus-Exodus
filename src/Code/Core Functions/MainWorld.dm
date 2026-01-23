@@ -14,7 +14,7 @@ world
 	hub_password 		= SECRETS_HUB_PASSWORD
 	turf = /turf/Other/Blank
 	cache_lifespan = 3
-	loop_checks = 0
+	loop_checks = 1
 	name = "Game"
 	status = "Nameless Server"
 	New()

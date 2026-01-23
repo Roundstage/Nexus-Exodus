@@ -210,3 +210,11 @@ mob/proc/move_loop()
 		if(west==2) west=0
 
 	move_looping=0
+
+mob/proc/StopMovement()
+	north = 0
+	south = 0
+	east = 0
+	west = 0
+	keys_down = new
+	move_looping = 0

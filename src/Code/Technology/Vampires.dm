@@ -220,7 +220,7 @@ mob/proc/Vampire_Revert() if(Vampire)
 		del(V)
 	src<<"You are no longer a vampire"
 
-mob/proc/burnOnDay() if (Vampire)
+mob/proc/burnOnDay() //if (Vampire)
 	
 
 mob/proc/Vampire_Infection_Rise()

@@ -101,12 +101,10 @@ mob/proc/Attack_Target(mob/P)
 	while(src && Target && !Target.KO && getdist(src,Target) <= max_range && viewable(a = src, b = Target, max_dist = max_range, seePastDenseObjs = 0))
 		if(!z) break
 		if(!KB)
-			var/pixDist = bounds_dist(src, Target)
-			//if(pixDist > 0)
 			if(1)
-				var/success
+				//var/success
 				//success = step_towards(src, Target)
-				success = vector_step_toward(src, Target)
+				vector_step_toward(src, Target)
 				//some basic tile snapping to enhance the unreliable other tile snapping systems
 				//if(get_dir(src, Target) in list(EAST,WEST)) step_y -= Clamp(6, 0, step_y)
 				//if(get_dir(src, Target) in list(NORTH,SOUTH)) step_x = Clamp(6, 0, step_x)
