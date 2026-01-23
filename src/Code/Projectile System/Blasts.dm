@@ -762,6 +762,7 @@ obj/Attacks/Kienzan
 
 	verb/Kienzan()
 		set category="Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Spin_Blast
@@ -834,6 +835,7 @@ obj/Attacks/Makosen
 
 	verb/Makosen()
 		set category="Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Time_Freeze_Energy
@@ -1127,6 +1129,7 @@ obj/Attacks/Sokidan
 
 	verb/Sokidan()
 		set category="Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Genocide

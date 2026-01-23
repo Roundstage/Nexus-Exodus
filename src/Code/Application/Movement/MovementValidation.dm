@@ -5,8 +5,16 @@ mob/var/tmp
 	last_directional_key_pressed
 	last_cardinal_change = 0
 
+mob/proc/IsAttackMovementLocked()
+	if(dash_attacking) return 1
+	if(attack_barrier_obj && attack_barrier_obj.Firing_Attack_Barrier) return 1
+	for(var/obj/Attacks/A in ki_attacks)
+		if(A.charging || A.streaming || A.Using) return 1
+	return 0
+
 mob/proc/Can_Move()
 	if(KB || !move || Disabled()) return
+	if(IsAttackMovementLocked()) return 0
 	else return 1
 
 mob/proc/Allow_Move(D)

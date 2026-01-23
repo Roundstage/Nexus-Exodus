@@ -6,6 +6,7 @@ datum/MovementService
 		if(!m) return
 		Debug("MovementService: AllowMove")
 		// reuse existing mob helpers where appropriate to keep refactor incremental
+		if(m.IsAttackMovementLocked()) return
 		if(m._allow_move_prechecks(D)) return
 		if(!m.Can_Move()) return
 		if(m.icon_state == "KB" || m.KB || !m.move) return
