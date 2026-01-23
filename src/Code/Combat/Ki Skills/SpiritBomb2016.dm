@@ -39,6 +39,7 @@ obj/Attacks/Genki_Dama
 	verb/Genki_Dama()
 		set category="Skills"
 		set name = "Omega Bomb"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 

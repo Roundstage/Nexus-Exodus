@@ -46,4 +46,5 @@ obj/Attacks/Genki_Dama/Death_Ball
 
 	verb/Death_Ball()
 		set category = "Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)

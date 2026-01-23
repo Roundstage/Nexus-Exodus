@@ -179,6 +179,7 @@ mob/proc/BeamCharge(obj/Attacks/A)
 	charging_beam=1
 	A.charging=1
 	bp_percent_before_charging=BPpcnt
+	StopMovement()
 	attacking=2 //Was 3
 	current_beam=A
 	overlays.Remove(BlastCharge,BlastCharge)

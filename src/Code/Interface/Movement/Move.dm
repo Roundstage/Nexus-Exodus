@@ -1,4 +1,5 @@
 mob/Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
+	if(!KB && IsAttackMovementLocked()) return 0 //Robust movement lock
 	//return ..()
 
 	/*

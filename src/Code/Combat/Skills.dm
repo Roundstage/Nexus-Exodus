@@ -212,6 +212,7 @@ obj/Dash_Attack
 
 	verb/Dash_Attack()
 		set category="Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp

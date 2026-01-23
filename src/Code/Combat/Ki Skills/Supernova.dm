@@ -40,4 +40,5 @@ obj/Attacks/Genki_Dama/Supernova
 
 	verb/Supernova()
 		//set category = "Skills"
+		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
