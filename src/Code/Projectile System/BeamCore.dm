@@ -26,7 +26,7 @@ obj/proc/beam_move_loop(mob/m)
 	if(m.beamMoveLoop) return
 	m.beamMoveLoop = 1
 	sleep(beam_delay)
-	var/operation = 0;
+	//var/operation = 0;
 	while(src && m)
 		if(m.beaming && !beam_objects.len)
 			break

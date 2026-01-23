@@ -473,7 +473,7 @@ mob/Admin3/verb/SetDragonBallWishCooldown()
 	set category = "Admin"
 	src << "This can take up to 1 minute to take effect because Wish Orbs activation is on a loop"
 	var/cooldown = input(src,"Enter the number of seconds between Wish Orbs","Options", dragon_ball_wish_cooldown) as num
-	cooldown * 1000
+	cooldown *= 1000
 	src << "Dragon Ball Wish cooldown set to [cooldown] seconds"
 	dragon_ball_wish_cooldown = cooldown
 
@@ -1014,7 +1014,7 @@ proc/Average_BP_of_Players(N=0)
 
 mob/Admin4/verb/RedoStatsForEveryone()
 	for(var/mob/P in players)
-		var/confirmation = input("You need to redo your status due to an admin change.")
+		//var/confirmation = input("You need to redo your status due to an admin change.")
 		P.Redo_Stats(usr)
 
 mob/verb/View_Server_Details()
@@ -2713,7 +2713,7 @@ proc/Commas(N, should_round = TRUE)
 		N=num2text(round(N,1),20)
 	else
 		N=num2text(N,20)
-	for(var/i=lentext(N)-2,i>1,i-=3) N="[copytext(N,1,i)]'[copytext(N,i)]"
+	for(var/i=length(N)-2,i>1,i-=3) N="[copytext(N,1,i)]'[copytext(N,i)]"
 	return N
 
 proc/Direction(A) switch(A)

@@ -24,7 +24,7 @@ mob
 			var/XXX=file("data/Logs/[path]/[ckey]Current.html")
 			if(fexists(XXX))
 				var/list/File_List = list("Cancel")
-				var/last_line = ""
+				//var/last_line = ""
 
 				for(var/File in flist("data/Logs/[path]/[ckey]"))
 					File_List+=File

@@ -65,7 +65,7 @@ proc/Replace_Text(Text,Old_Word,New_Word)
 	var/list/L=Text_2_List(Text,Old_Word);return List_2_Text(L,New_Word)
 
 proc/Text_2_List(text,sep)
-	var/textlen=lentext(text);var/seplen=lentext(sep);var/list/L=new;var/searchpos=1;var/findpos=1;var/buggytext
+	var/textlen=length(text);var/seplen=length(sep);var/list/L=new;var/searchpos=1;var/findpos=1;var/buggytext
 	while(1)
 		findpos=findtext(text,sep,searchpos,0);buggytext=copytext(text,searchpos,findpos);L+="[buggytext]"
 		searchpos=findpos+seplen

@@ -716,7 +716,7 @@ mob/proc/Majin()
 	med_mod=1
 	zenkai_mod=1
 	if(START_WITH_RACIAL_SKILLS)
-	contents.Add(new/obj/Attacks/Genki_Dama/Death_Ball,new/obj/Attacks/Spin_Blast,new/obj/Attacks/Blast,new/obj/Attacks/Charge,\
+		contents.Add(new/obj/Attacks/Genki_Dama/Death_Ball,new/obj/Attacks/Spin_Blast,new/obj/Attacks/Blast,new/obj/Attacks/Charge,\
 	new/obj/Attacks/Beam,new/obj/Fly,new/obj/Absorb,new/obj/Shadow_Spar)
 	base_bp=1500
 	gravity_mastered=20

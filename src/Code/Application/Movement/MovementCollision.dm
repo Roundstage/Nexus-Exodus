@@ -115,10 +115,6 @@ mob/proc/MobCross(mob/A)
 
 	BumpKnockbackDestroyObjectCheck(A)
 
-	if(A && last_bumped_obj == A && A != src && A.density)
-		if(!ismob(A) && !istype(A,/obj/Blast))
-			if(!(locate(/mob) in A.loc))
-				SideStep(A)
 
 	if(A && A.type == /obj/King_of_Braal_Throne)
 		BumpKingBraalThrone()

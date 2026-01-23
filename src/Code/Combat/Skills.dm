@@ -786,7 +786,7 @@ mob/proc/Soul_Attack(obj/Soul_Attack/Soul_Attack, range_y, range_x, duration)
 	var/z = player.z
 
 	// get direction player is facing
-	var/direction = player.dir
+	//var/direction = player.dir
 
 	var/list/adjascent_tiles = list()
 	// get adjascent tiles while considering direction
@@ -1082,8 +1082,8 @@ mob/proc/Give_Power(obj/Give_Power/G)
 		if(!power_given) Give_power_refill_loop()
 		power_given++
 
-		var/give_power_modifier = 2
-		var/waiting_period = 0
+		//var/give_power_modifier = 2
+		//var/waiting_period = 0
 
 		if(M.KO && M.Health>=100)
 			M.set_healing_modifier(0.5, "being given power", victim = M)
@@ -1855,7 +1855,7 @@ obj/Teleport
 
 		if(!T) return
 
-		var/ktDrain = 4000
+		//var/ktDrain = 4000
 		//if(usr.Ki < usr.max_ki * 0.999 && usr.Ki < ktDrain) return
 		//usr.Ki -= ktDrain
 

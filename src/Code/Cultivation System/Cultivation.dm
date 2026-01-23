@@ -28,7 +28,7 @@ mob
         Stat_Cultivation()
             var/mob/player = src
             if(is_cultivator(player))
-                if(statpanel("Cultivation"))
+                statpanel("Cultivation")
                 
                 var/CultivationRealm/Realm = player.CurrentRealm
                 var/CultivationStage/stage = Realm.Stage
