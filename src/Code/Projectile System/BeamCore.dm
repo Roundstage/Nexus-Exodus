@@ -149,6 +149,9 @@ mob/proc/BeamStreamLoop(obj/Attacks/A)
 			B.Update_transform_size(get_beam_size())
 			A.beam_delay = A.MoveDelay
 			B.SafeTeleport(beam_spawn)
+			// Apply character's pixel offset to beam for vectorial positioning
+			B.step_x = step_x
+			B.step_y = step_y
 			A.beam_move_loop(src)
 
 			//to prevent the bug where firing point blank does nothing to a mob in front of you
