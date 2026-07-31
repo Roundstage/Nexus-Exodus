@@ -21,6 +21,12 @@ datum/SkillController
 datum/SkillController/GuidedBlast
 	id = SKILL_CONTROLLER_GUIDED_BLAST
 
+	proc/getControlDirection(mob/user)
+		if(!user) return SOUTH
+		if(user.last_direction_pressed in list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))
+			return user.last_direction_pressed
+		return user.dir
+
 	proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)
 		if(!user || !blast) return
 		var/control_range = def ? def.control_range : 0
@@ -43,9 +49,10 @@ datum/SkillController/GuidedBlast
 			if(stop_on_deflect && blast.deflected) break
 			if(source_skill && ("Using" in source_skill.vars))
 				source_skill.vars["Using"] = 1
-			var/turf/next_step = Get_step(blast, user.dir)
+			var/control_dir = getControlDirection(user)
+			var/turf/next_step = Get_step(blast, control_dir)
 			if(blast.Owner && next_step && (blast.Owner in next_step) && (blast.owner_immune || (avoid_owner && prob(avoid_owner_chance))))
-				step(blast, pick(turn(user.dir,45),turn(user.dir,-45)), move_speed)
+				step(blast, pick(turn(control_dir,45),turn(control_dir,-45)), move_speed)
 			else if(allow_bump && next_step && (locate(/mob) in next_step))
 				for(var/mob/m in next_step)
 					if(m == blast.Owner && (blast.owner_immune || prob(avoid_owner_chance)))
@@ -56,10 +63,10 @@ datum/SkillController/GuidedBlast
 						if(prob(50)) bump_dir = get_dir(m, user)
 						else bump_dir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
 						blast.Bump(m, override_delete = bumps, override_dir = bump_dir)
-					if(blast && m) step(blast, get_dir(m, blast), move_speed)
+					if(blast && m) step(blast, control_dir, move_speed)
 					bumps--
 			else
-				step(blast, user.last_direction_pressed, move_speed)
+				step(blast, control_dir, move_speed)
 			if(blast) blast.density = 1
 			if(user.KO && blast) del(blast)
 			sleep(loop_delay)

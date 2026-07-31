@@ -1,7 +1,14 @@
 var/item_tile_limit = 6 //how many science items you can lay on 1 tile to prevent the crashing bug
 
 mob/proc/TryCreateScienceItem(obj/A)
-	if(A in global_science_items)
+	if(!A || !A.referenceObject || !A.Cost) return
+	syncTechnologyProgression(silent = TRUE)
+	if(!canAccessTechnology(A))
+		var/required_level = A ? A.science_level : 0
+		if(!required_level) required_level = 1
+		src << "You need Technology Level [required_level][A && A.science_path ? " in [A.science_path]" : ""] to create [A]."
+		return
+	if(canAccessTechnology(A))
 		if(KO) return
 
 		var/turf/base_loc = base_loc()
@@ -37,6 +44,7 @@ mob/proc/TryCreateScienceItem(obj/A)
 			if(O)
 				O.Cost=Item_cost(src,A)
 				O.Builder=key
+				gainTechnologyExperience(max(1, A.science_level), "crafting [A]", announce = TRUE)
 
 				if(istype(O,/obj/Ships/Ship)&&Race=="Namekian")
 					O.icon='PuranShip.dmi'

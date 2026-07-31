@@ -55,6 +55,7 @@ mob/proc/Warp_To(turf/B,mob/M) if(B)
 
 
 mob/proc/cant_blast(ignore_attack_check)
+	if(rp_mode) return 1
 	if(attacking == DRAGON_RUSH) return 1
 	if(stun_level && stun_stops_movement) return 1
 	if(!ignore_attack_check && attacking > 1) return 1 //aka: not a melee attack. melee no longer disrupts being able to blast at any time
@@ -83,6 +84,7 @@ mob/proc/can_melee(trying_to_power_attack)
 
 //this checks if anything OTHER than you attacking is stopping you from being able to melee
 mob/proc/CanMeleeFromOtherCauses()
+	if(rp_mode) return
 	if(stun_level && stun_stops_movement) return
 	if(blocking || evading || Peebagging() || Shadow_Sparring || KO || grabbedObject || Final_Realm()) return
 	if(ki_shield_on()) return
@@ -168,6 +170,7 @@ mob/proc/KnockbackNoWait(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immu
 
 mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,from_lunge, omega_kb) //A is the Attacker who knockbacked src
 
+	if(rp_mode) return
 	if(is_saitama) return
 	if(!z) return //prevent body swap bug knocking them out of the body
 	if(Safezone||KB||knockback_immune) return
@@ -297,8 +300,23 @@ mob/proc/can_anger()
 	if(jirenAlien && !jirenAlienCanAnger) return
 	if(Giving_Power) return
 	if(cant_anger_until_time > world.time) return
-	if(anger<=100)
+	if(anger < max_anger)
 		return 1
+
+mob/proc/gainAngerFromDamage(applied_damage)
+	if(applied_damage <= 0 || !can_anger()) return 0
+	var/anger_range = max_anger - 100
+	if(anger_range <= 0) return 0
+	var/before = anger
+	var/gain_mult = 1 + getMilestoneRank("controlled_fury") * 0.15
+	anger += applied_damage * (anger_range / 100) * gain_mult
+	anger = Clamp(anger, 100, max_anger)
+	if(anger > before)
+		last_anger = world.time
+		UpdateBP()
+		if(before <= 100 && anger > 100)
+			player_view(15, src) << "<font color=red>[src]'s anger begins to rise!"
+	return anger - before
 
 mob/var/list/anger_reasons=new
 
@@ -321,8 +339,6 @@ mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())
 	if(ismystic) anger_boost *= 0.85
 	anger += anger_boost
 	if(anger<100) anger=100
-	if(Health<100) Health=100
-	if(Ki<max_ki) Ki=max_ki
 	UpdateBP()
 	if(ssj_possible) if(Race in list("Saiyan","Half Saiyan"))
 		//no more randomness you either can get it or you cant

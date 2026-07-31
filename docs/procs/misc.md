@@ -13,7 +13,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Misc/Testing.dm`
 - `src/Code/Misc/Trolls.dm`
 - `src/Code/Misc/Trolls2.dm`
-- `src/Code/Misc/Unsorted.dm`
 - `src/Code/Misc/Unsorted2.dm`
 - `src/Code/Misc/Utilities.dm`
 
@@ -758,7 +757,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: boolean flag.
 - Side effects: none expected.
 
-### src/Code/Misc/Unsorted.dm
+### Procedures relocated from the former catch-all module
+
+These legacy proc summaries are retained for reference. Their implementations now live in the Admin, Combat, Communication, CoreFunctions, PlayerMechanics, Technology, and WorldMechanics modules listed in the subsystem documentation.
 
 #### mob/verb/Stream_Music_to_Everyone_Nearby
 - Signature: `mob/verb/Stream_Music_to_Everyone_Nearby()`

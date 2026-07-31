@@ -1,7 +1,9 @@
 # Combat
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Combat resolution, skill routing, damage, and attack-specific behavior.
+
+Guided blasts now use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
@@ -24,6 +26,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Combat/KiSkills/Supernova.dm`
 - `src/Code/Combat/Math/CombatMath.dm`
 - `src/Code/Combat/Melee.dm`
+- `src/Code/Combat/Stun.dm`
 - `src/Code/Combat/Melee/DragonRush.dm`
 - `src/Code/Combat/Melee/PressurePunch.dm`
 - `src/Code/Combat/Melee/RoundhouseKick.dm`
@@ -445,6 +448,13 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Apply Sokidan-style guided control using the blast's vector speed and normalized Ki cadence.
 - Returns: none (implicit).
 - Side effects: steps blast movement and may delete it.
+
+#### datum/SkillController/GuidedBlast/proc/getControlDirection
+- Signature: `datum/SkillController/GuidedBlast/proc/getControlDirection(mob/user)`
+- Inputs: controlling mob.
+- Purpose: Resolve one valid eight-way direction shared by collision prediction and movement, with facing as fallback.
+- Returns: BYOND direction constant.
+- Side effects: none expected.
 
 #### datum/SkillController/GuidedBomb/proc/execute
 - Signature: `datum/SkillController/GuidedBomb/proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)`

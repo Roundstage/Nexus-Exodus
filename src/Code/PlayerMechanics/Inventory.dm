@@ -2957,7 +2957,7 @@ mob/proc/EatSensu(mob/user, obj/o)
 		user.increase_combat_ko(increase_reason, victim = user)
 	else
 		var/decrease_reason = "A Sensu Bean heals [user] completely!"
-		user.decrease_combat_ko(decrease_reason, KO_SYSTEM_UNCONSCIOUS_KO, victim = user)
+		user.restoreWillpower(user.getMaxWillpower(), decrease_reason)
 
 	user.FullHeal()
 	Stop_Powering_Up()

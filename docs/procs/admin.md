@@ -7,6 +7,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Admin/Admin.dm`
 - `src/Code/Admin/AdminV2.dm`
 - `src/Code/Admin/AdminVerbs.dm`
+- `src/Code/Admin/CombatTesting.dm`
 
 ## Proc Reference
 

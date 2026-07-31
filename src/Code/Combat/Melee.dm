@@ -82,6 +82,7 @@ mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 	return n
 
 mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
+	if(rp_mode) return 0
 	var/health_before = Health
 	if(grabbedObject && strangling && GrabAbsorber()) dmg *= 1.3 //take way more damage if busy grab absorbing someone's energy
 
@@ -99,8 +100,11 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
 	Health -= dmg
 	if(Health < health_before)
 		var/applied_damage = health_before - Health
+		gainAngerFromDamage(applied_damage)
 		showDamageIndicator(applied_damage)
 		updateOverheadHealthHud()
+		return applied_damage
+	return 0
 
 mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate
 	var/mob/m = grabber
@@ -1007,6 +1011,11 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	if(!target || getdist(src,target)>1)
 		Reset_melee()
 		return
+	if(ismob(target))
+		var/mob/melee_target = target
+		if(melee_target.rp_mode)
+			Reset_melee()
+			return
 
 	if(target==chaser)
 		last_damaged_chaser=0

@@ -1,7 +1,9 @@
 # Player Mechanics
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Player state, progression, roleplay combat, and character lifecycle mechanics.
+
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Anger now grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones and Technology Levels are persistent, player-driven progressions that migrate old saves lazily.
 
 ## Files
 - `src/Code/PlayerMechanics/Aging.dm`
@@ -19,16 +21,31 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/PlayerMechanics/GodKiTraining.dm`
 - `src/Code/PlayerMechanics/Grabbing.dm`
 - `src/Code/PlayerMechanics/Inventory.dm`
+- `src/Code/PlayerMechanics/ItemTracking.dm`
 - `src/Code/PlayerMechanics/Learn.dm`
+- `src/Code/PlayerMechanics/Marriage.dm`
+- `src/Code/PlayerMechanics/Milestones.dm`
 - `src/Code/PlayerMechanics/OldKoSystem.dm`
 - `src/Code/PlayerMechanics/Ranks.dm`
 - `src/Code/PlayerMechanics/Reincarnation.dm`
+- `src/Code/PlayerMechanics/RPCombat.dm`
 - `src/Code/PlayerMechanics/Teach.dm`
+- `src/Code/PlayerMechanics/TechnologyProgression.dm`
 - `src/Code/PlayerMechanics/Train.dm`
 - `src/Code/PlayerMechanics/Voting.dm`
 - `src/Code/PlayerMechanics/Zenkai.dm`
 
 ## Proc Reference
+
+### Roleplay combat and progression
+
+- `gainAngerFromDamage(applied_damage)` converts actual health loss into proportional Anger without healing.
+- `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, and displacement while active.
+- `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
+- `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
+- `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
+- `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
+- `refreshTechnologyUnlocks(announce)` grants science items allowed by level and selected path.
 
 ### src/Code/PlayerMechanics/Aging.dm
 

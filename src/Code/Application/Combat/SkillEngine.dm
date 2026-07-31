@@ -1282,7 +1282,7 @@ datum/SkillEngine
 		A.Piercer = 1
 		A.slice_attack = 1
 		A.setStats(user, Percent = skill_kienzan_damage_factor, Off_Mult = 15, Explosion = 0, \
-			max_damage_factor = skill_kienzan_damage_factor, owner_immunity = 1)
+			owner_immunity = 1)
 		A.from_attack = skill_obj
 		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1

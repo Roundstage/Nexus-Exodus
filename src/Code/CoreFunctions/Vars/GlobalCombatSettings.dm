@@ -137,6 +137,17 @@ var
 	skill_sokidan_damage_factor = 3.5
 	skill_sokidan_total_factor = 7
 	skill_kienzan_damage_factor = 6
+	skill_kienzan_pierce_decay = 0.5
+
+	// Roleplay combat and Willpower settings adapted from Roleplay Tenkaichi.
+	WILLPOWER_LETHAL_KO_DRAIN = 30
+	WILLPOWER_LETHAL_DURATION = 1200
+	WILLPOWER_CRITICAL_DURATION = 2400
+	WILLPOWER_FAILURE_RECOVERY = 10
+	WILLPOWER_RECOVERY_AMOUNT = 1
+	WILLPOWER_RECOVERY_INTERVAL = 300
+	WILLPOWER_EXTERNAL_DRAIN = 10
+	MILESTONE_STARTING_POINTS = 5
 
 	icer_recovery = 1.1 //was 1.2, but they wanted it off, meaning icer forms no longer lower recovery with each higher transformation
 

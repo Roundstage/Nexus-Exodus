@@ -5,6 +5,7 @@ Chat, OOC, LOOC, emotes, telepathy, and chat logging. Also includes spam control
 
 ## Files
 - `src/Code/Communication/Communication.dm`
+- `src/Code/Communication/MediaAndDescriptions.dm`
 
 ## Proc Reference
 
