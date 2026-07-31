@@ -11,6 +11,10 @@ proc/nexusSmokeAssert(condition, message)
 	if(!condition)
 		CRASH("Nexus smoke test failed: [message]")
 
+proc/nexusSmokeAssertNear(actual, expected, tolerance, message)
+	if(!isnum(actual) || abs(actual - expected) > tolerance)
+		CRASH("Nexus smoke test failed: [message] (expected [expected], received [actual])")
+
 proc/nexusSmokeStatAllocation(list/profile)
 	var/list/allocation = list()
 	var/list/caps = profile["caps"]
@@ -114,6 +118,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(wolf_fang_hit_damage_mult == 1 && wolf_fang_knockback_distance == 3, "Wolf Fang Fist combo tuning is invalid")
 	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.25, "Hundred Crack Fist remains an execution instead of a damage combo")
 	nexusSmokeAssert(base_melee_damage == 2.5 && combat_damage_bp_exponent == 0.5 && combat_damage_stat_exponent == 0.85, "central combat damage constants are invalid")
+	nexusSmokeAssert(skill_blast_total_factor == 4 && skill_big_bang_damage_factor == 22 && skill_charge_damage_factor == 4 && skill_cyber_charge_damage_factor == 2.5, "core projectile factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_makosen_damage_factor == 0.4 && skill_makosen_total_factor == 8 && skill_scatter_shot_damage_factor == 0.3 && skill_scatter_shot_total_factor == 18, "barrage factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_attack_barrier_damage_factor == 0.2 && skill_shockwave_damage_factor == 0.5 && skill_explosion_damage_factor == 3, "AoE factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_dash_attack_min_factor == 2 && skill_dash_attack_max_factor == 8 && skill_dash_attack_step_factor == 0.25, "Dash Attack factor curve diverged from the balance workbook")
+	nexusSmokeAssert(skill_dropkick_opening_factor == 5 && skill_dropkick_finisher_factor == 3 && skill_sokidan_damage_factor == 3.5 && skill_sokidan_total_factor == 7 && skill_kienzan_damage_factor == 6, "special skill factors diverged from the balance workbook")
 	nexusSmokeAssert(calculateScaledCombatDamage(10, 100, 100, 100, 100) == 10, "equal-stat central damage did not preserve its factor")
 	nexusSmokeAssert(!calculateScaledCombatDamage(10, 100, 100, 0, 100), "zero offensive stat still caused damage")
 	var/superior_stat_damage = calculateScaledCombatDamage(10, 100, 100, 200, 100)
@@ -136,10 +145,32 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Final_Flash/final_flash_skill = new
 	var/obj/Attacks/Noob_Ray/noob_ray_skill = new
 	nexusSmokeAssert(final_flash_skill.damage_factor == 12 && noob_ray_skill.damage_factor == 52, "beam damage factors are invalid")
+	var/list/expected_beam_factors = list(
+		/obj/Attacks/Noob_Ray = 52,
+		/obj/Attacks/Laser_Beam = 4,
+		/obj/Attacks/Beam = 3,
+		/obj/Attacks/Ray = 3,
+		/obj/Attacks/Piercer = 5,
+		/obj/Attacks/Kamehameha = 8,
+		/obj/Attacks/Dodompa = 5,
+		/obj/Attacks/Final_Flash = 12,
+		/obj/Attacks/Garlic_Gun = 7,
+		/obj/Attacks/Masenko = 6)
+	for(var/beam_type in expected_beam_factors)
+		nexusSmokeAssert(initial(beam_type:damage_factor) == expected_beam_factors[beam_type], "beam factor diverged from the balance workbook: [beam_type]")
+	var/obj/Attacks/Genki_Dama/omega_bomb_balance = new
+	var/obj/Attacks/Genki_Dama/Death_Ball/death_ball_balance = new
+	var/obj/Attacks/Genki_Dama/Supernova/supernova_balance = new
+	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 4 && omega_bomb_balance.sb_max_dmg == 15, "Omega Bomb charge curve diverged from the balance workbook")
+	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 2.5 && death_ball_balance.sb_max_dmg == 10, "Death Ball charge curve diverged from the balance workbook")
+	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 2 && supernova_balance.sb_max_dmg == 5, "Supernova charge curve diverged from the balance workbook")
 	del(big_bang_projectile)
 	del(projectile_owner)
 	del(final_flash_skill)
 	del(noob_ray_skill)
+	del(omega_bomb_balance)
+	del(death_ball_balance)
+	del(supernova_balance)
 	nexusSmokeAssert(ki_projectile_step_delay == 0.5, "Ki projectile cadence is not normalized for 60 FPS")
 	var/obj/Attacks/Sokidan/sokidan_skill = new
 	var/datum/SkillDefinition/sokidan_definition = skill_engine.getDefinitionForObj(sokidan_skill)
@@ -350,6 +381,63 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(majin_balance_test.racialCombatBPMult() == 1.13 && majin_balance_test.racialDamageTakenMult() == 0.96, "Majin sustainable exceptional package is inconsistent")
 	nexusSmokeAssert(third_eye_bp_add == 0.2, "Third Eye BP no longer matches its 1.2x description")
 	nexusSmokeAssert(jirenAlienBPMult == 0.95 && jirenTakeDmgMult == 1 && jirenAlienPowerupMult == 0.75, "Alien Apex Genome escaped the Standard-tier package")
+	var/list/race_balance_cases = list(
+		list("Human", "Human", null, FALSE, FALSE, 1.33, 1),
+		list("Spirit Doll", "Human", "Spirit Doll", FALSE, FALSE, 1.197, 1),
+		list("Saiyan", "Saiyan", null, FALSE, FALSE, 1.54, 1),
+		list("Half Saiyan", "Half Saiyan", null, FALSE, FALSE, 1.725, 1),
+		list("Legendary Saiyan", "Saiyan", "Legendary Saiyan", FALSE, FALSE, 3.3, 0.9),
+		list("Alien", "Alien", null, FALSE, FALSE, 1.55, 1),
+		list("Alien Apex Genome", "Alien", null, TRUE, FALSE, 1.4725, 1),
+		list("Android", "Android", null, FALSE, FALSE, 1.35, 0.55),
+		list("Bio-Android", "Bio-Android", null, FALSE, FALSE, 2.31, 0.89),
+		list("Demigod", "Demigod", null, FALSE, FALSE, 1.65, 1),
+		list("Demon", "Demon", null, FALSE, FALSE, 1.85, 1),
+		list("Frost Lord", "Frost Lord", null, FALSE, FALSE, 1.68, 1),
+		list("Cooler", "Frost Lord", "Cooler", FALSE, TRUE, 1.596, 0.89),
+		list("Kai", "Kai", null, FALSE, FALSE, 1.8, 1),
+		list("Makyo", "Makyo", null, FALSE, FALSE, 1.4245, 1),
+		list("Majin", "Majin", null, FALSE, FALSE, 2.8815, 0.96),
+		list("Namekian", "Namekian", null, FALSE, FALSE, 1.65, 1),
+		list("Tsujin", "Tsujin", null, FALSE, FALSE, 1.28, 1))
+	for(var/list/balance_case in race_balance_cases)
+		var/mob/NexusSmokeTest/race_balance_test = new
+		race_balance_test.Race = balance_case[2]
+		race_balance_test.Class = balance_case[3]
+		race_balance_test.jirenAlien = balance_case[4]
+		race_balance_test.IsCooler = balance_case[5]
+		var/effective_creation_bp = race_balance_test.Get_race_starting_bp_mod() * race_balance_test.racialCombatBPMult()
+		nexusSmokeAssertNear(effective_creation_bp, balance_case[6], 0.0001, "creation BP package diverged from the balance workbook: [balance_case[1]]")
+		nexusSmokeAssertNear(race_balance_test.racialDamageTakenMult(), balance_case[7], 0.0001, "incoming damage package diverged from the balance workbook: [balance_case[1]]")
+		del(race_balance_test)
+	var/list/expected_creation_budgets = list(
+		"Human|human_adaptability" = 72,
+		"Spirit Doll|doll_awakened" = 72,
+		"Saiyan|saiyan_warrior" = 33,
+		"Saiyan|saiyan_low_class" = 37,
+		"Saiyan|saiyan_elite" = 34,
+		"Half Saiyan|half_saiyan_hybrid" = 44,
+		"Legendary Saiyan|legendary_berserker" = 34,
+		"Alien|alien_scholar" = 75,
+		"Alien|alien_predator" = 75,
+		"Alien|alien_shifter" = 75,
+		"Alien|alien_anomaly" = 75,
+		"Android|android_chassis" = 61,
+		"Android|android_infiltrator" = 61,
+		"Bio-Android|bio_adaptation" = 31,
+		"Demigod|demigod_heritage" = 24,
+		"Demon|demon_soulbound" = 44,
+		"Frost Lord|frost_heir" = 29,
+		"Frost Lord|frost_cooler" = 29,
+		"Kai|kai_guardian" = 42,
+		"Makyo|makyo_starborn" = 48,
+		"Majin|majin_fragment" = 34,
+		"Namekian|namek_dragon_clan" = 45,
+		"Tsujin|tsujin_engineer" = 55)
+	for(var/profile_id in expected_creation_budgets)
+		var/list/profile_parts = splittext(profile_id, "|")
+		var/list/balance_profile = nexusCreationStatProfile(profile_parts[1], profile_parts[2])
+		nexusSmokeAssert(balance_profile["budget"] == expected_creation_budgets[profile_id], "creation budget diverged from the balance workbook: [profile_id]")
 	var/legendary_sustainable_bp = 11 * 1.35 * 1.35 * lssj_combat_bp_mult
 	var/bio_sustainable_bp = base_ascension_mod * 1.265 * bio_android_combat_bp_mult * 1.6
 	var/majin_sustainable_bp = base_ascension_mod * 1.265 * 1.3 * majin_combat_bp_mult * 1.2

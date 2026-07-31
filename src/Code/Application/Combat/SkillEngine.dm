@@ -419,7 +419,7 @@ datum/SkillEngine
 			player_view(10, user) << sound('Blast.wav', volume = 10)
 
 		var/amount = Clamp(ToOne(skill_obj.Blast_Count), 1, 4)
-		var/datum/CombatDamageBudget/damage_budget = new(4)
+		var/datum/CombatDamageBudget/damage_budget = new(skill_blast_total_factor)
 		while(amount)
 			user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 
@@ -482,7 +482,8 @@ datum/SkillEngine
 			player_view(10, user) << sound('Blast.wav', volume = 70)
 			user.Say("BIG BANG ATTACK!!")
 			var/obj/Blast/a = get_cached_blast()
-			a.setStats(user, Percent = 22, Off_Mult = 1, Explosion = 4, explosion_percent = 22, max_damage_factor = 44)
+			a.setStats(user, Percent = skill_big_bang_damage_factor, Off_Mult = 1, Explosion = 4, \
+				explosion_percent = skill_big_bang_damage_factor, max_damage_factor = skill_big_bang_damage_factor * 2)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.Shockwave = 1
@@ -513,7 +514,8 @@ datum/SkillEngine
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 40)
 			var/obj/Blast/a = get_cached_blast()
-			a.setStats(user, Percent = 4, Off_Mult = 2, Explosion = 2, explosion_percent = 4, max_damage_factor = 8)
+			a.setStats(user, Percent = skill_charge_damage_factor, Off_Mult = 2, Explosion = 2, \
+				explosion_percent = skill_charge_damage_factor, max_damage_factor = skill_charge_damage_factor * 2)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.Shockwave = 1
@@ -545,7 +547,8 @@ datum/SkillEngine
 			player_view(10, user) << sound('Blast.wav', volume = 30)
 			var/obj/Blast/a = get_cached_blast()
 			a.icon = skill_obj.icon
-			a.setStats(user, Percent = 2.5, Off_Mult = 2, Explosion = 1, explosion_percent = 2.5, max_damage_factor = 5)
+			a.setStats(user, Percent = skill_cyber_charge_damage_factor, Off_Mult = 2, Explosion = 1, \
+				explosion_percent = skill_cyber_charge_damage_factor, max_damage_factor = skill_cyber_charge_damage_factor * 2)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.vector_speed = 32
@@ -572,7 +575,7 @@ datum/SkillEngine
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('BasicbeamFire.ogg', volume = 10)
 			var/amount = Clamp(ToOne(17 * user.Eff ** 0.25), 1, 20)
-			var/datum/CombatDamageBudget/damage_budget = new(8)
+			var/datum/CombatDamageBudget/damage_budget = new(skill_makosen_total_factor)
 			while(amount)
 				amount -= 1
 				var/obj/Blast/a = get_cached_blast()
@@ -586,7 +589,7 @@ datum/SkillEngine
 				a.Deflectable = 0
 				a.apply_short_range_beam_knock = 0
 				a.layer = 4
-				a.setStats(user, Percent = 0.4, Off_Mult = 1, Explosion = 0, shared_budget = damage_budget)
+				a.setStats(user, Percent = skill_makosen_damage_factor, Off_Mult = 1, Explosion = 0, shared_budget = damage_budget)
 				a.deflect_difficulty = 4
 				a.from_attack = skill_obj
 				if(prob(skill_obj.ExplosiveChance)) a.Explosive = skill_obj.Explosiveness
@@ -632,7 +635,7 @@ datum/SkillEngine
 
 		user.attacking = 3
 		var/amount = ToOne(40 * sqrt(user.Eff))
-		var/datum/CombatDamageBudget/damage_budget = new(18)
+		var/datum/CombatDamageBudget/damage_budget = new(skill_scatter_shot_total_factor)
 		skill_obj.Using = 1
 		user.last_scattershot = world.time
 		while(amount && !user.cant_blast(ignore_attack_check = 1))
@@ -647,7 +650,8 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			if(prob(100)) a.Explosive = 1
 			a.Shockwave = 3
-			a.setStats(user, Percent = 0.3, Off_Mult = 1, Explosion = 1, explosion_percent = 0.3, shared_budget = damage_budget)
+			a.setStats(user, Percent = skill_scatter_shot_damage_factor, Off_Mult = 1, Explosion = 1, \
+				explosion_percent = skill_scatter_shot_damage_factor, shared_budget = damage_budget)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.loc = user.loc
@@ -726,7 +730,7 @@ datum/SkillEngine
 				a.pixel_x = rand(-16, 16)
 				a.pixel_y = rand(-16, 16)
 				a.icon = skill_obj.icon
-				a.setStats(user, Percent = 0.2, Off_Mult = 1, Explosion = 0)
+				a.setStats(user, Percent = skill_attack_barrier_damage_factor, Off_Mult = 1, Explosion = 0)
 				a.from_attack = skill_obj
 				a.dir = user.dir
 				a.loc = user.loc
@@ -773,7 +777,7 @@ datum/SkillEngine
 					distance = round(distance)
 					if(distance > 30) distance = 30
 					p.Shockwave_Knockback(distance, user.loc, bypass_immunity = 1)
-					var/dmg = user.getHybridCombatDamage(p, 0.5)
+					var/dmg = user.getHybridCombatDamage(p, skill_shockwave_damage_factor)
 					dmg *= sagas_bonus(user, p)
 					user.training_period(p)
 					if(p.ki_shield_on())
@@ -857,7 +861,7 @@ datum/SkillEngine
 				total_mobs_exploded++
 				if(total_mobs_exploded > 50) break
 				if(!b.AOE_auto_dodge(user, Get_step(b, get_dir(b, target))))
-					var/dmg = user.getKiCombatDamage(b, 3)
+					var/dmg = user.getKiCombatDamage(b, skill_explosion_damage_factor)
 					dmg *= sagas_bonus(user, b)
 					user.training_period(b)
 					if(b.ki_shield_on())
@@ -959,7 +963,8 @@ datum/SkillEngine
 			step(user, dash_dir)
 			for(var/mob/p in mob_view(1, user))
 				if(p != user)
-					var/damage_factor = min(8, 2 + (steps - 1) * 0.25)
+					var/damage_factor = min(skill_dash_attack_max_factor, \
+						skill_dash_attack_min_factor + (steps - 1) * skill_dash_attack_step_factor)
 					var/damage = user.getPhysicalCombatDamage(p, damage_factor)
 					var/acc = user.get_melee_accuracy(p) * 2
 					var/kb_distance = (user.BP / p.BP) * (user.Str / p.End) * 5
@@ -1107,7 +1112,7 @@ datum/SkillEngine
 			player_view(15, user) << sound('Strongpunch.ogg', volume = 60)
 			m.AlterInputDisabled(1)
 			m.ScreenShake(Amount = 15, Offset = 8)
-			var/dmg = user.getPhysicalCombatDamage(m, 5)
+			var/dmg = user.getPhysicalCombatDamage(m, skill_dropkick_opening_factor)
 			var/hp_before_dmg = m.Health
 			m.TakeDamage(dmg)
 			if(dmg >= 100 + hp_before_dmg) m.KO(user, allow_anger = 1)
@@ -1132,7 +1137,7 @@ datum/SkillEngine
 						m.Death(user)
 
 		user.last_dropkick_debuff_triggered = world.time
-		if(m && hit && user.selected_target == m) m.TakeDamage(user.getPhysicalCombatDamage(m, 3))
+		if(m && hit && user.selected_target == m) m.TakeDamage(user.getPhysicalCombatDamage(m, skill_dropkick_finisher_factor))
 
 		if(user.Health < 0)
 			user.KO(user)
@@ -1214,7 +1219,8 @@ datum/SkillEngine
 		A.Shockwave = 2
 		A.Piercer = 0
 		A.vector_speed = 22
-		A.setStats(user, Percent = 3.5, Off_Mult = 3, Explosion = 2, homing_mod = 2, explosion_percent = 3.5, max_damage_factor = 7, owner_immunity = 1)
+		A.setStats(user, Percent = skill_sokidan_damage_factor, Off_Mult = 3, Explosion = 2, homing_mod = 2, \
+			explosion_percent = skill_sokidan_damage_factor, max_damage_factor = skill_sokidan_total_factor, owner_immunity = 1)
 		A.from_attack = skill_obj
 		A.weaker_obstacles_cant_destroy_blast = 1
 		A.blast_go_over_owner = 1
@@ -1275,7 +1281,8 @@ datum/SkillEngine
 		A.Shockwave = 0
 		A.Piercer = 1
 		A.slice_attack = 1
-		A.setStats(user, Percent = 6, Off_Mult = 15, Explosion = 0, max_damage_factor = 6, owner_immunity = 1)
+		A.setStats(user, Percent = skill_kienzan_damage_factor, Off_Mult = 15, Explosion = 0, \
+			max_damage_factor = skill_kienzan_damage_factor, owner_immunity = 1)
 		A.from_attack = skill_obj
 		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1
