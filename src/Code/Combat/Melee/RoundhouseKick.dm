@@ -33,7 +33,7 @@ mob
 			CenterIcon(e)
 			var/anim_time = 10
 			animate(e, transform * 3, alpha = 235, time = anim_time)
-			player_view(15,src) << sound('strongpunch.ogg', volume = 60)
+			player_view(15,src) << sound('Strongpunch.ogg', volume = 60)
 			sleep(10)
 			del(e)
 
@@ -46,14 +46,14 @@ mob
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
 			if(usr.cant_blast()) return
 			last_RoundhouseKick = world.time
-			player_view(15, src) << sound('throw.ogg', volume = 60)
+			player_view(15, src) << sound('Throw.ogg', volume = 60)
 			sleep(10)
 			RoundhouseKickFX()
-			var/list/targets = FindTargets(usr.dir,angle_limit=360, max_dist=3)
-			if(targets)
-				for(var/mob/M in targets)
-					var/dmg = (10 + get_melee_damage(usr, count_sword = 0)) * 1.6
-					var/knockback = get_melee_knockback_distance(usr);
+			var/mob/target = getSelectedTarget(max_dist = 3)
+			if(target)
+				for(var/mob/M in list(target))
+					var/dmg = getPhysicalCombatDamage(M, 4)
+					var/knockback = get_melee_knockback_distance(M)
 					if(M != usr)
 						usr << "You rotate a powerful kick that knocks [M] away!"
 						M.Knockback(usr, knockback, omega_kb = 1)

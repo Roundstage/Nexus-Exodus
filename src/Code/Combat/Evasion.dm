@@ -1,4 +1,4 @@
-var/image/block_shield=image(icon='block shield.dmi',layer=MOB_LAYER+2,pixel_y=36,pixel_x=3) //block shield.dmi is 26x26
+var/image/block_shield=image(icon='BlockShield.dmi',layer=MOB_LAYER+2,pixel_y=36,pixel_x=3) //BlockShield.dmi is 26x26
 
 mob/var/tmp
 	last_block_key_press=0

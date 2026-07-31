@@ -4,17 +4,48 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
+- `src/Code/UI/DamageIndicators.dm`
 - `src/Code/UI/Guide.dm`
 - `src/Code/UI/HUD.dm`
 - `src/Code/UI/HelperQuests.dm`
 - `src/Code/UI/Hotkeys.dm`
 - `src/Code/UI/RPWindow.dm`
 - `src/Code/UI/SavePlayerSettings.dm`
-- `src/Code/UI/Tabs 2017/BuildTab.dm`
+- `src/Code/UI/Tabs2017/BuildTab.dm`
 - `src/Code/UI/UIStuff.dm`
 - `src/Code/UI/Wasted.dm`
 
 ## Proc Reference
+
+### src/Code/UI/DamageIndicators.dm
+
+#### proc/acquireDamageIndicator
+- Signature: `proc/acquireDamageIndicator()`
+- Inputs: None.
+- Purpose: Acquire a pooled floating combat-text object.
+- Returns: `/obj/DamageIndicator` ready for display.
+- Side effects: removes an object from the cache or creates one.
+
+#### atom/proc/showDamageIndicator
+- Signature: `atom/proc/showDamageIndicator(amount, text_color = "#ff667a")`
+- Inputs: positive damage amount and optional CSS color.
+- Purpose: Display animated world-space damage above an atom.
+- Returns: the acquired indicator, or null when nothing can be shown.
+- Side effects: starts an asynchronous animation.
+
+#### obj/DamageIndicator/proc/show
+- Signature: `show(atom/target, amount, text_color)`
+- Inputs: target, damage amount, and text color.
+- Purpose: Format, position, animate, and release one damage indicator.
+- Returns: none (asynchronous).
+- Side effects: moves and animates the pooled object in the world.
+
+#### obj/DamageIndicator/proc/release
+- Signature: `release()`
+- Inputs: None.
+- Purpose: Reset and return an indicator to the cache.
+- Returns: none (implicit).
+- Side effects: clears visual state and removes the object from the map.
 
 ### src/Code/UI/Guide.dm
 
@@ -27,10 +58,183 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/UI/HUD.dm
 
+#### proc/hudPercentage
+- Signature: `proc/hudPercentage(value, maximum = 100)`
+- Inputs: current and maximum values.
+- Purpose: Produce a nonnegative HUD percentage while guarding invalid maxima.
+- Returns: percentage rounded to one decimal place.
+- Side effects: none.
+
+#### proc/nexusIsFiniteNumber
+- Signature: `proc/nexusIsFiniteNumber(value)`
+- Inputs: candidate numeric value.
+- Purpose: Reject nonnumeric, infinite, and indeterminate values before they reach HUD or dummy calculations.
+- Returns: boolean.
+- Side effects: none.
+
+#### proc/screenLocationPixels
+- Signature: `proc/screenLocationPixels(screen_location)`
+- Inputs: numeric BYOND `screen-loc` text.
+- Purpose: Convert tile and pixel screen coordinates into absolute pixels for HUD dragging.
+- Returns: two-item pixel coordinate list, or null for invalid input.
+- Side effects: none.
+
+#### proc/overheadHealthColor
+- Signature: `proc/overheadHealthColor(health_percent)`
+- Inputs: health percentage.
+- Purpose: Resolve green above 60%, yellow from 50% through 60%, and red below 50%.
+- Returns: hexadecimal color.
+- Side effects: none.
+
+#### proc/getOverheadHealthIcon
+- Signature: `proc/getOverheadHealthIcon(health_percent)`
+- Inputs: health percentage.
+- Purpose: Build or reuse a real 32x5 icon with dark background and proportional colored fill.
+- Returns: cached icon.
+- Side effects: initializes a cache entry on first use.
+
+#### proc/getVitalsPanelIcon
+- Signature: `proc/getVitalsPanelIcon()`
+- Inputs: None.
+- Purpose: Build or reuse the clean 380x160 translucent backdrop for the draggable vitals panel.
+- Returns: cached icon.
+- Side effects: initializes the panel icon on first use.
+
+#### proc/getVitalsBarIcon
+- Signature: `proc/getVitalsBarIcon(percent, accent_color)`
+- Inputs: percentage and accent color.
+- Purpose: Build or reuse a 220x24 native progress-bar icon with proportional fill.
+- Returns: cached icon.
+- Side effects: initializes a cache entry on first use.
+
+#### proc/getPowerGaugeIcon
+- Signature: `proc/getPowerGaugeIcon(percent, over_limit)`
+- Inputs: normalized soft-cap progress and over-limit state.
+- Purpose: Build either lateral power gauge, switching from violet to red above the efficient limit.
+- Returns: cached 9x96 icon.
+- Side effects: initializes a cache entry on first use.
+
+#### mob/proc/initializeVitalsHud
+- Signature: `mob/proc/initializeVitalsHud()`
+- Inputs: None.
+- Purpose: Attach the compact overhead bar and initialize the lower-left main vitals panel for playable characters.
+- Returns: none (implicit).
+- Side effects: updates `vis_contents`, `client.screen`, and hides the obsolete DMF Bars window.
+
+#### mob/proc/initializeMainVitalsHud
+- Signature: `mob/proc/initializeMainVitalsHud()`
+- Inputs: None.
+- Purpose: Create the lower-left panel with a centered enlarged character, three vitals rows, lateral power gauges, and a percentage readout.
+- Returns: none (implicit).
+- Side effects: creates one client-owned screen-object tree and synchronizes visibility with `client.show_bars`.
+
+#### mob/proc/updateMainVitalsHud
+- Signature: `mob/proc/updateMainVitalsHud()`
+- Inputs: None.
+- Purpose: Refresh the centered character, right-aligned `(current Energy) percentage%`, raw power percentage, and powerup soft-cap state.
+- Returns: none (implicit).
+- Side effects: updates screen appearances and maptext.
+
+#### mob/proc/setVitalsHudVisibility
+- Signature: `mob/proc/setVitalsHudVisibility(visible)`
+- Inputs: desired visibility.
+- Purpose: Add or remove the main vitals panel from `client.screen` without exposing the old DMF window.
+- Returns: none (implicit).
+- Side effects: mutates the client's screen list.
+
+#### mob/Write
+- Signature: `mob/Write(savefile/save_file)`
+- Inputs: destination savefile.
+- Purpose: Temporarily detach the runtime-only overhead HUD during all mob serialization.
+- Returns: parent serialization result.
+- Side effects: removes and restores the visual around the write operation.
+
+#### mob/proc/updateOverheadHealthHud
+- Signature: `mob/proc/updateOverheadHealthHud()`
+- Inputs: None.
+- Purpose: Refresh the health state and vertical position of the overhead HUD.
+- Returns: none (implicit).
+- Side effects: may initialize the HUD if it is missing.
+
+#### mob/proc/removeVitalsHud
+- Signature: `mob/proc/removeVitalsHud()`
+- Inputs: None.
+- Purpose: Detach and delete both overhead and main vitals HUD objects.
+- Returns: none (implicit).
+- Side effects: removes visual and screen objects.
+
+#### obj/NexusHud/VitalsPanel/proc/initialize
+- Signature: `initialize(mob/owner)`
+- Inputs: owning player.
+- Purpose: Compose the centered character, two power gauges, percentage readout, and three stat rows over the panel root.
+- Returns: none (implicit).
+- Side effects: populates `vis_contents`.
+
+#### obj/NexusHud/VitalsPanel/proc/update
+- Signature: `update(mob/owner)`
+- Inputs: owning player.
+- Purpose: Calculate Health, Energy, Stamina, raw `BPpcnt`, and the efficient powerup threshold.
+- Returns: none (implicit).
+- Side effects: updates child screen objects.
+
+#### obj/NexusHud/VitalsPanel/proc/moveToMouse
+- Signature: `moveToMouse(screen_location)`
+- Inputs: current mouse screen location.
+- Purpose: Move the panel from its stored drag origin while keeping it inside the left/bottom screen edges.
+- Returns: none (implicit).
+- Side effects: updates panel screen position.
+
+#### obj/NexusHud/VitalsPanel/proc/setScreenPosition
+- Signature: `setScreenPosition(new_x, new_y)`
+- Inputs: absolute lower-left pixel coordinates.
+- Purpose: Store the panel position using BYOND's icon-aware `LEFT` and `BOTTOM` anchors.
+- Returns: none (implicit).
+- Side effects: updates `screen_loc`.
+
+#### obj/NexusHud/CharacterPortrait/proc/update
+- Signature: `update(mob/owner)`
+- Inputs: owning player.
+- Purpose: Copy, enlarge, and center the character between the lateral power gauges without an additional frame.
+- Returns: none (implicit).
+- Side effects: replaces the portrait appearance.
+
+#### obj/NexusHud/VitalRow/proc/update
+- Signature: `update(label, percent, detail, accent_color)`
+- Inputs: row label, percentage, display detail, and accent color.
+- Purpose: Render one native icon-based stat row, its progress fill, label, and numeric detail.
+- Returns: none (implicit).
+- Side effects: swaps a cached bar icon and updates maptext.
+
+#### obj/NexusHud/PowerGauge/proc/update
+- Signature: `update(percent, over_limit)`
+- Purpose: Raise both lateral indicators with power and show red saturation after the soft cap.
+- Returns: none (implicit).
+- Side effects: swaps a cached vertical icon.
+
+#### obj/NexusHud/PowerReadout/proc/update
+- Signature: `update(power_percent, soft_cap, over_limit)`
+- Purpose: Render exactly one percentage line below the character, using color rather than duplicate text to signal the soft cap.
+- Returns: none (implicit).
+- Side effects: updates maptext.
+
+#### obj/NexusHud/OverheadHealthBar/proc/update
+- Signature: `update(mob/owner)`
+- Inputs: displayed character.
+- Purpose: Render a 32x5 health bar that is green above 60%, yellow from 50% through 60%, and red below 50%.
+- Returns: none (implicit).
+- Side effects: swaps the cached world-space icon.
+
+#### obj/NexusHud/VitalsPanel/MouseDrag
+- Signature: `MouseDrag(over_object, src_location, over_location, src_control, over_control, params)`
+- Inputs: standard BYOND mouse-drag context.
+- Purpose: Drag the client-owned vitals panel directly by its translucent background.
+- Returns: none (implicit).
+- Side effects: updates the panel position.
+
 #### proc/DrawHUD
 - Signature: `proc/DrawHUD(mob/M=usr)`
 - Inputs: mob/M=usr
-- Purpose: Handle draw hud.
+- Purpose: Legacy unused target HUD retained for save compatibility; the active vitals HUD uses `/obj/NexusHud/VitalsPanel`.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -139,9 +343,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Add_hotbar_proxies
 - Signature: `mob/proc/Add_hotbar_proxies()`
 - Inputs: None
-- Purpose: Add hotbar proxies.
+- Purpose: Add global utility proxies, including standalone Lunge and ownership-gated Flash Step.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
+
+#### obj/Lunge verbs
+- Signature: `Hotbar_use()`, `lunge()`
+- Inputs: None.
+- Purpose: Expose Lunge as a standalone hotbar action and Skills verb instead of a Space-release side effect.
+- Returns: none (implicit).
+- Side effects: delegates to `LungeAttack()`.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -535,6 +746,46 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
+### src/Code/UI/HotkeyEditor.dm
+
+#### proc/canonicalNexusHotkey
+- Signature: `canonicalNexusHotkey(base_key, use_ctrl = 0, use_shift = 0, use_alt = 0)`
+- Inputs: allowlisted base key and modifier flags.
+- Purpose: Produce stable combinations such as `CTRL+SHIFT+Numpad7`.
+- Returns: canonical combination or null for an unsupported key.
+- Side effects: none.
+
+#### datum/NexusHotkeyAction
+- Purpose: Define non-object actions with stable IDs, labels, availability predicates, repeat policy, and execution behavior.
+- Current actions: eight Zanzoken directions, available only while the player owns `/obj/Zanzoken`.
+
+#### mob/proc/initializeNexusHotkeys
+- Purpose: Migrate positional legacy bindings, initialize runtime state, and rebuild client-local dynamic macros.
+- Side effects: updates binding version and client macros.
+
+#### mob/proc/resolveNexusHotkeyBinding
+- Signature: `resolveNexusHotkeyBinding(combination)`
+- Purpose: Resolve an available registered action or owned `can_hotbar` object at execution time.
+- Returns: action datum, object, or null when unavailable.
+- Side effects: none.
+
+#### client/proc/syncNexusHotkeyMacros
+- Purpose: Recreate modifier and non-static macros using `winset()`, with paired key-up handling.
+- Supported: `CTRL`, `SHIFT`, `ALT`, independent numpad digits/operators, selected function keys, and utility keys.
+- Side effects: replaces only client-local macros created by this system.
+
+#### mob/proc/buildNexusHotkeyEditorHtml
+- Purpose: Render the searchable action deck, draggable virtual keyboard, modifier controls, independent numpad, and active binding summary.
+- Security: actions are represented by server-issued opaque tokens and revalidated in `Topic()`.
+
+#### datum/NexusHotkeyEditor/Topic
+- Purpose: Validate bind, unbind, clear, import, and close events sent by the in-game browser editor.
+- Side effects: saves each change immediately and refreshes macros/editor state.
+
+#### mob/proc/showNexusHotkeyEditor
+- Purpose: Stop held input and open the new editor used by F5.
+- Side effects: opens `NexusHotkeys` and suppresses gameplay key dispatch while active.
+
 ### src/Code/UI/RPWindow.dm
 
 #### mob/proc/ViewEmoteWindow
@@ -562,20 +813,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `ViewSelfSayWindow()`
 - Inputs: None
 - Purpose: Handle view self say window.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin1/verb/ViewRPWindow
-- Signature: `ViewRPWindow(mob/M in players)`
-- Inputs: mob/M in players
-- Purpose: Handle view rpwindow.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/Admin1/verb/ViewDevelopmentRPWindow
-- Signature: `ViewDevelopmentRPWindow(mob/M in players)`
-- Inputs: mob/M in players
-- Purpose: Handle view development rpwindow.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -637,7 +874,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/UI/Tabs 2017/BuildTab.dm
+### src/Code/UI/Tabs2017/BuildTab.dm
 
 #### mob/verb/MapFocus
 - Signature: `MapFocus()`
@@ -672,9 +909,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### client/Del
 - Signature: `client/Del()`
 - Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Remove the client from the global list and delete the client-owned vitals panel with all child visuals.
+- Returns: parent deletion result.
+- Side effects: removes the panel from `client.screen`.
 
 #### client/proc/DisplayTitleScreen
 - Signature: `DisplayTitleScreen()`

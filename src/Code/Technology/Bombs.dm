@@ -1,6 +1,6 @@
-area/proc/Area_Nuke() if(icon!='Lightning flash.dmi')
+area/proc/Area_Nuke() if(icon!='LightningFlash.dmi')
 	var/Old_State=icon_state
-	icon='Lightning flash.dmi'
+	icon='LightningFlash.dmi'
 	icon_state=null
 	spawn(600) if(src)
 		icon='Weather.dmi'
@@ -12,7 +12,7 @@ proc/Nuke_Icons(obj/F)
 			F.icon='Explosion.dmi'
 			F.icon_state=""
 		if(2)
-			F.icon='Explosion 2.dmi'
+			F.icon='ExplosionLegacy2.dmi'
 			F.icon_state=""
 		if(3)
 			F.icon='Smoke1.dmi'
@@ -22,7 +22,7 @@ turf/proc/Nuke(BP,Force,Range,Amount)
 	set waitfor=0
 	for(var/area/B in range(0,src)) if(B.type!=/area/Inside) B.Area_Nuke()
 	spawn(1) while(Amount>0)
-		spawn(rand(0,200)) view(10,src)<<pick('Blast.wav','kiplosion.ogg','wallhit.ogg','Explosion 2.wav')
+		spawn(rand(0,200)) view(10,src)<<pick('Blast.wav','Kiplosion.ogg','Wallhit.ogg','Explosion2.wav')
 		var/obj/Blast/Fireball/F=new(src)
 		F.BP=BP
 		F.Force=Force
@@ -170,7 +170,7 @@ obj/items/Nuke
 								usr.Alter_Res(-res_cost)
 								Range+=initial(Range)
 				if("Power")
-					var/Max_Upgrade=usr.max_turf_upgrade()*1
+					var/Max_Upgrade=usr.maxTurfUpgrade()*1
 					var/Percent=(BP/Max_Upgrade)*100
 					var/Res_Cost=Item_cost(usr,src)/500
 					if(Percent>=100)
@@ -213,7 +213,7 @@ obj/items/Nuke
 			while(Amount)
 				Amount-=1
 				Make_Shockwave(src,7,sw_icon_size=256)
-				player_view(10,src)<<sound('wallhit.ogg',volume=25)
+				player_view(10,src)<<sound('Wallhit.ogg',volume=25)
 				for(var/mob/P in view(7,loc))
 					var/Damage=(Force/P.End)*sqrt(BP/P.BP)*15
 					P.TakeDamage(Damage)

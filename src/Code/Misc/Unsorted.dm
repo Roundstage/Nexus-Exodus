@@ -75,7 +75,8 @@ proc/Get_step(mob/m,D)
 
 
 
-mob/Admin5/verb/Alt_Auto_Fight_Test(mob/m in world)
+mob/Admin5/verb/altAutoFightTest(mob/m in world)
+	set name = "Alt Auto Fight Test"
 	if(!m.client) return
 
 	Resetinactivity()
@@ -123,7 +124,8 @@ mob/Admin5/verb/Alt_Auto_Fight_Test(mob/m in world)
 
 
 
-mob/Admin5/verb/Battle_test()
+mob/Admin5/verb/battleTest()
+	set name = "Battle test"
 	var/mob/m=Duplicate(include_unclonables=1)
 	m.SafeTeleport(loc)
 	m.Player_Loops()
@@ -262,7 +264,8 @@ mob/proc/Random_stat_change()
 
 
 
-mob/Admin5/verb/Set_transform_size(mob/m in world)
+mob/Admin5/verb/setTransformSize(mob/m in world)
+	set name = "Set transform size"
 	set category="Admin"
 	var/n=input("multiple") as num
 	m.transform = matrix() * n
@@ -334,7 +337,7 @@ proc/viewable(mob/a, mob/b, max_dist = 5000, seePastDenseObjs = 1)
 var/toxic_waste_on=1
 
 obj/Toxic_Waste_Barrel
-	icon='toxic waste barrel.dmi'
+	icon='ToxicWasteBarrel.dmi'
 	Savable=1
 	takes_gradual_damage=1
 	Cost=1000000
@@ -386,7 +389,7 @@ obj/Toxic_Cloud
 			if(sleep_time<0) sleep_time=0
 			spawn(sleep_time) if(src) del(src)
 			if(!toxic_cloud_icon)
-				var/icon/i='fog cloud.dmi'-rgb(120,0,255)
+				var/icon/i='FogCloud.dmi'-rgb(120,0,255)
 				var/obj/o=new
 				o.icon=i
 				o.Enlarge_Icon(GetWidth(o.icon)*2,GetHeight(o.icon)*2)
@@ -414,7 +417,7 @@ mob/proc/Geiger_sound_loop()
 	if(geiger_sounding) return
 	geiger_sounding=1
 	while(in_radiation)
-		src<<sound('geiger.ogg',volume=60)
+		src<<sound('Geiger.ogg',volume=60)
 		sleep(173)
 	geiger_sounding=0
 
@@ -478,13 +481,13 @@ mob/proc
 		set waitfor=0
 		if(stun_loop) return
 		stun_loop = 1
-		overlays -= 'stun overlay.dmi'
-		overlays += 'stun overlay.dmi'
+		overlays -= 'StunOverlay.dmi'
+		overlays += 'StunOverlay.dmi'
 		while(stun_time > 0)
 			stun_time -= world.tick_lag
 			sleep(world.tick_lag)
 			stun_immunity = world.time + 13
-		overlays -= 'stun overlay.dmi'
+		overlays -= 'StunOverlay.dmi'
 		stun_level = 0
 		stun_loop = 0
 
@@ -501,8 +504,8 @@ obj/Priest
 	takes_gradual_damage=1
 	Makeable=1
 	New()
-		overlays-='Clothes Tuxedo.dmi'
-		overlays+='Clothes Tuxedo.dmi'
+		overlays-='ClothesTuxedo.dmi'
+		overlays+='ClothesTuxedo.dmi'
 		. = ..()
 		//spawn(5) if(src) del(src)
 	Click()
@@ -646,7 +649,8 @@ proc/Remove_all_nulls()
 			for(var/v in l) if(v==null) l-=v
 		//Tens("All nulls removed")
 
-mob/Admin5/verb/Test_mob_list(area/a in world)
+mob/Admin5/verb/testMobList(area/a in world)
+	set name = "Test mob list"
 	var/mob_count=0
 	for(var/v in a.mob_list)
 		src<<v
@@ -693,10 +697,10 @@ obj/Car
 		set waitfor=0
 		sleep(1)
 		//spawn while(src)
-			//player_range(30,src)<<sound('police sirens.ogg',volume=50)
+			//player_range(30,src)<<sound('PoliceSirens.ogg',volume=50)
 			//sleep(77)
 		spawn while(src)
-			player_range(30,src)<<sound('racing.ogg',volume=50)
+			player_range(30,src)<<sound('Racing.ogg',volume=50)
 			sleep(114)
 		while(src)
 			if(car_target&&car_target.z==z)
@@ -710,14 +714,14 @@ obj/Car
 			sleep(1)
 	Move()
 		//var/turf/t=loc
-		//if(t&&isturf(t)) t.TempTurfOverlay('Damaged Ground.dmi',5*600)
-		if(prob(5)) player_range(30,src)<<sound('tire slide.ogg',volume=50)
+		//if(t&&isturf(t)) t.TempTurfOverlay('DamagedGround.dmi',5*600)
+		if(prob(5)) player_range(30,src)<<sound('TireSlide.ogg',volume=50)
 		. = ..()
 	Bump(mob/m)
 		if(!car_target&&ismob(m))
 			SafeTeleport(m.loc)
 			return
-		var/s=pick('big crash.ogg','long crash.ogg','small crash.ogg')
+		var/s=pick('BigCrash.ogg','LongCrash.ogg','SmallCrash.ogg')
 		player_range(30,src)<<sound(s,volume=50)
 		if(isturf(m)) for(var/turf/t in range(1,src)) if(t.density&&t.Health!=1.#INF)
 			Explosion_Graphics(src,rand(2,4))
@@ -730,12 +734,13 @@ obj/Car
 		if(ismob(m))
 			Explosion_Graphics(src,rand(2,4))
 			Make_Shockwave(src)
-			player_range(30,src)<<sound('squished.ogg',volume=100)
+			player_range(30,src)<<sound('Squished.ogg',volume=100)
 			//m.KO("runaway car!",allow_anger=0)
 			car_target=null
 
 var/car_wreck_frequency=0
-mob/Admin4/verb/Car_wreck_frequency()
+mob/Admin4/verb/carWreckFrequency()
+	set name = "Car wreck frequency"
 	set category="Admin"
 	car_wreck_frequency=input(usr,"Set the frequency of random car wrecks","Options",car_wreck_frequency) as num
 	car_wreck_frequency=Clamp(car_wreck_frequency,0,100)
@@ -758,7 +763,8 @@ proc/Car_wreck(mob/m)
 	var/obj/Car/car = new(locate(m.x-15,m.y,m.z))
 	car.car_target=m
 
-mob/Admin4/verb/car_test(mob/m in world)
+mob/Admin4/verb/carTest(mob/m in world)
+	set name = "car test"
 	Car_wreck(m)
 
 mob/var/tmp/obj/Drivable_Car/car
@@ -790,8 +796,8 @@ obj/Drivable_Car
 		icon_state="[rand(1,63)]"
 	verb/Upgrade()
 		set src in oview(1)
-		if(BP<usr.max_turf_upgrade()*0.99)
-			BP=usr.max_turf_upgrade()*0.99
+		if(BP<usr.maxTurfUpgrade()*0.99)
+			BP=usr.maxTurfUpgrade()*0.99
 			player_view(15,usr)<<"[usr] upgrades the [src] to [Commas(BP)] battle power"
 		else usr<<"This [src] is beyond your upgrade abilities already"
 	var/car_new_called
@@ -810,13 +816,13 @@ obj/Drivable_Car
 		if(car_looping) return
 		car_looping=1
 		//spawn while(src)
-			//player_range(30,src)<<sound('police sirens.ogg',volume=50)
+			//player_range(30,src)<<sound('PoliceSirens.ogg',volume=50)
 			//sleep(77)
 		spawn while(car_looping)
 			if(locate(/mob) in src)
 				var/list/l=player_range(30,src)
 				for(var/mob/m in src) l+=m
-				l<<sound('racing.ogg',volume=30)
+				l<<sound('Racing.ogg',volume=30)
 			sleep(114)
 		while(src)
 			if(locate(/mob) in src)
@@ -827,11 +833,11 @@ obj/Drivable_Car
 		car_looping=0
 	Move()
 		//var/turf/t=loc
-		//if(t&&isturf(t)) t.TempTurfOverlay('Damaged Ground.dmi',5*600)
-		if(prob(5)) player_range(30,src)<<sound('tire slide.ogg',volume=30)
+		//if(t&&isturf(t)) t.TempTurfOverlay('DamagedGround.dmi',5*600)
+		if(prob(5)) player_range(30,src)<<sound('TireSlide.ogg',volume=30)
 		. = ..()
 	Bump(mob/m)
-		var/s=pick('big crash.ogg','long crash.ogg','small crash.ogg')
+		var/s=pick('BigCrash.ogg','LongCrash.ogg','SmallCrash.ogg')
 		var/list/l=player_range(30,src)
 		for(var/mob/m2 in src) l+=m2
 		l<<sound(s,volume=30)
@@ -851,6 +857,6 @@ obj/Drivable_Car
 			var/dmg=100 * (Avg_BP/m.BP)**2.5
 			m.TakeDamage(dmg)
 			if(m.Health<=0)
-				l<<sound('squished.ogg',volume=100)
+				l<<sound('Squished.ogg',volume=100)
 				m.KO("runaway car!",allow_anger=0)
 		dir=pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,SOUTHEAST,SOUTHWEST,NORTHWEST)

@@ -14,7 +14,7 @@ var
 var/list/all_connectors = new
 
 obj/Connector
-	icon = 'Connector Icons.dmi'
+	icon = 'ConnectorIcons.dmi'
 	icon_state = "h"
 	desc = "This is just graphical decoration for your base. Connectors automatically connect to other connectors you put beside them. They're just pipes."
 	Cost = 10000
@@ -30,7 +30,7 @@ obj/Connector
 			last_signal_sent_time = -9999
 
 	New()
-		GiveLightSource(size = 20, max_alpha = 35, light_color = default_electricity_color, auto_fade = 0, light_icon = 'transparent.png')
+		GiveLightSource(size = 20, max_alpha = 35, light_color = default_electricity_color, auto_fade = 0, light_icon = 'Transparent.png')
 		if(light_obj)light_obj.alpha = 0
 		all_connectors += src
 		for(var/obj/Connector/c in view(1,src)) c.DecideConnectorIcon()

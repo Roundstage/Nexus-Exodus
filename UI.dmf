@@ -509,7 +509,6 @@ window "AhelpW"
 		statusbar = false
 		can-minimize = false
 		can-resize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 240
 		on-close = "ClearAhelpW"
 	elem "label4"
@@ -560,7 +559,6 @@ window "Backstory"
 		title = "Description"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 240
 	elem "emoteinput"
 		type = INPUT
@@ -605,852 +603,6 @@ window "Backstory"
 		text = "Post"
 		command = "BackstoryS"
 
-window "CharacterCreator"
-	elem "CharacterCreator"
-		type = MAIN
-		pos = 291,0
-		size = 600x534
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		background-color = #2c2c2c
-		is-visible = false
-		saved-params = "pos;size;is-minimized;is-maximized"
-		title = "And Here Your Story Begins..."
-		statusbar = false
-		can-close = false
-		can-minimize = false
-		can-resize = false
-		transparent-color = #ff80ff
-	elem "bodyCC"
-		type = BUTTON
-		pos = 256,128
-		size = 104x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Select Body Size"
-		command = ".RedoBodySize"
-	elem "learnD"
-		type = LABEL
-		pos = 22,368
-		size = 139x122
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 8
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Learn List:"
-		text-wrap = true
-	elem "namec"
-		type = BUTTON
-		pos = 18,10
-		size = 190x35
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = "is-checked"
-		text = "Choose Name"
-		command = "namec"
-	elem "mapcc"
-		type = MAP
-		pos = 420,77
-		size = 154x196
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		border = line
-		drop-zone = false
-		saved-params = "zoom;letterbox;zoom-mode"
-		zoom = 4
-	elem "label23"
-		type = LABEL
-		pos = 217,511
-		size = 168x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 3
-		font-style = "bold"
-		text-color = #d2d200
-		background-color = #2c2c2c
-		is-transparent = true
-		saved-params = ""
-		text = "Created by RyuShinto and Chewyy"
-		text-wrap = true
-	elem "label22"
-		type = LABEL
-		pos = 224,7
-		size = 154x35
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 10
-		font-style = "bold underline"
-		text-color = #d2d200
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Roleplay Tenkaichi"
-		text-wrap = true
-	elem "agec"
-		type = BUTTON
-		pos = 400,10
-		size = 58x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Choose Age"
-		command = "agec"
-	elem "date"
-		type = LABEL
-		pos = 462,10
-		size = 130x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 8
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "November 31, Year 58"
-		text-wrap = true
-	elem "iconc"
-		type = BUTTON
-		pos = 533,252
-		size = 41x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Icon"
-		command = "iconc"
-	elem "racec"
-		type = BUTTON
-		pos = 224,323
-		size = 175x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Choose Race"
-		command = "racec"
-	elem "raceD"
-		type = LABEL
-		pos = 168,368
-		size = 411x122
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Click Choose Race to begin."
-		text-wrap = true
-	elem "button50"
-		type = BUTTON
-		pos = 2,78
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infoanger"
-	elem "button49"
-		type = BUTTON
-		pos = 2,55
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infobp"
-	elem "RaceBP"
-		type = LABEL
-		pos = 164,53
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "AngerLabel"
-		type = LABEL
-		pos = 164,75
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "label17"
-		type = LABEL
-		pos = 19,75
-		size = 141x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Anger"
-	elem "label16"
-		type = LABEL
-		pos = 19,53
-		size = 141x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Battle Power"
-		text-wrap = true
-	elem "genderc"
-		type = BUTTON
-		pos = 420,77
-		size = 41x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Gender"
-		command = "genderc"
-	elem "button38"
-		type = BUTTON
-		pos = 3,230
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".inforegen"
-	elem "button37"
-		type = BUTTON
-		pos = 3,208
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infodef"
-	elem "button36"
-		type = BUTTON
-		pos = 3,186
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infooff"
-	elem "button34"
-		type = BUTTON
-		pos = 3,252
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".inforecov"
-	elem "button33"
-		type = BUTTON
-		pos = 2,166
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infospd"
-	elem "button32"
-		type = BUTTON
-		pos = 2,144
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infoend"
-	elem "button31"
-		type = BUTTON
-		pos = 2,122
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infostr"
-	elem "button27"
-		type = BUTTON
-		pos = 2,100
-		size = 15x15
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "i"
-		command = ".infoenergy"
-	elem "hairc"
-		type = BUTTON
-		pos = 421,252
-		size = 41x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 9
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Hair"
-		command = "hairc"
-	elem "BodySizeLabel"
-		type = LABEL
-		pos = 256,147
-		size = 104x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "? ? ?"
-	elem "button29"
-		type = BUTTON
-		pos = 2,496
-		size = 91x35
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 11
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Back"
-		command = "BackChar"
-	elem "Efficiency"
-		type = LABEL
-		pos = 164,97
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Strength"
-		type = LABEL
-		pos = 164,119
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Endurance"
-		type = LABEL
-		pos = 164,141
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Speed"
-		type = LABEL
-		pos = 164,163
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Offense"
-		type = LABEL
-		pos = 164,184
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Defense"
-		type = LABEL
-		pos = 164,206
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Regeneration"
-		type = LABEL
-		pos = 164,228
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Recovery"
-		type = LABEL
-		pos = 164,250
-		size = 46x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Proceed"
-		type = BUTTON
-		pos = 507,496
-		size = 91x35
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 15
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Proceed"
-		command = "donec"
-	elem "label6"
-		type = LABEL
-		pos = 247,70
-		size = 119x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 9
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Points Remaining:"
-	elem "PointsRemaining"
-		type = LABEL
-		pos = 291,98
-		size = 30x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "0"
-	elem "Recov"
-		type = LABEL
-		pos = 19,250
-		size = 141x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Recovery"
-	elem "Regen"
-		type = LABEL
-		pos = 19,231
-		size = 141x17
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Regeneration"
-	elem "DEF"
-		type = LABEL
-		pos = 38,208
-		size = 103x18
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Defense"
-	elem "plusDEF"
-		type = BUTTON
-		pos = 141,206
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Defense\""
-	elem "minusDEF"
-		type = BUTTON
-		pos = 18,206
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Defense\""
-	elem "OFF"
-		type = LABEL
-		pos = 38,184
-		size = 103x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Offense"
-	elem "plusOFF"
-		type = BUTTON
-		pos = 141,184
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Offense\""
-	elem "minusOFF"
-		type = BUTTON
-		pos = 18,184
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Offense\""
-	elem "SPD"
-		type = LABEL
-		pos = 38,163
-		size = 103x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Speed"
-	elem "plusSPD"
-		type = BUTTON
-		pos = 141,163
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Speed\""
-	elem "minusSPD"
-		type = BUTTON
-		pos = 18,163
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Speed\""
-	elem "END"
-		type = LABEL
-		pos = 38,141
-		size = 103x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Endurance"
-	elem "plusEND"
-		type = BUTTON
-		pos = 141,141
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Endurance\""
-	elem "minusEND"
-		type = BUTTON
-		pos = 18,141
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Endurance\""
-	elem "STR"
-		type = LABEL
-		pos = 38,119
-		size = 103x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Might"
-	elem "plusSTR"
-		type = BUTTON
-		pos = 141,119
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Strength\""
-	elem "minusSTR"
-		type = BUTTON
-		pos = 18,119
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Strength\""
-	elem "EN"
-		type = LABEL
-		pos = 19,97
-		size = 141x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-size = 10
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = line
-		saved-params = ""
-		text = "Energy"
-	elem "infocc"
-		type = LABEL
-		pos = 216,208
-		size = 189x112
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 8
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Weclome to our server.\nClicking on the various buttons will allow you to customize your character.\nRacial descriptions will be added for the next wipe."
-		text-wrap = true
-	elem "plusRecov"
-		type = BUTTON
-		pos = 141,97
-		size = 20x21
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "+"
-		command = ".Skill_Points \"+\" \"Recovery\""
-	elem "minusRecov"
-		type = BUTTON
-		pos = 18,97
-		size = 20x20
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		font-family = "Arial Black"
-		font-size = 20
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "-"
-		command = ".Skill_Points \"-\" \"Recovery\""
-
 window "CharacterProfile"
 	elem "CharacterProfile"
 		type = MAIN
@@ -1464,8 +616,6 @@ window "CharacterProfile"
 		statusbar = false
 		can-minimize = false
 		can-resize = false
-		icon = 'Icons\\Scouter Icon.jpg'
-		image = 'Icons\\Misc Icons\\profile3.jpg'
 		image-mode = center
 		keep-aspect = true
 	elem "cbackstory"
@@ -1647,7 +797,6 @@ window "EmoteW"
 		title = "Emote"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 240
 		on-close = "EmoteClose"
 	elem "emoteinput"
@@ -1811,7 +960,6 @@ window "GenericSheet"
 		title = "RT"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 	elem "Grid"
 		type = GRID
 		pos = 0,0
@@ -1825,64 +973,6 @@ window "GenericSheet"
 		drop-zone = false
 		saved-params = ""
 		cells = 2x2
-		current-cell = 1,1
-		show-lines = none
-		link-color = #ff80ff
-		highlight-color = #000000
-
-window "Grid"
-	elem "Grid"
-		type = MAIN
-		pos = 291,0
-		size = 330x360
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		background-color = #000000
-		is-visible = false
-		saved-params = "pos;size;is-minimized;is-maximized"
-		statusbar = false
-		can-close = false
-		can-minimize = false
-	elem "Done"
-		type = BUTTON
-		pos = 227,329
-		size = 103x31
-		anchor1 = 69,91
-		anchor2 = 100,100
-		font-family = "serif"
-		font-size = 12
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Finished"
-		command = ".CloseGrid"
-	elem "SelectedCustomize"
-		type = LABEL
-		pos = 0,329
-		size = 227x31
-		anchor1 = 0,91
-		anchor2 = 69,100
-		font-family = "serif"
-		font-size = 10
-		text-color = #f5f5f5
-		background-color = #484848
-		border = sunken
-		saved-params = ""
-		text = "Select an icon!"
-		image-mode = tile
-	elem "GridX"
-		type = GRID
-		pos = 0,0
-		size = 330x329
-		anchor1 = 0,0
-		anchor2 = 100,91
-		text-color = #f5f5f5
-		background-color = #595959
-		is-default = true
-		border = line
-		drop-zone = false
-		saved-params = ""
-		cells = 2x1
 		current-cell = 1,1
 		show-lines = none
 		link-color = #ff80ff
@@ -2022,7 +1112,6 @@ window "Inventory"
 		title = "Inventory"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 200
 	elem "button60"
 		type = BUTTON
@@ -2200,7 +1289,6 @@ window "Ping"
 		statusbar = false
 		can-minimize = false
 		can-resize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		on-close = "StopPing"
 	elem "label12"
 		type = LABEL
@@ -2240,7 +1328,6 @@ window "QuestLog"
 		title = "Quest Log"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 	elem "questinfo"
 		type = LABEL
 		pos = 235,1
@@ -2286,7 +1373,6 @@ window "ScanArea"
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Scan Area"
 		statusbar = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		transparent-color = #3e3e3e
 		alpha = 210
 		on-close = "SenseClose"
@@ -2332,7 +1418,6 @@ window "SkillSheet"
 		title = "Character Sheet"
 		statusbar = false
 		can-minimize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 	elem "characterinfo"
 		type = LABEL
 		pos = 0,1
@@ -2444,7 +1529,6 @@ window "chat3"
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Chat"
 		statusbar = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 215
 	elem "OutputTabs3"
 		type = TAB
@@ -2471,7 +1555,6 @@ window "mainwindow"
 		is-default = true
 		saved-params = ""
 		statusbar = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		macro = "macro"
 		menu = "menu"
 	elem "button41"
@@ -2721,7 +1804,7 @@ window "mapwindow"
 		background-color = #2c2c2c
 		saved-params = "is-checked"
 		text = "Clear Target"
-		command = "Clear_Target"
+		command = "clearTarget"
 	elem "button62"
 		type = BUTTON
 		pos = 792,88
@@ -2903,7 +1986,6 @@ window "new_build"
 		saved-params = ""
 		title = "Build"
 		statusbar = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 200
 		on-close = ".OpenBuild"
 	elem "button47"
@@ -3314,7 +2396,6 @@ window "Charabox"
 		statusbar = false
 		can-minimize = false
 		can-resize = false
-		icon = 'Icons\\Scouter Icon.jpg'
 		alpha = 206
 		on-close = "Show-HUD"
 	elem "GravityT"

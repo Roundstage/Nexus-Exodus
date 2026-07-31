@@ -29,7 +29,7 @@ mob
 		DragonRushSFXLoop()
 			set waitfor=0
 			while(in_dragon_rush)
-				player_view(20,src) << sound(pick('meleemiss1.ogg','meleemiss2.ogg','meleemiss3.ogg'), volume = 20)
+				player_view(20,src) << sound(pick('Meleemiss1.ogg','Meleemiss2.ogg','Meleemiss3.ogg'), volume = 20)
 				sleep(world.tick_lag * rand(2,3))
 
 		EndDragonRush()
@@ -136,7 +136,7 @@ proc
 				sleep(4)
 				go_to_next_warp = 0
 				time_elapsed = 0
-				player_view(20,a) << sound('teleport.ogg',volume = 20)
+				player_view(20,a) << sound('Teleport.ogg',volume = 20)
 				a.AfterImage(25)
 				b.AfterImage(25)
 				a.NewDragonRushLoc(b)
@@ -172,13 +172,13 @@ proc
 		else loser = a
 
 		if(!winner || !loser) return
-		player_view(20,winner) << sound('strongpunch.ogg',volume = 20)
+		player_view(20,winner) << sound('Strongpunch.ogg',volume = 20)
 
 		//so the winner can move again and the dragon rush animations and shockwaves stop playing
 		winner.in_dragon_rush = 0
 		loser.in_dragon_rush = 0
 
-		var/dr_dmg = winner.get_melee_damage(loser) * 1 //was x7 but i want it to be a setup for a finisher not a finisher of itself
+		var/dr_dmg = winner.getPhysicalCombatDamage(loser, 2.5)
 		var/base_stun = 80
 		var/stun = base_stun * (winner.BP / loser.BP)**bp_exponent * (winner.Str / loser.Res)**0.4
 		stun = Clamp(stun, 0, base_stun * 2)
@@ -193,7 +193,7 @@ proc
 		winner.AfterImage(25)
 		winner.SafeTeleport(loser.loc)
 		flick('Zanzoken.dmi',winner)
-		player_view(20,winner) << sound('teleport.ogg',volume = 20)
+		player_view(20,winner) << sound('Teleport.ogg',volume = 20)
 		step_away(winner,loser)
 		winner.dir = get_dir(winner,loser)
 

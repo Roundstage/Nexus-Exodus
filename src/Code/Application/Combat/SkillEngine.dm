@@ -269,7 +269,7 @@ datum/SkillEngine
 	proc/resolveControlDelay(category)
 		if(category != SKILL_CATEGORY_CONTROLLED_BLAST && category != SKILL_CATEGORY_CONTROLLED_BIG_BLAST)
 			return 0
-		return world.tick_lag
+		return ki_projectile_step_delay
 
 	proc/resolveControlMaxSteps(path, category)
 		if(category != SKILL_CATEGORY_CONTROLLED_BLAST && category != SKILL_CATEGORY_CONTROLLED_BIG_BLAST)
@@ -329,6 +329,7 @@ datum/SkillEngine
 		if(def.homing_mode == SKILL_HOMING_AUTO)
 			if(user) blast.homing_chance = user.Get_blast_homing_chance(def.homing_mod)
 			if(blast.Can_Home) blast.Can_Home = 1
+			if(user) blast.blast_homing_target = user.getSelectedTarget(max_dist = 100)
 
 	proc/controlBlast(mob/user, obj/Blast/blast, obj/skill_obj, datum/SkillDefinition/def)
 		if(!def && skill_obj) def = getDefinitionForObj(skill_obj)
@@ -369,14 +370,7 @@ datum/SkillEngine
 		return 0
 
 	proc/isBeamSkill(path)
-		if(ispath(path, /obj/Attacks/Beam)) return 1
-		if(ispath(path, /obj/Attacks/Laser_Beam)) return 1
-		if(ispath(path, /obj/Attacks/Ray)) return 1
-		if(ispath(path, /obj/Attacks/Kamehameha)) return 1
-		if(ispath(path, /obj/Attacks/Dodompa)) return 1
-		if(ispath(path, /obj/Attacks/Final_Flash)) return 1
-		if(ispath(path, /obj/Attacks/Garlic_Gun)) return 1
-		if(ispath(path, /obj/Attacks/Masenko)) return 1
+		if(ispath(path, /obj/Attacks) && initial(path:hotbar_type) == "Beam") return 1
 		return 0
 
 	proc/castBeam(mob/user, obj/Attacks/skill_obj)
@@ -424,16 +418,17 @@ datum/SkillEngine
 			skill_obj.lastBlastSfx = world.time
 			player_view(10, user) << sound('Blast.wav', volume = 10)
 
-		var/amount = skill_obj.Blast_Count
+		var/amount = Clamp(ToOne(skill_obj.Blast_Count), 1, 4)
+		var/datum/CombatDamageBudget/damage_budget = new(4)
 		while(amount)
 			user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 
 			var/obj/Blast/a = get_cached_blast()
-			var/percent = 1.5 / skill_obj.blast_refire ** 0.75
+			var/percent = 0.5375 - 0.1875 * Clamp(skill_obj.blast_refire, 0.2, 1)
 			var/off_mod = 1
 			if(skill_obj.Stun) percent *= 1
 			a.Stun = skill_obj.Stun
-			a.setStats(user, Percent = percent, Off_Mult = off_mod, Explosion = 0)
+			a.setStats(user, Percent = percent, Off_Mult = off_mod, Explosion = skill_obj.Explosive, explosion_percent = skill_obj.Explosive ? percent : 0, shared_budget = damage_budget)
 			var
 				base_speed = 32
 				max_speed_bonus = 32 - base_speed
@@ -462,13 +457,8 @@ datum/SkillEngine
 			a.vector_speed = 44
 			a.Distance = 47
 			var/angle = dir_to_angle_0_360(a.dir)
-			var/mob/targ
-			if(world.time - skill_obj.last_retarget > 3)
-				targ = a.GetBlastHomingTarget(user.dir, angle = 18)
-				skill_obj.last_retarget = world.time
-				if(targ) skill_obj.last_blast_targ = targ
-			else if(skill_obj.last_blast_targ && a.Is_viable_homing_target(skill_obj.last_blast_targ))
-				targ = skill_obj.last_blast_targ
+			var/mob/targ = user.getSelectedTarget(max_dist = 30, dir_angle = user.dir, angle_limit = 18)
+			a.blast_homing_target = targ
 			if(targ) angle = get_global_angle(a, targ)
 			angle += rand(-4, 4)
 			a.BlastVectorWalk(angle)
@@ -485,17 +475,14 @@ datum/SkillEngine
 		user.attacking = 3
 		skill_obj.charging = 1
 		user.overlays += user.BlastCharge
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 30)
-		var/turf/fire_location = user.loc
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 30)
 		sleep(TickMult(18 * user.Speed_delay_mult(severity = 0.4)))
 		user.overlays -= user.BlastCharge
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 70)
 			user.Say("BIG BANG ATTACK!!")
 			var/obj/Blast/a = get_cached_blast()
-			var/dmg = 54
-			if(user.loc == fire_location) dmg *= 1.5
-			a.setStats(user, Percent = dmg, Off_Mult = 1, Explosion = 4)
+			a.setStats(user, Percent = 22, Off_Mult = 1, Explosion = 4, explosion_percent = 22, max_damage_factor = 44)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.Shockwave = 1
@@ -520,16 +507,13 @@ datum/SkillEngine
 		user.attacking = 3
 		user.moving_charge = 1
 		user.overlays += user.BlastCharge
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 20)
-		var/turf/fire_location = user.loc
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(TickMult(7.5 * user.Speed_delay_mult(severity = 0.6)))
 		user.overlays -= user.BlastCharge
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 40)
 			var/obj/Blast/a = get_cached_blast()
-			var/dmg = 20
-			if(user.loc == fire_location) dmg *= 1.5
-			a.setStats(user, Percent = dmg, Off_Mult = 2, Explosion = 2)
+			a.setStats(user, Percent = 4, Off_Mult = 2, Explosion = 2, explosion_percent = 4, max_damage_factor = 8)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.Shockwave = 1
@@ -554,14 +538,14 @@ datum/SkillEngine
 		user.attacking = 3
 		skill_obj.charging = 1
 		user.overlays += user.BlastCharge
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 20)
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(TickMult(5 * user.Speed_delay_mult(severity = 0.6)))
 		user.overlays -= user.BlastCharge
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 30)
 			var/obj/Blast/a = get_cached_blast()
 			a.icon = skill_obj.icon
-			a.setStats(user, Percent = 10, Off_Mult = 2, Explosion = 1)
+			a.setStats(user, Percent = 2.5, Off_Mult = 2, Explosion = 1, explosion_percent = 2.5, max_damage_factor = 5)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.vector_speed = 32
@@ -570,7 +554,7 @@ datum/SkillEngine
 			// Apply character's pixel offset for vectorial positioning
 			a.step_x = user.step_x
 			a.step_y = user.step_y
-			if(a) a.blast_walk(world.tick_lag)
+			if(a) a.blast_walk(ki_projectile_step_delay)
 		user.attacking = 0
 		skill_obj.charging = 0
 		return 1
@@ -581,13 +565,14 @@ datum/SkillEngine
 		if(user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)) return 0
 		user.attacking = 3
 		user.overlays += user.BlastCharge
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 20)
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		skill_obj.charging = 1
 		sleep(TickMult(0.1 * skill_obj.ChargeTime * user.Speed_delay_mult(severity = 0.4)))
 		if(user) user.overlays -= user.BlastCharge
 		if(!user.cant_blast(ignore_attack_check = 1))
-			player_view(10, user) << sound('basicbeam_fire.ogg', volume = 10)
-			var/amount = ToOne(17 * user.Eff ** 0.25)
+			player_view(10, user) << sound('BasicbeamFire.ogg', volume = 10)
+			var/amount = Clamp(ToOne(17 * user.Eff ** 0.25), 1, 20)
+			var/datum/CombatDamageBudget/damage_budget = new(8)
 			while(amount)
 				amount -= 1
 				var/obj/Blast/a = get_cached_blast()
@@ -601,7 +586,7 @@ datum/SkillEngine
 				a.Deflectable = 0
 				a.apply_short_range_beam_knock = 0
 				a.layer = 4
-				a.setStats(user, Percent = 17, Off_Mult = 1, Explosion = 0)
+				a.setStats(user, Percent = 0.4, Off_Mult = 1, Explosion = 0, shared_budget = damage_budget)
 				a.deflect_difficulty = 4
 				a.from_attack = skill_obj
 				if(prob(skill_obj.ExplosiveChance)) a.Explosive = skill_obj.Explosiveness
@@ -617,7 +602,7 @@ datum/SkillEngine
 				var/turf/t = a.loc
 				if(t && isturf(t) && t.Owner && t.Health > a.BP) del(a)
 				if(a) a.Beam()
-				spawn if(a && a.z) walk(a, a.dir, skill_obj.ShotSpeed * world.tick_lag)
+				spawn if(a && a.z) a.startKiProjectileWalk(a.dir, max(ki_projectile_step_delay, skill_obj.ShotSpeed * world.tick_lag))
 				sleep(TickMult(1))
 			user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 			skill_obj.Skill_Increase(2, user)
@@ -647,6 +632,7 @@ datum/SkillEngine
 
 		user.attacking = 3
 		var/amount = ToOne(40 * sqrt(user.Eff))
+		var/datum/CombatDamageBudget/damage_budget = new(18)
 		skill_obj.Using = 1
 		user.last_scattershot = world.time
 		while(amount && !user.cant_blast(ignore_attack_check = 1))
@@ -661,7 +647,7 @@ datum/SkillEngine
 			a.icon = skill_obj.icon
 			if(prob(100)) a.Explosive = 1
 			a.Shockwave = 3
-			a.setStats(user, Percent = 3.1, Off_Mult = 1, Explosion = ToOne(0.3))
+			a.setStats(user, Percent = 0.3, Off_Mult = 1, Explosion = 1, explosion_percent = 0.3, shared_budget = damage_budget)
 			applyHomingSettings(user, a, null, skill_obj)
 			a.from_attack = skill_obj
 			a.loc = user.loc
@@ -679,15 +665,13 @@ datum/SkillEngine
 				walk_towards(a, spot, 1)
 				spawn(rand(20, 25) * user.Speed_delay_mult(severity = 0.5)) if(a && a.z && a.Owner == user)
 					a.density = 1
-					if(target) walk_towards(a, target, TickMult(1))
-					spawn while(target && a && a.z && a.Owner == user)
-						if(user && (user.KB || user.KO))
-							walk(a, pick(a.dir, turn(a.dir, 45), turn(a.dir, -45), turn(a.dir, 90), turn(a.dir, -90)))
-						if(target in range(0, a)) a.Bump(target, override_dir = pick(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHWEST, SOUTHEAST))
-						sleep(TickMult(1))
+					if(!user || user.getSelectedTarget(target, require_view = FALSE) != target) target = null
+					if(target)
+						a.blast_homing_target = target
+						a.followSelectedTarget(target)
 				spawn if(a && a.z && a.Owner == user)
-					while(a && a.z && target) sleep(TickMult(2))
-					if(a && a.z)
+					while(a && a.z && target && a.Owner == user && !a.deflected && user && user.selected_target == target) sleep(TickMult(2))
+					if(a && a.z && !a.deflected)
 						walk_rand(a)
 						spawn(rand(1, 50)) if(a) del(a)
 				sleep(TickMult(0.3))
@@ -712,10 +696,11 @@ datum/SkillEngine
 		skill_obj.Firing_Attack_Barrier = 1
 
 		user.overlays += user.BlastCharge
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 20)
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(15 + (2 * user.Speed_delay_mult(severity = 0.5)))
+		var/orbs_fired = 0
 
-		while(skill_obj.Firing_Attack_Barrier)
+		while(skill_obj.Firing_Attack_Barrier && orbs_fired < 20)
 			var/max_blasts = user.MaxAttackBarrierBlasts()
 			while(skill_obj && user && skill_obj.Firing_Attack_Barrier && user.attack_barrier_blasts >= max_blasts)
 				sleep(5)
@@ -729,6 +714,7 @@ datum/SkillEngine
 				flick("Blast", user)
 				player_view(10, user) << sound('Blast.wav', 0, 1, 0, 15)
 				user.attack_barrier_blasts++
+				orbs_fired++
 				var/obj/Blast/a = get_cached_blast()
 				spawn(rand(600, 900)) if(a && a.z) del(a)
 				a.Shockwave = 4
@@ -740,7 +726,7 @@ datum/SkillEngine
 				a.pixel_x = rand(-16, 16)
 				a.pixel_y = rand(-16, 16)
 				a.icon = skill_obj.icon
-				a.setStats(user, Percent = 2, Off_Mult = 1, Explosion = 0)
+				a.setStats(user, Percent = 0.2, Off_Mult = 1, Explosion = 0)
 				a.from_attack = skill_obj
 				a.dir = user.dir
 				a.loc = user.loc
@@ -749,6 +735,7 @@ datum/SkillEngine
 				a.step_y = user.step_y
 				a.attack_barrier_loop()
 				sleep(TickMult(1 * user.Speed_delay_mult(severity = 0.3)))
+		skill_obj.Firing_Attack_Barrier = 0
 		user.attacking = 0
 		user.overlays -= user.BlastCharge
 		return 1
@@ -768,7 +755,7 @@ datum/SkillEngine
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		user.shockwaving = 1
 		var/amount = 7
-		player_view(10, user) << sound('wallhit.ogg', volume = 25)
+		player_view(10, user) << sound('Wallhit.ogg', volume = 25)
 		spawn if(user) while(amount)
 			amount -= 1
 			Make_Shockwave(user, 7, sw_icon_size = 256)
@@ -777,7 +764,7 @@ datum/SkillEngine
 					var/dirts = prob(40)
 					while(dirts)
 						dirts -= 1
-						var/image/i = image(icon = 'Damaged Ground.dmi', pixel_x = rand(-16, 16), pixel_y = rand(-16, 16))
+						var/image/i = image(icon = 'DamagedGround.dmi', pixel_x = rand(-16, 16), pixel_y = rand(-16, 16))
 						t.overlays += i
 						t.Remove_Damaged_Ground(i)
 			spawn for(var/mob/p in mob_view(10, user)) if(p.z && p != user && p.grabbedObject != user)
@@ -786,7 +773,7 @@ datum/SkillEngine
 					distance = round(distance)
 					if(distance > 30) distance = 30
 					p.Shockwave_Knockback(distance, user.loc, bypass_immunity = 1)
-					var/dmg = 2 * (user.BP / p.BP) ** bp_exponent * ((user.Pow + user.Swordless_strength()) / (p.Res + p.End)) ** 0.4 * (ki_power + melee_power) / 2
+					var/dmg = user.getHybridCombatDamage(p, 0.5)
 					dmg *= sagas_bonus(user, p)
 					user.training_period(p)
 					if(p.ki_shield_on())
@@ -841,8 +828,8 @@ datum/SkillEngine
 
 		skill_obj.last_use = world.time
 		skill_obj.Skill_Increase(5, user)
-		if(skill_obj.Level <= 2) player_view(10, target) << sound('kiplosion.ogg', volume = 40)
-		else player_view(10, target) << sound('Explosion 2.wav', volume = 40)
+		if(skill_obj.Level <= 2) player_view(10, target) << sound('Kiplosion.ogg', volume = 40)
+		else player_view(10, target) << sound('Explosion2.wav', volume = 40)
 		var/list/l = TurfCircle(7, target)
 		var/total_mobs_exploded = 0
 		var/total_objs_exploded = 0
@@ -870,13 +857,12 @@ datum/SkillEngine
 				total_mobs_exploded++
 				if(total_mobs_exploded > 50) break
 				if(!b.AOE_auto_dodge(user, Get_step(b, get_dir(b, target))))
-					var/dmg = 10 * ((user.BP / b.BP) ** 0.7) * ki_power
-					var/pow_vs_res = user.Pow / b.Res
-					if(pow_vs_res > 1) pow_vs_res = pow_vs_res ** 0.3
-					dmg *= pow_vs_res
+					var/dmg = user.getKiCombatDamage(b, 3)
 					dmg *= sagas_bonus(user, b)
 					user.training_period(b)
-					if(!b.shield_obj || !b.shield_obj.Using)
+					if(b.ki_shield_on())
+						b.Ki -= dmg * b.ShieldDamageReduction() * (b.max_ki / 100) / (b.Eff ** shield_exponent) * b.Generator_reduction()
+					else
 						b.TakeDamage(dmg)
 						if(b.Health <= 0)
 							if(!b.client) b.Death(user)
@@ -925,14 +911,14 @@ datum/SkillEngine
 			else sleep(TickMult(1))
 
 		if(!interrupted)
-			target = user.GetKikohoTarget()
+			target = user.GetKikohoTarget(target)
 			if(target && !user.cant_blast(ignore_attack_check = 1))
 				user.dir = get_dir(user, target)
 				user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 				skill_obj.Skill_Increase(1, user)
 
 				target_was_hit = 1
-				player_view(20, user) << sound('wallhit.ogg', volume = 40)
+				player_view(20, user) << sound('Wallhit.ogg', volume = 40)
 				target.GetHitByKikoho(user)
 				user.KikohoKnockAwayNonTargets(target)
 
@@ -962,7 +948,6 @@ datum/SkillEngine
 		if(user.Beam_stunned()) return 0
 
 		user.dash_attacking = 1
-		var/damage_mult = 1
 		user.original_dash_dir = user.dir
 		user.lastDashAttack = world.time
 		for(var/steps in 1 to 25)
@@ -974,16 +959,15 @@ datum/SkillEngine
 			step(user, dash_dir)
 			for(var/mob/p in mob_view(1, user))
 				if(p != user)
-					var/damage = damage_mult * user.get_melee_damage(p, allow_one_shot = 0)
+					var/damage_factor = min(8, 2 + (steps - 1) * 0.25)
+					var/damage = user.getPhysicalCombatDamage(p, damage_factor)
 					var/acc = user.get_melee_accuracy(p) * 2
-					damage *= user.BP / p.BP
 					var/kb_distance = (user.BP / p.BP) * (user.Str / p.End) * 5
 					if(prob(acc))
 						flick("Attack", user)
 						if(p.ki_shield_on())
 							p.Ki -= damage * p.ShieldDamageReduction() * (p.max_ki / 100) / (p.Eff ** shield_exponent) * p.Generator_reduction(is_melee = 1)
 						else
-							if(p.dir == user.dir) damage *= 2
 							p.TakeDamage(damage)
 						if(p.Health <= 0 || p.Ki <= 0) p.KO(user)
 						if(p) p.DashAttackPart2(user, kb_distance)
@@ -994,7 +978,6 @@ datum/SkillEngine
 						flick('Zanzoken.dmi', p)
 						step(p, turn(user.dir, pick(90, -90)))
 			user.AfterImage(20)
-			damage_mult += 0.3
 			sleep(TickMult(0.7 * user.Speed_delay_mult(severity = 0.25)))
 		user.Ki -= drain
 		user.dash_attacking = 0
@@ -1014,9 +997,13 @@ datum/SkillEngine
 			return 0
 		user.last_WolfFangFist = world.time
 
-		player_view(35, user) << sound('wolf_howl.mp3', volume = 35)
+		player_view(35, user) << sound('WolfHowl.mp3', volume = 35)
 		user.Do_lunge_drawback_animation()
 		sleep(TickMult(2 + user.Get_melee_delay(mult = 2)))
+		victim = user.getSelectedTarget(victim, max_dist = user.Get_lunge_targeting_distance())
+		if(!victim)
+			user.AddStamina(-20)
+			return 0
 
 		var/flying = user.Flying
 		user.Fly()
@@ -1024,6 +1011,7 @@ datum/SkillEngine
 		var/targ_dist = getdist(user, victim)
 		var/max_dist = targ_dist + 20
 		for(var/s in 1 to max_dist)
+			if(!victim || user.selected_target != victim) break
 			user.AfterImage(20)
 			var/success = step_towards(user, victim.base_loc(), 32)
 			if(user.WolfFangFistCancelled(victim, success))
@@ -1032,48 +1020,33 @@ datum/SkillEngine
 
 		if(!flying) user.Land()
 
-		var/hit = prob(user.get_melee_accuracy(victim) * 2)
-		if(getdist(user, victim) > 1) hit = 0
-		if(!hit) player_view(15, user) << sound('meleemiss3.ogg', volume = 35)
-		user.ScreenShake(Amount = 15, Offset = 8)
-
-		if(!(victim && hit))
-			user.AddStamina(-(20))
-			return 0
-
-		player_view(15, user) << sound('strongpunch.ogg', volume = 30)
-		flick("Attack", user)
-		victim.ScreenShake(Amount = 15, Offset = 8)
-		var/dmg = user.get_melee_damage(victim, count_sword = 0) * 0.8
-		victim.TakeDamage(dmg, 1)
-		var/hp_before_dmg = victim.Health
-		if(dmg >= 100 + hp_before_dmg) victim.KO(user, allow_anger = 1)
-		else if(dmg >= hp_before_dmg) victim.KO(user)
-		var/remaining_dmg = dmg - hp_before_dmg
-		if(remaining_dmg > 0) victim.TakeDamage(remaining_dmg, 1)
 		var/hitcount = 0
-		for(var/hits in 0 to user.numberOfHits)
-			var/hited = prob(user.get_melee_accuracy(victim))
-			if(!hited)
-				player_view(15, user) << sound('meleemiss3.ogg', volume = 35)
-				continue
+		for(var/hit_number in 1 to user.numberOfHits)
+			if(!victim || user.selected_target != victim || victim.KO) break
+			while(victim && user.selected_target == victim && getdist(user, victim) > 1)
+				if(!vector_step_toward(user, victim, 32)) break
+				user.AfterImage(12)
+				sleep(world.tick_lag)
+			if(!victim || getdist(user, victim) > 1) break
+
+			var/accuracy = user.get_melee_accuracy(victim)
+			if(hit_number == 1) accuracy *= 2
+			if(!prob(accuracy))
+				player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
+				break
 			hitcount++
-			player_view(15, user) << sound('strongpunch.ogg', volume = 60)
+			player_view(15, user) << sound('Strongpunch.ogg', volume = 60)
 			flick("Attack", user)
+			user.ScreenShake(Amount = 8, Offset = 5)
+			victim.ScreenShake(Amount = 12, Offset = 7)
+			var/dmg = user.getPhysicalCombatDamage(victim, wolf_fang_hit_damage_mult)
 			victim.TakeDamage(dmg, 1)
-			var/hp_before_dmg_hits = victim.Health
-			if(dmg >= 100 + hp_before_dmg_hits) victim.KO(user, allow_anger = 1)
-			else if(dmg >= hp_before_dmg_hits) victim.KO(user)
-			var/remaining_dmg_hits = dmg - hp_before_dmg_hits
-			if(remaining_dmg_hits > 0) victim.TakeDamage(remaining_dmg_hits, 1)
-			sleep(1)
-		world << "You have hit'em [hitcount] times"
-		sleep(2)
-		if(victim)
-			var/base_dist = 0
-			var/dist = base_dist * (user.BP / victim.BP) ** 0.5 * (user.End / victim.Str) ** 0.5
-			dist = Clamp(dist, 0, base_dist * 3)
-			victim.Knockback(user, Distance = dist, bypass_immunity = 1, from_lunge = 1)
+			if(victim && !victim.KO) victim.Knockback(user, Distance = wolf_fang_knockback_distance, bypass_immunity = 1)
+			sleep(2)
+		if(!hitcount)
+			user.AddStamina(-20)
+			return 0
+		user << "Wolf Fang Fist landed [hitcount] hit[hitcount == 1 ? "" : "s"]."
 		return 1
 
 	proc/castDropkick(mob/user, obj/Dropkick/skill_obj)
@@ -1094,9 +1067,14 @@ datum/SkillEngine
 		user.AlterInputDisabled(1)
 
 		user.DropkickFX()
-		player_view(15, user) << sound('throw.ogg', volume = 35)
+		player_view(15, user) << sound('Throw.ogg', volume = 35)
 		user.Do_lunge_drawback_animation()
 		sleep(TickMult(2 + user.Get_melee_delay(mult = 2)))
+		m = user.getSelectedTarget(m, max_dist = user.Get_lunge_targeting_distance())
+		if(!m)
+			user.attacking = 0
+			user.AlterInputDisabled(-1)
+			return 0
 
 		var/flying = user.Flying
 		user.Fly()
@@ -1112,6 +1090,7 @@ datum/SkillEngine
 		var/targ_dist = getdist(user, m)
 		var/max_dist = targ_dist + 8
 		for(var/s in 1 to max_dist)
+			if(!m || user.selected_target != m) break
 			user.AfterImage(8)
 			var/success = step_towards(user, m.base_loc(), 32)
 			if(user.DropkickCancelled(m, success)) break
@@ -1119,23 +1098,20 @@ datum/SkillEngine
 
 		if(!flying) user.Land()
 
-		var/hit = prob(user.get_melee_accuracy(m) * 2)
-		if(getdist(user, m) > 1) hit = 0
-		if(!hit) player_view(15, user) << sound('meleemiss3.ogg', volume = 35)
+		var/hit = m && user.selected_target == m && prob(user.get_melee_accuracy(m) * 2)
+		if(!m || getdist(user, m) > 1) hit = 0
+		if(!hit) player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
 
 		user.ScreenShake(Amount = 15, Offset = 8)
 		if(m && hit)
-			player_view(15, user) << sound('strongpunch.ogg', volume = 60)
+			player_view(15, user) << sound('Strongpunch.ogg', volume = 60)
 			m.AlterInputDisabled(1)
 			m.ScreenShake(Amount = 15, Offset = 8)
-			var/dmg = user.get_melee_damage(m, count_sword = 0) * 7.5
+			var/dmg = user.getPhysicalCombatDamage(m, 5)
 			var/hp_before_dmg = m.Health
 			m.TakeDamage(dmg)
 			if(dmg >= 100 + hp_before_dmg) m.KO(user, allow_anger = 1)
 			else if(dmg >= hp_before_dmg) m.KO(user)
-			var/remaining_dmg = dmg - hp_before_dmg
-			if(remaining_dmg > 0) m.TakeDamage(remaining_dmg)
-
 			sleep(2)
 			if(m)
 				m.AlterInputDisabled(-1)
@@ -1156,7 +1132,7 @@ datum/SkillEngine
 						m.Death(user)
 
 		user.last_dropkick_debuff_triggered = world.time
-		if(m) m.TakeDamage(user.get_melee_damage(m, count_sword = 0) * 5)
+		if(m && hit && user.selected_target == m) m.TakeDamage(user.getPhysicalCombatDamage(m, 3))
 
 		if(user.Health < 0)
 			user.KO(user)
@@ -1226,7 +1202,7 @@ datum/SkillEngine
 			user.icon_state = "1H Overhead Charge"
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		if(skill_obj) skill_obj.Skill_Increase(3, user)
-		player_view(10, user) << sound('basicbeam_charge.ogg', volume = 20)
+		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 
 		var/obj/Blast/A = get_cached_blast()
 		A.Sokidan = 1
@@ -1238,11 +1214,10 @@ datum/SkillEngine
 		A.Shockwave = 2
 		A.Piercer = 0
 		A.vector_speed = 22
-		var/dmgPercent = 23
-		if(user.Race == "Human") dmgPercent *= 1.5
-		A.setStats(user, Percent = dmgPercent, Off_Mult = 3, Explosion = 2, homing_mod = 2)
+		A.setStats(user, Percent = 3.5, Off_Mult = 3, Explosion = 2, homing_mod = 2, explosion_percent = 3.5, max_damage_factor = 7, owner_immunity = 1)
 		A.from_attack = skill_obj
 		A.weaker_obstacles_cant_destroy_blast = 1
+		A.blast_go_over_owner = 1
 
 		sleep(TickMult(7 * user.Speed_delay_mult(severity = 0.7)))
 
@@ -1256,7 +1231,7 @@ datum/SkillEngine
 			var/controlled = 0
 			applyHomingSettings(user, A, null, skill_obj)
 			controlled = controlBlast(user, A, skill_obj)
-			if(!controlled && A && A.z) walk(A, A.dir)
+			if(!controlled && A && A.z) A.startKiProjectileWalk(A.dir)
 
 		skill_obj.Using = 0
 		user.attacking = 0
@@ -1289,7 +1264,7 @@ datum/SkillEngine
 			user.icon_state = "1H Overhead Charge"
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		if(skill_obj) skill_obj.Skill_Increase(3, user)
-		player_view(10, user) << sound('destructodisc_charge.ogg', volume = 35)
+		player_view(10, user) << sound('DestructodiscCharge.ogg', volume = 35)
 
 		var/obj/Blast/A = get_cached_blast()
 		A.Sokidan = 1
@@ -1300,24 +1275,23 @@ datum/SkillEngine
 		A.Shockwave = 0
 		A.Piercer = 1
 		A.slice_attack = 1
-		var/dmgPercent = 45
-		if(user.Race == "Human") dmgPercent *= 1.5
-		A.setStats(user, Percent = dmgPercent, Off_Mult = 15, Explosion = 0)
+		A.setStats(user, Percent = 6, Off_Mult = 15, Explosion = 0, max_damage_factor = 6, owner_immunity = 1)
 		A.from_attack = skill_obj
 		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1
+		A.blast_go_over_owner = 1
 
 		sleep(TickMult(12 * user.Speed_delay_mult(severity = 0.3)))
 		if(user && user.h1_overhead_gfx)
 			user.icon_state = ""
 		if(A)
-			player_view(10, user) << sound('disc_fire.ogg', volume = 35)
+			player_view(10, user) << sound('DiscFire.ogg', volume = 35)
 			if(user.dir == SOUTH) A.density = 0
 			flick("Attack", user)
 			var/controlled = 0
 			applyHomingSettings(user, A, null, skill_obj)
 			controlled = controlBlast(user, A, skill_obj)
-			if(!controlled && A && A.z) walk(A, A.dir)
+			if(!controlled && A && A.z) A.startKiProjectileWalk(A.dir)
 		skill_obj.Using = 0
 		if(user) user.attacking = 0
 		debugLog("Kienzan fired.", user)

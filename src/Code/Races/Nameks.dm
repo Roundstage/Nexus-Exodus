@@ -192,7 +192,7 @@ mob/proc/Namekian_Fusion()
 				var/min_hbtc_bp = P.base_bp * 0.33
 				if(P.hbtc_bp < min_hbtc_bp) P.hbtc_bp = min_hbtc_bp
 
-				Respawn()
+				respawn()
 				P.Namekian_Fusion_Gfx()
 				available_potential=0.01
 				src<<"You have fused with [P] and were automatically reincarnated"
@@ -202,7 +202,7 @@ mob/Admin5/verb/testnfg()
 
 mob/proc/Namekian_Fusion_Gfx()
 	set waitfor=0
-	player_view(10,src)<<sound('Super Namek.ogg',volume=40)
+	player_view(10,src)<<sound('SuperNamek.ogg',volume=40)
 	var/N=6
 	spawn while(N&&src)
 		N--
@@ -213,7 +213,7 @@ mob/proc/Namekian_Fusion_Gfx()
 	RisingRocksTransformFXNoWait(rocksPerSession = 2, sessions = 15, sessionDelay = 2, maxDist = 6, distGrowPerSession = 1.5, minVel = 6, maxVel = 10, fadeTime = 35, hoverTime = 50)
 	var/obj/O=new(loc)
 	Timed_Delete(O,200)
-	O.icon='White Flashing Circle.dmi'
+	O.icon='WhiteFlashingCircle.dmi'
 	O.layer=9
 	CenterIcon(O)
 	spawn while(O)

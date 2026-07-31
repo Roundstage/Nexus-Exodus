@@ -92,7 +92,7 @@ obj/God_Fist
 		if(usr.Redoing_Stats)
 			usr<<"You can not use this while choosing stat mods"
 			return
-		for(var/obj/Limit_Breaker/lb in usr) if(lb.Using)
+		if(usr.limit_breaker_on)
 			usr<<"[src] can not be combined with limit breaker"
 			return
 		/*if(usr.buffed())
@@ -141,7 +141,7 @@ proc/get_body_part(turf/t)
 	return bp
 
 obj/Body_Part
-	icon='Body Parts.dmi'
+	icon='BodyParts.dmi'
 	Savable=0
 	Nukable=0
 	Grabbable=0

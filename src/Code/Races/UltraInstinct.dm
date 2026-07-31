@@ -1,8 +1,10 @@
-mob/Admin4/verb/GoUltraInstinct(mob/m in world)
+mob/Admin4/verb/goUltraInstinct(mob/m in world)
+	set name = "GoUltraInstinct"
 	set category = "Admin"
 	m.UltraInstinct()
 
-mob/Admin4/verb/MassUltraInstinct()
+mob/Admin4/verb/massUltraInstinct()
+	set name = "MassUltraInstinct"
 	set category = "Admin"
 	var/confirm=input("Are you sure you want to do this? (Mass Ultra Instinct)") in list("Yes","No")
 	if(confirm=="No") return
@@ -22,9 +24,9 @@ proc
 	GenerateUltraInstinctGraphics()
 		set waitfor=0
 		if(!ultra_instinct_idle_aura)
-			ultra_instinct_idle_aura = image(icon = 'vermar UI aura.dmi')
+			ultra_instinct_idle_aura = image(icon = 'VermarUIAura.dmi')
 		if(!ultra_instinct_aura)
-			ultra_instinct_aura = 'vermar UI aura 2.dmi' + rgb(0,0,0,222)
+			ultra_instinct_aura = 'VermarUIAura2.dmi' + rgb(0,0,0,222)
 			ultra_instinct_aura = Scaled_Icon(ultra_instinct_aura, 48, 64)
 
 mob/var
@@ -93,10 +95,10 @@ have instant transmission
 	UltraInstinct()
 		set waitfor=0
 		if(ultra_instinct) return
+		preparePrimaryTransformation("ultra_instinct")
 		Tens("<font size=5><font color=red>[src] has just gone Ultra Instinct!")
 		last_ultra_instinct = world.time
 		ultra_instinct = 1
-		for(var/v in 1 to 6) PowerUpGoNextForm()
 		UltraInstinctGraphics()
 		UltraInstinctSFX()
 		ApplyStun(time = 50, no_immunity = 1)
@@ -104,8 +106,8 @@ have instant transmission
 		SSj_Hair()
 		overlays -= ultra_instinct_idle_aura
 		overlays += ultra_instinct_idle_aura
-		overlays -= 'UI_Electricity.dmi'
-		overlays += 'UI_Electricity.dmi'
+		overlays -= 'UIElectricity.dmi'
+		overlays += 'UIElectricity.dmi'
 
 		Spd *= ultra_instinct_speed
 		spdmod *= ultra_instinct_speed
@@ -114,6 +116,7 @@ have instant transmission
 		Def *= ultra_instinct_ref
 		defmod *= ultra_instinct_ref
 		bp_mult += ui_bp_mult_add
+		syncActivePrimaryTransformation("Ultra Instinct")
 
 		UltraInstinctDestroyObstacles()
 		UltraInstinctSideStepLoop()
@@ -122,12 +125,11 @@ have instant transmission
 		sleep(1800)
 		UltraInstinctRevert()
 
-	UltraInstinctRevert()
-		set waitfor=0
+	clearUltraInstinctState()
 		if(!ultra_instinct) return
 		ultra_instinct = 0
 		overlays -= ultra_instinct_idle_aura
-		overlays -= 'UI_Electricity.dmi'
+		overlays -= 'UIElectricity.dmi'
 
 		Spd /= ultra_instinct_speed
 		spdmod /= ultra_instinct_speed
@@ -136,9 +138,15 @@ have instant transmission
 		Def /= ultra_instinct_ref
 		defmod /= ultra_instinct_ref
 		bp_mult -= ui_bp_mult_add
+		syncActivePrimaryTransformation("Ultra Instinct revert")
+
+	UltraInstinctRevert()
+		set waitfor=0
+		if(!ultra_instinct) return
+		clearUltraInstinctState()
 
 		player_view(50,src) << sound(null)
-		player_view(20,src) << sound('ultra instinct explode.ogg', volume = 50)
+		player_view(20,src) << sound('UltraInstinctExplode.ogg', volume = 50)
 		Explosion_Graphics(src,3)
 		SaitamaBloodEffect(blood_range = 2, blood_chance = 35)
 		ApplyStun(time = 150, no_immunity = 1)
@@ -154,9 +162,9 @@ have instant transmission
 
 	UltraInstinctSFX()
 		set waitfor=0
-		player_view(50,src) << sound('Ultra Instinct Sound Effect.ogg', volume = 77)
+		player_view(50,src) << sound('UltraInstinctSoundEffect.ogg', volume = 77)
 		sleep(33)
-		player_view(50,src) << sound('Ultra Instinct Music No Vocals.ogg', volume = 15)
+		player_view(50,src) << sound('UltraInstinctMusicNoVocals.ogg', volume = 15)
 
 	UltraInstinctDestroyObstacles()
 		set waitfor=0
@@ -193,7 +201,7 @@ have instant transmission
 						ultra_instinct_no_escape_triggered = 1
 						SafeTeleport(t)
 						dir = get_dir(src,last_attacker)
-						player_view(20,src)<<sound('teleport.ogg',volume=15)
+						player_view(20,src)<<sound('Teleport.ogg',volume=15)
 						flick('Zanzoken.dmi',src)
 						Melee()
 			sleep(10)
@@ -207,8 +215,8 @@ mob/proc/UltraInstinctGraphics()
 		N--
 		//Make_Shockwave(src,7,'Electricgroundbeam2.dmi')
 		//Make_Shockwave(src,7,ultra_instinct_aura)
-		//Make_Shockwave(src,7,'Give Power Effect White.dmi')
-		Make_Shockwave(src,7,'Ultra Instinct Spark Shockwave.dmi')
+		//Make_Shockwave(src,7,'GivePowerEffectWhite.dmi')
+		Make_Shockwave(src,7,'UltraInstinctSparkShockwave.dmi')
 		sleep(rand(200,300) / 100)
 	spawn if(src) Ultra_Instinct_Rising_Aura(src,65)
 	RisingRocksTransformFXNoWait(rocksPerSession = 2, sessions = 20, sessionDelay = 2, maxDist = 6, distGrowPerSession = 1, minVel = 30, maxVel = 60, fadeTime = 30, hoverTime = 20)
@@ -228,7 +236,7 @@ proc/UltraInstinctSwirlEffect(turf/pos, time = 100, start_size = 0.1, end_size =
 	var/obj/Effect/o = GetEffect()
 	o.SafeTeleport(pos)
 	Timed_Delete(o,time + 1)
-	o.icon='swirling white energy.png'
+	o.icon='SwirlingWhiteEnergy.png'
 	o.alpha = start_alpha
 	o.transform *= start_size
 	o.transform = turn(o.transform, rand(0,360))

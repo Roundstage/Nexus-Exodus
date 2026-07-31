@@ -52,7 +52,9 @@ client/Click(obj/A, location, control, params)
 				if(istype(A,/obj/items/Armor)) B.Apply_Armor(A)
 			A.Move(mob)
 			if(A.suffix=="Equipped") A.suffix=null
-			if(B) B.Restore_hotbar_from_IDs()
+			if(B)
+				B.rebuildPlayerAppearance("item stolen")
+				B.Restore_hotbar_from_IDs()
 	else if(A in Alien_Icons) A:Choose(usr)
 	else if(A in Demon_Icons) A:Choose(usr)
 	else . = ..()
@@ -114,8 +116,9 @@ turf/Click(turf/T) if(isturf(T))
 				if(skill_engine && skill_engine.handleExplosionClick(usr, T, K)) return
 		if(locate(/obj/Turfs/Door) in src) return
 
-		if(usr.CanInputMove() && !usr.attack_barrier_obj || (usr.attack_barrier_obj && !usr.attack_barrier_obj.Firing_Attack_Barrier))
-			for(var/obj/Zanzoken/A in usr) if(!T.density&&(!T.Water||usr.Flying)&&usr.Ki>=usr.Zanzoken_Drain())
+		if(usr.CanInputMove() && (!usr.attack_barrier_obj || !usr.attack_barrier_obj.Firing_Attack_Barrier))
+			var/obj/Zanzoken/A = usr.getZanzokenSkill()
+			if(A && !T.density&&(!T.Water||usr.Flying)&&usr.Ki>=usr.Zanzoken_Drain())
 
 				var/stam_drain = 6
 				if(usr.Being_chased()) stam_drain *= 2
@@ -137,7 +140,7 @@ turf/Click(turf/T) if(isturf(T))
 
 					usr.AddStamina(-stam_drain)
 
-					player_view(10,usr)<<sound('teleport.ogg',volume=15)
+					player_view(10,usr)<<sound('Teleport.ogg',volume=15)
 					flick('Zanzoken.dmi',usr)
 					usr.stand_still_time = world.time
 					var/OldDir=usr.dir
@@ -166,7 +169,7 @@ turf/Click(turf/T) if(isturf(T))
 			//commented it out like this. dont feel like recoding it
 			/*if(usr.client.eye==usr) if(!usr.KO && !usr.BeamStruggling()) for(var/obj/Shunkan_Ido/A in usr) if(A.Level>=20)
 				if(!T.density&&!T.Water)
-					player_view(10,usr)<<sound('teleport.ogg',volume=15)
+					player_view(10,usr)<<sound('Teleport.ogg',volume=15)
 					flick('Zanzoken.dmi',usr)
 					usr.stand_still_time = world.time
 					usr.SafeTeleport(locate(x,y,z))*/
@@ -189,13 +192,13 @@ mob/Click()
 		while(src&&usr&&getdist(src,usr)<=1&&KO&&!usr.KO) sleep(4)
 		if(usr) usr.Lootables=null
 		return
-	if(Class!="Legendary Saiyan"&&!ssj&&SSj4Able&&!usr.Target&&src==usr&&!transing&&!KO)
+	if(Class!="Legendary Saiyan"&&!ssj&&SSj4Able&&!usr.selected_target&&src==usr&&!transing&&!KO)
 		SSj4()
 		return
-	if(usr.Target==src||(usr==src&&usr.Target&&usr.Target!=src)) usr.Target=null
+	if(usr.selected_target == src || usr == src && usr.selected_target) usr.setSelectedTarget(null)
 	else
 		for(var/obj/items/Scouter/O in usr.item_list) if(O.suffix)
-			player_view(10,usr)<<sound('scouterbeeps.ogg',volume=35)
-			spawn(30) if(usr) player_view(10,usr)<<sound(pick('scouter.ogg','scouterend.ogg'),volume=35)
+			player_view(10,usr)<<sound('Scouterbeeps.ogg',volume=35)
+			spawn(30) if(usr) player_view(10,usr)<<sound(pick('Scouter.ogg','Scouterend.ogg'),volume=35)
 			break
-		usr.Target=src
+		if(src != usr) usr.setSelectedTarget(src)

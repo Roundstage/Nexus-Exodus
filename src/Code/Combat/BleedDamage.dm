@@ -21,10 +21,11 @@ mob/proc
 			if(dmg < 1) dmg = 1
 			if(dmg > 8) dmg = 8 //can only bleed out so fast
 			if(KO) dmg *= 3
-			if(Class == "Legendary Saiyan") dmg *= 1 //they said remove it, but it was 1.5
 			if(dmg > bleed_damage) dmg = bleed_damage
 			bleed_damage -= dmg
 			Health -= dmg
+			showDamageIndicator(dmg, "#d93452")
+			updateOverheadHealthHud()
 			if(Health <= 0) KO("low health")
 
 			sleep(10)

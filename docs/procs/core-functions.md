@@ -4,37 +4,38 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Core Functions/AaaMainVars.dm`
-- `src/Code/Core Functions/DBModeCharacters.dm`
-- `src/Code/Core Functions/DBModeCore.dm`
-- `src/Code/Core Functions/EnergySystem.dm`
-- `src/Code/Core Functions/KoSystem.dm`
-- `src/Code/Core Functions/ListSorting2018.dm`
-- `src/Code/Core Functions/Main.dm`
-- `src/Code/Core Functions/MainCreation.dm`
-- `src/Code/Core Functions/MainWorld.dm`
-- `src/Code/Core Functions/Map.dm`
-- `src/Code/Core Functions/MonsterAIRevamp2019.dm`
-- `src/Code/Core Functions/NewCharacter.dm`
-- `src/Code/Core Functions/PathfindTest.dm`
-- `src/Code/Core Functions/PixelHelpers.dm`
-- `src/Code/Core Functions/RaceChoiceMenu.dm`
-- `src/Code/Core Functions/RacesRework.dm`
-- `src/Code/Core Functions/Saving.dm`
-- `src/Code/Core Functions/Security.dm`
-- `src/Code/Core Functions/SecurityAdminBanning.dm`
-- `src/Code/Core Functions/SecurityBanSystem20.dm`
-- `src/Code/Core Functions/SkillSystem.dm`
-- `src/Code/Core Functions/StatPoints.dm`
-- `src/Code/Core Functions/StatpanelTabs.dm`
-- `src/Code/Core Functions/Text.dm`
-- `src/Code/Core Functions/TextRelated.dm`
-- `src/Code/Core Functions/_Game/Effects/EffectsLoops.dm`
-- `src/Code/Core Functions/_Game/Loop/MainGameLoop.dm`
+- `src/Code/CoreFunctions/DBModeCharacters.dm`
+- `src/Code/CoreFunctions/DBModeCore.dm`
+- `src/Code/CoreFunctions/EnergySystem.dm`
+- `src/Code/CoreFunctions/KoSystem.dm`
+- `src/Code/CoreFunctions/ListSorting2018.dm`
+- `src/Code/CoreFunctions/Main.dm`
+- `src/Code/CoreFunctions/MainCreation.dm`
+- `src/Code/CoreFunctions/MainWorld.dm`
+- `src/Code/CoreFunctions/Map.dm`
+- `src/Code/CoreFunctions/MonsterAIRevamp2019.dm`
+- `src/Code/CoreFunctions/PathfindTest.dm`
+- `src/Code/CoreFunctions/PixelHelpers.dm`
+- `src/Code/CoreFunctions/Saving.dm`
+- `src/Code/CoreFunctions/Security.dm`
+- `src/Code/CoreFunctions/SecurityAdminBanning.dm`
+- `src/Code/CoreFunctions/SecurityBanSystem20.dm`
+- `src/Code/CoreFunctions/SkillSystem.dm`
+- `src/Code/CoreFunctions/StatPoints.dm`
+- `src/Code/CoreFunctions/StatpanelTabs.dm`
+- `src/Code/CoreFunctions/Text.dm`
+- `src/Code/CoreFunctions/TextRelated.dm`
+- `src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm`
+- `src/Code/CoreFunctions/Vars/GlobalWorldSettings.dm`
+- `src/Code/CoreFunctions/Vars/MobCoreVars.dm`
+- `src/Code/CoreFunctions/Vars/MobSubsystemVars.dm`
+- `src/Code/CoreFunctions/Vars/WorldConstants.dm`
+- `src/Code/CoreFunctions/Game/Effects/EffectsLoops.dm`
+- `src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm`
 
 ## Proc Reference
 
-### src/Code/Core Functions/AaaMainVars.dm
+### src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm
 
 #### proc/ShouldOneShot
 - Signature: `proc/ShouldOneShot(mob/a, mob/b) //a = attacker`
@@ -43,7 +44,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/DBModeCharacters.dm
+### src/Code/CoreFunctions/DBModeCharacters.dm
 
 #### proc/Generate_dbz_character
 - Signature: `proc/Generate_dbz_character(n,for_avatar,new_only)`
@@ -115,7 +116,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/DBModeCore.dm
+### src/Code/CoreFunctions/DBModeCore.dm
 
 #### mob/proc/DBCharacterMenu
 - Signature: `DBCharacterMenu()`
@@ -208,7 +209,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/EnergySystem.dm
+### src/Code/CoreFunctions/EnergySystem.dm
 
 #### Seal/proc/Seal
 - Signature: `Seal(reason, duration)`
@@ -302,34 +303,41 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: none expected.
 
 #### mob/proc/give_energy_type
-- Signature: `mob/proc/give_energy_type(mob/player, energy_type, amount = 100, maximum = 100, modifier = 100)`
-- Inputs: mob/player, energy_type, amount = 100, maximum = 100, modifier = 100
-- Purpose: Handle give energy type.
+- Signature: `mob/proc/give_energy_type(energy_type, amount = 100, maximum = 100, modifier = 1.0)`
+- Inputs: energy_type, amount = 100, maximum = 100, modifier = 1.0
+- Purpose: Add a registered energy type to the current mob.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: creates and stores an Energy datum.
 
 #### mob/proc/remove_energy_type
-- Signature: `mob/proc/remove_energy_type(mob/player, energy_type)`
-- Inputs: mob/player, energy_type
-- Purpose: Remove energy type.
+- Signature: `mob/proc/remove_energy_type(energy_type)`
+- Inputs: energy_type
+- Purpose: Remove an energy type from the current mob.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/GiveEnergyTypeToPlayer
-- Signature: `mob/Admin2/verb/GiveEnergyTypeToPlayer(mob/player in players)`
+#### mob/proc/normalize_energy_types
+- Signature: `mob/proc/normalize_energy_types()`
+- Inputs: None
+- Purpose: Migrate legacy energy saves once, grant baseline race energies, and remove the retired Qi energy type.
+- Returns: none (implicit).
+- Side effects: mutates the current mob's energy list.
+
+#### mob/Admin2/verb/giveEnergyTypeToPlayer
+- Signature: `mob/Admin2/verb/giveEnergyTypeToPlayer(mob/player in players)`
 - Inputs: mob/player in players
 - Purpose: Handle give energy type to player.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/RemoveEnergyTypeFromPlayer
-- Signature: `mob/Admin2/verb/RemoveEnergyTypeFromPlayer(mob/player in players)`
+#### mob/Admin2/verb/removeEnergyTypeFromPlayer
+- Signature: `mob/Admin2/verb/removeEnergyTypeFromPlayer(mob/player in players)`
 - Inputs: mob/player in players
 - Purpose: Remove Energy Type From Player.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/KoSystem.dm
+### src/Code/CoreFunctions/KoSystem.dm
 
 #### mob/proc/Cause_Combat_KO
 - Signature: `Cause_Combat_KO(var/mob/victim, var/mob/attacker)`
@@ -415,7 +423,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/ListSorting2018.dm
+### src/Code/CoreFunctions/ListSorting2018.dm
 
 #### proc/SortListOfObjectsAlphabetically
 - Signature: `SortListOfObjectsAlphabetically(list/l)`
@@ -473,7 +481,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Main.dm
+### src/Code/CoreFunctions/Main.dm
 
 #### mob/proc/NewZenkaiMods
 - Signature: `mob/proc/NewZenkaiMods()`
@@ -521,13 +529,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `mob/proc/Carry_over_imprisonments()`
 - Inputs: None
 - Purpose: Handle carry over imprisonments.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Choose_Login
-- Signature: `mob/proc/Choose_Login() if(client)`
-- Inputs: None
-- Purpose: Handle choose login.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -755,7 +756,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/MainCreation.dm
+### src/Code/CoreFunctions/MainCreation.dm
 
 #### mob/proc/Get_spawns
 - Signature: `mob/proc/Get_spawns(excludeShips = 0)`
@@ -1212,7 +1213,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/MainWorld.dm
+### src/Code/CoreFunctions/MainWorld.dm
 
 #### world/New
 - Signature: `New()`
@@ -1235,15 +1236,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Set_Server_Name
-- Signature: `mob/Admin4/verb/Set_Server_Name()`
+#### mob/Admin4/verb/setServerName
+- Signature: `mob/Admin4/verb/setServerName()`
 - Inputs: None
 - Purpose: Set Server Name.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/Override_Server_Name
-- Signature: `mob/Admin5/verb/Override_Server_Name()`
+#### mob/Admin5/verb/overrideServerName
+- Signature: `mob/Admin5/verb/overrideServerName()`
 - Inputs: None
 - Purpose: Handle override server name.
 - Returns: none (implicit).
@@ -1280,7 +1281,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Other_Load_Stuff
 - Signature: `mob/proc/Other_Load_Stuff()`
 - Inputs: None
-- Purpose: Handle other load stuff.
+- Purpose: Normalize loaded character state and start player systems.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1501,8 +1502,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/max_villains
-- Signature: `mob/Admin4/verb/max_villains()`
+#### mob/Admin4/verb/maxVillains
+- Signature: `mob/Admin4/verb/maxVillains()`
 - Inputs: None
 - Purpose: Handle max villains.
 - Returns: none (implicit).
@@ -1536,7 +1537,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Map.dm
+### src/Code/CoreFunctions/Map.dm
 
 #### turf/proc/RandomDirtOverlay
 - Signature: `RandomDirtOverlay(n = 1)`
@@ -2784,7 +2785,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/MonsterAIRevamp2019.dm
+### src/Code/CoreFunctions/MonsterAIRevamp2019.dm
 
 #### mob/proc/Activate_NPCs_Loop
 - Signature: `mob/proc/Activate_NPCs_Loop()`
@@ -2870,8 +2871,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Toggle_Npcs
-- Signature: `mob/Admin2/verb/Toggle_Npcs()`
+#### mob/Admin2/verb/toggleNpcs
+- Signature: `mob/Admin2/verb/toggleNpcs()`
 - Inputs: None
 - Purpose: Toggle Npcs.
 - Returns: none (implicit).
@@ -3311,233 +3312,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Core Functions/NewCharacter.dm
-
-#### mob/verb/energyinfo
-- Signature: `mob/verb/energyinfo()`
-- Inputs: None
-- Purpose: Handle energyinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/bpinfo
-- Signature: `mob/verb/bpinfo()`
-- Inputs: None
-- Purpose: Handle bpinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/angerinfo
-- Signature: `mob/verb/angerinfo()`
-- Inputs: None
-- Purpose: Handle angerinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/strinfo
-- Signature: `mob/verb/strinfo()`
-- Inputs: None
-- Purpose: Handle strinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/endinfo
-- Signature: `mob/verb/endinfo()`
-- Inputs: None
-- Purpose: Handle endinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/spdinfo
-- Signature: `mob/verb/spdinfo()`
-- Inputs: None
-- Purpose: Handle spdinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/offinfo
-- Signature: `mob/verb/offinfo()`
-- Inputs: None
-- Purpose: Handle offinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/definfo
-- Signature: `mob/verb/definfo()`
-- Inputs: None
-- Purpose: Handle definfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/regeninfo
-- Signature: `mob/verb/regeninfo()`
-- Inputs: None
-- Purpose: Handle regeninfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/recovinfo
-- Signature: `mob/verb/recovinfo()`
-- Inputs: None
-- Purpose: Handle recovinfo.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/New_Character
-- Signature: `New_Character(EC=0)`
-- Inputs: EC=0
-- Purpose: Handle new character.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/WipeCharacter
-- Signature: `WipeCharacter()`
-- Inputs: None
-- Purpose: Handle wipe character.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/PrepareForCreation
-- Signature: `PrepareForCreation()`
-- Inputs: None
-- Purpose: Handle prepare for creation.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/donec
-- Signature: `donec()`
-- Inputs: None
-- Purpose: Handle donec.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/BackChar
-- Signature: `BackChar()`
-- Inputs: None
-- Purpose: Handle back char.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/racec
-- Signature: `racec()`
-- Inputs: None
-- Purpose: Handle racec.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/bodyc
-- Signature: `bodyc()`
-- Inputs: None
-- Purpose: Handle bodyc.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/namec
-- Signature: `namec()`
-- Inputs: None
-- Purpose: Handle namec.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/agec
-- Signature: `agec()`
-- Inputs: None
-- Purpose: Handle agec.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/genderc
-- Signature: `genderc()`
-- Inputs: None
-- Purpose: Handle genderc.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/hairc
-- Signature: `hairc()`
-- Inputs: None
-- Purpose: Handle hairc.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/iconc
-- Signature: `iconc()`
-- Inputs: None
-- Purpose: Handle iconc.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Stats
-- Signature: `Stats()`
-- Inputs: None
-- Purpose: Handle stats.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/AgeChoice
-- Signature: `AgeChoice()`
-- Inputs: None
-- Purpose: Handle age choice.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Name
-- Signature: `Name()`
-- Inputs: None
-- Purpose: Handle name.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Race
-- Signature: `Race()`
-- Inputs: None
-- Purpose: Handle race.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Location
-- Signature: `mob/proc/Location()`
-- Inputs: None
-- Purpose: Handle location.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### verb/Choose_Custom_Spawn
-- Signature: `verb/Choose_Custom_Spawn()`
-- Inputs: None
-- Purpose: Handle choose custom spawn.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Alien_Trans_Type
-- Signature: `Alien_Trans_Type()`
-- Inputs: None
-- Purpose: Handle alien trans type.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Gender
-- Signature: `Gender()`
-- Inputs: None
-- Purpose: Handle gender.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### */Human_Skins
-- Signature: `Human_Skins()`
-- Inputs: None
-- Purpose: Handle human skins.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### */Skin
-- Signature: `Skin()`
-- Inputs: None
-- Purpose: Handle skin.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/PathfindTest.dm
+### src/Code/CoreFunctions/PathfindTest.dm
 
 #### Can_Enter
 - Signature: `Can_Enter(turf/T,no_warp)`
@@ -3595,8 +3370,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Pathfind
-- Signature: `mob/Admin5/verb/Pathfind(mob/P in world)`
+#### mob/Admin5/verb/pathfind
+- Signature: `mob/Admin5/verb/pathfind(mob/P in world)`
 - Inputs: mob/P in world
 - Purpose: Handle pathfind.
 - Returns: none (implicit).
@@ -3938,7 +3713,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/PixelHelpers.dm
+### src/Code/CoreFunctions/PixelHelpers.dm
 
 #### proc/pixel_step_towards
 - Signature: `proc/pixel_step_towards(mob/a,mob/b,step_dist)`
@@ -4073,482 +3848,366 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/RaceChoiceMenu.dm
+### src/Code/CoreFunctions/Saving.dm
 
-#### obj/Race_icon/Click
-- Signature: `Click()`
-- Inputs: None
-- Purpose: Handle click.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Generate_race_menu_icons
-- Signature: `Generate_race_menu_icons()`
-- Inputs: None
-- Purpose: Handle generate race menu icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### proc/Get_race_icon
-- Signature: `Get_race_icon(r)`
-- Inputs: r
-- Purpose: Return race icon.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Get_race_desc
-- Signature: `Get_race_desc(r)`
-- Inputs: r
-- Purpose: Return race desc.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
-
-#### proc/Organize_race_icons
-- Signature: `Organize_race_icons(list/races)`
-- Inputs: list/races
-- Purpose: Handle organize race icons.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Race_choice_menu
-- Signature: `Race_choice_menu(list/races)`
-- Inputs: list/races
-- Purpose: Handle race choice menu.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Clear_race_menu
-- Signature: `Clear_race_menu()`
-- Inputs: None
-- Purpose: Handle clear race menu.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Fill_race_menu
-- Signature: `Fill_race_menu(list/races)`
-- Inputs: list/races
-- Purpose: Handle fill race menu.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/RacesRework.dm
-
-#### *proc/Initialise_Race
-- Signature: `Initialise_Race(mob/M, T)`
-- Inputs: mob/M, T
-- Purpose: Handle initialise race.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/Link
-- Signature: `Link(list/href_list)`
-- Inputs: list/href_list
-- Purpose: Handle link.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/canDisplayForm
-- Signature: `canDisplayForm(client/C)`
-- Inputs: client/C
-- Purpose: Return whether Display Form.
-- Returns: boolean flag.
-- Side effects: none expected.
-
-#### upForm/race_options/FormInitTempVars
-- Signature: `FormInitTempVars()`
-- Inputs: None
-- Purpose: Handle form init temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/FormSetTempVars
-- Signature: `FormSetTempVars(fname)`
-- Inputs: fname
-- Purpose: Handle form set temp vars.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/ProcessVariable
-- Signature: `ProcessVariable(fname, name, value)`
-- Inputs: fname, name, value
-- Purpose: Process Variable.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/FormSubmitSuccess
-- Signature: `FormSubmitSuccess(fname, client/C)`
-- Inputs: fname, client/C
-- Purpose: Handle form submit success.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### upForm/race_options/GenerateBody
-- Signature: `GenerateBody(list/errors=list())`
-- Inputs: list/errors=list(
-- Purpose: Handle generate body.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-### src/Code/Core Functions/Saving.dm
-
-#### proc/SaveAdminObjects
-- Signature: `proc/SaveAdminObjects()`
+#### proc/saveAdminObjects
+- Signature: `proc/saveAdminObjects()`
 - Inputs: None
 - Purpose: Save Admin Objects.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadAdminObjects
-- Signature: `proc/LoadAdminObjects()`
+#### proc/loadAdminObjects
+- Signature: `proc/loadAdminObjects()`
 - Inputs: None
 - Purpose: Load Admin Objects.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/proc/Respawn
-- Signature: `mob/proc/Respawn(butNotInShipArea)`
-- Inputs: butNotInShipArea
+#### mob/proc/respawn
+- Signature: `mob/proc/respawn(but_not_in_ship_area)`
+- Inputs: but_not_in_ship_area
 - Purpose: Handle respawn.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### proc/Initialize
-- Signature: `proc/Initialize()`
+#### proc/initialize
+- Signature: `proc/initialize()`
 - Inputs: None
 - Purpose: Handle initialize.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### proc/DestroyShipsInShipsLoop
-- Signature: `proc/DestroyShipsInShipsLoop()`
+#### proc/destroyShipsInShipsLoop
+- Signature: `proc/destroyShipsInShipsLoop()`
 - Inputs: None
 - Purpose: Handle destroy ships in ships loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### proc/AverageSpeedUpdater
-- Signature: `proc/AverageSpeedUpdater()`
+#### proc/averageSpeedUpdater
+- Signature: `proc/averageSpeedUpdater()`
 - Inputs: None
 - Purpose: Handle average speed updater.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### proc/SaveWorldRepeat
-- Signature: `proc/SaveWorldRepeat() while(1)`
+#### proc/saveWorldRepeat
+- Signature: `proc/saveWorldRepeat() while(1)`
 - Inputs: None
 - Purpose: Save World Repeat.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveWorld
-- Signature: `proc/SaveWorld(save_map=1, allow_auto_reboot=1, delete_pending_objs=1)`
+#### proc/saveWorld
+- Signature: `proc/saveWorld(save_map=1, allow_auto_reboot=1, delete_pending_objs=1)`
 - Inputs: save_map=1, allow_auto_reboot=1, delete_pending_objs=1
 - Purpose: Save World.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Loop
-- Signature: `proc/Save_Loop() while(1)`
+#### proc/saveLoop
+- Signature: `proc/saveLoop() while(1)`
 - Inputs: None
 - Purpose: Save Loop.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/proc/Cant_Remake
-- Signature: `mob/proc/Cant_Remake() if(fexists("data/Save/[key]"))`
+#### mob/proc/cantRemake
+- Signature: `mob/proc/cantRemake() if(fexists("data/Save/[key]"))`
 - Inputs: None
 - Purpose: Handle cant remake.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/RemoveOverlaysThatDontSaveCorrectly
-- Signature: `mob/proc/RemoveOverlaysThatDontSaveCorrectly()`
+#### mob/proc/removeOverlaysThatDontSaveCorrectly
+- Signature: `mob/proc/removeOverlaysThatDontSaveCorrectly()`
 - Inputs: None
 - Purpose: Remove Overlays That Dont Save Correctly.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/proc/Save
-- Signature: `mob/proc/Save()`
+#### mob/proc/save
+- Signature: `mob/proc/save()`
 - Inputs: None
 - Purpose: Handle save.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/Load
-- Signature: `mob/proc/Load() if(client)`
+#### mob/proc/load
+- Signature: `mob/proc/load() if(client)`
 - Inputs: None
 - Purpose: Handle load.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/HasSave
-- Signature: `mob/proc/HasSave()`
+#### mob/proc/hasSave
+- Signature: `mob/proc/hasSave()`
 - Inputs: None
 - Purpose: Return whether Save.
 - Returns: boolean flag.
 - Side effects: none expected.
 
-#### proc/SaveCustomDecors
-- Signature: `SaveCustomDecors()`
+#### proc/saveCustomDecors
+- Signature: `saveCustomDecors()`
 - Inputs: None
 - Purpose: Save Custom Decors.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadCustomDecors
-- Signature: `LoadCustomDecors()`
+#### proc/loadCustomDecors
+- Signature: `loadCustomDecors()`
 - Inputs: None
 - Purpose: Load Custom Decors.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Misc
-- Signature: `proc/Save_Misc()`
+#### proc/saveMisc
+- Signature: `proc/saveMisc()`
 - Inputs: None
 - Purpose: Save Misc.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Misc
-- Signature: `proc/Load_Misc()`
+#### proc/loadMisc
+- Signature: `proc/loadMisc()`
 - Inputs: None
 - Purpose: Load Misc.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Hero
-- Signature: `proc/Save_Hero()`
+#### proc/saveHero
+- Signature: `proc/saveHero()`
 - Inputs: None
 - Purpose: Save Hero.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Hero
-- Signature: `proc/Load_Hero() if(fexists("Hero"))`
+#### proc/loadHero
+- Signature: `proc/loadHero() if(fexists("Hero"))`
 - Inputs: None
 - Purpose: Load Hero.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveYear
-- Signature: `proc/SaveYear()`
+#### proc/saveYear
+- Signature: `proc/saveYear()`
 - Inputs: None
 - Purpose: Save Year.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadYear
-- Signature: `proc/LoadYear() if(fexists("Year"))`
+#### proc/loadYear
+- Signature: `proc/loadYear() if(fexists("Year"))`
 - Inputs: None
 - Purpose: Load Year.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Vote
-- Signature: `proc/Save_Vote()`
+#### proc/saveVote
+- Signature: `proc/saveVote()`
 - Inputs: None
 - Purpose: Save Vote.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Vote
-- Signature: `proc/Load_Vote() if(fexists("Votes"))`
+#### proc/loadVote
+- Signature: `proc/loadVote() if(fexists("Votes"))`
 - Inputs: None
 - Purpose: Load Vote.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Area
-- Signature: `proc/Save_Area()`
+#### proc/saveArea
+- Signature: `proc/saveArea()`
 - Inputs: None
 - Purpose: Save Area.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Area
-- Signature: `proc/Load_Area() if(fexists("data/Areas"))`
+#### proc/loadArea
+- Signature: `proc/loadArea() if(fexists("data/Areas"))`
 - Inputs: None
 - Purpose: Load Area.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveItems
-- Signature: `proc/SaveItems()`
+#### proc/saveItems
+- Signature: `proc/saveItems()`
 - Inputs: None
 - Purpose: Save Items.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadItems
-- Signature: `proc/LoadItems()`
+#### proc/loadItems
+- Signature: `proc/loadItems()`
 - Inputs: None
 - Purpose: Load Items.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_NPCs
-- Signature: `proc/Save_NPCs()`
+#### proc/saveNpcs
+- Signature: `proc/saveNpcs()`
 - Inputs: None
 - Purpose: Save NPCs.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_NPCs
-- Signature: `proc/Load_NPCs()`
+#### proc/loadNpcs
+- Signature: `proc/loadNpcs()`
 - Inputs: None
 - Purpose: Load NPCs.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Bodies
-- Signature: `proc/Save_Bodies()`
+#### proc/saveBodies
+- Signature: `proc/saveBodies()`
 - Inputs: None
 - Purpose: Save Bodies.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Bodies
-- Signature: `proc/Load_Bodies()`
+#### proc/loadBodies
+- Signature: `proc/loadBodies()`
 - Inputs: None
 - Purpose: Load Bodies.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveAdmins
-- Signature: `proc/SaveAdmins()`
+#### proc/saveAdmins
+- Signature: `proc/saveAdmins()`
 - Inputs: None
 - Purpose: Save Admins.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadAdmins
-- Signature: `proc/LoadAdmins() if(fexists("Admin"))`
+#### proc/loadAdmins
+- Signature: `proc/loadAdmins() if(fexists("Admin"))`
 - Inputs: None
 - Purpose: Load Admins.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Ban
-- Signature: `proc/Save_Ban()`
+#### proc/saveBan
+- Signature: `proc/saveBan()`
 - Inputs: None
 - Purpose: Save Ban.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Ban
-- Signature: `proc/Load_Ban()`
+#### proc/loadBan
+- Signature: `proc/loadBan()`
 - Inputs: None
 - Purpose: Load Ban.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Save_Gain
-- Signature: `proc/Save_Gain()`
+#### proc/saveGain
+- Signature: `proc/saveGain()`
 - Inputs: None
 - Purpose: Save Gain.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Load_Gain
-- Signature: `proc/Load_Gain() if(fexists("GAIN"))`
+#### proc/loadGain
+- Signature: `proc/loadGain() if(fexists("GAIN"))`
 - Inputs: None
 - Purpose: Load Gain.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveNotes
-- Signature: `proc/SaveNotes()`
+#### proc/saveNotes
+- Signature: `proc/saveNotes()`
 - Inputs: None
 - Purpose: Save Notes.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadNotes
-- Signature: `proc/LoadNotes() if(fexists("Notes"))`
+#### proc/loadNotes
+- Signature: `proc/loadNotes() if(fexists("Notes"))`
 - Inputs: None
 - Purpose: Load Notes.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveStory
-- Signature: `proc/SaveStory()`
+#### proc/saveStory
+- Signature: `proc/saveStory()`
 - Inputs: None
 - Purpose: Save Story.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadStory
-- Signature: `proc/LoadStory() if(fexists("STORY"))`
+#### proc/loadStory
+- Signature: `proc/loadStory() if(fexists("STORY"))`
 - Inputs: None
 - Purpose: Load Story.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveRanks
-- Signature: `proc/SaveRanks()`
+#### proc/saveRanks
+- Signature: `proc/saveRanks()`
 - Inputs: None
 - Purpose: Save Ranks.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadRanks
-- Signature: `proc/LoadRanks() if(fexists("Ranks"))`
+#### proc/loadRanks
+- Signature: `proc/loadRanks() if(fexists("Ranks"))`
 - Inputs: None
 - Purpose: Load Ranks.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveJobs
-- Signature: `proc/SaveJobs()`
+#### proc/saveJobs
+- Signature: `proc/saveJobs()`
 - Inputs: None
 - Purpose: Save Jobs.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadJobs
-- Signature: `proc/LoadJobs() if(fexists("Jobs"))`
+#### proc/loadJobs
+- Signature: `proc/loadJobs() if(fexists("Jobs"))`
 - Inputs: None
 - Purpose: Load Jobs.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveLogin
-- Signature: `proc/SaveLogin()`
+#### proc/saveLogin
+- Signature: `proc/saveLogin()`
 - Inputs: None
 - Purpose: Save Login.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadLogin
-- Signature: `proc/LoadLogin() if(fexists("Login Menu"))`
+#### proc/loadLogin
+- Signature: `proc/loadLogin() if(fexists("Login Menu"))`
 - Inputs: None
 - Purpose: Load Login.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/SaveRules
-- Signature: `proc/SaveRules()`
+#### proc/saveRules
+- Signature: `proc/saveRules()`
 - Inputs: None
 - Purpose: Save Rules.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/LoadRules
-- Signature: `proc/LoadRules() if(fexists("Rules"))`
+#### proc/loadRules
+- Signature: `proc/loadRules() if(fexists("Rules"))`
 - Inputs: None
 - Purpose: Load Rules.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### proc/Find_Max_Speed
-- Signature: `proc/Find_Max_Speed() while(1)`
+#### proc/findMaxSpeed
+- Signature: `proc/findMaxSpeed() while(1)`
 - Inputs: None
 - Purpose: Handle find max speed.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Security.dm
+### src/Code/CoreFunctions/Security.dm
 
 #### world/IsBanned
 - Signature: `world/IsBanned(key,ip,computer_id)`
@@ -4585,10 +4244,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/SecurityAdminBanning.dm
+### src/Code/CoreFunctions/SecurityAdminBanning.dm
 
-#### verb/Find_Player
-- Signature: `verb/Find_Player()`
+#### verb/findPlayer
+- Signature: `verb/findPlayer()`
 - Inputs: None
 - Purpose: Handle find player.
 - Returns: none (implicit).
@@ -4608,8 +4267,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Deny_Admin
-- Signature: `mob/Admin4/verb/Deny_Admin()`
+#### mob/Admin4/verb/denyAdmin
+- Signature: `mob/Admin4/verb/denyAdmin()`
 - Inputs: None
 - Purpose: Handle deny admin.
 - Returns: none (implicit).
@@ -4650,8 +4309,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Give_Admin
-- Signature: `mob/Admin4/verb/Give_Admin(mob/A in players)`
+#### mob/Admin4/verb/giveAdmin
+- Signature: `mob/Admin4/verb/giveAdmin(mob/A in players)`
 - Inputs: mob/A in players
 - Purpose: Handle give admin.
 - Returns: none (implicit).
@@ -4671,14 +4330,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/Remove_All_Admins
-- Signature: `mob/Admin5/verb/Remove_All_Admins()`
+#### mob/Admin5/verb/removeAllAdmins
+- Signature: `mob/Admin5/verb/removeAllAdmins()`
 - Inputs: None
 - Purpose: Remove All Admins.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Core Functions/SecurityBanSystem20.dm
+### src/Code/CoreFunctions/SecurityBanSystem20.dm
 
 #### proc/Hostban_check_loop
 - Signature: `proc/Hostban_check_loop()`
@@ -4701,8 +4360,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/Force_Initialise_Bans
-- Signature: `mob/Admin5/verb/Force_Initialise_Bans()`
+#### mob/Admin5/verb/forceInitialiseBans
+- Signature: `mob/Admin5/verb/forceInitialiseBans()`
 - Inputs: None
 - Purpose: Handle force initialise bans.
 - Returns: none (implicit).
@@ -4736,8 +4395,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/ExemptFromHostCheck
-- Signature: `mob/Admin5/verb/ExemptFromHostCheck()`
+#### mob/Admin5/verb/exemptFromHostCheck
+- Signature: `mob/Admin5/verb/exemptFromHostCheck()`
 - Inputs: None
 - Purpose: Handle exempt from host check.
 - Returns: none (implicit).
@@ -4771,11 +4430,11 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/SkillSystem.dm
+### src/Code/CoreFunctions/SkillSystem.dm
 
 #### mob/proc/get_energy
-- Signature: `mob/proc/get_energy(type)`
-- Inputs: type
+- Signature: `mob/proc/get_energy(energy_type)`
+- Inputs: energy_type
 - Purpose: Return energy.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
@@ -4815,7 +4474,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: boolean flag.
 - Side effects: none expected.
 
-### src/Code/Core Functions/StatPoints.dm
+### src/Code/CoreFunctions/StatPoints.dm
 
 #### mob/proc/Set_Minimum_Stats
 - Signature: `mob/proc/Set_Minimum_Stats()`
@@ -5055,7 +4714,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/StatpanelTabs.dm
+### src/Code/CoreFunctions/StatpanelTabs.dm
 
 #### mob/Stat
 - Signature: `mob/Stat()`
@@ -5351,8 +5010,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Tab_Refresh_ToOne
-- Signature: `mob/Admin4/verb/Tab_Refresh_ToOne()`
+#### mob/Admin4/verb/tabRefreshToOne
+- Signature: `mob/Admin4/verb/tabRefreshToOne()`
 - Inputs: None
 - Purpose: Handle tab refresh to one.
 - Returns: none (implicit).
@@ -5379,7 +5038,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/Text.dm
+### src/Code/CoreFunctions/Text.dm
 
 #### mob/proc/Race_Guide
 - Signature: `mob/proc/Race_Guide()`
@@ -5416,7 +5075,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/TextRelated.dm
+### src/Code/CoreFunctions/TextRelated.dm
 
 #### mob/proc/Event_Guide
 - Signature: `mob/proc/Event_Guide()`
@@ -5432,15 +5091,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Notes
-- Signature: `mob/Admin1/verb/Notes()`
+#### mob/Admin1/verb/notes
+- Signature: `mob/Admin1/verb/notes()`
 - Inputs: None
 - Purpose: Handle notes.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/EditNotes
-- Signature: `mob/Admin1/verb/EditNotes()`
+#### mob/Admin1/verb/editNotes
+- Signature: `mob/Admin1/verb/editNotes()`
 - Inputs: None
 - Purpose: Handle edit notes.
 - Returns: none (implicit).
@@ -5453,15 +5112,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/EditStory
-- Signature: `mob/Admin3/verb/EditStory()`
+#### mob/Admin3/verb/editStory
+- Signature: `mob/Admin3/verb/editStory()`
 - Inputs: None
 - Purpose: Handle edit story.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/EditRanks
-- Signature: `mob/Admin3/verb/EditRanks()`
+#### mob/Admin3/verb/editRanks
+- Signature: `mob/Admin3/verb/editRanks()`
 - Inputs: None
 - Purpose: Handle edit ranks.
 - Returns: none (implicit).
@@ -5474,8 +5133,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/EditJobs
-- Signature: `mob/Admin4/verb/EditJobs()`
+#### mob/Admin4/verb/editJobs
+- Signature: `mob/Admin4/verb/editJobs()`
 - Inputs: None
 - Purpose: Handle edit jobs.
 - Returns: none (implicit).
@@ -5488,21 +5147,21 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/EditRules
-- Signature: `mob/Admin3/verb/EditRules()`
+#### mob/Admin3/verb/editRules
+- Signature: `mob/Admin3/verb/editRules()`
 - Inputs: None
 - Purpose: Handle edit rules.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/EditLogin
-- Signature: `mob/Admin3/verb/EditLogin()`
+#### mob/Admin3/verb/editLogin
+- Signature: `mob/Admin3/verb/editLogin()`
 - Inputs: None
 - Purpose: Handle edit login.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/_Game/Effects/EffectsLoops.dm
+### src/Code/CoreFunctions/Game/Effects/EffectsLoops.dm
 
 #### mob/proc/try_applying_burn_effect
 - Signature: `mob/proc/try_applying_burn_effect()`
@@ -5511,7 +5170,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Core Functions/_Game/Loop/MainGameLoop.dm
+### src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm
 
 #### mob/proc/cycle_energies
 - Signature: `mob/proc/cycle_energies()`
@@ -5524,13 +5183,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `mob/proc/update_logging_system()`
 - Inputs: None
 - Purpose: Update logging system.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/update_cultivation
-- Signature: `mob/proc/update_cultivation()`
-- Inputs: None
-- Purpose: Update cultivation.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 

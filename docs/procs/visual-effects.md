@@ -4,11 +4,26 @@
 Standalone visual effects such as rock debris, Harambe event visuals, and rising rock animations.
 
 ## Files
-- `src/Code/Visual Effects/Big Rocks.dm`
-- `src/Code/Visual Effects/Harambe.dm`
-- `src/Code/Visual Effects/rising rocks 2019.dm`
+- `src/Code/VisualEffects/Big Rocks.dm`
+- `src/Code/VisualEffects/Harambe.dm`
+- `src/Code/VisualEffects/PlayerAppearanceManager.dm`
+- `src/Code/VisualEffects/rising rocks 2019.dm`
 
 ## Proc Reference
+
+### datum/PlayerAppearanceManager
+- Purpose: Own player equipment overlay slots, source identity, stable priorities, and isolated rendered images.
+- Behavior: removes legacy item-icon entries, derives equipped sources, sorts by priority/category/slot, rebuilds once, and re-adds injuries above equipment.
+
+### mob/proc/rebuildPlayerAppearance(reason)
+- Purpose: Reconstruct managed overlays after login, equipment changes, body swap, or primary transformation changes.
+- Side effects: removes prior manager-owned images and replaces them with fresh per-player images.
+
+### mob/verb/manageVisualLayers
+- Purpose: Let a player move an equipped visual between priority 300 (back) and 700 (front) without directly splicing `overlays`.
+
+### mob/verb/viewVisualLayers
+- Purpose: Display final managed slot order, source, priority, and managed/raw overlay counts.
 
 ### proc/StartupScatterBigRocks()
 - Purpose: Scatter large rock objects across the world after startup.

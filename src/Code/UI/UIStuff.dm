@@ -11,6 +11,14 @@ var/list/clients = new
 
 client/Del()
 	clients -= src
+	if(selected_target_marker)
+		images -= selected_target_marker
+		del(selected_target_marker)
+		selected_target_marker = null
+	if(main_vitals_hud)
+		screen -= main_vitals_hud
+		del(main_vitals_hud)
+		main_vitals_hud = null
 	. = ..()
 
 client
@@ -36,15 +44,7 @@ client/proc
 		set waitfor=0
 		while(!resolutionInitialized) sleep(1)
 		mob.loc = locate(445,3,2)
-		var/list/l = list('GokuBackground.jpg','MajinVegetaVsGokuBackground.jpg','ShaggyBackground.jpg',\
-		'SSBlueGokuAndVegetaBackground.jpg','PiccoloMeditatingBackground.png')
-		if(prob(50)) l = list('DragonUniverseNamekShadows.png')
-
-		//copyright
-		//l = list('DragonQuest.jpg')
-
-		//var/icon/i2 = icon(pick(l))
-		var/icon/i2 = icon('DragonQuest.dmi')
+		var/icon/i2 = icon('NexusExodus.dmi')
 		sleep(5) //just seeing if this fixes the bug where Width()/Height() fails sometimes
 		var
 			w = i2.Width()
@@ -63,43 +63,10 @@ client/proc
 			i.transform = m
 			images += i
 
-		//now the buttons
-		return //nevermind theyre buggy as fuck
-
-		var/obj/Button/NewButton/nb = new
-		var/obj/Button/LoadButton/lb = new
-		nb.transform *= 0.55
-		lb.transform *= 0.55
-		screen += nb
-		screen += lb
-
 	DeleteTitleScreen()
 		set waitfor=0
 		if(!titleScreenImg) return
 		del(titleScreenImg)
-		for(var/obj/Button/b in screen)
-			b.reallyDelete = 1
-			del(b)
-
-obj
-	Button
-		layer = 11
-		Click()
-			alert(usr, "[pixel_x],[pixel_y]")
-		New()
-			CenterIcon(src)
-			//apparently pixel_x and pixel_y dont work on client.screen so we convert it to transform offset
-			//but we still keep pixel_x and pixel_y as they are in case we need them for some other reason
-			var/matrix/m = matrix(transform)
-			m.Translate(pixel_x, pixel_y)
-			transform = m
-		NewButton
-			icon = 'new button.dmi'
-			screen_loc = "CENTER"
-
-		LoadButton
-			icon = 'loadButton.dmi'
-			screen_loc = "CENTER"
 
 client/New()
 	JSresolutionCheck()
@@ -110,8 +77,7 @@ client/New()
 	MaxFPSTrick()
 	if(connection == "telnet") mob = new/mob
 
-	//avoiding copyright, remove this and itll be Dragon Universe again
-	var/newTitle = "Dragon Quest II"
+	var/newTitle = "Nexus Exodus"
 	winset(src, "mainwindow", "title=\"[newTitle]\"")
 
 	if(!mob || !mob.loc) //in theory this should work, so if you were punched and just relog back into your character, i hope, then we shouldnt do any of this stuff?
@@ -148,8 +114,8 @@ client/New()
 			winset(src,"mainwindow.mainvssplit","is-visible=false")
 			DisplayTitleScreen()
 		if(mob)
-			//var/musics = list('royal blue theme.ogg', 'Ultra Instinct Theme 1.ogg', 'goku spirit bomb theme.ogg')
-			var/musics = list('carnival_meme.ogg')
+			//var/musics = list('RoyalBlueTheme.ogg', 'UltraInstinctTheme1.ogg', 'GokuSpiritBombTheme.ogg')
+			var/musics = list('CarnivalMeme.ogg')
 			src << sound(pick(musics), volume = 20, repeat = 1)
 			
 			mob.DetectNewLoadButtonClick()
@@ -241,9 +207,7 @@ mob/verb
 		set hidden = 1
 		if(!client) return
 		client.show_bars = !client.show_bars
-		var/bool = "true"
-		if(!client.show_bars) bool = "false"
-		winset(src, "Bars", "is-visible=[bool]")
+		setVitalsHudVisibility(client.show_bars)
 
 	ViewGuides()
 		set hidden = 1
@@ -350,55 +314,30 @@ mob/proc
 		while(HelpAlertShowing()) sleep(10)
 		if(!classic_ui) HelpAlert("Press Ctrl+F1 to be able to drag user interface elements where you want them to be. Press again to stop.", 1.#INF)
 
-	//through a series of workarounds we are left with no other choice but to detect if they clicked new/load this way
 	DetectNewLoadButtonClick()
 		set waitfor=0
-		if(classic_ui)
-			NewLoadPromptClassic()
-			return
-		while(!can_login || world.time < 100) sleep(10)
-		winset(src, "newButton", "is-visible=true")
-		winset(src, "loadButton", "is-visible=true")
-		winset(src, "newButton", "focus=false")
-		winset(src, "loadButton", "focus=false")
-		if(!classic_ui) winset(src, "mainwindow.map", "focus=true") //idk why but setting the other windows to visible seems to give them focus
-		else winset(src, "mapwindow.map", "focus=true")
-		sleep(5)
-		while(1)
-			if(winget(src, "newButton", "focus") == "true")
-				NewClicked()
-				return
-			if(winget(src, "loadButton", "focus") == "true")
-				if(HasSave())
-					LoadClicked()
-					return
-				else
-					alert(src, "You do not have any saved characters")
-			sleep(3)
+		ShowNexusLoginPrompt()
 
 	NewClicked()
 		set waitfor=0
 		if(playerCharacter) return
-		ClickMakeNewCharacter()
-		StuffThatRunsIfYouClickNewOrLoad()
+		return ClickMakeNewCharacter()
 
 	LoadClicked()
 		set waitfor=0
 		if(playerCharacter) return
-		if(!HasSave()) return
-		Load()
-		StuffThatRunsIfYouClickNewOrLoad()
-		return 1
+		if(!hasSave()) return
+		if(load())
+			StuffThatRunsIfYouClickNewOrLoad()
+			return 1
 
-	//this is for CLASSIC only
-	NewLoadPromptClassic()
-		if(!classic_ui) return
+	ShowNexusLoginPrompt()
 		if(playerCharacter) return
 		while(!can_login || world.time < 100) sleep(10)
-		switch(alert(src, "Hello [key]", "", "New Character", "Load Character"))
+		switch(alert(src, "Enter the Nexus", "Nexus Exodus", "New Character", "Load Character"))
 			if("New Character") NewClicked()
 			if("Load Character")
-				if(!HasSave())
+				if(!hasSave())
 					alert(src, "You do not have any saved characters")
 					NewClicked()
 					return

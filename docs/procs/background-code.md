@@ -4,15 +4,15 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Background Code/BugLogs.dm`
-- `src/Code/Background Code/JavascriptResolutionChecker.dm`
-- `src/Code/Background Code/ObjectCache.dm`
-- `src/Code/Background Code/SpecialAnnouncementsLoop.dm`
-- `src/Code/Background Code/StatLoop.dm`
+- `src/Code/BackgroundCode/BugLogs.dm`
+- `src/Code/BackgroundCode/JavascriptResolutionChecker.dm`
+- `src/Code/BackgroundCode/ObjectCache.dm`
+- `src/Code/BackgroundCode/SpecialAnnouncementsLoop.dm`
+- `src/Code/BackgroundCode/StatLoop.dm`
 
 ## Proc Reference
 
-### src/Code/Background Code/BugLogs.dm
+### src/Code/BackgroundCode/BugLogs.dm
 
 #### proc/gains_limiter
 - Signature: `proc/gains_limiter()`
@@ -70,7 +70,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/JavascriptResolutionChecker.dm
+### src/Code/BackgroundCode/JavascriptResolutionChecker.dm
 
 #### client/proc/JSresolutionCheck
 - Signature: `JSresolutionCheck()`
@@ -86,7 +86,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/ObjectCache.dm
+### src/Code/BackgroundCode/ObjectCache.dm
 
 #### proc/GetCachedObject
 - Signature: `GetCachedObject(obj_type, pos)`
@@ -102,7 +102,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/SpecialAnnouncementsLoop.dm
+### src/Code/BackgroundCode/SpecialAnnouncementsLoop.dm
 
 #### proc/SpecialAnnouncementsLoop
 - Signature: `SpecialAnnouncementsLoop()`
@@ -111,8 +111,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Set_Looping_Anouncement
-- Signature: `mob/Admin2/verb/Set_Looping_Anouncement()`
+#### mob/Admin2/verb/setLoopingAnouncement
+- Signature: `mob/Admin2/verb/setLoopingAnouncement()`
 - Inputs: None
 - Purpose: Set Looping Anouncement.
 - Returns: none (implicit).
@@ -125,7 +125,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Background Code/StatLoop.dm
+### src/Code/BackgroundCode/StatLoop.dm
 
 #### mob/proc/get_bp_loop
 - Signature: `mob/proc/get_bp_loop()`
@@ -176,12 +176,19 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/LegendaryZeroDefenseBPMult
-- Signature: `LegendaryZeroDefenseBPMult()`
+#### mob/proc/racialCombatBPMult
+- Signature: `racialCombatBPMult()`
 - Inputs: None
-- Purpose: Handle legendary zero defense bpmult.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Return the dynamic combat-BP multiplier for Standard and Exceptional race packages without modifying persisted BP data.
+- Returns: A positive BP multiplier.
+- Side effects: None.
+
+#### mob/proc/racialDamageTakenMult
+- Signature: `racialDamageTakenMult()`
+- Inputs: None
+- Purpose: Return the dynamic incoming-damage multiplier for Exceptional race packages and Alien Apex Genome.
+- Returns: A positive incoming-damage multiplier.
+- Side effects: None.
 
 #### mob/proc/effectiveBaseBPMult
 - Signature: `effectiveBaseBPMult()`
@@ -193,7 +200,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/get_bp
 - Signature: `mob/proc/get_bp(factor_powerup=1)`
 - Inputs: factor_powerup=1
-- Purpose: Return bp.
+- Purpose: Return BP through the ordered transformation pipeline; Demon soul contribution is capped at three effective souls (`1.3x`).
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -907,9 +914,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Update_health_bars
 - Signature: `mob/proc/Update_health_bars()`
 - Inputs: None
-- Purpose: Update health bars.
+- Purpose: Refresh the lower-left client-screen vitals panel and compact overhead health HUD.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: updates screen objects, maptext, and a world-space HUD object.
 
 #### mob/proc/Update_evade_meter
 - Signature: `mob/proc/Update_evade_meter()`

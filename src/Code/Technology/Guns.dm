@@ -1,4 +1,5 @@
-mob/Admin3/verb/DestroyTurretsOfThisPerson(obj/Turret/t in Turrets)
+mob/Admin3/verb/destroyTurretsOfThisPerson(obj/Turret/t in Turrets)
+	set name = "DestroyTurretsOfThisPerson"
 	if(!t) return
 	var/maker = t.Builder
 	for(var/obj/Turret/t2 in Turrets) if(t2.Builder == maker) del(t2)
@@ -219,7 +220,7 @@ obj/Turret
 			B.density=0
 			B.Owner=src
 			B.Fatal = 1
-			B.icon='Missile Small.dmi'
+			B.icon='MissileSmall.dmi'
 			B.BP=Turret_Power
 			B.Force=Turret_Force*2
 			B.percent_damage=5*Gun_Power
@@ -435,7 +436,7 @@ obj/items/Gun
 		spawn(TickMult(Delay)) if(P)
 			if(ismob(P)) P.attacking=0
 			if(src) Firing=0
-		if(Bullet) player_view(10,P)<<sound('reflect.ogg',volume=10)
+		if(Bullet) player_view(10,P)<<sound('Reflect.ogg',volume=10)
 		else player_view(10,P)<<sound('Blast.wav',volume=20)
 		var/N=1
 		if(Spread) N=3
@@ -481,7 +482,7 @@ obj/items/Ammo
 	Cost=0
 	clonable = 0
 	desc="Click this to reload whichever gun you want."
-	icon='Gun Accessories.dmi'
+	icon='GunAccessories.dmi'
 	icon_state="Ammo Box"
 	Stealable=1
 	var/Ammo=10

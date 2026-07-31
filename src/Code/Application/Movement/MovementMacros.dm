@@ -40,6 +40,7 @@ mob/proc/Macro_direction()
 mob/proc/HandleKeyDown(d)
 	set waitfor=0
 	set instant=1
+	if(nexus_hotkey_editor_open) return
 
 	/*if(!(d in list("north","south","east","west")))
 		if(last_keydown_time==world.time) return
@@ -83,32 +84,33 @@ mob/proc/HandleKeyDown(d)
 		last_directional_keydown_time = world.time
 		last_directional_key_down = d
 
-		var/warped
-		//instead of double tapping we have switched to Ctrl + Direction
-		//if(classic_ui && double_tapped) warped = DoubleTapWarp(d)
-		if(movement_port.clientCtrlDown(src)) warped = DoubleTapWarp(d)
-		//Dash_Evade(Macro_direction(), from_double_tap=double_tapped)
-
-		if(!warped) move_loop()
+		move_loop()
 	else
 		HotbarUseHandler(d)
 
-mob/proc/HotbarUseHandler(d)
+mob/proc/HotbarUseHandler(d, held_key)
 	set waitfor=0
 	set instant = 1
-	var/obj/o = Get_hotbar_obj_by_key_pressed(d)
-	while(d in keys_down)
-		if(o && o.can_hotbar)
-			o:Hotbar_use(usr)
-			if(o && !o.repeat_macro)
-				keys_down-=d
-				return
+	if(!held_key) held_key = d
+	var/hotkey_action = resolveNexusHotkeyBinding(d)
+	if(!hotkey_action) hotkey_action = Get_hotbar_obj_by_key_pressed(d)
+	if(!hotkey_action) return
+	active_nexus_hotkey_actions[held_key] = hotkey_action
+	active_nexus_hotkey_combinations[held_key] = d
+	while(held_key in keys_down)
+		if(!executeNexusHotkeyAction(hotkey_action)) return
+		if(!nexusHotkeyActionRepeats(hotkey_action))
+			keys_down -= held_key
+			return
 		sleep(world.tick_lag)
 
 mob/proc/HotbarKeyUpHandler(d)
 	set waitfor=0
 	set instant = 1
-	var/obj/o = Get_hotbar_obj_by_key_pressed(d)
+	var/obj/o = active_nexus_hotkey_actions[d]
+	active_nexus_hotkey_actions -= d
+	active_nexus_hotkey_combinations -= d
+	if(!o) o = Get_hotbar_obj_by_key_pressed(d)
 	if(o && o.can_hotbar)
 		if(o.is_for_moving)
 			ReleaseKey(o.move_macro_dir)
@@ -117,15 +119,15 @@ mob/proc/HandleKeyUp(d)
 	set waitfor=0
 	set instant=1
 	//world<<"KeyUp time: [world.time]"
+	var/active_combination = active_nexus_hotkey_combinations[d]
 
 	ReleaseKey(d)
 
 	if(!(d in list("north","south","east","west")))
 		HotbarKeyUpHandler(d)
 
-	if(d == "Space" && world.time - last_spacebar_down < 3)
-		if(MeleeFollowupAttackCheck())
-		else LungeAttack()
+	if(d == "Space" && (!active_combination || active_combination == "Space") && world.time - last_spacebar_down < 3)
+		MeleeFollowupAttackCheck()
 
 mob/proc/ReleaseKey(d)
 	set waitfor = 0

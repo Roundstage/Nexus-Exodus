@@ -4,15 +4,15 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Projectile System/BeamCore.dm`
-- `src/Code/Projectile System/Beams.dm`
-- `src/Code/Projectile System/Blasts.dm`
-- `src/Code/Projectile System/ProjectileCore.dm`
-- `src/Code/Projectile System/Projectiles.dm`
+- `src/Code/ProjectileSystem/BeamCore.dm`
+- `src/Code/ProjectileSystem/Beams.dm`
+- `src/Code/ProjectileSystem/Blasts.dm`
+- `src/Code/ProjectileSystem/ProjectileCore.dm`
+- `src/Code/ProjectileSystem/Projectiles.dm`
 
 ## Proc Reference
 
-### src/Code/Projectile System/BeamCore.dm
+### src/Code/ProjectileSystem/BeamCore.dm
 
 #### obj/proc/beam_move_loop
 - Signature: `obj/proc/beam_move_loop(mob/m)`
@@ -57,11 +57,18 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### mob/proc/BeamStop
-- Signature: `mob/proc/BeamStop(obj/Attacks/A)`
-- Inputs: obj/Attacks/A
-- Purpose: Handle beam stop.
+- Signature: `mob/proc/BeamStop(obj/Attacks/A, immediate = 0, obj/Blast/impact_segment)`
+- Inputs: beam skill, immediate teardown flag, and optional contacting segment.
+- Purpose: Stop beam state; raw player impacts use immediate teardown instead of the legacy delayed tail animation.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### mob/proc/deleteBeamSegmentsImmediately
+- Signature: `mob/proc/deleteBeamSegmentsImmediately(obj/Attacks/A, obj/Blast/impact_segment)`
+- Inputs: beam skill and contacting segment, which is deleted by the collision handler.
+- Purpose: Clear owner and attack segment lists and remove every trailing segment from the map in the same tick.
+- Returns: none (implicit).
+- Side effects: cancels segment damage loops and schedules every remaining segment for deletion.
 
 #### mob/proc/BeamStopThing2
 - Signature: `mob/proc/BeamStopThing2()`
@@ -91,7 +98,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Projectile System/Beams.dm
+### src/Code/ProjectileSystem/Beams.dm
+
+#### mob/verb/kiSettings
+- Signature: `mob/verb/kiSettings()`
+- Inputs: None.
+- Purpose: Configure the player's global beam behavior and Rock Throw mode when that skill is owned.
+- Returns: none (implicit).
+- Side effects: persists `Raw Damage` or `Beam Lock` on the player; Raw Damage is the default.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -254,7 +268,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Projectile System/Blasts.dm
+### src/Code/ProjectileSystem/Blasts.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -432,18 +446,39 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### obj/Blast/proc/BlastAutoTargetGo
-- Signature: `obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0)`
-- Inputs: boundWidth = 32, boundHeight = 32, stepSize = 44, angleLimit = 18, dist = 47, randomAngle = 0
-- Purpose: Handle blast auto target go.
+- Signature: `obj/Blast/proc/BlastAutoTargetGo(boundWidth = 32, boundHeight = 32, vectorSpeed = 44, angleLimit = 18, dist = 47, randomAngle = 0)`
+- Inputs: projectile bounds, speed, selected-target cone, distance, and random angle.
+- Purpose: Aim once at the owner's selected target when valid, otherwise fire straight.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/Blast/proc/stopProjectileFlight
+- Signature: `obj/Blast/proc/stopProjectileFlight()`
+- Inputs: None.
+- Purpose: Cancel engine walking and invalidate any custom flight loop for a cached blast.
+- Returns: none (implicit).
+- Side effects: advances the flight generation and stops `walk()`.
+
+#### obj/Blast/proc/startKiProjectileWalk
+- Signature: `obj/Blast/proc/startKiProjectileWalk(move_dir, delay_override = 0)`
+- Inputs: direction and optional cadence.
+- Purpose: Move non-beam Ki projectiles at their vector speed every 0.5 deciseconds while preserving legacy movement for beams, bullets, and non-Ki projectiles.
+- Returns: none (asynchronous).
+- Side effects: replaces the active projectile flight loop.
 
 #### obj/Blast/proc/BlastVectorWalk
 - Signature: `obj/Blast/proc/BlastVectorWalk(angle = 0)`
 - Inputs: angle = 0
-- Purpose: Handle blast vector walk.
+- Purpose: Move a straight Ki projectile at its vector speed every 0.5 deciseconds.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/Blast/proc/followSelectedTarget
+- Signature: `obj/Blast/proc/followSelectedTarget(mob/target)`
+- Inputs: explicitly selected target captured at fire time.
+- Purpose: Home at the projectile's vector speed and 0.5-decisecond cadence while that same target remains selected; never acquire a replacement.
+- Returns: none (asynchronous).
+- Side effects: moves and may bump the blast.
 
 #### obj/Blast/proc/Blast_Move
 - Signature: `obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)`
@@ -487,10 +522,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### obj/proc/blast_walk
-- Signature: `obj/proc/blast_walk(delay=1,start_dir)`
-- Inputs: delay=1, start_dir
-- Purpose: Handle blast walk.
+#### obj/Blast/proc/blast_walk
+- Signature: `obj/Blast/proc/blast_walk(delay=ki_projectile_step_delay,start_dir)`
+- Inputs: optional cadence and starting direction.
+- Purpose: Route straight blast movement through the normalized Ki projectile flight loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -816,7 +851,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Projectile System/ProjectileCore.dm
+### src/Code/ProjectileSystem/ProjectileCore.dm
 
 #### obj/Ability/proc/SetCooldown
 - Signature: `SetCooldown(mob/m)`
@@ -835,16 +870,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### obj/Ability/Blast/TestBlast/verb/TestBlast
 - Signature: `TestBlast()`
 - Inputs: None
-- Purpose: Handle test blast.
+- Purpose: Home the test projectile only toward the explicitly selected target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Projectile System/Projectiles.dm
+### src/Code/ProjectileSystem/Projectiles.dm
 
 #### obj/Blast/proc/setStats
-- Signature: `obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1)`
-- Inputs: mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1
-- Purpose: Set Stats.
+- Signature: `obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1, explosion_percent = 0, max_damage_factor = 0, owner_immunity = 0, datum/CombatDamageBudget/shared_budget)`
+- Inputs: owner snapshot, direct factor, accuracy, radius, projectile type, homing, independent splash factor, optional budget, owner immunity, and optional shared budget.
+- Purpose: Snapshot projectile combat stats while keeping direct damage, splash damage, cast budget and owner collision behavior independent.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
@@ -907,7 +942,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/CheckBlastHomingTarget
 - Signature: `proc/CheckBlastHomingTarget()`
 - Inputs: None
-- Purpose: Check Blast Homing Target.
+- Purpose: Retain the existing homing target only while it remains the owner's current selection and geometrically viable; never reacquire.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -939,10 +974,24 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
+#### proc/reserveDamageFactor
+- Signature: `proc/reserveDamageFactor(mob/target, requested_factor)`
+- Inputs: target and event factor.
+- Purpose: Reserve factor from the projectile's shared per-target cast budget.
+- Returns: available factor.
+- Side effects: updates the shared budget.
+
+#### proc/getProjectileCombatDamage
+- Signature: `proc/getProjectileCombatDamage(mob/target, factor)`
+- Inputs: target and reserved factor.
+- Purpose: Apply physical scaling for bullets or Ki scaling for energy projectiles.
+- Returns: percentage damage.
+- Side effects: none.
+
 #### proc/Shield
-- Signature: `proc/Shield(mob/A)`
-- Inputs: mob/A
-- Purpose: Handle shield.
+- Signature: `proc/Shield(mob/A, requested_factor)`
+- Inputs: target and direct/splash factor.
+- Purpose: Apply the centralized damage curve and cast budget to item, cybernetic and natural shields.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -953,17 +1002,31 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
+#### obj/Blast/proc/showExplosiveBeamImpact
+- Signature: `showExplosiveBeamImpact(atom/impact_target, force_mob_impact = 0)`
+- Inputs: contacted atom and optional player-impact override.
+- Purpose: Produce a violent raw-damage explosion and immediately stop a streaming beam after player contact.
+- Returns: 1 when explosive mode consumed the beam segment, otherwise 0.
+- Side effects: creates size-4 explosion graphics, a 256px shockwave, screen shake and sound; calls `BeamStop()` for streaming attacks and deletes the contacting segment.
+
+#### obj/Blast/proc/getBeamDamageWindow
+- Signature: `getBeamDamageWindow(loop_delay)`
+- Inputs: normal streaming tick duration.
+- Purpose: Use `beam_raw_damage_mod` for one-hit Raw Damage or preserve the tick duration for Beam Lock.
+- Returns: damage time scale.
+- Side effects: none.
+
 #### proc/Beam
 - Signature: `proc/Beam()`
 - Inputs: None
-- Purpose: Handle beam.
+- Purpose: Apply immediate raw impact or sustained lock damage and resolve projectile clashes.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### proc/Explode
 - Signature: `proc/Explode()`
 - Inputs: None
-- Purpose: Handle explode.
+- Purpose: Apply the independent explosion factor through the central damage formula and shared per-target budget.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -977,7 +1040,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/BlastMobCross
 - Signature: `proc/BlastMobCross(mob/m, override_dir, override_delete)`
 - Inputs: mob/m, override_dir, override_delete
-- Purpose: Handle blast mob cross.
+- Purpose: Resolve accuracy/deflection, preserve explicit owner immunity, reserve direct factor and apply centralized physical or Ki damage.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

@@ -46,7 +46,7 @@ proc/Switch_Bodies(mob/A,mob/P,save_override)
 		if(!(P in players)) players+=P
 		if(!save_override)
 			P.Savable=1
-			P.Save()
+			P.save()
 		P.DetermineViewSize()
 		P.Restore_hotbar_from_IDs()
 
@@ -58,7 +58,7 @@ proc/Switch_Bodies(mob/A,mob/P,save_override)
 		if(!(A in players)) players+=A
 		if(!save_override)
 			A.Savable=1
-			A.Save()
+			A.save()
 		A.DetermineViewSize()
 		A.Restore_hotbar_from_IDs()
 
@@ -180,7 +180,7 @@ obj/Body_Swap
 		temp_body.overlays-=temp_body.hair
 		temp_body.hair+=rgb(100,100,100)
 		temp_body.overlays+=temp_body.hair
-		//temp_body.overlays+='Bebi Markings.dmi'
+		//temp_body.overlays+='BebiMarkings.dmi'
 		temp_body.cyber_bp=usr.cyber_bp
 		temp_body.displaykey=usr.displaykey
 
@@ -193,8 +193,10 @@ obj/Body_Swap
 			del(I)
 
 		for(var/obj/items/I in temp_body) if(I.ignore_body_swap)
+			while(temp_body.overlays.Find(I.icon)) temp_body.overlays -= I.icon
 			temp_body.item_list-=I
 			del(I)
+		temp_body.rebuildPlayerAppearance("body swap clone cleanup")
 
 		other_player.FullHeal()
 		usr.FullHeal()
@@ -202,8 +204,8 @@ obj/Body_Swap
 		other_player.logout_timer=0
 		usr.logout_timer=0
 		temp_body.logout_timer=0
-		other_player.Save()
-		usr.Save()
+		other_player.save()
+		usr.save()
 
 		temp_body.BodySwapTimeLimitLoop()
 		ActiveBodySwapsNullLocLoop()
@@ -237,7 +239,8 @@ mob/proc/Bebi_Undo(logout) //Undoes the effects of Bebi taking over someone's bo
 			P.contents -= I
 			P.contents += I
 		if(P)
-			P.Save()
+			P.rebuildPlayerAppearance("body swap undo victim")
+			P.save()
 			P.KO()
 
 	//your original body
@@ -246,7 +249,8 @@ mob/proc/Bebi_Undo(logout) //Undoes the effects of Bebi taking over someone's bo
 		P.Get_Observe(P)
 		Switch_Bodies(src,P,save_override=1)
 		P.SetRes(Res())
-		P.Save()
+		P.rebuildPlayerAppearance("body swap undo owner")
+		P.save()
 		if(logout)
 			P.Logout(body_swap_user = 1)
 			if(P) del(P)

@@ -9,6 +9,91 @@ almost all uses should be thru wrapper functions. even melee combat
 */
 
 atom/movable/var/tmp/mob/auto_target
+mob/var/tmp/mob/selected_target
+client/var/tmp/image/selected_target_marker
+
+var/icon/selected_target_marker_icon
+
+proc/getSelectedTargetMarkerIcon()
+	if(selected_target_marker_icon) return selected_target_marker_icon
+	selected_target_marker_icon = icon('Healthbar.dmi', "100")
+	selected_target_marker_icon.Scale(32, 32)
+	selected_target_marker_icon.DrawBox(null, 1, 1, 32, 32)
+	var/marker_color = "#28d7ff"
+	selected_target_marker_icon.DrawBox(marker_color, 1, 1, 8, 2)
+	selected_target_marker_icon.DrawBox(marker_color, 1, 1, 2, 8)
+	selected_target_marker_icon.DrawBox(marker_color, 25, 1, 32, 2)
+	selected_target_marker_icon.DrawBox(marker_color, 31, 1, 32, 8)
+	selected_target_marker_icon.DrawBox(marker_color, 1, 31, 8, 32)
+	selected_target_marker_icon.DrawBox(marker_color, 1, 25, 2, 32)
+	selected_target_marker_icon.DrawBox(marker_color, 25, 31, 32, 32)
+	selected_target_marker_icon.DrawBox(marker_color, 31, 25, 32, 32)
+	return selected_target_marker_icon
+
+mob/proc/canSelectTarget(mob/candidate)
+	if(!candidate || candidate == src || !candidate.loc) return FALSE
+	if(candidate.type == /mob/Body || !candidate.attackable) return FALSE
+	if(candidate.invisibility > see_invisible) return FALSE
+	return TRUE
+
+mob/proc/setSelectedTarget(mob/new_target, announce = TRUE)
+	if(new_target && !canSelectTarget(new_target)) new_target = null
+	var/mob/old_target = selected_target
+	if(client && client.selected_target_marker)
+		client.images -= client.selected_target_marker
+		del(client.selected_target_marker)
+		client.selected_target_marker = null
+	selected_target = new_target
+	auto_target = null
+	if(new_target)
+		Target = new_target
+		if(client)
+			client.selected_target_marker = image(icon = getSelectedTargetMarkerIcon(), loc = new_target, layer = 99)
+			client.images += client.selected_target_marker
+		if(announce && old_target != new_target) src << "<font color=#28d7ff>Target selected: [new_target]."
+	else
+		if(Target == old_target) Target = null
+		if(announce && old_target) src << "<font color=#9aa4b2>Target cleared."
+	return selected_target
+
+mob/proc/getSelectedTarget(mob/expected_target, max_dist = 0, require_view = TRUE, allow_ko = FALSE, require_attackable = TRUE, dir_angle = 0, angle_limit = 0)
+	var/mob/current_target = selected_target
+	if(expected_target && current_target != expected_target) return
+	if(!canSelectTarget(current_target) || current_target.z != z)
+		setSelectedTarget(null, FALSE)
+		return
+	if(require_attackable && !current_target.attackable) return
+	if(!allow_ko && current_target.KO) return
+	if(max_dist > 0 && bounds_dist(src, current_target) / world.icon_size > max_dist) return
+	if(require_view && !viewable(src, current_target)) return
+	if(angle_limit > 0)
+		if(!dir_angle) dir_angle = dir
+		dir_angle = dir_to_angle_0_360(dir_angle)
+		var/target_angle = abs(ShortestDegreesBetweenAngles(dir_angle, get_global_angle(src, current_target)))
+		if(target_angle > angle_limit) return
+	return current_target
+
+mob/verb/selectTarget()
+	set name = "Select Target"
+	set category = "Combat"
+	var/list/candidates = list()
+	for(var/mob/candidate in mob_view(50, src))
+		if(!canSelectTarget(candidate)) continue
+		if(candidate.client && candidate.playerCharacter || istype(candidate, /mob/CombatDummy)) candidates += candidate
+	if(!candidates.len)
+		src << "No selectable players or combat dummies are nearby."
+		return
+	var/mob/choice = input(src, "Select a combat target.", "Target Selection") as null|anything in candidates
+	if(!choice) return
+	if(!(choice in mob_view(50, src)) || !(choice.client && choice.playerCharacter || istype(choice, /mob/CombatDummy)) || !canSelectTarget(choice))
+		src << "That target is no longer selectable."
+		return
+	setSelectedTarget(choice)
+
+mob/verb/clearTarget()
+	set name = "Clear Target"
+	set category = "Combat"
+	setSelectedTarget(null)
 
 atom/movable/proc
 	//dir_angle is like which way src is facing usually

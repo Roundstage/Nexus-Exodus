@@ -69,7 +69,7 @@ Chat, OOC, LOOC, emotes, telepathy, and chat logging. Also includes spam control
 - Purpose: Quick mute check by key.
 - Returns: true if in `Mutes`.
 
-### mob/Admin4/verb/Crazy()
+### mob/Admin4/verb/crazy()
 - Purpose: Toggle the global `Crazy` flag.
 
 ### mob/proc/Say_Recipients(distance = 44)

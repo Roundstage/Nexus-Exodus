@@ -1,0 +1,18 @@
+mob/proc/Human()
+	Race="Human"
+	Gravity_Mod=1
+	sp_mod=2
+	mastery_mod=2
+	bp_mod=Get_race_starting_bp_mod()
+	Decline=20
+	Decline_Rate=1
+	Intelligence=1
+	knowledge_cap_rate=1
+	Regenerate=0
+	Lungs=0
+	leech_rate=3
+	med_mod=2
+	zenkai_mod=1
+	base_bp=1
+	ascension_bp*=1
+	stun_resistance_mod=1

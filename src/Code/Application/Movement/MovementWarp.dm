@@ -14,8 +14,23 @@ mob/proc
 		if(!CanInputMove()) return 0
 		if(stamina < tapwarp_stam_drain) return 0
 		if(BeamStruggling() || UsingAttackBarrier()) return 0
-		if(!zanzoken_obj) return 0
+		if(!getZanzokenSkill()) return 0
 		return Can_flash_step()
+
+	directionalZanzoken(d)
+		set waitfor=0
+		if(!(d in list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))) return
+		if(!CanTapWarp()) return
+		var/turf/old_loc = loc
+		var/mob/target = FindWarpTarget(dir_angle = d, angle_limit = 40, max_dist = 5, prefer_auto_target = 0)
+		var/warped_to_target = target && TapWarpToMob(target)
+		if(!warped_to_target && !TapWarpToDir(d, 5)) return
+		last_tap_warp = world.time
+		AddStamina(-tapwarp_stam_drain)
+		AfterImage(50, loc_override = old_loc)
+		flick('Zanzoken.dmi', src)
+		player_view(20, src) << sound('Teleport.ogg', volume = 15)
+		if(warped_to_target && target) Melee(target, from_auto_attack = 1)
 
 	DoubleTapWarp(d)
 		set waitfor=0
@@ -41,8 +56,8 @@ mob/proc
 			AddStamina(-tapwarp_stam_drain)
 			AfterImage(50, loc_override = oloc)
 			flick('Zanzoken.dmi',src)
-			player_view(20,src) << sound('teleport.ogg',volume=15)
-			Melee(from_auto_attack=1)
+			player_view(20,src) << sound('Teleport.ogg',volume=15)
+			if(warped_to_mob_success && m) Melee(m, from_auto_attack=1)
 			return 1
 
 	TapWarpToMob(mob/m)
@@ -63,6 +78,8 @@ mob/proc
 		//these 2 lines above were simply 1 line: var/turf/t = pick(warp_turfs)
 
 		SafeTeleport(t)
+		step_x = m.step_x
+		step_y = m.step_y
 		dir = get_dir(src, m)
 		return 1
 
@@ -70,10 +87,10 @@ mob/proc
 		if(!t || !isturf(t) || t.opacity || istype(t,/turf/Other/Blank)) return
 		if(!t.FlyOverAble && t.density) return
 		for(var/obj/o in t)
-			if(istype(o,/obj/Turfs/Door) && o.opacity) return
+			if(o.density || istype(o,/obj/Turfs/Door) && o.opacity) return
 		return 1
 
-	TapWarpToDir(d, warp_dist = 12)
+	TapWarpToDir(d, warp_dist = 5)
 		var/turf/start_loc = loc
 		var/turf/t = start_loc
 		if(!t || !isturf(t)) return
@@ -85,8 +102,6 @@ mob/proc
 		if(t == start_loc) return
 		SafeTeleport(t)
 
-		var/mob/m = FindWarpTarget(dir_angle = turn(d,180), angle_limit=45, max_dist=20, prefer_auto_target=0)
-		if(m) dir = pixel_dir(src, m)
-		else dir = d
+		dir = d
 
 		return 1

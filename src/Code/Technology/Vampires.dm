@@ -73,7 +73,7 @@ obj/items/Daybreaker_Virus
 	science = 1
 	science_level = 5
 	science_path = "Genetics"
-	icon='T Virus.dmi'
+	icon='TVirus.dmi'
 	Stealable=1
 	Injection=1
 	clonable = 0

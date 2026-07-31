@@ -60,9 +60,9 @@ mob/Troll
 	New() spawn(10) if(src&&!(src in Make_List))
 		if(!icon)
 			TextColor=rgb(rand(0,255),rand(0,255),rand(0,255))
-			icon=pick('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','New Pale Female.dmi','New Tan Female.dmi',\
-			'New Black Female.dmi','Race Ginyu.dmi','Race Kui.dmi')
-			if(!(icon in list('Race Ginyu.dmi','Race Kui.dmi')))
+			icon=pick('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi',\
+			'NewBlackFemale.dmi','RaceGinyu.dmi','RaceKui.dmi')
+			if(!(icon in list('RaceGinyu.dmi','RaceKui.dmi')))
 				var/obj/O=pick(Hairs)
 				if(isobj(O)) overlays+=O.icon
 			var/list/L=new
@@ -85,7 +85,7 @@ mob/Troll
 			Warp=1
 			spawn if(src) if(name==initial(name)) Troll_Name()
 			var/obj/Attacks/Beam/Z=new(src)
-			Z.icon='Beam - Static Beam.dmi'
+			Z.icon='BeamStaticBeam.dmi'
 			Z.WaveMult*=5
 			var/obj/Attacks/Blast/B=new(src)
 			B.Spread=3
@@ -126,7 +126,7 @@ mob/Troll
 		if(!KO) if(locate(/obj/Zanzoken) in src) if(Target&&Troll_Mode=="Attack")
 			if(!(src in view(3,Target))) for(var/turf/T in view(3,Target)) if(T in view(15,src))
 				if(!T.density&&(!T.Water||Flying))
-					player_view(10,src)<<sound('teleport.ogg',volume=10)
+					player_view(10,src)<<sound('Teleport.ogg',volume=10)
 					flick('Zanzoken.dmi',src)
 					var/OldDir=dir
 					AfterImage()

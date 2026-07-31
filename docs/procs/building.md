@@ -10,59 +10,59 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 
 ## Proc Reference
 
-### proc/MapSave()
+### proc/mapSave()
 - Purpose: Persist player-built turfs into segmented savefiles under `data/Map*`.
 - Side effects: writes `Types`, `Healths`, `Builders`, `Xs`, `Ys`, `Zs`, `FlyOver` lists to disk.
 
-### proc/MapLoad()
+### proc/mapLoad()
 - Purpose: Load saved player-built turfs from `data/Map*` into the live world.
 - Side effects: instantiates turfs, rebuilds `Turfs` and `built_turfs`, removes default map decor.
 
-### proc/MapLoadExternal(savefile/F)
+### proc/mapLoadExternal(savefile/f)
 - Purpose: Load an external map savefile on top of the current world.
-- Inputs: `F` (path or savefile handle).
+- Inputs: `f` (path or savefile handle).
 - Side effects: creates turfs and rebuilds `built_turfs` from that file.
 
-### mob/proc/max_turf_upgrade()
+### mob/proc/maxTurfUpgrade()
 - Purpose: Compute the maximum wall HP upgrade allowed by Knowledge/Intelligence.
 - Returns: numeric BP cap for upgrades.
 
-### turf/proc/Make_Dense_All(mob/m)
+### turf/proc/makeDenseAll(mob/m)
 - Purpose: Set all turfs built by the same builder to be non-flyover.
 - Inputs: `m` (requesting mob for cooldown enforcement).
 
-### turf/proc/Upgrade_All(mob/m, display_message = 0, for_free = 0)
-- Purpose: Upgrade all structures for a builder up to `max_turf_upgrade()`.
+### turf/proc/upgradeAll(mob/m, display_message = 0, for_free = 0)
+- Purpose: Upgrade all structures for a builder up to `maxTurfUpgrade()`.
 - Side effects: charges resources, updates turret/object health lists.
 
-### turf/verb/Upgrade()
+### turf/verb/upgrade()
 - Purpose: Player-facing verb to upgrade or adjust density on their built tiles.
-- Side effects: calls `Make_Dense_All` and/or `Upgrade_All` based on choice.
+- Side effects: calls `makeDenseAll` and/or `upgradeAll` based on choice.
 
-### proc/AddBuilds()
+### proc/addBuilds()
 - Purpose: Populate the global `Builds` list with buildable turf/object templates.
 - Side effects: instantiates temporary objects to capture icon/name data.
 
 ### obj/Build/Click()
 - Purpose: Select a build template or place it at the player location.
-- Side effects: checks combat, sets `Target`, calls `Build_Lay`.
+- Side effects: checks combat, sets `Target`, calls `buildLay`.
 
-### mob/proc/turf_lay_cost()
+### mob/proc/turfLayCost()
 - Purpose: Calculate the resource cost per tile to build.
 - Returns: integer cost (scaled by total built turfs and multipliers).
 
-### mob/proc/StopBuildingThings()
+### mob/proc/stopBuildingThings()
 - Purpose: Clear current build target selection.
 
-### proc/IsInVoid(mob/m)
+### proc/isInVoid(mob/m)
 - Purpose: Determine whether a mob is in the void/blank turf.
 - Returns: true if location is invalid or `/turf/Other/Blank`.
 
-### proc/Build_Lay(obj/Build/O, mob/P)
+### proc/buildLay(obj/Build/o, mob/p)
 - Purpose: Core build placement routine for a selected template.
 - Side effects: validates build rules, instantiates the target turf/obj, charges resources, updates `Built_Objs`/`built_turfs`.
 
-### proc/Initialize_Built_Objs()
+### proc/initializeBuiltObjs()
 - Purpose: Rebuild `Built_Objs` map from existing savable built objects.
 
 ### obj/Connector/New()
@@ -86,7 +86,7 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 - Purpose: Choose connector sprite based on adjacent connectors.
 - Side effects: populates `attached_connectors`, updates icon/light source.
 
-### mob/Admin4/verb/Clear_All_Custom_Decors()
+### mob/Admin4/verb/clearAllCustomDecors()
 - Purpose: Delete all custom decor blueprints and spawned decor.
 - Side effects: clears `customDecors`, deletes `/obj/Turfs/Custom`.
 

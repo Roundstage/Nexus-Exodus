@@ -9,12 +9,12 @@ mob/var
 	jirenAlien = 0
 
 var
-	jirenAlienBPMult = 1.8
-	jirenAlienPowerupMult = 0.3
-	jirenAlienKBresist = 0.5 //knockback resistance
-	jirenTakeDmgMult = 0.6
+	jirenAlienBPMult = 0.95
+	jirenAlienPowerupMult = 0.75
+	jirenAlienKBresist = 0.8 //knockback resistance
+	jirenTakeDmgMult = 1
 	jirenAlienCanAnger = 0
-	jirenStunResist = 2.5
+	jirenStunResist = 1.25
 
 mob/proc/Alien_Stuff()
 	if(!client) return
@@ -81,8 +81,8 @@ mob/proc/Alien_Stuff()
 					contents += new/obj/Unlock_Potential
 					Alien_points-=L[choice]
 				if("Gyren Alien (50 AP)")
-					switch(alert(src, "This attribute makes you very powerful but has downsides. You get [jirenAlienBPMult]x more BP, [1 / jirenAlienKBresist]x resistance to knockbacks, \
-					and take [(1 - jirenTakeDmgMult) * 100]% less damage from all attacks. But your ability to use power up goes down [(1 - jirenAlienPowerupMult) * 100]%, \
+					switch(alert(src, "This attribute concentrates your power into a durable control-focused form. Your combat BP is adjusted by [jirenAlienBPMult]x and you get [1 / jirenAlienKBresist]x resistance to knockbacks. \
+					Your ability to use power up goes down [(1 - jirenAlienPowerupMult) * 100]%, \
 					and you do not get a 2nd try from anger because all your power is in your regular form already.", "Options", "Yes", "No"))
 						if("No")
 							goto retry
@@ -124,7 +124,7 @@ mob/proc/Alien_Stuff()
 						if("No")
 							goto retry
 					arm_stretch=1
-					arm_stretch_icon='generic arm.dmi'
+					arm_stretch_icon='GenericArm.dmi'
 					arm_stretch_range=150
 					Auto_color_arm_stretch_icon()
 					Alien_points-=L[choice]
@@ -143,7 +143,7 @@ mob/proc/Alien_Stuff()
 					b.name="Alien transform"
 					b.desc="This is a transformation that increases BP but drains energy"
 					b.buff_attributes+="transformation"
-					var/icon/i='Aura Electric.dmi'+rgb(80,180,80)
+					var/icon/i='AuraElectric.dmi'+rgb(80,180,80)
 					b.buff_overlays+=i
 					Alien_points-=L[choice]
 				if("Time freeze (25 AP)")

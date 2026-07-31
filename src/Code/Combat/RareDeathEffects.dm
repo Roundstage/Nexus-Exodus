@@ -32,7 +32,7 @@ mob/proc/Blood_splatter_effects()
 	var/max_timer=20
 
 	var/list/l=player_view(15,t)
-	l<<sound('squished.ogg',volume=100)
+	l<<sound('Squished.ogg',volume=100)
 
 	for(var/turf/t2 in TurfCircle(4,t)) if(!t2.density)
 		spawn(rand(0,max_timer))
@@ -48,8 +48,8 @@ mob/proc/Blood_splatter_effects()
 
 	sleep(max_timer)
 
-	l<<sound('squished.ogg',volume=100)
+	l<<sound('Squished.ogg',volume=100)
 
 	var/obj/Door_kill_blood/dkb = GetCachedObject(/obj/Door_kill_blood, t)
-	dkb.icon='Floor blood.dmi'
+	dkb.icon='FloorBlood.dmi'
 	CenterIcon(dkb)

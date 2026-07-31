@@ -2,9 +2,12 @@
 	set category = "Other"
 	transform = matrix()*/
 
+var/wolf_fang_hit_damage_mult = 1
+var/wolf_fang_knockback_distance = 3
+
 obj
 	WolfFangFist
-		desc = "Lunges at your oponent and land a highspeed damaging sequence."
+		desc = "Lunges at your opponent with five advancing strikes. Each hit deals medium knockback and carries you into the next attack."
 
 		Cost_To_Learn = 20
 		Teach_Timer = 1
@@ -43,5 +46,5 @@ mob
 			return 0
 
 		WolfFangFistCancelled(mob/victim, moved = 1)
-			if(!victim || getdist(src,victim) <= 1 || !moved || !viewable(src,victim,35))
+			if(!victim || selected_target != victim || getdist(src,victim) <= 1 || !moved || !viewable(src,victim,35))
 				return 1

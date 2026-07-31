@@ -1,5 +1,8 @@
 mob/proc/using_hokuto() if(hokuto_obj&&hokuto_obj.Attacking) return 1
 
+var/hundred_crack_hit_damage_mult = 0.25
+var/hundred_crack_min_hits = 24
+
 mob/var/tmp/obj/Hokuto_Shinken/hokuto_obj
 
 obj/Hokuto_Shinken
@@ -11,10 +14,7 @@ obj/Hokuto_Shinken
 	Teach_Timer=3
 	student_point_cost = 30
 	Cost_To_Learn=11
-	desc="Hokuto Hyakuretsu Ken from the Hokuto no Ken anime. If it succeeds the enemies die instantly, \
-	but if it fails you will be knocked out. The effectiveness is based on your strength and BP, versus their \
-	durability and BP. Also if they \
-	dodge all the hits it fails. I know that's not quite how it works in the anime but meh."
+	desc="A sustained rush of twenty-four or more rapid strikes. Each hit deals increased melee damage, but the technique never executes the target or knocks out its user."
 	var/tmp/Attacking
 	New()
 		spawn if(ismob(loc))
@@ -52,8 +52,9 @@ obj/Hokuto_Shinken
 		if(!(locate(/mob) in Chosen_Targets))
 			usr<<"No viable targets..."
 			return
-		player_view(10,usr)<<sound('Ai wo Torimodose 2.ogg',volume=30)
+		player_view(10,usr)<<sound('AiWoTorimodose2.ogg',volume=30)
 		Attacking=1
+		usr.attacking=3
 		player_view(10,usr)<<sound('ATATATA.ogg')
 		player_view(10,usr)<<"A glowing aura of power appears around [usr], suddenly their shirt rips off!"
 		spawn(12) if(usr)
@@ -65,48 +66,47 @@ obj/Hokuto_Shinken
 		usr.overlays.Add(I,F)
 		sleep(62)
 		usr.Say("HOOOO!!! ATATATATATATATATATATATATA!!!")
-		var/Amount=0
-		for(var/mob/P in Chosen_Targets) Amount+=5
-		if(Amount<17) Amount=17
+		var/Amount = hundred_crack_min_hits
 		BigCrater(pos = usr.loc, minRangeFromOtherCraters = 4)
 		Dust(usr, end_size = 0.6, time = 7)
 		Make_Shockwave(usr,sw_icon_size=256)
-		while(Amount)
+		while(Amount && usr && !usr.KO)
 			Amount-=1
 			if(Chosen_Targets)
 				var/mob/M=pick(Chosen_Targets)
-				if(M&&M.z==usr.z)
+				if(M&&M.z==usr.z&&!M.KO)
 					usr.Warp_To(Get_Warp_Destination(M,usr),M)
-					usr.dir=Get_step(usr,M)
-					if(M&&!M.KO) usr.Melee()
+					usr.dir=get_dir(usr,M)
+					usr.hundredCrackFistHit(M)
 					spawn if(usr && prob(20)) Make_Shockwave(usr,sw_icon_size=pick(64,128))
 			sleep(3)
-		for(var/mob/m in players) for(var/obj/Hokuto_Shinken_Energy/E in m)
-			if(E.Creator==usr.key) if(m) m.Hokuto_Shinken_Effects(usr)
-		usr.Say("Your already dead.")
-		usr.overlays.Remove(I,F)
-		usr.Ki/=5
+		if(usr)
+			usr.Say("You are already beaten.")
+			usr.overlays.Remove(I,F)
+			usr.Ki/=5
+			usr.attacking=0
+			Skill_Increase(1,usr)
 		Attacking=0
-		Skill_Increase(1,usr)
+
+mob/proc/hundredCrackFistHit(mob/target)
+	if(!target || target.KO || target.Safezone || target.z != z) return 0
+	var/accuracy = Clamp(get_melee_accuracy(target) * 1.15, 5, 100)
+	if(!prob(accuracy))
+		player_view(12, src) << sound(pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg'), volume = 20)
+		return 0
+	var/damage = getPhysicalCombatDamage(target, hundred_crack_hit_damage_mult)
+	flick("Attack", src)
+	player_view(12, src) << sound(pick('Weakpunch.ogg', 'Mediumpunch.ogg'), volume = 25)
+	target.TakeDamage(damage, 1)
+	target.SetLastAttackedTime(src)
+	target.setOpponent(src)
+	return 1
 
 mob/proc/Hokuto_Shinken_Effects(mob/P)
 	set waitfor=0
+	if(!P) return
 	for(var/obj/Hokuto_Shinken_Energy/E in src) if(E.Creator==P.key)
-		var/hs_power=((E.Level/BP)**bp_exponent + (E.hs_str/End)**0.3) / 2 * 0.75
-		if(hs_power<1)
-			P.KO("hundred crack fist backfire",allow_anger=0)
-			del(E)
-		else spawn(rand(15,30)) if(src)
-			if(hero==key)
-				player_view(15,src)<<"[src] is able to resist the hundred crack fist!"
-			else
-				Body_Parts(10)
-				player_view(15,src)<<"[src]'s body swells and is in immense pain, only a moment later they explode as the effect's of [P]'s \
-				Hokuto Shinken style kills them instantly...(Killed by [P.key])"
-				var/turf/T=loc
-				Death(P)
-				if(T) for(var/mob/S in T) if(!S.client) S.overlays+='Exploded Head.dmi'
-			del(E)
+		del(E)
 
 mob/proc/Add_Hokuto_Shinken_Energy(mob/P) if(ismob(P)) if(!(locate(/obj/Hokuto_Shinken_Energy) in P))
 	if(hokuto_obj&&hokuto_obj.Attacking)

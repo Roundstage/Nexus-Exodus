@@ -1,27 +1,31 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `DU.dme` is the Dream Maker environment; it includes all `.dm` sources. Add new code files to the `// BEGIN_INCLUDE` block.
+- `DU.dme` is the Dream Maker environment and the source of truth for compiled files. Add new code files to the `// BEGIN_INCLUDE` block.
 - `src/Code/` contains game logic, grouped by subsystem (Combat, Movement, World Mechanics, etc.).
 - `src/Icons/`, `src/Images/`, `src/Sound/` hold assets; `src/Maps/` contains `.dmm` maps.
 - `UI.dmf` defines the client skin. `data/` holds runtime saves and logs (avoid committing ad-hoc changes).
 
 ## Build, Test, and Development Commands
-- Build (BYOND 516): open `DU.dme` in Dream Maker -> `Build > Compile` (produces a `.dmb`).
+- Full baseline: run `.\tools\Invoke-ByondSmoke.ps1` from PowerShell. It pins BYOND 516.1685, compiles, and runs clean and versioned startup tests in a temporary directory.
+- Headless local compile: run `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly`. This never starts Dream Daemon or opens a local server.
+- Naming audit: run `.\tools\Test-NamingConventions.ps1`; add `-Detailed` for individual violations, `-PathStrict` to enforce paths, and `-Strict` once the identifier migration is complete.
+- Asset reference audit: run `.\tools\Test-AssetReferences.ps1 -Strict` to reject missing, ambiguous, or incorrectly cased first-party asset references.
+- Manual build: open `DU.dme` with BYOND 516.1685 and select `Build > Compile`.
 - Run locally: open the compiled `.dmb` in Dream Daemon or use Dream Maker's `Run`.
-- Release: package the `.dmb` plus required assets from `src/` and `data/` as needed.
+- Release: package the matching `.dmb` and `.rsc` files plus required runtime data.
 
 ## Coding Style & Naming Conventions
 - Language is BYOND DM. Use tabs for indentation and keep proc blocks compact.
 - Functions/procs use `camelCase`, types/classes use `PascalCase`, and variables use `snake_case`.
 - File names use `PascalCase` with no spaces (e.g., `src/Code/Combat/SpeedDelay.dm`).
+- Directory names use `CamelCase` with no spaces; keep code grouped by subsystem.
 - If you add assets, mirror existing folder structure and update references in `.dm` or `.dmf`.
 
 ## Testing Guidelines
-- No automated test suite is present. Validate changes manually:
-  - Compile without warnings.
-  - Exercise the affected feature in-game.
-  - Check runtime output/logs (see `data/Logs` and `data/Bugs`).
+- CI and `tools/Invoke-ByondSmoke.ps1` require zero compiler warnings, no startup runtimes, and passing startup assertions.
+- Exercise affected gameplay manually after the automated baseline passes.
+- Check runtime output/logs in `data/Logs`, `data/Bugs`, and `Errors.log`.
 
 ## Legacy & Refactor Notes
 - This is a legacy BYOND codebase dating back to 2017; refactors should be incremental and well-scoped.

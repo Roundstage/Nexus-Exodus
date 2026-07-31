@@ -134,7 +134,7 @@ proc/Initialize_Gun_Icons()
 	var/Gun_Name=1
 	var/obj/Gun_Icon/G=new
 	G.name=Gun_Name
-	G.icon='Item, Blaster.dmi'
+	G.icon='ItemBlaster.dmi'
 	Gun_Icons+=G
 	for(var/A in icon_states('GUNS.dmi')) if(!(A in list("Rocket Middle","Rocket Right","Ammo 1","Ammo 2",\
 	"Ammo 3","Ammo Box")))
@@ -144,7 +144,7 @@ proc/Initialize_Gun_Icons()
 		B.icon='GUNS.dmi'
 		B.icon_state=A
 		Gun_Icons+=B
-	var/list/Bullets=list('Bullet 1.dmi','Bullet 2.dmi','Bullet 3.dmi','Bullet 4.dmi','Bullet.dmi','Missile Small.dmi',\
+	var/list/Bullets=list('Bullet1.dmi','Bullet2.dmi','Bullet3.dmi','Bullet4.dmi','Bullet.dmi','MissileSmall.dmi',\
 	'Missile.dmi','Grenade.dmi')
 	for(var/A in Bullets)
 		var/obj/Bullet_Icons/B=new

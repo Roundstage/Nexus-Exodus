@@ -60,7 +60,7 @@ obj
 		layer = 0+BACKGROUND_LAYER
 
 		global_lighting
-			icon 			= 'daynight.dmi'
+			icon 			= 'Daynight.dmi'
 			plane 			= EMISSIVE_PLANE
 			screen_loc 		= "center,center"
 			mouse_opacity	= 0

@@ -95,7 +95,7 @@ obj/Module
 		makes_toxic_waste=1
 		desc="This gives you the ability that Bebi had, to jump into other people's bodies. It will decrease \
 		durability, resistance, and defense by 5%"
-		Icon_Change='Bio Experiment.dmi'
+		Icon_Change='BioExperiment.dmi'
 		//BPx=0.5
 		Abilities=list(new/obj/Body_Swap)
 		Endx=0.95
@@ -1423,7 +1423,7 @@ mob/proc/Absorb_Blast(obj/Blast/B)
 		src << "Your blast absorber has been overloaded! It will re-activate in [timer] minutes"
 		blast_absorb_next_use = world.realtime + (timer * 60 * 10)
 		return
-	Force_Field('Black Hole.dmi',rgb(0,0,0),"full2")
+	Force_Field('BlackHole.dmi',rgb(0,0,0),"full2")
 	return 1
 
 obj/Overdrive
@@ -1515,7 +1515,7 @@ obj/Scrap_Absorb
 				Using=1
 				Stored_Icon=usr.icon
 				Old_cyber_bp=usr.cyber_bp
-				usr.icon='Android 13.dmi'
+				usr.icon='Android13.dmi'
 				usr.Scrap_Absorb_Revert_Timer(src)
 				usr.scrap_absorb_mode = 1
 				if(usr.Ki<usr.max_ki) usr.Ki=usr.max_ki
@@ -1525,7 +1525,7 @@ obj/Scrap_Absorb
 				break
 
 obj/Android_Scraps
-	icon='Android Scraps.dmi'
+	icon='AndroidScraps.dmi'
 	density=1
 	Savable=0
 	takes_gradual_damage=1
@@ -1606,7 +1606,7 @@ mob/proc/Scraps_Exist()
 
 proc/Scraps_Assemble(obj/T)
 	if(!T) return
-	var/image/I=image(icon='Black Hole.dmi',icon_state="full2")
+	var/image/I=image(icon='BlackHole.dmi',icon_state="full2")
 	T.overlays+=I
 	for(var/obj/Android_Scraps/A in range(10,T))
 		A.density=0

@@ -1,9 +1,9 @@
 mob/var
 	has_gold_form
 	is_gold_form
-	gold_form_aura = 'Gold Icer Aura Smaller.dmi'
+	gold_form_aura = 'GoldIcerAuraSmaller.dmi'
 	gold_form_mult = 1.3
-	goldFormIcon = 'Gold Icer.dmi'
+	goldFormIcon = 'GoldIcer.dmi'
 
 	tmp
 		gold_form_drain_loop
@@ -65,6 +65,7 @@ mob/proc
 		icon = goldFormIcon
 		Aura_Overlays()
 		GoldFormDrain()
+		syncActivePrimaryTransformation("gold")
 
 	GoldFormRevert()
 		if(!is_gold_form)
@@ -78,6 +79,7 @@ mob/proc
 		else 
 			icon = Form4Icon
 		//SSj_Hair()
+		syncActivePrimaryTransformation("gold revert")
 
 	GoldFormDrain()
 		set waitfor=0
@@ -101,7 +103,7 @@ mob/proc
 		if(!isnum(god_ki_mastery)) god_ki_mastery = 0 //fix -nan bug i made
 		gold_form_aura = image(initial(gold_form_aura) + rgb(0,0,0,170), pixel_x = 0, pixel_y = -4)
 		//gold_form_aura = Scaled_Icon(gold_form_aura, 48, 64)
-		gold_form_idle_aura = image(icon = 'Gold Idle Aura.dmi' + rgb(0,0,0,203), pixel_x = -32, pixel_y = -28)
+		gold_form_idle_aura = image(icon = 'GoldIdleAura.dmi' + rgb(0,0,0,203), pixel_x = -32, pixel_y = -28)
 
 		if(!is_gold_form) return
 
@@ -111,7 +113,7 @@ mob/proc
 		set waitfor=0
 		var/obj/Effect/e = GetEffect()
 		e.loc = loc
-		e.icon = 'Mega Supernova 2018.dmi'
+		e.icon = 'MegaSupernova2018.dmi'
 		CenterIcon(e)
 		e.layer = 9
 		e.alpha = 255

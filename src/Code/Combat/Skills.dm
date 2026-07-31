@@ -46,13 +46,16 @@ obj/Giant_Form
 mob/proc
 	Toggle_giant_form(obj/Giant_Form/g)
 		if(using_giant_form) Disable_giant_form()
-		else Enable_giant_form(g)
+		else
+			preparePrimaryTransformation("giant")
+			Enable_giant_form(g)
 
 	Enable_giant_form(obj/Giant_Form/g)
 		if(using_giant_form) return
 		using_giant_form=1
 		if(Race=="Makyo")
-			icon='Big Garlic.dmi'
+			icon='BigGarlic.dmi'
+			if(player_appearance_manager) player_appearance_manager.removeRenderedAppearances()
 			giant_form_overlays=new/list
 			giant_form_overlays.Add(overlays)
 			overlays=null
@@ -73,13 +76,14 @@ mob/proc
 		Def*=0.75
 		defmod*=0.75
 		if(g) src << g.desc
+		syncActivePrimaryTransformation("giant enabled")
 
 	Disable_giant_form(icon_change=1)
 		if(!using_giant_form) return
 		using_giant_form=0
 		if(Race=="Makyo")
-			if(icon=='Big Garlic.dmi')
-				icon='Makyojin 2.dmi'
+			if(icon=='BigGarlic.dmi')
+				icon='Makyojin2.dmi'
 				overlays.Add(giant_form_overlays)
 				bp_mult-=0.3
 		else if(icon_change)
@@ -87,7 +91,6 @@ mob/proc
 		bp_mult-=0.2
 		Spd/=0.75
 		spdmod/=0.75
-		bp_mult+=0.5
 		Str/=1.25
 		strmod/=1.25
 		End/=1.25
@@ -98,6 +101,7 @@ mob/proc
 		offmod/=0.75
 		Def/=0.75
 		defmod/=0.75
+		syncActivePrimaryTransformation("giant disabled")
 
 mob/var/limit_breaker_on
 
@@ -143,7 +147,7 @@ obj/Limit_Breaker
 			return
 		if(!usr.limit_breaker_on)
 			usr.limit_breaker_on = 1
-			player_view(10,usr)<<sound('aura3.ogg',volume=20)
+			player_view(10,usr)<<sound('Aura3.ogg',volume=20)
 			usr.last_anger=world.time
 			usr.overlays+=icon
 			usr.bp_mult+=0.5
@@ -227,7 +231,7 @@ mob/proc/Dash_Attack()
 
 mob/proc/DashAttackPart2(mob/a, KB_Distance) //a = attacker
 	set waitfor=0
-	player_view(center=a)<<sound('strongpunch.ogg',volume=50)
+	player_view(center=a)<<sound('Strongpunch.ogg',volume=50)
 	Make_Shockwave(src,sw_icon_size=pick(128,256))
 	var/kb_dir=pick(turn(a.dir,45),turn(a.dir,-45))
 	Knockback(A = a, Distance = KB_Distance, override_dir = kb_dir, bypass_immunity = 1)
@@ -744,7 +748,7 @@ mob/proc/Soul_Weapon(obj/Soul_Weapon/soul_weapon)
 
 	A.name = "Soul [A.name]"
 	A.desc = "A weapon made from the soul of [player]."
-	A.icon = 'Sword 2.dmi' + rgb(200, 60, 60)
+	A.icon = 'Sword2.dmi' + rgb(200, 60, 60)
 
 	soul_weapon.weapon 		= A
 	player.contents 		+= soul_weapon.weapon
@@ -854,11 +858,11 @@ mob/proc/Soul_Attack(obj/Soul_Attack/Soul_Attack, range_y, range_x, duration)
 
 
 	for(var/turf/T in adjascent_tiles)
-		T.overlays += 'Lightning flash.dmi' + rgb(91, 102, 226, 255)
+		T.overlays += 'LightningFlash.dmi' + rgb(91, 102, 226, 255)
 
 	spawn(duration * 10)
 		for(var/turf/T in adjascent_tiles)
-			T.overlays -= 'Lightning flash.dmi' + rgb(91, 102, 226, 255)
+			T.overlays -= 'LightningFlash.dmi' + rgb(91, 102, 226, 255)
 		Soul_Attack.is_active = FALSE
 	return
 
@@ -941,7 +945,7 @@ proc/Rising_Aura(obj/T,N=50)
 	while(T&&T.z&&N)
 		N--
 		var/obj/Rising_Aura/A=new(T.loc)
-		A.icon=image(icon='Aura, Big.dmi',icon_state="2")
+		A.icon=image(icon='AuraBig.dmi',icon_state="2")
 		A.icon+=rgb(100,200,255)
 		sleep(2)
 
@@ -1065,7 +1069,7 @@ mob/proc/Give_Power(obj/Give_Power/G)
 	M.gp_list+=src			 //track list of people giving power to M
 	player_view(15,src) << "[src] is sending their power to [M]!"
 	var/obj/O=new
-	O.icon='Give Power.dmi'
+	O.icon='GivePower.dmi'
 	O.layer=layer+1
 
 	spawn while(src&&Giving_Power&&M)
@@ -1124,7 +1128,15 @@ mob/proc/Give_power_refill_loop()
 				break
 		sleep(100)
 
-mob/var/tmp/obj/zanzoken_obj
+mob/var/tmp/obj/Zanzoken/zanzoken_obj
+
+mob/proc/getZanzokenSkill()
+	if(zanzoken_obj && zanzoken_obj.loc == src) return zanzoken_obj
+	zanzoken_obj = locate(/obj/Zanzoken) in src
+	return zanzoken_obj
+
+mob/proc/hasZanzokenSkill()
+	return !!getZanzokenSkill()
 
 obj/Zanzoken
 	teachable=1
@@ -1139,9 +1151,17 @@ obj/Zanzoken
 	zanzoken if they try to run from you"
 
 	New()
-		spawn(5) if(src && ismob(loc))
+		. = ..()
+		spawn if(src && ismob(loc))
 			var/mob/m=loc
 			m.zanzoken_obj=src
+			if(m.client) m.client.syncNexusHotkeyMacros()
+
+	Del()
+		if(ismob(loc))
+			var/mob/m = loc
+			if(m.zanzoken_obj == src) m.zanzoken_obj = null
+			spawn if(m && m.client) m.client.syncNexusHotkeyMacros()
 		. = ..()
 
 	verb/Combo_Toggle()
@@ -1152,6 +1172,60 @@ obj/Zanzoken
 		else
 			usr<<"Combo Warping off"
 			usr.Warp=0
+
+	verb/zanzokenNorth()
+		set name = "Zanzoken: North"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(NORTH)
+
+	verb/zanzokenNortheast()
+		set name = "Zanzoken: Northeast"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(NORTHEAST)
+
+	verb/zanzokenEast()
+		set name = "Zanzoken: East"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(EAST)
+
+	verb/zanzokenSoutheast()
+		set name = "Zanzoken: Southeast"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(SOUTHEAST)
+
+	verb/zanzokenSouth()
+		set name = "Zanzoken: South"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(SOUTH)
+
+	verb/zanzokenSouthwest()
+		set name = "Zanzoken: Southwest"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(SOUTHWEST)
+
+	verb/zanzokenWest()
+		set name = "Zanzoken: West"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(WEST)
+
+	verb/zanzokenNorthwest()
+		set name = "Zanzoken: Northwest"
+		set category = "Skills"
+		set src in usr
+		usr.directionalZanzoken(NORTHWEST)
+
+	verb/flashStep()
+		set name = "Flash Step"
+		set category = "Skills"
+		set src in usr
+		usr.Flash_Step()
 
 mob/var/KeepsBody //If this is 1 you keep your body when Dead.
 obj/Keep_Body
@@ -1207,7 +1281,7 @@ obj/Shield
 	desc="You can toggle this on and off. A ki shield will surround you to protect you from all \
 	attacks. Each attack will drain your energy instead of health. The shield will also protect you \
 	from dying in space but it will drain energy heavily."
-	icon='Shield Blue.dmi'
+	icon='ShieldBlue.dmi'
 	New()
 		spawn if(ismob(loc))
 			var/mob/M=loc
@@ -1739,7 +1813,7 @@ obj/Shunkan_Ido
 				return
 			usr<<"You found their energy signature."
 			player_view(15,usr)<<"[usr] disappears in a flash!"
-			player_view(10,src)<<sound('teleport.ogg',volume=30)
+			player_view(10,src)<<sound('Teleport.ogg',volume=30)
 			if(!usr.tournament_override(fighters_can=0,show_message=0))
 				for(var/mob/B in oview(1,usr))
 					if(B == usr) continue //2 calls to SafeTeleport in the same tick does not work
@@ -1753,7 +1827,7 @@ obj/Shunkan_Ido
 			usr.SafeTeleport(A.loc)
 			usr.Update_SI_disadvantage(A)
 			step_rand(usr)
-			oview(10,src)<<sound('teleport.ogg',volume=30)
+			oview(10,src)<<sound('Teleport.ogg',volume=30)
 		else usr<<"[A] logged out..."
 		using_si=0
 
@@ -1845,7 +1919,7 @@ obj/Teleport
 			//Planets.Remove("Arconia", "Ice", "Desert", "Jungle", "Android", "Kaioshin")
 
 		for(var/obj/Planets/p in planets) if((p.name in disabled_planets)||(p.name in destroyed_planets)) Planets-=p.name
-		var/image/I=image(icon='Black Hole.dmi',icon_state="full")
+		var/image/I=image(icon='BlackHole.dmi',icon_state="full")
 		I.icon+=rgb(rand(0,255),rand(0,255),rand(0,255))
 		var/turf/T
 		var/n=input("Choose a realm") in Planets
@@ -1912,7 +1986,7 @@ mob/proc/Power_up()
 	if(KO) return
 
 	if(God_Fist_obj && God_Fist_obj.Using)
-		if(!God_Fist_level && !ultra_instinct) player_view(10,src)<<'powerup.wav'
+		if(!God_Fist_level && !ultra_instinct) player_view(10,src)<<'Powerup.wav'
 		if((!ShouldUseSuperGod_Fist() && God_Fist_level < 20) || (ShouldUseSuperGod_Fist() && !super_God_Fist))
 			Make_Shockwave(src,sw_icon_size=256)
 			for(var/mob/P in player_view(20,src)) P.ScreenShake(20,8)
@@ -1930,7 +2004,7 @@ mob/proc/Power_up()
 		powerup_obj.Powerup=1
 		src<<"You begin powering up"
 		if(BPpcnt<=100) Make_Shockwave(src,sw_icon_size=256)
-		if(!ultra_instinct) player_view(10,src)<<sound('aura3.ogg',volume=10)
+		if(!ultra_instinct) player_view(10,src)<<sound('Aura3.ogg',volume=10)
 		else player_view(10,src) << sound('Blast.wav',volume = 10)
 	else if(!Redoing_Stats)
 		PowerUpGoNextForm()
@@ -2021,24 +2095,24 @@ proc/GetHeight(O)
 
 mob/var/icon
 	Aura='src/Icons/Ki/Auras/Aura.dmi'
-	FlightAura='src/Icons/Ki/Auras/Aura Fly.dmi'
-	BlastCharge='src/Icons/Ki/Blast Charging/Charge1.dmi'
+	FlightAura='src/Icons/Ki/Auras/AuraFly.dmi'
+	BlastCharge='src/Icons/Ki/BlastCharging/Charge1.dmi'
 	Burst='src/Icons/Ki/Auras/Burst.dmi'
-	SSj4Aura='src/Icons/Ki/Auras/Aura SSj4.dmi'
+	SSj4Aura='src/Icons/Ki/Auras/AuraSSj4.dmi'
 
 obj/Auras
-	icon='src/Icons/Ki/Auras/Aura, Big.dmi'
+	icon='src/Icons/Ki/Auras/AuraBig.dmi'
 	Givable=0
 	can_change_icon=1
 	var/tmp/image/Old
-	var/God_Fist='src/Icons/Ki/Auras/Aura, Kaioken, Big.dmi'
-	var/SSj='src/Icons/Ki/Auras/Aura, SSj, Big.dmi'
-	var/USSj='USSj Aura.dmi'
-	var/SSj2='Aura, SSj, Big.dmi'
-	var/SSj3='ssj3 aura.dmi'
-	var/SSj4='Aura, Big.dmi'
-	var/Legend='Aura, LSSj, Big.dmi'
-	var/LSSj='Aura, LSSj, Big.dmi'
+	var/God_Fist='src/Icons/Ki/Auras/AuraKaiokenBig.dmi'
+	var/SSj='src/Icons/Ki/Auras/AuraSSjBig.dmi'
+	var/USSj='USSjAura.dmi'
+	var/SSj2='AuraSSjBig.dmi'
+	var/SSj3='Ssj3Aura.dmi'
+	var/SSj4='AuraBig.dmi'
+	var/Legend='AuraLSSjBig.dmi'
+	var/LSSj='AuraLSSjBig.dmi'
 	var/Init
 	var/auraYoffset = 0
 	New()
@@ -2068,7 +2142,7 @@ var/image/super_God_Fist_aura
 
 proc/InitSuperGod_FistAura()
 	if(!super_God_Fist_aura)
-		super_God_Fist_aura = image(icon = 'Aura Super Kaioken.dmi')
+		super_God_Fist_aura = image(icon = 'AuraSuperKaioken.dmi')
 		super_God_Fist_aura.pixel_x = Icon_Center_X(super_God_Fist_aura.icon)
 
 mob/proc/ShouldUseSuperGod_Fist()
@@ -2147,19 +2221,19 @@ mob/proc/Aura_Overlays(remove_only)
 		Auras.Old=I
 		Add_Sparks()
 
-mob/proc/Remove_Sparks() overlays.Remove('Sparks LSSj.dmi','Electric_Mystic.dmi','Elec.dmi',\
-'Electric_Blue.dmi','Demon Vampire Majin By Tobi Uchiha.dmi','LSSJ powerz.dmi','SSj2 Electric Tobi Uchiha.dmi',\
-'SSj3 Electric Tobi Uchiha.dmi','USSj Electric Tobi Uchiha.dmi')
+mob/proc/Remove_Sparks() overlays.Remove('SparksLSSj.dmi','ElectricMystic.dmi','Elec.dmi',\
+'ElectricBlue.dmi','DemonVampireMajinByTobiUchiha.dmi','LssjPowerz.dmi','SSj2ElectricTobiUchiha.dmi',\
+'Ssj3ElectricTobiUchiha.dmi','USSjElectricTobiUchiha.dmi')
 
 mob/proc/Add_Sparks()
 	Remove_Sparks()
 
-	if(BPpcnt>100&&(ismajin||Vampire||Race=="Demon")) overlays+='Demon Vampire Majin By Tobi Uchiha.dmi'
+	if(BPpcnt>100&&(ismajin||Vampire||Race=="Demon")) overlays+='DemonVampireMajinByTobiUchiha.dmi'
 	if(BPpcnt>100)
-		if(Class=="Legendary Saiyan") overlays+='LSSJ powerz.dmi' //overlays+='Sparks LSSj.dmi'
-		if(ismystic) overlays+='Electric_Mystic.dmi'
-	if(ssj==2) overlays+='SSj2 Electric Tobi Uchiha.dmi'
-	if(ssj==3) overlays+='SSj3 Electric Tobi Uchiha.dmi'
+		if(Class=="Legendary Saiyan") overlays+='LssjPowerz.dmi' //overlays+='SparksLSSj.dmi'
+		if(ismystic) overlays+='ElectricMystic.dmi'
+	if(ssj==2) overlays+='SSj2ElectricTobiUchiha.dmi'
+	if(ssj==3) overlays+='Ssj3ElectricTobiUchiha.dmi'
 
 obj/Fly
 	teachable=1
@@ -2205,7 +2279,7 @@ mob/proc/Fly(obj/Fly/F)
 		pixel_y += 3
 		Layer_Update()
 		Fly_loop()
-		if(icon=='Demon6.dmi'||icon=='Demon6, Female.dmi')
+		if(icon=='Demon6.dmi'||icon=='Demon6Female.dmi')
 			F.overlays-=F.overlays
 			F.overlays=overlays
 			overlays-=overlays
@@ -2229,11 +2303,11 @@ mob/proc/Land()
 
 proc/Random_Fart()
 	var/sound/S=pick('Fart1.wav','Fart2.wav','Fart3.wav','Fart4.wav','Fart5.wav','Fart6.wav','Fart7.wav',\
-	'Fart8.wav','Fart9.wav','Fart10.wav','Fart11.wav','Fart12.wav','Fart13.wav','Fart14.wav','Fart 15.wav',\
-	'Fart 16.wav','Fart 17.wav','Fart 18.wav','Fart 19.wav')
+	'Fart8.wav','Fart9.wav','Fart10.wav','Fart11.wav','Fart12.wav','Fart13.wav','Fart14.wav','Fart15.wav',\
+	'Fart16.wav','Fart17.wav','Fart18.wav','Fart19.wav')
 	return S
 
-var/image/Self_Destruct_Fire=image(icon='Lightning flash.dmi',layer=99)
+var/image/Self_Destruct_Fire=image(icon='LightningFlash.dmi',layer=99)
 
 turf/proc/Self_Destruct_Lightning(B) if(B)
 	overlays-=Self_Destruct_Fire
@@ -2293,9 +2367,9 @@ obj/Self_Destruct
 		using_sd=1
 		usr.move=0
 
-		player_view(10,usr)<<sound('aura3.ogg',volume=30)
+		player_view(10,usr)<<sound('Aura3.ogg',volume=30)
 		player_view(12,usr)<<"A huge explosion eminates from [usr] ([usr.displaykey]) and surrounds the area!"
-		player_view(10,usr)<<sound('basicbeam_fire.ogg',volume=20)
+		player_view(10,usr)<<sound('BasicbeamFire.ogg',volume=20)
 		Make_Shockwave(usr,sw_icon_size=512)
 		var/Dist=10
 		for(var/N=0,N<5,N++) for(var/turf/T in view(Dist)) if(T.opacity&&(T.Health<usr.BP)&&usr.Is_wall_breaker())
@@ -2317,8 +2391,6 @@ obj/Self_Destruct
 						var/anger_wait=2400
 						if(world.time>P.last_anger+anger_wait)
 							P.anger(anger_mult=1,ssj_possible=1)
-							var/dmg = Get_self_destruct_damage(usr,P)
-							P.TakeDamage(dmg)
 						if(P.Regenerate&&!P.KO&&usr.BP>P.BP*P.Regenerate) P.Death(usr,1)
 						else P.Death(usr)
 			if(usr && T) if((T.Health < usr.WallBreakPower()) && usr.Is_wall_breaker())
@@ -2336,11 +2408,10 @@ obj/Self_Destruct
 		using_sd=0
 
 proc/Get_self_destruct_damage(mob/a,mob/b)
-	var/dmg=130 * ((a.Pow/b.Res)**0.5) * ((a.BP/b.BP)**bp_exponent) * ki_power
-	if(a.Class=="Spirit Doll") dmg*=1.5
+	var/dmg = a.getKiCombatDamage(b, 30)
 
 	if(a.Regenerate || (locate(/obj/Module/Rebuild) in a.active_modules)) dmg *= 0.5
-	return dmg;
+	return dmg
 
 mob/proc/AOE_auto_dodge(mob/attacker,turf/origin,min_dist=7,max_dist=10)
 	if(KO||KB||Frozen||Safezone) return
@@ -2365,7 +2436,7 @@ mob/proc/AOE_auto_dodge(mob/attacker,turf/origin,min_dist=7,max_dist=10)
 			var/turf/safe_turf=pick(safe_turfs)
 			SafeTeleport(safe_turf)
 			flick('Zanzoken.dmi',src)
-			player_view(10,src)<<sound('teleport.ogg',volume=15)
+			player_view(10,src)<<sound('Teleport.ogg',volume=15)
 			if(ultra_instinct)
 				SafeTeleport(attacker.loc)
 				step_away(src,attacker,5,32)
@@ -2440,9 +2511,9 @@ obj/Kaio_Revive
 			/*switch(alert(A,"Do you want sent to your spawn?","Options","Yes","No"))
 				if("Yes")
 					player_view(15,A)<<"[A] was returned to their home"
-					A.Respawn()*/
+					A.respawn()*/
 			sleep(30)
-			A.Respawn()
+			A.respawn()
 			return
 		alert("Use this to bring someone in front of you back to life. Currently there is no dead person in front of you")
 
@@ -2673,7 +2744,7 @@ mob/proc/Taiyoken_Blindness_Timer()
 obj/Rift_Teleport
 	verb/Rift_Teleport()
 		set category="Skills"
-		var/image/I=image(icon='Black Hole.dmi',icon_state="full")
+		var/image/I=image(icon='BlackHole.dmi',icon_state="full")
 		switch(input("Person or Location?") in list("Person","Location",))
 			if("Location")
 				var/xx=input("X Location?") as num
@@ -2825,7 +2896,7 @@ obj/Observe
 					return
 		usr.Get_Observe(A)
 
-mob/Admin1/verb/Observe(atom/A in Observe_List())
+mob/Admin1/verb/observe(atom/A in Observe_List())
 	set category="Admin"
 	set name="Admin Observe"
 	Get_Observe(A)
@@ -2928,16 +2999,20 @@ obj/Mystic
 		if(usr.is_ssj_blue)
 			usr << "<font color=#0099FF>Mystic can not be combined with Super Saiyan Blue"
 			return
+		var/primary_form = usr.detectPrimaryTransformation()
+		if(primary_form && !(primary_form in list("saiyan_ssj1", "saiyan_ssj2")))
+			usr << "<font color=teal>Mystic is only compatible with base form, Super Saiyan 1, or Super Saiyan 2."
+			return
 
 		if(!usr.ismystic)
 			Last_Use=Year
 			usr.ismystic=1
 			usr.Spd*=1.1
 			usr.spdmod*=1.1
-			usr.overlays-='SSj Aura.dmi'
+			usr.overlays-='SSjAura.dmi'
 			usr.overlays-='Elec.dmi'
-			usr.overlays-='Electric_Blue.dmi'
-			usr.overlays-='Electric_Majin.dmi'
+			usr.overlays-='ElectricBlue.dmi'
+			usr.overlays-='ElectricMajin.dmi'
 			usr.overlays-=usr.ssjhair
 			usr.overlays-=usr.ussjhair
 			usr.overlays-=usr.ssjfphair
@@ -2991,34 +3066,35 @@ obj/FireFist
 		if(!usr.isFireFist)
 			Last_Use=Year
 			usr.isFireFist=1
-			usr.overlays+='Flaming_fists.dmi'
+			usr.overlays+='FlamingFists.dmi'
 			player_view(10,usr) << sound('FogoNaMao.mp3',volume=100)
 			usr << "You are now using the FireFist buff"
 			usr.FireFistLoop();
 		else usr.FireFist_Revert()
 
-mob/proc/FireFist_Revert() {
-	if(isFireFist){
+mob/proc/FireFist_Revert()
+	if(isFireFist)
 		isFireFist=0
-		usr.overlays-='Flaming_fists.dmi'
-		usr << "You have stopped using Fire Fist"
-	}
-}
-mob/proc/FireFistLoop(){
-	while (isFireFist == 1){
+		overlays-='FlamingFists.dmi'
+		src << "You have stopped using Fire Fist"
+		rebuildPlayerAppearance("Fire Fist revert")
+
+mob/proc/FireFistLoop()
+	set waitfor = 0
+	if(fire_fist_loop) return
+	fire_fist_loop = TRUE
+	while(isFireFist)
 		FireFistDrain()
 		sleep(20)
-	}
-}
-mob/proc/FireFistDrain(){
+	fire_fist_loop = FALSE
+
+mob/proc/FireFistDrain()
 	var/drain = 1.5 * (Eff**0.5) * (800 / 30)
-	if(Ki < drain){
-		usr << "You are too exausted to use Fire Fist"
-		usr.FireFist_Revert()
+	if(Ki < drain)
+		src << "You are too exhausted to use Fire Fist"
+		FireFist_Revert()
 		return
-	}
 	Ki -= drain
-}
 
 obj/SaiyanPower
 	teachable=0
@@ -3066,29 +3142,28 @@ obj/SaiyanPower
 			usr.Eff *= 1.5
 			usr.max_ki *= 1.5
 			usr.Ki *= 1.5
-			usr.overlays+='saiyanPower.dmi'
+			usr.overlays+='SaiyanPower.dmi'
 			usr << "You are now using the Saiyan Power"
 		else usr.SaiyanPower_Revert()
 
-mob/proc/SaiyanPower_Revert() {
-	if(usingSaiyanPower){
+mob/proc/SaiyanPower_Revert()
+	if(usingSaiyanPower)
 		usingSaiyanPower=0
-		usr.recov /= 1.25
-		usr.regen /= 1.25
-		usr.Eff /= 1.5
-		usr.max_ki /= 1.5
-		usr.Ki /= 1.5
-		usr.overlays-='saiyanPower.dmi'
-		usr << "You have stopped using Saiyan Power"
-	}
-}
+		recov /= 1.25
+		regen /= 1.25
+		Eff /= 1.5
+		max_ki /= 1.5
+		Ki /= 1.5
+		overlays-='SaiyanPower.dmi'
+		src << "You have stopped using Saiyan Power"
+		rebuildPlayerAppearance("Saiyan Power revert")
 
 
 
 obj/Majin
 
 	New()
-		if(!icon) icon='Aura Electric.dmi'+rgb(150,0,0)
+		if(!icon) icon='AuraElectric.dmi'+rgb(150,0,0)
 
 	teachable=1
 	Skill=1
@@ -3124,9 +3199,9 @@ obj/Majin
 				usr.ismajin=1
 				usr.bp_mult += majin_skill_bp_add
 				usr.max_anger *= majin_skill_anger_mult
-				usr.overlays-='SSj Aura.dmi'
+				usr.overlays-='SSjAura.dmi'
 				usr.overlays-='Elec.dmi'
-				usr.overlays-='Electric_Blue.dmi'
+				usr.overlays-='ElectricBlue.dmi'
 				usr.overlays+=icon
 				usr << desc
 				usr<<"You are now using the Majin buff"
@@ -3153,6 +3228,7 @@ mob/var
 	ismystic
 	isFireFist
 	usingSaiyanPower
+	tmp/fire_fist_loop
 
 mob/var/Restore_Youth=0 //How many times you have had youth restored
 
@@ -3202,7 +3278,7 @@ obj/Restore_Youth
 			player_view(15,M)<<"[usr] brings [M]'s age from [round(Previous_Age,0.1)] to [round(M.Age,0.1)] years old"
 			M.Restore_Youth++
 obj/Sacred_Water
-	icon='props.dmi'
+	icon='Props.dmi'
 	icon_state="Closed"
 	desc="This will give you a small power boost if your static BP is under a certain amount, and fully refill your health and energy, \
 	and can be used as many times as wanted"

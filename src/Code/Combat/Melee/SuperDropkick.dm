@@ -37,7 +37,7 @@ mob
 		DropkickFX()
 			set waitfor=0
 			var/obj/Effect/e = GetEffect()
-			e.icon = 'swirling white energy.png'
+			e.icon = 'SwirlingWhiteEnergy.png'
 			CenterIcon(e)
 			e.SafeTeleport(loc)
 			e.transform *= 2
@@ -51,5 +51,5 @@ mob
 			return 0
 
 		DropkickCancelled(mob/m, moved = 1)
-			if(!m || getdist(src,m) <= 1 || !moved || !viewable(src,m,35))
+			if(!m || selected_target != m || getdist(src,m) <= 1 || !moved || !viewable(src,m,35))
 				return 1

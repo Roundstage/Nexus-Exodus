@@ -95,7 +95,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 ### src/Code/Technology/Bombs.dm
 
 #### area/proc/Area_Nuke
-- Signature: `area/proc/Area_Nuke() if(icon!='Lightning flash.dmi')`
+- Signature: `area/proc/Area_Nuke() if(icon!='LightningFlash.dmi')`
 - Inputs: None
 - Purpose: Handle area nuke.
 - Returns: none (implicit).
@@ -1033,8 +1033,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Technology/Guns.dm
 
-#### mob/Admin3/verb/DestroyTurretsOfThisPerson
-- Signature: `mob/Admin3/verb/DestroyTurretsOfThisPerson(obj/Turret/t in Turrets)`
+#### mob/Admin3/verb/destroyTurretsOfThisPerson
+- Signature: `mob/Admin3/verb/destroyTurretsOfThisPerson(obj/Turret/t in Turrets)`
 - Inputs: obj/Turret/t in Turrets
 - Purpose: Handle destroy turrets of this person.
 - Returns: none (implicit).
@@ -1498,8 +1498,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Clear_banked_items
-- Signature: `mob/Admin4/verb/Clear_banked_items()`
+#### mob/Admin4/verb/clearBankedItems
+- Signature: `mob/Admin4/verb/clearBankedItems()`
 - Inputs: None
 - Purpose: Handle clear banked items.
 - Returns: none (implicit).
@@ -1533,8 +1533,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Upgrade_Settings
-- Signature: `mob/Admin4/verb/Upgrade_Settings()`
+#### mob/Admin4/verb/upgradeSettings
+- Signature: `mob/Admin4/verb/upgradeSettings()`
 - Inputs: None
 - Purpose: Handle upgrade settings.
 - Returns: none (implicit).
@@ -1578,9 +1578,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/Add_Technology
 - Signature: `proc/Add_Technology()`
 - Inputs: None
-- Purpose: Add Technology.
+- Purpose: Build the technology catalog from object types with an initial Cost.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: creates reference objects for catalog entries and updates tech_list.
 
 #### proc/Can_Make_Technology
 - Signature: `proc/Can_Make_Technology(mob/P,obj/O)`

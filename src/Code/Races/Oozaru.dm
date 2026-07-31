@@ -49,6 +49,8 @@ mob/proc/Great_Ape_revert() if(IsGreatApe())
 	spdmod/=0.1
 	overlays.Add(Great_Ape_Overlays)
 	Great_Ape_Overlays.Remove(Great_Ape_Overlays)
+	lastGreatApeRevert = world.realtime
+	syncActivePrimaryTransformation("great ape revert")
 
 var/ssj4_base_bp_req = 350000000
 
@@ -58,18 +60,20 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 		return
 	if(IsGod()) return
 	if(Redoing_Stats) return
+	preparePrimaryTransformation("great_ape")
 	if(!Great_Ape_control) Cease_training()
 	var/obj/Great_Ape/O=Great_Ape_obj
 	God_Fist_Revert()
 	O.suffix="Active"
 	O.icon=icon
+	if(player_appearance_manager) player_appearance_manager.removeRenderedAppearances()
 	Great_Ape_Overlays.Add(overlays)
 	overlays.Remove(overlays)
 	spawn(rand(1,100)) for(var/mob/A in player_view(20,src))
 		var/sound/S=sound('Roar.wav')
 		A<<S
-	if(Golden) icon='gold oozaru hayate.dmi'
-	else icon='oozaru hayate.dmi'
+	if(Golden) icon='GoldOozaruHayate.dmi'
+	else icon='OozaruHayate.dmi'
 	CenterIcon(src)
 
 	var/initSize = 0.33
@@ -100,6 +104,7 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 				SSj4Able=Year
 				SSj4()
 	Great_Ape_berserk_loop()
+	syncActivePrimaryTransformation("great ape")
 
 mob/proc/Great_Ape_berserk_loop()
 	set waitfor=0

@@ -50,7 +50,7 @@ mob/proc
 	ServerSettings()
 		upForm(src.client, src, /upForm/admin_panel)
 
-mob/Admin4/verb/Server_Control_Panel()
+mob/Admin4/verb/serverControlPanel()
 	set category = "Admin"
 	set name = "Server Control Panel"
 	src.ServerSettings()

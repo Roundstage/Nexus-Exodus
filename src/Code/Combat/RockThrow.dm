@@ -7,12 +7,13 @@ mob/var
 obj
 	RockThrow
 		desc = "You throw a rock at your opponent and deal damage with your strength."
+		icon = 'ResourceRocks.dmi'
 		Cost_To_Learn = 15
 		Teach_Timer = 1
 		student_point_cost = 15
 		repeat_macro = 0
 		can_hotbar = 1
-		hotbar_type = "Ranged"
+		hotbar_type = "Blast"
 		
 		var/spread_mode = 0 // 0 = single powerful rock, 1 = rapid fire mode
 
@@ -26,20 +27,15 @@ obj
 				set category = "Skills"
 				usr.RockThrow()
 				
-			Ki_Settings()
-				set category = "Other"
-				switch(input("Do you want your Rock Throws to be similar to blast and have lower damage but no cooldown?") in list("Yes","No"))
-					if("Yes") spread_mode = 1
-					if("No") spread_mode = 0
-
 	RockSlide
 		desc = "You throw lots of rocks at your opponent and deal damage with your strength. Each projectile is slightly weaker than Rock Throw."
+		icon = 'RisingRocks.dmi'
 		Cost_To_Learn = 35
 		Teach_Timer = 1
 		student_point_cost = 35
 		repeat_macro = 0
 		can_hotbar = 1
-		hotbar_type = "Ranged"
+		hotbar_type = "Blast"
 
 		verb/Hotbar_use()
 			set waitfor = 0
@@ -53,12 +49,13 @@ obj
 
 	RockTomb
 		desc = "You throw a massive rock at your opponent and deal heavy damage with your strength. When mastered this rock explodes!"
+		icon = 'RockExplosion.dmi'
 		Cost_To_Learn = 50
 		Teach_Timer = 1
 		student_point_cost = 50
 		repeat_macro = 0
 		can_hotbar = 1
-		hotbar_type = "Ranged"
+		hotbar_type = "Blast"
 		
 		var/mastered = 0
 
@@ -78,10 +75,10 @@ mob
 			set waitfor = 0
 			var/obj/Effect/e = GetEffect()
 			e.loc = loc
-			e.icon = 'dust.dmi'
+			e.icon = 'Dust.dmi'
 			CenterIcon(e)
 			animate(e, transform * 1.5, alpha = 180, time = 8)
-			player_view(15, src) << sound('throw.ogg', volume = 50)
+			player_view(15, src) << sound('Throw.ogg', volume = 50)
 			sleep(12)
 			del(e)
 
@@ -105,20 +102,17 @@ mob
 				flick("Blast", usr)
 				RockThrowFX()
 				
-				var/list/targets = FindTargets(usr.dir, angle_limit = 30, max_dist = 10)
-				if(targets)
-					for(var/mob/M in targets)
-						if(M != usr)
-							var/dmg = get_melee_damage(usr, count_sword = 0) * 1.2
-							var/knockback = get_melee_knockback_distance(usr)
-							usr << "You throw a rock at [M]!"
-							M << "[usr] throws a rock at you!"
-							M.TakeDamage(dmg, 1.5)
-							M.Knockback(usr, knockback)
-							return
+				var/mob/target = getSelectedTarget(max_dist = 10, dir_angle = usr.dir, angle_limit = 30)
+				if(target)
+					var/dmg = getPhysicalCombatDamage(target, 3)
+					var/knockback = get_melee_knockback_distance(target)
+					usr << "You throw a rock at [target]!"
+					target << "[usr] throws a rock at you!"
+					target.TakeDamage(dmg, 1.5)
+					target.Knockback(usr, knockback)
+					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
-//					player_view(6, usr) << sound('Blast1.wav', volume = 40)
 			else
 				// Rapid fire mode
 				if(usr.Ki < 16) return
@@ -129,29 +123,25 @@ mob
 				
 				flick("Blast", usr)
 				
-				var/list/targets = FindTargets(usr.dir, angle_limit = 30, max_dist = 8)
-				if(targets)
-					for(var/mob/M in targets)
-						if(M != usr)
-							var/dmg = get_melee_damage(usr, count_sword = 0) * 0.4
-							var/knockback = get_melee_knockback_distance(usr) * 0.5
-							usr << "You throw a small rock at [M]!"
-							M << "[usr] throws a small rock at you!"
-							M.TakeDamage(dmg, 1.0)
-							M.Knockback(usr, knockback)
-							return
+				var/mob/target = getSelectedTarget(max_dist = 8, dir_angle = usr.dir, angle_limit = 30)
+				if(target)
+					var/dmg = getPhysicalCombatDamage(target, 1)
+					var/knockback = get_melee_knockback_distance(target) * 0.5
+					usr << "You throw a small rock at [target]!"
+					target << "[usr] throws a small rock at you!"
+					target.TakeDamage(dmg, 1.0)
+					target.Knockback(usr, knockback)
+					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
-//					player_view(6, usr) << sound('Blast2.wav', volume = 30)
 
 		RockSlideFX()
 			set waitfor = 0
 			var/obj/Effect/e = GetEffect()
 			e.loc = loc
-			e.icon = 'dust.dmi'
+			e.icon = 'Dust.dmi'
 			CenterIcon(e)
 			animate(e, transform * 2, alpha = 220, time = 15)
-//			player_view(15, src) << sound('rockslide.ogg', volume = 60)
 			sleep(20)
 			del(e)
 
@@ -182,8 +172,8 @@ mob
 				if(targets)
 					for(var/mob/M in targets)
 						if(M != usr && hits < 5)
-							var/dmg = get_melee_damage(usr, count_sword = 0) * 0.8
-							var/knockback = get_melee_knockback_distance(usr) * 0.7
+							var/dmg = getPhysicalCombatDamage(M, 0.8)
+							var/knockback = get_melee_knockback_distance(M) * 0.7
 							usr << "A rock from your slide hits [M]!"
 							M << "A rock from [usr]'s slide hits you!"
 							M.TakeDamage(dmg, 1.2)
@@ -201,10 +191,9 @@ mob
 			set waitfor = 0
 			var/obj/Effect/e = GetEffect()
 			e.loc = loc
-			e.icon = 'explosion.dmi'
+			e.icon = 'Explosion.dmi'
 			CenterIcon(e)
 			animate(e, transform * 3, alpha = 255, time = 20)
-//			player_view(15, src) << sound('explosion.ogg', volume = 80)
 			sleep(25)
 			del(e)
 
@@ -225,37 +214,32 @@ mob
 			
 			flick("Blast", usr)
 			
-			var/list/targets = FindTargets(usr.dir, angle_limit = 45, max_dist = 12)
-			if(targets)
-				for(var/mob/M in targets)
-					if(M != usr)
-						var/dmg = get_melee_damage(usr, count_sword = 0) * 2.0
-						var/knockback = get_melee_knockback_distance(usr) * 1.5
-						
-						if(skill.mastered)
-							dmg *= 1.25 // 25% bonus damage when mastered
-							usr << "You hurl a massive explosive rock at [M]!"
-							M << "[usr] hurls a massive explosive rock at you!"
-							spawn(20) RockTombFX() // Delayed explosion effect
-//							player_view(6, usr) << sound('meteor.ogg', volume = 70)
-							
-							// Area damage for mastered version
-							for(var/mob/T in range(2, M))
-								if(T != usr && T != M)
-									T.TakeDamage(dmg * 0.3, 1.0)
-									T.Knockback(usr, knockback * 0.5)
-									T << "You are caught in the rock explosion!"
-						else
-							usr << "You hurl a massive rock at [M]!"
-							M << "[usr] hurls a massive rock at you!"
-//							player_view(6, usr) << sound('rockthrow.ogg', volume = 60)
-						
-						var/hp_before_dmg = M.Health
-						M.TakeDamage(dmg, 2.0)
-						M.Knockback(usr, knockback, omega_kb = 1)
-						
-						if(dmg >= 200 + hp_before_dmg) M.KO(src, allow_anger = 0)
-						else if(dmg >= hp_before_dmg) M.KO(src)
-						return
+			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
+			if(target)
+				var/dmg = getPhysicalCombatDamage(target, 5)
+				var/knockback = get_melee_knockback_distance(target) * 1.5
+
+				if(skill.mastered)
+					usr << "You hurl a massive explosive rock at [target]!"
+					target << "[usr] hurls a massive explosive rock at you!"
+					spawn(20) RockTombFX() // Delayed explosion effect
+
+					// Area damage for mastered version
+					for(var/mob/area_target in range(2, target))
+						if(area_target != usr && area_target != target)
+							area_target.TakeDamage(dmg * 0.3, 1.0)
+							area_target.Knockback(usr, knockback * 0.5)
+							area_target << "You are caught in the rock explosion!"
+				else
+					usr << "You hurl a massive rock at [target]!"
+					target << "[usr] hurls a massive rock at you!"
+
+				var/hp_before_dmg = target.Health
+				target.TakeDamage(dmg, 2.0)
+				target.Knockback(usr, knockback, omega_kb = 1)
+
+				if(dmg >= 200 + hp_before_dmg) target.KO(src, allow_anger = 0)
+				else if(dmg >= hp_before_dmg) target.KO(src)
+				return
 			else
 				usr << "You throw a massive rock, but there is no one to hit!"

@@ -4,31 +4,31 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/World Mechanics/BPResets.dm`
-- `src/Code/World Mechanics/BaseOrbs.dm`
-- `src/Code/World Mechanics/Battleground.dm`
-- `src/Code/World Mechanics/DeadZone.dm`
-- `src/Code/World Mechanics/DragonBalls.dm`
-- `src/Code/World Mechanics/Gravity.dm`
-- `src/Code/World Mechanics/Leagues.dm`
-- `src/Code/World Mechanics/LeaguesMainVillain.dm`
-- `src/Code/World Mechanics/OrbitingPlanet.dm`
-- `src/Code/World Mechanics/PlanetDestroy.dm`
-- `src/Code/World Mechanics/Sagas.dm`
-- `src/Code/World Mechanics/Space.dm`
-- `src/Code/World Mechanics/Tournament.dm`
-- `src/Code/World Mechanics/Weather Day Night/Areas.dm`
-- `src/Code/World Mechanics/Weather Day Night/DayNight.dm`
-- `src/Code/World Mechanics/Weather Day Night/Fireflies.dm`
-- `src/Code/World Mechanics/Weather Day Night/Lighting.dm`
-- `src/Code/World Mechanics/Years.dm`
+- `src/Code/WorldMechanics/BPResets.dm`
+- `src/Code/WorldMechanics/BaseOrbs.dm`
+- `src/Code/WorldMechanics/Battleground.dm`
+- `src/Code/WorldMechanics/DeadZone.dm`
+- `src/Code/WorldMechanics/DragonBalls.dm`
+- `src/Code/WorldMechanics/Gravity.dm`
+- `src/Code/WorldMechanics/Leagues.dm`
+- `src/Code/WorldMechanics/LeaguesMainVillain.dm`
+- `src/Code/WorldMechanics/OrbitingPlanet.dm`
+- `src/Code/WorldMechanics/PlanetDestroy.dm`
+- `src/Code/WorldMechanics/Sagas.dm`
+- `src/Code/WorldMechanics/Space.dm`
+- `src/Code/WorldMechanics/Tournament.dm`
+- `src/Code/WorldMechanics/WeatherDayNight/Areas.dm`
+- `src/Code/WorldMechanics/WeatherDayNight/DayNight.dm`
+- `src/Code/WorldMechanics/WeatherDayNight/Fireflies.dm`
+- `src/Code/WorldMechanics/WeatherDayNight/Lighting.dm`
+- `src/Code/WorldMechanics/Years.dm`
 
 ## Proc Reference
 
-### src/Code/World Mechanics/BPResets.dm
+### src/Code/WorldMechanics/BPResets.dm
 
-#### mob/Admin4/verb/Reset_BP_To_Early_Levels
-- Signature: `mob/Admin4/verb/Reset_BP_To_Early_Levels()`
+#### mob/Admin4/verb/resetBpToEarlyLevels
+- Signature: `mob/Admin4/verb/resetBpToEarlyLevels()`
 - Inputs: None
 - Purpose: Handle reset bp to early levels.
 - Returns: none (implicit).
@@ -41,8 +41,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Era_reset_test_information
-- Signature: `mob/Admin5/verb/Era_reset_test_information()`
+#### mob/Admin5/verb/eraResetTestInformation
+- Signature: `mob/Admin5/verb/eraResetTestInformation()`
 - Inputs: None
 - Purpose: Handle era reset test information.
 - Returns: none (implicit).
@@ -55,7 +55,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/BaseOrbs.dm
+### src/Code/WorldMechanics/BaseOrbs.dm
 
 #### obj/Base_Orb/New
 - Signature: `New()`
@@ -92,14 +92,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-#### mob/Admin4/verb/Toggle_BP_Orbs
-- Signature: `mob/Admin4/verb/Toggle_BP_Orbs()`
+#### mob/Admin4/verb/toggleBpOrbs
+- Signature: `mob/Admin4/verb/toggleBpOrbs()`
 - Inputs: None
 - Purpose: Toggle BP Orbs.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/World Mechanics/Battleground.dm
+### src/Code/WorldMechanics/Battleground.dm
 
 #### mob/proc/SpawnAtBattleGroundChoice
 - Signature: `SpawnAtBattleGroundChoice()`
@@ -150,7 +150,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/DeadZone.dm
+### src/Code/WorldMechanics/DeadZone.dm
 
 #### obj/Portal_Graphic/New
 - Signature: `New()`
@@ -229,7 +229,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/DragonBalls.dm
+### src/Code/WorldMechanics/DragonBalls.dm
 
 #### mob/proc/Drop_dragonballs
 - Signature: `mob/proc/Drop_dragonballs()`
@@ -266,8 +266,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Test_WishForPower
-- Signature: `mob/Admin5/verb/Test_WishForPower()`
+#### mob/Admin5/verb/testWishForPower
+- Signature: `mob/Admin5/verb/testWishForPower()`
 - Inputs: None
 - Purpose: Handle test wish for power.
 - Returns: none (implicit).
@@ -385,7 +385,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/World Mechanics/Gravity.dm
+### src/Code/WorldMechanics/Gravity.dm
 
 #### mob/proc/Start_Gravity_Loops
 - Signature: `mob/proc/Start_Gravity_Loops()`
@@ -485,7 +485,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Leagues.dm
+### src/Code/WorldMechanics/Leagues.dm
 
 #### mob/verb/Create_League
 - Signature: `mob/verb/Create_League()`
@@ -564,7 +564,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/LeaguesMainVillain.dm
+### src/Code/WorldMechanics/LeaguesMainVillain.dm
 
 #### proc/Count_villain_league_members
 - Signature: `proc/Count_villain_league_members()`
@@ -608,7 +608,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/OrbitingPlanet.dm
+### src/Code/WorldMechanics/OrbitingPlanet.dm
 
 #### obj/Orbiter/New
 - Signature: `New()`
@@ -624,10 +624,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/PlanetDestroy.dm
+### src/Code/WorldMechanics/PlanetDestroy.dm
 
-#### mob/Admin3/verb/Restore_planet
-- Signature: `mob/Admin3/verb/Restore_planet()`
+#### mob/Admin3/verb/restorePlanet
+- Signature: `mob/Admin3/verb/restorePlanet()`
 - Inputs: None
 - Purpose: Handle restore planet.
 - Returns: none (implicit).
@@ -689,8 +689,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: boolean flag.
 - Side effects: none expected.
 
-#### mob/Admin4/verb/Disable_planet
-- Signature: `mob/Admin4/verb/Disable_planet()`
+#### mob/Admin4/verb/disablePlanet
+- Signature: `mob/Admin4/verb/disablePlanet()`
 - Inputs: None
 - Purpose: Handle disable planet.
 - Returns: none (implicit).
@@ -711,9 +711,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### proc/destroy_planet
-- Signature: `proc/destroy_planet(planet,power=1)`
-- Inputs: planet, power=1
-- Purpose: Handle destroy planet.
+- Signature: `proc/destroy_planet(planet, power = 1, force = 1)`
+- Inputs: planet, snapshotted attacker BP, and snapshotted Force.
+- Purpose: Destroy the planet while limiting random player hazards to ten factor-2 hits, or factor 20 per victim, through the central Ki formula.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -752,7 +752,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Sagas.dm
+### src/Code/WorldMechanics/Sagas.dm
 
 #### proc/find_new_hero
 - Signature: `find_new_hero(mob/old_hero)`
@@ -894,7 +894,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Space.dm
+### src/Code/WorldMechanics/Space.dm
 
 #### proc/Get_ship_interior
 - Signature: `proc/Get_ship_interior()`
@@ -903,8 +903,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-#### mob/Admin4/verb/Planets
-- Signature: `mob/Admin4/verb/Planets()`
+#### mob/Admin4/verb/planets
+- Signature: `mob/Admin4/verb/planets()`
 - Inputs: None
 - Purpose: Handle planets.
 - Returns: none (implicit).
@@ -1253,7 +1253,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Tournament.dm
+### src/Code/WorldMechanics/Tournament.dm
 
 #### obj/Tournament_Controls/Click
 - Signature: `Click()`
@@ -1269,15 +1269,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Set_Tournament_Interval
-- Signature: `mob/Admin2/verb/Set_Tournament_Interval()`
+#### mob/Admin2/verb/setTournamentInterval
+- Signature: `mob/Admin2/verb/setTournamentInterval()`
 - Inputs: None
 - Purpose: Set Tournament Interval.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/Start_Tournament
-- Signature: `mob/Admin2/verb/Start_Tournament()`
+#### mob/Admin2/verb/startTournament
+- Signature: `mob/Admin2/verb/startTournament()`
 - Inputs: None
 - Purpose: Start Tournament.
 - Returns: none (implicit).
@@ -1374,7 +1374,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Weather Day Night/Areas.dm
+### src/Code/WorldMechanics/WeatherDayNight/Areas.dm
 
 #### proc/RestrictedMapLoop
 - Signature: `RestrictedMapLoop()`
@@ -1453,10 +1453,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Weather Day Night/DayNight.dm
+### src/Code/WorldMechanics/WeatherDayNight/DayNight.dm
 
-#### mob/Admin2/verb/Change_Day_Night
-- Signature: `mob/Admin2/verb/Change_Day_Night(turf/t in world)`
+#### mob/Admin2/verb/changeDayNight
+- Signature: `mob/Admin2/verb/changeDayNight(turf/t in world)`
 - Inputs: turf/t in world
 - Purpose: Handle change day night.
 - Returns: none (implicit).
@@ -1483,7 +1483,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Weather Day Night/Fireflies.dm
+### src/Code/WorldMechanics/WeatherDayNight/Fireflies.dm
 
 #### proc/GenerateFireflyIcons
 - Signature: `GenerateFireflyIcons()`
@@ -1555,7 +1555,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/World Mechanics/Weather Day Night/Lighting.dm
+### src/Code/WorldMechanics/WeatherDayNight/Lighting.dm
 
 #### proc/FadeOutLights
 - Signature: `FadeOutLights(area/a)`
@@ -1620,10 +1620,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/World Mechanics/Years.dm
+### src/Code/WorldMechanics/Years.dm
 
-#### mob/Admin4/verb/Year_Speed
-- Signature: `mob/Admin4/verb/Year_Speed()`
+#### mob/Admin4/verb/yearSpeed
+- Signature: `mob/Admin4/verb/yearSpeed()`
 - Inputs: None
 - Purpose: Handle year speed.
 - Returns: none (implicit).

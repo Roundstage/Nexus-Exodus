@@ -1,7 +1,8 @@
 
 mob/var/is_saitama
 
-mob/Admin4/verb/MakeSaitama(mob/m in world)
+mob/Admin4/verb/makeSaitama(mob/m in world)
+	set name = "MakeSaitama"
 	set category="Admin"
 	var/h = input("how many hours til this saitama expires and is deleted?") as num
 	m.BecomeSaitama(h)
@@ -12,7 +13,8 @@ var
 	list/saitama_queue=new
 	mob/current_saitama
 
-mob/Admin4/verb/Enable_Saitama_Rotations()
+mob/Admin4/verb/enableSaitamaRotations()
+	set name = "Enable Saitama Rotations"
 	set category="Admin"
 	saitama_rotations=!saitama_rotations
 	if(saitama_rotations) src<<"Saitama rotations is now on. This means that the game will automatically offer a random player every [saitama_rotation_minutes] minutes to \
@@ -34,7 +36,7 @@ proc
 			if(m)
 				saitama_queue-=k
 				current_saitama=m
-				m.Save()
+				m.save()
 				m.BecomeSaitama(saitama_rotation_minutes / 60)
 				return
 
@@ -73,10 +75,10 @@ mob/proc
 			Pow=1
 			Zombie_Virus=0
 			Regenerate=0
-			if(!(icon in list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','New Pale Female.dmi','New Tan Female.dmi','New Black Female.dmi')))
+			if(!(icon in list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi','NewBlackFemale.dmi')))
 				icon='BaseHumanPale.dmi'
 			overlays=null
-			overlays.Add('OPM gloves.dmi','OPM boots.dmi','OPM unitard.dmi','OPM belt.dmi','OPM cape.dmi','OPM collar.dmi')
+			overlays.Add('OpmGloves.dmi','OpmBoots.dmi','OpmUnitard.dmi','OpmBelt.dmi','OpmCape.dmi','OpmCollar.dmi')
 			for(var/obj/o in src) if(o.Cost_To_Learn)
 				if(!(o.type in list(/obj/Fly,/obj/Flash_Step,/obj/Sense,/obj/Advanced_Sense,/obj/Sense3,/obj/Zanzoken)))
 					del(o)
@@ -113,7 +115,7 @@ mob/proc/SaitamaBloodEffect(blood_range = 4, blood_chance = 67)
 		var/max_timer=TickMult(5)
 
 		var/list/l=player_view(15,t)
-		l<<sound('wallhit.ogg',volume=20)
+		l<<sound('Wallhit.ogg',volume=20)
 		Explosion_Graphics(t,5)
 
 		for(var/turf/t2 in TurfCircle(blood_range,t)) if(!t2.density)
@@ -130,5 +132,5 @@ mob/proc/SaitamaBloodEffect(blood_range = 4, blood_chance = 67)
 					sleep(TickMult(0.8))
 
 		var/obj/Door_kill_blood/dkb = GetCachedObject(/obj/Door_kill_blood, t)
-		dkb.icon='Floor blood.dmi'
+		dkb.icon='FloorBlood.dmi'
 		CenterIcon(dkb)
