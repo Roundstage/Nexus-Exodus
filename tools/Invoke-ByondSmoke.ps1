@@ -16,6 +16,31 @@ $ByondVersion = '516.1685'
 $ByondUrl = 'https://www.byond.com/download/build/516/516.1685_byond.zip'
 $ByondSha256 = 'e24078f1e6d719681118d6505b2a3f263fb173c1b63465d2f68f3e0ec177126f'
 
+function Repair-ProcessEnvironmentPath {
+	$environment = [Environment]::GetEnvironmentVariables([EnvironmentVariableTarget]::Process)
+	$pathKeys = @($environment.Keys | Where-Object {
+		[string]::Equals([string]$_, 'Path', [StringComparison]::OrdinalIgnoreCase)
+	})
+	if($pathKeys.Count -le 1) {
+		return
+	}
+
+	$canonicalKey = @($pathKeys | Where-Object { [string]$_ -ceq 'Path' } | Select-Object -First 1)
+	if($canonicalKey.Count -eq 0) {
+		$canonicalKey = @($pathKeys[0])
+	}
+	$pathValue = [string]$environment[$canonicalKey[0]]
+
+	foreach($pathKey in $pathKeys) {
+		if([string]$pathKey -cne [string]$canonicalKey[0]) {
+			Remove-Item -LiteralPath "Env:$pathKey" -ErrorAction SilentlyContinue
+		}
+	}
+	[Environment]::SetEnvironmentVariable('Path', $pathValue, [EnvironmentVariableTarget]::Process)
+}
+
+Repair-ProcessEnvironmentPath
+
 function Copy-WorkingTree {
 	param(
 		[string]$RepositoryRoot,
@@ -269,7 +294,7 @@ try {
 	$byondDirectory = Join-Path $toolsDirectory 'byond'
 	$byondBin = Join-Path $byondDirectory 'bin'
 	$dreamMakerPath = Join-Path $byondBin 'dm.exe'
-	$dreamDaemonPath = Join-Path $byondBin 'dreamdaemon.exe'
+	$dreamDaemonPath = Join-Path $byondBin 'dd.exe'
 	if(![IO.File]::Exists($dreamMakerPath) -or ![IO.File]::Exists($dreamDaemonPath)) {
 		if([IO.Directory]::Exists($byondDirectory)) {
 			[IO.Directory]::Delete($byondDirectory, $true)
@@ -277,7 +302,7 @@ try {
 		Expand-Archive -LiteralPath $archivePath -DestinationPath $toolsDirectory
 	}
 	if(![IO.File]::Exists($dreamMakerPath) -or ![IO.File]::Exists($dreamDaemonPath)) {
-		throw 'The BYOND archive does not contain dm.exe and dreamdaemon.exe.'
+		throw 'The BYOND archive does not contain dm.exe and dd.exe.'
 	}
 
 	$toolVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo($dreamDaemonPath).FileVersion

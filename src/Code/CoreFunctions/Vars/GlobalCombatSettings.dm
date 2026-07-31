@@ -116,6 +116,28 @@ var
 	melee_power=1
 	ki_power=1
 
+	// Skill factors mirrored by docs/Balance/SkillDamageBalance.xlsx.
+	// Keep these values centralized so runtime tuning and startup validation cannot drift apart.
+	skill_blast_total_factor = 4
+	skill_big_bang_damage_factor = 22
+	skill_charge_damage_factor = 4
+	skill_cyber_charge_damage_factor = 2.5
+	skill_makosen_damage_factor = 0.4
+	skill_makosen_total_factor = 8
+	skill_scatter_shot_damage_factor = 0.3
+	skill_scatter_shot_total_factor = 18
+	skill_attack_barrier_damage_factor = 0.2
+	skill_shockwave_damage_factor = 0.5
+	skill_explosion_damage_factor = 3
+	skill_dash_attack_min_factor = 2
+	skill_dash_attack_max_factor = 8
+	skill_dash_attack_step_factor = 0.25
+	skill_dropkick_opening_factor = 5
+	skill_dropkick_finisher_factor = 3
+	skill_sokidan_damage_factor = 3.5
+	skill_sokidan_total_factor = 7
+	skill_kienzan_damage_factor = 6
+
 	icer_recovery = 1.1 //was 1.2, but they wanted it off, meaning icer forms no longer lower recovery with each higher transformation
 
 var

@@ -555,7 +555,7 @@ mob/proc/ApplyRaceBuild()
 
 	// Saiyan com subclasses separadas
 	var/list/Saiyan_builds = list(
-		null = list(
+		"Warrior" = list(
 			"Strength" = 2, "Durability" = 4, "Force" = 2, "Resist" = 4, "Speed" = 2, "Regeneration" = 3,
 			"Points" = -17
 		),
@@ -578,7 +578,9 @@ mob/proc/ApplyRaceBuild()
 
 	// Saiyan especial com classes
 	if(src.Race == "Saiyan")
-		build = Saiyan_builds[src.Class]
+		var/saiyan_build_id = src.Class
+		if(!(saiyan_build_id in Saiyan_builds)) saiyan_build_id = "Warrior"
+		build = Saiyan_builds[saiyan_build_id]
 		if(!build) return
 		
 		if(!src.stat_build_unlocked)
