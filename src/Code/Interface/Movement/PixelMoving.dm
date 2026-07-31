@@ -1,4 +1,5 @@
-mob/Admin4/verb/FPS()
+mob/Admin4/verb/fps()
+	set name = "FPS"
 	set category="Admin"
 	var/N=input(src,"Set the frames per second of the server. A value that can be divided by 2 as many times as possible seems to run smoothest, but as long \
 	as it is divisible by 2 twice it doesn't seem to make much difference after that. For example 16, is divisible by 2 four times (16, 8, 4, 2, 1) \

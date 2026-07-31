@@ -39,10 +39,10 @@ mob/proc/TryCreateScienceItem(obj/A)
 				O.Builder=key
 
 				if(istype(O,/obj/Ships/Ship)&&Race=="Namekian")
-					O.icon='Puran Ship.dmi'
+					O.icon='PuranShip.dmi'
 					CenterIcon(O)
 				if(istype(O,/obj/items/Scouter)&&Race=="Human")
-					O.icon='Item - Sun Glassess.dmi'
+					O.icon='ItemSunGlassess.dmi'
 					O.name="Scanner"
 				if(istype(O,/obj/Spawn))
 					O.Health=100000
@@ -85,7 +85,7 @@ mob/proc/Store_item_check(obj/o)
 		return
 
 obj/Bank
-	icon='tech.dmi'
+	icon='Tech.dmi'
 	icon_state="compdown"
 	Dead_Zone_Immune=1
 	Grabbable=0
@@ -103,7 +103,8 @@ obj/Bank
 var/list/bank_list=new
 var/list/banked_items=new
 
-mob/Admin4/verb/Clear_banked_items()
+mob/Admin4/verb/clearBankedItems()
+	set name = "Clear banked items"
 	set category="Admin"
 	banked_items=new/list
 	src<<"All banked items cleared"
@@ -220,7 +221,7 @@ proc/Random_resource_drops()
 				r.Savable=0
 				r.Value = rand(300000) * Resource_Multiplier
 				if(map_restriction_on) r.Value *= 2
-				r.icon = 'Resource Rocks.dmi'
+				r.icon = 'ResourceRocks.dmi'
 				r.icon_state = "[rand(1,4)]"
 				r.density = 1
 
@@ -246,7 +247,8 @@ area/proc/Resources_destroyed()
 	for(var/obj/Resource_Destroyer/o in resource_destroyers) if(o.destroy_resources)
 		var/area/a=locate(/area) in range(0,o)
 		if(a==src) return 1
-mob/Admin4/verb/Upgrade_Settings()
+mob/Admin4/verb/upgradeSettings()
+	set name = "Upgrade Settings"
 	set category="Admin"
 	switch(input(src,"You can set the upgrade cap to automatic, or a manual amount. Currently the upgrade cap is \
 	[Commas(Tech_BP)].") in list("Cancel","Automatic","Manual"))
@@ -359,6 +361,7 @@ var/list/tech_list = new
 
 proc/Add_Technology()
 	for(var/v in typesof(/obj))
+		if(!initial(v:Cost)) continue
 		var/obj/o = new v
 		if(o)
 			o.referenceObject = 1
@@ -504,7 +507,7 @@ obj/Drill
 	var/DrillRate=1000
 	var
 		drill_drop_res_on_delete = 1
-	icon='Drill Giant.dmi'
+	icon='DrillGiant.dmi'
 	desc="Place this at a location and it will automatically drill resources from within the planet. It can not \
 	drill if you have it on player built turfs. The more you upgrade this the faster it will drill. Click on it \
 	to withdraw what it has drilled."

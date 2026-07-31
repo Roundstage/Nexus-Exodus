@@ -22,17 +22,17 @@ mob/var/Zombie_Power=0
 mob/proc/Mutate(A)
 	if(!A) A=rand(2,13)
 	Flyer=0
-	//NPC Scorpion 2.dmi, NPC Spider 3.dmi, NPC Snake.dmi
+	//NPCScorpion2.dmi, NPCSpider3.dmi, NPCSnake.dmi
 	//RP_Power, Str, Dur, Res, Spd, Off, Def
 	if(A==2)
 		name="Zombie Dog"
-		icon='Zombie Dog.dmi'
+		icon='ZombieDog.dmi'
 		BP*=1.2
 		Spd*=1.2
 		spdmod*=1.2
 	if(A==3)
 		name="Licker"
-		icon='Zombie Licker.dmi'
+		icon='ZombieLicker.dmi'
 		Zombie_Virus=5
 		BP*=1.5
 		Spd*=1.5
@@ -45,7 +45,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==4)
 		name="Hunter"
-		icon='Zombie Hunter.dmi'
+		icon='ZombieHunter.dmi'
 		Zombie_Virus=1
 		BP*=1.5
 		Str*=2
@@ -59,7 +59,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==5)
 		name="Tyrant"
-		icon='Zombie Tyrant.dmi'
+		icon='ZombieTyrant.dmi'
 		Zombie_Virus=20
 		BP*=2
 		End*=1.5
@@ -68,7 +68,7 @@ mob/proc/Mutate(A)
 		spdmod*=1.5
 	if(A==6)
 		name="Nemesis"
-		icon='Zombie Nemesis.dmi'
+		icon='ZombieNemesis.dmi'
 		Zombie_Virus=1
 		BP*=2
 		End*=3
@@ -83,7 +83,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==7)
 		name="Mr X"
-		icon='Zombie X.dmi'
+		icon='ZombieX.dmi'
 		Zombie_Virus=10
 		BP*=3
 		spdmod*=2
@@ -92,7 +92,7 @@ mob/proc/Mutate(A)
 		offmod*=2
 	if(A==8)
 		name="Thanatos"
-		icon='Zombie Thanatos.dmi'
+		icon='ZombieThanatos.dmi'
 		Zombie_Virus=10
 		BP*=3
 		Str*=2
@@ -113,7 +113,7 @@ mob/proc/Mutate(A)
 		Flyer=1
 	if(A==10)
 		name="Reptile Zombie"
-		icon='NPC Reptile Monster.dmi'
+		icon='NPCReptileMonster.dmi'
 		Zombie_Virus=1
 		BP*=1.3
 		Spd*=2
@@ -122,13 +122,13 @@ mob/proc/Mutate(A)
 		resmod*=0.5
 	if(A==11)
 		name="Snake Zombie"
-		icon='NPC Snake.dmi'
+		icon='NPCSnake.dmi'
 		Zombie_Virus=0.5
 		Spd*=3
 		spdmod*=3
 	if(A==12)
 		name="Scorpion Zombie"
-		icon='NPC Scorpion 2.dmi'
+		icon='NPCScorpion2.dmi'
 		Zombie_Virus*=0.5
 		End*=3
 		endmod*=3
@@ -136,7 +136,7 @@ mob/proc/Mutate(A)
 		CenterIcon(src)
 	if(A==13)
 		name="Spider Zombie"
-		icon='NPC Spider 3.dmi'
+		icon='NPCSpider3.dmi'
 		Zombie_Virus=2
 		Spd*=3
 		spdmod*=3
@@ -151,7 +151,7 @@ mob/var/Has_DNA=1
 
 obj/items/DNA_Container
 	Cost=20000000
-	icon='Item, DNA Extractor.dmi'
+	icon='ItemDNAExtractor.dmi'
 	desc="This can be used to store DNA from whoever you use it on. Which can be used to clone them. You can \
 	only use this on someone who is knocked out or paralyzed. After it has DNA in it, you can go to a Genetics \
 	Computer and use it to make a clone, and possibly more."
@@ -365,7 +365,7 @@ obj/items/T_Spider
 	Stealable=1
 	desc="x1.2 Strength. 1.2x Accuracy. /1.44 Resistance. Get the advantage and disadvantage of a spider! \
 	Also gives a BP boost roughly worth 20 minutes of sparring."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -388,7 +388,7 @@ obj/items/T_Scorpion
 	Stealable=1
 	desc="x1.2 Accuracy. /1.2 Reflex. Get the advantage and disadvantage of a scorpion! Also gives a BP boost \
 	roughly worth 20 minutes of sparring."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -408,7 +408,7 @@ obj/items/T_Snake
 	Stealable=1
 	desc="x1.2 Speed. /1.2 Reflex. Get the advantage and disadvantage of a snake! Also gives a BP boost roughly \
 	worth 20 minutes of sparring."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -427,7 +427,7 @@ obj/items/T_Snake
 obj/items/T_Recovery
 	Stealable=1
 	desc="Doubles recovery but halves energy."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -449,7 +449,7 @@ obj/items/T_Recovery
 obj/items/T_Regeneration
 	Stealable=1
 	desc="Doubles regeneration and divides force by 4 permanently making energy almost useless."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -468,7 +468,7 @@ obj/items/T_Regeneration
 obj/items/T_Energy
 	Stealable=1
 	desc="Raises energy to a certain level if it is below that level."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -489,7 +489,7 @@ obj/items/T_Energy
 obj/items/T_Vitality
 	Stealable=1
 	desc="Raises durability and resistance immensely."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -513,7 +513,7 @@ obj/items/T_Vitality
 obj/items/T_Heal
 	Stealable=1
 	desc="Temporarily speeds up regeneration when used."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	var/tmp/injecting
 
 	verb/Hotbar_use()
@@ -576,7 +576,7 @@ obj/items/T_Fusion
 	this is active. No amount of damage you take will slow you down. The downside is that a bio field generator \
 	will kill you like it would a zombie, and there is a 10% chance that injecting this will kill you."
 
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 
 	verb/Hotbar_use()
 		set waitfor=0
@@ -595,21 +595,21 @@ obj/items/T_Fusion
 		var/bp=highest_base_and_hbtc_bp**0.6 * 50
 		bp=Clamp(bp,highest_base_and_hbtc_bp*0.1,highest_base_and_hbtc_bp*0.2)
 		if(A.Zombie_Power<bp) A.Zombie_Power=bp
-		A.overlays-='Red Eyes.dmi'
-		A.overlays+='Red Eyes.dmi'
+		A.overlays-='RedEyes.dmi'
+		A.overlays+='RedEyes.dmi'
 		player_view(15,usr)<<"[usr] injects [A] with a mysterious needle!"
 		if(prob(10)) usr.Death("???",Force_Death=1)
 		del(src)
 
 mob/proc/ClearTFusion()
 	if(!Zombie_Power) return
-	overlays -= 'Red Eyes.dmi'
+	overlays -= 'RedEyes.dmi'
 	Zombie_Power = 0
 
 obj/items/T_Strength
 	Stealable=1
 	desc="This will greatly increase strength and speed if they are under certain levels."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -632,7 +632,7 @@ obj/items/T_Strength
 obj/items/T_Undying
 	Stealable=1
 	desc="This will boost your death regeneration by 1.3 points (which is a lot), but result in a 25% loss of resistance."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set hidden=1
 		Use()
@@ -653,7 +653,7 @@ obj/items/T_Undying
 obj/items/T_Life
 	Stealable=1
 	desc="This will slow your decline IMMENSELY. Extending your lifespan nearly 4x its normal amount."
-	icon='Item, Needle.dmi'
+	icon='ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -717,7 +717,7 @@ mob/proc/Zombies(Can_Mutate=1,timer=150)
 		if(!z) return
 		var/mob/Enemy/Zombie/Z=Zombie_Copy()
 		Z.overlays+='Zombie.dmi'
-		Z.underlays-='Pool of Blood.dmi'
+		Z.underlays-='PoolOfBlood.dmi'
 		Z.name="Zombie"
 		Z.Level=1
 		del(src)
@@ -946,7 +946,7 @@ obj/items/T_Virus_Injection
 	science = 1
 	science_level = 6
 	science_path = "Genetics"
-	icon='T Virus.dmi'
+	icon='TVirus.dmi'
 	Level=1
 	Stealable=1
 	Injection=1

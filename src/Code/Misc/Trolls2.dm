@@ -123,10 +123,10 @@ mob/new_troll
 				if(isobj(Icon)) B.icon=Icon.icon
 				B.icon+=rgb(rand(0,255),rand(0,255),rand(0,255))
 				TextColor = GetRandomTextColor()
-				var/icons = list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','New Pale Female.dmi','New Tan Female.dmi',\
-				'New Black Female.dmi','Race Ginyu.dmi','Race Kui.dmi')
+				var/icons = list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi',\
+				'NewBlackFemale.dmi','RaceGinyu.dmi','RaceKui.dmi')
 				icon = pick(icons)
-				if(!(icon in list('Race Ginyu.dmi','Race Kui.dmi')))
+				if(!(icon in list('RaceGinyu.dmi','RaceKui.dmi')))
 					var/obj/O=pick(Hairs)
 					if(isobj(O)) overlays+=O.icon
 
@@ -194,7 +194,7 @@ mob/new_troll
 			if(!beam)
 				beam=new/obj/Attacks/Beam(src)
 				beam.WaveMult*=1
-				beam.icon='Beam - Static Beam.dmi'
+				beam.icon='BeamStaticBeam.dmi'
 				beam.icon += rgb(rand(0,255),rand(0,255),rand(0,255))
 
 			troll_actions()
@@ -601,7 +601,7 @@ mob/new_troll
 			t.type == /turf/Other/Blank)
 				return
 			for(var/atom/movable/m in t) return
-			player_view(10,src) << sound('teleport.ogg',volume=15)
+			player_view(10,src) << sound('Teleport.ogg',volume=15)
 			flick('Zanzoken.dmi',src)
 			AfterImage()
 			SafeTeleport(t)

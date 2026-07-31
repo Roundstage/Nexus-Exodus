@@ -285,7 +285,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Inputs: d
 - Purpose: Handle key down.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: updates movement input state; Ctrl no longer triggers Zanzoken.
 
 #### mob/proc/HotbarUseHandler
 - Signature: `mob/proc/HotbarUseHandler(d)`
@@ -304,7 +304,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/HandleKeyUp
 - Signature: `mob/proc/HandleKeyUp(d)`
 - Inputs: d
-- Purpose: Handle key up.
+- Purpose: Release movement/hotbar state and allow a quick Space melee follow-up without triggering Lunge.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -408,37 +408,44 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/CanTapWarp
 - Signature: `CanTapWarp()`
 - Inputs: None
-- Purpose: Return whether Tap Warp.
+- Purpose: Return whether Tap Warp, using actual `/obj/Zanzoken` ownership rather than an unvalidated cached pointer.
 - Returns: boolean flag.
 - Side effects: none expected.
+
+#### mob/proc/directionalZanzoken
+- Signature: `directionalZanzoken(d)`
+- Inputs: one of the eight map directions.
+- Purpose: Warp to and attack the selected opponent when it is within five tiles and the requested direction cone; otherwise move up to five tiles in that direction.
+- Returns: none (asynchronous).
+- Side effects: drains five stamina, creates the standard effects, and may perform one adjacent melee attack.
 
 #### mob/proc/DoubleTapWarp
 - Signature: `DoubleTapWarp(d)`
 - Inputs: d
-- Purpose: Handle double tap warp.
+- Purpose: Warp around the explicitly selected target when valid; otherwise preserve directional warp without auto-attacking another mob.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/TapWarpToMob
 - Signature: `TapWarpToMob(mob/m)`
 - Inputs: mob/m
-- Purpose: Handle tap warp to mob.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Move to a valid adjacent turf while matching the target's vector offsets and facing it.
+- Returns: 1 on success, otherwise null.
+- Side effects: updates location, `step_x`, `step_y`, and direction.
 
 #### mob/proc/ValidWarpTurf
 - Signature: `ValidWarpTurf(turf/t)`
 - Inputs: turf/t
-- Purpose: Handle valid warp turf.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Reject blank, opaque, dense, or dense-object destinations.
+- Returns: boolean flag.
+- Side effects: none expected.
 
 #### mob/proc/TapWarpToDir
-- Signature: `TapWarpToDir(d, warp_dist = 12)`
-- Inputs: d, warp_dist = 12
-- Purpose: Handle tap warp to dir.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `TapWarpToDir(d, warp_dist = 5)`
+- Inputs: direction and maximum distance.
+- Purpose: Move to the furthest valid turf along a directional path.
+- Returns: 1 when at least one tile was crossed, otherwise null.
+- Side effects: teleports the mob and faces it in the requested direction.
 
 ### src/Code/Domain/Movement/MovementPorts.dm
 
@@ -627,8 +634,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Interface/Movement/PixelMoving.dm
 
-#### mob/Admin4/verb/FPS
-- Signature: `mob/Admin4/verb/FPS()`
+#### mob/Admin4/verb/fps
+- Signature: `mob/Admin4/verb/fps()`
 - Inputs: None
 - Purpose: Handle fps.
 - Returns: none (implicit).

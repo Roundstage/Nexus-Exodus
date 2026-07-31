@@ -44,22 +44,15 @@ Thumbs.db
 # Folders #
 ###########
 .vscode/tasks.json
-data/*
-assets/*
-icons/*
-fonts/*
-Admin
-.gitignore
-DU.dme
-.gitignore
-Misc
-Votes
-.gitignore
-data/Areas
-data/ItemSave
-GAIN
-Year
-data/Areas
-data/ItemSave
-data/Map1
-data/Save/Roundstage
+/data/
+/assets/
+/icons/
+/fonts/
+/Admin/
+/Misc/
+/Votes/
+/GAIN/
+/Year/
+
+# Local Codex analysis and generated previews #
+/.codex-tmp/

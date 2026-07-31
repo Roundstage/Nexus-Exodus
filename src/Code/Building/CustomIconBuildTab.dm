@@ -15,7 +15,8 @@ var
 	customBuildAllowed = 1
 
 mob/Admin4/verb
-	Clear_All_Custom_Decors()
+	clearAllCustomDecors()
+		set name = "Clear All Custom Decors"
 		set category = "Admin"
 		switch(alert(usr, "Delete all of the blueprints from the build tab too?", "Options", "Yes", "No"))
 			if("Yes")

@@ -9,20 +9,20 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Application/Combat/SkillEngine.dm`
 - `src/Code/Combat/BleedDamage.dm`
 - `src/Code/Combat/Buffs.dm`
+- `src/Code/Combat/CombatDummy.dm`
 - `src/Code/Combat/Evasion.dm`
 - `src/Code/Combat/HokutoShinken.dm`
 - `src/Code/Combat/Injuries.dm`
-- `src/Code/Combat/Ki Skills/DeathBall2017.dm`
-- `src/Code/Combat/Ki Skills/FinalExplosion.dm`
-- `src/Code/Combat/Ki Skills/FusionSystem.dm`
-- `src/Code/Combat/Ki Skills/Hakai.dm`
-- `src/Code/Combat/Ki Skills/Kikoho2016.dm`
-- `src/Code/Combat/Ki Skills/Sense 2017/Sense.dm`
-- `src/Code/Combat/Ki Skills/SolarFlare.dm`
-- `src/Code/Combat/Ki Skills/SpiritBomb2016.dm`
-- `src/Code/Combat/Ki Skills/Supernova.dm`
+- `src/Code/Combat/KiSkills/DeathBall2017.dm`
+- `src/Code/Combat/KiSkills/FinalExplosion.dm`
+- `src/Code/Combat/KiSkills/FusionSystem.dm`
+- `src/Code/Combat/KiSkills/Hakai.dm`
+- `src/Code/Combat/KiSkills/Kikoho2016.dm`
+- `src/Code/Combat/KiSkills/Sense2017/Sense.dm`
+- `src/Code/Combat/KiSkills/SolarFlare.dm`
+- `src/Code/Combat/KiSkills/SpiritBomb2016.dm`
+- `src/Code/Combat/KiSkills/Supernova.dm`
 - `src/Code/Combat/Math/CombatMath.dm`
-- `src/Code/Combat/MegatonThrow.dm`
 - `src/Code/Combat/Melee.dm`
 - `src/Code/Combat/Melee/DragonRush.dm`
 - `src/Code/Combat/Melee/PressurePunch.dm`
@@ -209,7 +209,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### datum/SkillEngine/proc/resolveControlDelay
 - Signature: `datum/SkillEngine/proc/resolveControlDelay(category)`
 - Inputs: category
-- Purpose: Resolve control loop delay for guided control.
+- Purpose: Resolve the 0.5-decisecond non-beam Ki cadence for guided control.
 - Returns: number.
 - Side effects: none expected.
 
@@ -244,7 +244,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### datum/SkillEngine/proc/applyHomingSettings
 - Signature: `datum/SkillEngine/proc/applyHomingSettings(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/skill_obj)`
 - Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/skill_obj
-- Purpose: Apply homing settings from a skill definition to a blast.
+- Purpose: Apply homing settings and bind the user's current explicit target to a blast.
 - Returns: none (implicit).
 - Side effects: mutates blast homing values.
 
@@ -279,7 +279,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### datum/SkillEngine/proc/isBeamSkill
 - Signature: `datum/SkillEngine/proc/isBeamSkill(path)`
 - Inputs: path
-- Purpose: Identify beam skill types for routing.
+- Purpose: Identify every attack whose declared `hotbar_type` is `Beam`, including legacy and future beam types.
 - Returns: 1 when beam type, else 0.
 - Side effects: none expected.
 
@@ -384,9 +384,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### datum/SkillEngine/proc/castWolfFangFist
 - Signature: `datum/SkillEngine/proc/castWolfFangFist(mob/user, obj/WolfFangFist/skill_obj)`
 - Inputs: mob/user, obj/WolfFangFist/skill_obj
-- Purpose: Execute Wolf Fang Fist lunge combo.
+- Purpose: Execute five advancing strikes, each dealing 0.8x melee damage and three-tile knockback.
 - Returns: 1 on success, else 0.
-- Side effects: applies multi-hit melee damage and VFX.
+- Side effects: advances after each landed hit, applies multi-hit melee damage, knockback, and VFX.
 
 #### datum/SkillEngine/proc/castDropkick
 - Signature: `datum/SkillEngine/proc/castDropkick(mob/user, obj/Dropkick/skill_obj)`
@@ -442,7 +442,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### datum/SkillController/GuidedBlast/proc/execute
 - Signature: `datum/SkillController/GuidedBlast/proc/execute(mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill)`
 - Inputs: mob/user, obj/Blast/blast, datum/SkillDefinition/def, obj/source_skill
-- Purpose: Apply Sokidan-style guided control to a blast.
+- Purpose: Apply Sokidan-style guided control using the blast's vector speed and normalized Ki cadence.
 - Returns: none (implicit).
 - Side effects: steps blast movement and may delete it.
 
@@ -531,6 +531,64 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Handle bleed loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/Combat/CombatDummy.dm
+
+#### mob/CombatDummy/New
+- Signature: `New()`
+- Inputs: None.
+- Purpose: Initialize a passive, nonpersistent humanoid combat target and its overhead health HUD.
+- Returns: initialized dummy.
+- Side effects: attaches one overhead HUD object.
+
+#### mob/CombatDummy/Del
+- Signature: `Del()`
+- Inputs: None.
+- Purpose: Release the dummy's overhead HUD before deletion.
+- Returns: parent deletion result.
+- Side effects: deletes the attached visual object.
+
+#### mob/CombatDummy/proc/setBattlePower
+- Signature: `setBattlePower(value)`
+- Inputs: desired base battle power.
+- Purpose: Set base and effective BP while preserving the configured powerup percentage.
+- Returns: none (implicit).
+- Side effects: changes dummy combat power.
+
+#### mob/CombatDummy/proc/setPowerup
+- Signature: `setPowerup(value)`
+- Inputs: desired powerup percentage; values above 100 are valid.
+- Purpose: Set `BPpcnt` and recalculate effective BP.
+- Returns: none (implicit).
+- Side effects: changes dummy combat power.
+
+#### mob/CombatDummy/proc/resetCombatDummy
+- Signature: `resetCombatDummy()`
+- Inputs: None.
+- Purpose: Restore health, Energy, stamina, movement, and defeat state.
+- Returns: none (implicit).
+- Side effects: refreshes the overhead health HUD.
+
+#### mob/Admin2/verb/spawnCombatDummy
+- Signature: `spawnCombatDummy()`
+- Inputs: None.
+- Purpose: Spawn a combat dummy in front of the admin and immediately open its controller.
+- Returns: none (implicit).
+- Side effects: creates a nonsavable mob and writes an admin audit entry.
+
+#### mob/Admin2/verb/controlCombatDummy
+- Signature: `controlCombatDummy(mob/CombatDummy/dummy in world)`
+- Inputs: an existing combat dummy.
+- Purpose: Reopen the selected dummy's controller.
+- Returns: none (implicit).
+- Side effects: opens interactive prompts.
+
+#### mob/proc/openCombatDummyController
+- Signature: `openCombatDummyController(mob/CombatDummy/dummy)`
+- Inputs: dummy to configure.
+- Purpose: Configure BP, seven combat stats, health, Energy, stamina, powerup, name, restoration, or deletion.
+- Returns: none (implicit).
+- Side effects: validates Admin2 access and audits every mutation.
 
 ### src/Code/Combat/Buffs.dm
 
@@ -765,14 +823,21 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### verb/Hundred_Crack_Fist
 - Signature: `verb/Hundred_Crack_Fist()`
 - Inputs: None
-- Purpose: Handle hundred crack fist.
+- Purpose: Execute at least 24 rapid 0.45x melee attacks without an execution or user-KO outcome.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: warps between eligible targets, applies ordinary cumulative damage, and spends most remaining Ki.
+
+#### mob/proc/hundredCrackFistHit
+- Signature: `mob/proc/hundredCrackFistHit(mob/target)`
+- Inputs: eligible target.
+- Purpose: Roll and apply one 0.45x melee strike in the Hundred Crack Fist sequence.
+- Returns: 1 on hit, otherwise 0.
+- Side effects: applies damage, opponent state, attack animation, and sound.
 
 #### mob/proc/Hokuto_Shinken_Effects
 - Signature: `mob/proc/Hokuto_Shinken_Effects(mob/P)`
 - Inputs: mob/P
-- Purpose: Handle hokuto shinken effects.
+- Purpose: Remove obsolete legacy Hokuto markers without killing either combatant.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -834,7 +899,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/DeathBall2017.dm
+### src/Code/Combat/KiSkills/DeathBall2017.dm
 
 #### obj/Attacks/Genki_Dama/Death_Ball/New
 - Signature: `New()`
@@ -857,7 +922,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/FinalExplosion.dm
+### src/Code/Combat/KiSkills/FinalExplosion.dm
 
 #### mob/proc/FinalExplosionFollowOnMove
 - Signature: `mob/proc/FinalExplosionFollowOnMove()`
@@ -936,7 +1001,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/FusionSystem.dm
+### src/Code/Combat/KiSkills/FusionSystem.dm
 
 #### obj/Fusion_Dance/verb/Fusion_Dance
 - Signature: `Fusion_Dance(var/mob/M in orange(usr,1))`
@@ -994,7 +1059,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Hakai.dm
+### src/Code/Combat/KiSkills/Hakai.dm
 
 #### mob/proc/CanUseHakai
 - Signature: `CanUseHakai()`
@@ -1045,7 +1110,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Kikoho2016.dm
+### src/Code/Combat/KiSkills/Kikoho2016.dm
 
 #### mob/proc/IsValidKikohoTarget
 - Signature: `mob/proc/IsValidKikohoTarget(mob/m)`
@@ -1055,9 +1120,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: none expected.
 
 #### mob/proc/GetKikohoTarget
-- Signature: `mob/proc/GetKikohoTarget()`
-- Inputs: None
-- Purpose: Return Kikoho Target.
+- Signature: `mob/proc/GetKikohoTarget(mob/expected_target)`
+- Inputs: optional target captured before charge-up.
+- Purpose: Validate only the current explicit target and prevent charge completion from switching victims.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -1141,9 +1206,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/KikohoDamageTo
 - Signature: `KikohoDamageTo(mob/m)`
 - Inputs: mob/m
-- Purpose: Handle kikoho damage to.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Return centralized Force-versus-Resistance Kikoho damage at factor `7`.
+- Returns: percentage damage.
+- Side effects: none.
 
 #### mob/proc/FireKikoho
 - Signature: `FireKikoho(obj/Attacks/Kikoho/k)`
@@ -1257,7 +1322,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Sense 2017/Sense.dm
+### src/Code/Combat/KiSkills/Sense2017/Sense.dm
 
 #### mob/verb/Toggle_Sense_Overlay
 - Signature: `mob/verb/Toggle_Sense_Overlay()`
@@ -1385,7 +1450,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-### src/Code/Combat/Ki Skills/SolarFlare.dm
+### src/Code/Combat/KiSkills/SolarFlare.dm
 
 #### mob/proc/TrySolarFlare
 - Signature: `TrySolarFlare()`
@@ -1457,7 +1522,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/SpiritBomb2016.dm
+### src/Code/Combat/KiSkills/SpiritBomb2016.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -1599,7 +1664,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/Ki Skills/Supernova.dm
+### src/Code/Combat/KiSkills/Supernova.dm
 
 #### obj/Attacks/Genki_Dama/Supernova/New
 - Signature: `New()`
@@ -1652,98 +1717,49 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/MegatonThrow.dm
+### src/Code/Combat/DamageScaling.dm
 
-#### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### proc/calculateScaledCombatDamage
+- Signature: `proc/calculateScaledCombatDamage(factor = 0, attacker_bp = 0, defender_bp = 0, source_stat = 0, guard_stat = 0)`
+- Inputs: parity damage factor, attacker/defender BP, and relevant offensive/defensive stats.
+- Purpose: Apply the shared `BP^0.5 * (2*source/(source+guard))^0.85` curve.
+- Returns: scaled percentage damage, or zero for a nonpositive factor, BP, or source stat.
+- Side effects: none.
 
-#### obj/PocketSand/verb/PocketSand
-- Signature: `PocketSand()`
-- Inputs: None
-- Purpose: Handle pocket sand.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### mob/proc/getPhysicalCombatDamage
+- Signature: `mob/proc/getPhysicalCombatDamage(mob/target, factor = 0)`
+- Inputs: target and parity factor.
+- Purpose: Scale physical damage from Strength against Endurance.
+- Returns: percentage damage.
+- Side effects: none.
 
-#### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### mob/proc/getKiCombatDamage
+- Signature: `mob/proc/getKiCombatDamage(mob/target, factor = 0)`
+- Inputs: target and parity factor.
+- Purpose: Scale Ki damage from Force against Resistance.
+- Returns: percentage damage.
+- Side effects: none.
 
-#### obj/ExplodingHeartStrike/verb/ExplodingHeartStrike
-- Signature: `ExplodingHeartStrike()`
-- Inputs: None
-- Purpose: Handle exploding heart strike.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### mob/proc/getHybridCombatDamage
+- Signature: `mob/proc/getHybridCombatDamage(mob/target, factor = 0)`
+- Inputs: target and total parity factor.
+- Purpose: Split a factor evenly between physical and Ki scaling.
+- Returns: combined percentage damage.
+- Side effects: none.
 
-#### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/MegatonThrow/verb/MegatonThrow
-- Signature: `MegatonThrow()`
-- Inputs: None
-- Purpose: Handle megaton throw.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/PocketSandFX
-- Signature: `PocketSandFX()`
-- Inputs: None
-- Purpose: Handle pocket sand fx.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/PocketSand
-- Signature: `PocketSand()`
-- Inputs: None
-- Purpose: Handle pocket sand.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ExplodingHeartStrikeFX
-- Signature: `ExplodingHeartStrikeFX()`
-- Inputs: None
-- Purpose: Handle exploding heart strike fx.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/ExplodingHeartStrike
-- Signature: `ExplodingHeartStrike()`
-- Inputs: None
-- Purpose: Handle exploding heart strike.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/MegatonThrow
-- Signature: `MegatonThrow()`
-- Inputs: None
-- Purpose: Handle megaton throw.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/MegatonToss
-- Signature: `MegatonToss(mob/M)`
-- Inputs: mob/M
-- Purpose: Handle megaton toss.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### datum/CombatDamageBudget/proc/reserveFactor
+- Signature: `datum/CombatDamageBudget/proc/reserveFactor(mob/target, requested_factor = 0)`
+- Inputs: target and requested parity factor.
+- Purpose: Enforce a shared per-target cast budget across projectiles, beam ticks, impact and splash.
+- Returns: the factor still available to the event.
+- Side effects: records consumed factor for the target.
 
 ### src/Code/Combat/Melee.dm
 
 #### mob/proc/GetSpeedDamageDecrease
 - Signature: `mob/proc/GetSpeedDamageDecrease()`
 - Inputs: None
-- Purpose: Return Speed Damage Decrease.
+- Purpose: Normalize per-hit melee damage so the `100 -> 200` Speed range produces about `1.35x`, rather than `2.327x`, sustained DPS.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -1806,7 +1822,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/TakeDamage
 - Signature: `mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)`
 - Inputs: dmg = 0, stun_damage_mod = 0.6, knockback = 0
-- Purpose: Handle take damage.
+- Purpose: Apply stun state and the target's dynamic racial incoming-damage multiplier before shield or Health processing.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1960,14 +1976,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/Defense_damage_reduction
 - Signature: `proc/Defense_damage_reduction(mob/attacker,mob/defender)`
 - Inputs: mob/attacker, mob/defender
-- Purpose: Handle defense damage reduction.
+- Purpose: Legacy helper retained for compatibility; balanced damage paths do not call it because Offense and Defense affect hit outcomes only.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/get_melee_damage
 - Signature: `mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1)`
 - Inputs: mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1
-- Purpose: Return melee damage.
+- Purpose: Return centralized Strength-versus-Endurance melee damage with explicit factors (`2.5` basic and `5` Lunge), bounded speed normalization, and capped rear/critical bonuses.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -2027,8 +2043,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: boolean flag.
 - Side effects: none expected.
 
-#### mob/Admin5/verb/constant_max_speed
-- Signature: `mob/Admin5/verb/constant_max_speed()`
+#### mob/Admin5/verb/constantMaxSpeed
+- Signature: `mob/Admin5/verb/constantMaxSpeed()`
 - Inputs: None
 - Purpose: Handle constant max speed.
 - Returns: none (implicit).
@@ -2177,14 +2193,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/MeleeFollowupAttackCheck
 - Signature: `mob/proc/MeleeFollowupAttackCheck()`
 - Inputs: None
-- Purpose: Handle melee followup attack check.
+- Purpose: Teleport-follow only when `last_mob_attacked` is still the explicitly selected target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/LungeAttack
 - Signature: `mob/proc/LungeAttack()`
 - Inputs: None
-- Purpose: Handle lunge attack.
+- Purpose: Start a selected-target melee lunge from the standalone Lunge verb or hotbar action.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2561,13 +2577,6 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### obj/RockThrow/verb/Ki_Settings
-- Signature: `Ki_Settings()`
-- Inputs: None
-- Purpose: Handle ki settings.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
 - Inputs: None
@@ -2606,7 +2615,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/RockThrow
 - Signature: `RockThrow()`
 - Inputs: None
-- Purpose: Handle rock throw.
+- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2620,7 +2629,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/RockSlide
 - Signature: `RockSlide()`
 - Inputs: None
-- Purpose: Handle rock slide.
+- Purpose: Search the forward spread and apply up to five victim-relative Strength-based hits.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2678,14 +2687,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Enable_giant_form
 - Signature: `Enable_giant_form(obj/Giant_Form/g)`
 - Inputs: obj/Giant_Form/g
-- Purpose: Handle enable giant form.
+- Purpose: Apply the reversible Giant Form BP/stat package.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Disable_giant_form
 - Signature: `Disable_giant_form(icon_change=1)`
 - Inputs: icon_change=1
-- Purpose: Handle disable giant form.
+- Purpose: Remove exactly the BP/stat package applied by Giant Form without leaving permanent `bp_mult` drift.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2972,7 +2981,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### obj/Zanzoken/New
 - Signature: `New()`
 - Inputs: None
-- Purpose: Initialize object state and register references.
+- Purpose: Register the owned Zanzoken skill and synchronize conditional hotkey actions.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2982,6 +2991,32 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Handle combo toggle.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### mob/proc/getZanzokenSkill
+- Signature: `mob/proc/getZanzokenSkill()`
+- Purpose: Return the directly owned `/obj/Zanzoken` and self-heal the temporary cache.
+- Returns: owned skill object or null.
+- Side effects: refreshes `zanzoken_obj`.
+
+#### mob/proc/hasZanzokenSkill
+- Signature: `mob/proc/hasZanzokenSkill()`
+- Purpose: Authoritatively gate click warp, directional verbs, Flash Step, and registered hotkey actions.
+- Returns: boolean.
+- Side effects: may self-heal the cache.
+
+#### obj/Zanzoken directional verbs
+- Signature: `zanzokenNorth()`, `zanzokenNortheast()`, `zanzokenEast()`, `zanzokenSoutheast()`, `zanzokenSouth()`, `zanzokenSouthwest()`, `zanzokenWest()`, `zanzokenNorthwest()`
+- Inputs: None.
+- Purpose: Expose eight directional Zanzoken actions that attack a selected target inside the five-tile direction cone or fall back to fixed movement.
+- Returns: none (implicit).
+- Side effects: delegates to `directionalZanzoken()`.
+
+#### obj/Zanzoken/verb/flashStep
+- Signature: `flashStep()`
+- Inputs: None.
+- Purpose: Expose Flash Step in the Skills tab when Zanzoken is learned.
+- Returns: none (implicit).
+- Side effects: delegates to `Flash_Step()`.
 
 #### obj/Keep_Body/New
 - Signature: `New()`
@@ -3490,7 +3525,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/Get_self_destruct_damage
 - Signature: `proc/Get_self_destruct_damage(mob/a,mob/b)`
 - Inputs: mob/a, mob/b
-- Purpose: Return self destruct damage.
+- Purpose: Return centralized Force-versus-Resistance damage at factor `30`, reduced only when Regenerate/Rebuild removes the full sacrifice.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -3620,8 +3655,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Observe
-- Signature: `mob/Admin1/verb/Observe(atom/A in Observe_List())`
+#### mob/Admin1/verb/observe
+- Signature: `mob/Admin1/verb/observe(atom/A in Observe_List())`
 - Inputs: atom/A in Observe_List(
 - Purpose: Handle observe.
 - Returns: none (implicit).
@@ -3698,21 +3733,21 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### mob/proc/FireFist_Revert
-- Signature: `mob/proc/FireFist_Revert() {`
+- Signature: `mob/proc/FireFist_Revert()`
 - Inputs: None
-- Purpose: Handle fire fist revert.
+- Purpose: Disable Fire Fist on `src`, remove its overlay, and rebuild managed player appearance.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/FireFistLoop
-- Signature: `mob/proc/FireFistLoop(){`
+- Signature: `mob/proc/FireFistLoop()`
 - Inputs: None
-- Purpose: Handle fire fist loop.
+- Purpose: Run exactly one guarded Fire Fist drain loop; login restarts it through `Player_Loops()`.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/FireFistDrain
-- Signature: `mob/proc/FireFistDrain(){`
+- Signature: `mob/proc/FireFistDrain()`
 - Inputs: None
 - Purpose: Handle fire fist drain.
 - Returns: none (implicit).
@@ -3740,9 +3775,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### mob/proc/SaiyanPower_Revert
-- Signature: `mob/proc/SaiyanPower_Revert() {`
+- Signature: `mob/proc/SaiyanPower_Revert()`
 - Inputs: None
-- Purpose: Handle saiyan power revert.
+- Purpose: Remove the Saiyan Power package from `src` without relying on `usr`.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4046,6 +4081,48 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Combat/Targeting/Targeting.dm
 
+#### proc/getSelectedTargetMarkerIcon
+- Signature: `proc/getSelectedTargetMarkerIcon()`
+- Inputs: None.
+- Purpose: Lazily generate the cyan client-only lock-on marker.
+- Returns: cached 32x32 icon.
+- Side effects: initializes the marker icon on first use.
+
+#### mob/proc/canSelectTarget
+- Signature: `mob/proc/canSelectTarget(mob/candidate)`
+- Inputs: candidate mob.
+- Purpose: Reject self, bodies, hidden, nonattackable, or unplaced mobs.
+- Returns: boolean.
+- Side effects: none.
+
+#### mob/proc/setSelectedTarget
+- Signature: `mob/proc/setSelectedTarget(mob/new_target, announce = TRUE)`
+- Inputs: new target and announcement flag.
+- Purpose: Set or clear the authoritative combat lock and synchronize legacy sense state and the client marker.
+- Returns: selected target or null.
+- Side effects: updates `Target`, `selected_target`, `auto_target`, and `client.images`.
+
+#### mob/proc/getSelectedTarget
+- Signature: `mob/proc/getSelectedTarget(mob/expected_target, max_dist = 0, require_view = TRUE, allow_ko = FALSE, require_attackable = TRUE, dir_angle = 0, angle_limit = 0)`
+- Inputs: optional expected target and contextual range, visibility, KO, attackable, direction, and cone constraints.
+- Purpose: Validate only the explicit selection without searching for a fallback mob.
+- Returns: selected mob when valid, otherwise null.
+- Side effects: clears intrinsically invalid selections.
+
+#### mob/verb/selectTarget
+- Signature: `mob/verb/selectTarget()`
+- Inputs: player choice from nearby visible player characters and combat dummies.
+- Purpose: Open the explicit combat-target selector.
+- Returns: none (implicit).
+- Side effects: may set the selected target.
+
+#### mob/verb/clearTarget
+- Signature: `mob/verb/clearTarget()`
+- Inputs: None.
+- Purpose: Clear the explicit combat target and marker.
+- Returns: none (implicit).
+- Side effects: clears targeting state.
+
 #### atom/movable/proc/FindTarget
 - Signature: `FindTarget(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1)`
 - Inputs: dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1
@@ -4063,7 +4140,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### atom/movable/proc/FindTargets
 - Signature: `FindTargets(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=0)`
 - Inputs: dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=0
-- Purpose: Handle find targets.
+- Purpose: Legacy angular scan retained for intentional area/random attacks such as Rock Slide, not player lock-on skills.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4114,7 +4191,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/FindHakaiTarget
 - Signature: `mob/proc/FindHakaiTarget()`
 - Inputs: None
-- Purpose: Handle find hakai target.
+- Purpose: Validate the selected target against Hakai restrictions.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4128,7 +4205,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### obj/Blast/proc/GetBlastHomingTarget
 - Signature: `obj/Blast/proc/GetBlastHomingTarget(d, angle)`
 - Inputs: d, angle
-- Purpose: Return Blast Homing Target.
+- Purpose: Return only the owner's selected target when viable for homing.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -4142,14 +4219,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/LungeTarget
 - Signature: `mob/proc/LungeTarget(dist_override)`
 - Inputs: dist_override
-- Purpose: Handle lunge target.
+- Purpose: Validate only the selected target for lunge, Wolf Fang Fist, Dropkick, Scatter Shot, and Flash Step.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/FindWarpTarget
 - Signature: `FindWarpTarget(dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0)`
 - Inputs: dir_angle=NORTH, angle_limit=44, max_dist=10, prefer_auto_target=0
-- Purpose: Handle find warp target.
+- Purpose: Validate only the selected target against warp range and directional cone.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

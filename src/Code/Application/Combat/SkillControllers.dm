@@ -28,39 +28,44 @@ datum/SkillController/GuidedBlast
 		var/bump_limit = def ? def.control_bumps : 0
 		var/allow_bump = bump_limit > 0
 		var/loop_delay = def ? def.control_delay : 0
-		if(!loop_delay) loop_delay = world.tick_lag
+		if(!loop_delay) loop_delay = ki_projectile_step_delay
 		var/avoid_owner = def ? def.control_avoid_owner : 0
 		var/avoid_owner_chance = def ? def.control_avoid_owner_chance : 0
 		if(!avoid_owner_chance) avoid_owner_chance = 85
 		var/stop_on_deflect = def ? def.control_stop_on_deflect : 0
 		var/bumps = bump_limit
+		var/move_speed = blast.vector_speed
+		if(!move_speed) move_speed = 32
+		blast.stopProjectileFlight()
+		var/flight_id = blast.projectile_flight_id
 
-		while(blast && blast.z && user && getdist(blast, user) < control_range)
+		while(blast && blast.z && user && flight_id == blast.projectile_flight_id && getdist(blast, user) < control_range)
 			if(stop_on_deflect && blast.deflected) break
 			if(source_skill && ("Using" in source_skill.vars))
 				source_skill.vars["Using"] = 1
 			var/turf/next_step = Get_step(blast, user.dir)
-			if(avoid_owner && blast.Owner && next_step && (blast.Owner in next_step) && prob(avoid_owner_chance))
-				step(blast, pick(turn(user.dir,45),turn(user.dir,-45)))
+			if(blast.Owner && next_step && (blast.Owner in next_step) && (blast.owner_immune || (avoid_owner && prob(avoid_owner_chance))))
+				step(blast, pick(turn(user.dir,45),turn(user.dir,-45)), move_speed)
 			else if(allow_bump && next_step && (locate(/mob) in next_step))
 				for(var/mob/m in next_step)
-					if(m == blast.Owner && prob(avoid_owner_chance))
-						step(blast, pick(turn(blast.dir,45),turn(blast.dir,-45)))
+					if(m == blast.Owner && (blast.owner_immune || prob(avoid_owner_chance)))
+						step(blast, pick(turn(blast.dir,45),turn(blast.dir,-45)), move_speed)
+						continue
 					else
 						var/bump_dir
 						if(prob(50)) bump_dir = get_dir(m, user)
 						else bump_dir = pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST)
 						blast.Bump(m, override_delete = bumps, override_dir = bump_dir)
-						if(blast && m) step_away(blast, m)
-						bumps--
+					if(blast && m) step(blast, get_dir(m, blast), move_speed)
+					bumps--
 			else
-				step(blast, user.last_direction_pressed)
+				step(blast, user.last_direction_pressed, move_speed)
 			if(blast) blast.density = 1
 			if(user.KO && blast) del(blast)
 			sleep(loop_delay)
 
 		if(blast && blast.z)
-			walk(blast, blast.dir)
+			blast.startKiProjectileWalk(blast.dir)
 
 datum/SkillController/GuidedBomb
 	id = SKILL_CONTROLLER_GUIDED_BOMB

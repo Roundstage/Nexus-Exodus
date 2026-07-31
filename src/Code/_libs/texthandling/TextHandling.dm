@@ -289,8 +289,8 @@ obj/test/texthandling/verb/dd_list2text_test()
 	mylist += basic
 
 	var/text = dd_list2text(mylist, ",")
-	//if (text != "one,The two")
-		//die("dd_list2text() returned incorrect text: [text]")
+	if(text != "one,The two")
+		CRASH("dd_list2text() returned incorrect text: [text]")
 
 	mylist -= basic
 	del(basic)

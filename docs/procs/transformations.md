@@ -1,12 +1,34 @@
 # Transformations
 
 ## Overview
-Kaioken ("God Fist") transformation logic, including drain, boosts, and gore effects.
+Primary transformation registry/controller plus Kaioken ("God Fist") drain and boost logic. A mob may have one primary transformation; Third Eye, Mystic, Fire Fist, Saiyan Power, Majin, Kaioken, and Limit Breaker remain explicit secondary/burst categories.
 
 ## Files
 - `src/Code/Transformations/Kaioken.dm`
+- `src/Code/Transformations/TransformationSystem.dm`
 
 ## Proc Reference
+
+### proc/initializeNexusTransformationRegistry()
+- Purpose: Register stable IDs, labels, families, and stages for Saiyan, divine Saiyan, Frost, Giant, Oozaru, Alien, and Ultra Instinct primaries.
+
+### mob/proc/detectPrimaryTransformation()
+- Purpose: Convert current legacy flags (`ssj`, `Form`, God forms, Giant, Oozaru, transformation buff) into one stable active ID.
+
+### mob/proc/preparePrimaryTransformation(transformation_id)
+- Purpose: Revert an incompatible current primary before a legacy activation proc applies the requested form.
+
+### mob/proc/requestPrimaryTransformation(transformation_id)
+- Purpose: Validate and directly transition to an unlocked form. SSJ2/SSJ3 and Frost stages can be selected directly instead of always climbing or dropping to base manually.
+
+### mob/proc/revertPrimaryTransformations(reason)
+- Purpose: Remove all primary-form families while preserving separately categorized buffs.
+
+### mob/proc/normalizePrimaryTransformation()
+- Purpose: Reconstruct canonical state on login and clean legacy saves containing simultaneous primaries.
+
+### mob/verb/transform and mob/verb/revertTransformation
+- Purpose: Player-facing verbs for direct form selection and full primary reversion.
 
 ### mob/proc/God_Fist_loop()
 - Purpose: Apply periodic Kaioken drains and boost growth while active.

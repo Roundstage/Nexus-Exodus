@@ -7,7 +7,7 @@ mob/var
 
 mob/proc
 	GTA5WastedSound()
-		src << sound('GTA 5 wasted.ogg', volume = 100)
+		src << sound('GTA5Wasted.ogg', volume = 100)
 
 	GTA5ScreenObjects()
 		if(!client || gta5_screen_added) return
@@ -84,11 +84,11 @@ obj/GTA5_Stuff
 		MakeImmovableIndestructable()
 
 	GTA5_Wasted_Logo
-		icon = 'wasted gta 5.png'
+		icon = 'WastedGta5.png'
 		alpha = 0
 		screen_loc = "CENTER-2,CENTER-2"
 
 	GTA5_Vignette
-		//icon = 'screen vignette overlay.png'
-		icon = 'Blackness 2017.dmi'
+		//icon = 'ScreenVignetteOverlay.png'
+		icon = 'Blackness2017.dmi'
 		alpha = 0

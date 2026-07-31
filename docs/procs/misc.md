@@ -4,7 +4,7 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Misc/60FPSCONSTANTTRICK.dm`
+- `src/Code/Misc/FrameRateConstantTrick.dm`
 - `src/Code/Misc/InstaLeech.dm`
 - `src/Code/Misc/Jackson.dm`
 - `src/Code/Misc/Saitama.dm`
@@ -19,7 +19,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ## Proc Reference
 
-### src/Code/Misc/60FPSCONSTANTTRICK.dm
+### src/Code/Misc/FrameRateConstantTrick.dm
 
 #### client/proc/MaxFPSTrick
 - Signature: `MaxFPSTrick()`
@@ -160,15 +160,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Misc/Saitama.dm
 
-#### mob/Admin4/verb/MakeSaitama
-- Signature: `mob/Admin4/verb/MakeSaitama(mob/m in world)`
+#### mob/Admin4/verb/makeSaitama
+- Signature: `mob/Admin4/verb/makeSaitama(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle make saitama.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Enable_Saitama_Rotations
-- Signature: `mob/Admin4/verb/Enable_Saitama_Rotations()`
+#### mob/Admin4/verb/enableSaitamaRotations
+- Signature: `mob/Admin4/verb/enableSaitamaRotations()`
 - Inputs: None
 - Purpose: Handle enable saitama rotations.
 - Returns: none (implicit).
@@ -281,8 +281,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/For_Noxus
-- Signature: `For_Noxus()`
+#### mob/Admin4/verb/forNoxus
+- Signature: `forNoxus()`
 - Inputs: None
 - Purpose: Handle for noxus.
 - Returns: none (implicit).
@@ -809,15 +809,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-#### mob/Admin5/verb/Alt_Auto_Fight_Test
-- Signature: `mob/Admin5/verb/Alt_Auto_Fight_Test(mob/m in world)`
+#### mob/Admin5/verb/altAutoFightTest
+- Signature: `mob/Admin5/verb/altAutoFightTest(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle alt auto fight test.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Battle_test
-- Signature: `mob/Admin5/verb/Battle_test()`
+#### mob/Admin5/verb/battleTest
+- Signature: `mob/Admin5/verb/battleTest()`
 - Inputs: None
 - Purpose: Handle battle test.
 - Returns: none (implicit).
@@ -837,8 +837,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Set_transform_size
-- Signature: `mob/Admin5/verb/Set_transform_size(mob/m in world)`
+#### mob/Admin5/verb/setTransformSize
+- Signature: `mob/Admin5/verb/setTransformSize(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Set transform size.
 - Returns: none (implicit).
@@ -1019,8 +1019,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/Test_mob_list
-- Signature: `mob/Admin5/verb/Test_mob_list(area/a in world)`
+#### mob/Admin5/verb/testMobList
+- Signature: `mob/Admin5/verb/testMobList(area/a in world)`
 - Inputs: area/a in world
 - Purpose: Handle test mob list.
 - Returns: none (implicit).
@@ -1068,8 +1068,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Car_wreck_frequency
-- Signature: `mob/Admin4/verb/Car_wreck_frequency()`
+#### mob/Admin4/verb/carWreckFrequency
+- Signature: `mob/Admin4/verb/carWreckFrequency()`
 - Inputs: None
 - Purpose: Handle car wreck frequency.
 - Returns: none (implicit).
@@ -1089,8 +1089,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/car_test
-- Signature: `mob/Admin4/verb/car_test(mob/m in world)`
+#### mob/Admin4/verb/carTest
+- Signature: `mob/Admin4/verb/carTest(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle car test.
 - Returns: none (implicit).
@@ -1168,8 +1168,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Diagnose_Deleted_Objects
-- Signature: `mob/Admin5/verb/Diagnose_Deleted_Objects()`
+#### mob/Admin5/verb/diagnoseDeletedObjects
+- Signature: `mob/Admin5/verb/diagnoseDeletedObjects()`
 - Inputs: None
 - Purpose: Handle diagnose deleted objects.
 - Returns: none (implicit).
@@ -1332,12 +1332,12 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Flash_Step
 - Signature: `Flash_Step()`
 - Inputs: None
-- Purpose: Handle flash step.
+- Purpose: Warp adjacent to the selected Lunge target using Zanzoken destination validation.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: spends the same five stamina as directional Zanzoken and creates teleport effects.
 
-#### mob/Admin5/verb/test_overlays
-- Signature: `mob/Admin5/verb/test_overlays()`
+#### mob/Admin5/verb/testOverlays
+- Signature: `mob/Admin5/verb/testOverlays()`
 - Inputs: None
 - Purpose: Handle test overlays.
 - Returns: none (implicit).
@@ -1378,8 +1378,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Diagnose_Effect_Icons
-- Signature: `Diagnose_Effect_Icons()`
+#### mob/Admin5/verb/diagnoseEffectIcons
+- Signature: `diagnoseEffectIcons()`
 - Inputs: None
 - Purpose: Handle diagnose effect icons.
 - Returns: none (implicit).

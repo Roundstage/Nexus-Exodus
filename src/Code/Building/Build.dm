@@ -8,172 +8,172 @@ var/Map_Loaded
 		turf_info[turf_count]=list("Type"=t.type,"Health"=t.Health,"Builder"=t.Builder,"x"=t.x,"y"=t.y,\
 		"z"=t.z,"Flyable"=t.FlyOverAble)*/
 
-proc/MapSave()
+proc/mapSave()
 	//set background = 1
-	var/Amount=0
-	var/E=1
-	var/savefile/F=new("data/Map[E]")
-	var/list/Types=new
-	var/list/Healths=new
+	var/amount=0
+	var/e=1
+	var/savefile/f=new("data/Map[e]")
+	var/list/types=new
+	var/list/healths=new
 	//var/list/Levels=new
-	var/list/Builders=new
-	var/list/Xs=new
-	var/list/Ys=new
-	var/list/Zs=new
-	var/list/FlyOver=new
-	for(var/turf/A in Turfs) if(A.Builder)
-		Types+=A.type
+	var/list/builders=new
+	var/list/xs=new
+	var/list/ys=new
+	var/list/zs=new
+	var/list/fly_over=new
+	for(var/turf/a in Turfs) if(a.Builder)
+		types+=a.type
 
 		//Healths+="[num2text(round(A.Health),100)]"
-		Healths += A.Health
+		healths += a.Health
 
 		//Levels+="[num2text(A.Level,100)]"
-		Builders+=A.Builder
-		Xs+=A.x
-		Ys+=A.y
-		Zs+=A.z
-		FlyOver+=A.FlyOverAble
-		Amount+=1
-		if(Amount % 20000 == 0)
-			F["Types"]<<Types
-			F["Healths"]<<Healths
+		builders+=a.Builder
+		xs+=a.x
+		ys+=a.y
+		zs+=a.z
+		fly_over+=a.FlyOverAble
+		amount+=1
+		if(amount % 20000 == 0)
+			f["Types"]<<types
+			f["Healths"]<<healths
 			//F["Levels"]<<Levels
-			F["Builders"]<<Builders
-			F["Xs"]<<Xs
-			F["Ys"]<<Ys
-			F["Zs"]<<Zs
-			F["FlyOver"]<<FlyOver
-			E ++
-			F=new("Map[E]")
-			Types=new
-			Healths=new
+			f["Builders"]<<builders
+			f["Xs"]<<xs
+			f["Ys"]<<ys
+			f["Zs"]<<zs
+			f["FlyOver"]<<fly_over
+			e ++
+			f=new("Map[e]")
+			types=new
+			healths=new
 			//Levels=new
-			Builders=new
-			Xs=new
-			Ys=new
-			Zs=new
-			FlyOver=new
+			builders=new
+			xs=new
+			ys=new
+			zs=new
+			fly_over=new
 
-	if(Amount % 20000 != 0)
-		F["Types"]<<Types
-		F["Healths"]<<Healths
+	if(amount % 20000 != 0)
+		f["Types"]<<types
+		f["Healths"]<<healths
 		//F["Levels"]<<Levels
-		F["Builders"]<<Builders
-		F["Xs"]<<Xs
-		F["Ys"]<<Ys
-		F["Zs"]<<Zs
-		F["FlyOver"]<<FlyOver
+		f["Builders"]<<builders
+		f["Xs"]<<xs
+		f["Ys"]<<ys
+		f["Zs"]<<zs
+		f["FlyOver"]<<fly_over
 
-	world<<"Map Saved ([Amount])"
+	world<<"Map Saved ([amount])"
 
-proc/MapLoad()
+proc/mapLoad()
 	//set background = 1
 	Map_Loaded=1
 	if(fexists("data/Map1"))
-		var/Amount=0
-		var/DebugAmount= 0
-		var/E=1
+		var/amount=0
+		var/debug_amount= 0
+		var/e=1
 		load
-		if(!fexists("data/Map[E]"))
+		if(!fexists("data/Map[e]"))
 			goto end
-		var/savefile/F=new("data/Map[E]")
+		var/savefile/f=new("data/Map[e]")
 		sleep(1)
-		var/list/Types=F["Types"]
-		var/list/Healths=F["Healths"]
-		var/list/Builders=F["Builders"]
-		var/list/Xs=F["Xs"]
-		var/list/Ys=F["Ys"]
-		var/list/Zs=F["Zs"]
-		var/list/FlyOver=F["FlyOver"]
+		var/list/types=f["Types"]
+		var/list/healths=f["Healths"]
+		var/list/builders=f["Builders"]
+		var/list/xs=f["Xs"]
+		var/list/ys=f["Ys"]
+		var/list/zs=f["Zs"]
+		var/list/fly_over=f["FlyOver"]
 
 		clients << "Map Load Stage 1 Begin"
 		sleep(5)
 
-		Amount = 0
-		for(var/A in Types)
-			Amount+=1
-			DebugAmount += 1
-			var/turf/T = new A(locate(Xs[Amount], Ys[Amount], Zs[Amount]))
+		amount = 0
+		for(var/a in types)
+			amount+=1
+			debug_amount += 1
+			var/turf/t = new a(locate(xs[amount], ys[amount], zs[amount]))
 
-			T.Health = Healths[Amount]
-			if(T.Health == "inf") T.Health = 1.#INF
-			if(istext(T.Health)) T.Health = text2num(T.Health)
+			t.Health = healths[amount]
+			if(t.Health == "inf") t.Health = 1.#INF
+			if(istext(t.Health)) t.Health = text2num(t.Health)
 
-			T.Builder = Builders[Amount]
-			T.FlyOverAble = text2num(FlyOver[Amount])
-			Turfs += T
+			t.Builder = builders[amount]
+			t.FlyOverAble = text2num(fly_over[amount])
+			Turfs += t
 
-			if(!(T.Builder in built_turfs)) built_turfs[T.Builder] = new/list
-			var/list/l = built_turfs[T.Builder]
-			l += T
-			built_turfs[T.Builder] = l
+			if(!(t.Builder in built_turfs)) built_turfs[t.Builder] = new/list
+			var/list/l = built_turfs[t.Builder]
+			l += t
+			built_turfs[t.Builder] = l
 
-			for(var/obj/o in T)
+			for(var/obj/o in t)
 				if(!o.Builder && (o.type in list(/obj/Edges, /obj/Surf, /obj/Trees, /obj/Turfs)))
 					o.reallyDelete = 1
 					o.respawn_on_delete = 0
 					o.DeleteNoWait();
 					o.SafeTeleport(null)
 
-			if(Amount == 20000)
+			if(amount == 20000)
 				sleep(world.tick_lag)
 				break
 
-		if(Amount == 20000)
-			E ++
+		if(amount == 20000)
+			e ++
 			goto load
 
 		end
-		world<<"Map Loaded ([DebugAmount] in [E] Files.)"
+		world<<"Map Loaded ([debug_amount] in [e] Files.)"
 
 		GenerateFeaturesOnPlayerTurfsOnMapLoad()
 
 //load an external map file on top of everything that is already loaded, this is for like if admins are building special admin buildings on another server
 //and they want to then put what they built into the main player server they can just load it on top of that using the map files externally and also so
 //they dont have to shut down the server to do it
-proc/MapLoadExternal(savefile/F)
-	if(!F)
+proc/mapLoadExternal(savefile/f)
+	if(!f)
 		clients << "No file was passed"
 		return
-	F = new(F)
-	var/Amount=0
-	var/DebugAmount= 0
+	f = new(f)
+	var/amount=0
+	var/debug_amount= 0
 	sleep(1)
-	var/list/Types=F["Types"]
-	var/list/Healths=F["Healths"]
-	var/list/Builders=F["Builders"]
-	var/list/Xs=F["Xs"]
-	var/list/Ys=F["Ys"]
-	var/list/Zs=F["Zs"]
-	var/list/FlyOver=F["FlyOver"]
+	var/list/types=f["Types"]
+	var/list/healths=f["Healths"]
+	var/list/builders=f["Builders"]
+	var/list/xs=f["Xs"]
+	var/list/ys=f["Ys"]
+	var/list/zs=f["Zs"]
+	var/list/fly_over=f["FlyOver"]
 	sleep(5)
-	Amount = 0
-	for(var/A in Types)
-		Amount+=1
-		DebugAmount += 1
-		var/turf/T = new A(locate(Xs[Amount], Ys[Amount], Zs[Amount]))
-		T.Health = Healths[Amount]
-		if(T.Health == "inf") T.Health = 1.#INF
-		if(istext(T.Health)) T.Health = text2num(T.Health)
-		T.Builder = Builders[Amount]
-		T.FlyOverAble = text2num(FlyOver[Amount])
-		Turfs += T
-		if(!(T.Builder in built_turfs)) built_turfs[T.Builder] = new/list
-		var/list/l = built_turfs[T.Builder]
-		l += T
-		built_turfs[T.Builder] = l
-		for(var/obj/o in T)
+	amount = 0
+	for(var/a in types)
+		amount+=1
+		debug_amount += 1
+		var/turf/t = new a(locate(xs[amount], ys[amount], zs[amount]))
+		t.Health = healths[amount]
+		if(t.Health == "inf") t.Health = 1.#INF
+		if(istext(t.Health)) t.Health = text2num(t.Health)
+		t.Builder = builders[amount]
+		t.FlyOverAble = text2num(fly_over[amount])
+		Turfs += t
+		if(!(t.Builder in built_turfs)) built_turfs[t.Builder] = new/list
+		var/list/l = built_turfs[t.Builder]
+		l += t
+		built_turfs[t.Builder] = l
+		for(var/obj/o in t)
 			if(!o.Builder && (o.type in list(/obj/Edges, /obj/Surf, /obj/Trees, /obj/Turfs)))
 				o.reallyDelete = 1
 				o.respawn_on_delete = 0
 				o.DeleteNoWait();
 				o.SafeTeleport(null)
-	world<<"<font color=yellow>External map loaded (+[DebugAmount] turfs)"
+	world<<"<font color=yellow>External map loaded (+[debug_amount] turfs)"
 
 var/Turf_Strength = 2 //this many times the upgrade value
 var/max_turf_str = 10
 
-mob/proc/max_turf_upgrade()
+mob/proc/maxTurfUpgrade()
 	var/n = Knowledge * Turf_Strength * (Intelligence() ** wall_INT_scaling)
 	n *= 1 //arbitrary
 	return n
@@ -181,7 +181,7 @@ mob/proc/max_turf_upgrade()
 mob/var/tmp/last_wall_upgrade=0 //world.time
 
 turf/proc
-	Make_Dense_All(mob/m)
+	makeDenseAll(mob/m)
 		set background=1
 		if(m&&world.time>m.last_wall_upgrade+10)
 			spawn(1) if(m) m.last_wall_upgrade=world.time
@@ -190,12 +190,12 @@ turf/proc
 					T.FlyOverAble = 0*/
 			//m.last_wall_upgrade=world.time
 			if(Builder in built_turfs)
-				for(var/turf/T in built_turfs[Builder])
-					if(T.density)
-						T.FlyOverAble = 0
+				for(var/turf/t in built_turfs[Builder])
+					if(t.density)
+						t.FlyOverAble = 0
 		else m<<"You can only do this once every 1 seconds (to prevent lag)"
 
-	Upgrade_All(mob/m,display_message=0,for_free=0)
+	upgradeAll(mob/m,display_message=0,for_free=0)
 		set background=1
 
 		//if an admin does it, ask first, cuz it may be to inf health on accident
@@ -208,14 +208,14 @@ turf/proc
 			spawn(1) if(m) m.last_wall_upgrade=world.time
 			//m.last_wall_upgrade = world.time
 
-			var/Max_Upgrade=m.max_turf_upgrade()
-			var/Cost=round(1000/m.Intelligence())
-			if(m.Res()<Cost&&!for_free)
-				m<<"You need at least [Commas(Cost)]$ to upgrade a wall"
+			var/max_upgrade=m.maxTurfUpgrade()
+			var/cost=round(1000/m.Intelligence())
+			if(m.Res()<cost&&!for_free)
+				m<<"You need at least [Commas(cost)]$ to upgrade a wall"
 				return
-			m.Alter_Res(-Cost)
-			player_view(15,m)<<"[usr] upgrades [Builder]'s walls to [Commas(Max_Upgrade)] battle power, if they were below that \
-			amount already. (Cost: [Commas(Cost)]$)"
+			m.Alter_Res(-cost)
+			player_view(15,m)<<"[usr] upgrades [Builder]'s walls to [Commas(max_upgrade)] battle power, if they were below that \
+			amount already. (Cost: [Commas(cost)]$)"
 
 			/*spawn for(var/turf/T in built_turfs[Builder]) if(T.Health<Max_Upgrade)
 				T.Health=Max_Upgrade
@@ -225,15 +225,16 @@ turf/proc
 					var/list/L=Built_Objs[ckey(Builder)]
 					for(var/obj/o in L) if(o.Health<Max_Upgrade) o.Health=Max_Upgrade*/
 			if(Builder in built_turfs)
-				for(var/turf/T in built_turfs[Builder]) if(T.Health<Max_Upgrade)
-					T.Health=Max_Upgrade
+				for(var/turf/t in built_turfs[Builder]) if(t.Health<max_upgrade)
+					t.Health=max_upgrade
 			if(ckey(Builder) in Built_Objs)
-				var/list/L=Built_Objs[ckey(Builder)]
-				for(var/obj/o in L) if(o.Health<Max_Upgrade) o.Health=Max_Upgrade
+				var/list/l=Built_Objs[ckey(Builder)]
+				for(var/obj/o in l) if(o.Health<max_upgrade) o.Health=max_upgrade
 
 		else if(display_message) m<<"You can only do this once every 1 seconds (to prevent lag)"
 
-turf/verb/Upgrade()
+turf/verb/upgrade()
+	set name = "Upgrade"
 	set src in view(1)
 	if(!Builder)
 		usr<<"You can only use this on things built by players"
@@ -241,21 +242,21 @@ turf/verb/Upgrade()
 	if(!usr.Intelligence())
 		usr<<"You do not have any intelligence to do this"
 		return
-	if(!Built_Objs) Initialize_Built_Objs()
-	var/list/Options=list("Upgrade and make dense all","Upgrade all")
+	if(!Built_Objs) initializeBuiltObjs()
+	var/list/options=list("Upgrade and make dense all","Upgrade all")
 	if(Builder==usr.key)
-		if(FlyOverAble) Options+="Make dense all"
-		else Options+="Make undense all"
-	switch(input("Options") in Options)
+		if(FlyOverAble) options+="Make dense all"
+		else options+="Make undense all"
+	switch(input("Options") in options)
 		if("Upgrade and make dense all")
-			Make_Dense_All(usr)
-			Upgrade_All(usr,display_message=0)
-		if("Make dense all") Make_Dense_All(usr)
+			makeDenseAll(usr)
+			upgradeAll(usr,display_message=0)
+		if("Make dense all") makeDenseAll(usr)
 		if("Make undense all")
 			if(Builder in built_turfs)
 				var/list/l=built_turfs[Builder]
 				for(var/turf/t in l) t.FlyOverAble = 1
-		if("Upgrade all") Upgrade_All(usr)
+		if("Upgrade all") upgradeAll(usr)
 
 
 
@@ -269,56 +270,56 @@ atom/var/Buildable=1
 
 var/list/Builds=new
 
-proc/AddBuilds()
-	for(var/A in typesof(/turf))
-		var/turf/C=new A(locate(1,1,1))
-		if(C) if(C.Buildable && C.type!=/turf&&C.type!=/turf/warp)
-			var/obj/Build/B=new
-			B.build_category = C.build_category
-			B.icon=C.icon
-			B.icon_state=C.icon_state
-			B.Creates=C.type
-			B.name="[C.name]-B"
-			Builds+=B
-		del(C)
-	for(var/A in typesof(/obj/Turfs))
-		var/obj/B=new A
-		if(B) if(B.Buildable && B.type!=/obj/Turfs && B.build_category != BUILD_CUSTOM)
-			var/obj/Build/C=new
-			C.build_category = BUILD_DECOR
-			C.icon=B.icon
-			C.icon_state=B.icon_state
-			C.Creates=B.type
-			C.name="[B.name]-B"
-			Builds+=C
-	for(var/A in typesof(/obj/Trees))
-		var/obj/B=new A
-		if(B) if(B.Buildable&&B.type!=/obj/Trees)
-			var/obj/Build/C=new
-			C.build_category = BUILD_TREES
-			C.icon=B.icon
-			C.icon_state=B.icon_state
-			C.Creates=B.type
-			C.name="[B.name]-B"
-			Builds+=C
-	for(var/A in typesof(/obj/Edges))
-		var/obj/B=new A
-		if(B) if(B.Buildable&&B.type!=/obj/Trees)
-			var/obj/Build/C=new
-			C.icon=B.icon
-			C.icon_state=B.icon_state
-			C.Creates=B.type
-			C.name="[B.name]-B"
-			Builds+=C
-	for(var/A in typesof(/obj/Surf))
-		var/obj/B=new A
-		if(B) if(B.Buildable&&B.type!=/obj/Trees)
-			var/obj/Build/C=new
-			C.icon=B.icon
-			C.icon_state=B.icon_state
-			C.Creates=B.type
-			C.name="[B.name]-B"
-			Builds+=C
+proc/addBuilds()
+	for(var/a in typesof(/turf))
+		var/turf/c=new a(locate(1,1,1))
+		if(c) if(c.Buildable && c.type!=/turf&&c.type!=/turf/warp)
+			var/obj/Build/b=new
+			b.build_category = c.build_category
+			b.icon=c.icon
+			b.icon_state=c.icon_state
+			b.Creates=c.type
+			b.name="[c.name]-B"
+			Builds+=b
+		del(c)
+	for(var/a in typesof(/obj/Turfs))
+		var/obj/b=new a
+		if(b) if(b.Buildable && b.type!=/obj/Turfs && b.build_category != BUILD_CUSTOM)
+			var/obj/Build/c=new
+			c.build_category = BUILD_DECOR
+			c.icon=b.icon
+			c.icon_state=b.icon_state
+			c.Creates=b.type
+			c.name="[b.name]-B"
+			Builds+=c
+	for(var/a in typesof(/obj/Trees))
+		var/obj/b=new a
+		if(b) if(b.Buildable&&b.type!=/obj/Trees)
+			var/obj/Build/c=new
+			c.build_category = BUILD_TREES
+			c.icon=b.icon
+			c.icon_state=b.icon_state
+			c.Creates=b.type
+			c.name="[b.name]-B"
+			Builds+=c
+	for(var/a in typesof(/obj/Edges))
+		var/obj/b=new a
+		if(b) if(b.Buildable&&b.type!=/obj/Trees)
+			var/obj/Build/c=new
+			c.icon=b.icon
+			c.icon_state=b.icon_state
+			c.Creates=b.type
+			c.name="[b.name]-B"
+			Builds+=c
+	for(var/a in typesof(/obj/Surf))
+		var/obj/b=new a
+		if(b) if(b.Buildable&&b.type!=/obj/Trees)
+			var/obj/Build/c=new
+			c.icon=b.icon
+			c.icon_state=b.icon_state
+			c.Creates=b.type
+			c.name="[b.name]-B"
+			Builds+=c
 
 mob/var/tmp/turf_lay_cost=0
 
@@ -335,211 +336,211 @@ obj/Build
 			usr<<"You have deselected [src]"
 			usr.Target=null
 			return
-		usr.turf_lay_cost = usr.turf_lay_cost()
-		Build_Lay(src,usr)
+		usr.turf_lay_cost = usr.turfLayCost()
+		buildLay(src,usr)
 		if(usr.Target!=src)
 			usr.Target=src
 			usr<<"You have selected [src]"
-			usr<<"It will cost [Commas(usr.turf_lay_cost())] resources per tile you build. This cost will go up later based on how much tiles \
+			usr<<"It will cost [Commas(usr.turfLayCost())] resources per tile you build. This cost will go up later based on how much tiles \
 			have been built by all players."
 		if(usr.client) winset(usr,"mapwindow.map","focus=true")
 		if(usr.client) winset(usr,"mainwindow.map","focus=true")
 
-mob/proc/turf_lay_cost()
+mob/proc/turfLayCost()
 	var/n = 1000 * 1.6**(Turfs.len/10000)
 	n=round(n,1000)
 	if(n>100000) n=100000
 	if(IsAdmin() && admins_build_free) return 0
 	return n * building_price_mult
 
-mob/proc/StopBuildingThings()
+mob/proc/stopBuildingThings()
 	Target = null
 
-proc/IsInVoid(mob/m)
+proc/isInVoid(mob/m)
 	if(!m) return
 	var/turf/t = m.base_loc()
 	if(!t) return 1
 	if(t.type == /turf/Other/Blank) return 1
 
-proc/Build_Lay(obj/Build/O,mob/P) if(!P.KO) //Type to build, player who is building it, location to put it
+proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is building it, location to put it
 	set waitfor=0
 
-	if(P.AtBattlegrounds())
-		P << "You can not build here"
-		P.StopBuildingThings()
+	if(p.AtBattlegrounds())
+		p << "You can not build here"
+		p.stopBuildingThings()
 		return
 
-	var/turf/t2 = P.loc
+	var/turf/t2 = p.loc
 	if(!t2 || !isturf(t2))
-		P.StopBuildingThings()
+		p.stopBuildingThings()
 		return
 
-	var/turf/true_loc=P.base_loc()
+	var/turf/true_loc=p.base_loc()
 	if(!true_loc.Builder && true_loc && isturf(true_loc) && true_loc.z==5 && true_loc.type!=/turf/Other/Sky2)
 		var/turf/death_spawn=locate(death_x,death_y,death_z)
 		if(get_dist(true_loc,death_spawn) < checkpointBuildDist)
-			P<<"Building is not allowed here except on the clouds"
-			P.Target=null
+			p<<"Building is not allowed here except on the clouds"
+			p.Target=null
 			return
 
-	if(IsInVoid(P))
-		if(!can_build_in_void && !P.IsAdmin())
-			P.StopBuildingThings()
+	if(isInVoid(p))
+		if(!can_build_in_void && !p.IsAdmin())
+			p.stopBuildingThings()
 			return
-		if(!admins_can_build_in_void && P.IsAdmin())
-			P.StopBuildingThings()
+		if(!admins_can_build_in_void && p.IsAdmin())
+			p.stopBuildingThings()
 			return
 
-	if(prison_exit&&P.z==prison_exit.z&&getdist(P,prison_exit)<=20)
-		P<<"You can not build this close to the prison exit"
-		P.StopBuildingThings()
+	if(prison_exit&&p.z==prison_exit.z&&getdist(p,prison_exit)<=20)
+		p<<"You can not build this close to the prison exit"
+		p.stopBuildingThings()
 		return
 
-	if(istype(P.get_area(),/area/tournament_area))
-		P<<"Building here is impossible"
-		P.StopBuildingThings()
+	if(istype(p.get_area(),/area/tournament_area))
+		p<<"Building here is impossible"
+		p.stopBuildingThings()
 		return
 
-	if(istype(P.get_area(),/area/God_Ki_Realm))
-		P<<"Building here is impossible"
-		P.StopBuildingThings()
+	if(istype(p.get_area(),/area/God_Ki_Realm))
+		p<<"Building here is impossible"
+		p.stopBuildingThings()
 		return
 
-	if(istype(P.get_area(),/area/Braal_Core))
-		P<<"Building here is impossible"
-		P.StopBuildingThings()
+	if(istype(p.get_area(),/area/Braal_Core))
+		p<<"Building here is impossible"
+		p.stopBuildingThings()
 		return
 
-	for(var/obj/Fighter_Spot/f in Fighter_Spots) if(f.z==P.locz()&&getdist(f,P)<=12)
-		P<<"You can not build near the tournament"
-		P.StopBuildingThings()
+	for(var/obj/Fighter_Spot/f in Fighter_Spots) if(f.z==p.locz()&&getdist(f,p)<=12)
+		p<<"You can not build near the tournament"
+		p.stopBuildingThings()
 		return
 
-	var/Res_Cost = P.turf_lay_cost
-	if(P.z == Z_LEVEL_SPACE && Res_Cost != 0) Res_Cost += 10000 * building_price_mult
+	var/res_cost = p.turf_lay_cost
+	if(p.z == Z_LEVEL_SPACE && res_cost != 0) res_cost += 10000 * building_price_mult
 
-	if(Res_Cost != 0)
+	if(res_cost != 0)
 		var/obj/Spawn/s
-		for(s in Spawn_List) if(!s.Builder&&s.z==P.z&&getdist(s,P)<=20) break
+		for(s in Spawn_List) if(!s.Builder&&s.z==p.z&&getdist(s,p)<=20) break
 		if(s)
-			Res_Cost += 100000 * building_price_mult
-			if(P.Res()<Res_Cost)
-				P<<"It costs [Res_Cost] resources per tile to build this close to a non-player made spawn"
-				P.StopBuildingThings()
+			res_cost += 100000 * building_price_mult
+			if(p.Res()<res_cost)
+				p<<"It costs [res_cost] resources per tile to build this close to a non-player made spawn"
+				p.stopBuildingThings()
 				return
 
-	if(P.Res()<Res_Cost)
-		P<<"You need [Res_Cost] resources per tile you build"
-		P.StopBuildingThings()
+	if(p.Res()<res_cost)
+		p<<"You need [res_cost] resources per tile you build"
+		p.stopBuildingThings()
 		return
 
-	for(var/turf/t in range(0,P))
-		if(t.Builder && t.Builder!=P.key && P.max_turf_upgrade()<t.Health*0.95)
-			P<<"You can not build over this person's turfs because it was built with knowledge too far \
+	for(var/turf/t in range(0,p))
+		if(t.Builder && t.Builder!=p.key && p.maxTurfUpgrade()<t.Health*0.95)
+			p<<"You can not build over this person's turfs because it was built with knowledge too far \
 			beyond yours."
-			P.StopBuildingThings()
+			p.stopBuildingThings()
 			return
 		if(istype(t,/turf/Teleporter))
-			P<<"You can not build this close to entrances"
-			P.StopBuildingThings()
+			p<<"You can not build this close to entrances"
+			p.stopBuildingThings()
 			return
 		if(locate(/obj/Bank) in t) return
 
-	for(var/obj/Turfs/Door/d in range(0,P)) if(d.Password==7125)
-		P<<"You can not build over the time chamber door"
-		P.StopBuildingThings()
+	for(var/obj/Turfs/Door/d in range(0,p)) if(d.Password==7125)
+		p<<"You can not build over the time chamber door"
+		p.stopBuildingThings()
 		return
 
-	if(!Built_Objs) Initialize_Built_Objs()
-	var/atom/D=P
-	if(P.Ship) D=P.Ship
+	if(!Built_Objs) initializeBuiltObjs()
+	var/atom/D=p
+	if(p.Ship) D=p.Ship
 	if(!D.loc) return
 	var/Turrets
 
 	for(var/obj/Turret/T in Turrets) if(T.z&&T.z==D.z&&getdist(T,D)<=15&&T.Password)
 		Turrets=1
-		for(var/obj/items/Door_Pass/I in P.item_list) if(I.Password==T.Password) Turrets=0
+		for(var/obj/items/Door_Pass/i in p.item_list) if(i.Password==T.Password) Turrets=0
 	if(Turrets)
-		P<<"You cannot build this close to turrets that want to attack you"
+		p<<"You cannot build this close to turrets that want to attack you"
 		return
 
 	//for(var/obj/Controls/N in view(1,locate(D.x,D.y,D.z)))
 	//	P<<"You cannot build this close to ship controls"
 	//	return
-	for(var/obj/Warper/W in view(1,locate(D.x,D.y,D.z)))
-		P<<"You cannot build this close to warpers."
+	for(var/obj/Warper/w in view(1,locate(D.x,D.y,D.z)))
+		p<<"You cannot build this close to warpers."
 		return
 	if(!D) return
 
-	var/atom/C
-	if(copytext(O.Creates,1,6) == "/turf")
+	var/atom/c
+	if(copytext(o.Creates,1,6) == "/turf")
 		//C = new O.Creates(locate(D.x,D.y,D.z), skip_auto_gen = 1)
-		C = new O.Creates(locate(D.x,D.y,D.z))
-	else C = new O.Creates(locate(D.x,D.y,D.z))
+		c = new o.Creates(locate(D.x,D.y,D.z))
+	else c = new o.Creates(locate(D.x,D.y,D.z))
 
-	if(!C) return
-	C.Builder=P.key
-	if(isobj(C))
+	if(!c) return
+	c.Builder=p.key
+	if(isobj(c))
 
-		P.StopBuildingThings() //so you only place 1 per click instead of til you untoggle it
+		p.stopBuildingThings() //so you only place 1 per click instead of til you untoggle it
 
-		if(!(P.ckey in Built_Objs)) Built_Objs[ckey(P.key)]=new/list
-		var/list/L=Built_Objs[ckey(P.key)]
-		L+=C
-		Built_Objs[ckey(P.key)]=L
+		if(!(p.ckey in Built_Objs)) Built_Objs[ckey(p.key)]=new/list
+		var/list/L=Built_Objs[ckey(p.key)]
+		L+=c
+		Built_Objs[ckey(p.key)]=L
 
-		C:Spawn_Timer=0
-		if(istype(C,/obj/Turfs/Sign)||istype(C,/obj/Turfs/Glass))
-			C.Bolted=P.key
-		var/Turf_Objects=0
-		for(var/obj/K in range(0,P)) if(!(locate(K) in P)) Turf_Objects+=1
-		if(Turf_Objects>4)
-			P<<"Nothing more can be placed here."
-			del(C)
+		c:Spawn_Timer=0
+		if(istype(c,/obj/Turfs/Sign)||istype(c,/obj/Turfs/Glass))
+			c.Bolted=p.key
+		var/turf_objects=0
+		for(var/obj/k in range(0,p)) if(!(locate(k) in p)) turf_objects+=1
+		if(turf_objects>4)
+			p<<"Nothing more can be placed here."
+			del(c)
 			return
 
-	if(istype(C,/obj/Turfs/Door))
-		var/New_Password=input(P,"Enter a password or leave blank") as text
-		if(!C) return
-		C.Password=New_Password
-		if(isobj(C)) C:Grabbable=0
+	if(istype(c,/obj/Turfs/Door))
+		var/new_password=input(p,"Enter a password or leave blank") as text
+		if(!c) return
+		c.Password=new_password
+		if(isobj(c)) c:Grabbable=0
 
-		P.StopBuildingThings() //Only build 1 door at a time
+		p.stopBuildingThings() //Only build 1 door at a time
 
-	if(istype(C,/obj/Turfs/Sign))
-		var/txt = input(P,"What do you want to write on the sign?","options") as text
-		if(!C) return
-		C.maptext = txt
-		C.maptext="<b><font color=cyan>[C.maptext]"
-	if(!isturf(C)) C.Savable=1
+	if(istype(c,/obj/Turfs/Sign))
+		var/txt = input(p,"What do you want to write on the sign?","options") as text
+		if(!c) return
+		c.maptext = txt
+		c.maptext="<b><font color=cyan>[c.maptext]"
+	if(!isturf(c)) c.Savable=1
 	else
-		C.Savable=0
+		c.Savable=0
 		//new/area/Inside(locate(P.x,P.y,P.z))
-		for(var/obj/Edges/E in C) del(E)
-		for(var/obj/Surf/E in C) del(E)
-		for(var/obj/Trees/E in C) del(E)
-		for(var/obj/Turfs/E in C) del(E)
-		Turfs+=C
+		for(var/obj/Edges/e in c) del(e)
+		for(var/obj/Surf/e in c) del(e)
+		for(var/obj/Trees/e in c) del(e)
+		for(var/obj/Turfs/e in c) del(e)
+		Turfs+=c
 
-		if(!(P.key in built_turfs)) built_turfs[P.key]=new/list
-		var/list/l=built_turfs[P.key]
-		l+=C
-		built_turfs[P.key]=l
+		if(!(p.key in built_turfs)) built_turfs[p.key]=new/list
+		var/list/l=built_turfs[p.key]
+		l+=c
+		built_turfs[p.key]=l
 
-		GenerateFeaturesOnBuildLay(C)
+		GenerateFeaturesOnBuildLay(c)
 
-	P.Alter_Res(-Res_Cost)
+	p.Alter_Res(-res_cost)
 
 
 
 
 var/list/Built_Objs
 
-proc/Initialize_Built_Objs()
+proc/initializeBuiltObjs()
 	Built_Objs = new/list
-	for(var/obj/Turfs/T)
-		if(T.Builder && T.Savable)
-			if(!(ckey(T.Builder) in Built_Objs)) Built_Objs[ckey(T.Builder)] = new/list
-			var/list/L = Built_Objs[ckey(T.Builder)]
-			L += T
-			Built_Objs[ckey(T.Builder)] = L
+	for(var/obj/Turfs/t)
+		if(t.Builder && t.Savable)
+			if(!(ckey(t.Builder) in Built_Objs)) Built_Objs[ckey(t.Builder)] = new/list
+			var/list/l = Built_Objs[ckey(t.Builder)]
+			l += t
+			Built_Objs[ckey(t.Builder)] = l

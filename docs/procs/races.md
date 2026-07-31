@@ -1,19 +1,73 @@
 # Races
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics.
 
 ## Files
+- `src/Code/Races/Alien/Alien.dm`
 - `src/Code/Races/AlienStarterMoves.dm`
-- `src/Code/Races/Bio Android/Bios.dm`
+- `src/Code/Races/Android/Android.dm`
+- `src/Code/Races/BioAndroid/Bios.dm`
+- `src/Code/Races/BioAndroid/BioAndroid.dm`
+- `src/Code/Races/Demigod/Demigod.dm`
+- `src/Code/Races/Demon/Demon.dm`
+- `src/Code/Races/FrostLord/Cooler.dm`
+- `src/Code/Races/FrostLord/FrostLord.dm`
+- `src/Code/Races/HalfSaiyan/HalfSaiyan.dm`
+- `src/Code/Races/Human/Human.dm`
 - `src/Code/Races/Icer/GoldIcer.dm`
+- `src/Code/Races/Kai/Kai.dm`
+- `src/Code/Races/Majin/Majin.dm`
 - `src/Code/Races/Majins/GooTrap.dm`
+- `src/Code/Races/Makyo/Makyo.dm`
+- `src/Code/Races/Namekian/Namekian.dm`
 - `src/Code/Races/Nameks.dm`
 - `src/Code/Races/Oozaru.dm`
+- `src/Code/Races/Saiyan/EliteSaiyan.dm`
+- `src/Code/Races/Saiyan/LegendarySaiyan.dm`
 - `src/Code/Races/Saiyan/RoyalBlue.dm`
+- `src/Code/Races/Saiyan/Saiyan.dm`
 - `src/Code/Races/Saiyan/SSBlue.dm`
 - `src/Code/Races/Saiyan/SsGodRed.dm`
+- `src/Code/Races/SpiritDoll/SpiritDoll.dm`
+- `src/Code/Races/Tsujin/Tsujin.dm`
 - `src/Code/Races/UltraInstinct.dm`
+- `src/Code/Races/Shared/RaceProgression.dm`
+- `src/Code/Races/Yeet/Yeet.dm`
+
+## Race Initializers
+These modular initializers replace the former combined race implementation. "Not assigned" means the initializer leaves `Class` unset for a fresh character.
+
+The shared dispatchers have these current signatures:
+
+- `mob/proc/Race(force_race,force_elite,force_low_class,interactive_options=1,force_cooler=0,force_normal_class=0)` obtains the available-race list, opens the legacy chooser when `force_race` is absent, and delegates initialization.
+- `mob/proc/InitializeRaceTemplate(force_race,force_elite,force_low_class,interactive_options=1,force_cooler=0,force_normal_class=0)` dispatches directly to the modular initializer and applies the initialized race's `bp_mod` to `ascension_bp`.
+
+`force_normal_class` is forwarded only to Saiyan initialization. It prevents the random Low Class branch and interactive Elite offer when the creator selects the normal Warrior Blood trait; `force_elite` and `force_low_class` continue to select those explicit classes.
+
+| File | Current initializer signature | Saved `Race` | Saved `Class` |
+| --- | --- | --- | --- |
+| `Alien/Alien.dm` | `mob/proc/Alien(interactive_options=1)` | `Alien` | Not assigned; the Nexus Alien population check may set `Elite` |
+| `Android/Android.dm` | `mob/proc/Android(interactive_options=1)` | `Android` | Not assigned |
+| `BioAndroid/BioAndroid.dm` | `mob/proc/Bio(interactive_options=1)` | `Bio-Android` | Not assigned |
+| `Demigod/Demigod.dm` | `mob/proc/Demigod(interactive_options=1)` | `Demigod` | Not assigned |
+| `Demon/Demon.dm` | `mob/proc/Demon(interactive_options=1)` | `Demon` | Not assigned |
+| `FrostLord/Cooler.dm` | `mob/proc/Cooler()` | Retains `Frost Lord` | `Cooler` |
+| `FrostLord/FrostLord.dm` | `mob/proc/Icer(interactive_options=1,force_cooler=0)` | `Frost Lord` | Not assigned, or `Cooler` when the variant is applied |
+| `HalfSaiyan/HalfSaiyan.dm` | `mob/proc/Half_Saiyan()` | `Half Saiyan` | Not assigned |
+| `Human/Human.dm` | `mob/proc/Human()` | `Human` | Not assigned |
+| `Kai/Kai.dm` | `mob/proc/Kai(interactive_options=1)` | `Kai` | Not assigned |
+| `Majin/Majin.dm` | `mob/proc/Majin(interactive_options=1)` | `Majin` | Not assigned |
+| `Makyo/Makyo.dm` | `mob/proc/Makyo(interactive_options=1)` | `Makyo` | Not assigned |
+| `Namekian/Namekian.dm` | `mob/proc/Namekian(interactive_options=1)` | `Namekian` | Not assigned |
+| `Saiyan/EliteSaiyan.dm` | `mob/proc/Elite_Saiyan() if(Class!="Elite")` | Retains `Saiyan` | `Elite` |
+| `Saiyan/LegendarySaiyan.dm` | `mob/proc/Legendary_Saiyan()` | `Saiyan` | `Legendary Saiyan` |
+| `Saiyan/Saiyan.dm` | `mob/proc/Saiyan(Can_Elite=1,force_elite,force_low_class,force_normal_class=0)` | `Saiyan` | Not assigned, `Low Class`, or `Elite` |
+| `SpiritDoll/SpiritDoll.dm` | `mob/proc/Doll(interactive_options=1)` | `Human` | `Spirit Doll` |
+| `Tsujin/Tsujin.dm` | `mob/proc/Tsujin(interactive_options=1)` | `Tsujin` | Not assigned |
+| `Yeet/Yeet.dm` | `mob/proc/Yeet()` | `Yeet` | Not assigned |
+
+`Races/_Shared/RaceProgression.dm` owns `NewZenkaiMods()`, `GetNewZenkaiMod()`, `Get_race_starting_bp_mod()`, and `ApplyStartingBP()` plus shared race/stat version constants. These declarations were moved out of `Main.dm` without changing their persisted variable names or behavior.
 
 ## Proc Reference
 
@@ -33,7 +87,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Races/Bio Android/Bios.dm
+### src/Code/Races/BioAndroid/Bios.dm
 
 #### mob/proc/BioFormCheck
 - Signature: `BioFormCheck(mob/m)`
@@ -611,15 +665,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Races/UltraInstinct.dm
 
-#### mob/Admin4/verb/GoUltraInstinct
-- Signature: `mob/Admin4/verb/GoUltraInstinct(mob/m in world)`
+#### mob/Admin4/verb/goUltraInstinct
+- Signature: `mob/Admin4/verb/goUltraInstinct(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle go ultra instinct.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/MassUltraInstinct
-- Signature: `mob/Admin4/verb/MassUltraInstinct()`
+#### mob/Admin4/verb/massUltraInstinct
+- Signature: `mob/Admin4/verb/massUltraInstinct()`
 - Inputs: None
 - Purpose: Handle mass ultra instinct.
 - Returns: none (implicit).

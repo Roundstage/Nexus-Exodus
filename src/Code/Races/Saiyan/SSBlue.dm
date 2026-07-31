@@ -4,7 +4,7 @@ mob/var
 	ssj_blue_hair
 	ssj_blue_aura
 	ssj_blue_mult = 1.35
-	base_ssj_blue_idle_aura = 'SSj Blue Idle Aura.dmi' //icon
+	base_ssj_blue_idle_aura = 'SSjBlueIdleAura.dmi' //icon
 
 	tmp
 		ssj_blue_drain_loop
@@ -28,6 +28,7 @@ mob/proc
 
 	SSj_Blue()
 		if(is_ssj_blue || transing || IsGreatApe() || ssj) return
+		preparePrimaryTransformation("saiyan_blue")
 
 		if(Race in list("Saiyan", "Half Saiyan")) Revert()
 		Mystic_Revert()
@@ -50,6 +51,7 @@ mob/proc
 		transing = 0
 		Aura_Overlays()
 		SSj_Blue_Drain()
+		syncActivePrimaryTransformation("ssj blue")
 
 	SSj_Blue_Revert()
 		if(!is_ssj_blue)
@@ -59,6 +61,7 @@ mob/proc
 		is_ssj_blue = 0
 		overlays -= ssj_blue_idle_aura
 		SSj_Hair()
+		syncActivePrimaryTransformation("ssj blue revert")
 
 	SSj_Blue_Drain()
 		set waitfor=0
@@ -82,9 +85,9 @@ mob/proc
 		if(!is_ssj_blue) overlays -= ssj_blue_idle_aura
 		if(!isnum(god_ki_mastery)) god_ki_mastery = 0 //fix -nan bug i made
 		if(!ssj_blue_aura)
-			//ssj_blue_aura = 'SS Blue Aura 2017.dmi' + rgb(0,0,0,170)
+			//ssj_blue_aura = 'SsBlueAura2017.dmi' + rgb(0,0,0,170)
 			//ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 48, 64)
-			ssj_blue_aura = 'SS Blue Aura 2017.dmi'
+			ssj_blue_aura = 'SsBlueAura2017.dmi'
 			ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 96, 96)
 		if(!ssj_blue_idle_aura)
 			ssj_blue_idle_aura = image(icon = base_ssj_blue_idle_aura + rgb(0,0,0,213), pixel_x = -32, pixel_y = -28)

@@ -45,7 +45,7 @@ mob/var
 	ssj_god_idle_aura
 	ssjg_bp_mult=1.25
 	ssjg_bp_add=0
-	base_ssj_god_idle_aura = 'SSj Blue Idle Aura.dmi' //icon
+	base_ssj_god_idle_aura = 'SSjBlueIdleAura.dmi' //icon
 
 var
 	ssjg_god_ki_req=15
@@ -58,9 +58,10 @@ var
 	ssjg_stamina_regen=1.4			  // If there is a means of applying this to stamina regen while in SSG, it should 100% be added.
 
 mob/proc/SSG()
-	if(!IsGreatApe() && !transing && !ismystic&!is_ssg)
+	if(!IsGreatApe() && !transing && !ismystic && !is_ssg)
 		//if(Race=="Half Saiyan") return	//uncomment this line if you don't want Half-Saiyans getting SSG.
 		if(!has_ssg_req()) return
+		preparePrimaryTransformation("saiyan_god")
 
 		 //Make sure player has god ki enabled?  If this doesn't do that then comment out or remove this line.
 		transing=1
@@ -88,14 +89,16 @@ mob/proc/SSG()
 		overlays-=hair
 		Old_Overlays.Add(overlays)		  // I can't imagine there'd be much of an overlay unless you wanted one
 		overlays-=overlays				  // like SSB where it has a constant smaller aura even when not powering up.
-		overlays+='SSj4 Overlay.dmi'
+		overlays+='SSj4Overlay.dmi'
 		overlays+=Old_Overlays*/
 		SSj_Hair()
 		Aura_Overlays()
 		SSG_Drain()
+		syncActivePrimaryTransformation("ssg")
 
-mob/var/ssg_drain_loop
-mob/var/tmp/ssg_revert
+mob/var/tmp
+	ssg_drain_loop
+	ssg_revert
 mob/proc
 	SSG_Drain()
 		set waitfor=0
@@ -125,9 +128,9 @@ mob/proc
 		if(!is_ssg) overlays -= ssj_god_idle_aura
 		if(!isnum(god_ki_mastery)) god_ki_mastery = 0 //fix -nan bug i made
 		if(!ssj_god_aura)
-			//ssj_blue_aura = 'SS Blue Aura 2017.dmi' + rgb(0,0,0,170)
+			//ssj_blue_aura = 'SsBlueAura2017.dmi' + rgb(0,0,0,170)
 			//ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 48, 64)
-			ssj_god_aura = 'Light_Red_Aura_Xenoverse_Color_Scheme.dmi'
+			ssj_god_aura = 'LightRedAuraXenoverseColorScheme.dmi'
 			ssj_god_aura = Scaled_Icon(ssj_god_aura, 96, 96)
 		if(!ssj_god_idle_aura)
 			ssj_god_idle_aura = image(icon = base_ssj_god_idle_aura + rgb(0,0,0,213), pixel_x = -32, pixel_y = -28)
@@ -156,8 +159,9 @@ mob/proc
 		regen/=ssjg_regen_mult
 		SSj_Hair()
 		ssg_revert=0
+		syncActivePrimaryTransformation("ssg revert")
 
-#ifdef DEBUG
+#ifdef NEXUS_DEV_TOOLS
 mob
 	verb
 		Free_SP()

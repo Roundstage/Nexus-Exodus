@@ -4,33 +4,33 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Player Mechanics/Aging.dm`
-- `src/Code/Player Mechanics/Ascension.dm`
-- `src/Code/Player Mechanics/Clothes.dm`
-- `src/Code/Player Mechanics/Cooking.dm`
-- `src/Code/Player Mechanics/Crandal.dm`
-- `src/Code/Player Mechanics/Customize.dm`
-- `src/Code/Player Mechanics/Death.dm`
-- `src/Code/Player Mechanics/Debuffs.dm`
-- `src/Code/Player Mechanics/Diarea.dm`
-- `src/Code/Player Mechanics/Faction.dm`
-- `src/Code/Player Mechanics/Feats.dm`
-- `src/Code/Player Mechanics/GodKi.dm`
-- `src/Code/Player Mechanics/GodKiTraining.dm`
-- `src/Code/Player Mechanics/Grabbing.dm`
-- `src/Code/Player Mechanics/Inventory.dm`
-- `src/Code/Player Mechanics/Learn.dm`
-- `src/Code/Player Mechanics/OldKoSystem.dm`
-- `src/Code/Player Mechanics/Ranks.dm`
-- `src/Code/Player Mechanics/Reincarnation.dm`
-- `src/Code/Player Mechanics/Teach.dm`
-- `src/Code/Player Mechanics/Train.dm`
-- `src/Code/Player Mechanics/Voting.dm`
-- `src/Code/Player Mechanics/Zenkai.dm`
+- `src/Code/PlayerMechanics/Aging.dm`
+- `src/Code/PlayerMechanics/Ascension.dm`
+- `src/Code/PlayerMechanics/Clothes.dm`
+- `src/Code/PlayerMechanics/Cooking.dm`
+- `src/Code/PlayerMechanics/Crandal.dm`
+- `src/Code/PlayerMechanics/Customize.dm`
+- `src/Code/PlayerMechanics/Death.dm`
+- `src/Code/PlayerMechanics/Debuffs.dm`
+- `src/Code/PlayerMechanics/Diarea.dm`
+- `src/Code/PlayerMechanics/Faction.dm`
+- `src/Code/PlayerMechanics/Feats.dm`
+- `src/Code/PlayerMechanics/GodKi.dm`
+- `src/Code/PlayerMechanics/GodKiTraining.dm`
+- `src/Code/PlayerMechanics/Grabbing.dm`
+- `src/Code/PlayerMechanics/Inventory.dm`
+- `src/Code/PlayerMechanics/Learn.dm`
+- `src/Code/PlayerMechanics/OldKoSystem.dm`
+- `src/Code/PlayerMechanics/Ranks.dm`
+- `src/Code/PlayerMechanics/Reincarnation.dm`
+- `src/Code/PlayerMechanics/Teach.dm`
+- `src/Code/PlayerMechanics/Train.dm`
+- `src/Code/PlayerMechanics/Voting.dm`
+- `src/Code/PlayerMechanics/Zenkai.dm`
 
 ## Proc Reference
 
-### src/Code/Player Mechanics/Aging.dm
+### src/Code/PlayerMechanics/Aging.dm
 
 #### mob/proc/Apply_racial_aging_variables
 - Signature: `mob/proc/Apply_racial_aging_variables()`
@@ -39,7 +39,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Ascension.dm
+### src/Code/PlayerMechanics/Ascension.dm
 
 #### mob/proc/ssj_power
 - Signature: `mob/proc/ssj_power()`
@@ -198,14 +198,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Revert
 - Signature: `mob/proc/Revert()`
 - Inputs: None
-- Purpose: Handle revert.
+- Purpose: Legacy racial revert adapter; removes the applicable current stage and resynchronizes canonical primary/appearance state.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/SSj_Hair
 - Signature: `mob/proc/SSj_Hair()`
 - Inputs: None
-- Purpose: Handle ssj hair.
+- Purpose: Resolve current Saiyan hair, tail, and blue unmastered or green mastered eye overlays.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -247,7 +247,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Frost_Lord_Forms
 - Signature: `mob/proc/Frost_Lord_Forms() if(Race=="Frost Lord")`
 - Inputs: None
-- Purpose: Handle frost lord forms.
+- Purpose: Advance one Frost stage; standard Final and Cooler Fifth can advance to Gold when requirements pass.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -289,7 +289,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Third_Eye
 - Signature: `mob/proc/Third_Eye()`
 - Inputs: None
-- Purpose: Handle third eye.
+- Purpose: Apply the documented `bp_mult +0.2` Human focus buff plus meditation/mastery effects.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -335,7 +335,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Clothes.dm
+### src/Code/PlayerMechanics/Clothes.dm
 
 #### proc/PopulateClothesChoices
 - Signature: `proc/PopulateClothesChoices()`
@@ -365,7 +365,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Cooking.dm
+### src/Code/PlayerMechanics/Cooking.dm
 
 #### obj/proc/Fire_Cook
 - Signature: `obj/proc/Fire_Cook() for(var/mob/Body/A in range(1,src)) if(!A.Cooked)`
@@ -416,7 +416,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Crandal.dm
+### src/Code/PlayerMechanics/Crandal.dm
 
 #### mob/proc/Player_Rename_List
 - Signature: `mob/proc/Player_Rename_List()`
@@ -432,8 +432,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/Add_Color_to_Something
-- Signature: `mob/Admin2/verb/Add_Color_to_Something(obj/O as obj|mob|turf in view(usr))`
+#### mob/Admin2/verb/addColorToSomething
+- Signature: `mob/Admin2/verb/addColorToSomething(obj/O as obj|mob|turf in view(usr))`
 - Inputs: obj/O as obj|mob|turf in view(usr
 - Purpose: Add Color to Something.
 - Returns: none (implicit).
@@ -523,7 +523,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Customize.dm
+### src/Code/PlayerMechanics/Customize.dm
 
 #### mob/proc/ChangeIcerFormIcon
 - Signature: `mob/proc/ChangeIcerFormIcon(form = 1)`
@@ -609,7 +609,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Death.dm
+### src/Code/PlayerMechanics/Death.dm
 
 #### mob/proc/FixCantMoveDueToKiAttack
 - Signature: `mob/proc/FixCantMoveDueToKiAttack()`
@@ -933,8 +933,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Make_Bodies
-- Signature: `mob/Admin4/verb/Make_Bodies()`
+#### mob/Admin4/verb/makeBodies
+- Signature: `mob/Admin4/verb/makeBodies()`
 - Inputs: None
 - Purpose: Handle make bodies.
 - Returns: none (implicit).
@@ -961,8 +961,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Revive_Orb_Settings
-- Signature: `mob/Admin4/verb/Revive_Orb_Settings()`
+#### mob/Admin4/verb/reviveOrbSettings
+- Signature: `mob/Admin4/verb/reviveOrbSettings()`
 - Inputs: None
 - Purpose: Handle revive orb settings.
 - Returns: none (implicit).
@@ -975,7 +975,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Debuffs.dm
+### src/Code/PlayerMechanics/Debuffs.dm
 
 #### mob/proc/Check_if_kiting
 - Signature: `Check_if_kiting(turf/old_loc)`
@@ -1138,7 +1138,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Player Mechanics/Diarea.dm
+### src/Code/PlayerMechanics/Diarea.dm
 
 #### mob/proc/Diarea
 - Signature: `mob/proc/Diarea(Contagious=1,Other_Chance=0,Invis=0) if(prob(Diarea+Other_Chance))`
@@ -1189,14 +1189,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/MassDiarea
-- Signature: `mob/Admin3/verb/MassDiarea()`
+#### mob/Admin3/verb/massDiarea
+- Signature: `mob/Admin3/verb/massDiarea()`
 - Inputs: None
 - Purpose: Handle mass diarea.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Faction.dm
+### src/Code/PlayerMechanics/Faction.dm
 
 #### obj/Faction/Click
 - Signature: `Click()`
@@ -1212,7 +1212,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Feats.dm
+### src/Code/PlayerMechanics/Feats.dm
 
 #### mob/proc/GiveAllFeats
 - Signature: `GiveAllFeats()`
@@ -1291,7 +1291,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/GodKi.dm
+### src/Code/PlayerMechanics/GodKi.dm
 
 #### proc/GodOnline
 - Signature: `GodOnline()`
@@ -1356,7 +1356,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/GodKiTraining.dm
+### src/Code/PlayerMechanics/GodKiTraining.dm
 
 #### proc/GodKiRealmKillLoop
 - Signature: `GodKiRealmKillLoop()`
@@ -1407,7 +1407,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Grabbing.dm
+### src/Code/PlayerMechanics/Grabbing.dm
 
 #### mob/proc/item_count
 - Signature: `mob/proc/item_count()`
@@ -1451,10 +1451,17 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/proc/armStretchRangeTiles
+- Signature: `armStretchRangeTiles(range_pixels)`
+- Inputs: arm range in pixels.
+- Purpose: Convert legacy racial/module arm ranges to rounded tile counts for path scanning.
+- Returns: at least one tile.
+- Side effects: none expected.
+
 #### mob/proc/GetArmStretchTarget
 - Signature: `GetArmStretchTarget(grab_dist = 10)`
 - Inputs: grab_dist = 10
-- Purpose: Return Arm Stretch Target.
+- Purpose: Prefer an eligible selected mob in the forward vector cone, then search the forward and side rays.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -1466,8 +1473,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: none expected.
 
 #### mob/proc/CanExtendoGrab
-- Signature: `CanExtendoGrab(mob/m)`
-- Inputs: mob/m
+- Signature: `CanExtendoGrab(atom/movable/m)`
+- Inputs: movable mob or object.
 - Purpose: Return whether Extendo Grab.
 - Returns: boolean flag.
 - Side effects: none expected.
@@ -1480,8 +1487,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: none expected.
 
 #### mob/proc/Grab_failed
-- Signature: `Grab_failed(mob/m, list/arms, step_number=0, grab_dist=0, obj/last_arm, turf/starting_loc)`
-- Inputs: mob/m, list/arms, step_number=0, grab_dist=0, obj/last_arm, turf/starting_loc
+- Signature: `Grab_failed(atom/movable/m, list/arms, step_number=0, grab_dist=0, obj/last_arm, turf/starting_loc)`
+- Inputs: target, arm list, progress, maximum range, last segment, and starting turf.
 - Purpose: Handle grab failed.
 - Returns: none (implicit).
 - Side effects: see implementation.
@@ -1494,16 +1501,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### mob/proc/Get_next_arm_position
-- Signature: `Get_next_arm_position(obj/old_arm,mob/m)`
-- Inputs: obj/old_arm, mob/m
+- Signature: `Get_next_arm_position(obj/old_arm,atom/movable/m)`
+- Inputs: previous arm segment and movable target.
 - Purpose: Return next arm position.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
 #### mob/proc/Stretch_arm_to
-- Signature: `Stretch_arm_to(mob/m,grab_dist=10)`
-- Inputs: mob/m, grab_dist=10
-- Purpose: Handle stretch arm to.
+- Signature: `Stretch_arm_to(atom/movable/m,grab_dist=10)`
+- Inputs: movable target and pixel range.
+- Purpose: Extend and retract cached arm segments using normalized range while copying vector offsets during the pull.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1521,7 +1528,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Player Mechanics/Inventory.dm
+### src/Code/PlayerMechanics/Inventory.dm
 
 #### obj/Brain_Scrambler/New
 - Signature: `New()`
@@ -2210,8 +2217,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### mob/proc/Force_Field
-- Signature: `mob/proc/Force_Field(Icon='Force Field.dmi',C=rgb(100,200,250,120),State="")`
-- Inputs: Icon='Force Field.dmi', C=rgb(100, 200, 250, 120
+- Signature: `mob/proc/Force_Field(Icon='ForceField.dmi',C=rgb(100,200,250,120),State="")`
+- Inputs: Icon='ForceField.dmi', C=rgb(100, 200, 250, 120
 - Purpose: Handle force field.
 - Returns: none (implicit).
 - Side effects: see implementation.
@@ -3077,7 +3084,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Learn.dm
+### src/Code/PlayerMechanics/Learn.dm
 
 #### proc/Initialize_Learnable_Skills_List
 - Signature: `proc/Initialize_Learnable_Skills_List()`
@@ -3093,8 +3100,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin4/verb/Manage_Learnable_Skills
-- Signature: `mob/Admin4/verb/Manage_Learnable_Skills()`
+#### mob/Admin4/verb/manageLearnableSkills
+- Signature: `mob/Admin4/verb/manageLearnableSkills()`
 - Inputs: None
 - Purpose: Handle manage learnable skills.
 - Returns: none (implicit).
@@ -3149,7 +3156,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/OldKoSystem.dm
+### src/Code/PlayerMechanics/OldKoSystem.dm
 
 #### mob/proc/anger_chance
 - Signature: `mob/proc/anger_chance(mod=1)`
@@ -3256,7 +3263,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Ranks.dm
+### src/Code/PlayerMechanics/Ranks.dm
 
 #### mob/proc/Give_Rank
 - Signature: `mob/proc/Give_Rank(mob/A)`
@@ -3265,8 +3272,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Auto_Rank
-- Signature: `mob/Admin4/verb/Auto_Rank()`
+#### mob/Admin4/verb/autoRank
+- Signature: `mob/Admin4/verb/autoRank()`
 - Inputs: None
 - Purpose: Handle auto rank.
 - Returns: none (implicit).
@@ -3524,7 +3531,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Reincarnation.dm
+### src/Code/PlayerMechanics/Reincarnation.dm
 
 #### obj/Reincarnation/New
 - Signature: `New()`
@@ -3561,7 +3568,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Teach.dm
+### src/Code/PlayerMechanics/Teach.dm
 
 #### mob/proc/RaiseStudentPoints
 - Signature: `RaiseStudentPoints(mob/m, amount=0)`
@@ -3647,7 +3654,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-### src/Code/Player Mechanics/Train.dm
+### src/Code/PlayerMechanics/Train.dm
 
 #### mob/proc/Peebag_Gains
 - Signature: `mob/proc/Peebag_Gains(delay = 10) //delay is how often they were allowed to punch the peebag`
@@ -3656,8 +3663,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/BP_Gain_Test
-- Signature: `mob/Admin5/verb/BP_Gain_Test()`
+#### mob/Admin5/verb/bpGainTest
+- Signature: `mob/Admin5/verb/bpGainTest()`
 - Inputs: None
 - Purpose: Handle bp gain test.
 - Returns: none (implicit).
@@ -3922,7 +3929,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Voting.dm
+### src/Code/PlayerMechanics/Voting.dm
 
 #### proc/Player_Count
 - Signature: `proc/Player_Count()`
@@ -4050,10 +4057,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Player Mechanics/Zenkai.dm
+### src/Code/PlayerMechanics/Zenkai.dm
 
-#### mob/Admin5/verb/Test_Zenkai
-- Signature: `mob/Admin5/verb/Test_Zenkai(mob/m in world)`
+#### mob/Admin5/verb/testZenkai
+- Signature: `mob/Admin5/verb/testZenkai(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle test zenkai.
 - Returns: none (implicit).

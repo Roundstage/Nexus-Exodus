@@ -4,17 +4,17 @@
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 
 ## Files
-- `src/Code/Planet Specifics/HellEffects.dm`
-- `src/Code/Planet Specifics/MiningCave.dm`
-- `src/Code/Planet Specifics/PlanetVegetaFitness.dm`
-- `src/Code/Planet Specifics/Prison.dm`
-- `src/Code/Planet Specifics/Saiyan King/SaiyanArmyNPCs.dm`
-- `src/Code/Planet Specifics/Saiyan King/SaiyanKing.dm`
-- `src/Code/Planet Specifics/TimeChamber.dm`
+- `src/Code/PlanetSpecifics/HellEffects.dm`
+- `src/Code/PlanetSpecifics/MiningCave.dm`
+- `src/Code/PlanetSpecifics/PlanetVegetaFitness.dm`
+- `src/Code/PlanetSpecifics/Prison.dm`
+- `src/Code/PlanetSpecifics/SaiyanKing/SaiyanArmyNPCs.dm`
+- `src/Code/PlanetSpecifics/SaiyanKing/SaiyanKing.dm`
+- `src/Code/PlanetSpecifics/TimeChamber.dm`
 
 ## Proc Reference
 
-### src/Code/Planet Specifics/HellEffects.dm
+### src/Code/PlanetSpecifics/HellEffects.dm
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -65,8 +65,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Scare
-- Signature: `mob/Admin5/verb/Scare()`
+#### mob/Admin5/verb/scare
+- Signature: `mob/Admin5/verb/scare()`
 - Inputs: None
 - Purpose: Handle scare.
 - Returns: none (implicit).
@@ -100,7 +100,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/MiningCave.dm
+### src/Code/PlanetSpecifics/MiningCave.dm
 
 #### turf/Mining_Rock/Enter
 - Signature: `Enter(atom/A)`
@@ -123,7 +123,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/PlanetVegetaFitness.dm
+### src/Code/PlanetSpecifics/PlanetVegetaFitness.dm
 
 #### mob/proc/FreezaRunnerCowardKill
 - Signature: `FreezaRunnerCowardKill()`
@@ -188,7 +188,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Prison.dm
+### src/Code/PlanetSpecifics/Prison.dm
 
 #### proc/Prisoner_Mark
 - Signature: `proc/Prisoner_Mark()`
@@ -260,7 +260,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Saiyan King/SaiyanArmyNPCs.dm
+### src/Code/PlanetSpecifics/SaiyanKing/SaiyanArmyNPCs.dm
 
 #### proc/RandomHumanIcon
 - Signature: `RandomHumanIcon()`
@@ -290,7 +290,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/Saiyan King/SaiyanKing.dm
+### src/Code/PlanetSpecifics/SaiyanKing/SaiyanKing.dm
 
 #### proc/SpawnKingBraalThrone
 - Signature: `SpawnKingBraalThrone()`
@@ -390,7 +390,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Planet Specifics/TimeChamber.dm
+### src/Code/PlanetSpecifics/TimeChamber.dm
 
 #### proc/HBTC_Timer
 - Signature: `proc/HBTC_Timer() while(1)`

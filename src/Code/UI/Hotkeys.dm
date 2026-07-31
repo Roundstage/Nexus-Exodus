@@ -5,6 +5,7 @@ mob/proc/LoadCharacterHotkeyThing()
 		Restore_hotbar_from_IDs() //this automatically loads their hotkey backup if it hasnt been loaded already
 	else
 		Generate_starter_hotbar()
+	initializeNexusHotkeys()
 
 	//original - restore if any problems
 	/*Generate_starter_hotbar()
@@ -22,12 +23,16 @@ mob/proc
 			return
 		var/savefile/f=new("data/HotkeyBackups/[ckey]")
 		f["hotbar_ids"] >> hotbar_ids
+		f["nexus_hotkey_bindings"] >> nexus_hotkey_bindings
+		f["nexus_hotkey_version"] >> nexus_hotkey_version
 
 	Hotkey_server_backup_save()
-		if(!client || !hotbar_ids.len) return
+		if(!client) return
 		if(client.connection != "seeker") return //i think web connections and such are corrupting their hotkey file and erasing their hotkeys
 		var/savefile/f = new("data/HotkeyBackups/[ckey]")
 		f["hotbar_ids"] << hotbar_ids
+		f["nexus_hotkey_bindings"] << nexus_hotkey_bindings
+		f["nexus_hotkey_version"] << nexus_hotkey_version
 
 obj/var/tmp
 	is_for_moving
@@ -46,7 +51,7 @@ mob/proc/Add_hotbar_proxies()
 	hotbar_proxies_added = 7*/
 
 	if(!global_hotbar_proxies)
-		global_hotbar_proxies = list(new/obj/Build_Menu,new/obj/Manual_Attack,new/obj/Train,new/obj/Meditate,new/obj/Power_Up,new/obj/Power_Down,new/obj/Grab,\
+		global_hotbar_proxies = list(new/obj/Build_Menu,new/obj/Manual_Attack,new/obj/Lunge,new/obj/Train,new/obj/Meditate,new/obj/Power_Up,new/obj/Power_Down,new/obj/Grab,\
 		new/obj/Local_chat,new/obj/World_chat,new/obj/Emote,new/obj/Countdown,new/obj/Learn,new/obj/Teach,new/obj/Injure,\
 		new/obj/Lethal_toggle,new/obj/Dig_for_resources,new/obj/Use_object,new/obj/Play_Music,new/obj/Block,new/obj/Evade,new/obj/Flash_Step, \
 		new/obj/Move_Left, new/obj/Move_Right, new/obj/Move_Up, new/obj/Move_Down, new/obj/Defend, new/obj/Dice_Roll, new/obj/Local_World_chat, new/obj/Think)
@@ -298,6 +303,21 @@ obj/Manual_Attack
 		set hidden=1
 		usr.Melee()
 
+obj/Lunge
+	can_hotbar=1
+	hotbar_type="Melee"
+	repeat_macro=0
+
+	verb/Hotbar_use()
+		set waitfor=0
+		set hidden=1
+		usr.LungeAttack()
+
+	verb/lunge()
+		set name="Lunge"
+		set category="Skills"
+		usr.LungeAttack()
+
 obj/Train
 	hotbar_type="Training method"
 	can_hotbar=1
@@ -362,20 +382,19 @@ var/list/hotbar_type_icons
 
 mob/proc/Get_hotbar_obj_by_key_pressed(kp)
 	//if(key=="Tens of DU") src<<"Get_hotbar_obj_by_key_pressed"
-	var/index=0
-	for(var/k in keys)
-		index++
-		if(k==kp) break
+	var/index = keys.Find(kp)
+	if(!index) return
 	if(hotbar.len<index) return
 	var/obj/o=hotbar[index]
 	return o
 
 mob/proc/Get_hotbar_ability_key(obj/o)
 	//if(key=="Tens of DU") src<<"Get_hotbar_ability_key"
-	var/index=0
-	for(var/o2 in hotbar)
-		index++
-		if(isobj(o2)&&o2==o) break
+	if(active_nexus_hotkey_actions)
+		for(var/held_key in active_nexus_hotkey_actions)
+			if(active_nexus_hotkey_actions[held_key] == o) return held_key
+	var/index = hotbar.Find(o)
+	if(!index) return
 	if(keys.len<index) return
 	return keys[index]
 
@@ -391,19 +410,19 @@ proc/Generate_hotbar_type_icons()
 		var/obj/hotbar_type_icon/o=new
 		o.name=t
 		switch(t)
-			if("Empty") o.icon='Empty hotbar icon.dmi'
-			if("Melee") o.icon='melee.jpg'
-			if("Blast") o.icon='blast.jpg'
-			if("Beam") o.icon='beam.jpg'
-			if("Buff") o.icon='buff.jpg'
-			if("Defensive") o.icon='defensive.jpg'
-			if("Support") o.icon='support.jpg'
-			if("Other") o.icon='other.jpg'
-			if("Ability") o.icon='ability.jpg'
-			if("Transformation") o.icon='transformation.jpg'
-			if("Combat item") o.icon='combat item.jpg'
-			if("Training method") o.icon='training.png'
-			if("Item") o.icon='item.jpg'
+			if("Empty") o.icon='EmptyHotbarIcon.dmi'
+			if("Melee") o.icon='Melee.jpg'
+			if("Blast") o.icon='Blast.jpg'
+			if("Beam") o.icon='Beam.jpg'
+			if("Buff") o.icon='Buff.jpg'
+			if("Defensive") o.icon='Defensive.jpg'
+			if("Support") o.icon='Support.jpg'
+			if("Other") o.icon='Other.jpg'
+			if("Ability") o.icon='Ability.jpg'
+			if("Transformation") o.icon='Transformation.jpg'
+			if("Combat item") o.icon='CombatItem.jpg'
+			if("Training method") o.icon='Training.png'
+			if("Item") o.icon='Item.jpg'
 		hotbar_type_icons+=o
 
 proc/GridPosToListPos(gp)
@@ -502,6 +521,7 @@ mob/verb/Delete_hotbar()
 	hotbar=new/list
 	hotbar_ids=new/list
 	Refresh_hotbar_grids()
+	initializeNexusHotkeys()
 
 mob/var/starter_hotbar_generated
 
@@ -601,6 +621,7 @@ mob/proc/Restore_hotbar_from_IDs()
 				break
 
 	Refresh_hotbar_grids()
+	initializeNexusHotkeys()
 
 mob/proc/Refresh_hotbar_grids()
 	//if(key=="Tens of DU") src<<"Refresh_hotbar_grids"
@@ -651,43 +672,43 @@ proc/Get_hotbar_letter_obj(k)
 
 proc/Get_hotbar_letter_icon(k)
 	switch(k)
-		if("Space") return 'Spacebar hotbar icon.jpg'
-		if("0") return '0 hotbar icon.jpg'
-		if("1") return '1 hotbar icon.jpg'
-		if("2") return '2 hotbar icon.jpg'
-		if("3") return '3 hotbar icon.jpg'
-		if("4") return '4 hotbar icon.jpg'
-		if("5") return '5 hotbar icon.jpg'
-		if("6") return '6 hotbar icon.jpg'
-		if("7") return '7 hotbar icon.jpg'
-		if("8") return '8 hotbar icon.jpg'
-		if("9") return '9 hotbar icon.jpg'
-		if("A") return 'A hotbar icon.jpg'
-		if("B") return 'B hotbar icon.jpg'
-		if("C") return 'C hotbar icon.jpg'
-		if("D") return 'D hotbar icon.jpg'
-		if("E") return 'E hotbar icon.jpg'
-		if("F") return 'F hotbar icon.jpg'
-		if("G") return 'G hotbar icon.jpg'
-		if("H") return 'H hotbar icon.jpg'
-		if("I") return 'I hotbar icon.jpg'
-		if("J") return 'J hotbar icon.jpg'
-		if("K") return 'K hotbar icon.jpg'
-		if("L") return 'L hotbar icon.jpg'
-		if("M") return 'M hotbar icon.jpg'
-		if("N") return 'N hotbar icon.jpg'
-		if("O") return 'O hotbar icon.jpg'
-		if("P") return 'P hotbar icon.jpg'
-		if("Q") return 'Q hotbar icon.jpg'
-		if("R") return 'R hotbar icon.jpg'
-		if("S") return 'S hotbar icon.jpg'
-		if("T") return 'T hotbar icon.jpg'
-		if("U") return 'U hotbar icon.jpg'
-		if("V") return 'V hotbar icon.jpg'
-		if("W") return 'W hotbar icon.jpg'
-		if("X") return 'X hotbar icon.jpg'
-		if("Y") return 'Y hotbar icon.jpg'
-		if("Z") return 'Z hotbar icon.jpg'
+		if("Space") return 'SpacebarHotbarIcon.jpg'
+		if("0") return 'Asset0HotbarIcon.jpg'
+		if("1") return 'Asset1HotbarIcon.jpg'
+		if("2") return 'Asset2HotbarIcon.jpg'
+		if("3") return 'Asset3HotbarIcon.jpg'
+		if("4") return 'Asset4HotbarIcon.jpg'
+		if("5") return 'Asset5HotbarIcon.jpg'
+		if("6") return 'Asset6HotbarIcon.jpg'
+		if("7") return 'Asset7HotbarIcon.jpg'
+		if("8") return 'Asset8HotbarIcon.jpg'
+		if("9") return 'Asset9HotbarIcon.jpg'
+		if("A") return 'AHotbarIcon.jpg'
+		if("B") return 'BHotbarIcon.jpg'
+		if("C") return 'CHotbarIcon.jpg'
+		if("D") return 'DHotbarIcon.jpg'
+		if("E") return 'EHotbarIcon.jpg'
+		if("F") return 'FHotbarIcon.jpg'
+		if("G") return 'GHotbarIcon.jpg'
+		if("H") return 'HHotbarIcon.jpg'
+		if("I") return 'IHotbarIcon.jpg'
+		if("J") return 'JHotbarIcon.jpg'
+		if("K") return 'KHotbarIcon.jpg'
+		if("L") return 'LHotbarIcon.jpg'
+		if("M") return 'MHotbarIcon.jpg'
+		if("N") return 'NHotbarIcon.jpg'
+		if("O") return 'OHotbarIcon.jpg'
+		if("P") return 'PHotbarIcon.jpg'
+		if("Q") return 'QHotbarIcon.jpg'
+		if("R") return 'RHotbarIcon.jpg'
+		if("S") return 'SHotbarIcon.jpg'
+		if("T") return 'THotbarIcon.jpg'
+		if("U") return 'UHotbarIcon.jpg'
+		if("V") return 'VHotbarIcon.jpg'
+		if("W") return 'WHotbarIcon.jpg'
+		if("X") return 'XHotbarIcon.jpg'
+		if("Y") return 'YHotbarIcon.jpg'
+		if("Z") return 'ZHotbarIcon.jpg'
 
 mob/proc/Refresh_hotbar_key_grid()
 	//if(key=="Tens of DU") src<<"Refresh_hotbar_key_grid"
@@ -735,26 +756,16 @@ proc/Sort_hotbar_objects(list/original_list)
 
 mob/verb/Show_hotbar_grid()
 	set hidden=1
-	//if(key=="Tens of DU") src<<"Show_hotbar_grid"
-	if(!client) return
-	Remove_Duplicate_Moves()
-	winset(src,"hotbar","is-visible=true")
-	Restore_hotbar_from_IDs()
-	Refresh_hotbar_grids()
+	showNexusHotkeyEditor()
 
 mob/verb/Hide_hotbar_grid()
 	set hidden=1
 	set name=".Hide_hotbar_grid"
-	//if(key=="Tens of DU") src<<"Hide_hotbar_grid"
-	if(!client) return
-	winset(src,"hotbar.ability_grid","cells=0x0") //clear the grid
-	winset(src,"hotbar.key_grid","cells=0x0")
-	winset(src,"hotbar","is-visible=false")
-	save_player_settings()
+	hideNexusHotkeyEditor()
 
 mob/verb/ToggleHotbarMenu()
 	set hidden=1
-	if(winget(src,"hotbar","is-visible") == "true") Hide_hotbar_grid()
+	if(nexus_hotkey_editor_open) Hide_hotbar_grid()
 	else Show_hotbar_grid()
 
 mob/verb/ToggleAutoAttack()

@@ -5,7 +5,7 @@ mob
 			var/ckey = player.ckey
 			if(overwrite_ckey != "none")
 				ckey = overwrite_ckey
-				name = "All"
+				name = overwrite_ckey == "all" ? "All" : overwrite_ckey
 
 			var/View={"
 				<html>
@@ -66,18 +66,6 @@ mob
 			set name="View own Chatlog"
 
 			ViewEmoteWindow(src, M, M.unwritten_chatlogs, "Chatlog", "ChatLogs", M.ckey)
-mob/Admin1
-	verb
-		ViewRPWindow(mob/M in players)
-			set category="Admin"
-			set name="View Player RP Window"
-			ViewEmoteWindow(src, M, M.unwritten_emotelogs, "Emote", "emotelogs")
-			
-		ViewDevelopmentRPWindow(mob/M in players)
-			set category="Admin"
-			set name="View Player Development RP Window"
-
-			ViewEmoteWindow(src, M, M.unwritten_emotelogs, "Development Emote", "emotelogs_dev")
 mob
 	proc
 		PostEmoteRPWindow(text as text, key)

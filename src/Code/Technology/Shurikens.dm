@@ -101,7 +101,7 @@ obj/items/Shuriken
 			if(Explosive) delay *= 2 //exploding shuris are just in general too OP
 			spawn(delay) if(usr) usr.attacking=0
 			if(!Shurikens) usr<<"You are out of shurikens. Right click them and hit upgrade to add more"
-			player_view(10,usr)<<sound('swordhit.ogg',volume=30)
+			player_view(10,usr)<<sound('Swordhit.ogg',volume=30)
 			var/obj/Blast/A=get_cached_blast()
 			A.Is_Ki=0
 			A.Distance=35
@@ -110,7 +110,7 @@ obj/items/Shuriken
 			A.Owner=usr
 			var/dmg = 7
 			if(Explosive) dmg *= explosion_dmg_mult
-			A.setStats(usr, Percent = 7, Off_Mult = 1.02, Explosion = Explosive * 2, bullet=1)
+			A.setStats(usr, Percent = 7, Off_Mult = 1.02, Explosion = Explosive * 2, bullet = 1, explosion_percent = Explosive ? 3.5 : 0)
 			A.from_attack=src
 			A.Force/=usr.sword_mult()
 			A.Bullet=1

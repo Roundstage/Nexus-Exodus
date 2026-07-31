@@ -278,10 +278,11 @@ mob/proc
 		/*for(var/obj/God_Fist/k in src) if(k.Using)
 			src<<"Buffs can not be combined with God_Fist"
 			return*/
-		for(var/obj/Limit_Breaker/lb in src) if(lb.Using)
+		if(limit_breaker_on)
 			src<<"Buffs can not be combined with Limit breaker"
 			return
 
+		if("transformation" in O.buff_attributes) preparePrimaryTransformation("alien_transform")
 		for(var/obj/Buff/B in src) Buff_Disable(B)
 		O.suffix="Active"
 		if(O.trans_graphics&&world.realtime-O.last_trans>2*600) spawn if(src)
@@ -338,6 +339,7 @@ mob/proc
 		src << "<font color=cyan>You have activated [O]"
 		if(O.name == initial(O.name)) src << "<font color=cyan>But it appears you have not set it up yet. To customize a custom buff use the Buff Options \
 		command found in the Other tab"
+		if("transformation" in O.buff_attributes) syncActivePrimaryTransformation("custom transformation")
 
 
 	Rebuff_timer_countdown()
@@ -350,6 +352,7 @@ mob/proc
 			else sleep(10)
 
 	Buff_Disable(obj/Buff/O) if(O&&O.suffix)
+		var/was_transformation = ("transformation" in O.buff_attributes)
 		O.suffix=null
 
 		if(O.buff_hair)
@@ -389,6 +392,7 @@ mob/proc
 		src << "<font color=[rgb(0,255,0)]>You have deactivated [O]"
 
 		current_buff=null
+		if(was_transformation) syncActivePrimaryTransformation("custom transformation revert")
 
 mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin
 	set name = ".buff_point"

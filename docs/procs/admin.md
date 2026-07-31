@@ -12,8 +12,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Admin/Admin.dm
 
-#### mob/Admin4/verb/Toggle_Admin_Inf_Knowledge_For_Self
-- Signature: `mob/Admin4/verb/Toggle_Admin_Inf_Knowledge_For_Self()`
+#### mob/Admin4/verb/toggleAdminInfKnowledgeForSelf
+- Signature: `mob/Admin4/verb/toggleAdminInfKnowledgeForSelf()`
 - Inputs: None
 - Purpose: Toggle Admin Inf Knowledge For Self.
 - Returns: none (implicit).
@@ -82,8 +82,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Show_Ships
-- Signature: `mob/Admin5/verb/Show_Ships()`
+#### mob/Admin5/verb/showShips
+- Signature: `mob/Admin5/verb/showShips()`
 - Inputs: None
 - Purpose: Handle show ships.
 - Returns: none (implicit).
@@ -96,8 +96,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Set_Dodging_and_Deflecting_Mode
-- Signature: `mob/Admin4/verb/Set_Dodging_and_Deflecting_Mode()`
+#### mob/Admin4/verb/setDodgingAndDeflectingMode
+- Signature: `mob/Admin4/verb/setDodgingAndDeflectingMode()`
 - Inputs: None
 - Purpose: Set Dodging and Deflecting Mode.
 - Returns: none (implicit).
@@ -110,15 +110,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin4/verb/Set_Void_Rules
-- Signature: `mob/Admin4/verb/Set_Void_Rules()`
+#### mob/Admin4/verb/setVoidRules
+- Signature: `mob/Admin4/verb/setVoidRules()`
 - Inputs: None
 - Purpose: Set Void Rules.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin3/verb/Fix_Resource_Bug
-- Signature: `mob/Admin3/verb/Fix_Resource_Bug()`
+#### mob/Admin3/verb/fixResourceBug
+- Signature: `mob/Admin3/verb/fixResourceBug()`
 - Inputs: None
 - Purpose: Handle fix resource bug.
 - Returns: none (implicit).
@@ -131,15 +131,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Destroy_Built_Objs_Of_This_Person
-- Signature: `mob/Admin3/verb/Destroy_Built_Objs_Of_This_Person(obj/t in world)`
+#### mob/Admin3/verb/destroyBuiltObjsOfThisPerson
+- Signature: `mob/Admin3/verb/destroyBuiltObjsOfThisPerson(obj/t in world)`
 - Inputs: obj/t in world
 - Purpose: Handle destroy built objs of this person.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Destroy_Turfs_Of_This_Person
-- Signature: `mob/Admin3/verb/Destroy_Turfs_Of_This_Person(turf/t in world)`
+#### mob/Admin3/verb/destroyTurfsOfThisPerson
+- Signature: `mob/Admin3/verb/destroyTurfsOfThisPerson(turf/t in world)`
 - Inputs: turf/t in world
 - Purpose: Handle destroy turfs of this person.
 - Returns: none (implicit).
@@ -159,8 +159,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Create_BP_Equalizer_Here
-- Signature: `mob/Admin3/verb/Create_BP_Equalizer_Here()`
+#### mob/Admin3/verb/createBpEqualizerHere
+- Signature: `mob/Admin3/verb/createBpEqualizerHere()`
 - Inputs: None
 - Purpose: Create BP Equalizer Here.
 - Returns: none (implicit).
@@ -180,8 +180,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Convert_Walls_to_New_Owner
-- Signature: `mob/Admin4/verb/Convert_Walls_to_New_Owner(turf/t in world)`
+#### mob/Admin4/verb/convertWallsToNewOwner
+- Signature: `mob/Admin4/verb/convertWallsToNewOwner(turf/t in world)`
 - Inputs: turf/t in world
 - Purpose: Handle convert walls to new owner.
 - Returns: none (implicit).
@@ -194,15 +194,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Invis_Browser
-- Signature: `mob/Admin4/verb/Invis_Browser()`
+#### mob/Admin4/verb/invisBrowser
+- Signature: `mob/Admin4/verb/invisBrowser()`
 - Inputs: None
 - Purpose: Handle invis browser.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Override_All_Spawns
-- Signature: `mob/Admin4/verb/Override_All_Spawns()`
+#### mob/Admin4/verb/overrideAllSpawns
+- Signature: `mob/Admin4/verb/overrideAllSpawns()`
 - Inputs: None
 - Purpose: Handle override all spawns.
 - Returns: none (implicit).
@@ -215,50 +215,50 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/Common_types_test
-- Signature: `mob/Admin5/verb/Common_types_test()`
+#### mob/Admin5/verb/commonTypesTest
+- Signature: `mob/Admin5/verb/commonTypesTest()`
 - Inputs: None
 - Purpose: Handle common types test.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Make_dragon_balls_active_now
-- Signature: `mob/Admin4/verb/Make_dragon_balls_active_now()`
+#### mob/Admin4/verb/makeDragonBallsActiveNow
+- Signature: `mob/Admin4/verb/makeDragonBallsActiveNow()`
 - Inputs: None
 - Purpose: Handle make dragon balls active now.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/SetDragonBallWishCooldown
-- Signature: `mob/Admin3/verb/SetDragonBallWishCooldown()`
+#### mob/Admin3/verb/setDragonBallWishCooldown
+- Signature: `mob/Admin3/verb/setDragonBallWishCooldown()`
 - Inputs: None
 - Purpose: Set Dragon Ball Wish Cooldown.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin4/verb/Zombie_info
-- Signature: `mob/Admin4/verb/Zombie_info()`
+#### mob/Admin4/verb/zombieInfo
+- Signature: `mob/Admin4/verb/zombieInfo()`
 - Inputs: None
 - Purpose: Handle zombie info.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Zombie_locs
-- Signature: `mob/Admin4/verb/Zombie_locs()`
+#### mob/Admin4/verb/zombieLocs
+- Signature: `mob/Admin4/verb/zombieLocs()`
 - Inputs: None
 - Purpose: Handle zombie locs.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Pwipe_vote_settings
-- Signature: `mob/Admin4/verb/Pwipe_vote_settings()`
+#### mob/Admin4/verb/pwipeVoteSettings
+- Signature: `mob/Admin4/verb/pwipeVoteSettings()`
 - Inputs: None
 - Purpose: Handle pwipe vote settings.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Show_relative_base_bps
-- Signature: `mob/Admin2/verb/Show_relative_base_bps()`
+#### mob/Admin2/verb/showRelativeBaseBps
+- Signature: `mob/Admin2/verb/showRelativeBaseBps()`
 - Inputs: None
 - Purpose: Handle show relative base bps.
 - Returns: none (implicit).
@@ -292,22 +292,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Who_is_zombie_infected
-- Signature: `mob/Admin4/verb/Who_is_zombie_infected()`
+#### mob/Admin4/verb/whoIsZombieInfected
+- Signature: `mob/Admin4/verb/whoIsZombieInfected()`
 - Inputs: None
 - Purpose: Handle who is zombie infected.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/IPs
-- Signature: `mob/Admin3/verb/IPs()`
+#### mob/Admin3/verb/ips
+- Signature: `mob/Admin3/verb/ips()`
 - Inputs: None
 - Purpose: Handle ips.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/show_tiers
-- Signature: `mob/Admin5/verb/show_tiers()`
+#### mob/Admin5/verb/showTiers
+- Signature: `mob/Admin5/verb/showTiers()`
 - Inputs: None
 - Purpose: Handle show tiers.
 - Returns: none (implicit).
@@ -334,43 +334,43 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/where_is_everyone
-- Signature: `mob/Admin1/verb/where_is_everyone()`
+#### mob/Admin1/verb/whereIsEveryone
+- Signature: `mob/Admin1/verb/whereIsEveryone()`
 - Inputs: None
 - Purpose: Handle where is everyone.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/alt_settings
-- Signature: `mob/Admin4/verb/alt_settings()`
+#### mob/Admin4/verb/altSettings
+- Signature: `mob/Admin4/verb/altSettings()`
 - Inputs: None
 - Purpose: Handle alt settings.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/PlayerLogs
-- Signature: `mob/Admin2/verb/PlayerLogs(mob/player in players)`
+#### mob/Admin2/verb/playerLogs
+- Signature: `mob/Admin2/verb/playerLogs(mob/player in players)`
 - Inputs: mob/player in players
 - Purpose: Handle player logs.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/whos_in_safezone
-- Signature: `mob/Admin1/verb/whos_in_safezone()`
+#### mob/Admin1/verb/whosInSafezone
+- Signature: `mob/Admin1/verb/whosInSafezone()`
 - Inputs: None
 - Purpose: Handle whos in safezone.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/death_settings
-- Signature: `mob/Admin4/verb/death_settings()`
+#### mob/Admin4/verb/deathSettings
+- Signature: `mob/Admin4/verb/deathSettings()`
 - Inputs: None
 - Purpose: Handle death settings.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Add_Log_Note
-- Signature: `mob/Admin1/verb/Add_Log_Note()`
+#### mob/Admin1/verb/addLogNote
+- Signature: `mob/Admin1/verb/addLogNote()`
 - Inputs: None
 - Purpose: Add Log Note.
 - Returns: none (implicit).
@@ -383,8 +383,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Create_Safezone_Here
-- Signature: `mob/Admin2/verb/Create_Safezone_Here()`
+#### mob/Admin2/verb/createSafezoneHere
+- Signature: `mob/Admin2/verb/createSafezoneHere()`
 - Inputs: None
 - Purpose: Create Safezone Here.
 - Returns: none (implicit).
@@ -397,8 +397,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Destroy_All_of_Type
-- Signature: `mob/Admin3/verb/Destroy_All_of_Type(atom/movable/O in world)`
+#### mob/Admin3/verb/destroyAllOfType
+- Signature: `mob/Admin3/verb/destroyAllOfType(atom/movable/O in world)`
 - Inputs: atom/movable/O in world
 - Purpose: Handle destroy all of type.
 - Returns: none (implicit).
@@ -418,15 +418,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Cure_Zombie_Infection
-- Signature: `mob/Admin4/verb/Cure_Zombie_Infection()`
+#### mob/Admin4/verb/cureZombieInfection
+- Signature: `mob/Admin4/verb/cureZombieInfection()`
 - Inputs: None
 - Purpose: Handle cure zombie infection.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/See_Logins_Toggle
-- Signature: `mob/Admin1/verb/See_Logins_Toggle()`
+#### mob/Admin1/verb/seeLoginsToggle
+- Signature: `mob/Admin1/verb/seeLoginsToggle()`
 - Inputs: None
 - Purpose: Handle see logins toggle.
 - Returns: none (implicit).
@@ -446,8 +446,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Stat_Info
-- Signature: `mob/Admin4/verb/Stat_Info()`
+#### mob/Admin4/verb/statInfo
+- Signature: `mob/Admin4/verb/statInfo()`
 - Inputs: None
 - Purpose: Handle stat info.
 - Returns: none (implicit).
@@ -474,8 +474,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/RedoStatsForEveryone
-- Signature: `mob/Admin4/verb/RedoStatsForEveryone()`
+#### mob/Admin4/verb/redoStatsForEveryone
+- Signature: `mob/Admin4/verb/redoStatsForEveryone()`
 - Inputs: None
 - Purpose: Handle redo stats for everyone.
 - Returns: none (implicit).
@@ -488,15 +488,15 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Allow_Ban_Votes
-- Signature: `mob/Admin4/verb/Allow_Ban_Votes()`
+#### mob/Admin4/verb/allowBanVotes
+- Signature: `mob/Admin4/verb/allowBanVotes()`
 - Inputs: None
 - Purpose: Handle allow ban votes.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/SP_Multiplier
-- Signature: `mob/Admin4/verb/SP_Multiplier()`
+#### mob/Admin4/verb/spMultiplier
+- Signature: `mob/Admin4/verb/spMultiplier()`
 - Inputs: None
 - Purpose: Handle sp multiplier.
 - Returns: none (implicit).
@@ -509,47 +509,33 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/AllowScienceItem
-- Signature: `mob/Admin3/verb/AllowScienceItem(mob/M in world)`
+#### mob/Admin3/verb/allowScienceItem
+- Signature: `mob/Admin3/verb/allowScienceItem(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle allow science item.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/GiveScienceLevel
-- Signature: `mob/Admin3/verb/GiveScienceLevel(mob/M in world)`
+#### mob/Admin3/verb/giveScienceLevel
+- Signature: `mob/Admin3/verb/giveScienceLevel(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle give science level.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/GiveSciencePath
-- Signature: `mob/Admin3/verb/GiveSciencePath(mob/M in world)`
+#### mob/Admin3/verb/giveSciencePath
+- Signature: `mob/Admin3/verb/giveSciencePath(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle give science path.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/SetGlobalScienceTabItems
-- Signature: `mob/Admin3/verb/SetGlobalScienceTabItems()`
+#### mob/Admin3/verb/setGlobalScienceTabItems
+- Signature: `mob/Admin3/verb/setGlobalScienceTabItems()`
 - Inputs: None
 - Purpose: Set Global Science Tab Items.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
-
-#### mob/verb/View_Admin_Logs
-- Signature: `mob/verb/View_Admin_Logs()`
-- Inputs: None
-- Purpose: Handle view admin logs.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/verb/View_All_Admin_Logs
-- Signature: `mob/verb/View_All_Admin_Logs()`
-- Inputs: None
-- Purpose: Handle view all admin logs.
-- Returns: none (implicit).
-- Side effects: see implementation.
 
 #### mob/proc/Illegal_Science
 - Signature: `mob/proc/Illegal_Science()`
@@ -558,8 +544,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Count
-- Signature: `mob/Admin4/verb/Count(obj/A in view(src))`
+#### mob/Admin4/verb/count
+- Signature: `mob/Admin4/verb/count(obj/A in view(src))`
 - Inputs: obj/A in view(src
 - Purpose: Handle count.
 - Returns: none (implicit).
@@ -572,22 +558,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Meteors
-- Signature: `mob/Admin4/verb/Meteors()`
+#### mob/Admin4/verb/meteors
+- Signature: `mob/Admin4/verb/meteors()`
 - Inputs: None
 - Purpose: Handle meteors.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Bodies
-- Signature: `mob/Admin2/verb/Bodies()`
+#### mob/Admin2/verb/bodies
+- Signature: `mob/Admin2/verb/bodies()`
 - Inputs: None
 - Purpose: Handle bodies.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/AdminAutoAttack
-- Signature: `mob/Admin4/verb/AdminAutoAttack(mob/P in world)`
+#### mob/Admin4/verb/adminAutoAttack
+- Signature: `mob/Admin4/verb/adminAutoAttack(mob/P in world)`
 - Inputs: mob/P in world
 - Purpose: Handle admin auto attack.
 - Returns: none (implicit).
@@ -603,7 +589,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### verb/Auto_Attack
 - Signature: `verb/Auto_Attack()`
 - Inputs: None
-- Purpose: Handle auto attack.
+- Purpose: Repeatedly melee only the explicitly selected target while it remains in range.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -621,8 +607,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-#### mob/Admin5/verb/Get_Icon
-- Signature: `mob/Admin5/verb/Get_Icon(atom/A in Get_Icon_List())`
+#### mob/Admin5/verb/getIcon
+- Signature: `mob/Admin5/verb/getIcon(atom/A in Get_Icon_List())`
 - Inputs: atom/A in Get_Icon_List(
 - Purpose: Return Icon.
 - Returns: computed value (see implementation).
@@ -642,22 +628,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin4/verb/Purge_Old_Saves
-- Signature: `mob/Admin4/verb/Purge_Old_Saves()`
+#### mob/Admin4/verb/purgeOldSaves
+- Signature: `mob/Admin4/verb/purgeOldSaves()`
 - Inputs: None
 - Purpose: Handle purge old saves.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Enlarge
-- Signature: `mob/Admin3/verb/Enlarge(atom/A as mob|obj in world)`
+#### mob/Admin3/verb/enlarge
+- Signature: `mob/Admin3/verb/enlarge(atom/A as mob|obj in world)`
 - Inputs: atom/A as mob|obj in world
 - Purpose: Handle enlarge.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/ChangeTransformSize
-- Signature: `mob/Admin3/verb/ChangeTransformSize(atom/a as mob|obj in world)`
+#### mob/Admin3/verb/changeTransformSize
+- Signature: `mob/Admin3/verb/changeTransformSize(atom/a as mob|obj in world)`
 - Inputs: atom/a as mob|obj in world
 - Purpose: Handle change transform size.
 - Returns: none (implicit).
@@ -684,29 +670,29 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Delete_File
-- Signature: `mob/Admin5/verb/Delete_File()`
+#### mob/Admin5/verb/deleteFile
+- Signature: `mob/Admin5/verb/deleteFile()`
 - Inputs: None
 - Purpose: Delete File.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin5/verb/GetFiles
-- Signature: `mob/Admin5/verb/GetFiles()`
+#### mob/Admin5/verb/getFiles
+- Signature: `mob/Admin5/verb/getFiles()`
 - Inputs: None
 - Purpose: Return Files.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
-#### mob/Admin4/verb/Hardboot
-- Signature: `mob/Admin4/verb/Hardboot()`
+#### mob/Admin4/verb/hardboot
+- Signature: `mob/Admin4/verb/hardboot()`
 - Inputs: None
 - Purpose: Handle hardboot.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Delete_Player_Save
-- Signature: `mob/Admin3/verb/Delete_Player_Save(mob/A in players)`
+#### mob/Admin3/verb/deletePlayerSave
+- Signature: `mob/Admin3/verb/deletePlayerSave(mob/A in players)`
 - Inputs: mob/A in players
 - Purpose: Delete Player Save.
 - Returns: none (implicit).
@@ -726,8 +712,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/SendToSpawn
-- Signature: `mob/Admin1/verb/SendToSpawn(mob/A in players)`
+#### mob/Admin1/verb/sendToSpawn
+- Signature: `mob/Admin1/verb/sendToSpawn(mob/A in players)`
 - Inputs: mob/A in players
 - Purpose: Handle send to spawn.
 - Returns: none (implicit).
@@ -747,57 +733,57 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Rename
-- Signature: `mob/Admin1/verb/Rename(atom/A in Rename_List())`
+#### mob/Admin1/verb/rename
+- Signature: `mob/Admin1/verb/rename(atom/A in Rename_List())`
 - Inputs: atom/A in Rename_List(
 - Purpose: Handle rename.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Reward
-- Signature: `mob/Admin2/verb/Reward(mob/A in players)`
+#### mob/Admin2/verb/reward
+- Signature: `mob/Admin2/verb/reward(mob/A in players)`
 - Inputs: mob/A in players
 - Purpose: Handle reward.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Map_Save
-- Signature: `mob/Admin3/verb/Map_Save()`
+#### mob/Admin3/verb/mapSaveCommand
+- Signature: `mob/Admin3/verb/mapSaveCommand()`
 - Inputs: None
 - Purpose: Handle map save.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Save_Items
-- Signature: `mob/Admin3/verb/Save_Items()`
+#### mob/Admin3/verb/saveItemsCommand
+- Signature: `mob/Admin3/verb/saveItemsCommand()`
 - Inputs: None
 - Purpose: Save Items.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/Objects
-- Signature: `mob/Admin2/verb/Objects()`
+#### mob/Admin2/verb/objects
+- Signature: `mob/Admin2/verb/objects()`
 - Inputs: None
 - Purpose: Handle objects.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Warper
-- Signature: `mob/Admin3/verb/Warper()`
+#### mob/Admin3/verb/warper
+- Signature: `mob/Admin3/verb/warper()`
 - Inputs: None
 - Purpose: Handle warper.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Pwipe_Settings
-- Signature: `mob/Admin4/verb/Pwipe_Settings()`
+#### mob/Admin4/verb/pwipeSettings
+- Signature: `mob/Admin4/verb/pwipeSettings()`
 - Inputs: None
 - Purpose: Handle pwipe settings.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Pwipe
-- Signature: `mob/Admin4/verb/Pwipe()`
+#### mob/Admin4/verb/pwipe
+- Signature: `mob/Admin4/verb/pwipe()`
 - Inputs: None
 - Purpose: Handle pwipe.
 - Returns: none (implicit).
@@ -817,22 +803,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/AFKBoot
-- Signature: `mob/Admin3/verb/AFKBoot()`
+#### mob/Admin3/verb/afkBoot
+- Signature: `mob/Admin3/verb/afkBoot()`
 - Inputs: None
 - Purpose: Handle afkboot.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Kill
-- Signature: `mob/Admin1/verb/Kill(mob/A in world)`
+#### mob/Admin1/verb/kill
+- Signature: `mob/Admin1/verb/kill(mob/A in world)`
 - Inputs: mob/A in world
 - Purpose: Handle kill.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Errors
-- Signature: `mob/Admin4/verb/Errors()`
+#### mob/Admin4/verb/errors
+- Signature: `mob/Admin4/verb/errors()`
 - Inputs: None
 - Purpose: Handle errors.
 - Returns: none (implicit).
@@ -845,8 +831,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Update
-- Signature: `mob/Admin4/verb/Update()//(var/F as file)`
+#### mob/Admin4/verb/update
+- Signature: `mob/Admin4/verb/update()//(var/F as file)`
 - Inputs: None
 - Purpose: Handle update.
 - Returns: none (implicit).
@@ -880,8 +866,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/RemoveOverlays
-- Signature: `mob/Admin1/verb/RemoveOverlays(atom/A in Admin_Overlays_List())`
+#### mob/Admin1/verb/removeOverlays
+- Signature: `mob/Admin1/verb/removeOverlays(atom/A in Admin_Overlays_List())`
 - Inputs: atom/A in Admin_Overlays_List(
 - Purpose: Remove Overlays.
 - Returns: none (implicit).
@@ -894,8 +880,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/PlayFile
-- Signature: `mob/Admin4/verb/PlayFile(S as file)`
+#### mob/Admin4/verb/playFile
+- Signature: `mob/Admin4/verb/playFile(S as file)`
 - Inputs: S as file
 - Purpose: Handle play file.
 - Returns: none (implicit).
@@ -908,43 +894,43 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Display_Player_Ages
-- Signature: `mob/Admin1/verb/Display_Player_Ages()`
+#### mob/Admin1/verb/displayPlayerAges
+- Signature: `mob/Admin1/verb/displayPlayerAges()`
 - Inputs: None
 - Purpose: Handle display player ages.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Replace
-- Signature: `mob/Admin4/verb/Replace(atom/A as turf|obj in view(10))`
+#### mob/Admin4/verb/replace
+- Signature: `mob/Admin4/verb/replace(atom/A as turf|obj in view(10))`
 - Inputs: atom/A as turf|obj in view(10
 - Purpose: Handle replace.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/GiveItem
-- Signature: `mob/Admin2/verb/GiveItem(mob/A in world, Search as text)`
+#### mob/Admin2/verb/giveItem
+- Signature: `mob/Admin2/verb/giveItem(mob/A in world, Search as text)`
 - Inputs: mob/A in world, Search as text
 - Purpose: Handle give item.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Make
-- Signature: `mob/Admin2/verb/Make(mob/A in world, Search as text)`
+#### mob/Admin2/verb/make
+- Signature: `mob/Admin2/verb/make(mob/A in world, Search as text)`
 - Inputs: mob/A in world, Search as text
 - Purpose: Handle make.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Forms
-- Signature: `mob/Admin2/verb/Forms()`
+#### mob/Admin2/verb/forms
+- Signature: `mob/Admin2/verb/forms()`
 - Inputs: None
 - Purpose: Handle forms.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Reboot
-- Signature: `mob/Admin3/verb/Reboot()`
+#### mob/Admin3/verb/reboot
+- Signature: `mob/Admin3/verb/reboot()`
 - Inputs: None
 - Purpose: Handle reboot.
 - Returns: none (implicit).
@@ -957,57 +943,57 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Shutdown
-- Signature: `mob/Admin5/verb/Shutdown()`
+#### mob/Admin5/verb/shutdownServer
+- Signature: `mob/Admin5/verb/shutdownServer()`
 - Inputs: None
 - Purpose: Handle shutdown.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Message
-- Signature: `mob/Admin1/verb/Message(msg as message)`
+#### mob/Admin1/verb/sendMessage
+- Signature: `mob/Admin1/verb/sendMessage(msg as message)`
 - Inputs: msg as message
 - Purpose: Handle message.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/ChatOn
-- Signature: `ChatOn()`
+#### mob/Admin4/verb/chatOn
+- Signature: `chatOn()`
 - Inputs: None
 - Purpose: Handle chat on.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Narrate
-- Signature: `Narrate(msg as message)`
+#### mob/Admin1/verb/narrate
+- Signature: `narrate(msg as message)`
 - Inputs: msg as message
 - Purpose: Handle narrate.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Stream_Music_to_Everyone
-- Signature: `Stream_Music_to_Everyone()`
+#### mob/Admin1/verb/streamMusicToEveryone
+- Signature: `streamMusicToEveryone()`
 - Inputs: None
 - Purpose: Handle stream music to everyone.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/StopAllSoundsGlobally
-- Signature: `StopAllSoundsGlobally()`
+#### mob/Admin1/verb/stopAllSoundsGlobally
+- Signature: `stopAllSoundsGlobally()`
 - Inputs: None
 - Purpose: Stop All Sounds Globally.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin1/verb/IP
-- Signature: `IP(mob/M in players)`
+#### mob/Admin1/verb/ip
+- Signature: `ip(mob/M in players)`
 - Inputs: mob/M in players
 - Purpose: Handle ip.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Enter_Character
-- Signature: `Enter_Character(mob/M in world)`
+#### mob/Admin3/verb/enterCharacter
+- Signature: `enterCharacter(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle enter character.
 - Returns: none (implicit).
@@ -1020,22 +1006,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/MassRevive
-- Signature: `MassRevive()`
+#### mob/Admin2/verb/massRevive
+- Signature: `massRevive()`
 - Inputs: None
 - Purpose: Handle mass revive.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/MassSummon
-- Signature: `MassSummon()`
+#### mob/Admin2/verb/massSummon
+- Signature: `massSummon()`
 - Inputs: None
 - Purpose: Handle mass summon.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/Dead
-- Signature: `mob/Admin2/verb/Dead()`
+#### mob/Admin2/verb/dead
+- Signature: `mob/Admin2/verb/dead()`
 - Inputs: None
 - Purpose: Handle dead.
 - Returns: none (implicit).
@@ -1048,50 +1034,50 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/Delete
-- Signature: `mob/Admin2/verb/Delete(Search as text)`
+#### mob/Admin2/verb/delete
+- Signature: `mob/Admin2/verb/delete(Search as text)`
 - Inputs: Search as text
 - Purpose: Handle delete.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/DeleteAtom
-- Signature: `mob/Admin2/verb/DeleteAtom(atom/Target in Delete_List(src))`
+#### mob/Admin2/verb/deleteAtom
+- Signature: `mob/Admin2/verb/deleteAtom(atom/Target in Delete_List(src))`
 - Inputs: atom/Target in Delete_List(src
 - Purpose: Delete Atom.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin1/verb/Kick
-- Signature: `mob/Admin1/verb/Kick(mob/m in world)`
+#### mob/Admin1/verb/kick
+- Signature: `mob/Admin1/verb/kick(mob/m in world)`
 - Inputs: mob/m in world
 - Purpose: Handle kick.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/XYZTeleport
-- Signature: `XYZTeleport(mob/M in world)`
+#### mob/Admin2/verb/xyzTeleport
+- Signature: `xyzTeleport(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle xyzteleport.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Give_Super_Saiyan
-- Signature: `Give_Super_Saiyan(mob/A in world)`
+#### mob/Admin3/verb/giveSuperSaiyan
+- Signature: `giveSuperSaiyan(mob/A in world)`
 - Inputs: mob/A in world
 - Purpose: Handle give super saiyan.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/AdminHeal
-- Signature: `mob/Admin1/verb/AdminHeal(mob/A in world)`
+#### mob/Admin1/verb/adminHeal
+- Signature: `mob/Admin1/verb/adminHeal(mob/A in world)`
 - Inputs: mob/A in world
 - Purpose: Handle admin heal.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/AllowOOC
-- Signature: `mob/Admin2/verb/AllowOOC()`
+#### mob/Admin2/verb/allowOOC
+- Signature: `mob/Admin2/verb/allowOOC()`
 - Inputs: None
 - Purpose: Handle allow ooc.
 - Returns: none (implicit).
@@ -1104,43 +1090,43 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Chat
-- Signature: `Chat(msg as text)`
+#### mob/Admin1/verb/chat
+- Signature: `chat(msg as text)`
 - Inputs: msg as text
 - Purpose: Handle chat.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Announce
-- Signature: `Announce(msg as message)`
+#### mob/Admin1/verb/announce
+- Signature: `announce(msg as message)`
 - Inputs: msg as message
 - Purpose: Handle announce.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/KO_Someone
-- Signature: `KO_Someone(mob/M in world)`
+#### mob/Admin1/verb/koSomeone
+- Signature: `koSomeone(mob/M in world)`
 - Inputs: mob/M in world
 - Purpose: Handle ko someone.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Admin_Revive
-- Signature: `mob/Admin1/verb/Admin_Revive(mob/M in players)`
+#### mob/Admin1/verb/adminRevive
+- Signature: `mob/Admin1/verb/adminRevive(mob/M in players)`
 - Inputs: mob/M in players
 - Purpose: Handle admin revive.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin2/verb/World_Heal
-- Signature: `mob/Admin2/verb/World_Heal()`
+#### mob/Admin2/verb/worldHeal
+- Signature: `mob/Admin2/verb/worldHeal()`
 - Inputs: None
 - Purpose: Handle world heal.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Teleport
-- Signature: `mob/Admin1/verb/Teleport(mob/M in Summon_List())`
+#### mob/Admin1/verb/teleport
+- Signature: `mob/Admin1/verb/teleport(mob/M in Summon_List())`
 - Inputs: mob/M in Summon_List(
 - Purpose: Handle teleport.
 - Returns: none (implicit).
@@ -1153,22 +1139,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Summon
-- Signature: `mob/Admin1/verb/Summon(mob/M in Summon_List())`
+#### mob/Admin1/verb/summon
+- Signature: `mob/Admin1/verb/summon(mob/M in Summon_List())`
 - Inputs: mob/M in Summon_List(
 - Purpose: Handle summon.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Mute
-- Signature: `Mute()`
+#### mob/Admin1/verb/mute
+- Signature: `mute()`
 - Inputs: None
 - Purpose: Handle mute.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/MassUnMute
-- Signature: `MassUnMute()`
+#### mob/Admin1/verb/massUnMute
+- Signature: `massUnMute()`
 - Inputs: None
 - Purpose: Handle mass un mute.
 - Returns: none (implicit).
@@ -1181,22 +1167,22 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Ban
-- Signature: `Ban(mob/P as anything in Bannables())`
+#### mob/Admin1/verb/ban
+- Signature: `ban(mob/P as anything in Bannables())`
 - Inputs: mob/P as anything in Bannables(
 - Purpose: Handle ban.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin1/verb/Manual_Ban
-- Signature: `mob/Admin1/verb/Manual_Ban()`
+#### mob/Admin1/verb/manualBan
+- Signature: `mob/Admin1/verb/manualBan()`
 - Inputs: None
 - Purpose: Handle manual ban.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Set_Max_Ban_Time
-- Signature: `mob/Admin5/verb/Set_Max_Ban_Time()`
+#### mob/Admin5/verb/setMaxBanTime
+- Signature: `mob/Admin5/verb/setMaxBanTime()`
 - Inputs: None
 - Purpose: Set Max Ban Time.
 - Returns: none (implicit).
@@ -1216,8 +1202,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/MassKO
-- Signature: `mob/Admin3/verb/MassKO()`
+#### mob/Admin3/verb/massKo
+- Signature: `mob/Admin3/verb/massKo()`
 - Inputs: None
 - Purpose: Handle mass ko.
 - Returns: none (implicit).
@@ -1230,8 +1216,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin3/verb/Edit
-- Signature: `mob/Admin3/verb/Edit(atom/a in world)`
+#### mob/Admin3/verb/edit
+- Signature: `mob/Admin3/verb/edit(atom/a in world)`
 - Inputs: atom/a in world
 - Purpose: Handle edit.
 - Returns: none (implicit).
@@ -1272,8 +1258,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Brix
-- Signature: `mob/Admin5/verb/Brix(mob/A in world)`
+#### mob/Admin5/verb/brix
+- Signature: `mob/Admin5/verb/brix(mob/A in world)`
 - Inputs: mob/A in world
 - Purpose: Handle brix.
 - Returns: none (implicit).
@@ -1293,8 +1279,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin5/verb/Max_Swarms
-- Signature: `mob/Admin5/verb/Max_Swarms()`
+#### mob/Admin5/verb/maxSwarms
+- Signature: `mob/Admin5/verb/maxSwarms()`
 - Inputs: None
 - Purpose: Handle max swarms.
 - Returns: none (implicit).
@@ -1393,8 +1379,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/Server_Control_Panel
-- Signature: `mob/Admin4/verb/Server_Control_Panel()`
+#### mob/Admin4/verb/serverControlPanel
+- Signature: `mob/Admin4/verb/serverControlPanel()`
 - Inputs: None
 - Purpose: Handle server control panel.
 - Returns: none (implicit).
@@ -1794,22 +1780,50 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/Admin/AdminVerbs.dm
 
-#### mob/Admin4/verb/Load_External_Map_File
-- Signature: `mob/Admin4/verb/Load_External_Map_File()`
+#### mob/Admin4/verb/loadExternalMapFile
+- Signature: `mob/Admin4/verb/loadExternalMapFile()`
 - Inputs: None
 - Purpose: Load External Map File.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/Admin2/verb/Bug_Logs
-- Signature: `mob/Admin2/verb/Bug_Logs()`
+#### mob/Admin2/verb/bugLogs
+- Signature: `mob/Admin2/verb/bugLogs()`
 - Inputs: None
 - Purpose: Handle bug logs.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/Admin4/verb/wipe_bounty_list
-- Signature: `wipe_bounty_list()`
+#### mob/Admin1/verb/viewRpWindow
+- Signature: `viewRpWindow(mob/M in players)`
+- Inputs: mob/M in players
+- Purpose: View a player's RP log.
+- Returns: none (implicit).
+- Side effects: reads and displays RP log files.
+
+#### mob/Admin1/verb/viewDevelopmentRpWindow
+- Signature: `viewDevelopmentRpWindow(mob/M in players)`
+- Inputs: mob/M in players
+- Purpose: View a player's development RP log.
+- Returns: none (implicit).
+- Side effects: reads and displays development RP log files.
+
+#### mob/Admin1/verb/viewAdminLogs
+- Signature: `viewAdminLogs()`
+- Inputs: None
+- Purpose: View the log for a selected administrator.
+- Returns: none (implicit).
+- Side effects: reads and displays admin log files.
+
+#### mob/Admin1/verb/viewAllAdminLogs
+- Signature: `viewAllAdminLogs()`
+- Inputs: None
+- Purpose: View the combined administrator log.
+- Returns: none (implicit).
+- Side effects: reads and displays admin log files.
+
+#### mob/Admin4/verb/wipeBountyList
+- Signature: `wipeBountyList()`
 - Inputs: None
 - Purpose: Handle wipe bounty list.
 - Returns: none (implicit).

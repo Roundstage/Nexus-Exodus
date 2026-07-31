@@ -35,10 +35,16 @@ obj/Mysterious_Portal
 		usr.Michael_Jackson_Dance()
 obj/Michael_Jackson
 	density=1
-	icon='Michael Jackson.dmi'
-mob/Admin3/verb/MJ(mob/A in players) A.Michael_Jackson_Dance()
-mob/Admin3/verb/Mass_MJ() for(var/mob/A in players) spawn A.Michael_Jackson_Dance()
-mob/Admin3/verb/MJ_Cure() for(var/mob/A in players) for(var/obj/Michael_Jackson/B in A) del(B)
+	icon='MichaelJackson.dmi'
+mob/Admin3/verb/mj(mob/A in players)
+	set name = "MJ"
+	A.Michael_Jackson_Dance()
+mob/Admin3/verb/massMj()
+	set name = "Mass MJ"
+	for(var/mob/A in players) spawn A.Michael_Jackson_Dance()
+mob/Admin3/verb/mjCure()
+	set name = "MJ Cure"
+	for(var/mob/A in players) for(var/obj/Michael_Jackson/B in A) del(B)
 mob/proc/Michael_Jackson_Dance()
 
 	for(var/obj/Michael_Jackson/mj in src) del(mj)
@@ -56,7 +62,7 @@ mob/proc/Michael_Jackson_Dance()
 		A.icon=icon
 		A.overlays=overlays
 	overlays-=overlays
-	icon='Michael Jackson.dmi'
+	icon='MichaelJackson.dmi'
 	icon_state="1"
 	for(var/mob/B in view(src)) if(!(locate(/obj/Michael_Jackson) in B)) if(!B.MJ_Immune()) B.Michael_Jackson_Dance()
 	spawn(160) if(src)
@@ -141,7 +147,7 @@ obj/MJ
 			B.Health-=5000
 			if(B.Health<=0) del(B)
 	Asteroid
-		icon='Asteroid 5 11 2013.dmi'
+		icon='Asteroid5112013.dmi'
 		Health=25000
 		New()
 			CenterIcon(src)
@@ -151,7 +157,7 @@ obj/MJ
 			Explosion_Graphics(src,2,10)
 			. = ..()
 	Meteor
-		icon='small asteroid.dmi'
+		icon='SmallAsteroid.dmi'
 		Health=5000
 		New()
 			CenterIcon(src)

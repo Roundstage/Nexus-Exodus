@@ -43,7 +43,8 @@ obj/proc/ObjectRespawn()
 var
 	outputDeletedObjects
 
-mob/Admin5/verb/Diagnose_Deleted_Objects()
+mob/Admin5/verb/diagnoseDeletedObjects()
+	set name = "Diagnose Deleted Objects"
 	set category = "Admin"
 	outputDeletedObjects = !outputDeletedObjects
 	if(outputDeletedObjects)
@@ -593,7 +594,7 @@ turf/Jagged_edge_fillers
 	Buildable=0
 	auto_gen_eligible = 0
 	Wall18
-		icon='JEF cliff.dmi'
+		icon='JefCliff.dmi'
 		density=1
 		_1
 			icon_state="NE"
@@ -604,7 +605,7 @@ turf/Jagged_edge_fillers
 		_4
 			icon_state="SE"
 	Grass10
-		icon='JEF green grass.dmi'
+		icon='JefGreenGrass.dmi'
 		Grass10_1
 			icon_state="NE"
 		Grass10_2
@@ -672,10 +673,7 @@ mob/proc
 		return 1
 
 	Get_flash_step_target(mob/m)
-		if(Is_valid_flash_step_target(m)) return m
-		m=flash_step_mob
-		if(Is_valid_flash_step_target(m)) return m
-		m=Manually_find_flash_step_target()
+		m = getSelectedTarget(m, max_dist = 50)
 		if(Is_valid_flash_step_target(m)) return m
 
 	Is_valid_flash_step_target(mob/m)
@@ -690,17 +688,17 @@ mob/proc
 			return 1
 
 	Manually_find_flash_step_target()
-		for(var/mob/m in players) if(Is_valid_flash_step_target(m)) return m
+		var/mob/m = getSelectedTarget(max_dist = 22)
+		if(Is_valid_flash_step_target(m)) return m
 
 	Get_flash_step_delay()
 		var/n=TickMult(Speed_delay_mult(severity=0.5) * 2.5)
 		return n
 
 	Flash_Step()
-		var/stam_drain = 10
+		var/stam_drain = tapwarp_stam_drain
 		if(!Can_flash_step() || stamina < stam_drain) return
-		//if(stamina < stam_drain) return
-		if(!zanzoken_obj)
+		if(!getZanzokenSkill())
 			src<<"This ability requires zanzoken"
 			return
 
@@ -711,18 +709,13 @@ mob/proc
 		flash_step_mob=LungeTarget()
 		if(!flash_step_mob) return
 
-		var/turf/t = get_step(flash_step_mob,dir)
-		if(!t || t.density) return
-		for(var/obj/o in t) if(o.density) return
-
-		var/zz=1
-		if(God_Fist_obj && God_Fist_obj.Using) zz*=0.5
-
+		var/turf/old_loc = loc
+		if(!TapWarpToMob(flash_step_mob)) return
 		AddStamina(-stam_drain)
-
-		player_view(15,src)<<sound('teleport.ogg',volume=15)
+		last_tap_warp = world.time
+		AfterImage(50, loc_override = old_loc)
+		player_view(15,src)<<sound('Teleport.ogg',volume=15)
 		flick('Zanzoken.dmi',src)
-		SafeTeleport(t)
 		dir=get_dir(src,flash_step_mob)
 		var/defend_chance=66 * (flash_step_mob.Def / Def)
 		if(prob(defend_chance)) flash_step_mob.dir=get_dir(flash_step_mob,src)
@@ -749,7 +742,8 @@ mob/proc
 						src<<"icon = [i.icon]. state = [i.icon_state]"
 					alert("[a] has [a.underlays.len] underlays")
 
-mob/Admin5/verb/test_overlays()
+mob/Admin5/verb/testOverlays()
+	set name = "test overlays"
 	switch(input("what kind of test?") in list("basic","detailed"))
 		if("basic")
 			for(var/atom/a)
@@ -815,7 +809,7 @@ mob/proc/Get_blast_homing_chance(mod = 1)
 
 obj/beam_redirector //when beams are deflected this object is placed down at the spot where it was
 //deflected, and the beam uses the object's dir to know which way it should then go
-	icon='beam axis.dmi'
+	icon='BeamAxis.dmi'
 	Grabbable=0
 	Savable=0
 	layer=7
@@ -839,7 +833,8 @@ obj/beam_redirector //when beams are deflected this object is placed down at the
 			sleep(2)
 
 mob/Admin5/verb
-	Diagnose_Effect_Icons()
+	diagnoseEffectIcons()
+		set name = "Diagnose Effect Icons"
 		set category = "Admin"
 		var/list/l = new
 		var/noIcon = 0
@@ -946,7 +941,7 @@ proc/Initialize_explosion_icons()
 	if(explosion_icons) return
 	explosion_icons=new/list
 	for(var/v in 1 to 5)
-		var/icon/i='Explosion1 2013.dmi'
+		var/icon/i='Explosion12013.dmi'
 		var/size = 1.3
 		i=Scaled_Icon(i, GetWidth(i) * (1.5 ** v) * size, GetHeight(i) * (1.5 ** v) * size)
 		explosion_icons+=i
@@ -978,7 +973,7 @@ turf/proc/Make_Damaged_Ground(Amount=1) if(!Water)
 	if(O>=1) return
 	while(Amount)
 		Amount-=1
-		var/image/I=image(icon='crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
+		var/image/I=image(icon='Crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
 		overlays+=I
 		Remove_Damaged_Ground(I)
 

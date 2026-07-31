@@ -1,20 +1,9 @@
 //this means having really high speed decreases the damage you do per hit
 mob/proc/GetSpeedDamageDecrease()
-
-	//return 1 //disabled for now
-
-	var/n = 1
-	//n *= Speed_delay_mult(severity=melee_delay_severity) //if we did this the damage would be increased directly proportionate to how much it slows you down
-	//which would make you do exactly the same DPS no matter how fast or slow you are. just an example
-	n += (Speed_delay_mult(severity = melee_delay_severity) - 1) * lowSpeedDmgAdd
-
-	//set the mult back to 1 if you arent attacking anywhere near your full speed because this means you and your enemy are running around
-	//which negates any up close speed advantage so we shouldnt apply a damage debuff based on speed in this scenario because enough time
-	//has passed in between that you can be delivering power punches again since you are flurrying super fast at the enemy right now
-	//if(world.time - last_melee_attack >= Get_melee_delay() * 3) n = 1
-		//nevermind now that low speed masively slows down move rate, thats enough downside
-
-	return n
+	var/baseline_delay = 3.04
+	var/current_delay = max(Speed_delay_mult(severity = melee_delay_severity), 0.01)
+	var/attack_rate_ratio = baseline_delay / current_delay
+	return Clamp(attack_rate_ratio ** -0.65, 0.55, 1.35)
 
 mob/var
 	tmp
@@ -93,16 +82,13 @@ mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 	return n
 
 mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
+	var/health_before = Health
 	if(grabbedObject && strangling && GrabAbsorber()) dmg *= 1.3 //take way more damage if busy grab absorbing someone's energy
 
 	if(stun_level || Frozen)
 		dmg  *= stun_damage_mod
 
-	if(Class == "Legendary Saiyan" && lssj_always_angry) dmg *= lssjTakeDmgMult //it was 0.5 but think about their regen shaving off some dmg think of it like this
-	//they take 6% dmg per sec if taking normal dmg like anyone else but at half dmg its 3% per sec but they heal 2% per sec it becomes a difference of
-	//4% compared to 1%
-	if(Race == "Android") dmg *= android_dmg_taken_mult
-	if(jirenAlien) dmg *= jirenTakeDmgMult
+	dmg *= racialDamageTakenMult()
 
 	if(Shielding())
 		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
@@ -111,6 +97,10 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
 			return
 
 	Health -= dmg
+	if(Health < health_before)
+		var/applied_damage = health_before - Health
+		showDamageIndicator(applied_damage)
+		updateOverheadHealthHud()
 
 mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate
 	var/mob/m = grabber
@@ -184,7 +174,7 @@ obj/Lunge_Graphic
 	Savable=0
 	attackable=0
 	layer=5
-	icon='attack spark.dmi'
+	icon='AttackSpark.dmi'
 	icon_state="1"
 
 	New()
@@ -251,7 +241,7 @@ mob/proc/Lunge_toward(mob/m)
 	Fly()
 
 	for(var/v in 1 to lunge_distance)
-		if(KB || KO || !lunge_attacking || !target_loc || loc==target_loc || loc==target_loc.loc || Mob_in_front() || !viewable(src,lunge_target)) break
+		if(KB || KO || !lunge_attacking || selected_target != m || !target_loc || loc==target_loc || loc==target_loc.loc || Mob_in_front() || !viewable(src,lunge_target)) break
 		else
 			var/dir_holder = dir
 			dir = start_dir
@@ -301,7 +291,7 @@ mob/proc/Cancel_lunge()
 
 mob/proc/Do_lunge_drawback_animation()
 	set waitfor=0
-	Play_Melee_Sound(sound_range=15,origin=src,sound_file='throw.ogg',sound_volume=35)
+	Play_Melee_Sound(sound_range=15,origin=src,sound_file='Throw.ogg',sound_volume=35)
 	var/obj/Lunge_Graphic/lg=Get_lunge_drawback_graphic()
 	if(lg) lg.Lunge_go(src)
 
@@ -320,6 +310,7 @@ atom/movable/proc/At_forward_half(mob/m)
 
 mob/proc/find_melee_target(mob/O,from_auto_attack)
 	var/mob/target=O
+	if(from_auto_attack && !target) return
 	if(!target)
 		var/turf/t=Get_step(src,dir)
 		if(t&&isturf(t))
@@ -377,7 +368,7 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		dmg = base_melee_damage
 
 		if(lunge_attacking)
-			dmg *= 2.5 //compensate for the time it takes to charge up a lunge
+			dmg = 5 //compensate for the time it takes to charge up a lunge
 			//dmg += base_melee_damage * 0.1 * distance_lunged
 		else if(ultra_instinct) dmg /= 1
 
@@ -385,20 +376,10 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		//if(m.power_attacking) dmg/=2.7 //to compensate for all the free hits your going to get while theyre charging up their power attack which is far lower dps
 		dmg *= melee_power
 
-		//dmg*=(BP/m.BP)**bp_exponent
-
-		var/thing=1
-		if(BP > m.BP) thing = (BP / m.BP)**bp_exponent //FIND: BP EXPONENT
-		else thing = (BP / m.BP)**bp_exponent
-		dmg*=thing
-
-		if(ShouldOneShot(src, m) && allow_one_shot) dmg *= one_shot_dmg_mult
-
 		dmg *= AllAttacksDamageModifiers(m)
 
 		if(m.KO) dmg*=2.5
-		dmg*=Defense_damage_reduction(src,m)
-		//dmg *= GetSpeedDamageDecrease()
+		dmg *= GetSpeedDamageDecrease()
 		if(m.regenerator_obj) dmg *= regenerator_damage_mod
 
 		//drone teamer debuff system
@@ -437,16 +418,9 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 				if(FF) resist_n=Avg_Res()
 				str_mult=((swordless_str*0.5)+(Pow*0.5))/resist_n
 				dmg *= energy_sword_damage_mod
-		if(str_mult>1)
-			str_mult=str_mult**superior_strength_exponent
-			//to nerf str whores without nerfing durability
-			if(for_strangle) str_mult=str_mult**0.3
-		else str_mult=str_mult**inferior_strength_exponent
-		if(for_strangle) str_mult=Clamp(str_mult,0,strangle_str_mult_cap)
-		dmg*=str_mult
+		dmg = calculateScaledCombatDamage(dmg, BP, m.BP, str_mult, 1)
 
-		if(m.dir==dir&&!for_strangle) dmg*=hit_from_behind_dmg_mult //hit from behind
-		if(using_hokuto()) dmg*=0.3
+		if(m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
 		if(alignment=="Evil"&&alignment_on) dmg*=villain_damage_penalty
 		dmg*=sagas_bonus(src,m)
 
@@ -590,7 +564,8 @@ mob/proc/Is_wall_breaker()
 	if((stronger_people / Player_Count()) * 100 >= percent_of_wall_breakers) return
 	return 1
 
-mob/Admin5/verb/constant_max_speed()
+mob/Admin5/verb/constantMaxSpeed()
+	set name = "constant max speed"
 	const_max_speed=input("set max speed") as num
 	if(!const_max_speed_looping) const_max_speed()
 
@@ -692,7 +667,7 @@ mob/proc/get_melee_accuracy(mob/m)
 	if(!ismob(m)) return accuracy
 	else
 		if(m.evading && !lunge_attacking && !power_attacking) return 0
-		return accuracy
+		return Clamp(accuracy, 15, 95)
 
 mob/proc/get_active_shield() if(shield_obj&&shield_obj.Using) return shield_obj
 
@@ -760,10 +735,10 @@ mob/proc/get_melee_knockback_distance(mob/m)
 	return ToOne(dist)
 
 mob/proc/get_melee_sounds(knockback_dist=0)
-	var/list/l=list('weakpunch.ogg','weakkick.ogg','mediumpunch.ogg','mediumkick.ogg')
-	if(using_sword()) l=list('swordhit.ogg')
-	if(knockback_dist >= 12) l=list('strongpunch.ogg','strongkick.ogg')
-	if(hokuto_obj&&hokuto_obj.Attacking) l=list('weakpunch.ogg')
+	var/list/l=list('Weakpunch.ogg','Weakkick.ogg','Mediumpunch.ogg','Mediumkick.ogg')
+	if(using_sword()) l=list('Swordhit.ogg')
+	if(knockback_dist >= 12) l=list('Strongpunch.ogg','Strongkick.ogg')
+	if(hokuto_obj&&hokuto_obj.Attacking) l=list('Weakpunch.ogg')
 	return l
 
 mob/var/tmp/obj/items/Sword/equipped_sword
@@ -830,7 +805,7 @@ mob/proc/combo_teleport(mob/m)
 	if(t&&isturf(t)&&!t.density&&t.Enter(src)&&!(locate(/mob) in t))
 		Ki-=Zanzoken_Drain()
 		Zanzoken_Mastery(0.2)
-		player_view(7,src)<<sound('teleport.ogg',volume=10)
+		player_view(7,src)<<sound('Teleport.ogg',volume=10)
 		flick('Zanzoken.dmi',src)
 		SafeTeleport(t)
 		last_combo_teleport=world.time
@@ -947,9 +922,8 @@ mob/var/tmp/melee_code=0
 mob/proc/MeleeFollowupAttackCheck()
 	set waitfor=0
 	if(!can_melee()) return
-	var/list/targs = FindTargets(dir_angle = dir, angle_limit=50, max_dist=20, prefer_auto_target=0)
-	if(last_mob_attacked && (last_mob_attacked in targs))
-		var/mob/m = last_mob_attacked
+	var/mob/m = getSelectedTarget(last_mob_attacked, max_dist = 20)
+	if(m)
 		if(m && m != src && m.KB)
 			var/list/l = list(get_step(m, m.dir), get_step(m, turn(m.dir,45)), get_step(m, turn(m.dir,-45)), \
 				get_step(m, turn(m.dir,90)), get_step(m, turn(m.dir,-90)))
@@ -959,10 +933,10 @@ mob/proc/MeleeFollowupAttackCheck()
 				var/turf/t = pick(l)
 				if(t && isturf(t))
 					SafeTeleport(t)
-					player_view(15,src)<<sound('teleport.ogg',volume=15)
+					player_view(15,src)<<sound('Teleport.ogg',volume=15)
 					flick('Zanzoken.dmi',src)
 					dir = get_dir(src,m)
-					Melee()
+					Melee(m)
 					return 1
 
 mob/proc/LungeAttack()
@@ -991,6 +965,10 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 			if(!can_melee()) return //because the can_melee call above will let you continue with a power attack but if you made it to this block
 			//then you are actually lunging so ignore the previous can_melee args
 			Lunge_toward(target)
+			if(!target || selected_target != target)
+				Cancel_lunge()
+				Reset_melee()
+				return
 
 			//they already initiated dragon rush with you so cancel the rest of this melee attack because it causes problems
 			if(in_dragon_rush && target.in_dragon_rush)
@@ -1001,7 +979,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				lunge_attacking = 0
 				return
 
-		target = find_melee_target(O,from_auto_attack)
+		target = find_melee_target(target,from_auto_attack)
 
 	if(new_combat && (force_power_attack || (target && !lunge_attacking && same_loc_after_move && same_dir_after_move && !from_auto_attack && \
 	Trying_to_power_attack() && Can_power_attack())))
@@ -1062,7 +1040,6 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/obj/Shield/ki_shield
 	if(ismob(target)) ki_shield=target.get_active_shield()
 	var/knockback=get_melee_knockback_distance(target)
-	if(knockback) dmg*=1+(knockback/20)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()
@@ -1124,8 +1101,8 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		var/shield_drain = dmg * target.ShieldDamageReduction() * (target.max_ki/100/(target.Eff**shield_exponent))*target.Generator_reduction(is_melee=1)
 		if(target.Ki>=shield_drain)
 			target.Ki-=shield_drain
-			Play_Melee_Sound(sound_range=10,origin=target,sound_file=pick('meleemiss1.ogg',\
-			'meleemiss2.ogg','meleemiss3.ogg'),sound_volume=20)
+			Play_Melee_Sound(sound_range=10,origin=target,sound_file=pick('Meleemiss1.ogg',\
+			'Meleemiss2.ogg','Meleemiss3.ogg'),sound_volume=20)
 			if(knockback)
 				if(prob(30)) Make_Shockwave(target,sw_icon_size=pick(64,128))
 				Melee_Shockwave_Repel(target)
@@ -1155,17 +1132,16 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 
 			if(!target.isBurning)
 				target << "You are now Burning due to being hit by someone using Fire Fist!"
-
-			target.isBurning = TRUE;
+				target.isBurning = TRUE
+				target.try_applying_burn_effect()
 		if(prob(GetCriticalChance()))
-			dmg*=1.5
+			dmg*=1.25
 			knockback*=5
-			player_view(15,src) << sound('strongpunch.ogg', volume = 60)
+			player_view(15,src) << sound('Strongpunch.ogg', volume = 60)
 			player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
 		else
 			Play_Melee_Sound(sound_range=10,origin=src,sound_file=pick(sounds),sound_volume=20)
 		if(ismob(target) && Is_Darius()) target.Apply_Bleed()
-		Add_Hokuto_Shinken_Energy(target)
 		zombie_melee_infection(target)
 		if(using_sword()&&ismob(target)) target.check_lose_tail(dmg,src)
 		if(lunge_attacking) BigCrater(pos = target.base_loc(), minRangeFromOtherCraters = 3)
@@ -1247,8 +1223,8 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 
 mob/proc/MeleeAutoDodge(mob/attacker)
 	AddStamina(-DodgeStamCost(attacker))
-	Play_Melee_Sound(sound_range=10,origin = src,sound_file=pick('meleemiss1.ogg',\
-		'meleemiss2.ogg','meleemiss3.ogg'),sound_volume=20)
+	Play_Melee_Sound(sound_range=10,origin = src,sound_file=pick('Meleemiss1.ogg',\
+		'Meleemiss2.ogg','Meleemiss3.ogg'),sound_volume=20)
 	Dodge_animation()
 	dir = get_dir(src, attacker)
 

@@ -79,7 +79,7 @@ obj/Land_Mine
 			var/turf/t = loc
 			if(!t || !isturf(t)) return
 
-			player_view(20,src) << sound('Explosion 2.wav',volume=50)
+			player_view(20,src) << sound('Explosion2.wav',volume=50)
 
 			var/obj/LandMineEffect/lme = new(t)
 			flick(lme.icon_state,lme)
@@ -129,7 +129,7 @@ obj/LandMineEffect
 	Makeable=0
 	Givable=0
 	density=0
-	icon='Land Mine Explosion.dmi'
+	icon='LandMineExplosion.dmi'
 	icon_state="explosion2"
 
 	New()

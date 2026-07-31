@@ -1,0 +1,18 @@
+mob/proc/Yeet()
+	Race="Yeet"
+	Gravity_Mod=1
+	sp_mod=2
+	mastery_mod=2
+	bp_mod=Get_race_starting_bp_mod()
+	Decline=20
+	Decline_Rate=1
+	Intelligence=1
+	knowledge_cap_rate=1
+	Regenerate=1
+	Lungs=1
+	leech_rate=3
+	med_mod=2
+	zenkai_mod=1
+	base_bp=1
+	ascension_bp*=1
+	stun_resistance_mod=1.3

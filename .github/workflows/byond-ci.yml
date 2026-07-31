@@ -1,0 +1,56 @@
+name: BYOND 516
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-and-smoke:
+    runs-on: windows-2022
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Verify naming and asset references
+        shell: powershell
+        run: |
+          .\tools\Test-NamingConventions.ps1 -PathStrict
+          .\tools\Test-AssetReferences.ps1 -Strict
+
+      - name: Compile and smoke test
+        shell: powershell
+        run: >-
+          .\tools\Invoke-ByondSmoke.ps1
+          -DataMode Both
+          -StartupTimeoutSeconds 180
+          -ObservationSeconds 30
+
+      - name: Verify workspace isolation
+        shell: powershell
+        run: |
+          $changes = @(git status --porcelain=v1 --untracked-files=all)
+          if ($changes) {
+              $changes
+              throw 'The smoke test changed the workspace.'
+          }
+
+          $forbidden = @(
+              'DU.dmb',
+              'DU.rsc',
+              'DU.dyn.rsc',
+              'DU.lk',
+              'DU.rsc.lk',
+              'DU.dyn.rsc.lk',
+              'DU.int',
+              'Errors.log'
+          ) | Where-Object { Test-Path -LiteralPath $_ }
+
+          if ($forbidden) {
+              throw "Runtime artifacts found in the workspace: $($forbidden -join ', ')"
+          }

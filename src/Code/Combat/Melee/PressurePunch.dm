@@ -36,7 +36,7 @@ mob
 			var/anim_time = 10
 			e.transform *=3
 			animate(e, transform * 3, alpha = 235, time = anim_time)
-			player_view(15,src) << sound('pressurePunch.mp3', volume = 100)
+			player_view(15,src) << sound('PressurePunch.mp3', volume = 100)
 			sleep(10)
 			del(e)
 
@@ -49,14 +49,14 @@ mob
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
 			if(usr.cant_blast()) return
 			last_pressurePunch = world.time
-			player_view(15,src) << sound('pressurePunchCharge.mp3', volume = 60)
+			player_view(15,src) << sound('PressurePunchCharge.mp3', volume = 60)
 			sleep(20)
-			var/list/targets = FindTargets(usr.dir,angle_limit=33, max_dist=3)
+			var/mob/target = getSelectedTarget(max_dist = 3, dir_angle = usr.dir, angle_limit = 33)
 			PressurePunchFX()
-			if(targets)
-				for(var/mob/M in targets)
-					var/dmg = 20 + (get_melee_damage(usr, count_sword = 0) * 4)
-					var/knockback = get_melee_knockback_distance(usr)*10;
+			if(target)
+				for(var/mob/M in list(target))
+					var/dmg = getPhysicalCombatDamage(M, 6)
+					var/knockback = get_melee_knockback_distance(M) * 10
 					if(M != usr)
 						usr << "You concentrate your energy into a powerful punch that knocks [M] away!"
 						M.Knockback(usr, knockback, omega_kb = 1)

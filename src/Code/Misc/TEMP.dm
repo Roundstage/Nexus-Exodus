@@ -46,11 +46,11 @@ obj
 				for(var/mob/M in Get_step(usr,usr.dir))
 					if(M&&M.client)
 						var/true_damage=(M.bleed_stacks+1)*0.15
-						overlays.Remove('Stack 1.dmi')
-						overlays.Remove('Stack 2.dmi')
-						overlays.Remove('Stack 3.dmi')
-						overlays.Remove('Stack 4.dmi')
-						overlays.Remove('Stack 5.dmi')
+						overlays.Remove('Stack1.dmi')
+						overlays.Remove('Stack2.dmi')
+						overlays.Remove('Stack3.dmi')
+						overlays.Remove('Stack4.dmi')
+						overlays.Remove('Stack5.dmi')
 						if(M.Shielding())
 							M.Ki-=(max_ki*true_damage)
 							if(M.Ki<=0)
@@ -84,22 +84,22 @@ mob
 				bleed_remaining=5
 
 		Bleed_Graphics()
-			overlays.Remove('Stack 1.dmi')
-			overlays.Remove('Stack 2.dmi')
-			overlays.Remove('Stack 3.dmi')
-			overlays.Remove('Stack 4.dmi')
-			overlays.Remove('Stack 5.dmi')
+			overlays.Remove('Stack1.dmi')
+			overlays.Remove('Stack2.dmi')
+			overlays.Remove('Stack3.dmi')
+			overlays.Remove('Stack4.dmi')
+			overlays.Remove('Stack5.dmi')
 			switch(bleed_stacks)
 				if(1)
-					overlays.Add('Stack 1.dmi')
+					overlays.Add('Stack1.dmi')
 				if(2)
-					overlays.Add('Stack 2.dmi')
+					overlays.Add('Stack2.dmi')
 				if(3)
-					overlays.Add('Stack 3.dmi')
+					overlays.Add('Stack3.dmi')
 				if(4)
-					overlays.Add('Stack 4.dmi')
+					overlays.Add('Stack4.dmi')
 				if(5)
-					overlays.Add('Stack 5.dmi')
+					overlays.Add('Stack5.dmi')
 
 		Bleed_Damage()
 			set waitfor=0
@@ -112,7 +112,8 @@ mob
 mob
 	Admin4
 		verb
-			For_Noxus()
+			forNoxus()
+				set name = "For Noxus"
 				switch(input("Are you sure you wish to declare war in the name of Noxus?") in list("Yes","No"))
 					if("Yes")
 						for(var/mob/M in world)

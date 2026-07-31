@@ -2,18 +2,30 @@
 
 - I'm going to rework this entire code and make it great again.
 
-Nexus Exodus is a BYOND-based sandbox with PVP and RP features. Based in Dragon Universe.
+Nexus Exodus is a BYOND-based sandbox with PVP and RP features.
 
 This game has a lot of features. Transformations (such as Super Saiyan), customisation (stat builds), construction (the sandbox part comes here), and a lot of smaller things. 
 
-# Compiling
+New characters use a classic-inspired brown and gold creator with current lineage selection, catalog-backed body and hair choices, race-exclusive traits, and manual allocation of all eleven starting attributes. Race initialization is split into file-per-race modules under `src/Code/Races`, while global, world, combat, and mob variables are grouped under `src/Code/CoreFunctions/Vars`.
 
-To compile, you will need to setup a [BYOND](https://www.byond.com/) environment.
+## Build and smoke test
 
-In other words, download BYOND and then open Dream Maker.
+Nexus Exodus is pinned to [BYOND 516.1685](https://www.byond.com/download/build/516/516.1685_byond.zip). Other compiler builds are rejected by `DU.dme`.
 
-Then, go on ```file -> Open Environment``` and select the .dme from this project. Congratulations! Now you can go to ```Build -> Compile``` and then you will compile the code.
+Run the complete compile and startup baseline from PowerShell:
 
-You will be rewarded with a .dmb file, which you can use to run locally or host using Dream Daemon.
+```powershell
+.\tools\Invoke-ByondSmoke.ps1
+```
 
-Alternatively, you can go to our Releases and get the files directly to run.
+For a non-interactive local compile that never starts Dream Daemon, use `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly`. Runtime smoke tests remain enabled by default and in CI.
+
+The script downloads the official BYOND archive, verifies its SHA-256, copies the working tree to a temporary directory, compiles with zero warnings, and observes startup with both versioned and clean runtime data. The checkout is not modified.
+
+Use `-KeepTemp` to preserve the temporary build or `-DataMode Versioned`/`-DataMode Clean` to run one data mode.
+
+## Manual development
+
+Install BYOND 516.1685, open `DU.dme` in Dream Maker, and select `Build > Compile`. A runnable build consists of both `DU.dmb` and `DU.rsc`.
+
+Start the compiled world in Dream Daemon or use Dream Maker's `Run` command. Do not enable `NEXUS_DEV_TOOLS` in distributed builds.
