@@ -234,8 +234,8 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 	var/Match=1
 	var/Stage=1
 	for(var/mob/M in All_Entrants) spawn while(Tournament&&M&&(M in All_Entrants))
-		if(M.Fatal)
-			M.Fatal=0
+		if(M.Fatal || M.sparring_mode == LETHAL_COMBAT)
+			M.SetSparringMode(CASUAL_COMBAT, FALSE)
 			M<<"<font color=green><font size=3>Your attacks can not be set to lethal while you are in a tournament."
 		sleep(4)
 	var/tournament_over //to try to fix the endless tournament bug

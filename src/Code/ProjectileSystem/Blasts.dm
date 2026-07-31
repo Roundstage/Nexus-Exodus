@@ -158,27 +158,8 @@ atom/var/Fatal=0
 
 mob/verb/Ki_Toggle()
 	set category	="Other"
-	set name		="Toggle Sparring Mode"
-
-	if(src in All_Entrants)
-		src << "Your attacks can not be set to lethal in the tournament"
-		SetSparringMode(CASUAL_COMBAT)
-		return
-
-	ToggleSparringMode()
-
-	if(sparring_mode == CASUAL_COMBAT)
-		src<<"Your attacks are now non-lethal."
-		Fatal=0
-	else
-		var/mode = input("Choose lethal mode", "Lethal Mode", "Non-lethal") in list("Non-lethal", "Lethal")
-
-		if(mode == "Lethal") 
-			src <<"Your attacks are now lethal."
-			Fatal=1
-		else 
-			src<<"Your attacks are now non-lethal."
-			Fatal=0
+	set name		="Toggle Lethal Intent"
+	toggleLethalIntent()
 
 obj/var/Mastery=1
 

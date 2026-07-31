@@ -30,8 +30,6 @@ mob/proc/RefreshAllTabs()
 	else
 		if(client.inactivity >= 1200) client.statpanel = "Other"
 		var/startTime = world.time - (last_logon + tabStartupDelay)
-		if(startTime > 1)
-			Stat_Stat()
 		if(startTime > 2)
 			Stat_Admin()
 			Stat_Nav()

@@ -2723,36 +2723,18 @@ var/list/editFilter = list("vars", "verbs")
 mob/Admin3/verb/edit(atom/a in world)
 	set name = "Edit"
 	set category = "Admin"
-	var/html = "<body><body bgcolor=#000000 text=#339999 link=#99FFFF>"
-
-	html += "[a]<br>[a.type]"
-	html += "<table width=10%>"
-
-	for(var/v in a.vars)
-		var/encoded_var = a.vars[v]
-		if("[v]" in editFilter)
-			continue
-		if("[v]" == "player_desc")
-			encoded_var = html_encode(a.vars[v])
-
-		html += "<td><a href=byond://?src=\ref[a];action=edit;var=[v]>"
-		html += v
-
-		if(istype(a.vars[v], /list))
-			html  += "<td>[a.vars[v]]"
-			for(var/element in a.vars[v])
-				html += "[element], "
-
-			html += "</td></tr>"
-		else 
-			html += "<td>[Value(encoded_var)]</td></tr>"
-	html += "</table></body>"
-	usr << "Aqui";
-	usr << browse(html, "window=[a];size=800x600")
-	
-	admin_blame(src, "[key] opened the edit sheet for [a]")
+	showNexusAdminInspector(a)
 
 atom/Topic(href, hrefs[])
+	if(hrefs["action"] == "refresh_character_sheet")
+		if(usr == src && ismob(src))
+			var/mob/character = src
+			character.showCharacterSheet()
+		return
+	if(hrefs["action"] == "open_admin_inspector")
+		if(usr && usr.client && usr.IsAdmin() && Admins[usr.key] >= 3)
+			usr.showNexusAdminInspector(src)
+		return
 	if(hrefs["action"] == "edit")
 		if(!usr || !usr.client || !usr.IsAdmin()) return
 		var/mob/admin = usr

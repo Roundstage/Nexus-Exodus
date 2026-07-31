@@ -3,7 +3,7 @@
 ## Overview
 Startup assertions run only when Dream Daemon receives the `nexus_smoke_tests` world parameter. The PowerShell smoke runner enables this parameter in an isolated temporary world.
 
-The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, directional and invisibility target validation, no-fallback lunge/homing behavior, HUD and power-gauge dimensions, central damage parity/zero-stat/bounded-stat assertions, per-target damage budgets, beam factors, reflected owner-immune projectiles, rock skill icons/categories, standalone Lunge, Wolf Fang and Hundred Crack tuning, normalized Ki projectile cadence, vector-aware arm range, beam routing, default Raw Damage, immediate versus tick damage windows and centralized Ki Settings, ownership-gated Zanzoken/Flash Step actions, eight-direction five-tile warping, modifier/numpad canonicalization, multi-key action bindings, overhead health colors, damage-indicator registration, every hidden mutation tier and version-2 migration, multiplicative mutation application, Nexus manual allocation profiles and caps, the creator's race/appearance path, Spirit Doll identity and BP scaling, forced Cooler initialization, energy and internal mutation serialization, retired Qi cleanup, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
+The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, vitals/action HUD dimensions, synchronized lethal intent, RP Mode and Willpower, Mining/Smithing progression, forged quality, Character-sheet content, central combat balance, skill routing, character creation, serialization, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
 
 For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` compiles the complete environment with BYOND 516.1685, requires zero errors and warnings plus both `DU.dmb` and `DU.rsc`, and does not start Dream Daemon. The default command performs the same compile before running startup assertions.
 
@@ -38,7 +38,7 @@ For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` comp
 #### proc/runStartupSmokeTests
 - Signature: `proc/runStartupSmokeTests(soul_contract_count_before)`
 - Inputs: soul_contract_count_before
-- Purpose: Validate admin access paths, explicit targeting, combat dummy/HUD/indicator invariants, hidden mutations, creator allocation and appearance, serialization and migration, retired Qi cleanup, technology catalog invariants, and text handling.
+- Purpose: Validate admin access paths, combat/HUD/skill invariants, roleplay combat, professions, Character-sheet content, creator allocation and appearance, serialization and migration, technology catalog invariants, and text handling.
 - Returns: none (implicit).
 - Side effects: creates and deletes test mobs and writes the success marker to `world.log`.
 
