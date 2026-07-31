@@ -184,6 +184,8 @@ mob/proc
 			winset(src,"rpane.rpanewindow","is-visible=true")
 			winset(src,"mainwindow.mainvssplit","is-visible=true")
 		initializeVitalsHud()
+		initializeActionHud()
+		SetSparringMode(sparring_mode, FALSE)
 
 		//this is for the GameJolt Launcher thing. but i had to disable it because if you enter this as your key in the buy packs window it wont work
 		//if(key == displaykey && findtext(key, "guest")) displaykey = "[name]-G"

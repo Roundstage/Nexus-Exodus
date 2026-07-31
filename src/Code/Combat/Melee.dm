@@ -458,13 +458,23 @@ mob/verb/ToggleBreakingThings()
 	src << "You will now [can_things_be_broken ? "be able to" : "not be able to"] break things such as Walls and Objects. This does not affect Science Items."
 
 mob/verb/ToggleSparringMode()
-	var/mode = input("Choose sparring mode", "Sparring mode", CASUAL_COMBAT) in list(CASUAL_COMBAT, LETHAL_COMBAT)
-	SetSparringMode(mode)
+	toggleLethalIntent()
+
+mob/proc/toggleLethalIntent()
+	if(src in All_Entrants)
+		src << "Your attacks can not be set to lethal in the tournament"
+		SetSparringMode(CASUAL_COMBAT)
+		return FALSE
+	var/new_mode = sparring_mode == LETHAL_COMBAT ? CASUAL_COMBAT : LETHAL_COMBAT
+	SetSparringMode(new_mode)
+	return sparring_mode == LETHAL_COMBAT
 
 mob/proc/SetSparringMode(mode = sparring_mode, show_message = TRUE)
 	var/sparring_mode_message = ""
 
+	if(mode != LETHAL_COMBAT) mode = CASUAL_COMBAT
 	sparring_mode = mode
+	Fatal = mode == LETHAL_COMBAT
 	if(show_message)
 		if(mode == LETHAL_COMBAT)
 			sparring_mode_message = "[src] emanates <span style='color: red;'>killing intent!</span>"
@@ -476,6 +486,7 @@ mob/proc/SetSparringMode(mode = sparring_mode, show_message = TRUE)
 		for(var/mob/M in view(22, src))
 			M << sparring_mode_message
 			M.ChatLog(sparring_mode_message, M.key)
+	refreshCombatStatusOverlays()
 
 mob/var/tmp/last_spar_alert = null
 mob/proc/AlertSparringMode(var/mob/attacker, var/mob/victim)

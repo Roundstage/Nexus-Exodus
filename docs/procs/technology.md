@@ -3,6 +3,8 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Copper, Iron, Mythril, and Auracite ores can be forged into material-specific swords and armor at an Engineering Technology Level 3 forge.
+
 Craft access is now checked through `canAccessTechnology()`: persistent Technology XP produces levels 1–8, and level 5/7/8 grant Genetics, Engineering, or Robotics path slots. Knowledge growth and successful crafting both award Technology XP; admin grants remain compatible as explicit overrides.
 
 ## Files
@@ -14,6 +16,7 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 - `src/Code/Technology/Guns.dm`
 - `src/Code/Technology/LandMine.dm`
 - `src/Code/Technology/NewDrones.dm`
+- `src/Code/Technology/Professions.dm`
 - `src/Code/Technology/Shurikens.dm`
 - `src/Code/Technology/SmokeBomb.dm`
 - `src/Code/Technology/Technology.dm`
@@ -22,6 +25,15 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 - `src/Code/Technology/Zombies.dm`
 
 ## Proc Reference
+
+### src/Code/Technology/Professions.dm
+
+- `gainProfessionExperience(profession, amount, reason, announce)` advances Mining or Smithing and applies Liberal Arts conversion.
+- `performMiningTick(base_yield)` applies profession level and Mining Expert multipliers, awards XP in mining caves, and rolls material drops.
+- `initializeSmithingRecipes()` registers Copper, Iron, Mythril, and Auracite sword/armor recipes with level and ore requirements.
+- `craftSmithingRecipe(recipe)` consumes stacked ore, creates the forged item, applies Master Blacksmith quality, and awards Smithing XP.
+- `/obj/Forge` is an Engineering Technology Level 3 station exposing the Smith menu.
+- `/obj/items/Ore`, `/obj/items/Sword/Forged`, and `/obj/items/Armor/Forged` use imported Roleplay Tenkaichi material artwork while retaining Nexus item contracts.
 
 ### src/Code/Technology/BodySwap.dm
 

@@ -1,9 +1,12 @@
 # UI
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats tab is no longer refreshed; the detailed Character sheet is opened from the top-right action HUD.
 
 ## Files
+- `src/Code/UI/ActionHud.dm`
+- `src/Code/UI/AdminInspector.dm`
+- `src/Code/UI/CharacterSheet.dm`
 - `src/Code/UI/DamageIndicators.dm`
 - `src/Code/UI/Guide.dm`
 - `src/Code/UI/HUD.dm`
@@ -16,6 +19,24 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/UI/Wasted.dm`
 
 ## Proc Reference
+
+### src/Code/UI/ActionHud.dm
+
+- `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons and hides their obsolete skin controls.
+- `refreshActionHud()` keeps button labels and colors synchronized with live combat state.
+- `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
+
+### src/Code/UI/AdminInspector.dm
+
+- `showNexusAdminInspector(target)` opens a level-3-admin-only replacement for the raw EDIT window.
+- `datum/NexusAdminInspector/buildHtml()` groups editable variables by identity, combat, progression, appearance, position, collection, system, or other and exposes live text/category filtering.
+- `datum/NexusAdminInspector/editVariable(variable_name)` preserves the legacy number/text/file/list/null edit choices and admin logging.
+
+### src/Code/UI/CharacterSheet.dm
+
+- `showCharacterSheet()` exports the current sprite portrait and opens the responsive Character assessment.
+- `buildCharacterSheetHtml(portrait_resource)` renders identity, equipment, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Milestones, Lethal pressure, and learned skills.
+- Admins receive a direct link from Character to the structured inspector.
 
 ### src/Code/UI/DamageIndicators.dm
 

@@ -3,7 +3,7 @@
 ## Overview
 Combat resolution, skill routing, damage, and attack-specific behavior.
 
-Guided blasts now use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits.
+Guided blasts use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits. Fight to the Death now directly synchronizes `sparring_mode` and `Fatal`; there is no secondary non-lethal choice, and tournaments force Casual mode.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`

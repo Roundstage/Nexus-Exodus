@@ -3,7 +3,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Anger now grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones and Technology Levels are persistent, player-driven progressions that migrate old saves lazily.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Anger now grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones, Technology Levels, Mining, and Smithing are persistent, player-driven progressions that migrate old saves lazily.
 
 ## Files
 - `src/Code/PlayerMechanics/Aging.dm`
@@ -46,6 +46,8 @@ The former cumulative KO counter is deprecated. Casual defeats recover automatic
 - `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
 - `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
 - `refreshTechnologyUnlocks(announce)` grants science items allowed by level and selected path.
+- `Liberal Arts Degree`, `Mining Expert`, `Rapid Deployment`, and `Master Blacksmith` are Roleplay Tenkaichi milestone ports adapted to Nexus progression contracts.
+- `refreshCombatStatusOverlays()` keeps the imported Lethal and RP Mode character icons synchronized with the action HUD.
 
 ### src/Code/PlayerMechanics/Aging.dm
 

@@ -9,6 +9,25 @@ mob/var/tmp
 	lethal_combat_until = 0
 	willpower_recovery_ready_at = 0
 	willpower_ready_announced = FALSE
+	image/lethal_intent_status_overlay
+	image/rp_mode_status_overlay
+
+mob/proc/refreshCombatStatusOverlays()
+	if(sparring_mode == LETHAL_COMBAT)
+		if(!lethal_intent_status_overlay)
+			lethal_intent_status_overlay = image('LethalHud.dmi', layer = 25)
+			overlays += lethal_intent_status_overlay
+	else if(lethal_intent_status_overlay)
+		overlays -= lethal_intent_status_overlay
+		lethal_intent_status_overlay = null
+	if(rp_mode)
+		if(!rp_mode_status_overlay)
+			rp_mode_status_overlay = image('RPModeHud.dmi', layer = 25)
+			overlays += rp_mode_status_overlay
+	else if(rp_mode_status_overlay)
+		overlays -= rp_mode_status_overlay
+		rp_mode_status_overlay = null
+	refreshActionHud()
 
 mob/proc/getMaxWillpower()
 	return max(1, max_willpower + getMilestoneRank("iron_will") * 10)
@@ -29,6 +48,8 @@ mob/proc/getWillpowerRecoveryInterval()
 
 mob/proc/enterLethalCombat()
 	var/duration = willpower > 40 ? WILLPOWER_LETHAL_DURATION : WILLPOWER_CRITICAL_DURATION
+	var/rapid_deployment_rank = getMilestoneRank("rapid_deployment")
+	if(rapid_deployment_rank) duration *= 1 - rapid_deployment_rank * 0.25
 	lethal_combat_until = max(lethal_combat_until, world.time + duration)
 	ko_is_lethal = TRUE
 
@@ -57,7 +78,9 @@ mob/proc/restoreWillpower(amount, reason, announce = TRUE)
 
 mob/proc/setRPMode(enabled, announce = TRUE)
 	enabled = !!enabled
-	if(rp_mode == enabled) return
+	if(rp_mode == enabled)
+		refreshCombatStatusOverlays()
+		return
 	rp_mode = enabled
 	if(enabled)
 		attacking = 0
@@ -66,6 +89,7 @@ mob/proc/setRPMode(enabled, announce = TRUE)
 		if(announce) player_view(22, src) << "<font color=#80c0ff>[src] enters RP Mode and withdraws from combat."
 	else if(announce)
 		player_view(22, src) << "<font color=#80c0ff>[src] leaves RP Mode."
+	refreshCombatStatusOverlays()
 
 mob/proc/willpowerGetUp(force = FALSE)
 	if(!KO) return FALSE

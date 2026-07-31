@@ -272,6 +272,7 @@ mob/proc/removeVitalsHud()
 		client.screen -= client.main_vitals_hud
 		del(client.main_vitals_hud)
 		client.main_vitals_hud = null
+	removeActionHud()
 
 obj/NexusHud
 	Savable = 0

@@ -24,6 +24,10 @@ proc/initializeMilestoneCatalog()
 	milestone_catalog["scientific_method"] = new /datum/MilestoneDefinition("scientific_method", "Scientific Method", "Gains 10% more Technology XP per rank.", 2, 3)
 	milestone_catalog["rapid_recovery"] = new /datum/MilestoneDefinition("rapid_recovery", "Rapid Recovery", "Reduces knockout recovery time by 10% per rank.", 2, 2)
 	milestone_catalog["steadfast_spirit"] = new /datum/MilestoneDefinition("steadfast_spirit", "Steadfast Spirit", "Recovers Willpower outside lethal combat 15% faster per rank.", 2, 2)
+	milestone_catalog["liberal_arts"] = new /datum/MilestoneDefinition("liberal_arts", "Liberal Arts Degree", "Converts 25% of Mining and Smithing XP into Technology XP.", 1, 1)
+	milestone_catalog["mining_expert"] = new /datum/MilestoneDefinition("mining_expert", "Mining Expert", "Increases natural mining yield by 50% and improves ore discovery.", 3, 1)
+	milestone_catalog["rapid_deployment"] = new /datum/MilestoneDefinition("rapid_deployment", "Rapid Deployment", "Reduces lethal combat pressure duration by 25% per rank.", 3, 2)
+	milestone_catalog["master_blacksmith"] = new /datum/MilestoneDefinition("master_blacksmith", "Master Blacksmith", "Forged equipment gains 5% quality and recipes consume one less ore.", 4, 1)
 
 mob/var
 	milestone_points = 0

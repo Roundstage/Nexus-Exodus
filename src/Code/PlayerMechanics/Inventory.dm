@@ -2874,7 +2874,7 @@ mob/proc/Digging(Amount=1)
 	if(Amount<1) Amount=1
 	for(var/obj/items/Digging/D in item_list) if(D.suffix) Amount*=D.DigMult
 	Amount=round(Amount)
-	Alter_Res(Amount)
+	Alter_Res(performMiningTick(Amount))
 
 mob/verb/Dig_for_Resources()
 	set category="Skills"

@@ -1,7 +1,7 @@
 # Admin
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Administrative commands and management flows. The `Edit` verb now routes to the structured, searchable Nexus inspector documented under UI while preserving the existing edit permission level and audit logging.
 
 ## Files
 - `src/Code/Admin/Admin.dm`
