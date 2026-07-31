@@ -386,6 +386,10 @@ obj/Blast
 		var/guard_stat = Bullet ? target.End : target.Res
 		return calculateScaledCombatDamage(factor, BP, target.BP, Force, guard_stat)
 
+	proc/applyPiercingDamageDecay()
+		Damage /= 2
+		if(slice_attack) percent_damage *= skill_kienzan_pierce_decay
+
 	proc/Shield(mob/A, requested_factor)
 		if(!A) return
 		if(isnull(requested_factor)) requested_factor = percent_damage
@@ -510,6 +514,7 @@ obj/Blast
 				if(is_makosen || deflected) beam_radius=0
 
 				for(var/mob/A in range(beam_radius,src)) if((A.loc==loc || A!=Owner) && (A.loc==loc || get_dir(src,A) != dir))
+					if(A.rp_mode) continue
 					if(A.ultra_instinct)
 						var/d = turn(dir,pick(135,-135))
 						step(A,d,32)
@@ -774,6 +779,7 @@ obj/Blast
 		for(var/atom/movable/am in view(Explosive,src))
 			if(ismob(am)&&am!=Owner)
 				var/mob/m=am
+				if(m.rp_mode) continue
 				var/same_tile_as_firer
 				if(Owner && ismob(Owner) && am.loc==Owner.loc) same_tile_as_firer=1
 				if(m.attack_barrier_obj&&m.attack_barrier_obj.Firing_Attack_Barrier)
@@ -827,6 +833,7 @@ obj/Blast
 
 	proc/BlastMobCross(mob/m, override_dir, override_delete)
 		if(Beam) return 1 //i think this is right...
+		if(m.rp_mode) return 1
 		if(owner_immune && m == Owner) return 1
 		if(m.ultra_instinct)
 			m.Flip()
@@ -960,8 +967,7 @@ obj/Blast
 				DeleteNoWait(delay = world.tick_lag)
 				return 0
 		else
-			original_dmg /= 2 //damage is decreased every time it slices thru something
-			Damage = original_dmg
+			applyPiercingDamageDecay()
 			SafeTeleport(get_step(src,dir))
 			Bounce_Dir()
 		return 0
@@ -1051,6 +1057,7 @@ obj/proc/Shockwave_Knockback(Amount,turf/A)
 mob/proc/Shockwave_Knockback(Amount,turf/A, bypass_immunity)
 	set waitfor=0
 
+	if(rp_mode) return
 	if(is_saitama) return
 	if(!z) return //prevent body swap bug knocking them out of body
 	if(regenerator_obj && regenerator_obj.base_loc() == base_loc()) return

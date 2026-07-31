@@ -17,6 +17,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/WorldMechanics/Sagas.dm`
 - `src/Code/WorldMechanics/Space.dm`
 - `src/Code/WorldMechanics/Tournament.dm`
+- `src/Code/WorldMechanics/Vehicles.dm`
 - `src/Code/WorldMechanics/WeatherDayNight/Areas.dm`
 - `src/Code/WorldMechanics/WeatherDayNight/DayNight.dm`
 - `src/Code/WorldMechanics/WeatherDayNight/Fireflies.dm`

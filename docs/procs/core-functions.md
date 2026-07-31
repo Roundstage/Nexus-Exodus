@@ -1,13 +1,16 @@
 # Core Functions
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Core world, persistence, combat-recovery, and utility functions.
+
+`KoSystem.dm` now coordinates Casual/Lethal recovery through RP Mode and Willpower. `combat_ko_total` remains only as a save-compatibility field and is normalized to zero; it is no longer a three-KO health resource.
 
 ## Files
 - `src/Code/CoreFunctions/DBModeCharacters.dm`
 - `src/Code/CoreFunctions/DBModeCore.dm`
 - `src/Code/CoreFunctions/EnergySystem.dm`
 - `src/Code/CoreFunctions/KoSystem.dm`
+- `src/Code/CoreFunctions/LegacyUtilities.dm`
 - `src/Code/CoreFunctions/ListSorting2018.dm`
 - `src/Code/CoreFunctions/Main.dm`
 - `src/Code/CoreFunctions/MainCreation.dm`
@@ -20,9 +23,11 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/CoreFunctions/Security.dm`
 - `src/Code/CoreFunctions/SecurityAdminBanning.dm`
 - `src/Code/CoreFunctions/SecurityBanSystem20.dm`
+- `src/Code/CoreFunctions/SecurityRelog.dm`
 - `src/Code/CoreFunctions/SkillSystem.dm`
 - `src/Code/CoreFunctions/StatPoints.dm`
 - `src/Code/CoreFunctions/StatpanelTabs.dm`
+- `src/Code/CoreFunctions/SpatialQueries.dm`
 - `src/Code/CoreFunctions/Text.dm`
 - `src/Code/CoreFunctions/TextRelated.dm`
 - `src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm`
@@ -340,25 +345,25 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 ### src/Code/CoreFunctions/KoSystem.dm
 
 #### mob/proc/Cause_Combat_KO
-- Signature: `Cause_Combat_KO(var/mob/victim, var/mob/attacker)`
-- Inputs: var/mob/victim, var/mob/attacker
-- Purpose: Handle cause combat ko.
+- Signature: `Cause_Combat_KO(mob/victim, mob/attacker)`
+- Inputs: victim and optional attacking mob.
+- Purpose: Schedule casual recovery or start lethal combat, RP Mode, and Willpower loss.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/increase_combat_ko
 - Signature: `increase_combat_ko(var/reason_of_increase, quantity = 1, mob/victim)`
 - Inputs: var/reason_of_increase, quantity = 1, mob/victim
-- Purpose: Handle increase combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Compatibility wrapper that converts old KO-counter penalties into Willpower damage.
+- Returns: Willpower drained.
+- Side effects: clears the deprecated KO counter.
 
 #### mob/proc/decrease_combat_ko
 - Signature: `decrease_combat_ko(var/reason_of_decrease, quantity = 1, mob/victim)`
 - Inputs: var/reason_of_decrease, quantity = 1, mob/victim
-- Purpose: Handle decrease combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Compatibility wrapper that converts old KO-counter healing into Willpower restoration.
+- Returns: Willpower restored.
+- Side effects: clears the deprecated KO counter.
 
 #### mob/proc/get_time_out_of_combat
 - Signature: `get_time_out_of_combat(mob/victim)`
@@ -391,9 +396,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/time_to_heal_ko
 - Signature: `time_to_heal_ko(mob/victim)`
 - Inputs: mob/victim
-- Purpose: Handle time to heal ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Calculate the get-up delay after healing and milestone modifiers.
+- Returns: delay in world ticks.
+- Side effects: none expected.
 
 #### mob/proc/set_healing_modifier
 - Signature: `set_healing_modifier(var/modifier, var/reason, var/is_cummulative = FALSE, mob/victim)`
@@ -402,24 +407,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### mob/proc/heal_spar_ko
-- Signature: `heal_spar_ko(mob/victim, time_to_heal)`
-- Inputs: mob/victim, time_to_heal
-- Purpose: Handle heal spar ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/initiate_healing
-- Signature: `initiate_healing(mob/victim, time_to_heal, healed_message)`
-- Inputs: mob/victim, time_to_heal, healed_message
-- Purpose: Handle initiate healing.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
 #### mob/proc/try_healing_combat_ko
 - Signature: `try_healing_combat_ko(mob/victim)`
 - Inputs: mob/victim
-- Purpose: Handle try healing combat ko.
+- Purpose: Auto-rise from casual KOs, announce lethal get-up readiness, recover failed Willpower, and passively restore Willpower out of combat.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

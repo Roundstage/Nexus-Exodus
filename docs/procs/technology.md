@@ -1,7 +1,9 @@
 # Technology
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Technology objects, crafting rules, and item-specific systems.
+
+Craft access is now checked through `canAccessTechnology()`: persistent Technology XP produces levels 1–8, and level 5/7/8 grant Genetics, Engineering, or Robotics path slots. Knowledge growth and successful crafting both award Technology XP; admin grants remain compatible as explicit overrides.
 
 ## Files
 - `src/Code/Technology/BodySwap.dm`
@@ -15,6 +17,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `src/Code/Technology/Shurikens.dm`
 - `src/Code/Technology/SmokeBomb.dm`
 - `src/Code/Technology/Technology.dm`
+- `src/Code/Technology/ToxicWaste.dm`
 - `src/Code/Technology/Vampires.dm`
 - `src/Code/Technology/Zombies.dm`
 

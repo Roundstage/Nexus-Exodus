@@ -73,8 +73,10 @@ mob/proc/LogKoData(mob/Victim, mob/Attacker)
 		Victim.last_knocked_out_by_mob = Attacker
 
 mob/proc/ResetStatsToDefault(mob/Victim)
-	Victim.Health = 100
-	Victim.Ki = max_ki
+	// Keep a fractional health point so the attack which caused the KO does not
+	// immediately execute the victim in legacy fatal-hit follow-up checks.
+	Victim.Health = 0.1
+	Victim.Ki = max(0, Victim.Ki)
 	Victim.BP = get_bp()
 	if(Victim.BPpcnt > 100)
 		Victim.BPpcnt = 100
@@ -157,15 +159,8 @@ mob/proc/TryToKillWithPoison(mob/Victim)
 		Victim.Death("Poisoned to death")
 
 mob/proc/TryToCauseAngerDueToKo(mob/Victim)
-	var/is_player = FALSE
-
-	if(Victim.client) 
-		is_player = TRUE
-
-	if(is_player && ShouldAnger(Victim) && prob(10) && !Victim.Angry())
-		Victim << "<font color=yellow>Being defeated so much angers you...</font>"
-		Victim.anger(reason = "being ko'd so much")
-		Victim.FullHeal()
+	// Anger now builds from damage instead of granting a random full-heal proc on KO.
+	return FALSE
 		
 mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src)
 	set waitfor=0
@@ -178,10 +173,6 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 	if(Victim.spam_killed)
 		Victim.FullHeal()
 		return
-
-	if(allow_anger) 
-		if(TryToCauseAnger(Attacker, Victim))
-			return
 
 	TryToAnnounceBattlegroundsDefeat(Attacker, Victim)
 	give_tier(Attacker)
@@ -206,7 +197,6 @@ mob/proc/UnKO() if(KO)
 	var/mob/Victim = src
 
 	TryToKillWithPoison(Victim)
-	TryToCauseAngerDueToKo(Victim)
 	MinimumHeal(Victim)
 	Victim.KO = FALSE
 	Victim.icon_state = initial(icon_state)

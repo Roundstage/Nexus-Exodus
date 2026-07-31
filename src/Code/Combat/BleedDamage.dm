@@ -16,6 +16,9 @@ mob/proc
 		bleed_loop=1
 
 		while(bleed_damage > 0)
+			if(rp_mode)
+				sleep(10)
+				continue
 			if(bleed_damage > 300) bleed_damage = 300
 			var/dmg = 1 + (bleed_damage / 50)
 			if(dmg < 1) dmg = 1
@@ -24,6 +27,7 @@ mob/proc
 			if(dmg > bleed_damage) dmg = bleed_damage
 			bleed_damage -= dmg
 			Health -= dmg
+			gainAngerFromDamage(dmg)
 			showDamageIndicator(dmg, "#d93452")
 			updateOverheadHealthHud()
 			if(Health <= 0) KO("low health")

@@ -1,7 +1,9 @@
 # Projectile System
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Projectile movement, collision, beam segments, and damage behavior.
+
+`obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
 
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
@@ -875,6 +877,13 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 ### src/Code/ProjectileSystem/Projectiles.dm
+
+#### obj/Blast/proc/applyPiercingDamageDecay
+- Signature: `obj/Blast/proc/applyPiercingDamageDecay()`
+- Inputs: None.
+- Purpose: Decay legacy piercing damage and Kienzan's active central damage factor after a successful hit.
+- Returns: none (implicit).
+- Side effects: mutates projectile damage for its next collision.
 
 #### obj/Blast/proc/setStats
 - Signature: `obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1, explosion_percent = 0, max_damage_factor = 0, owner_immunity = 0, datum/CombatDamageBudget/shared_budget)`

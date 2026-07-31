@@ -44,33 +44,19 @@ mob/proc
 		winset(src, "[win].grid1", "cells=0") //clears grid
 		var/added = 0
 		if(win == "TabScience")
-			var/list/added_items = usr.global_science_items
-			usr.global_science_items = list()
-	
-			for(var/obj/item in GLOBAL_SCIENCE_TAB_ITEMS)	
-				if(!(item in added_items))
-					usr.global_science_items += item
+			syncTechnologyProgression(silent = TRUE)
+			global_science_items = list()
+			if(islist(GLOBAL_SCIENCE_TAB_ITEMS))
+				for(var/obj/item in GLOBAL_SCIENCE_TAB_ITEMS)
+					if(!(item in global_science_items)) global_science_items += item
+			for(var/obj/item in tech_list)
+				if(canAccessTechnology(item) && !(item in global_science_items)) global_science_items += item
+			for(var/obj/item in individual_science_items)
+				if(!(item in global_science_items)) global_science_items += item
 
-			for(var/obj/item in added_items)
-				if(!(item in GLOBAL_SCIENCE_TAB_ITEMS))
-					if(!(item in usr.individual_science_items))
-						usr.global_science_items -= item
-
-			for(var/obj/item in usr.individual_science_items)
-				if(!(item in usr.global_science_items))
-					usr.global_science_items += item
-
-			for(var/obj/item in usr.global_science_items)
-				if(!(item in GLOBAL_SCIENCE_TAB_ITEMS))
-					if(!(item in usr.individual_science_items))
-						usr.global_science_items -= item
-
-
-			for(var/obj/o in usr.global_science_items) 
+			for(var/obj/o in global_science_items)
 				if(!(o.type in Illegal_Science))
 					added++
-					added_items += o
-
 					winset(src, "[win].grid1", "current-cell=[added]")
 					src << output(o, "[win].grid1")
 

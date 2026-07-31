@@ -165,7 +165,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 2.5 && death_ball_balance.sb_max_dmg == 10, "Death Ball charge curve diverged from the balance workbook")
 	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 2 && supernova_balance.sb_max_dmg == 5, "Supernova charge curve diverged from the balance workbook")
 	del(big_bang_projectile)
-	del(projectile_owner)
 	del(final_flash_skill)
 	del(noob_ray_skill)
 	del(omega_bomb_balance)
@@ -175,7 +174,64 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Sokidan/sokidan_skill = new
 	var/datum/SkillDefinition/sokidan_definition = skill_engine.getDefinitionForObj(sokidan_skill)
 	nexusSmokeAssert(sokidan_definition && sokidan_definition.control_delay == ki_projectile_step_delay, "Sokidan does not use the normalized Ki projectile cadence")
+	var/datum/SkillController/GuidedBlast/guided_controller = skill_controller_registry.get(SKILL_CONTROLLER_GUIDED_BLAST)
+	projectile_owner.dir = NORTH
+	projectile_owner.last_direction_pressed = EAST
+	nexusSmokeAssert(guided_controller && guided_controller.getControlDirection(projectile_owner) == EAST, "guided blasts are not checking and moving toward the same direction")
+	projectile_owner.last_direction_pressed = 0
+	nexusSmokeAssert(guided_controller.getControlDirection(projectile_owner) == NORTH, "guided blasts have no facing-direction fallback")
+	var/obj/Blast/kienzan_projectile = new
+	kienzan_projectile.slice_attack = 1
+	kienzan_projectile.Piercer = 1
+	kienzan_projectile.setStats(projectile_owner, Percent = skill_kienzan_damage_factor, Off_Mult = 15, owner_immunity = 1)
+	nexusSmokeAssert(!kienzan_projectile.damage_budget, "Kienzan still exhausts a one-hit damage budget")
+	kienzan_projectile.applyPiercingDamageDecay()
+	nexusSmokeAssert(kienzan_projectile.percent_damage == skill_kienzan_damage_factor * skill_kienzan_pierce_decay, "Kienzan does not lose damage after piercing a target")
+	del(kienzan_projectile)
 	del(sokidan_skill)
+	del(projectile_owner)
+	var/mob/NexusSmokeTest/rp_combat_test = new
+	rp_combat_test.Race = "Human"
+	rp_combat_test.Health = 100
+	rp_combat_test.anger = 100
+	rp_combat_test.max_anger = 200
+	rp_combat_test.TakeDamage(25)
+	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "damage application changed during gradual anger buildup")
+	nexusSmokeAssertNear(rp_combat_test.anger, 125, 0.01, "anger does not build proportionally as health is lost")
+	rp_combat_test.setRPMode(TRUE, announce = FALSE)
+	rp_combat_test.TakeDamage(25)
+	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "RP Mode did not protect its user from damage")
+	nexusSmokeAssert(rp_combat_test.cant_blast(), "RP Mode still allows energy attacks")
+	rp_combat_test.ApplyStun(time = 20, no_immunity = TRUE, stun_power = 2)
+	nexusSmokeAssert(!rp_combat_test.stun_level, "RP Mode still allows combat stuns")
+	rp_combat_test.setRPMode(FALSE, announce = FALSE)
+	nexusSmokeAssert(!rp_combat_test.has_entered_combat(victim = rp_combat_test), "a never-attacked player is incorrectly considered in combat")
+	rp_combat_test.willpower = 100
+	rp_combat_test.enterLethalCombat()
+	rp_combat_test.drainWillpower(rp_combat_test.getLethalKoDrain(), "Smoke test", announce = FALSE)
+	nexusSmokeAssert(rp_combat_test.willpower == 70 && rp_combat_test.isInLethalCombat(), "lethal combat did not drain and track Willpower")
+	rp_combat_test.KO = TRUE
+	rp_combat_test.rp_mode = TRUE
+	rp_combat_test.ko_recovery_ready_at = world.time
+	nexusSmokeAssert(rp_combat_test.willpowerGetUp(), "Willpower could not raise a ready lethal-KO player")
+	nexusSmokeAssert(!rp_combat_test.KO && !rp_combat_test.rp_mode && rp_combat_test.Health == 70, "Willpower get-up restored an invalid combat state")
+	var/mob/NexusSmokeTest/milestone_test = new
+	milestone_test.Age = 20
+	milestone_test.syncMilestoneProgression(silent = TRUE)
+	nexusSmokeAssert(milestone_test.milestone_points == MILESTONE_STARTING_POINTS, "legacy milestone initialization did not grant its starter budget")
+	nexusSmokeAssert(milestone_test.purchaseMilestone("iron_will") && milestone_test.getMilestoneRank("iron_will") == 1, "milestone purchase did not persist its rank")
+	nexusSmokeAssert(milestone_test.getMaxWillpower() == 110, "Iron Will did not raise maximum Willpower")
+	milestone_test.milestone_last_year = floor(Year) - 1
+	milestone_test.syncMilestoneProgression(silent = TRUE)
+	nexusSmokeAssert(milestone_test.total_milestone_points == MILESTONE_STARTING_POINTS + 1, "yearly Milestone Point progression did not advance")
+	var/mob/NexusSmokeTest/technology_progression_test = new
+	technology_progression_test.Knowledge = 701
+	technology_progression_test.syncTechnologyProgression(silent = TRUE)
+	nexusSmokeAssert(technology_progression_test.player_tech_level == 5, "Knowledge migration did not derive Technology Level 5")
+	nexusSmokeAssert(technology_progression_test.getTechnologyPathSlots() == 1, "Technology Level 5 did not award a specialization slot")
+	del(technology_progression_test)
+	del(milestone_test)
+	del(rp_combat_test)
 	var/list/zanzoken_verbs = list(\
 		/obj/Zanzoken/verb/zanzokenNorth,\
 		/obj/Zanzoken/verb/zanzokenNortheast,\

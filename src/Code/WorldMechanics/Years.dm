@@ -47,6 +47,7 @@ mob/proc/Age_Update()
 	real_age=(Year-BirthYear)*1
 	if(!Dead&&LogYear) Age+=(Year-LogYear)*1
 	LogYear=Year
+	syncMilestoneProgression(silent = FALSE)
 	if(!Dead&&Age>Lifespan()&&z!=13&&((z!=6&&Demonic)||!Demonic)) Die()
 	if(Age>Decline/2&&icon=='NamekYoung.dmi') icon='NamekAdult.dmi'
 	if(Age>=Decline&&icon=='NamekAdult.dmi') icon='NamekOld.dmi'
