@@ -24,7 +24,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 - `showNexusAdminPanel(compact, selected_target)` opens the full or quick searchable panel and keeps one selected player as the target for successive actions.
 - `openItemPicker(mode, search)` searches item type paths without instantiating hundreds of reference objects; protected non-givable results are rejected when selected.
 - `openRewardMenu()` and `applyReward(reward_type)` replace the legacy Reward flow with audited BP, BP Mod, Energy, Resources, Skill Points, Milestone Points, Technology XP, Mining XP, and Smithing XP controls.
-- `runLegacyCommand()` searches all verbs available to the administrator's level and exposes only one legacy command at a time.
+- `runLegacyCommand()` searches all verbs available to the administrator's level without removing them from CMD or their original Admin tab categories.
 - `Admin Panel`, `Quick Admin`, `Manage Player`, and `Admin Inspector` are the permanent administration launchers.
 
 ### src/Code/Admin/ServerPanel.dm
@@ -1858,7 +1858,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### mob/Admin3/verb/giveTenkaichiAttacks
 - Signature: `giveTenkaichiAttacks(mob/character in players)`
 - Inputs: connected target player and an interactive package selection.
-- Purpose: Grant weapon, unarmed, beam, ranged or complete Roleplay Tenkaichi attack packages without duplicating owned attacks.
+- Purpose: Grant weapon, unarmed, persistent special-style, beam or complete Roleplay Tenkaichi attack packages without duplicating owned attacks. Generic blast reskins are intentionally excluded.
 - Returns: none (implicit).
 - Side effects: creates skill objects in the target inventory and writes an admin audit entry.
 

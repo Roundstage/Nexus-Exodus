@@ -54,23 +54,31 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(character_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
-	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 15 && getTenkaichiUnarmedAttackTypes().len == 14, "Tenkaichi physical attack catalog is incomplete")
-	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiRangedAttackTypes().len == 18, "Tenkaichi ranged attack catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 2, "Tenkaichi special-style catalog is incomplete")
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
-	var/obj/Attacks/Blast/RoleplayBlast/HomingFinisher/tenkaichi_homing = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash/tenkaichi_iai = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/SwordStab/tenkaichi_stab = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow/tenkaichi_throw = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury/tenkaichi_march = new
 	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
 	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
 	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
-	nexusSmokeAssert(tenkaichi_homing.roleplay_homing && tenkaichi_homing.Blast_Count == 4, "Homing Finisher does not use active multi-projectile pursuit")
+	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
+	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
+	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
 	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
 	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
-	var/obj/Attacks/Blast/RoleplayBlast/WallOfFlame/tenkaichi_flame_wall = new
+	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
 	nexusSmokeAssert(tenkaichi_guard_break.breaks_guard && tenkaichi_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
-	nexusSmokeAssert(tenkaichi_flame_wall.Spread == 2 && tenkaichi_flame_wall.Blast_Count == 4, "Wall of Flame is not a bounded projectile fan")
+	nexusSmokeAssert(tenkaichi_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
 	del(tenkaichi_slice)
 	del(tenkaichi_combo)
-	del(tenkaichi_homing)
+	del(tenkaichi_iai)
+	del(tenkaichi_stab)
+	del(tenkaichi_throw)
+	del(tenkaichi_march)
 	del(tenkaichi_beam)
 	del(tenkaichi_guard_break)
 	del(tenkaichi_flame_wall)
@@ -284,6 +292,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	initializeNexusAdminActions()
 	nexusSmokeAssert(nexus_admin_action_catalog.len >= 20 && nexus_admin_action_catalog["give_item"] && nexus_admin_action_catalog["reward"] && nexus_admin_action_catalog["legacy_command"], "Nexus Admin Panel command catalog is incomplete")
 	nexusSmokeAssert(/mob/AdminEssentials/verb/managePlayer in typesof(/mob/AdminEssentials/verb), "contextual Manage Player command is missing")
+	var/mob/NexusSmokeTest/admin_verb_test = new
+	admin_verb_test.grantAdminVerbsForLevel(4)
+	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs), "legacy admin verbs are not retained cumulatively for CMD and the Admin tab")
+	del(admin_verb_test)
 	var/list/server_setting_categories = getNexusServerSettingCategories()
 	nexusSmokeAssert(server_setting_categories.len == 6 && server_setting_categories["Progression"] == /upForm/admin_gains && server_setting_categories["Science"] == /upForm/admin_science, "HUD Server Panel categories are incomplete")
 	var/upForm/headless_server_settings = new /upForm/admin_gains(null, profession_test, list(), TRUE)

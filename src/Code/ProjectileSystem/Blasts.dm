@@ -484,17 +484,11 @@ obj/Attacks/Blast
 
 	verb/Hotbar_use()
 		set hidden=1
-		if(istype(src, /obj/Attacks/Blast/RoleplayBlast))
-			var/obj/Attacks/Blast/RoleplayBlast/roleplay_blast = src
-			roleplay_blast.useRoleplayBlast(usr)
-		else usr.Blast_macro()
+		usr.Blast_macro()
 
 	verb/Blast()
 		set category="Skills"
-		if(istype(src, /obj/Attacks/Blast/RoleplayBlast))
-			var/obj/Attacks/Blast/RoleplayBlast/roleplay_blast = src
-			roleplay_blast.useRoleplayBlast(usr)
-		else if(skill_engine) skill_engine.castSkill(usr, src)
+		if(skill_engine) skill_engine.castSkill(usr, src)
 
 mob/var/tmp
 	blast_fire_loop

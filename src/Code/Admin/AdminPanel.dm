@@ -1,5 +1,4 @@
 client/var/tmp/datum/NexusAdminPanel/nexus_admin_panel
-mob/var/tmp/active_legacy_admin_verb
 
 datum/NexusAdminAction
 	var
@@ -41,7 +40,7 @@ proc/initializeNexusAdminActions()
 	nexus_admin_action_catalog["roll_mutations"] = new /datum/NexusAdminAction("roll_mutations", "Roll Mutations", "Character", "Reroll the selected player's mutation package.", 3, TRUE)
 	nexus_admin_action_catalog["give_tenkaichi"] = new /datum/NexusAdminAction("give_tenkaichi", "Give Tenkaichi Equipment", "Smithing", "Give any ported material and weapon or armor design for testing.", 3, TRUE, TRUE)
 	nexus_admin_action_catalog["test_tenkaichi"] = new /datum/NexusAdminAction("test_tenkaichi", "Test Tenkaichi Smithing", "Smithing", "Grant profession levels, every ore and spawn a forge for the selected player.", 3, TRUE)
-	nexus_admin_action_catalog["give_tenkaichi_attacks"] = new /datum/NexusAdminAction("give_tenkaichi_attacks", "Give Tenkaichi Attacks", "Testing", "Give weapon, unarmed, beam or ranged Roleplay Tenkaichi attack packages for testing.", 3, TRUE, TRUE)
+	nexus_admin_action_catalog["give_tenkaichi_attacks"] = new /datum/NexusAdminAction("give_tenkaichi_attacks", "Give Tenkaichi Attacks", "Testing", "Give melee, weapon, special-style or beam Roleplay Tenkaichi packages for testing.", 3, TRUE, TRUE)
 	nexus_admin_action_catalog["player_logs"] = new /datum/NexusAdminAction("player_logs", "Player Logs", "Logs", "Open the selected player's server logs.", 2, TRUE)
 	nexus_admin_action_catalog["rp_logs"] = new /datum/NexusAdminAction("rp_logs", "Roleplay Window", "Logs", "View the selected player's roleplay history.", 1, TRUE)
 	nexus_admin_action_catalog["development_logs"] = new /datum/NexusAdminAction("development_logs", "Development RP Window", "Logs", "View the selected player's development roleplay history.", 1, TRUE)
@@ -53,7 +52,7 @@ proc/initializeNexusAdminActions()
 	nexus_admin_action_catalog["save_world"] = new /datum/NexusAdminAction("save_world", "Save World", "Server", "Persist the current world state immediately.", 3, FALSE, FALSE, TRUE)
 	nexus_admin_action_catalog["reboot"] = new /datum/NexusAdminAction("reboot", "Reboot Server", "Server", "Run the confirmed server reboot workflow.", 3, FALSE, FALSE, TRUE)
 	nexus_admin_action_catalog["battle_test"] = new /datum/NexusAdminAction("battle_test", "Battle Test", "Testing", "Open the automated combat test setup.", 5)
-	nexus_admin_action_catalog["legacy_command"] = new /datum/NexusAdminAction("legacy_command", "Legacy Command Palette", "Legacy", "Search every legacy admin verb and expose only the selected command.", 1)
+	nexus_admin_action_catalog["legacy_command"] = new /datum/NexusAdminAction("legacy_command", "Legacy Verb Finder", "Legacy", "Search every legacy admin verb without hiding it from CMD or the Admin tab.", 1)
 
 proc/getNexusAdminVerbPaths(admin_level)
 	var/list/paths = list()
@@ -250,7 +249,7 @@ datum/NexusAdminPanel
 			owner << "Created [new_item] at your location."
 
 	proc/runLegacyCommand()
-		var/search = input(owner, "Search all admin verb paths. Only the chosen verb is exposed, keeping the command list clean.", "Legacy Command Palette") as null|text
+		var/search = input(owner, "Search the admin verbs available at your level. Every verb remains available through CMD and its original Admin tab category.", "Legacy Verb Finder") as null|text
 		if(isnull(search)) return
 		var/list/options = list()
 		for(var/verb_path in getNexusAdminVerbPaths(owner.AdminLevel()))
@@ -260,15 +259,13 @@ datum/NexusAdminPanel
 		if(!options.len)
 			owner << "No legacy admin command matched '[search]'."
 			return
-		var/selection = input(owner, "Choose a legacy command. It will replace the previously exposed legacy verb.", "Legacy Command Palette") as null|anything in options
+		var/selection = input(owner, "Choose a legacy verb to locate its CMD name.", "Legacy Verb Finder") as null|anything in options
 		if(isnull(selection)) return
 		var/selected_path = options[selection]
-		if(owner.active_legacy_admin_verb) owner.verbs -= owner.active_legacy_admin_verb
-		owner.active_legacy_admin_verb = selected_path
 		owner.verbs += selected_path
 		var/command_name = getNexusAdminVerbCommand(selected_path)
-		owner << "Legacy command '[command_name]' is now available. Choosing another replaces it."
-		owner.admin_blame(owner, "[owner.key] exposed [selected_path] through the Legacy Command Palette.")
+		owner << "Legacy verb '[command_name]' is available through CMD and its original Admin tab category."
+		owner.admin_blame(owner, "[owner.key] located [selected_path] through the Legacy Verb Finder.")
 
 	proc/runAction(action_id)
 		initializeNexusAdminActions()

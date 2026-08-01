@@ -4194,9 +4194,9 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/castTenkaichiMeleeTechnique
 - Signature: `mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)`
 - Inputs: the owned Roleplay Tenkaichi technique object.
-- Purpose: Validate equipment, RPMode, target, range, energy and cooldown before routing the strike through native `Melee()`.
+- Purpose: Validate equipment, RPMode, target, range, energy and cooldown before routing ordinary strikes through native `Melee()` and dispatching line dash, pursuit, delayed barrage, grapple and counter behaviors.
 - Returns: boolean success flag.
-- Side effects: may dash to the selected target, spend energy and establish a one-use melee modifier context.
+- Side effects: may move through targets, pursue over time, consume a grab, prepare a riposte, spend energy or establish a one-use melee modifier context.
 
 #### obj/Attacks/TenkaichiMeleeTechnique/proc/applyOnHit
 - Signature: `applyOnHit(mob/attacker, mob/target, damage)`
@@ -4211,6 +4211,36 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Purpose: Resolve supplemental technique hits using Nexus KO, lethal, safe-zone and RPMode rules.
 - Returns: boolean success flag.
 - Side effects: changes target Health and may trigger KO or Death.
+
+#### mob/proc/resolveTenkaichiTechniqueHit
+- Signature: `mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTechnique/technique, damage_multiplier, force_hit)`
+- Inputs: target, technique definition, optional damage multiplier and forced-hit flag.
+- Purpose: Resolve specialized melee hits through Nexus accuracy, dodge, guard, damage, KO and lethal rules.
+- Returns: boolean success flag.
+- Side effects: may damage, bleed, stun or knock back the target.
+
+#### mob/proc/tryTenkaichiRiposte
+- Signature: `mob/proc/tryTenkaichiRiposte(mob/attacker)`
+- Inputs: incoming melee attacker.
+- Purpose: Consume a prepared Riposte and counter the incoming attack before its energy and damage resolution.
+- Returns: boolean indicating whether the incoming attack was intercepted.
+- Side effects: stuns and counterattacks the attacker.
+
+### src/Code/Combat/TenkaichiSpecialStyles.dm
+
+#### obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/proc/useStyle
+- Signature: `useStyle(mob/user)`
+- Inputs: attack owner.
+- Purpose: Create a five-tile persistent fire wall instead of approximating the technique as a projectile fan.
+- Returns: boolean success flag.
+- Side effects: spends energy and creates temporary flame-field controllers.
+
+#### obj/Effect/TenkaichiFlameField/proc/processField
+- Signature: `processField()`
+- Inputs: none.
+- Purpose: Apply bounded periodic Ki damage, burn and brief stun to enemies occupying the field.
+- Returns: none (implicit).
+- Side effects: damages each target at most six times and deletes the field when its duration ends.
 
 #### proc/BubbleSort
 - Signature: `proc/BubbleSort(list/l)`
