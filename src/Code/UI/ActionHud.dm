@@ -75,6 +75,13 @@ proc/drawNexusShortcutGlyph(icon/button_icon, action_id, glyph_color)
 			button_icon.DrawBox(glyph_color, 19, 8, 21, 21)
 			button_icon.DrawBox("#21170e", 9, 12, 11, 14)
 			button_icon.DrawBox("#21170e", 13, 15, 17, 17)
+		if("menu")
+			button_icon.DrawBox(glyph_color, 6, 8, 21, 10)
+			button_icon.DrawBox(glyph_color, 6, 13, 21, 15)
+			button_icon.DrawBox(glyph_color, 6, 18, 21, 20)
+			button_icon.DrawBox("#21170e", 8, 9, 9, 9)
+			button_icon.DrawBox("#21170e", 8, 14, 9, 14)
+			button_icon.DrawBox("#21170e", 8, 19, 9, 19)
 		if("admin")
 			button_icon.DrawBox(glyph_color, 7, 8, 20, 12)
 			button_icon.DrawBox(glyph_color, 9, 12, 18, 21)
@@ -117,7 +124,8 @@ mob/proc/getNexusShortcutTypes()
 		/obj/NexusHud/ShortcutButton/Sense,
 		/obj/NexusHud/ShortcutButton/Chat,
 		/obj/NexusHud/ShortcutButton/Hotkeys,
-		/obj/NexusHud/ShortcutButton/Command)
+		/obj/NexusHud/ShortcutButton/Command,
+		/obj/NexusHud/ShortcutButton/Menu)
 	if(IsAdmin())
 		shortcut_types += /obj/NexusHud/ShortcutButton/World
 		shortcut_types += /obj/NexusHud/ShortcutButton/Admin
@@ -322,6 +330,7 @@ obj/NexusHud/ShortcutButton
 			if("chat") owner.toggleNexusChatHud()
 			if("hotkeys") owner.showNexusHotkeyEditor()
 			if("cmd") owner.showNexusCommandPrompt()
+			if("menu") owner.PressEscape()
 			if("admin") owner.showNexusAdminPanel(FALSE)
 		owner.refreshActionHud()
 
@@ -361,7 +370,12 @@ obj/NexusHud/ShortcutButton
 	Command
 		action_id = "cmd"
 		accent_color = "#d8d8d8"
-		desc = "Enter any available Dream Seeker command"
+		desc = "Focus the command bar below chat"
+
+	Menu
+		action_id = "menu"
+		accent_color = "#e0bd74"
+		desc = "Open the Escape menu"
 
 	Admin
 		action_id = "admin"
@@ -370,11 +384,9 @@ obj/NexusHud/ShortcutButton
 
 mob/proc/showNexusCommandPrompt()
 	if(!client || !playerCharacter) return
-	var/command_line = input(src, "Enter a command exactly as you would in Dream Seeker. Available verbs and admin permissions are still enforced normally.", "CMD") as null|text
-	if(isnull(command_line)) return
-	command_line = trimtext(copytext("[command_line]", 1, 1001))
-	if(!length(command_line)) return
-	winset(src, null, list2params(list("command" = command_line)))
+	if(!client.nexus_chat_hud) initializeNexusChatHud()
+	else if(!client.nexus_chat_hud.is_visible) client.nexus_chat_hud.setVisible(TRUE)
+	winset(src, "nexuschatwindow.command", "focus=true")
 
 datum/NexusPlayerMenu
 	var/tmp/mob/owner
@@ -623,7 +635,9 @@ datum/NexusPlayerMenu
 			item_count++
 			var/status_text = item.suffix ? "[item.suffix]" : "Carried"
 			var/description_text = item.desc ? "[item.desc]" : "No description available."
-			html += "<a class='card with-icon' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_item&item=\ref[item]';return false;\" href='byond://?src=\ref[src]&action=use_item&item=\ref[item]'>[buildIcon(item, "[item]")]<div class='card-copy'><span>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><em>LEFT: USE / RIGHT: EXAMINE</em></a>"
+			var/use_url = "byond://?src=\ref[src]&action=use_item&item=\ref[item]"
+			var/examine_url = "byond://?src=\ref[src]&action=examine_item&item=\ref[item]"
+			html += "<div class='card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[examine_url]')\" oncontextmenu=\"window.location.href='[examine_url]';return false;\">[buildIcon(item, "[item]")]<div class='card-copy'><span>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><div class='card-actions'><a href='[use_url]'>USE</a><a href='[examine_url]'>EXAMINE</a></div></div>"
 		if(!item_count) html += "<div class='empty'>This character is not carrying any items.</div>"
 		return html
 
@@ -634,8 +648,9 @@ datum/NexusPlayerMenu
 			if(!skill.hotbar_type) continue
 			skill_count++
 			var/mastery_text = nexusIsFiniteNumber(skill.Mastery) ? "Mastery [round(skill.Mastery, 0.1)]%" : "Learned"
-			var/use_link = hascall(skill, "Hotbar_use") ? "<a class='use' href='byond://?src=\ref[src]&action=use_skill&skill=\ref[skill]'>USE</a>" : ""
-			html += "<div class='card with-icon' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_skill&skill=\ref[skill]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>RIGHT CLICK: DAMAGE / RANGE / USAGE</small></div>[use_link]</div>"
+			var/skill_examine_url = "byond://?src=\ref[src]&action=examine_skill&skill=\ref[skill]"
+			var/use_link = hascall(skill, "Hotbar_use") ? "<a href='byond://?src=\ref[src]&action=use_skill&skill=\ref[skill]'>USE</a>" : ""
+			html += "<div class='card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[skill_examine_url]')\" oncontextmenu=\"window.location.href='[skill_examine_url]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>Damage, range and usage details available.</small></div><div class='card-actions'>[use_link]<a href='[skill_examine_url]'>EXAMINE</a></div></div>"
 		if(!skill_count) html += "<div class='empty'>No techniques are registered on this character.</div>"
 		return html
 
@@ -660,7 +675,9 @@ datum/NexusPlayerMenu
 			if(has_sense_three)
 				details += "<small>[html_encode("[target.Race]")] / [html_encode("[target.alignment]")]</small>"
 				details += "<div class='sense-stats'><i>STR [target.strpcnt_rate()]</i><i>END [target.durpcnt_rate()]</i><i>SPD [target.spdpcnt_rate()]</i><i>FOR [target.powpcnt_rate()]</i><i>RES [target.respcnt_rate()]</i><i>OFF [target.offpcnt_rate()]</i><i>DEF [target.defpcnt_rate()]</i></div>"
-			html += "<a class='card with-icon sense-card' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_sense&target=\ref[target]';return false;\" href='byond://?src=\ref[src]&action=target&target=\ref[target]'>[buildIcon(target, "[target]")]<div class='card-copy'><span>[html_encode(location_text)]</span><b>[html_encode("[target]")]</b>[details]</div><em>LEFT: TARGET / RIGHT: EXAMINE</em></a>"
+			var/target_url = "byond://?src=\ref[src]&action=target&target=\ref[target]"
+			var/sense_examine_url = "byond://?src=\ref[src]&action=examine_sense&target=\ref[target]"
+			html += "<div class='card with-icon sense-card with-actions' onmousedown=\"return nexusRightClick(window.event,'[sense_examine_url]')\" oncontextmenu=\"window.location.href='[sense_examine_url]';return false;\">[buildIcon(target, "[target]")]<div class='card-copy'><span>[html_encode(location_text)]</span><b>[html_encode("[target]")]</b>[details]</div><div class='card-actions'><a href='[target_url]'>TARGET</a><a href='[sense_examine_url]'>EXAMINE</a></div></div>"
 		if(!target_count) html += "<div class='empty'>No readable energy signatures are nearby.</div>"
 		return html
 
@@ -690,9 +707,9 @@ datum/NexusPlayerMenu
 		var/rendered_content = buildContent()
 		if(section != "world") rendered_content = "<div class='cards'>[rendered_content]</div>"
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Menu</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{min-height:100vh;padding:10px}.header{position:sticky;top:0;z-index:2;border:2px solid #755a36;padding:8px;background:#21190f}.top{display:flex;align-items:center;gap:8px}.title{margin-right:auto}.title b{display:block;font-size:17px;letter-spacing:1px}.title small{display:block;margin-top:2px}.close{padding:6px 9px}.tabs{display:flex;gap:4px;margin-top:8px}.tab{flex:1;padding:7px;text-align:center}.content{margin-top:7px;border:2px solid #684e2f;padding:8px}.cards{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:6px}.card{position:relative;display:block;min-height:92px;padding:9px;border:2px solid #624b30;background:#2a2117;color:#ead7ad;text-decoration:none}.card:hover{border-color:#bd9655;background:#392a1b}.card span,.card b,.card small,.card em{display:block}.card span{color:#c69c57;font-size:9px}.card b{margin:6px 0;font-size:13px}.card small{color:#b9a37c;line-height:1.35}.card em{position:absolute;right:7px;bottom:6px;color:#e2bd72;font-size:8px;font-style:normal}.card.resource{border-color:#85652e}.card.compact{min-height:72px}.use{position:absolute;right:7px;bottom:6px;padding:4px 8px;border:1px solid #9a7440;color:#ffe2a5;text-decoration:none}.world-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}.world-grid div{min-height:64px;padding:9px;border:2px solid #644b2e;background:#2a2117}.world-grid small,.world-grid b{display:block}.world-grid b{margin-top:7px;color:#f0d79e}.empty{padding:36px;text-align:center;color:#b9a37c}h2{margin:10px 0 7px;padding:7px;border:2px solid #755a36;font-size:13px}@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}.world-grid{grid-template-columns:repeat(2,1fr)}}
+		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{min-height:100vh;padding:10px}.header{position:sticky;top:0;z-index:2;border:2px solid #755a36;padding:8px;background:#21190f}.top{display:flex;align-items:center;gap:8px}.title{margin-right:auto}.title b{display:block;font-size:17px;letter-spacing:1px}.title small{display:block;margin-top:2px}.close{padding:6px 9px}.tabs{display:flex;gap:4px;margin-top:8px}.tab{flex:1;padding:7px;text-align:center}.content{margin-top:7px;border:2px solid #684e2f;padding:8px}.cards{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:6px}.card{position:relative;display:block;min-height:92px;padding:9px;border:2px solid #624b30;background:#2a2117;color:#ead7ad;text-decoration:none}.card.with-actions{padding-bottom:42px}.card:hover{border-color:#bd9655;background:#392a1b}.card span,.card b,.card small{display:block}.card span{color:#c69c57;font-size:9px}.card b{margin:6px 0;font-size:13px}.card small{color:#b9a37c;line-height:1.35}.card.resource{border-color:#85652e}.card.compact{min-height:72px}.card-actions{position:absolute;left:8px;right:8px;bottom:7px;display:flex;justify-content:flex-end;gap:5px}.card-actions a{display:block;padding:4px 8px;border:2px outset #9a7440;background:#49351f;color:#ffe2a5;text-decoration:none;font-size:9px;font-weight:bold}.card-actions a:active{border-style:inset}.world-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}.world-grid div{min-height:64px;padding:9px;border:2px solid #644b2e;background:#2a2117}.world-grid small,.world-grid b{display:block}.world-grid b{margin-top:7px;color:#f0d79e}.empty{padding:36px;text-align:center;color:#b9a37c}h2{margin:10px 0 7px;padding:7px;border:2px solid #755a36;font-size:13px}@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}.world-grid{grid-template-columns:repeat(2,1fr)}}
 		.card.with-icon{display:flex;gap:9px}.card-copy{flex:1;min-width:0}.item-icon{width:48px;height:48px;flex:0 0 48px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:44px;max-height:44px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}.sense-card{min-height:132px}.sense-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;margin-top:5px}.sense-stats i{font-size:8px;color:#d1b47d;font-style:normal}
-		</style></head><body><div class='shell'><div class='header'><div class='top'><div class='title'><b>NEXUS MENU / [uppertext(section)]</b><small>Pixel interface for the systems formerly hidden in legacy tabs</small></div><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><div class='tabs'>[buildNavigation()]</div></div><div class='content'>[rendered_content]</div></div></body></html>"}
+		</style><script>function nexusRightClick(e,url){e=e||window.event;if(e&&e.button==2){window.location.href=url;return false;}return true;}</script></head><body><div class='shell'><div class='header'><div class='top'><div class='title'><b>NEXUS MENU / [uppertext(section)]</b><small>Pixel interface for the systems formerly hidden in legacy tabs</small></div><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><div class='tabs'>[buildNavigation()]</div></div><div class='content'>[rendered_content]</div></div></body></html>"}
 
 	proc/show()
 		if(!owner || !owner.client || !owner.playerCharacter)
