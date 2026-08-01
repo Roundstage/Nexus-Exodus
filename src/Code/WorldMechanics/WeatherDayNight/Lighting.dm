@@ -10,10 +10,11 @@ var/list
 
 #define NEXUS_LIGHTING_PLANE 15
 #define NEXUS_HUD_PLANE 20
-#define NEXUS_GLOW_MASK_DIAMETER 517
+#define NEXUS_GLOW_MASK_DIAMETER 256
+#define NEXUS_GLOW_DEFAULT_OFFSET 7
 
-proc/getNexusGlowRangeScale(range_tiles)
-	return max(0.25, range_tiles) * world.icon_size * 2 / NEXUS_GLOW_MASK_DIAMETER
+proc/getNexusGlowRangeScale(size_tiles)
+	return max(0.25, size_tiles) * world.icon_size / NEXUS_GLOW_MASK_DIAMETER
 
 proc/getNexusAmbientMatrix(ambient_color)
 	if(!ambient_color) ambient_color = rgb(255, 255, 255, 255)
@@ -102,7 +103,7 @@ obj/NexusLighting
 		color = list(null, null, null, null, "#ffffffff")
 
 	Emitter
-		icon = 'TorchLightCircle.dmi'
+		icon = 'NexusLightGradient.dmi'
 		plane = NEXUS_LIGHTING_PLANE
 		layer = FLOAT_LAYER
 		blend_mode = BLEND_ADD
@@ -113,9 +114,11 @@ obj/NexusLighting
 			range_tiles = 2
 			light_intensity = 180
 			variation_enabled = TRUE
+			gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET
 			base_outer_alpha = 60
 			base_core_alpha = 148
 			base_range_scale = 0.25
+			base_core_scale = 0.1
 
 		New()
 			. = ..()
@@ -131,31 +134,35 @@ obj/NexusLighting
 			core_visual = null
 			. = ..()
 
-		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'TorchLightCircle.dmi', enable_variation = TRUE)
+		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			animate(src)
 			if(core_visual) animate(core_visual)
-			range_tiles = Clamp(new_range_tiles, 0.25, 10)
+			range_tiles = Clamp(new_range_tiles, 0.25, 12)
 			light_intensity = Clamp(new_intensity, 0, 255)
 			variation_enabled = enable_variation
+			gradient_offset = round(Clamp(new_gradient_offset, 1, 10))
 			icon = light_icon
+			icon_state = light_icon == 'NexusLightGradient.dmi' ? "[gradient_offset]" : ""
 			color = light_color
 			base_range_scale = getNexusGlowRangeScale(range_tiles)
-			base_outer_alpha = Clamp(round(light_intensity * 0.3), 1, 90)
-			base_core_alpha = Clamp(round(light_intensity * 0.82), 1, 230)
+			base_core_scale = base_range_scale * 0.42
+			base_outer_alpha = Clamp(round(light_intensity * 0.42), 1, 120)
+			base_core_alpha = Clamp(round(light_intensity * 0.78), 1, 220)
 			alpha = base_outer_alpha
 			transform = matrix() * base_range_scale
 			if(core_visual)
 				core_visual.icon = light_icon
+				core_visual.icon_state = light_icon == 'NexusLightGradient.dmi' ? "1" : ""
 				core_visual.color = light_color
 				core_visual.alpha = base_core_alpha
-				core_visual.transform = matrix() * 0.36
+				core_visual.transform = matrix() * base_core_scale
 			if(enable_variation && light_intensity > 0)
 				var/variation_time = rand(7, 11)
-				animate(src, alpha = max(1, round(base_outer_alpha * 0.84)), transform = matrix() * base_range_scale * 1.035, time = variation_time, loop = -1, easing = SINE_EASING)
+				animate(src, alpha = max(1, round(base_outer_alpha * 0.9)), transform = matrix() * base_range_scale * 1.025, time = variation_time, loop = -1, easing = SINE_EASING)
 				animate(src, alpha = base_outer_alpha, transform = matrix() * base_range_scale, time = variation_time, easing = SINE_EASING)
 				if(core_visual)
-					animate(core_visual, alpha = max(1, round(base_core_alpha * 0.9)), transform = matrix() * 0.34, time = variation_time + 1, loop = -1, easing = SINE_EASING)
-					animate(core_visual, alpha = base_core_alpha, transform = matrix() * 0.36, time = variation_time + 1, easing = SINE_EASING)
+					animate(core_visual, alpha = max(1, round(base_core_alpha * 0.92)), transform = matrix() * base_core_scale * 0.96, time = variation_time + 1, loop = -1, easing = SINE_EASING)
+					animate(core_visual, alpha = base_core_alpha, transform = matrix() * base_core_scale, time = variation_time + 1, easing = SINE_EASING)
 			return src
 
 atom/movable
@@ -165,11 +172,11 @@ atom/movable
 		nexus_action_glow_generation = 0
 
 	proc
-		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')
+		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			if(!nexus_glow)
 				nexus_glow = new
 				vis_contents += nexus_glow
-			nexus_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE)
+			nexus_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset)
 			CenterIcon(nexus_glow)
 			return nexus_glow
 
@@ -179,12 +186,12 @@ atom/movable
 			del(nexus_glow)
 			nexus_glow = null
 
-		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')
+		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			nexus_action_glow_generation++
 			if(!nexus_action_glow)
 				nexus_action_glow = new
 				vis_contents += nexus_action_glow
-			nexus_action_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE)
+			nexus_action_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset)
 			CenterIcon(nexus_action_glow)
 			return nexus_action_glow
 
@@ -195,15 +202,15 @@ atom/movable
 			del(nexus_action_glow)
 			nexus_action_glow = null
 
-		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')
+		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor = 0
 			var/obj/NexusLighting/Emitter/pulse = new
-			pulse.configureNexusEmitter(light_color, size, light_alpha, light_icon, FALSE)
+			pulse.configureNexusEmitter(light_color, size, light_alpha, light_icon, FALSE, gradient_offset)
 			CenterIcon(pulse)
 			vis_contents += pulse
-			var/range_scale = getNexusGlowRangeScale(size)
+			var/range_scale = pulse.base_range_scale
 			animate(pulse, alpha = 0, transform = matrix() * range_scale * 1.18, time = max(1, duration), easing = SINE_EASING)
-			if(pulse.core_visual) animate(pulse.core_visual, alpha = 0, transform = matrix() * 0.42, time = max(1, duration), easing = SINE_EASING)
+			if(pulse.core_visual) animate(pulse.core_visual, alpha = 0, transform = matrix() * pulse.base_core_scale * 1.18, time = max(1, duration), easing = SINE_EASING)
 			sleep(max(1, duration))
 			if(pulse)
 				vis_contents -= pulse
@@ -271,12 +278,15 @@ mob/Admin2/verb/setMaximumDarkness()
 mob/Admin2/verb/testNexusGlow()
 	set name = "Test Glow"
 	set category = "Admin"
-	var/light_range = input(src, "Choose the test light radius in tiles (0.5 to 8).", "Test Glow", 4) as num|null
-	if(isnull(light_range)) return
-	light_range = Clamp(light_range, 0.5, 8)
-	setNexusActionGlow("#ffffff", light_range, 255)
+	var/light_size = input(src, "Choose the total light diameter in tiles (0.5 to 12). A size of 1 covers one tile.", "Test Glow", 1) as num|null
+	if(isnull(light_size)) return
+	light_size = Clamp(light_size, 0.5, 12)
+	var/gradient_offset = input(src, "Choose the gradient offset (1 to 10). 1 is a tight falloff; 10 fades slowly across the selected size.", "Test Glow", 10) as num|null
+	if(isnull(gradient_offset)) return
+	gradient_offset = round(Clamp(gradient_offset, 1, 10))
+	setNexusActionGlow("#ffffff", light_size, 255, 'NexusLightGradient.dmi', gradient_offset)
 	var/test_generation = nexus_action_glow_generation
-	src << "A maximum-intensity white glow with a [light_range]-tile falloff will remain attached to you for 10 seconds."
+	src << "A maximum-intensity white glow with a [light_size]-tile diameter and gradient offset [gradient_offset] will remain attached to you for 10 seconds."
 	spawn(100) if(src && nexus_action_glow_generation == test_generation) clearNexusActionGlow()
 
 mob/Admin2/verb/testNexusBlast()
@@ -334,7 +344,7 @@ atom
 obj
 	LightSource
 		parent_type = /obj/NexusLighting/Emitter
-		icon = 'TorchLightCircle.dmi'
+		icon = 'NexusLightGradient.dmi'
 		density = 0
 		Savable = 0
 		plane = NEXUS_LIGHTING_PLANE
@@ -348,7 +358,8 @@ obj
 			max_alpha = 70
 			fade_with_day = 1
 			light_range = 1
-			light_icon_resource = 'TorchLightCircle.dmi'
+			light_icon_resource = 'NexusLightGradient.dmi'
+			light_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET
 			tmp/light_transition_generation = 0
 
 		New()
@@ -377,7 +388,7 @@ obj
 				set waitfor=0
 				light_transition_generation++
 				var/transition_generation = light_transition_generation
-				configureNexusEmitter(color, light_range, getRenderedAlpha(), light_icon_resource, FALSE)
+				configureNexusEmitter(color, light_range, getRenderedAlpha(), light_icon_resource, FALSE, light_gradient_offset)
 				var/outer_target = base_outer_alpha
 				var/core_target = base_core_alpha
 				alpha = 0
@@ -386,14 +397,14 @@ obj
 				if(core_visual) animate(core_visual, alpha = core_target, time = n, easing = SINE_EASING)
 				sleep(n)
 				if(src && transition_generation == light_transition_generation)
-					configureNexusEmitter(color, light_range, getRenderedAlpha(), light_icon_resource, TRUE)
+					configureNexusEmitter(color, light_range, getRenderedAlpha(), light_icon_resource, TRUE, light_gradient_offset)
 					CenterIcon(src)
 
 	proc
 		RemoveLightSource()
 			if(light_obj) del(light_obj)
 
-		GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'TorchLightCircle.dmi')
+		GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor=0
 
 			//too many lights on screen can crash people. so dont add a light if too many nearby objects already have lights
@@ -412,10 +423,11 @@ obj
 			l.fade_with_day = auto_fade
 			l.light_range = size
 			l.light_icon_resource = light_icon
+			l.light_gradient_offset = round(Clamp(gradient_offset, 1, 10))
 
 			var/area/a = get_area()
 			var/show_light = !a || !a.is_day || !l.fade_with_day
-			l.configureNexusEmitter(light_color, size, l.getRenderedAlpha(), light_icon, show_light)
+			l.configureNexusEmitter(light_color, size, l.getRenderedAlpha(), light_icon, show_light, l.light_gradient_offset)
 			CenterIcon(l)
 			if(!show_light)
 				animate(l)
