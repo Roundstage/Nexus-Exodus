@@ -113,7 +113,7 @@ mob/proc/BeamStream(obj/Attacks/A)
 	charging_beam=0
 	A.charging=0
 	A.streaming=1
-	setNexusActionGlow(getNexusAttackGlowColor(A), 3.8, 235)
+	startNexusBeamGlow(A)
 	overlays-=BlastCharge
 
 	var/list/states = icon_states(icon)
@@ -197,7 +197,7 @@ mob/proc/BeamCharge(obj/Attacks/A)
 	StopMovement()
 	attacking=2 //Was 3
 	current_beam=A
-	setNexusActionGlow(getNexusAttackGlowColor(A), 3.2, 215)
+	startNexusKiCharge(A, 1.25)
 	overlays.Remove(BlastCharge,BlastCharge)
 	overlays+=BlastCharge
 	player_view(10,src)<<sound('BasicbeamCharge.ogg',volume=20)

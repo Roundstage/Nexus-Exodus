@@ -136,6 +136,7 @@ mob/proc
 
 	SpiritBombBegin(obj/Attacks/Genki_Dama/sb)
 		sb.charging = 1
+		startNexusKiCharge(sb, 1.55)
 		var/turf/blast_loc = SpiritBombSpawnLoc(sb.y_offset)
 		var/obj/Blast/Genki_Dama/b = new(blast_loc)
 		if(!b)
@@ -242,6 +243,7 @@ mob/proc
 	SpiritBombDone(obj/Attacks/Genki_Dama/sb)
 		sb.charging = 0
 		attacking = 0
+		clearNexusActionGlow()
 
 	SpiritBombChargeTime(obj/Attacks/Genki_Dama/sb)
 		var/t = sb.sb_charge_time * Speed_delay_mult(severity = sb.sb_speed_stat_influence)

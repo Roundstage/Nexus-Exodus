@@ -28,7 +28,7 @@ Primary transformation registry/controller plus Kaioken ("God Fist") drain and b
 - Purpose: Reconstruct canonical state on login and clean legacy saves containing simultaneous primaries.
 
 ### mob/proc/updateTransformationGlow()
-- Purpose: Map the active canonical transformation to a persistent colored light emitter and remove it on reversion. Saiyan, divine, Frost, Giant, Great Ape, Alien, and Ultra Instinct families have distinct profiles.
+- Purpose: Map the active canonical transformation to a persistent colored aura emitter with unsynchronized intensity/scale variation, and remove it on reversion. Saiyan, divine, Frost, Giant, Great Ape, Alien, and Ultra Instinct families have distinct profiles.
 
 ### mob/verb/transform and mob/verb/revertTransformation
 - Purpose: Player-facing verbs for direct form selection and full primary reversion.
@@ -61,7 +61,7 @@ Primary transformation registry/controller plus Kaioken ("God Fist") drain and b
 
 ### mob/proc/God_Fist(obj/God_Fist/K)
 - Purpose: Enable Kaioken usage and prompt the user.
-- Side effects: sets `K.Using`.
+- Side effects: sets `K.Using` and attaches the red aura-variation light without replacing later action lights.
 
 ### mob/proc/God_Fist_Revert(obj/God_Fist/K)
 - Purpose: Disable Kaioken and clear `K.Using`.
