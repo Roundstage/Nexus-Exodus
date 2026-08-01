@@ -8,6 +8,51 @@ mob/Admin4/verb/loadExternalMapFile()
 	admin_blame(src, "[key] loaded an external map into the game.", TRUE)
 	mapLoadExternal(f)
 
+mob/Admin3/verb/giveMutation(mob/character in players)
+	set name = "Give Mutation"
+	set category = "Admin"
+	if(AdminLevel() < 3 || !character || !character.playerCharacter) return
+	var/list/mutation_options = list()
+	for(var/mutation_id in CHARACTER_MUTATIONS)
+		var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+		mutation_options["[mutation.stat] ([mutation_id])"] = mutation_id
+	var/mutation_label = input(src, "Choose a mutation to add or update on [character].", "Give Mutation") as null|anything in mutation_options
+	if(isnull(mutation_label)) return
+	var/selected_mutation = mutation_options[mutation_label]
+	var/current_percent = max(0, text2num("[character.character_mutations[selected_mutation]]"))
+	var/new_percent = input(src, "Set the mutation strength from 1% to 30%.", "Give Mutation", max(1, current_percent)) as null|num
+	if(isnull(new_percent)) return
+	new_percent = Clamp(round(new_percent), 1, 30)
+	if(!character.setCharacterMutationValue(selected_mutation, new_percent))
+		src << "The mutation could not be granted."
+		return
+	admin_blame(src, "[key] set [character]'s [selected_mutation] mutation from [current_percent]% to [new_percent]%")
+	src << "[character] now has [selected_mutation] at [new_percent]%."
+	character << "An administrator granted you the [selected_mutation] mutation at [new_percent]%."
+
+mob/Admin3/verb/rollMutations(mob/character in players)
+	set name = "Roll Mutations"
+	set category = "Admin"
+	if(AdminLevel() < 3 || !character || !character.playerCharacter) return
+	if(islist(character.character_mutations) && character.character_mutations.len)
+		if(alert(src, "This replaces [character]'s current mutations and their stat modifiers.", "Roll Mutations", "Continue", "Cancel") != "Continue") return
+	var/rarity_choice = input(src, "Use the natural rarity roll or force a mutation rarity.", "Roll Mutations") as null|anything in list("Natural Roll", "Common", "Uncommon", "Rare", "Anomaly")
+	if(isnull(rarity_choice)) return
+	var/forced_rarity = rarity_choice == "Natural Roll" ? null : rarity_choice
+	if(!character.rerollCharacterMutations(forced_rarity))
+		src << "The mutation roll failed."
+		return
+	var/result = "None"
+	if(character.character_mutations.len)
+		var/list/mutation_results = list()
+		for(var/mutation_id in character.character_mutations)
+			mutation_results += "[mutation_id] [character.character_mutations[mutation_id]]%"
+		result = jointext(mutation_results, ", ")
+	var/rarity_result = character.mutation_rarity ? character.mutation_rarity : "None"
+	admin_blame(src, "[key] rerolled [character]'s mutations using [rarity_choice]: [result]")
+	src << "[character]'s mutation result ([rarity_result]): [result]."
+	character << "An administrator rerolled your mutations. Result: [result]."
+
 mob/Admin2/verb/bugLogs()
 	set name = "Bug Logs"
 	set category="Admin"

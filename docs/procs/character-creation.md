@@ -33,6 +33,8 @@ Argument names, order, type annotations, and defaults below match the current de
 - `mob/proc/getCharacterMutationRarity()` derives a compatible rarity from the current admin-editable mutation set.
 - `mob/proc/applyCharacterMutationRatio(mutation_id, ratio)` adjusts the affected live stat and growth modifier by a reversible ratio.
 - `mob/proc/setCharacterMutationValue(mutation_id, percent)` safely adds, changes, or removes an admin-managed mutation without stacking the previous bonus.
+- `mob/proc/clearCharacterMutations()` reverses every current mutation modifier before clearing the saved mutation state.
+- `mob/proc/rerollCharacterMutations(forced_rarity)` removes the old modifiers, rolls a new set, and applies the new modifiers to a live character.
 - `mob/proc/applyCharacterMutations()` multiplicatively applies the saved percentages.
 
 ### NexusCharacterCreation.dm

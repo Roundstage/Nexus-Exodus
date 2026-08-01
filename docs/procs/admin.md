@@ -11,6 +11,11 @@ Administrative commands and management flows. The `Edit` verb routes to the stru
 
 ## Proc Reference
 
+### src/Code/Admin/AdminVerbs.dm
+
+- `giveMutation(character)` grants or updates one mutation at 1% through 30% for a playable character.
+- `rollMutations(character)` replaces the target's live mutation modifiers using either the natural rarity roll or a forced rarity.
+
 ### src/Code/Admin/Admin.dm
 
 #### mob/Admin4/verb/toggleAdminInfKnowledgeForSelf

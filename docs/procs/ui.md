@@ -24,9 +24,9 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 
 ### src/Code/UI/ActionHud.dm
 
-- `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons and hides their obsolete skin controls.
+- `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system.
+- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the complete 128x28 controls inside the map viewport.
 - `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
 
 ### src/Code/UI/AdminInspector.dm
@@ -122,14 +122,14 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### proc/getVitalsPanelIcon
 - Signature: `proc/getVitalsPanelIcon()`
 - Inputs: None.
-- Purpose: Build or reuse the clean 380x160 translucent backdrop for the draggable vitals panel.
+- Purpose: Build or reuse the clean 320x144 translucent backdrop for the draggable vitals panel.
 - Returns: cached icon.
 - Side effects: initializes the panel icon on first use.
 
 #### proc/getVitalsBarIcon
 - Signature: `proc/getVitalsBarIcon(percent, accent_color)`
 - Inputs: percentage and accent color.
-- Purpose: Build or reuse a 220x24 native progress-bar icon with proportional fill.
+- Purpose: Build or reuse a 184x20 native progress-bar icon with proportional fill.
 - Returns: cached icon.
 - Side effects: initializes a cache entry on first use.
 
@@ -137,7 +137,7 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 - Signature: `proc/getPowerGaugeIcon(percent, over_limit)`
 - Inputs: normalized soft-cap progress and over-limit state.
 - Purpose: Build either lateral power gauge, switching from violet to red above the efficient limit.
-- Returns: cached 9x96 icon.
+- Returns: cached 7x78 icon.
 - Side effects: initializes a cache entry on first use.
 
 #### mob/proc/initializeVitalsHud
@@ -150,7 +150,7 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### mob/proc/initializeMainVitalsHud
 - Signature: `mob/proc/initializeMainVitalsHud()`
 - Inputs: None.
-- Purpose: Create the lower-left panel with a centered enlarged character, three vitals rows, lateral power gauges, and a percentage readout.
+- Purpose: Create the lower-left panel with a centered enlarged character, four vitals rows, lateral power gauges, and a percentage readout.
 - Returns: none (implicit).
 - Side effects: creates one client-owned screen-object tree and synchronizes visibility with `client.show_bars`.
 
