@@ -138,6 +138,8 @@ var
 	skill_sokidan_total_factor = 7
 	skill_kienzan_damage_factor = 6
 	skill_kienzan_pierce_decay = 0.5
+	beam_skill_cooldown_ticks = 30
+	beam_clash_winner_damage_mult = 1.35
 
 	// Roleplay combat and Willpower settings adapted from Roleplay Tenkaichi.
 	WILLPOWER_LETHAL_KO_DRAIN = 30

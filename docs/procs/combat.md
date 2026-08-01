@@ -5,6 +5,10 @@ Combat resolution, skill routing, damage, and attack-specific behavior.
 
 Guided blasts use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits. Fight to the Death now directly synchronizes `sparring_mode` and `Fatal`; there is no secondary non-lethal choice, and tournaments force Casual mode.
 
+Sense tracking is persistent while Sense or a compatible scanner is owned. Client-local world images render each readable character's relative power percentage below their sprite, while appearance-matched arrows keep off-screen signatures discoverable. The replacement Sense menu adds sprite icons and exposes qualitative Strength, Endurance, Speed, Force, Resistance, Offense, and Defense ratings to Sense 3.
+
+Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Each warp fades both fighters out and back in and displays a centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
+
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
 - `src/Code/Application/Combat/SkillControllers.dm`

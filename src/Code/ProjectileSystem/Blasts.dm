@@ -614,7 +614,7 @@ obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)
 
 //avoid using this old ass proc whenever possible, it makes no sense
 mob/proc/Disabled()
-	if(KO || KB || (Frozen && !paralysis_immune) || (Action in list("Meditating","Training"))) return 1
+	if(rp_mode || KO || KB || (Frozen && !paralysis_immune) || (Action in list("Meditating","Training"))) return 1
 
 obj/Attacks/Big_Bang_Attack
 	Drain=80

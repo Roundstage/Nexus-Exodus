@@ -11,6 +11,7 @@ mob/var/tmp
 	willpower_ready_announced = FALSE
 	image/lethal_intent_status_overlay
 	image/rp_mode_status_overlay
+	rp_mode_input_lock = FALSE
 
 mob/proc/refreshCombatStatusOverlays()
 	if(sparring_mode == LETHAL_COMBAT)
@@ -79,17 +80,38 @@ mob/proc/restoreWillpower(amount, reason, announce = TRUE)
 mob/proc/setRPMode(enabled, announce = TRUE)
 	enabled = !!enabled
 	if(rp_mode == enabled)
+		if(enabled && !rp_mode_input_lock)
+			AlterInputDisabled(1)
+			rp_mode_input_lock = TRUE
+		else if(!enabled && rp_mode_input_lock)
+			AlterInputDisabled(-1)
+			rp_mode_input_lock = FALSE
 		refreshCombatStatusOverlays()
 		return
 	rp_mode = enabled
 	if(enabled)
+		if(!rp_mode_input_lock)
+			AlterInputDisabled(1)
+			rp_mode_input_lock = TRUE
 		attacking = 0
 		Auto_Attack = 0
 		Action = null
 		if(announce) player_view(22, src) << "<font color=#80c0ff>[src] enters RP Mode and withdraws from combat."
-	else if(announce)
-		player_view(22, src) << "<font color=#80c0ff>[src] leaves RP Mode."
+	else
+		if(rp_mode_input_lock)
+			AlterInputDisabled(-1)
+			rp_mode_input_lock = FALSE
+		if(announce) player_view(22, src) << "<font color=#80c0ff>[src] leaves RP Mode."
 	refreshCombatStatusOverlays()
+
+mob/proc/applyRegenerationHealth(amount, drains_willpower = TRUE)
+	if(amount <= 0 || Health >= 100) return 0
+	var/health_before = Health
+	Health = min(100, Health + amount)
+	var/healed = Health - health_before
+	if(drains_willpower && healed > 0 && has_entered_combat(victim = src))
+		drainWillpower(healed * 0.25, "Regenerating under combat pressure costs Willpower.", announce = FALSE)
+	return healed
 
 mob/proc/willpowerGetUp(force = FALSE)
 	if(!KO) return FALSE

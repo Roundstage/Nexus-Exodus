@@ -5,8 +5,38 @@ var
 
 mob/var/tmp
 	last_tap_warp = 0
+	obj/Shunkan_Ido/instant_transmission_obj
 
 mob/proc
+	getInstantTransmissionSkill()
+		if(instant_transmission_obj && instant_transmission_obj.loc == src) return instant_transmission_obj
+		instant_transmission_obj = locate(/obj/Shunkan_Ido) in src
+		return instant_transmission_obj
+
+	instantTransmissionWarpCost()
+		return max(1, max_ki * 0.0025)
+
+	CanInstantTransmissionWarp()
+		if(!CanInputMove() || BeamStruggling() || UsingAttackBarrier()) return FALSE
+		if(!getInstantTransmissionSkill()) return FALSE
+		if(Ki < instantTransmissionWarpCost()) return FALSE
+		return Can_flash_step()
+
+	directionalInstantTransmission(d)
+		set waitfor = 0
+		if(!(d in list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))) return
+		if(!CanInstantTransmissionWarp()) return
+		var/turf/old_loc = loc
+		var/mob/target = FindWarpTarget(dir_angle = d, angle_limit = 40, max_dist = 8, prefer_auto_target = 0)
+		var/warped_to_target = target && TapWarpToMob(target)
+		if(!warped_to_target && !TapWarpToDir(d, 8)) return
+		Ki = max(0, Ki - instantTransmissionWarpCost())
+		last_tap_warp = world.time
+		AfterImage(60, loc_override = old_loc)
+		flick('Zanzoken.dmi', src)
+		player_view(20, src) << sound('Teleport.ogg', volume = 18)
+		if(warped_to_target && target) Melee(target, from_auto_attack = 1)
+
 	TapWarpCantMoveTime()
 		return world.tick_lag * 2
 

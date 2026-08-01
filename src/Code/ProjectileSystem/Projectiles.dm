@@ -203,6 +203,8 @@ obj/Blast
 			beam_steps = 0 //0 = first step, increases by +1 each time
 
 	var/percent_damage=1
+	var/strength_scaled = FALSE
+	var/tmp/clash_damage_bonus_applied = FALSE
 	var/explosion_damage_factor = 0
 	var/datum/CombatDamageBudget/damage_budget
 	var/owner_immune = 0
@@ -402,6 +404,9 @@ obj/Blast
 
 	proc/getProjectileCombatDamage(mob/target, factor)
 		if(!target) return 0
+		if(strength_scaled && ismob(Owner))
+			var/mob/physical_owner = Owner
+			return physical_owner.getPhysicalCombatDamage(target, factor)
 		var/guard_stat = Bullet ? target.End : target.Res
 		return calculateScaledCombatDamage(factor, BP, target.BP, Force, guard_stat)
 
@@ -709,6 +714,15 @@ obj/Blast
 									C.layer = initial(C.layer) - 0.2
 
 							var/winning = BeamStruggleWinning(src, A)
+							if(Owner && A.Owner && world.time >= Owner.next_beam_clash_notice)
+								var/your_pressure = round(BeamStrugglePower() / max(1, A.BeamStrugglePower()), 0.01)
+								Owner << "<font color=#ffe38a><b>BEAM CLASH</b>: pressure [your_pressure]x against [A.Owner]."
+								A.Owner << "<font color=#ffe38a><b>BEAM CLASH</b>: pressure [round(1 / max(0.01, your_pressure), 0.01)]x against [Owner]."
+								player_view(15, src) << "<font color=#ffd060>The beams collide and the air tears around the impact!"
+								player_view(15, src) << sound('Explosion2.wav', volume = 36)
+								Make_Shockwave(src, sw_icon_size = 128)
+								Owner.next_beam_clash_notice = world.time + 10
+								A.Owner.next_beam_clash_notice = world.time + 10
 							//var/dist_to_owner = getdist(src, Owner)
 							//var/dist_to_enemy = getdist(src, A.Owner)
 
@@ -731,6 +745,9 @@ obj/Blast
 							//if(prob(70) && dist_to_owner > 1 && dist_to_enemy > 1)
 							//	winning = 0
 							if(winning == 1) //winning
+								if(!clash_damage_bonus_applied)
+									percent_damage *= beam_clash_winner_damage_mult
+									clash_damage_bonus_applied = TRUE
 								for(var/obj/Blast/B in Get_step(A, turn(A.dir, 180)))
 									if(B.dir == A.dir && B.Owner == Owner)
 										B.icon_state = "struggle"

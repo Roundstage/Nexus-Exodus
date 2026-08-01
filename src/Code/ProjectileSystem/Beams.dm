@@ -320,6 +320,7 @@ obj/Attacks/Masenko
 
 obj/Attacks/var
 	Wave
+	tmp/next_beam_use = 0
 	chargelvl=1
 	WaveMult
 	Range=20

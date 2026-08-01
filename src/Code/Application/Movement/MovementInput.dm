@@ -104,6 +104,7 @@ mob/proc
 
 	CanInputMove()
 		if(input_disabled) return
+		if(rp_mode) return
 		if(in_dragon_rush) return
 		if(stun_level && stun_stops_movement) return
 		else return 1 //and remove this line if you enable the above line

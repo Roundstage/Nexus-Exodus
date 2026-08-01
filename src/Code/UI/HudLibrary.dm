@@ -157,41 +157,44 @@ datum/NexusChatHud
 		var/start_index = max(1, end_index - visible_count + 1)
 		var/rendered = ""
 		for(var/entry_index = start_index, entry_index <= end_index, entry_index++)
-			rendered += "<div style='border-bottom:1px solid #3b2b1c;padding:2px 1px'>[entries[entry_index]]</div>"
+			if(length(rendered)) rendered += "<br><span style='color:#4b3927'>------------------------------------------------------------</span><br>"
+			rendered += "<span>[entries[entry_index]]</span>"
 		return rendered
+
+	proc/getRightAnchoredLocation(panel_width, local_x, element_width, bottom_y)
+		var/right_offset = 8 + panel_width - local_x - element_width
+		return "RIGHT:-[right_offset],BOTTOM:[bottom_y]"
 
 	proc/refresh()
 		clearElements()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
-		var/panel_x = Clamp(round(owner.nexus_chat_hud_x), 8, 900)
 		var/panel_y = 8
 		var/panel_width = Clamp(round(owner.nexus_chat_hud_width), 360, 820)
 		var/panel_height = Clamp(round(owner.nexus_chat_hud_height), 130, 460)
-		owner.nexus_chat_hud_x = panel_x
 		owner.nexus_chat_hud_width = panel_width
 		owner.nexus_chat_hud_height = panel_height
 		if(owner.nexus_chat_hud_collapsed) panel_height = 24
-		addElementAt("", null, "LEFT:[panel_x],BOTTOM:[panel_y]", panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
+		addElementAt("", null, getRightAnchoredLocation(panel_width, 0, panel_width, panel_y), panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
 		var/header_y = panel_y + panel_height - 22
 		var/control_width = 21
-		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "move_left" = "<-", "move_right" = "->", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
-		var/control_x = panel_x + panel_width - 4 - (header_actions.len * control_width)
-		addElementAt("CHAT / [uppertext(active_channel)]", null, "LEFT:[panel_x + 4],BOTTOM:[header_y]", max(60, control_x - panel_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
+		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
+		var/control_x = panel_width - 4 - (header_actions.len * control_width)
+		addElementAt("CHAT / [uppertext(active_channel)]", null, getRightAnchoredLocation(panel_width, 4, max(60, control_x - 4), header_y), max(60, control_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
 		for(var/action_id in header_actions)
-			addElementAt(header_actions[action_id], action_id, "LEFT:[control_x],BOTTOM:[header_y]", control_width, 20, "#46321d", "#987140", "", "#f2d8a0", "center", 8)
+			addElementAt(header_actions[action_id], action_id, getRightAnchoredLocation(panel_width, control_x, control_width, header_y), control_width, 20, "#46321d", "#987140", "", "#f2d8a0", "center", 8)
 			control_x += control_width
 		if(owner.nexus_chat_hud_collapsed) return
 		var/tab_y = panel_y + panel_height - 43
 		var/tab_width = round((panel_width - 8) / 4)
-		var/tab_x = panel_x + 4
+		var/tab_x = 4
 		for(var/channel in list("all", "combat", "ic", "ooc"))
 			var/is_active = channel == active_channel
-			addElementAt(uppertext(channel), "channel:[channel]", "LEFT:[tab_x],BOTTOM:[tab_y]", tab_width, 19, is_active ? "#725027" : "#302319", is_active ? "#d2aa61" : "#725735", is_active ? "#e0bd74" : "", is_active ? "#fff0bd" : "#cbb389", "center", 8)
+			addElementAt(uppertext(channel), "channel:[channel]", getRightAnchoredLocation(panel_width, tab_x, tab_width, tab_y), tab_width, 19, is_active ? "#725027" : "#302319", is_active ? "#d2aa61" : "#725735", is_active ? "#e0bd74" : "", is_active ? "#fff0bd" : "#cbb389", "center", 8)
 			tab_x += tab_width
 		var/footer_height = 22
 		var/message_y = panel_y + footer_height
 		var/message_height = max(40, panel_height - 68)
-		var/obj/message_panel = addElementAt("", null, "LEFT:[panel_x + 4],BOTTOM:[message_y]", panel_width - 8, message_height, "#130f0b", "#574128", "", "#ead7b0", "left", 8, FALSE)
+		var/obj/message_panel = addElementAt("", null, getRightAnchoredLocation(panel_width, 4, panel_width - 8, message_y), panel_width - 8, message_height, "#130f0b", "#574128", "", "#ead7b0", "left", 8, FALSE)
 		message_panel.maptext_x = 7
 		message_panel.maptext_y = 5
 		message_panel.maptext_width = panel_width - 22
@@ -199,9 +202,9 @@ datum/NexusChatHud
 		message_panel.maptext = "<div style='font-family:Courier New;font-size:8px;color:#ead7b0'>[buildMessageHtml()]</div>"
 		var/list/footer_actions = list("say" = "SAY", "ooc" = "OOC", "emote" = "EMOTE", "logs" = "LOGS")
 		var/footer_width = round((panel_width - 8) / footer_actions.len)
-		var/footer_x = panel_x + 4
+		var/footer_x = 4
 		for(var/action_id in footer_actions)
-			addElementAt(footer_actions[action_id], action_id, "LEFT:[footer_x],BOTTOM:[panel_y + 2]", footer_width, 18, "#3c2b1a", "#846238", "", "#ead09a", "center", 8)
+			addElementAt(footer_actions[action_id], action_id, getRightAnchoredLocation(panel_width, footer_x, footer_width, panel_y + 2), footer_width, 18, "#3c2b1a", "#846238", "", "#ead09a", "center", 8)
 			footer_x += footer_width
 
 	handleAction(action_id)
@@ -215,8 +218,6 @@ datum/NexusChatHud
 				var/list/entries = owner.client.nexus_chat_history[active_channel]
 				scroll_offset = min(max(0, entries.len - 1), scroll_offset + getVisibleMessageCount())
 			if("scroll_down") scroll_offset = max(0, scroll_offset - getVisibleMessageCount())
-			if("move_left") owner.nexus_chat_hud_x = max(8, owner.nexus_chat_hud_x - 64)
-			if("move_right") owner.nexus_chat_hud_x = min(900, owner.nexus_chat_hud_x + 64)
 			if("width_down") owner.nexus_chat_hud_width = max(360, owner.nexus_chat_hud_width - 64)
 			if("width_up") owner.nexus_chat_hud_width = min(820, owner.nexus_chat_hud_width + 64)
 			if("height_down") owner.nexus_chat_hud_height = max(130, owner.nexus_chat_hud_height - 48)

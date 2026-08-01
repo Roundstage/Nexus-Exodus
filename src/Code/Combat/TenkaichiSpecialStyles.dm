@@ -57,6 +57,99 @@ obj/Attacks/TenkaichiSpecialStyle/WallOfFlame
 		player_view(15, user) << "[user] raises a persistent Wall of Flame!"
 		return TRUE
 
+obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
+	desc = "A charged Roleplay Tenkaichi projectile adapted to Nexus Exodus combat scaling."
+	var
+		energy_cost = 150
+		cooldown_ticks = 120
+		charge_ticks = 18
+		projectile_damage_factor = 10
+		explosion_size = 2
+		strength_scaled = FALSE
+		requires_weapon = FALSE
+		tmp/next_use = 0
+
+	verb/Hotbar_use()
+		set hidden = 1
+		fireChargedProjectile(usr)
+
+	proc/fireChargedProjectile(mob/user)
+		set waitfor = 0
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		if(requires_weapon && !user.using_sword())
+			user << "You must equip a weapon before using [src]."
+			return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
+		if(user.Ki < drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		next_use = world.time + cooldown_ticks
+		user.Ki -= drain
+		user.attacking = 3
+		charging = TRUE
+		user.overlays += user.BlastCharge
+		user.showTenkaichiTechniqueAnnouncement("Charging [name]", strength_scaled ? "#a9d3ff" : "#ffd45c", 'BasicbeamCharge.ogg', 42)
+		user.pulseNexusGlow(strength_scaled ? "#a8d5ff" : "#ffd75a", 4.5, 225, max(8, charge_ticks))
+		sleep(charge_ticks)
+		if(user) user.overlays -= user.BlastCharge
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast(ignore_attack_check = 1))
+			if(user) user.attacking = 0
+			charging = FALSE
+			return FALSE
+		var/obj/Blast/projectile = get_cached_blast()
+		projectile.setStats(user, Percent = projectile_damage_factor, Off_Mult = strength_scaled ? 1.2 : 1, Explosion = explosion_size, explosion_percent = projectile_damage_factor, max_damage_factor = projectile_damage_factor * 2)
+		projectile.strength_scaled = strength_scaled
+		projectile.from_attack = src
+		projectile.icon = icon
+		projectile.dir = user.dir
+		projectile.Distance = 40
+		projectile.vector_speed = 32
+		projectile.Shockwave = 2
+		projectile.SafeTeleport(user.loc)
+		CenterIcon(projectile)
+		projectile.queueNexusProjectileGlowUpdate()
+		player_view(15, user) << sound('Blast.wav', volume = 55)
+		flick("Blast", user)
+		user.attacking = 0
+		charging = FALSE
+		projectile.startKiProjectileWalk(user.dir)
+		return TRUE
+
+obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova
+	name = "Dragon Nova"
+	desc = "A giant charged energy sphere adapted from Roleplay Tenkaichi. It is slow, explosive, and intended as a Force finisher."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTDragonNova.dmi'
+	energy_cost = 200
+	cooldown_ticks = 140
+	charge_ticks = 24
+	projectile_damage_factor = 12
+	explosion_size = 4
+
+	verb/Dragon_Nova()
+		set name = "Dragon Nova"
+		set category = "Skills"
+		fireChargedProjectile(usr)
+
+obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak
+	name = "Sky Break"
+	desc = "A weapon swing that breaks the sound barrier and launches a Strength-scaled cutting blast."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTSkyBreak.dmi'
+	energy_cost = 180
+	cooldown_ticks = 130
+	charge_ticks = 16
+	projectile_damage_factor = 8
+	explosion_size = 2
+	strength_scaled = TRUE
+	requires_weapon = TRUE
+
+	verb/Sky_Break()
+		set name = "Sky Break"
+		set category = "Skills"
+		fireChargedProjectile(usr)
+
 obj/Effect/TenkaichiFlameField
 	name = "Wall of Flame"
 	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTWallOfFlame.dmi'

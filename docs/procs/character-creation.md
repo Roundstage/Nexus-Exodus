@@ -59,7 +59,7 @@ Argument names, order, type annotations, and defaults below match the current de
 - `mob/proc/autoAllocateCharacterStats()` remains available for non-Nexus callers; the Nexus creator does not use it.
 - `mob/proc/applyNexusAlienOptions(list/selected_options)` applies each validated AP option exactly once; `applyNexusAlienProfile(profile)` remains a preset wrapper.
 - `mob/proc/applyNexusAppearance(..., list/frost_form_ids)` applies a validated body, optional hair, and every selected Frost form icon.
-- `mob/proc/applyNexusStarterClothing(list/selected_ids)` creates, equips, prioritizes, and rebuilds up to four validated starting clothes.
+- `mob/proc/applyNexusStarterClothing(list/selected_ids)` creates, equips, prioritizes, and rebuilds up to four validated starting clothes. Each DMI is copied and scaled to the selected body's frame dimensions before equipment composition, and appearance is rebuilt again after `FinishNewCharacterSetup()` so setup cannot replace the equipped overlays.
 - `mob/proc/setNexusCharacterAge(requested_age)` sets birth year and age under `allow_age_choosing`.
 - `mob/proc/commitNexusCharacter(..., cooler_available, list/alien_options, list/frost_form_ids, list/starter_clothing)` validates and completes creation.
 - `proc/nexusRaceDescription(race_name)` returns the short lineage description.

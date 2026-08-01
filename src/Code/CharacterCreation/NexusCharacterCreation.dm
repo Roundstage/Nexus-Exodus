@@ -429,10 +429,17 @@ mob/proc/applyNexusAppearance(selected_race, gender_choice, body_icon_id, obj/Ha
 mob/proc/applyNexusStarterClothing(list/selected_ids)
 	var/list/options = nexusStarterClothingOptions()
 	var/priority = 500
+	var/icon/body_preview = icon(src.icon)
 	for(var/clothing_id in selected_ids)
 		var/clothing_type = options[clothing_id]
 		if(!clothing_type) continue
 		var/obj/items/Clothes/item = new clothing_type(src)
+		var/icon/clothing_preview = icon(item.icon)
+		if(body_preview && clothing_preview && (clothing_preview.Width() != body_preview.Width() || clothing_preview.Height() != body_preview.Height()))
+			clothing_preview.Scale(body_preview.Width(), body_preview.Height())
+			item.icon = clothing_preview
+		item.pixel_x = 0
+		item.pixel_y = 0
 		item.suffix = "Equipped"
 		item.appearance_managed = TRUE
 		item.appearance_priority = priority
@@ -496,6 +503,7 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 		if(src.max_ki / src.Eff < 1000) src.max_ki *= 2
 	if(prob(Cured_Vampire_Ratio() * 100)) src.Former_Vampire = 1
 	src.FinishNewCharacterSetup()
+	src.rebuildPlayerAppearance("completed character creation")
 	src.stat_version = cur_stat_ver
 	src.LoadFeats()
 	src.character_made_time = world.realtime

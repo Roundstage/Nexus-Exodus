@@ -48,7 +48,9 @@ proc/getTenkaichiBeamAttackTypes()
 proc/getTenkaichiSpecialStyleAttackTypes()
 	return list(
 		/obj/Attacks/Buster_Barrage,
-		/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame)
+		/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame,
+		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova,
+		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak)
 
 proc/getTenkaichiRockAttackTypes()
 	return list(
