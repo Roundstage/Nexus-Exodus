@@ -25,6 +25,8 @@ mob/proc
 		f["hotbar_ids"] >> hotbar_ids
 		f["nexus_hotkey_bindings"] >> nexus_hotkey_bindings
 		f["nexus_hotkey_version"] >> nexus_hotkey_version
+		if("nexus_keyboard_layout" in f) f["nexus_keyboard_layout"] >> nexus_keyboard_layout
+		nexus_keyboard_layout = normalizeNexusKeyboardLayout(nexus_keyboard_layout)
 
 	Hotkey_server_backup_save()
 		if(!client) return
@@ -33,6 +35,7 @@ mob/proc
 		f["hotbar_ids"] << hotbar_ids
 		f["nexus_hotkey_bindings"] << nexus_hotkey_bindings
 		f["nexus_hotkey_version"] << nexus_hotkey_version
+		f["nexus_keyboard_layout"] << normalizeNexusKeyboardLayout(nexus_keyboard_layout)
 
 obj/var/tmp
 	is_for_moving

@@ -1,4 +1,6 @@
-#define NEXUS_HOTKEY_VERSION 1
+#define NEXUS_HOTKEY_VERSION 2
+#define NEXUS_HOTKEY_DOUBLE_PREFIX "DOUBLE:"
+#define NEXUS_HOTKEY_DOUBLE_TAP_WINDOW 4
 
 var/list/nexus_hotkey_base_keys = list(\
 	"Space", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",\
@@ -15,25 +17,95 @@ var/list/nexus_static_hotkey_base_keys = list(\
 	"Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",\
 	"Numpad6", "Numpad7", "Numpad8", "Numpad9")
 
+var/list/nexus_keyboard_layout_ids = list("us", "br", "gb", "fr", "de", "us(dvorak)")
+
+proc/normalizeNexusKeyboardLayout(layout_id)
+	if(!istext(layout_id)) return "us"
+	layout_id = lowertext(layout_id)
+	if(layout_id in nexus_keyboard_layout_ids) return layout_id
+	return "us"
+
+proc/getNexusKeyboardLayoutName(layout_id)
+	switch(normalizeNexusKeyboardLayout(layout_id))
+		if("br") return "br - Brazilian ABNT2"
+		if("gb") return "gb - United Kingdom ISO"
+		if("fr") return "fr - French AZERTY"
+		if("de") return "de - German QWERTZ"
+		if("us(dvorak)") return "us(dvorak) - Dvorak"
+	return "us - United States ANSI"
+
+proc/getNexusKeyboardLayoutRows(layout_id)
+	switch(normalizeNexusKeyboardLayout(layout_id))
+		if("fr")
+			return list(list("A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"), list("Q", "S", "D", "F", "G", "H", "J", "K", "L", "M"), list("W", "X", "C", "V", "B", "N"))
+		if("de")
+			return list(list("Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"), list("A", "S", "D", "F", "G", "H", "J", "K", "L"), list("Y", "X", "C", "V", "B", "N", "M"))
+		if("us(dvorak)")
+			return list(list("P", "Y", "F", "G", "C", "R", "L"), list("A", "O", "E", "U", "I", "D", "H", "T", "N", "S"), list("Q", "J", "K", "X", "B", "M", "W", "V", "Z"))
+	return list(list("Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"), list("A", "S", "D", "F", "G", "H", "J", "K", "L"), list("Z", "X", "C", "V", "B", "N", "M"))
+
+proc/getNexusUnixKeyName(base_key)
+	base_key = normalizeNexusHotkeyBase(base_key)
+	if(!base_key) return "unknown"
+	switch(base_key)
+		if("Space") return "space"
+		if("Back") return "backspace"
+		if("Insert") return "insert"
+		if("Delete") return "delete"
+		if("Pause") return "pause"
+		if("Multiply") return "kp_multiply"
+		if("Add") return "kp_add"
+		if("Subtract") return "kp_subtract"
+		if("Divide") return "kp_divide"
+		if("Separator") return "kp_separator"
+	if(findtext(base_key, "Numpad") == 1) return "kp_[lowertext(copytext(base_key, 7))]"
+	return lowertext(base_key)
+
 proc/normalizeNexusHotkeyBase(base_key)
 	if(!istext(base_key)) return
 	for(var/allowed_key in nexus_hotkey_base_keys)
 		if(lowertext(allowed_key) == lowertext(base_key)) return allowed_key
 
-proc/canonicalNexusHotkey(base_key, use_ctrl = 0, use_shift = 0, use_alt = 0)
+proc/canonicalNexusHotkey(base_key, use_ctrl = 0, use_shift = 0, use_alt = 0, tap_count = 1)
 	base_key = normalizeNexusHotkeyBase(base_key)
 	if(!base_key) return
 	var/combination = ""
 	if(use_ctrl) combination += "CTRL+"
 	if(use_shift) combination += "SHIFT+"
 	if(use_alt) combination += "ALT+"
-	return "[combination][base_key]"
+	combination = "[combination][base_key]"
+	if(tap_count >= 2) return "[NEXUS_HOTKEY_DOUBLE_PREFIX][combination]"
+	return combination
+
+proc/isNexusDoubleTapHotkey(combination)
+	return istext(combination) && findtext(combination, NEXUS_HOTKEY_DOUBLE_PREFIX) == 1
+
+proc/getNexusHotkeyTriggerCombination(combination)
+	if(!istext(combination)) return
+	if(isNexusDoubleTapHotkey(combination)) return copytext(combination, length(NEXUS_HOTKEY_DOUBLE_PREFIX) + 1)
+	return combination
 
 proc/getNexusHotkeyBase(combination)
 	if(!istext(combination)) return
+	combination = getNexusHotkeyTriggerCombination(combination)
 	var/list/parts = dd_text2list(combination, "+")
 	if(!parts.len) return
 	return normalizeNexusHotkeyBase(parts[parts.len])
+
+proc/getNexusUnixHotkeyName(combination)
+	var/trigger_combination = getNexusHotkeyTriggerCombination(combination)
+	if(!trigger_combination) return "unassigned"
+	var/list/parts = dd_text2list(trigger_combination, "+")
+	var/list/unix_parts = list()
+	for(var/part in parts)
+		switch(uppertext(part))
+			if("CTRL") unix_parts += "ctrl_l"
+			if("SHIFT") unix_parts += "shift_l"
+			if("ALT") unix_parts += "alt_l"
+			else unix_parts += getNexusUnixKeyName(part)
+	var/formatted = jointext(unix_parts, " + ")
+	if(isNexusDoubleTapHotkey(combination)) return "[formatted] + [formatted]"
+	return formatted
 
 datum/NexusHotkeyAction
 	var/action_id
@@ -94,8 +166,10 @@ proc/getNexusHotkeyAction(action_id)
 mob/var/tmp
 	list/nexus_hotkey_bindings = new
 	nexus_hotkey_version
+	nexus_keyboard_layout = "us"
 	list/active_nexus_hotkey_actions = new
 	list/active_nexus_hotkey_combinations = new
+	list/nexus_hotkey_last_press_times = new
 	list/nexus_hotkey_editor_actions = new
 	nexus_hotkey_editor_open
 
@@ -170,10 +244,27 @@ mob/proc/initializeNexusHotkeys()
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
 	if(!islist(active_nexus_hotkey_actions)) active_nexus_hotkey_actions = list()
 	if(!islist(active_nexus_hotkey_combinations)) active_nexus_hotkey_combinations = list()
+	if(!islist(nexus_hotkey_last_press_times)) nexus_hotkey_last_press_times = list()
+	nexus_keyboard_layout = normalizeNexusKeyboardLayout(nexus_keyboard_layout)
 	if(nexus_hotkey_version < NEXUS_HOTKEY_VERSION)
 		migrateLegacyHotkeyBindings()
 		nexus_hotkey_version = NEXUS_HOTKEY_VERSION
 	if(client) client.syncNexusHotkeyMacros()
+
+mob/proc/getNexusHotkeyBindingIdForPress(trigger_combination, was_held = FALSE, press_time = world.time)
+	trigger_combination = getNexusHotkeyTriggerCombination(trigger_combination)
+	if(!trigger_combination) return
+	if(was_held) return trigger_combination
+	if(!islist(nexus_hotkey_last_press_times)) nexus_hotkey_last_press_times = list()
+	var/double_combination = "[NEXUS_HOTKEY_DOUBLE_PREFIX][trigger_combination]"
+	if(resolveNexusHotkeyBinding(double_combination))
+		if(trigger_combination in nexus_hotkey_last_press_times)
+			var/last_press_time = nexus_hotkey_last_press_times[trigger_combination]
+			if(isnum(last_press_time) && press_time >= last_press_time && press_time - last_press_time <= NEXUS_HOTKEY_DOUBLE_TAP_WINDOW)
+				nexus_hotkey_last_press_times -= trigger_combination
+				return double_combination
+		nexus_hotkey_last_press_times[trigger_combination] = press_time
+	return trigger_combination
 
 mob/proc/getNexusBindingDisplayName(list/binding_info)
 	if(!islist(binding_info)) return "Unassigned"
@@ -188,7 +279,7 @@ mob/proc/getNexusBindingDisplayName(list/binding_info)
 
 mob/proc/bindNexusHotkey(combination, list/binding_info)
 	if(!canonicalNexusHotkey(getNexusHotkeyBase(combination))) return 0
-	if(combination == "ALT+F4") return 0
+	if(getNexusHotkeyTriggerCombination(combination) == "ALT+F4") return 0
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
 	nexus_hotkey_bindings[combination] = binding_info.Copy()
 	nexus_hotkey_version = NEXUS_HOTKEY_VERSION
@@ -219,17 +310,21 @@ client/proc/syncNexusHotkeyMacros()
 	clearNexusHotkeyMacros()
 	if(!mob || !islist(mob.nexus_hotkey_bindings)) return
 	var/list/generated_up_keys = list()
+	var/list/generated_down_combinations = list()
 	var/macro_number = 0
 	for(var/combination in mob.nexus_hotkey_bindings)
 		if(!mob.resolveNexusHotkeyBinding(combination)) continue
+		var/trigger_combination = getNexusHotkeyTriggerCombination(combination)
 		var/base_key = getNexusHotkeyBase(combination)
-		if(!base_key) continue
-		var/is_static_bare_key = combination == base_key && (base_key in nexus_static_hotkey_base_keys)
+		if(!base_key || !trigger_combination) continue
+		var/is_static_bare_key = trigger_combination == base_key && (base_key in nexus_static_hotkey_base_keys)
 		if(is_static_bare_key) continue
+		if(trigger_combination in generated_down_combinations) continue
 		macro_number++
 		var/down_id = "nexus_hotkey_[macro_number]_down"
-		winset(src, down_id, list("parent" = "macro", "name" = combination, "command" = "nexusHotkeyDown [combination] [base_key]"))
+		winset(src, down_id, list("parent" = "macro", "name" = trigger_combination, "command" = "nexusHotkeyDown [trigger_combination] [base_key]"))
 		generated_nexus_hotkey_macros += down_id
+		generated_down_combinations += trigger_combination
 		if(!(base_key in nexus_static_hotkey_base_keys) && !(base_key in generated_up_keys))
 			var/up_id = "nexus_hotkey_[macro_number]_up"
 			winset(src, up_id, list("parent" = "macro", "name" = "[base_key]+UP", "command" = "nexusHotkeyUp [base_key]"))
@@ -242,10 +337,11 @@ mob/verb/nexusHotkeyDown(combination as text, base_key as text)
 	set waitfor = 0
 	if(nexus_hotkey_editor_open) return
 	base_key = normalizeNexusHotkeyBase(base_key)
-	if(!base_key || !resolveNexusHotkeyBinding(combination)) return
+	if(!base_key) return
+	var/was_key_held = (base_key in keys_down)
 	for(var/repetition in 1 to 3) keys_down -= base_key
 	keys_down += base_key
-	HotbarUseHandler(combination, base_key)
+	HotbarUseHandler(combination, base_key, was_key_held)
 
 mob/verb/nexusHotkeyUp(base_key as text)
 	set hidden = 1
@@ -261,12 +357,13 @@ mob/proc/getNexusKeyBindingBadges(base_key)
 		if(getNexusHotkeyBase(combination) != base_key) continue
 		var/list/binding_info = nexus_hotkey_bindings[combination]
 		var/display_name = html_encode(getNexusBindingDisplayName(binding_info))
-		badges += "<span class='binding'>[html_encode(combination)] - [display_name]<button onclick=\"event.stopPropagation();clearBinding('[combination]')\">x</button></span>"
+		var/binding_class = isNexusDoubleTapHotkey(combination) ? "binding double" : "binding single"
+		badges += "<span class='[binding_class]'><i>[html_encode(getNexusUnixHotkeyName(combination))]</i><b>[display_name]</b><button onclick=\"event.stopPropagation();clearBinding('[combination]')\">x</button></span>"
 	return badges
 
 mob/proc/renderNexusVirtualKey(base_key, display_label)
 	var/key_class = base_key == "Space" ? "key space-key" : "key"
-	return "<div class='[key_class]' ondragover='event.preventDefault()' ondrop=\"dropAction(event,'[base_key]')\"><strong>[html_encode(display_label || base_key)]</strong>[getNexusKeyBindingBadges(base_key)]</div>"
+	return "<div class='[key_class]' ondragover='event.preventDefault()' ondrop=\"dropAction(event,'[base_key]')\"><strong>[html_encode(display_label || getNexusUnixKeyName(base_key))]</strong><small>[html_encode(base_key)]</small>[getNexusKeyBindingBadges(base_key)]</div>"
 
 mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	initializeNexusHotkeys()
@@ -293,46 +390,54 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 			"display name" = "[hotkey_object]")
 		actions_html += "<div class='action-card' draggable='true' ondragstart=\"startDrag(event,'[action_token]')\"><b>[html_encode("[hotkey_object]")]</b><span>[html_encode(hotkey_object.hotbar_type)]</span></div>"
 
+	var/layout_options = ""
+	for(var/layout_id in nexus_keyboard_layout_ids)
+		var/selected = layout_id == nexus_keyboard_layout ? " selected" : ""
+		layout_options += "<option value='[html_encode(layout_id)]'[selected]>[html_encode(getNexusKeyboardLayoutName(layout_id))]</option>"
+
 	var/keyboard_html = ""
 	keyboard_html += "<div class='key-row'>"
-	for(var/key_name in list("F3", "F4", "F7", "F8", "F9", "F10", "F12", "Back", "Insert", "Delete", "Pause")) keyboard_html += renderNexusVirtualKey(key_name, key_name)
+	for(var/key_name in list("F3", "F4", "F7", "F8", "F9", "F10", "F12", "Back", "Insert", "Delete", "Pause")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
 	keyboard_html += "</div><div class='key-row'>"
-	for(var/key_name in list("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")) keyboard_html += renderNexusVirtualKey(key_name, key_name)
-	keyboard_html += "</div><div class='key-row offset-one'>"
-	for(var/key_name in list("Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P")) keyboard_html += renderNexusVirtualKey(key_name, key_name)
-	keyboard_html += "</div><div class='key-row offset-two'>"
-	for(var/key_name in list("A", "S", "D", "F", "G", "H", "J", "K", "L")) keyboard_html += renderNexusVirtualKey(key_name, key_name)
-	keyboard_html += "</div><div class='key-row offset-three'>"
-	for(var/key_name in list("Z", "X", "C", "V", "B", "N", "M")) keyboard_html += renderNexusVirtualKey(key_name, key_name)
-	keyboard_html += "</div><div class='key-row space-row'>[renderNexusVirtualKey("Space", "SPACE")]</div>"
+	for(var/key_name in list("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+	var/list/layout_rows = getNexusKeyboardLayoutRows(nexus_keyboard_layout)
+	for(var/row_number in 1 to layout_rows.len)
+		var/row_class = row_number == 1 ? "offset-one" : row_number == 2 ? "offset-two" : "offset-three"
+		keyboard_html += "</div><div class='key-row [row_class]'>"
+		var/list/layout_row = layout_rows[row_number]
+		for(var/key_name in layout_row) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+	keyboard_html += "</div><div class='key-row space-row'>[renderNexusVirtualKey("Space", "space")]</div>"
 
 	var/numpad_html = ""
 	for(var/key_name in list("Numpad7", "Numpad8", "Numpad9", "Divide", "Numpad4", "Numpad5", "Numpad6", "Multiply", "Numpad1", "Numpad2", "Numpad3", "Subtract", "Numpad0", "Separator", "Add"))
-		numpad_html += renderNexusVirtualKey(key_name, replacetext(key_name, "Numpad", "NUM "))
+		numpad_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
 
 	var/binding_summary = ""
 	for(var/combination in nexus_hotkey_bindings)
 		var/list/binding_info = nexus_hotkey_bindings[combination]
-		binding_summary += "<div><code>[html_encode(combination)]</code><span>[html_encode(getNexusBindingDisplayName(binding_info))]</span><button onclick=\"clearBinding('[combination]')\">Remove</button></div>"
+		var/trigger_label = isNexusDoubleTapHotkey(combination) ? "DOUBLE" : "SINGLE"
+		binding_summary += "<div><em>[trigger_label]</em><code>[html_encode(getNexusUnixHotkeyName(combination))]</code><span>[html_encode(getNexusBindingDisplayName(binding_info))]</span><button onclick=\"clearBinding('[combination]')\">Remove</button></div>"
 	if(!binding_summary) binding_summary = "<p class='empty'>No bindings configured.</p>"
 
 	return {"<!doctype html>
 	<html><head><meta charset='utf-8'><title>Nexus Hotkeys</title><style>[getNexusRpgBrowserCss()]
-	*{box-sizing:border-box}body{margin:0;background:#070b12;color:#edf2fa;font:13px Arial,sans-serif;overflow:hidden}
-	.shell{height:100vh;display:grid;grid-template-columns:300px 1fr;background:radial-gradient(circle at 75% 20%,#18203a 0,#090e18 42%,#05080e 100%)}
-	.catalog{padding:22px 18px;border-right:1px solid #2c3547;background:rgba(8,12,20,.92);overflow:auto}.catalog h1{margin:0 0 4px;font-size:22px;letter-spacing:.08em}.catalog p{margin:0 0 15px;color:#8d9bb0}.catalog input{width:100%;padding:10px;border:1px solid #38445b;background:#101722;color:white;border-radius:4px;margin-bottom:12px}
-	.action-card{padding:10px 12px;margin:7px 0;border:1px solid #343f55;border-left:4px solid #9d77ff;background:#111925;cursor:grab;border-radius:4px}.action-card:hover{border-color:#b99cff;background:#172235}.action-card b{display:block}.action-card span{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#7f90aa}
-	.workspace{padding:18px 22px;overflow:auto}.toolbar{display:flex;align-items:center;gap:16px;margin-bottom:16px}.toolbar h2{margin:0 auto 0 0;font-size:16px;letter-spacing:.08em}.modifier{padding:8px 11px;border:1px solid #3a4760;background:#111925;border-radius:4px}.toolbar button,.summary button{border:1px solid #4b5870;background:#151e2d;color:#eaf0f9;padding:7px 10px;border-radius:3px;cursor:pointer}.toolbar button:hover,.summary button:hover{border-color:#ff7d66}
-	.keyboard-wrap{display:grid;grid-template-columns:minmax(650px,1fr) 275px;gap:18px}.keyboard{padding:15px;border:1px solid #2e394e;background:rgba(11,17,28,.82);border-radius:8px}.key-row{display:flex;gap:6px;margin-bottom:6px}.offset-one{padding-left:20px}.offset-two{padding-left:38px}.offset-three{padding-left:62px}.space-row{justify-content:center;margin-top:9px}
-	.key{position:relative;min-width:58px;min-height:55px;flex:1;padding:8px 5px;border:1px solid #46536b;border-bottom:3px solid #252e3e;background:linear-gradient(#1c2738,#111824);border-radius:5px;color:#dce6f5;text-align:center;overflow:hidden}.key:hover{border-color:#a887ff;box-shadow:0 0 12px rgba(157,119,255,.2)}.key strong{font:11px Consolas,monospace;letter-spacing:.05em}.space-key{max-width:440px;min-height:62px}
-	.binding{display:block;margin-top:4px;padding:2px 18px 2px 3px;background:#44316f;color:#f1eaff;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}.binding button{position:absolute;right:2px;top:0;border:0;background:none;color:#ff9b87;cursor:pointer}
-	.numpad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:15px;border:1px solid #2e394e;background:rgba(11,17,28,.82);border-radius:8px}.numpad .key{min-width:0;min-height:69px}
-	.summary{margin-top:18px;border-top:1px solid #303a4d;padding-top:12px}.summary h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#9aa9bf}.summary>div{display:grid;grid-template-columns:180px 1fr auto;align-items:center;gap:12px;padding:6px 8px;border-bottom:1px solid #202a39}.summary code{color:#c9b7ff}.empty{color:#78879c}
-	.hint{color:#93a1b6;font-size:11px;margin:10px 0}.warning{color:#ff9a80}
+	*{box-sizing:border-box}body{margin:0;background:#100d08;color:#ead9b5;font:14px Arial,sans-serif;overflow:hidden}
+	.shell{height:100vh;display:grid;grid-template-columns:360px minmax(900px,1fr);background:#100d08;border:3px solid #8f692f}
+	.catalog{padding:18px;border-right:3px double #8f692f;background:#19130c;overflow:auto}.catalog h1{margin:0 0 5px;color:#ffd77a;font:24px Nexus,Georgia,serif;letter-spacing:.08em}.catalog p{margin:0 0 15px;color:#bca579}.catalog input{width:100%;padding:11px;border:2px inset #8f692f;background:#080706;color:#fff1c8;margin-bottom:12px;font:14px Consolas,monospace}
+	.action-card{padding:11px 12px;margin:7px 0;border:2px solid #66502c;border-left:7px solid #c6923c;background:#241b10;cursor:grab}.action-card:hover{border-color:#ffd77a;background:#302313}.action-card b{display:block;color:#fff1c8}.action-card span{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#bca579}
+	.workspace{padding:17px 20px;overflow:auto}.toolbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:12px;padding:10px;border:2px solid #72552c;background:#1b150d}.toolbar h2{margin:0 auto 0 0;align-self:center;color:#ffd77a;font:18px Nexus,Georgia,serif;letter-spacing:.08em}.control{display:block;color:#cdb787;font-size:10px;text-transform:uppercase}.control select{display:block;min-width:230px;margin-top:3px;padding:7px;border:2px inset #8f692f;background:#090806;color:#fff1c8;font:12px Consolas,monospace}.modifier{padding:7px 9px;border:1px solid #6c522c;background:#2a2013;font:12px Consolas,monospace}.toolbar button,.summary button{border:2px outset #8f692f;background:#3a2a16;color:#fff1c8;padding:7px 10px;cursor:pointer;font:11px Nexus,Georgia,serif;text-transform:uppercase}.toolbar button:hover,.summary button:hover{color:#ffd77a;background:#51391b}
+	.trigger-strip{display:flex;align-items:center;gap:7px;margin:0 0 12px;padding:8px 12px;border:2px solid #72552c;background:#171109}.trigger-strip>strong{color:#ffd77a;margin-right:8px}.trigger-strip label{padding:7px 12px;border:1px solid #66502c;background:#281e12;font:12px Consolas,monospace}.trigger-strip small{margin-left:auto;color:#bca579}
+	.keyboard-wrap{display:grid;grid-template-columns:minmax(720px,1fr) 315px;gap:14px}.keyboard{padding:13px;border:3px double #8f692f;background:#18120b}.key-row{display:flex;gap:5px;margin-bottom:5px}.offset-one{padding-left:21px}.offset-two{padding-left:40px}.offset-three{padding-left:66px}.space-row{justify-content:center;margin-top:8px}
+	.key{position:relative;min-width:64px;min-height:76px;flex:1;padding:7px 4px;border:2px outset #75603a;border-bottom-width:4px;background:#292116;color:#f4dfad;text-align:center;overflow:hidden}.key:hover{border-color:#ffd77a;background:#392b17}.key strong{display:block;font:12px Consolas,monospace}.key small{display:block;color:#907e5e;font:8px Consolas,monospace;margin-bottom:3px}.space-key{max-width:480px;min-height:80px}
+	.binding{display:block;margin-top:3px;padding:3px 18px 3px 4px;color:#fff8df;font-size:8px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}.binding.single{background:#355229}.binding.double{background:#62402a}.binding i,.binding b{display:block;overflow:hidden;text-overflow:ellipsis}.binding i{color:#ffdb7d;font-style:normal}.binding button{position:absolute;right:2px;top:1px;border:0;background:none;color:#ffc2a3;cursor:pointer}
+	.numpad{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:13px;border:3px double #8f692f;background:#18120b;align-content:start}.numpad .key{min-width:0;min-height:84px}
+	.summary{margin-top:15px;border:3px double #8f692f;background:#18120b;padding:10px}.summary h3{margin:0 0 7px;color:#ffd77a;font:14px Nexus,Georgia,serif;letter-spacing:.1em}.summary>div{display:grid;grid-template-columns:65px 230px 1fr auto;align-items:center;gap:10px;padding:7px 8px;border-top:1px solid #4f3a1e}.summary em{color:#cdb787;font:10px Consolas,monospace}.summary code{color:#ffd77a}.empty{color:#907e5e}
+	.hint{color:#bca579;font-size:11px;margin:8px 2px 12px}.warning{color:#ff9a80}
 	</style></head><body><div class='shell'>
-	<aside class='catalog'><h1>ACTION DECK</h1><p>Drag an available action onto a key.</p><input id='filter' placeholder='Filter actions...' oninput='filterActions()'>[actions_html]</aside>
-	<main class='workspace'><div class='toolbar'><h2>VIRTUAL KEYBOARD</h2><label class='modifier'><input id='ctrl' type='checkbox'[editor.use_ctrl ? " checked" : ""]> CTRL</label><label class='modifier'><input id='shift' type='checkbox'[editor.use_shift ? " checked" : ""]> SHIFT</label><label class='modifier'><input id='alt' type='checkbox'[editor.use_alt ? " checked" : ""]> ALT</label><button onclick='importLegacy()'>Import legacy</button><button onclick='clearAll()'>Clear all</button><button onclick='closeEditor()'>Close</button></div>
-	<p class='hint'>Select modifiers, then drop an action. Numpad keys are independent from number-row keys. <span class='warning'>System keys and ALT+F4 are reserved.</span></p>
+	<aside class='catalog'><h1>ACTION DECK</h1><p>Drag an action onto its key. The same action may be used more than once.</p><input id='filter' placeholder='Search actions...' oninput='filterActions()'>[actions_html]</aside>
+	<main class='workspace'><div class='toolbar'><h2>HOTKEY FORGE</h2><label class='control'>XKB keyboard layout<select onchange='selectLayout(this.value)'>[layout_options]</select></label><label class='modifier'><input id='ctrl' type='checkbox'[editor.use_ctrl ? " checked" : ""]> ctrl_l</label><label class='modifier'><input id='shift' type='checkbox'[editor.use_shift ? " checked" : ""]> shift_l</label><label class='modifier'><input id='alt' type='checkbox'[editor.use_alt ? " checked" : ""]> alt_l</label><button onclick='importLegacy()'>Import legacy</button><button onclick='clearAll()'>Clear all</button><button onclick='closeEditor()'>Close</button></div>
+	<div class='trigger-strip'><strong>ACTIVATION</strong><label><input name='tap_count' type='radio' value='1'[editor.tap_count == 1 ? " checked" : ""]> single press</label><label><input name='tap_count' type='radio' value='2'[editor.tap_count == 2 ? " checked" : ""]> double tap</label><small>Example: space = Manual Attack &nbsp; / &nbsp; space + space = Lunge</small></div>
+	<p class='hint'>Choose an XKB layout, modifiers and activation type, then drop an action. Unix/XKB names are shown first. <span class='warning'>System keys and alt_l + f4 are reserved.</span></p>
 	<div class='keyboard-wrap'><section class='keyboard'>[keyboard_html]</section><section class='numpad'>[numpad_html]</section></div>
 	<section class='summary'><h3>Active bindings</h3>[binding_summary]</section></main></div>
 	<script>
@@ -340,10 +445,12 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	function sendTopic(data){data.src=handlerRef;if(window.BYOND&&BYOND.topic){BYOND.topic(data);return;}var query='';for(var key in data){if(query)query+='&';query+=encodeURIComponent(key)+'='+encodeURIComponent(data\[key\]);}window.location.href='byond://?'+query;}
 	function startDrag(event,id){event.dataTransfer.setData('text/plain',id);}
 	function modifiers(){return{ctrl:document.getElementById('ctrl').checked?'1':'0',shift:document.getElementById('shift').checked?'1':'0',alt:document.getElementById('alt').checked?'1':'0'};}
-	function dropAction(event,key){event.preventDefault();var m=modifiers();sendTopic({action:'bind',action_token:event.dataTransfer.getData('text/plain'),base_key:key,ctrl:m.ctrl,shift:m.shift,alt:m.alt});}
+	function tapCount(){var taps=document.getElementsByName('tap_count');for(var i=0;i<taps.length;i++)if(taps\[i\].checked)return taps\[i\].value;return'1';}
+	function dropAction(event,key){event.preventDefault();var m=modifiers();sendTopic({action:'bind',action_token:event.dataTransfer.getData('text/plain'),base_key:key,ctrl:m.ctrl,shift:m.shift,alt:m.alt,tap_count:tapCount()});}
 	function clearBinding(combo){sendTopic({action:'unbind',combination:combo});}
 	function clearAll(){if(confirm('Remove every custom binding?'))sendTopic({action:'clear'});}
 	function importLegacy(){sendTopic({action:'import_legacy'});}
+	function selectLayout(layout){sendTopic({action:'layout',layout:layout});}
 	function closeEditor(){sendTopic({action:'close'});}
 	function filterActions(){var query=document.getElementById('filter').value.toLowerCase();var cards=document.getElementsByClassName('action-card');for(var i=0;i<cards.length;i++)cards\[i\].style.display=cards\[i\].innerText.toLowerCase().indexOf(query)>=0?'block':'none';}
 	</script></body></html>"}
@@ -353,6 +460,7 @@ datum/NexusHotkeyEditor
 	var/tmp/use_ctrl
 	var/tmp/use_shift
 	var/tmp/use_alt
+	var/tmp/tap_count = 1
 
 	New(mob/new_owner)
 		. = ..()
@@ -360,7 +468,7 @@ datum/NexusHotkeyEditor
 
 	proc/show()
 		if(!owner || !owner.client) return
-		owner << browse(owner.buildNexusHotkeyEditorHtml(src), "window=NexusHotkeys;size=1180x760;can_resize=true;can_close=false")
+		owner << browse(owner.buildNexusHotkeyEditorHtml(src), "window=NexusHotkeys;size=1480x900;can_resize=true;can_close=false")
 
 	Topic(href, list/href_list)
 		if(!owner || usr != owner || !owner.client) return
@@ -371,7 +479,8 @@ datum/NexusHotkeyEditor
 				use_ctrl = text2num(href_list["ctrl"])
 				use_shift = text2num(href_list["shift"])
 				use_alt = text2num(href_list["alt"])
-				var/combination = canonicalNexusHotkey(base_key, use_ctrl, use_shift, use_alt)
+				tap_count = text2num(href_list["tap_count"]) >= 2 ? 2 : 1
+				var/combination = canonicalNexusHotkey(base_key, use_ctrl, use_shift, use_alt, tap_count)
 				var/list/binding_info = owner.nexus_hotkey_editor_actions[href_list["action_token"]]
 				if(combination && islist(binding_info))
 					var/available_action
@@ -389,6 +498,9 @@ datum/NexusHotkeyEditor
 				owner.client.syncNexusHotkeyMacros()
 			if("import_legacy")
 				owner.importLegacyNexusHotkeys()
+			if("layout")
+				owner.nexus_keyboard_layout = normalizeNexusKeyboardLayout(href_list["layout"])
+				owner.Hotkey_server_backup_save()
 			if("close")
 				owner.hideNexusHotkeyEditor()
 				return

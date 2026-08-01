@@ -41,6 +41,7 @@ mob/proc/HandleKeyDown(d)
 	set waitfor=0
 	set instant=1
 	if(nexus_hotkey_editor_open) return
+	var/was_key_held = (d in keys_down)
 
 	/*if(!(d in list("north","south","east","west")))
 		if(last_keydown_time==world.time) return
@@ -86,18 +87,19 @@ mob/proc/HandleKeyDown(d)
 
 		move_loop()
 	else
-		HotbarUseHandler(d)
+		HotbarUseHandler(d, null, was_key_held)
 
-mob/proc/HotbarUseHandler(d, held_key)
+mob/proc/HotbarUseHandler(d, held_key, was_key_held = FALSE)
 	set waitfor=0
 	set instant = 1
 	if(!held_key) held_key = d
-	var/hotkey_action = resolveNexusHotkeyBinding(d)
-	if(!hotkey_action) hotkey_action = Get_hotbar_obj_by_key_pressed(d)
+	var/binding_id = getNexusHotkeyBindingIdForPress(d, was_key_held)
+	var/hotkey_action = resolveNexusHotkeyBinding(binding_id)
+	if(!hotkey_action && binding_id == d) hotkey_action = Get_hotbar_obj_by_key_pressed(d)
 	if(!hotkey_action) return
 	active_nexus_hotkey_actions[held_key] = hotkey_action
-	active_nexus_hotkey_combinations[held_key] = d
-	while(held_key in keys_down)
+	active_nexus_hotkey_combinations[held_key] = binding_id
+	while((held_key in keys_down) && active_nexus_hotkey_combinations[held_key] == binding_id)
 		if(!executeNexusHotkeyAction(hotkey_action)) return
 		if(!nexusHotkeyActionRepeats(hotkey_action))
 			keys_down -= held_key
@@ -107,13 +109,14 @@ mob/proc/HotbarUseHandler(d, held_key)
 mob/proc/HotbarKeyUpHandler(d)
 	set waitfor=0
 	set instant = 1
-	var/obj/o = active_nexus_hotkey_actions[d]
+	var/o = active_nexus_hotkey_actions[d]
 	active_nexus_hotkey_actions -= d
 	active_nexus_hotkey_combinations -= d
 	if(!o) o = Get_hotbar_obj_by_key_pressed(d)
-	if(o && o.can_hotbar)
-		if(o.is_for_moving)
-			ReleaseKey(o.move_macro_dir)
+	if(isobj(o))
+		var/obj/hotkey_object = o
+		if(hotkey_object.can_hotbar && hotkey_object.is_for_moving)
+			ReleaseKey(hotkey_object.move_macro_dir)
 
 mob/proc/HandleKeyUp(d)
 	set waitfor=0
