@@ -11,6 +11,9 @@ var/list/clients = new
 
 client/Del()
 	clients -= src
+	if(nexus_hud_window)
+		del(nexus_hud_window)
+		nexus_hud_window = null
 	if(selected_target_marker)
 		images -= selected_target_marker
 		del(selected_target_marker)

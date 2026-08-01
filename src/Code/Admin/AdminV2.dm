@@ -48,13 +48,12 @@ mob/proc/manage_deadzone_pressure_resistant_races()
 
 mob/proc
 	ServerSettings()
-		upForm(src.client, src, /upForm/admin_panel)
+		showNexusServerPanel()
 
 mob/Admin4/verb/serverControlPanel()
 	set category = "Admin"
 	set name = "Server Control Panel"
-	showNexusAdminPanel(FALSE)
-	admin_blame(src, "[key] has opened the Nexus admin control panel.")
+	showNexusServerPanel()
 	//src.EditInfo()
 
 

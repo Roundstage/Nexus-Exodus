@@ -14,6 +14,7 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 - `src/Code/UI/HUD.dm`
 - `src/Code/UI/HelperQuests.dm`
 - `src/Code/UI/Hotkeys.dm`
+- `src/Code/UI/HudLibrary.dm`
 - `src/Code/UI/RPWindow.dm`
 - `src/Code/UI/SavePlayerSettings.dm`
 - `src/Code/UI/Tabs2017/BuildTab.dm`
@@ -28,6 +29,12 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
 - `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact 88x20 controls inside the map viewport.
 - `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
+
+### src/Code/UI/HudLibrary.dm
+
+- `getNexusHudLibraryIcon()` creates and caches scalable panel/button surfaces used by native HUD windows.
+- `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
+- `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
 
 ### src/Code/UI/AdminInspector.dm
 

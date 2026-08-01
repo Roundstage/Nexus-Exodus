@@ -38,6 +38,11 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ## Proc Reference
 
+### src/Code/_libs/upform/lib.dm
+
+- `upForm/New(owner, host, viewers, headless_mode)` accepts an optional headless mode that initializes form bindings and validation without registering viewers or rendering browser content. Native HUD controllers use this to preserve mature configuration models while replacing their legacy interface.
+- Headless forms bypass browser cleanup in `Del()` and remain ordinary short-lived datums owned by their caller.
+
 ### src/Code/_libs/absolutepositions/AbsolutePositions.dm
 
 #### atom/movable/proc/SetLoc

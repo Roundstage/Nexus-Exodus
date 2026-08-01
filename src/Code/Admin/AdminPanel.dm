@@ -33,6 +33,7 @@ proc/initializeNexusAdminActions()
 	nexus_admin_action_catalog["summon"] = new /datum/NexusAdminAction("summon", "Summon", "Movement", "Summon the selected player to you.", 1, TRUE, TRUE)
 	nexus_admin_action_catalog["heal"] = new /datum/NexusAdminAction("heal", "Heal", "Player", "Fully heal the selected player and optionally clear injuries.", 1, TRUE, TRUE)
 	nexus_admin_action_catalog["revive"] = new /datum/NexusAdminAction("revive", "Revive", "Player", "Revive and remove KO from the selected player.", 1, TRUE, TRUE)
+	nexus_admin_action_catalog["reward"] = new /datum/NexusAdminAction("reward", "Reward Player", "Player", "Grant progression, resources or character growth through the refactored reward menu.", 2, TRUE, TRUE)
 	nexus_admin_action_catalog["inspect"] = new /datum/NexusAdminAction("inspect", "Admin Inspector", "Development", "Search and edit every runtime variable, collection and mutation.", 3, TRUE, TRUE)
 	nexus_admin_action_catalog["give_item"] = new /datum/NexusAdminAction("give_item", "Give Item", "Items", "Search the item type catalog and give one result to the selected player.", 2, TRUE, TRUE)
 	nexus_admin_action_catalog["make_object"] = new /datum/NexusAdminAction("make_object", "Create Object", "Items", "Search the object catalog and create one at your location.", 2)
@@ -76,13 +77,16 @@ datum/NexusAdminPanel
 	var/tmp/list/item_candidates
 	var/tmp/item_picker_mode = "give"
 
-	New(mob/new_owner, compact_mode = FALSE)
+	New(mob/new_owner, compact_mode = FALSE, mob/new_target)
 		. = ..()
 		owner = new_owner
 		compact = compact_mode
-		target = new_owner
+		target = new_target && new_target.client ? new_target : new_owner
 
 	Del()
+		if(owner)
+			owner << browse(null, "window=NexusAdminItems")
+			owner << browse(null, "window=NexusAdminReward")
 		if(owner && owner.client && owner.client.nexus_admin_panel == src)
 			owner.client.nexus_admin_panel = null
 		. = ..()
@@ -108,6 +112,92 @@ datum/NexusAdminPanel
 		var/icon/portrait_icon = icon(target.icon, target.icon_state, SOUTH)
 		owner << browse_rsc(portrait_icon, portrait_resource)
 		owner << browse(target.buildCharacterSheetHtml(portrait_resource), "window=NexusAdminCharacter;size=1180x760;can_resize=true")
+
+	proc/openRewardMenu()
+		if(!requireTarget()) return
+		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>Reward Player</title><style>
+		*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#26374b,#0b121c 48%,#06090e);color:#edf3fa;font:13px Arial,sans-serif}.header{padding:16px 18px;border-bottom:1px solid #455a72;background:#0a1019}.header h1{margin:0 0 5px;font-size:21px}.header p{margin:0;color:#93a5b9}.target{color:#ffd19c}.grid{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:8px;padding:14px}.reward{min-height:82px;padding:12px;border:1px solid #30475d;background:linear-gradient(145deg,#111f2c,#0b141e);color:#e7f1fa;text-decoration:none}.reward:hover{border-color:#75c9ed;background:#142b3d}.reward b,.reward span{display:block}.reward b{font-size:14px;margin-bottom:6px}.reward span{color:#8fa4b9;line-height:1.35}.footer{padding:0 14px 14px}.back{display:inline-block;padding:9px 13px;border:1px solid #607790;color:#dceaf5;text-decoration:none}@media(max-width:680px){.grid{grid-template-columns:1fr}}
+		</style></head><body><div class='header'><h1>Reward <span class='target'>[html_encode("[target] ([target.key])")]</span></h1><p>Direct, audited progression controls. This menu does not invoke the legacy Reward verb.</p></div><div class='grid'>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=bp'><b>Battle Power</b><span>Set absolute base BP with online relative maximum and average context.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=bp_mod'><b>BP Modifier</b><span>Set the character's permanent BP growth modifier.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=energy'><b>Base Energy</b><span>Set base Energy while preserving the character's Efficiency multiplier.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=resources'><b>Resources</b><span>Add construction and technology resources.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Skill Points</b><span>Add up to 10,000 skill points at a time.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=milestone_points'><b>Milestone Points</b><span>Add spendable perk points and update the lifetime total.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=technology_xp'><b>Technology XP</b><span>Advance Technology Level and refresh available unlocks.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=mining_xp'><b>Mining XP</b><span>Advance the Tenkaichi mining profession.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=smithing_xp'><b>Smithing XP</b><span>Advance the Tenkaichi smithing profession.</span></a>
+		</div><div class='footer'><a class='back' href='byond://?src=\ref[src]&action=reward_back'>BACK TO PLAYER PANEL</a></div></body></html>"}
+		owner << browse(html, "window=NexusAdminReward;size=760x680;can_resize=true")
+
+	proc/applyReward(reward_type)
+		if(!requireTarget() || !canUse(2)) return
+		var/amount
+		switch(reward_type)
+			if("skill_points")
+				amount = input(owner, "How many Skill Points should [target] receive?", "Reward Player", 1) as null|num
+				if(isnull(amount)) return
+				amount = Clamp(round(amount), 0, 10000)
+				target.Experience += amount
+			if("resources")
+				amount = input(owner, "How many Resources should [target] receive?", "Reward Player", 1000) as null|num
+				if(isnull(amount) || amount < 0) return
+				target.Alter_Res(amount)
+			if("bp")
+				var/relative_max = 0
+				var/relative_average = 0
+				var/player_count = 0
+				for(var/mob/player in players)
+					if(!player.client || player.bp_mod <= 0) continue
+					var/relative_bp = player.base_bp / player.bp_mod
+					relative_max = max(relative_max, relative_bp)
+					relative_average += relative_bp
+					player_count++
+				if(player_count) relative_average /= player_count
+				relative_max *= target.bp_mod
+				relative_average *= target.bp_mod
+				amount = input(owner, "Current BP: [Commas(target.base_bp)]\nRelative online max: [Commas(relative_max)]\nRelative online average: [Commas(relative_average)]", "Set [target]'s Battle Power", target.base_bp) as null|num
+				if(isnull(amount)) return
+				amount = Clamp(amount, 0, 10000000000000)
+				if(amount == target.base_bp) return
+				target.base_bp = amount
+			if("bp_mod")
+				var/max_mod = 0
+				var/average_mod = 0
+				var/player_count = 0
+				for(var/mob/player in players)
+					if(!player.client) continue
+					max_mod = max(max_mod, player.bp_mod)
+					average_mod += player.bp_mod
+					player_count++
+				if(player_count) average_mod /= player_count
+				amount = input(owner, "Current BP Mod: [target.bp_mod]x\nOnline max: [max_mod]x\nOnline average: [round(average_mod, 0.01)]x", "Set [target]'s BP Modifier", target.bp_mod) as null|num
+				if(isnull(amount) || amount <= 0 || amount == target.bp_mod) return
+				target.bp_mod = amount
+			if("energy")
+				var/base_energy = target.Eff > 0 ? target.max_ki / target.Eff : target.max_ki
+				amount = input(owner, "Set base Energy. Efficiency ([target.Eff]x) is applied automatically.", "Set [target]'s Base Energy", base_energy) as null|num
+				if(isnull(amount) || amount < 1) return
+				target.max_ki = amount * max(target.Eff, 0.01)
+				target.Ki = min(target.Ki, target.max_ki)
+			if("milestone_points")
+				amount = input(owner, "How many Milestone Points should [target] receive?", "Reward Player", 1) as null|num
+				if(isnull(amount) || amount < 0) return
+				amount = round(amount)
+				target.milestone_points += amount
+				target.total_milestone_points += amount
+			if("technology_xp")
+				amount = input(owner, "How much Technology XP should [target] receive?", "Reward Player", 50) as null|num
+				if(isnull(amount) || amount < 0) return
+				target.gainTechnologyExperience(amount, "admin reward", announce = TRUE)
+			if("mining_xp", "smithing_xp")
+				var/profession = reward_type == "mining_xp" ? "Mining" : "Smithing"
+				amount = input(owner, "How much [profession] XP should [target] receive?", "Reward Player", 50) as null|num
+				if(isnull(amount) || amount < 0) return
+				target.gainProfessionExperience(profession, amount, "admin reward", announce = TRUE)
+			else return
+		owner.admin_blame(owner, "[owner.key] rewarded [target.key] with [amount] [reward_type] through the contextual Admin Panel.")
+		owner << "Rewarded [target] with [amount] [reward_type]."
 
 	proc/openItemPicker(mode = "give", search = "")
 		if(mode == "give" && !requireTarget()) return
@@ -195,6 +285,9 @@ datum/NexusAdminPanel
 				target.SafeTeleport(owner.loc)
 			if("heal") call(owner, /mob/Admin1/verb/adminHeal)(target)
 			if("revive") call(owner, /mob/Admin1/verb/adminRevive)(target)
+			if("reward")
+				openRewardMenu()
+				return
 			if("inspect") owner.showNexusAdminInspector(target)
 			if("give_item")
 				openItemPicker("give")
@@ -211,7 +304,11 @@ datum/NexusAdminPanel
 			if("development_logs") call(owner, /mob/Admin1/verb/viewDevelopmentRpWindow)(target)
 			if("admin_logs") call(owner, /mob/Admin1/verb/viewAdminLogs)()
 			if("bug_logs") call(owner, /mob/Admin2/verb/bugLogs)()
-			if("server_settings") owner.ServerSettings()
+			if("server_settings")
+				owner << browse(null, "window=NexusAdminPanel")
+				owner << browse(null, "window=NexusQuickAdmin")
+				owner.showNexusServerPanel()
+				return
 			if("toggle_ooc") call(owner, /mob/Admin2/verb/allowOOC)()
 			if("world_heal") call(owner, /mob/Admin2/verb/worldHeal)()
 			if("save_world")
@@ -255,13 +352,23 @@ datum/NexusAdminPanel
 	Topic(href, list/href_list)
 		if(!canUse() || usr != owner) return
 		switch(href_list["action"])
-			if("run") runAction(href_list["id"])
+			if("run")
+				runAction(href_list["id"])
+				if(href_list["id"] == "server_settings") return
 			if("item_search")
 				openItemPicker(href_list["mode"], href_list["query"])
 				return
 			if("create_item")
 				createSelectedItem(href_list["index"])
 				openItemPicker(item_picker_mode)
+				return
+			if("apply_reward")
+				applyReward(href_list["type"])
+				openRewardMenu()
+				return
+			if("reward_back")
+				owner << browse(null, "window=NexusAdminReward")
+				show()
 				return
 			if("back")
 				owner << browse(null, "window=NexusAdminItems")
@@ -274,10 +381,10 @@ datum/NexusAdminPanel
 				return
 		show()
 
-mob/proc/showNexusAdminPanel(compact = FALSE)
+mob/proc/showNexusAdminPanel(compact = FALSE, mob/selected_target)
 	if(!client || !IsAdmin()) return
 	if(client.nexus_admin_panel) del(client.nexus_admin_panel)
-	client.nexus_admin_panel = new /datum/NexusAdminPanel(src, compact)
+	client.nexus_admin_panel = new /datum/NexusAdminPanel(src, compact, selected_target)
 	client.nexus_admin_panel.show()
 
 mob/AdminEssentials/verb/adminPanel()
@@ -289,6 +396,12 @@ mob/AdminEssentials/verb/quickAdminPanel()
 	set name = "Quick Admin"
 	set category = "Admin"
 	showNexusAdminPanel(TRUE)
+
+mob/AdminEssentials/verb/managePlayer(mob/selected_player in players)
+	set name = "Manage Player"
+	set category = "Admin"
+	if(!selected_player || !selected_player.client) return
+	showNexusAdminPanel(TRUE, selected_player)
 
 mob/AdminEssentials/verb/adminInspector()
 	set name = "Admin Inspector"

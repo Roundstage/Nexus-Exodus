@@ -1,13 +1,14 @@
 # Admin
 
 ## Overview
-Administrative commands and management flows. Administrators receive a searchable full control panel and a compact player-focused quick panel. The normal command/right-click surface is limited to both panel launchers plus Teleport, Summon, AdminHeal, Admin Revive, and Admin Inspector; any other legacy verb can be exposed individually through the searchable legacy palette. The structured inspector remains the complete variable, collection, and mutation editor.
+Administrative commands and management flows. Administrators receive a searchable full control panel and a compact player-focused quick panel. `Manage Player` appears on a clicked player's context menu and opens that quick panel with the player already selected. The normal command/right-click surface is otherwise limited to both panel launchers plus Teleport, Summon, AdminHeal, Admin Revive, and Admin Inspector; any other legacy verb can be exposed individually through the searchable legacy palette. The structured inspector remains the complete variable, collection, and mutation editor.
 
 ## Files
 - `src/Code/Admin/Admin.dm`
 - `src/Code/Admin/AdminV2.dm`
 - `src/Code/Admin/AdminVerbs.dm`
 - `src/Code/Admin/AdminPanel.dm`
+- `src/Code/Admin/ServerPanel.dm`
 - `src/Code/Admin/CombatTesting.dm`
 
 ## Proc Reference
@@ -20,10 +21,18 @@ Administrative commands and management flows. Administrators receive a searchabl
 ### src/Code/Admin/AdminPanel.dm
 
 - `initializeNexusAdminActions()` registers permission-aware commands by Player, Movement, Character, Items, Smithing, Development, Logs, Testing, Server, and Legacy categories.
-- `showNexusAdminPanel(compact)` opens the full or quick searchable panel and keeps one selected player as the target for successive actions.
+- `showNexusAdminPanel(compact, selected_target)` opens the full or quick searchable panel and keeps one selected player as the target for successive actions.
 - `openItemPicker(mode, search)` searches item type paths without instantiating hundreds of reference objects; protected non-givable results are rejected when selected.
+- `openRewardMenu()` and `applyReward(reward_type)` replace the legacy Reward flow with audited BP, BP Mod, Energy, Resources, Skill Points, Milestone Points, Technology XP, Mining XP, and Smithing XP controls.
 - `runLegacyCommand()` searches all verbs available to the administrator's level and exposes only one legacy command at a time.
-- `Admin Panel`, `Quick Admin`, and `Admin Inspector` are the permanent administration launchers.
+- `Admin Panel`, `Quick Admin`, `Manage Player`, and `Admin Inspector` are the permanent administration launchers.
+
+### src/Code/Admin/ServerPanel.dm
+
+- `showNexusServerPanel()` opens the level-4 Server Control Panel as native `client.screen` HUD objects.
+- `datum/NexusServerPanel/render()` provides six category tabs, current-value search, pagination, and direct editing for every setting bound by the existing administration models.
+- `createSettingsModel()` uses a headless upForm model only for its complete setting bindings and validation; no legacy browser window is created.
+- Number and text settings retain their legacy conversion and validation. List settings use dedicated add/remove controls, and every mutation is written to the admin audit log.
 
 ### src/Code/Admin/Admin.dm
 
