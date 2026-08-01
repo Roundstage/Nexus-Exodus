@@ -229,7 +229,7 @@ proc/Random_resource_drops()
 				r.Savable=0
 				r.Value = rand(300000) * Resource_Multiplier
 				if(map_restriction_on) r.Value *= 2
-				r.icon = 'src/Icons/Effects/ResourceRocks.dmi'
+				r.icon = 'ResourceRocks.dmi'
 				r.icon_state = "[rand(1,4)]"
 				r.density = 1
 

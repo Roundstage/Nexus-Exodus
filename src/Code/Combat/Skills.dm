@@ -209,7 +209,7 @@ obj/Dash_Attack
 	desc="A melee finishing move where you dash in a line in front of you and anyone in that line will \
 	be attacked and take damage. You can aim it by moving side to side. It does more damage if you hit \
 	the target from behind, and more damage the further away you do it from"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTDashAura.dmi'
+	icon = 'RTDashAura.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
