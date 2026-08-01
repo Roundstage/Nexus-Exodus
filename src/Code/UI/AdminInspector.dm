@@ -25,7 +25,9 @@ proc/getNexusAdminVariableDisplay(variable_value)
 		for(var/entry in value_list)
 			if(shown >= 4) break
 			preview += " | [entry]"
-			if(!isnull(value_list[entry])) preview += ": [value_list[entry]]"
+			if(!isnum(entry) && !islist(entry))
+				var/associated_value = value_list[entry]
+				if(!isnull(associated_value)) preview += ": [associated_value]"
 			shown++
 		return preview
 	return Value(variable_value)
@@ -104,7 +106,8 @@ datum/NexusAdminInspector
 		var/index = 0
 		for(var/entry in value_list)
 			index++
-			var/associated_value = value_list[entry]
+			var/associated_value
+			if(!isnum(entry) && !islist(entry)) associated_value = value_list[entry]
 			list_rows += "<tr><td>[index]</td><td>[html_encode("[entry]")]</td><td>[html_encode("[associated_value]")]</td></tr>"
 		if(!list_rows) list_rows = "<tr><td colspan='3'>This list is empty.</td></tr>"
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Admin List Inspector</title><style>
