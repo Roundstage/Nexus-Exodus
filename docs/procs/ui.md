@@ -1,11 +1,11 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats and right-side chat/info panes are permanently detached; the detailed Character sheet is opened from the top-right action HUD.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats and right-side chat/info panes are permanently detached; the detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip now exposes Inventory, Skills, Sense, World, Chat, Hotkeys, and the permission-gated Admin panel without restoring native stat tabs.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
-The lower-left HudLib chat owns All, Combat, IC, and OOC feeds without consuming map width. It can be collapsed or resized in both axes from its header. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
+The HudLib chat begins immediately beside the lower-left vitals panel, owns All, Combat, IC, and OOC feeds without consuming map width, and no longer covers the portrait or status bars. It can be moved horizontally, collapsed, or resized in both axes from its header. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
 All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Login uses a resizable RPG-style three-slot character selector instead of the New/Load alert.
 
@@ -29,10 +29,15 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 
 ### src/Code/UI/ActionHud.dm
 
-- `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons as client-only screen objects and hides their obsolete skin controls.
+- `getNexusActionButtonIcon()` builds the 108x20 rustic controls needed to display complete `LETHAL`, `RPMODE`, and `CHARACTER` labels without clipping.
+- `getNexusShortcutBarIcon()`, `getNexusShortcutButtonIcon()`, and `drawNexusShortcutGlyph()` build the top-left bolted strip and its license-independent pixel pictograms.
+- `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons plus the top-left shortcut strip as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact 88x20 controls inside the map viewport.
-- `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
+- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain six player shortcuts and add Admin only when the owner has an active admin level.
+- `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
+- `datum/NexusPlayerMenu` replaces the Inventory, Skills, Sense, and World stat tabs with a rustic browser surface. Inventory items remain interactive, learned skills can invoke their normal hotbar entry point, and Sense entries can become the active target.
+- `showNexusPlayerMenu(section)` opens the requested player-menu section from its pixel shortcut.
+- `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
 
 ### src/Code/UI/HudLibrary.dm
 
@@ -40,7 +45,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `getNexusRpgBrowserCss()` supplies the shared rustic RPG presentation layer used by the Character, creation, emote, log, hotkey, inspector, reward, item, and admin windows.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
-- `datum/NexusChatHud` renders the resizable/collapsible four-channel lower-left chat, navigation, composition, and personal-log actions as `client.screen` objects.
+- `datum/NexusChatHud` renders the horizontally movable, resizable, collapsible four-channel chat, navigation, composition, and personal-log actions as `client.screen` objects. Its saved default X position is 312 pixels so the 296-pixel vitals panel remains visible.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
 - `hideNexusLegacyInterface()` reattaches `mapwindow` as the full-width left pane and detaches both legacy split panes so resizing the client changes the map viewport rather than reserving space for DMF tabs.
 

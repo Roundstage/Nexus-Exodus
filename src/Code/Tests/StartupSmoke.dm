@@ -170,16 +170,25 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(lighting_owner)
 	nexusSmokeAssert(text2path("/obj/NexusHud/ActionButton/Lethal") && text2path("/obj/NexusHud/ActionButton/RPMode") && text2path("/obj/NexusHud/ActionButton/Character"), "top-right action HUD is incomplete")
 	var/icon/action_button_icon = getNexusActionButtonIcon(TRUE, "#ff4d5f")
-	nexusSmokeAssert(action_button_icon.Width() == 88 && action_button_icon.Height() == 20, "action HUD button has invalid dimensions")
+	nexusSmokeAssert(action_button_icon.Width() == 108 && action_button_icon.Height() == 20, "action HUD button has invalid dimensions")
+	nexusSmokeAssert(text2path("/obj/NexusHud/ShortcutButton/Inventory") && text2path("/obj/NexusHud/ShortcutButton/Skills") && text2path("/obj/NexusHud/ShortcutButton/Sense") && text2path("/obj/NexusHud/ShortcutButton/World") && text2path("/obj/NexusHud/ShortcutButton/Chat") && text2path("/obj/NexusHud/ShortcutButton/Hotkeys") && text2path("/obj/NexusHud/ShortcutButton/Admin"), "top shortcut HUD is incomplete")
+	nexusSmokeAssert(text2path("/datum/NexusPlayerMenu"), "replacement player menu is missing")
+	var/icon/shortcut_button_icon = getNexusShortcutButtonIcon("inventory", FALSE, "#d6aa5d")
+	var/icon/shortcut_bar_icon = getNexusShortcutBarIcon(6)
+	nexusSmokeAssert(shortcut_button_icon.Width() == 26 && shortcut_button_icon.Height() == 26, "shortcut HUD button has invalid dimensions")
+	nexusSmokeAssert(shortcut_bar_icon.Width() == 176 && shortcut_bar_icon.Height() == 34, "shortcut HUD backing strip has invalid dimensions")
 	var/obj/NexusHud/ActionButton/Lethal/lethal_button = new
 	var/obj/NexusHud/ActionButton/RPMode/rp_mode_button = new
 	var/obj/NexusHud/ActionButton/Character/character_button = new
+	var/obj/NexusHud/ShortcutButton/Inventory/inventory_button = new
 	nexusSmokeAssert(lethal_button.plane == 20, "action HUD is not isolated above the lighting plane")
+	nexusSmokeAssert(inventory_button.plane == 20 && inventory_button.action_id == "inventory", "shortcut HUD is not isolated or addressable")
 	nexusSmokeAssert(lethal_button.screen_loc == "RIGHT:-8,TOP:-8" && rp_mode_button.screen_loc == "RIGHT:-8,TOP:-32" && character_button.screen_loc == "RIGHT:-8,TOP:-56", "action HUD buttons are not pixel-anchored in the upper-right corner")
 	nexusSmokeAssert(!lethal_button.loc && !rp_mode_button.loc && !character_button.loc, "action HUD buttons leaked into an atom's contents")
 	del(lethal_button)
 	del(rp_mode_button)
 	del(character_button)
+	del(inventory_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
@@ -266,6 +275,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vitals_owner.max_ki = 8000
 	vitals_owner.willpower = 50
 	vitals_owner.max_willpower = 100
+	nexusSmokeAssert(vitals_owner.nexus_chat_hud_x == 312, "chat HUD does not begin beside the lower-left vitals panel")
 	vitals_panel.initialize(vitals_owner)
 	nexusSmokeAssert(vitals_panel.vis_contents.len == 8 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
