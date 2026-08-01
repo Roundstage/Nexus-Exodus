@@ -1560,7 +1560,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### proc/getNexusAmbientMatrix
 - Signature: `getNexusAmbientMatrix(ambient_color)`
-- Purpose: Build the BYOND color matrix used by the multiplicative client lighting plane.
+- Purpose: Build the BYOND color matrix used by the multiplicative client lighting plane. The matrix discards the temporary plane alpha before adding the fully opaque ambient backdrop, so additive RGB gradients remain continuous instead of clipping into solid circles.
 
 #### proc/updateAreaNexusLighting
 - Signature: `updateAreaNexusLighting(area/a, ambient_color, fade_time = 0)`

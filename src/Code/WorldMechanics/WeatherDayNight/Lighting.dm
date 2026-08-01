@@ -18,7 +18,7 @@ proc/getNexusGlowRangeScale(size_tiles)
 
 proc/getNexusAmbientMatrix(ambient_color)
 	if(!ambient_color) ambient_color = rgb(255, 255, 255, 255)
-	return list(null, null, null, null, ambient_color)
+	return list(null, null, null, "#0000", ambient_color)
 
 proc/updateAreaNexusLighting(area/a, ambient_color, fade_time = 0)
 	if(!a || !islist(a.player_list)) return
