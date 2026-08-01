@@ -3,7 +3,7 @@
 ## Overview
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats tab is no longer refreshed; the detailed Character sheet is opened from the top-right action HUD.
 
-The compact lower-left vitals panel renders Willpower above Health, followed by Energy and Stamina. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
 ## Files
 - `src/Code/UI/ActionHud.dm`
@@ -26,7 +26,7 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 
 - `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the complete 128x28 controls inside the map viewport.
+- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact 88x20 controls inside the map viewport.
 - `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
 
 ### src/Code/UI/AdminInspector.dm
@@ -115,21 +115,28 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### proc/getOverheadHealthIcon
 - Signature: `proc/getOverheadHealthIcon(health_percent)`
 - Inputs: health percentage.
-- Purpose: Build or reuse a real 32x5 icon with dark background and proportional colored fill.
+- Purpose: Build or reuse a thin 32x3 health icon with dark background and proportional colored fill.
+- Returns: cached icon.
+- Side effects: initializes a cache entry on first use.
+
+#### proc/getOverheadVitalIcon
+- Signature: `proc/getOverheadVitalIcon(percent, accent_color)`
+- Inputs: percentage and status accent color.
+- Purpose: Build the shared 32x3 overhead Energy and Willpower indicators.
 - Returns: cached icon.
 - Side effects: initializes a cache entry on first use.
 
 #### proc/getVitalsPanelIcon
 - Signature: `proc/getVitalsPanelIcon()`
 - Inputs: None.
-- Purpose: Build or reuse the clean 320x144 translucent backdrop for the draggable vitals panel.
+- Purpose: Build or reuse the clean 296x136 translucent backdrop for the draggable vitals panel.
 - Returns: cached icon.
 - Side effects: initializes the panel icon on first use.
 
 #### proc/getVitalsBarIcon
 - Signature: `proc/getVitalsBarIcon(percent, accent_color)`
 - Inputs: percentage and accent color.
-- Purpose: Build or reuse a 184x20 native progress-bar icon with proportional fill.
+- Purpose: Build or reuse a 168x19 native progress-bar icon with proportional fill.
 - Returns: cached icon.
 - Side effects: initializes a cache entry on first use.
 
@@ -137,13 +144,13 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 - Signature: `proc/getPowerGaugeIcon(percent, over_limit)`
 - Inputs: normalized soft-cap progress and over-limit state.
 - Purpose: Build either lateral power gauge, switching from violet to red above the efficient limit.
-- Returns: cached 7x78 icon.
+- Returns: cached 7x72 icon.
 - Side effects: initializes a cache entry on first use.
 
 #### mob/proc/initializeVitalsHud
 - Signature: `mob/proc/initializeVitalsHud()`
 - Inputs: None.
-- Purpose: Attach the compact overhead bar and initialize the lower-left main vitals panel for playable characters.
+- Purpose: Attach the compact overhead Health, Energy, and Willpower bars and initialize the lower-left main vitals panel for playable characters.
 - Returns: none (implicit).
 - Side effects: updates `vis_contents`, `client.screen`, and hides the obsolete DMF Bars window.
 
@@ -178,7 +185,7 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### mob/proc/updateOverheadHealthHud
 - Signature: `mob/proc/updateOverheadHealthHud()`
 - Inputs: None.
-- Purpose: Refresh the health state and vertical position of the overhead HUD.
+- Purpose: Refresh the Health, Energy, and Willpower states and vertical positions of the overhead HUD.
 - Returns: none (implicit).
 - Side effects: may initialize the HUD if it is missing.
 
@@ -192,14 +199,14 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### obj/NexusHud/VitalsPanel/proc/initialize
 - Signature: `initialize(mob/owner)`
 - Inputs: owning player.
-- Purpose: Compose the centered character, two power gauges, percentage readout, and three stat rows over the panel root.
+- Purpose: Compose the centered character, two power gauges, percentage readout, and four labeled stat rows over the panel root.
 - Returns: none (implicit).
 - Side effects: populates `vis_contents`.
 
 #### obj/NexusHud/VitalsPanel/proc/update
 - Signature: `update(mob/owner)`
 - Inputs: owning player.
-- Purpose: Calculate Health, Energy, Stamina, raw `BPpcnt`, and the efficient powerup threshold.
+- Purpose: Calculate Willpower, Health, Energy, Stamina, raw `BPpcnt`, and the efficient powerup threshold.
 - Returns: none (implicit).
 - Side effects: updates child screen objects.
 
@@ -246,7 +253,7 @@ The compact lower-left vitals panel renders Willpower above Health, followed by 
 #### obj/NexusHud/OverheadHealthBar/proc/update
 - Signature: `update(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Render a 32x5 health bar that is green above 60%, yellow from 50% through 60%, and red below 50%.
+- Purpose: Render one row of the stacked 32x3 overhead Health, Energy, and Willpower display; Health changes color at its existing thresholds.
 - Returns: none (implicit).
 - Side effects: swaps the cached world-space icon.
 

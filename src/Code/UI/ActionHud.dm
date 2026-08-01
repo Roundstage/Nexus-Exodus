@@ -4,12 +4,12 @@ proc/getNexusActionButtonIcon(active, accent_color)
 	var/cache_key = "[active]-[accent_color]"
 	if(nexus_action_button_icon_cache[cache_key]) return nexus_action_button_icon_cache[cache_key]
 	var/icon/button_icon = icon('UserNamesBarsUi.png')
-	button_icon.Scale(128, 28)
-	button_icon.DrawBox(active ? "#202c3b" : "#111821", 1, 1, 128, 28)
-	button_icon.DrawBox(active ? accent_color : "#455164", 1, 1, 4, 28)
-	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 1, 128, 2)
-	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 27, 128, 28)
-	button_icon.DrawBox(active ? "#35475b" : "#1a2430", 5, 3, 126, 26)
+	button_icon.Scale(88, 20)
+	button_icon.DrawBox(active ? "#202c3b" : "#111821", 1, 1, 88, 20)
+	button_icon.DrawBox(active ? accent_color : "#455164", 1, 1, 3, 20)
+	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 1, 88, 2)
+	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 19, 88, 20)
+	button_icon.DrawBox(active ? "#35475b" : "#1a2430", 4, 3, 86, 18)
 	nexus_action_button_icon_cache[cache_key] = button_icon
 	return button_icon
 
@@ -66,10 +66,10 @@ mob/proc/removeActionHud()
 obj/NexusHud/ActionButton
 	mouse_opacity = 2
 	layer = 110
-	maptext_x = 10
-	maptext_y = 7
-	maptext_width = 108
-	maptext_height = 16
+	maptext_x = 4
+	maptext_y = 5
+	maptext_width = 80
+	maptext_height = 11
 	var/tmp/mob/owner
 	var/action_id
 	var/accent_color = "#8fa5bd"
@@ -91,7 +91,7 @@ obj/NexusHud/ActionButton
 		var/active = isActive(character)
 		icon = getNexusActionButtonIcon(active, accent_color)
 		var/text_color = active ? "#ffffff" : "#aeb9c8"
-		maptext = "<div style='font-family:Arial;font-size:10px;font-weight:bold;letter-spacing:1px;color:[text_color];text-align:center;text-shadow:1px 1px #000'>[getLabel(character)]</div>"
+		maptext = "<div style='font-family:Arial;font-size:8px;font-weight:bold;letter-spacing:.5px;color:[text_color];text-align:center;text-shadow:1px 1px #000'>[getLabel(character)]</div>"
 
 	Click(location, control, params)
 		if(!owner || usr != owner || !owner.client) return
@@ -116,7 +116,7 @@ obj/NexusHud/ActionButton
 	RPMode
 		action_id = "rp_mode"
 		accent_color = "#ff9b54"
-		screen_loc = "RIGHT:-8,TOP:-40"
+		screen_loc = "RIGHT:-8,TOP:-32"
 		desc = "Toggle RP Mode. While active, combat interaction is blocked."
 
 		isActive(mob/character)
@@ -128,7 +128,7 @@ obj/NexusHud/ActionButton
 	Character
 		action_id = "character"
 		accent_color = "#62c8ff"
-		screen_loc = "RIGHT:-8,TOP:-72"
+		screen_loc = "RIGHT:-8,TOP:-56"
 		desc = "Open the detailed character sheet."
 
 		getLabel(mob/character)
