@@ -52,6 +52,7 @@ mob/proc
 		last_logon = world.time
 		playerCharacter = 1
 		hideNexusLegacyInterface()
+		if(client) client.DeleteTitleScreen()
 		src << sound(0)
 		spawn(200) Great_Ape_revert()
 		if(Race=="Namekian") verbs+=typesof(/mob/Namekian/verb)

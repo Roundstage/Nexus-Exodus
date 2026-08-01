@@ -80,15 +80,15 @@ datum/NexusCharacterSelect
 			if("create")
 				if(owner.hasSave(slot)) return
 				var/mob/player = owner
-				del(src)
-				player.NewClicked(slot)
+				if(player.NewClicked(slot)) del(src)
+				else show()
 			if("play")
 				if(!owner.hasSave(slot))
 					show()
 					return
 				var/mob/player = owner
-				del(src)
-				player.LoadClicked(slot)
+				if(player.LoadClicked(slot)) del(src)
+				else show()
 			if("delete")
 				if(!owner.hasSave(slot)) return
 				var/list/slot_info = owner.getNexusCharacterSlotInfo(slot)
@@ -375,7 +375,6 @@ mob/proc
 		ShowNexusLoginPrompt()
 
 	NewClicked(selected_slot = 0)
-		set waitfor=0
 		if(playerCharacter) return
 		ensureNexusCharacterSlots()
 		if(!selected_slot)
@@ -388,10 +387,12 @@ mob/proc
 			ShowNexusLoginPrompt()
 			return
 		active_character_slot = clampNexusCharacterSlot(selected_slot)
-		return ClickMakeNewCharacter()
+		var/creator_opened = ClickMakeNewCharacter()
+		if(!creator_opened && client && !client.nexus_character_select)
+			ShowNexusLoginPrompt()
+		return creator_opened
 
 	LoadClicked(selected_slot = 0)
-		set waitfor=0
 		if(playerCharacter) return
 		ensureNexusCharacterSlots()
 		if(!selected_slot)
@@ -404,8 +405,10 @@ mob/proc
 			return
 		active_character_slot = clampNexusCharacterSlot(selected_slot)
 		if(load())
+			hideNexusLegacyInterface()
 			StuffThatRunsIfYouClickNewOrLoad()
 			return 1
+		return FALSE
 
 	ShowNexusLoginPrompt()
 		if(playerCharacter) return
