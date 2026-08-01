@@ -1586,13 +1586,45 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `getNexusGlowRangeScale(size_tiles)`
 - Purpose: Convert a requested total tile diameter to the transform scale required by the 256px configurable gradient mask. A size of `1` covers one tile.
 
+#### proc/getNexusLightTurf
+- Signature: `getNexusLightTurf(atom/source_atom)`
+- Purpose: Resolve the map turf containing a light source or its attached owner without relying on a version-specific global helper.
+
+#### proc/nexusTurfBlocksLight
+- Signature: `nexusTurfBlocksLight(turf/target_turf)`
+- Purpose: Treat missing, dense, or opaque turfs and opaque objects on a turf as lighting blockers.
+
+#### proc/nexusLightCanReach
+- Signature: `nexusLightCanReach(turf/source_turf, turf/target_turf)`
+- Purpose: Trace a tile line from a light to a target. A blocking turf's visible face can receive light, while tiles beyond it are shadowed.
+
+#### proc/getNexusLightOcclusionCacheKey
+- Signature: `getNexusLightOcclusionCacheKey(turf/source_turf, size_tiles)`
+- Purpose: Describe the blocker layout around a light at a quantized range so identical local layouts can reuse one generated mask.
+
+#### proc/getNexusLightOcclusionMask
+- Signature: `getNexusLightOcclusionMask(turf/source_turf, size_tiles, cache_key)`
+- Purpose: Build and cache a transparent 256px alpha mask containing only tiles reachable from the source. The mask clips the additive gradient at dense or opaque map geometry.
+
+#### proc/startNexusStaticLightOcclusionUpdates
+- Signature: `startNexusStaticLightOcclusionUpdates()`
+- Purpose: Refresh all legacy static lights at a throttled interval so opened doors and constructed or removed blockers update their shadows.
+
 #### proc/getNexusProjectileVisualDiameter
 - Signature: `getNexusProjectileVisualDiameter(icon_resource)`
 - Purpose: Cache the largest pixel dimension of each projectile icon resource so automatic light classification does not reconstruct the same DMI for every shot in a barrage.
 
 #### obj/NexusLighting/Emitter/proc/configureNexusEmitter
 - Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)`
-- Purpose: Select one of ten CC0-derived falloff states, compose it with a range-relative compact core, then run an unsynchronized client-side intensity/scale loop tuned for steady light, small blast, blast, beam segment, beam source, aura, or ki charge.
+- Purpose: Select one of ten CC0-derived falloff states, compose it with a range-relative compact core, apply cached turf-occlusion masks to significant lights, then run an unsynchronized client-side intensity/scale loop tuned for steady light, small blast, blast, beam segment, beam source, aura, or ki charge. Very small blasts and individual beam segments skip masks to avoid per-projectile overhead; beams already terminate at dense geometry and their larger source light remains occluded.
+
+#### obj/NexusLighting/Emitter/proc/refreshNexusLightOcclusion
+- Signature: `refreshNexusLightOcclusion(force_update = FALSE)`
+- Purpose: Apply or update separate alpha masks for an emitter's outer gradient and compact core based on the current surrounding blockers.
+
+#### atom/movable/proc/startNexusLightOcclusionTracking
+- Signature: `startNexusLightOcclusionTracking()`
+- Purpose: Run one throttled tracker per illuminated moving atom, refreshing its attached emitters after tile movement and periodically detecting changed doors or constructed turfs.
 
 #### atom/movable/proc/setNexusActionGlow
 - Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)`
@@ -1649,6 +1681,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/Admin2/verb/testNexusLightVariations
 - Signature: `testNexusLightVariations()`
 - Purpose: Test small/standard blast, beam trail/source, aura, and ki-charge flicker profiles without granting an attack.
+
+#### mob/Admin2/verb/testNexusTurfOcclusion
+- Signature: `testNexusTurfOcclusion()`
+- Purpose: Apply maximum darkness and attach a seven-tile warm test light for twenty seconds so admins can inspect wall and door collision while walking.
 
 #### proc/FadeOutLights
 - Signature: `FadeOutLights(area/a)`

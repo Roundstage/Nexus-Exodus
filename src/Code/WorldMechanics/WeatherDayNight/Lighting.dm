@@ -8,13 +8,18 @@ pixel offset aligned to their average pixel location (x * 32 and y * 32)
 var/list
 	light_sources = new
 	nexus_projectile_icon_diameters = new
+	nexus_light_occlusion_mask_cache = new
 
 var/nexus_projectile_glow_serial_counter = 0
+var/nexus_static_light_occlusion_updates_running = FALSE
+var/nexus_light_turf_occlusion_enabled = TRUE
 
 #define NEXUS_LIGHTING_PLANE 15
 #define NEXUS_HUD_PLANE 20
 #define NEXUS_GLOW_MASK_DIAMETER 256
 #define NEXUS_GLOW_DEFAULT_OFFSET 7
+#define NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE 1.5
+#define NEXUS_LIGHT_OCCLUSION_CACHE_LIMIT 160
 #define NEXUS_LIGHT_VARIATION_STEADY "steady"
 #define NEXUS_LIGHT_VARIATION_SMALL_BLAST "small_blast"
 #define NEXUS_LIGHT_VARIATION_BLAST "blast"
@@ -25,6 +30,79 @@ var/nexus_projectile_glow_serial_counter = 0
 
 proc/getNexusGlowRangeScale(size_tiles)
 	return max(0.25, size_tiles) * world.icon_size / NEXUS_GLOW_MASK_DIAMETER
+
+proc/getNexusLightTurf(atom/source_atom)
+	var/atom/current_atom = source_atom
+	while(current_atom && !isturf(current_atom))
+		current_atom = current_atom.loc
+	return isturf(current_atom) ? current_atom : null
+
+proc/nexusTurfBlocksLight(turf/target_turf)
+	if(!target_turf || target_turf.density || target_turf.opacity) return TRUE
+	for(var/obj/blocker in target_turf)
+		if(blocker.opacity) return TRUE
+	return FALSE
+
+proc/nexusLightCanReach(turf/source_turf, turf/target_turf)
+	if(!source_turf || !target_turf || source_turf.z != target_turf.z) return FALSE
+	if(source_turf == target_turf) return TRUE
+	var/turf/current_turf = source_turf
+	var/maximum_steps = get_dist(source_turf, target_turf) + 1
+	for(var/line_step = 1, line_step <= maximum_steps, line_step++)
+		var/turf/next_turf = get_step(current_turf, get_dir(current_turf, target_turf))
+		if(!next_turf) return FALSE
+		if(next_turf == target_turf) return TRUE
+		if(nexusTurfBlocksLight(next_turf)) return FALSE
+		current_turf = next_turf
+	return FALSE
+
+proc/getNexusLightOcclusionCacheKey(turf/source_turf, size_tiles)
+	if(!source_turf) return null
+	var/mask_size = Clamp(size_tiles, NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE, 12)
+	var/radius = max(1, round(mask_size / 2 + 0.5))
+	var/blocker_signature = ""
+	for(var/y_offset = -radius, y_offset <= radius, y_offset++)
+		for(var/x_offset = -radius, x_offset <= radius, x_offset++)
+			var/turf/sample_turf = locate(source_turf.x + x_offset, source_turf.y + y_offset, source_turf.z)
+			blocker_signature += nexusTurfBlocksLight(sample_turf) ? "1" : "0"
+	return "[round(mask_size, 0.05)]|[blocker_signature]"
+
+proc/getNexusLightOcclusionMask(turf/source_turf, size_tiles, cache_key)
+	if(!source_turf) return null
+	if(!cache_key) cache_key = getNexusLightOcclusionCacheKey(source_turf, size_tiles)
+	var/icon/cached_mask = nexus_light_occlusion_mask_cache[cache_key]
+	if(cached_mask) return cached_mask
+
+	var/mask_size = Clamp(size_tiles, NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE, 12)
+	var/radius = max(1, round(mask_size / 2 + 0.5))
+	var/tile_pixel_size = NEXUS_GLOW_MASK_DIAMETER / mask_size
+	var/pixel_center = (NEXUS_GLOW_MASK_DIAMETER + 1) / 2
+	var/icon/occlusion_mask = icon('NexusLightGradient.dmi', "10")
+	occlusion_mask.DrawBox(null, 1, 1, NEXUS_GLOW_MASK_DIAMETER, NEXUS_GLOW_MASK_DIAMETER)
+	for(var/y_offset = -radius, y_offset <= radius, y_offset++)
+		for(var/x_offset = -radius, x_offset <= radius, x_offset++)
+			var/turf/sample_turf = locate(source_turf.x + x_offset, source_turf.y + y_offset, source_turf.z)
+			if(!sample_turf || !nexusLightCanReach(source_turf, sample_turf)) continue
+			var/x1 = Clamp(round(pixel_center + (x_offset - 0.5) * tile_pixel_size), 1, NEXUS_GLOW_MASK_DIAMETER)
+			var/y1 = Clamp(round(pixel_center + (y_offset - 0.5) * tile_pixel_size), 1, NEXUS_GLOW_MASK_DIAMETER)
+			var/x2 = Clamp(round(pixel_center + (x_offset + 0.5) * tile_pixel_size), 1, NEXUS_GLOW_MASK_DIAMETER)
+			var/y2 = Clamp(round(pixel_center + (y_offset + 0.5) * tile_pixel_size), 1, NEXUS_GLOW_MASK_DIAMETER)
+			occlusion_mask.DrawBox(rgb(255, 255, 255, 255), min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
+
+	if(nexus_light_occlusion_mask_cache.len >= NEXUS_LIGHT_OCCLUSION_CACHE_LIMIT)
+		nexus_light_occlusion_mask_cache = new/list
+	nexus_light_occlusion_mask_cache[cache_key] = occlusion_mask
+	return occlusion_mask
+
+proc/startNexusStaticLightOcclusionUpdates()
+	set waitfor = 0
+	if(nexus_static_light_occlusion_updates_running) return
+	nexus_static_light_occlusion_updates_running = TRUE
+	while(light_sources.len)
+		for(var/obj/LightSource/static_light in light_sources)
+			if(static_light) static_light.refreshNexusLightOcclusion()
+		sleep(30)
+	nexus_static_light_occlusion_updates_running = FALSE
 
 proc/getNexusProjectileVisualDiameter(icon_resource)
 	if(!icon_resource) return world.icon_size
@@ -225,6 +303,7 @@ obj/NexusLighting
 		alpha = 60
 		var/tmp
 			image/core_visual
+			atom/movable/light_origin
 			range_tiles = 2
 			light_intensity = 180
 			variation_enabled = TRUE
@@ -234,6 +313,8 @@ obj/NexusLighting
 			base_core_alpha = 148
 			base_range_scale = 0.25
 			base_core_scale = 0.1
+			occlusion_mask_key
+			core_occlusion_mask_key
 
 		New()
 			. = ..()
@@ -246,8 +327,50 @@ obj/NexusLighting
 		Del()
 			animate(src)
 			if(core_visual) animate(core_visual)
+			filters = null
+			if(core_visual) core_visual.filters = null
+			light_origin = null
 			core_visual = null
 			. = ..()
+
+		proc/getNexusLightOriginTurf()
+			if(light_origin) return getNexusLightTurf(light_origin)
+			return getNexusLightTurf(src)
+
+		proc/shouldUseNexusLightOcclusion()
+			if(!nexus_light_turf_occlusion_enabled || light_intensity <= 0 || range_tiles < NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE) return FALSE
+			if(variation_style == NEXUS_LIGHT_VARIATION_SMALL_BLAST || variation_style == NEXUS_LIGHT_VARIATION_BEAM) return FALSE
+			return TRUE
+
+		proc/clearNexusLightOcclusion()
+			filters = null
+			if(core_visual) core_visual.filters = null
+			occlusion_mask_key = null
+			core_occlusion_mask_key = null
+
+		proc/refreshNexusLightOcclusion(force_update = FALSE)
+			var/turf/origin_turf = getNexusLightOriginTurf()
+			if(!origin_turf || !shouldUseNexusLightOcclusion())
+				clearNexusLightOcclusion()
+				return
+
+			var/new_mask_key = getNexusLightOcclusionCacheKey(origin_turf, range_tiles)
+			if(force_update || new_mask_key != occlusion_mask_key)
+				var/icon/outer_mask = getNexusLightOcclusionMask(origin_turf, range_tiles, new_mask_key)
+				filters = outer_mask ? list(filter(type = "alpha", icon = outer_mask)) : null
+				occlusion_mask_key = new_mask_key
+
+			var/core_range_tiles = range_tiles * 0.42
+			if(!core_visual) return
+			if(core_range_tiles < NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE)
+				core_visual.filters = null
+				core_occlusion_mask_key = null
+				return
+			var/new_core_mask_key = getNexusLightOcclusionCacheKey(origin_turf, core_range_tiles)
+			if(force_update || new_core_mask_key != core_occlusion_mask_key)
+				var/icon/core_mask = getNexusLightOcclusionMask(origin_turf, core_range_tiles, new_core_mask_key)
+				core_visual.filters = core_mask ? list(filter(type = "alpha", icon = core_mask)) : null
+				core_occlusion_mask_key = new_core_mask_key
 
 		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			animate(src)
@@ -324,6 +447,7 @@ obj/NexusLighting
 				if(core_visual)
 					animate(core_visual, alpha = max(1, round(base_core_alpha * core_alpha_ratio)), transform = matrix() * base_core_scale * core_scale_ratio, time = variation_time + 1, loop = -1, easing = SINE_EASING)
 					animate(core_visual, alpha = base_core_alpha, transform = matrix() * base_core_scale, time = variation_time + 1, easing = SINE_EASING)
+			refreshNexusLightOcclusion(TRUE)
 			return src
 
 atom/movable
@@ -333,14 +457,53 @@ atom/movable
 		obj/NexusLighting/Emitter/nexus_aura_glow
 		nexus_action_glow_generation = 0
 		nexus_aura_glow_generation = 0
+		nexus_light_occlusion_tracking = FALSE
+		turf/nexus_light_occlusion_last_turf
+		nexus_light_occlusion_next_refresh = 0
 
 	proc
+		hasNexusOccludingLight()
+			if(istype(src, /obj/NexusLighting/Emitter))
+				var/obj/NexusLighting/Emitter/emitter = src
+				return emitter.shouldUseNexusLightOcclusion()
+			if(nexus_glow && nexus_glow.shouldUseNexusLightOcclusion()) return TRUE
+			if(nexus_action_glow && nexus_action_glow.shouldUseNexusLightOcclusion()) return TRUE
+			if(nexus_aura_glow && nexus_aura_glow.shouldUseNexusLightOcclusion()) return TRUE
+			return FALSE
+
+		refreshAttachedNexusLightOcclusion(force_update = FALSE)
+			if(istype(src, /obj/NexusLighting/Emitter))
+				var/obj/NexusLighting/Emitter/emitter = src
+				emitter.refreshNexusLightOcclusion(force_update)
+				return
+			if(nexus_glow) nexus_glow.refreshNexusLightOcclusion(force_update)
+			if(nexus_action_glow) nexus_action_glow.refreshNexusLightOcclusion(force_update)
+			if(nexus_aura_glow) nexus_aura_glow.refreshNexusLightOcclusion(force_update)
+
+		startNexusLightOcclusionTracking()
+			set waitfor = 0
+			if(nexus_light_occlusion_tracking || !hasNexusOccludingLight()) return
+			nexus_light_occlusion_tracking = TRUE
+			nexus_light_occlusion_last_turf = null
+			nexus_light_occlusion_next_refresh = 0
+			while(src && hasNexusOccludingLight())
+				var/turf/current_turf = getNexusLightTurf(src)
+				if(current_turf != nexus_light_occlusion_last_turf || world.time >= nexus_light_occlusion_next_refresh)
+					refreshAttachedNexusLightOcclusion()
+					nexus_light_occlusion_last_turf = current_turf
+					nexus_light_occlusion_next_refresh = world.time + 10
+				sleep(2)
+			nexus_light_occlusion_tracking = FALSE
+			nexus_light_occlusion_last_turf = null
+
 		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			if(!nexus_glow)
 				nexus_glow = new
 				vis_contents += nexus_glow
+			nexus_glow.light_origin = src
 			nexus_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
 			CenterIcon(nexus_glow)
+			startNexusLightOcclusionTracking()
 			return nexus_glow
 
 		clearNexusGlow()
@@ -354,8 +517,10 @@ atom/movable
 			if(!nexus_action_glow)
 				nexus_action_glow = new
 				vis_contents += nexus_action_glow
+			nexus_action_glow.light_origin = src
 			nexus_action_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
 			CenterIcon(nexus_action_glow)
+			startNexusLightOcclusionTracking()
 			return nexus_action_glow
 
 		clearNexusActionGlow()
@@ -370,8 +535,10 @@ atom/movable
 			if(!nexus_aura_glow)
 				nexus_aura_glow = new
 				vis_contents += nexus_aura_glow
+			nexus_aura_glow.light_origin = src
 			nexus_aura_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
 			CenterIcon(nexus_aura_glow)
+			startNexusLightOcclusionTracking()
 			return nexus_aura_glow
 
 		clearNexusAuraGlow()
@@ -384,6 +551,7 @@ atom/movable
 		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor = 0
 			var/obj/NexusLighting/Emitter/pulse = new
+			pulse.light_origin = src
 			pulse.configureNexusEmitter(light_color, size, light_alpha, light_icon, FALSE, gradient_offset)
 			CenterIcon(pulse)
 			vis_contents += pulse
@@ -533,11 +701,24 @@ mob/Admin2/verb/testNexusLightVariations()
 		var/aura_generation = nexus_aura_glow_generation
 		spawn(100) if(src && nexus_aura_glow_generation == aura_generation) clearNexusAuraGlow()
 
+mob/Admin2/verb/testNexusTurfOcclusion()
+	set name = "Test Turf Light Collision"
+	set category = "Admin"
+	if(!loc)
+		src << "You must be on the map to test turf light collision."
+		return
+	nexus_light_turf_occlusion_enabled = TRUE
+	setMaximumDarkness()
+	setNexusActionGlow("#fff4cf", 7, 255, 'NexusLightGradient.dmi', 10, NEXUS_LIGHT_VARIATION_CHARGE)
+	var/test_generation = nexus_action_glow_generation
+	src << "A seven-tile test light will follow you for 20 seconds. Walk beside walls and closed opaque doors: their visible face is lit, but tiles behind them remain dark."
+	spawn(200) if(src && nexus_action_glow_generation == test_generation) clearNexusActionGlow()
+
 mob/Admin2/verb/testNexusLighting()
 	set name = "Test Lighting"
 	set category = "Admin"
 	if(!client) return
-	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Maximum Darkness", "Night", "Day", "White Glow", "Lighting Blast", "Beam Lighting", "Light Variations", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
+	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Maximum Darkness", "Night", "Day", "White Glow", "Turf Light Collision", "Lighting Blast", "Beam Lighting", "Light Variations", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
 	switch(choice)
 		if("Maximum Darkness") setMaximumDarkness()
 		if("Night")
@@ -545,6 +726,7 @@ mob/Admin2/verb/testNexusLighting()
 		if("Day")
 			if(current_area) current_area.FadeToDay()
 		if("White Glow") testNexusGlow()
+		if("Turf Light Collision") testNexusTurfOcclusion()
 		if("Lighting Blast") testNexusBlast()
 		if("Beam Lighting") testNexusBeamLighting()
 		if("Light Variations") testNexusLightVariations()
@@ -607,6 +789,7 @@ obj
 			. = ..()
 			MakeImmovableIndestructable()
 			light_sources += src
+			startNexusStaticLightOcclusionUpdates()
 
 		Del()
 			light_sources -= src
@@ -670,6 +853,7 @@ obj
 			var/show_light = !a || !a.is_day || !l.fade_with_day
 			l.configureNexusEmitter(light_color, size, l.getRenderedAlpha(), light_icon, show_light, l.light_gradient_offset)
 			CenterIcon(l)
+			startNexusStaticLightOcclusionUpdates()
 			if(!show_light)
 				animate(l)
 				l.alpha = 0
