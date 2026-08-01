@@ -939,11 +939,14 @@ datum/SkillEngine
 
 	proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)
 		if(!user) return 0
+		if(!skill_obj) skill_obj = locate(/obj/Dash_Attack) in user
 		var/turf/t = user.loc
 		if(!istype(t, /turf)) return 0
 
 		if(user.dash_attacking || user.lunge_attacking || user.grabbedObject || user.in_dragon_rush) return 0
-		if(world.time - user.lastDashAttack < 100) return 0
+		if(user.lastDashAttack && world.time - user.lastDashAttack < 100)
+			user << "Dash Attack is still on cooldown."
+			return 0
 		if(user.tournament_override()) return 0
 		var/drain = 145 * (user.max_ki / 3000) ** 0.5
 		if(user.Ki < drain)
@@ -952,15 +955,17 @@ datum/SkillEngine
 		if(user.Beam_stunned()) return 0
 
 		user.dash_attacking = 1
+		user.attack_forced_movement = 1
 		user.original_dash_dir = user.dir
 		user.lastDashAttack = world.time
+		if(skill_obj && skill_obj.icon) user.overlays += skill_obj.icon
 		for(var/steps in 1 to 25)
 			if(user.KB) break
 			var/dash_dir = user.original_dash_dir
 			if(user.desired_dash_dir && round(steps / 3) == steps / 3)
 				dash_dir = user.desired_dash_dir
 				user.desired_dash_dir = 0
-			step(user, dash_dir)
+			if(!step(user, dash_dir)) break
 			for(var/mob/p in mob_view(1, user))
 				if(p != user)
 					var/damage_factor = min(skill_dash_attack_max_factor, \
@@ -977,6 +982,8 @@ datum/SkillEngine
 						if(p.Health <= 0 || p.Ki <= 0) p.KO(user)
 						if(p) p.DashAttackPart2(user, kb_distance)
 						user.Ki -= drain
+						if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
+						user.attack_forced_movement = 0
 						user.dash_attacking = 0
 						return 1
 					else
@@ -985,6 +992,8 @@ datum/SkillEngine
 			user.AfterImage(20)
 			sleep(TickMult(0.7 * user.Speed_delay_mult(severity = 0.25)))
 		user.Ki -= drain
+		if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
+		user.attack_forced_movement = 0
 		user.dash_attacking = 0
 		return 1
 

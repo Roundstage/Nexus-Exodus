@@ -7,7 +7,8 @@ mob/var
 obj
 	RockThrow
 		desc = "You throw a rock at your opponent and deal damage with your strength."
-		icon = 'ResourceRocks.dmi'
+		icon = 'src/Icons/Effects/ResourceRocks.dmi'
+		icon_state = "1"
 		Cost_To_Learn = 15
 		Teach_Timer = 1
 		student_point_cost = 15
@@ -29,7 +30,7 @@ obj
 				
 	RockSlide
 		desc = "You throw lots of rocks at your opponent and deal damage with your strength. Each projectile is slightly weaker than Rock Throw."
-		icon = 'RisingRocks.dmi'
+		icon = 'src/Icons/Effects/RisingRocks.dmi'
 		Cost_To_Learn = 35
 		Teach_Timer = 1
 		student_point_cost = 35
@@ -49,7 +50,8 @@ obj
 
 	RockTomb
 		desc = "You throw a massive rock at your opponent and deal heavy damage with your strength. When mastered this rock explodes!"
-		icon = 'RockExplosion.dmi'
+		icon = 'src/Icons/Effects/ResourceRocks.dmi'
+		icon_state = "4"
 		Cost_To_Learn = 50
 		Teach_Timer = 1
 		student_point_cost = 50
@@ -68,6 +70,62 @@ obj
 			RockTomb()
 				set category = "Skills"
 				usr.RockTomb()
+
+obj/Effect/RockSkillProjectile
+	name = "hurled rock"
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+
+mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_scale = 1)
+	if(!target || !visual_icon) return
+	var/obj/Effect/RockSkillProjectile/rock = new
+	rock.icon = visual_icon
+	if(visual_state) rock.icon_state = visual_state
+	rock.SafeTeleport(loc)
+	CenterIcon(rock)
+	if(visual_scale != 1) rock.transform = matrix() * visual_scale
+	var/maximum_steps = max(1, getdist(src, target) + 4)
+	for(var/flight_step = 1, flight_step <= maximum_steps && rock && target, flight_step++)
+		if(getdist(rock, target) <= 0) break
+		var/turf/next_turf = get_step_towards(rock, target)
+		if(!next_turf) break
+		rock.SafeTeleport(next_turf)
+		sleep(1)
+	var/turf/impact_turf = target ? target.loc : rock.loc
+	if(rock) del(rock)
+	return impact_turf
+
+mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_state = "1", visual_scale = 1)
+	set waitfor = 0
+	showRockSkillProjectile(target, 'src/Icons/Effects/ResourceRocks.dmi', visual_state, visual_scale)
+	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	target.TakeDamage(damage, 1.5)
+	target.Knockback(src, knockback)
+
+mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
+	set waitfor = 0
+	showRockSkillProjectile(target, 'src/Icons/Effects/RisingRocks.dmi')
+	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	target.TakeDamage(damage, 1.2)
+	target.Knockback(src, knockback)
+
+mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
+	set waitfor = 0
+	var/turf/impact_turf = showRockSkillProjectile(target, 'src/Icons/Effects/ResourceRocks.dmi', "4", 2)
+	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	var/health_before_damage = target.Health
+	if(mastered)
+		RockTombFX(impact_turf)
+		for(var/mob/area_target in range(2, target))
+			if(area_target == src || area_target == target || !canHitTenkaichiTechniqueTarget(area_target)) continue
+			area_target.TakeDamage(damage * 0.3, 1)
+			area_target.Knockback(src, knockback * 0.5)
+			area_target << "You are caught in the rock explosion!"
+	target.TakeDamage(damage, 2)
+	target.Knockback(src, knockback, omega_kb = 1)
+	if(damage >= 200 + health_before_damage) target.KO(src, allow_anger = 0)
+	else if(damage >= health_before_damage) target.KO(src)
 
 mob
 	proc
@@ -108,8 +166,7 @@ mob
 					var/knockback = get_melee_knockback_distance(target)
 					usr << "You throw a rock at [target]!"
 					target << "[usr] throws a rock at you!"
-					target.TakeDamage(dmg, 1.5)
-					target.Knockback(usr, knockback)
+					spawn() deliverRockThrowHit(target, dmg, knockback, "[rand(1, 4)]")
 					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
@@ -129,8 +186,7 @@ mob
 					var/knockback = get_melee_knockback_distance(target) * 0.5
 					usr << "You throw a small rock at [target]!"
 					target << "[usr] throws a small rock at you!"
-					target.TakeDamage(dmg, 1.0)
-					target.Knockback(usr, knockback)
+					spawn() deliverRockThrowHit(target, dmg, knockback, "[rand(1, 4)]", 0.8)
 					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
@@ -176,8 +232,7 @@ mob
 							var/knockback = get_melee_knockback_distance(M) * 0.7
 							usr << "A rock from your slide hits [M]!"
 							M << "A rock from [usr]'s slide hits you!"
-							M.TakeDamage(dmg, 1.2)
-							M.Knockback(usr, knockback)
+							spawn() deliverRockSlideHit(M, dmg, knockback)
 							hits++
 							break
 				
@@ -187,14 +242,14 @@ mob
 			if(hits == 0)
 				usr << "Your rock slide hits nothing but air!"
 
-		RockTombFX()
+		RockTombFX(turf/impact_turf)
 			set waitfor = 0
 			var/obj/Effect/e = GetEffect()
-			e.loc = loc
-			e.icon = 'Explosion.dmi'
+			e.loc = impact_turf ? impact_turf : loc
+			e.icon = 'src/Icons/Effects/RockExplosion.dmi'
 			CenterIcon(e)
-			animate(e, transform * 3, alpha = 255, time = 20)
-			sleep(25)
+			flick(e.icon, e)
+			sleep(20)
 			del(e)
 
 		RockTomb()
@@ -222,24 +277,10 @@ mob
 				if(skill.mastered)
 					usr << "You hurl a massive explosive rock at [target]!"
 					target << "[usr] hurls a massive explosive rock at you!"
-					spawn(20) RockTombFX() // Delayed explosion effect
-
-					// Area damage for mastered version
-					for(var/mob/area_target in range(2, target))
-						if(area_target != usr && area_target != target)
-							area_target.TakeDamage(dmg * 0.3, 1.0)
-							area_target.Knockback(usr, knockback * 0.5)
-							area_target << "You are caught in the rock explosion!"
 				else
 					usr << "You hurl a massive rock at [target]!"
 					target << "[usr] hurls a massive rock at you!"
-
-				var/hp_before_dmg = target.Health
-				target.TakeDamage(dmg, 2.0)
-				target.Knockback(usr, knockback, omega_kb = 1)
-
-				if(dmg >= 200 + hp_before_dmg) target.KO(src, allow_anger = 0)
-				else if(dmg >= hp_before_dmg) target.KO(src)
+				spawn() deliverRockTombHit(target, dmg, knockback, skill.mastered)
 				return
 			else
 				usr << "You throw a massive rock, but there is no one to hit!"
