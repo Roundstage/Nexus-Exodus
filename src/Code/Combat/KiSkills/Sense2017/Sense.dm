@@ -1,15 +1,10 @@
-mob/var/tmp/testing_sense = 0
+mob/var/tmp/testing_sense = TRUE
 
 mob/verb/Toggle_Sense_Overlay()
 	set category = "Other"
-	if(!testing_sense)
-		UpdateSenseArrowList(current_area)
-		testing_sense = 1
-		src << "Sense Arrows on"
-	else
-		src << "Sense Arrows are already on. Perhaps there is just no one else on the planet to sense."
-		testing_sense = 0
-		RemoveAllSenseArrows()
+	testing_sense = TRUE
+	UpdateSenseArrowList(current_area)
+	src << "Sense tracking is always active while you have Sense or a scanner."
 
 obj/Screen_Indicator
 	Savable=0
@@ -73,12 +68,68 @@ mob
 	var
 		tmp
 			list/sense_arrows = new
+			list/nexus_sense_readouts = new
+			next_nexus_sense_refresh = 0
+			next_nexus_sense_arrow_refresh = 0
 
 	proc
+		hasNexusSenseDisplay()
+			if(Scouter || Cyber_Scanner) return TRUE
+			if(Android) return FALSE
+			if(sense_obj && sense_obj.loc == src) return TRUE
+			if(locate(/obj/Sense) in src) return TRUE
+			if(locate(/obj/Advanced_Sense) in src) return TRUE
+			if(locate(/obj/Sense3) in src) return TRUE
+			return FALSE
+
+		clearNexusSenseReadouts()
+			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			if(client)
+				for(var/mob/old_target in nexus_sense_readouts)
+					var/image/old_readout = nexus_sense_readouts[old_target]
+					if(old_readout) client.images -= old_readout
+			nexus_sense_readouts = list()
+
+		refreshNexusSenseReadouts()
+			if(!client || !current_area || !hasNexusSenseDisplay())
+				clearNexusSenseReadouts()
+				return
+			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			var/list/active_targets = list()
+			for(var/mob/target in current_area.mob_list)
+				if(target == src || target.type == /mob/Body || target.unsenseable || !target.loc) continue
+				if(target.locz() != locz() || !CanSense(src, target)) continue
+				active_targets[target] = TRUE
+				var/image/readout = nexus_sense_readouts[target]
+				if(!readout)
+					readout = image(icon = null, loc = target)
+					readout.layer = 1000
+					readout.maptext_x = -32
+					readout.maptext_y = -12
+					readout.maptext_width = 96
+					readout.maptext_height = 12
+					readout.mouse_opacity = 0
+					nexus_sense_readouts[target] = readout
+					client.images += readout
+				var/power_percent = Sense_Power(target)
+				readout.maptext = "<div style='font-family:Courier New;font-size:7px;font-weight:bold;text-align:center;color:#9de8ff;text-shadow:1px 1px #000'>[power_percent]%</div>"
+			for(var/mob/old_target in nexus_sense_readouts.Copy())
+				if(active_targets[old_target]) continue
+				var/image/old_readout = nexus_sense_readouts[old_target]
+				if(old_readout) client.images -= old_readout
+				nexus_sense_readouts -= old_target
+
 		UpdateSenseArrowPositionsLoop()
 			set waitfor=0
 			while(1)
-				if(client) UpdateSenseArrowPositions()
+				if(client)
+					UpdateSenseArrowPositions()
+					if(world.time >= next_nexus_sense_arrow_refresh)
+						UpdateSenseArrowList(current_area)
+						next_nexus_sense_arrow_refresh = world.time + 50
+					if(world.time >= next_nexus_sense_refresh)
+						refreshNexusSenseReadouts()
+						next_nexus_sense_refresh = world.time + 10
 				sleep(sense_arrow_update_rate)
 
 				var/inactive_time = 600
@@ -154,7 +205,9 @@ mob
 
 		UpdateSenseArrowList(area/a)
 			RemoveAllSenseArrows()
-			if(!testing_sense) return
+			if(!a || !hasNexusSenseDisplay())
+				clearNexusSenseReadouts()
+				return
 			for(var/mob/m in a.player_list)
 				if(m != src)
 					var/obj/Screen_Indicator/si = GetNewScreenIndicator()

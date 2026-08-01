@@ -11,13 +11,29 @@ mob
 	var
 		tmp
 			in_dragon_rush
+			dragon_rush_attack_active
+			obj/NexusHud/DragonRushPrompt/dragon_rush_prompt
 	proc
 		CheckLungeDragonRush(mob/a, mob/b)
 			if(!allow_dragon_rush) return
 			if(!a || !b) return
 			if(a.in_dragon_rush || b.in_dragon_rush) return //if their lunge hit you first and the dragon rush has already begun dont stack another one on it
-			if(!b.lunge_attacking) return //the lunges did not collide
+			if(!(a.lunge_attacking || a.dragon_rush_attack_active)) return
+			if(!(b.lunge_attacking || b.dragon_rush_attack_active)) return
 			StartDragonRush(a,b)
+			return TRUE
+
+		ShowDragonRushPrompt(mob/enemy)
+			if(!client || !enemy) return
+			if(!dragon_rush_prompt)
+				dragon_rush_prompt = new
+				client.screen += dragon_rush_prompt
+			dragon_rush_prompt.updateDirection(get_dir(src, enemy))
+
+		ClearDragonRushPrompt()
+			if(client && dragon_rush_prompt) client.screen -= dragon_rush_prompt
+			if(dragon_rush_prompt) del(dragon_rush_prompt)
+			dragon_rush_prompt = null
 
 		DragonRushAnimationLoop()
 			set waitfor=0
@@ -36,11 +52,15 @@ mob
 			attacking = 0
 			in_dragon_rush = 0
 			lunge_attacking = 0
+			dragon_rush_attack_active = null
+			alpha = 255
+			ClearDragonRushPrompt()
 
 		StartDragonRushVars()
 			in_dragon_rush = 1
 			attacking = DRAGON_RUSH
 			lunge_attacking = 0
+			dragon_rush_attack_active = null
 			DragonRushAnimationLoop()
 
 		PressedTowardEnemy(mob/m)
@@ -139,8 +159,15 @@ proc
 				player_view(20,a) << sound('Teleport.ogg',volume = 20)
 				a.AfterImage(25)
 				b.AfterImage(25)
+				animate(a, alpha = 0, time = 2)
+				animate(b, alpha = 0, time = 2)
+				sleep(2)
 				a.NewDragonRushLoc(b)
 				if(get_dist(a,b) > 1) return //dragon rush warp to new loc failed
+				animate(a, alpha = 255, time = 2)
+				animate(b, alpha = 255, time = 2)
+				a.ShowDragonRushPrompt(b)
+				b.ShowDragonRushPrompt(a)
 				warps++
 
 			var/a_press = a.PressedTowardEnemy(b)
@@ -204,3 +231,35 @@ proc
 		if(a_points > b_points) return a
 		else if(b_points > a_points) return b
 		return pick(a,b)
+
+obj/NexusHud/DragonRushPrompt
+	mouse_opacity = 0
+	plane = 20
+	layer = 125
+	screen_loc = "CENTER-1:0,CENTER:48"
+	maptext_x = 0
+	maptext_y = 4
+	maptext_width = 112
+	maptext_height = 28
+
+	New()
+		. = ..()
+		icon = getNexusHudLibraryIcon(112, 28, "#21180f", "#d3a54e", "#6c4a22")
+
+	proc/updateDirection(direction)
+		var/arrow = "?"
+		var/direction_name = "WAIT"
+		switch(direction)
+			if(NORTH)
+				arrow = "^"
+				direction_name = "UP"
+			if(SOUTH)
+				arrow = "v"
+				direction_name = "DOWN"
+			if(EAST)
+				arrow = ">"
+				direction_name = "RIGHT"
+			if(WEST)
+				arrow = "<"
+				direction_name = "LEFT"
+		maptext = "<div style='font-family:Courier New;font-size:10px;font-weight:bold;text-align:center;color:#ffe19b;text-shadow:1px 1px #000'>[arrow] [direction_name] [arrow]</div>"

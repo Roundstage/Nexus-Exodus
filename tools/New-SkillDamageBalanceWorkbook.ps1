@@ -131,6 +131,8 @@ $settingRows = @(
 	@("Raw beam damage window", 3, "damage windows", "ProjectileSystem/BeamCore.dm"),
 	@("Beam leading multiplier", 0.85, "multiplier", "ProjectileSystem/Projectiles.dm"),
 	@("Beam post-force multiplier", 0.6, "multiplier", "ProjectileSystem/Projectiles.dm"),
+	@("Beam skill cooldown", 3, "seconds", "GlobalCombatSettings.dm"),
+	@("Beam clash winner damage", 1.35, "multiplier", "GlobalCombatSettings.dm"),
 	@("Owner resistance penalty", 1, "scenario default", "ProjectileSystem/Projectiles.dm"),
 	@("Ki projectile cadence", 0.5, "deciseconds", "ProjectileSystem/Blasts.dm"),
 	@("World FPS", 60, "frames/second", "Application/Movement/MovementInput.dm"),
@@ -391,10 +393,10 @@ Add-SkillRow "Dash Attack" "/obj/Dash_Attack" "Learnable" "Physical" "2-8" 1 0 0
 Add-SkillRow "Dropkick" "/obj/Dropkick" "Learnable" "Physical" 8 2 0 0 "25 stamina" 30 "Windup + travel" 19 "None" "Two hits: 5 and 3" "Application/Combat/SkillEngine.dm"
 Add-SkillRow "Pressure Punch" "/obj/PressurePunch" "Learnable" "Physical" 6 1 0 0 0 12 "2s" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/PressurePunch.dm"
 Add-SkillRow "Roundhouse Kick" "/obj/RoundhouseKick" "Learnable" "Physical" 4 1 0 0 0 12 "1s" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/RoundhouseKick.dm"
-Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 3 1 0 0 40 3 "Instant target resolve" 10 "None" "Strength versus Endurance" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 3.5 1 0 0 40 3 "Instant target resolve" 10 "None" "Strength versus Endurance" "Combat/RockThrow.dm"
 Add-SkillRow "Rock Throw - Rapid" "/obj/RockThrow" "Learnable mode" "Physical" 1 1 0 0 16 0 "Instant target resolve" 8 "None" "No cooldown" "Combat/RockThrow.dm"
-Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Melee" 0.8 5 0 0 150 12 "Up to 15 searches" 8 "None" "Now calculates damage against each victim" "Combat/RockThrow.dm"
-Add-SkillRow "Rock Tomb" "/obj/RockTomb" "Learnable" "Physical" 5 1 0 0 100 15 "Instant target resolve" 12 "None" "Mastered splash affects secondary targets only" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Physical" 0.55 "7-15" 0 0 150 12 "1 tick between rocks" 8 "None" "Strength-scaled sequence; maximum shared factor 8.25" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Tomb" "/obj/RockTomb" "Learnable" "Physical" 8 1 0 "30% mastered splash" 100 15 "Instant target resolve" 12 "None" "Mastered splash affects secondary targets only" "Combat/RockThrow.dm"
 Add-SkillRow "Blast" "/obj/Attacks/Blast" "Learnable" "Ki" "0.35-0.5" "1-4" 0 "Optional equal splash" "Dynamic" "Dynamic" "No charge" 47 "None" "Shared factor budget 4" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
 Add-SkillRow "Big Bang Attack" "/obj/Attacks/Big_Bang_Attack" "Learnable" "Ki" 22 2 0 "22 splash" 80 0 "18*SD(.4)" 60 "None" "22 direct + 22 splash; budget 44" "SkillEngine.dm"
 Add-SkillRow "Charge" "/obj/Attacks/Charge" "Learnable" "Ki" 4 2 0 "4 splash" 20 0 "7.5*SD(.6)" 47 "None" "4 direct + 4 splash" "SkillEngine.dm"
@@ -407,16 +409,18 @@ Add-SkillRow "Scatter Shot" "/obj/Attacks/Scatter_Shot" "Learnable" "Ki" 0.3 "Dy
 Add-SkillRow "Genocide" "/obj/Attacks/Genocide" "Learnable" "Ki" 0.25 12 0 0 3 0 "5ds between shots" 500 "None" "Activation capped at 12" "ProjectileSystem/Blasts.dm"
 Add-SkillRow "Buster Barrage" "/obj/Attacks/Buster_Barrage" "Learnable" "Ki" 0.4 20 0 "10% equal splash" 9 0 "Per-shot interval" 250 "None" "20 shots; shared budget 16" "ProjectileSystem/Blasts.dm"
 Add-SkillRow "Attack Barrier" "/obj/Attacks/Attack_Barrier" "Learnable" "Ki" 0.2 20 0 0 6 0 "Initial delay" 3 "None" "Activation capped at 20 orbs" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
-Add-SkillRow "Noob Ray" "/obj/Attacks/Noob_Ray" "Unobtainable normally" "Ki Beam" 52 1 1 0 "Recalculated 500.8" 0 "Beam toggle" 50 "None" "Highest factor; only acquisition is commented" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 4 1 1 0 "Recalculated 27.2" 0 "Beam toggle" 60 "None" "Cumulative beam budget 4" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 3 1 1.5 0 "Recalculated 4.3" 0 "Beam toggle" 40 "None" "Cumulative beam budget 3" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 3 1 1 0 "Recalculated 5" 0 "Beam toggle" 30 "None" "Cumulative beam budget 3" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 5 1 1 0 "Recalculated 13.7" 0 "Beam toggle" 60 "None" "Shield pierce; no range damage growth" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 8 1 1.5 0 "Recalculated 12.9" 0 "Beam toggle" 40 "None" "Cumulative beam budget 8" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 5 1 1.2 0 "Recalculated 8.6" 0 "Beam toggle" 32 "None" "Range affects utility only" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 12 1 2 0 "Recalculated 21.2" 0 "Beam toggle" 60 "None" "Cumulative beam budget 12" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 7 1 1.8 0 "Recalculated 9" 0 "Beam toggle" 40 "None" "Cumulative beam budget 7" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 6 1 1.4 0 "Recalculated 9.1" 0 "Beam toggle" 32 "None" "Range affects utility only" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Noob Ray" "/obj/Attacks/Noob_Ray" "Unobtainable normally" "Ki Beam" 52 1 1 0 "Recalculated 500.8" 3 "Beam toggle" 50 "None" "Highest factor; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 4 1 1 0 "Recalculated 27.2" 3 "Beam toggle" 60 "None" "Cumulative budget 4; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 3 1 1.5 0 "Recalculated 4.3" 3 "Beam toggle" 40 "None" "Cumulative budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 3 1 1 0 "Recalculated 5" 3 "Beam toggle" 30 "None" "Cumulative budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 5 1 1 0 "Recalculated 13.7" 3 "Beam toggle" 60 "None" "Shield pierce; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 8 1 1.5 0 "Recalculated 12.9" 3 "Beam toggle" 40 "None" "Cumulative budget 8; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 5 1 1.2 0 "Recalculated 8.6" 3 "Beam toggle" 32 "None" "Range utility; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 12 1 2 0 "Recalculated 21.2" 3 "Beam toggle" 60 "None" "Cumulative budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 7 1 1.8 0 "Recalculated 9" 3 "Beam toggle" 40 "None" "Cumulative budget 7; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 6 1 1.4 0 "Recalculated 9.1" 3 "Beam toggle" 32 "None" "Range utility; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Dragon Nova" "/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova" "Test package" "Ki" 12 2 0 4 200 14 "2.4s charge" 40 "None" "Direct plus equal splash; budget cap 24" "Combat/TenkaichiSpecialStyles.dm"
+Add-SkillRow "Sky Break" "/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak" "Test package" "Physical" 8 2 0 2 180 13 "1.6s charge" 40 "None" "Strength-scaled direct plus splash; weapon required; budget cap 16" "Combat/TenkaichiSpecialStyles.dm"
 Add-SkillRow "Explosion" "/obj/Attacks/Explosion" "Learnable" "Ki AoE" 3 1 0 5 150 "2*SD(.35)" "No charge" 20 "None" "Force versus Resistance" "SkillEngine.dm"
 Add-SkillRow "Shockwave" "/obj/Attacks/Shockwave" "Learnable" "Hybrid AoE" 0.5 7 0 10 15 "7*SD(.25)" "No charge" 10 "None" "Half physical and half Ki per pulse" "SkillEngine.dm"
 Add-SkillRow "Kikoho" "/obj/Attacks/Kikoho" "Granted" "Ki" 7 1 0 0 100 0 "0.5*(5+11*SD(.4))" 11 "None" "Instant hit; separate self-damage pool +24" "Combat/KiSkills/Kikoho2016.dm"
@@ -436,8 +440,8 @@ Add-Row $calculator.Rows @((New-Cell "Skill" 1), (New-Cell "Model" 1), (New-Cell
 $damageRows = @(
 	@("Manual Attack", "Physical", 2.5, 1, 0, "Before rear/critical"), @("Lunge", "Physical", 5, 1, 0, ""),
 	@("Wolf Fang Fist", "Physical", 1, 5, 0, "5-hit maximum"), @("Hundred Crack Fist", "Physical", 0.25, 24, 0, "Exact sequence"),
-	@("Rock Throw - Powerful", "Physical", 3, 1, 0, ""), @("Rock Throw - Rapid", "Physical", 1, 1, 0, ""),
-	@("Rock Slide", "Physical", 0.8, 5, 0, "Maximum hits"), @("Rock Tomb", "Physical", 5, 1, 0, "Primary target"),
+	@("Rock Throw - Powerful", "Physical", 3.5, 1, 0, ""), @("Rock Throw - Rapid", "Physical", 1, 1, 0, ""),
+	@("Rock Slide", "Physical", 0.55, 15, 0, "Maximum 15 hits"), @("Rock Tomb", "Physical", 8, 1, 0, "Primary target"),
 	@("Big Bang Attack", "Ki", 22, 2, 0, "Direct plus splash"), @("Charge", "Ki", 4, 2, 0, "Direct plus splash"),
 	@("Cyber Charge", "Ki", 2.5, 2, 0, "Direct plus splash"), @("Kienzan", "Ki", 6, 1, 0, "Owner-immune"),
 	@("Sokidan", "Ki", 3.5, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 0.5, 4, 0, "Direct only"),
@@ -447,7 +451,8 @@ $damageRows = @(
 	@("Beam", "Ki", 3, 1, 0, "Cumulative beam factor"), @("Death Beam", "Ki", 3, 1, 0, "Cumulative beam factor"),
 	@("Makankosappo", "Ki", 5, 1, 0, "Cumulative beam factor"), @("Kamehameha", "Ki", 8, 1, 0, "Cumulative beam factor"),
 	@("Dodompa", "Ki", 5, 1, 0, "Cumulative beam factor"), @("Final Flash", "Ki", 12, 1, 0, "Cumulative beam factor"),
-	@("Galick Gun", "Ki", 7, 1, 0, "Cumulative beam factor"), @("Masenko", "Ki", 6, 1, 0, "Cumulative beam factor")
+	@("Galick Gun", "Ki", 7, 1, 0, "Cumulative beam factor"), @("Masenko", "Ki", 6, 1, 0, "Cumulative beam factor"),
+	@("Dragon Nova", "Ki", 12, 2, 0, "Direct plus equal splash"), @("Sky Break", "Physical", 8, 2, 0, "Strength-scaled direct plus splash")
 )
 foreach ($entry in $damageRows) {
 	$rowNumber = $calculator.Rows.Count + 1
@@ -472,9 +477,11 @@ $validationRows = @(
 	@("Wolf Fang five hits", 5, 6, "Per hit x5"),
 	@("Hundred Crack per hit", 0.25, 7, "Per-hit factor"),
 	@("Hundred Crack minimum total", 6, 7, "Per hit x24"),
-	@("Rock Throw powerful", 3, 8, "Explicit physical factor"),
+	@("Rock Throw powerful", 3.5, 8, "Explicit physical factor"),
 	@("Charge direct plus splash", 8, 13, "4 x2"),
-	@("Big Bang direct plus splash", 44, 12, "22 x2")
+	@("Big Bang direct plus splash", 44, 12, "22 x2"),
+	@("Dragon Nova direct plus splash", 24, 32, "12 x2"),
+	@("Sky Break direct plus splash", 16, 33, "8 x2")
 )
 foreach ($row in $validationRows) {
 	$resultFormula = if ($row[0] -like "*five hits*") { "'Damage Calculator'!J$($row[2])*5" } elseif ($row[0] -like "*minimum total*") { "'Damage Calculator'!J$($row[2])*24" } elseif ($row[0] -like "*plus splash*") { "'Damage Calculator'!J$($row[2])*2" } else { "'Damage Calculator'!J$($row[2])" }

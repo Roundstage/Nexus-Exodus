@@ -1777,6 +1777,65 @@ obj/Shunkan_Ido
 	var/tmp/using_si
 	desc="Shunkan Ido, also known as Instant Transmission, is self-explanatory. If you know a person's \
 	energy you can teleport to them. Anyone next to you will also be teleported."
+	New()
+		. = ..()
+		spawn if(src && ismob(loc))
+			var/mob/m = loc
+			m.instant_transmission_obj = src
+
+	Del()
+		if(ismob(loc))
+			var/mob/m = loc
+			if(m.instant_transmission_obj == src) m.instant_transmission_obj = null
+		. = ..()
+
+	verb/instantTransmissionNorth()
+		set name = "Instant Transmission: North"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(NORTH)
+
+	verb/instantTransmissionNortheast()
+		set name = "Instant Transmission: Northeast"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(NORTHEAST)
+
+	verb/instantTransmissionEast()
+		set name = "Instant Transmission: East"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(EAST)
+
+	verb/instantTransmissionSoutheast()
+		set name = "Instant Transmission: Southeast"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(SOUTHEAST)
+
+	verb/instantTransmissionSouth()
+		set name = "Instant Transmission: South"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(SOUTH)
+
+	verb/instantTransmissionSouthwest()
+		set name = "Instant Transmission: Southwest"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(SOUTHWEST)
+
+	verb/instantTransmissionWest()
+		set name = "Instant Transmission: West"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(WEST)
+
+	verb/instantTransmissionNorthwest()
+		set name = "Instant Transmission: Northwest"
+		set category = "Skills"
+		set src in usr
+		usr.directionalInstantTransmission(NORTHWEST)
 	verb/Hotbar_use()
 		set hidden=1
 		Instant_Transmission()

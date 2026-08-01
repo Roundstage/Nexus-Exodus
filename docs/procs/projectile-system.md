@@ -5,6 +5,8 @@ Projectile movement, collision, beam segments, and damage behavior.
 
 `obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
 
+Every Beam skill now receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Beam clashes report the pressure ratio to both owners, emit impact feedback, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break through physical Strength-versus-Endurance resolution.
+
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
 - `src/Code/ProjectileSystem/Beams.dm`

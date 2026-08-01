@@ -192,7 +192,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
-	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 2, "Tenkaichi special-style catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 4, "Tenkaichi special-style catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
@@ -216,8 +216,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
 	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
 	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
+	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova/tenkaichi_dragon_nova = new
+	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak/tenkaichi_sky_break = new
 	nexusSmokeAssert(tenkaichi_guard_break.breaks_guard && tenkaichi_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
 	nexusSmokeAssert(tenkaichi_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
+	nexusSmokeAssert(tenkaichi_dragon_nova.projectile_damage_factor == 12 && tenkaichi_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its RPT balance or icon")
+	nexusSmokeAssert(tenkaichi_sky_break.strength_scaled && tenkaichi_sky_break.requires_weapon && tenkaichi_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated Strength projectile")
 	del(tenkaichi_slice)
 	del(tenkaichi_combo)
 	del(tenkaichi_iai)
@@ -230,6 +234,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(tenkaichi_beam)
 	del(tenkaichi_guard_break)
 	del(tenkaichi_flame_wall)
+	del(tenkaichi_dragon_nova)
+	del(tenkaichi_sky_break)
 	var/turf/attack_movement_origin
 	var/turf/attack_movement_destination
 	for(var/turf/candidate_origin in world)
@@ -275,7 +281,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vitals_owner.max_ki = 8000
 	vitals_owner.willpower = 50
 	vitals_owner.max_willpower = 100
-	nexusSmokeAssert(vitals_owner.nexus_chat_hud_x == 312, "chat HUD does not begin beside the lower-left vitals panel")
+	var/datum/NexusChatHud/chat_hud_contract = new
+	nexusSmokeAssert(chat_hud_contract.getRightAnchoredLocation(500, 0, 500, 8) == "RIGHT:-8,BOTTOM:8", "chat HUD is not anchored to the lower-right edge")
+	del(chat_hud_contract)
 	vitals_panel.initialize(vitals_owner)
 	nexusSmokeAssert(vitals_panel.vis_contents.len == 8 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
@@ -342,6 +350,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(rock_tomb_skill)
 	var/obj/Lunge/lunge_action = new
 	nexusSmokeAssert(lunge_action.can_hotbar && /obj/Lunge/verb/lunge in lunge_action.verbs, "Lunge is not available as a standalone action")
+	nexusSmokeAssert(text2path("/mob/Admin2/verb/orderCombatDummyLunge") && text2path("/obj/NexusHud/DragonRushPrompt"), "Dragon Rush dummy control or direction prompt is missing")
 	del(lunge_action)
 	nexusSmokeAssert(wolf_fang_hit_damage_mult == 1 && wolf_fang_knockback_distance == 3, "Wolf Fang Fist combo tuning is invalid")
 	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.25, "Hundred Crack Fist remains an execution instead of a damage combo")
@@ -351,6 +360,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(skill_attack_barrier_damage_factor == 0.2 && skill_shockwave_damage_factor == 0.5 && skill_explosion_damage_factor == 3, "AoE factors diverged from the balance workbook")
 	nexusSmokeAssert(skill_dash_attack_min_factor == 2 && skill_dash_attack_max_factor == 8 && skill_dash_attack_step_factor == 0.25, "Dash Attack factor curve diverged from the balance workbook")
 	nexusSmokeAssert(skill_dropkick_opening_factor == 5 && skill_dropkick_finisher_factor == 3 && skill_sokidan_damage_factor == 3.5 && skill_sokidan_total_factor == 7 && skill_kienzan_damage_factor == 6, "special skill factors diverged from the balance workbook")
+	nexusSmokeAssert(beam_skill_cooldown_ticks == 30 && beam_clash_winner_damage_mult == 1.35, "beam cooldown or clash damage tuning is invalid")
 	nexusSmokeAssert(calculateScaledCombatDamage(10, 100, 100, 100, 100) == 10, "equal-stat central damage did not preserve its factor")
 	nexusSmokeAssert(!calculateScaledCombatDamage(10, 100, 100, 0, 100), "zero offensive stat still caused damage")
 	var/superior_stat_damage = calculateScaledCombatDamage(10, 100, 100, 200, 100)
@@ -420,6 +430,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(projectile_owner)
 	var/mob/NexusSmokeTest/rp_combat_test = new
 	rp_combat_test.Race = "Human"
+	rp_combat_test.max_ki = 1000
+	nexusSmokeAssert(rp_combat_test.instantTransmissionWarpCost() == 2.5, "Instant Transmission directional Energy cost is invalid")
 	rp_combat_test.Health = 100
 	rp_combat_test.anger = 100
 	rp_combat_test.max_anger = 200
@@ -427,13 +439,22 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "damage application changed during gradual anger buildup")
 	nexusSmokeAssertNear(rp_combat_test.anger, 125, 0.01, "anger does not build proportionally as health is lost")
 	rp_combat_test.setRPMode(TRUE, announce = FALSE)
+	nexusSmokeAssert(!rp_combat_test.CanInputMove() && rp_combat_test.rp_mode_input_lock, "RP Mode did not fully lock movement input")
 	rp_combat_test.TakeDamage(25)
 	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "RP Mode did not protect its user from damage")
 	nexusSmokeAssert(rp_combat_test.cant_blast(), "RP Mode still allows energy attacks")
 	rp_combat_test.ApplyStun(time = 20, no_immunity = TRUE, stun_power = 2)
 	nexusSmokeAssert(!rp_combat_test.stun_level, "RP Mode still allows combat stuns")
 	rp_combat_test.setRPMode(FALSE, announce = FALSE)
+	nexusSmokeAssert(!rp_combat_test.rp_mode_input_lock && !rp_combat_test.input_disabled, "leaving RP Mode did not release its movement lock")
 	nexusSmokeAssert(!rp_combat_test.has_entered_combat(victim = rp_combat_test), "a never-attacked player is incorrectly considered in combat")
+	rp_combat_test.Health = 50
+	rp_combat_test.willpower = 100
+	rp_combat_test.last_attacked_time = world.time
+	rp_combat_test.applyRegenerationHealth(20)
+	nexusSmokeAssert(rp_combat_test.Health == 70 && rp_combat_test.willpower == 95, "combat regeneration does not consume Willpower")
+	rp_combat_test.applyRegenerationHealth(10, drains_willpower = FALSE)
+	nexusSmokeAssert(rp_combat_test.Health == 80 && rp_combat_test.willpower == 95, "auto-repair incorrectly consumes Willpower")
 	rp_combat_test.SetSparringMode(LETHAL_COMBAT, FALSE)
 	nexusSmokeAssert(rp_combat_test.sparring_mode == LETHAL_COMBAT && rp_combat_test.Fatal, "lethal intent did not enable fatal damage")
 	rp_combat_test.SetSparringMode(CASUAL_COMBAT, FALSE)

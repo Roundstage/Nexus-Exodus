@@ -915,8 +915,7 @@ mob/proc/Namekian_regen_loop()
 
 			if(Ki>=Drain)
 				Ki-=Drain
-				Health+=Percent
-				if(Health>100) Health=100
+				applyRegenerationHealth(Percent)
 		sleep(10)
 	Namekian_regen_looping=0
 
@@ -1081,8 +1080,7 @@ proc/Recover_health_loop()
 				if(m.z == Z_LEVEL_HBTC) n *= 2 //hbtc
 				n*=1 * m.RegenMod()
 				n *= 2 * Server_Regeneration*m.Regen_Mult/m.Gravity_Health_Ratio()
-				m.Health += n * 0.25
-				if(m.Health>100) m.Health=100
+				m.applyRegenerationHealth(n * 0.25)
 		sleep(base_sleep_time)
 
 mob/var/Overdrive
@@ -1096,7 +1094,7 @@ mob/proc/Makyo_Star()
 			if(!shield||!shield.Using)
 				var/mode_mod=2
 				if(race_stats_only_mode) mode_mod *= 2
-				if(Can_recover_health(health_limit=100)) Health += 1.3 * RegenMod() * mode_mod
+				if(Can_recover_health(health_limit=100)) applyRegenerationHealth(1.3 * RegenMod() * mode_mod)
 				if(Can_recover_ki(ki_limit=max_ki * 2)) Ki += (max_ki / 40) * recov**0.5 * mode_mod
 			sleep(10)
 		else sleep(600)

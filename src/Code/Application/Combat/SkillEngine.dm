@@ -382,8 +382,12 @@ datum/SkillEngine
 			if(a != skill_obj && (a.charging || a.streaming)) return 0
 
 		if(!skill_obj.charging && !skill_obj.streaming)
+			if(world.time < skill_obj.next_beam_use)
+				user << "[skill_obj] will be ready in [round((skill_obj.next_beam_use - world.time) / 10, 0.1)] seconds."
+				return 0
 			if(user.attacking <= 1)
 				if(user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)) return 0
+				skill_obj.next_beam_use = world.time + beam_skill_cooldown_ticks
 				user.last_beam_charge = world.time
 				user.BeamCharge(skill_obj)
 		else if(!skill_obj.streaming && skill_obj.charging)
@@ -394,6 +398,7 @@ datum/SkillEngine
 				user.BeamStream(skill_obj)
 		else if(skill_obj.streaming)
 			user.BeamStop(skill_obj)
+			skill_obj.next_beam_use = max(skill_obj.next_beam_use, world.time + beam_skill_cooldown_ticks)
 
 		skill_obj.calculate_beam_drain()
 		return 1
@@ -1024,6 +1029,7 @@ datum/SkillEngine
 			user << "No target found"
 			return 0
 		user.last_WolfFangFist = world.time
+		user.dragon_rush_attack_active = "Wolf Fang Fist"
 
 		player_view(35, user) << sound('WolfHowl.mp3', volume = 35)
 		user.Do_lunge_drawback_animation()
@@ -1031,6 +1037,7 @@ datum/SkillEngine
 		victim = user.getSelectedTarget(victim, max_dist = user.Get_lunge_targeting_distance())
 		if(!victim)
 			user.AddStamina(-20)
+			user.dragon_rush_attack_active = null
 			return 0
 
 		var/flying = user.Flying
@@ -1039,14 +1046,20 @@ datum/SkillEngine
 		var/targ_dist = getdist(user, victim)
 		var/max_dist = targ_dist + 20
 		for(var/s in 1 to max_dist)
+			if(user.in_dragon_rush)
+				if(!flying) user.Land()
+				return 1
 			if(!victim || user.selected_target != victim) break
 			user.AfterImage(20)
 			var/success = step_towards(user, victim.base_loc(), 32)
+			if(getdist(user, victim) <= 1 && user.CheckLungeDragonRush(user, victim)) return 1
 			if(user.WolfFangFistCancelled(victim, success))
 				break
 			else sleep(world.tick_lag)
 
 		if(!flying) user.Land()
+		if(user.in_dragon_rush) return 1
+		if(victim && getdist(user, victim) <= 1 && user.CheckLungeDragonRush(user, victim)) return 1
 
 		var/hitcount = 0
 		for(var/hit_number in 1 to user.numberOfHits)
@@ -1073,8 +1086,10 @@ datum/SkillEngine
 			sleep(2)
 		if(!hitcount)
 			user.AddStamina(-20)
+			user.dragon_rush_attack_active = null
 			return 0
 		user << "Wolf Fang Fist landed [hitcount] hit[hitcount == 1 ? "" : "s"]."
+		user.dragon_rush_attack_active = null
 		return 1
 
 	proc/castDropkick(mob/user, obj/Dropkick/skill_obj)
@@ -1091,6 +1106,7 @@ datum/SkillEngine
 			user << "No target found"
 			return 0
 		user.attacking = 1
+		user.dragon_rush_attack_active = "Dropkick"
 		user.last_dropkick = world.time
 		user.AlterInputDisabled(1)
 
@@ -1101,6 +1117,7 @@ datum/SkillEngine
 		m = user.getSelectedTarget(m, max_dist = user.Get_lunge_targeting_distance())
 		if(!m)
 			user.attacking = 0
+			user.dragon_rush_attack_active = null
 			user.AlterInputDisabled(-1)
 			return 0
 
@@ -1118,13 +1135,27 @@ datum/SkillEngine
 		var/targ_dist = getdist(user, m)
 		var/max_dist = targ_dist + 8
 		for(var/s in 1 to max_dist)
+			if(user.in_dragon_rush)
+				if(!flying) user.Land()
+				user.AlterInputDisabled(-1)
+				return 1
 			if(!m || user.selected_target != m) break
 			user.AfterImage(8)
 			var/success = step_towards(user, m.base_loc(), 32)
+			if(getdist(user, m) <= 1 && user.CheckLungeDragonRush(user, m))
+				if(!flying) user.Land()
+				user.AlterInputDisabled(-1)
+				return 1
 			if(user.DropkickCancelled(m, success)) break
 			else sleep(world.tick_lag)
 
 		if(!flying) user.Land()
+		if(user.in_dragon_rush)
+			user.AlterInputDisabled(-1)
+			return 1
+		if(m && getdist(user, m) <= 1 && user.CheckLungeDragonRush(user, m))
+			user.AlterInputDisabled(-1)
+			return 1
 
 		var/hit = m && user.selected_target == m && prob(user.get_melee_accuracy(m) * 2)
 		if(!m || getdist(user, m) > 1) hit = 0
@@ -1166,6 +1197,7 @@ datum/SkillEngine
 			user.KO(user)
 		user.AddStamina(-25)
 		user.attacking = 0
+		user.dragon_rush_attack_active = null
 		sleep(3)
 		user.AlterInputDisabled(-1)
 		return 1

@@ -184,7 +184,7 @@ mob
 				
 				var/mob/target = getSelectedTarget(max_dist = 10, dir_angle = usr.dir, angle_limit = 30)
 				if(target)
-					var/dmg = getPhysicalCombatDamage(target, 3)
+					var/dmg = getPhysicalCombatDamage(target, 3.5)
 					var/knockback = get_melee_knockback_distance(target)
 					usr << "You throw a rock at [target]!"
 					target << "[usr] throws a rock at you!"
@@ -246,15 +246,15 @@ mob
 			if(amount > 15) amount = 15
 			var/hits = 0
 			
-			while(amount > 0 && hits < 5) // Limit hits to prevent spam
+			while(amount > 0 && hits < 15)
 				var/search_angle = pick(-45, -30, -15, 0, 15, 30, 45)
 				var/search_dir = turn(usr.dir, search_angle)
 				var/list/targets = FindTargets(search_dir, angle_limit = 15, max_dist = 8)
 				
 				if(targets)
 					for(var/mob/M in targets)
-						if(M != usr && hits < 5)
-							var/dmg = getPhysicalCombatDamage(M, 0.8)
+						if(M != usr && hits < 15)
+							var/dmg = getPhysicalCombatDamage(M, 0.55)
 							var/knockback = get_melee_knockback_distance(M) * 0.7
 							usr << "A rock from your slide hits [M]!"
 							M << "A rock from [usr]'s slide hits you!"
@@ -301,7 +301,7 @@ mob
 			
 			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
 			if(target)
-				var/dmg = getPhysicalCombatDamage(target, 5)
+				var/dmg = getPhysicalCombatDamage(target, 8)
 				var/knockback = get_melee_knockback_distance(target) * 1.5
 
 				if(skill.mastered)

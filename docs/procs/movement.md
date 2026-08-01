@@ -1,7 +1,7 @@
 # Movement
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+Movement input, collision, environmental traversal, and short-range warp behavior. `CanInputMove()` treats RP Mode as an absolute player movement lock. Instant Transmission now has a directional eight-tile warp path that reuses Zanzoken placement and visuals while consuming Energy rather than Stamina.
 
 ## Files
 - `src/Code/Application/Movement/MovementAlignment.dm`

@@ -3,7 +3,9 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Anger now grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones, Technology Levels, Mining, and Smithing are persistent, player-driven progressions that migrate old saves lazily.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. RP Mode now owns an input lock in addition to its existing damage/attack immunity, so it is fully immobile. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored while the character is in combat; auto-repair can opt out and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones, Technology Levels, Mining, and Smithing are persistent, player-driven progressions that migrate old saves lazily.
+
+Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
 ## Files
 - `src/Code/PlayerMechanics/Aging.dm`

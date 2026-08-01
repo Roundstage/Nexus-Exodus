@@ -59,6 +59,16 @@ mob/CombatDummy
 		icon_state = initial(icon_state)
 		updateOverheadHealthHud()
 
+	proc/lungeAt(mob/target)
+		set waitfor = 0
+		if(!target || !target.loc || target.z != z || getdist(src, target) > Get_lunge_targeting_distance()) return FALSE
+		selected_target = target
+		Target = target
+		dir = get_dir(src, target)
+		last_lunge_attack = 0
+		Lunge_toward(target)
+		return TRUE
+
 	TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker, attack_name)
 		. = ..()
 		if(Health <= 0) resetCombatDummy()
@@ -85,13 +95,22 @@ mob/Admin2/verb/controlCombatDummy(mob/CombatDummy/dummy in world)
 	set category = "Admin"
 	openCombatDummyController(dummy)
 
+mob/Admin2/verb/orderCombatDummyLunge(mob/CombatDummy/dummy in world)
+	set name = "Dummy Lunge At Me"
+	set category = "Admin"
+	if(AdminLevel() < 2 || !dummy) return
+	if(!dummy.lungeAt(src))
+		src << "The dummy needs to be on the same map and within lunge range."
+
 mob/proc/openCombatDummyController(mob/CombatDummy/dummy)
 	if(AdminLevel() < 2 || !dummy) return
 	while(src && client && dummy && AdminLevel() >= 2)
 		var/choice = input(src, "Choose a value to configure on [dummy].", "Combat Dummy Controller") as null|anything in list(
-			"Battle Power", "Combat Stats", "Health", "Energy", "Stamina", "Powerup", "Restore", "Rename", "Delete")
+			"Battle Power", "Combat Stats", "Health", "Energy", "Stamina", "Powerup", "Lunge At Me", "Restore", "Rename", "Delete")
 		if(!choice || !dummy || AdminLevel() < 2) return
 		switch(choice)
+			if("Lunge At Me")
+				if(!dummy.lungeAt(src)) src << "The dummy needs to be on the same map and within lunge range."
 			if("Battle Power")
 				var/new_bp = input(src, "Set the dummy's base battle power.", "Battle Power", dummy.base_bp) as null|num
 				if(isnull(new_bp)) continue

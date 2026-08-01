@@ -26,6 +26,7 @@ obj/var/tmp
 mob/var/tmp
 	list/my_beam_objs=new
 	beaming
+	next_beam_clash_notice = 0
 	beam_struggling = -999999
 	charging_beam
 	can_generate_beam_segment = 1
@@ -226,6 +227,8 @@ mob/proc/BeamCharge(obj/Attacks/A)
 	if(src && A) Beam_Charge_Loop(A)
 
 mob/proc/BeamStop(obj/Attacks/A, immediate = 0, obj/Blast/impact_segment)
+	if(!A) return
+	A.next_beam_use = max(A.next_beam_use, world.time + beam_skill_cooldown_ticks)
 	//LOOK. i didnt like this chunk using spawn so i separated into its own function , if it causes problems just revert it
 	/*spawn for(var/i=my_beam_objs.len,i>0,i--)
 		if(my_beam_objs.len>=i)
