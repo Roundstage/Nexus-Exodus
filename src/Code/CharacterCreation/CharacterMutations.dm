@@ -173,6 +173,24 @@ mob/proc/setCharacterMutationValue(mutation_id, percent)
 	src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
 	return TRUE
 
+mob/proc/clearCharacterMutations()
+	if(!islist(src.character_mutations)) src.character_mutations = list()
+	var/list/old_mutations = src.character_mutations.Copy()
+	for(var/mutation_id in old_mutations)
+		if(CHARACTER_MUTATIONS[mutation_id]) setCharacterMutationValue(mutation_id, 0)
+	src.character_mutations.Cut()
+	src.mutation_rarity = null
+	src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	return TRUE
+
+mob/proc/rerollCharacterMutations(forced_rarity)
+	if(!isnull(forced_rarity) && !(forced_rarity in list("Common", "Uncommon", "Rare", "Anomaly"))) return FALSE
+	if(!clearCharacterMutations()) return FALSE
+	src.mutation_save_version = 0
+	rollCharacterMutations(forced_rarity)
+	applyCharacterMutations()
+	return TRUE
+
 mob/proc/applyCharacterMutations()
 	if(!islist(src.character_mutations)) return
 	for(var/mutation_id in src.character_mutations)

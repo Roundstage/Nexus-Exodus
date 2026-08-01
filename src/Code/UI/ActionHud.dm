@@ -29,9 +29,11 @@ mob/proc/rebuildActionHud()
 			client.screen -= old_button
 			del(old_button)
 	client.nexus_action_buttons = list(
-		new /obj/NexusHud/ActionButton/Lethal(src),
-		new /obj/NexusHud/ActionButton/RPMode(src),
-		new /obj/NexusHud/ActionButton/Character(src))
+		new /obj/NexusHud/ActionButton/Lethal,
+		new /obj/NexusHud/ActionButton/RPMode,
+		new /obj/NexusHud/ActionButton/Character)
+	for(var/obj/NexusHud/ActionButton/button in client.nexus_action_buttons)
+		button.update(src)
 
 mob/proc/initializeActionHud()
 	if(!client || !playerCharacter) return
@@ -102,7 +104,7 @@ obj/NexusHud/ActionButton
 	Lethal
 		action_id = "lethal"
 		accent_color = "#ff4d5f"
-		screen_loc = "EAST-3:-8,NORTH:-4"
+		screen_loc = "RIGHT:-8,TOP:-8"
 		desc = "Toggle lethal intent."
 
 		isActive(mob/character)
@@ -114,7 +116,7 @@ obj/NexusHud/ActionButton
 	RPMode
 		action_id = "rp_mode"
 		accent_color = "#ff9b54"
-		screen_loc = "EAST-3:-8,NORTH-1:-4"
+		screen_loc = "RIGHT:-8,TOP:-40"
 		desc = "Toggle RP Mode. While active, combat interaction is blocked."
 
 		isActive(mob/character)
@@ -126,7 +128,7 @@ obj/NexusHud/ActionButton
 	Character
 		action_id = "character"
 		accent_color = "#62c8ff"
-		screen_loc = "EAST-3:-8,NORTH-2:-4"
+		screen_loc = "RIGHT:-8,TOP:-72"
 		desc = "Open the detailed character sheet."
 
 		getLabel(mob/character)
