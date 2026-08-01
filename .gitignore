@@ -56,3 +56,9 @@ Thumbs.db
 
 # Local Codex analysis and generated previews #
 /.codex-tmp/
+
+# Local server credentials and environment overrides #
+/HostKeys.txt
+/SECRETS.local.dm
+/.env
+/.env.*

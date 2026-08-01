@@ -53,8 +53,8 @@ mob/proc
 mob/Admin4/verb/serverControlPanel()
 	set category = "Admin"
 	set name = "Server Control Panel"
-	src.ServerSettings()
-	admin_blame(src, "[key] has opened the server control panel.")
+	showNexusAdminPanel(FALSE)
+	admin_blame(src, "[key] has opened the Nexus admin control panel.")
 	//src.EditInfo()
 
 

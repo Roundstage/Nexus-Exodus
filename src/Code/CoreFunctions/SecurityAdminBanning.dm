@@ -71,16 +71,14 @@ mob/proc/GiveAdmin(Amount = 1, bypass_admin_ban)
 					return
 
 	if(Amount>=1)
-		verbs+=typesof(/mob/Admin1/verb)
-		if(Amount>=2) verbs += typesof(/mob/Admin2/verb)
-		if(Amount>=3) verbs+=typesof(/mob/Admin3/verb)
-		if(Amount>=4) verbs+=typesof(/mob/Admin4/verb)
-		if(Amount>=5) verbs+=typesof(/mob/Admin5/verb)
+		verbs += typesof(/mob/AdminEssentials/verb)
+		verbs += list(/mob/Admin1/verb/teleport, /mob/Admin1/verb/summon, /mob/Admin1/verb/adminHeal, /mob/Admin1/verb/adminRevive)
 		if(Amount==4) Head_Admin=key
 		Admins[key]=Amount
 
 mob/proc/Remove_Admin()
-	verbs-=typesof(/mob/Admin1/verb,/mob/Admin2/verb,/mob/Admin3/verb,/mob/Admin4/verb,/mob/Admin5/verb)
+	verbs -= typesof(/mob/Admin1/verb, /mob/Admin2/verb, /mob/Admin3/verb, /mob/Admin4/verb, /mob/Admin5/verb, /mob/AdminEssentials/verb)
+	active_legacy_admin_verb = null
 	Admins-=key
 
 var/host_admin_given
@@ -88,7 +86,8 @@ var/host_admin_given
 mob/proc/Admin_Check()
 	set waitfor=0
 
-	verbs -= typesof(/mob/Admin1/verb, /mob/Admin2/verb, /mob/Admin3/verb, /mob/Admin4/verb, /mob/Admin5/verb)
+	verbs -= typesof(/mob/Admin1/verb, /mob/Admin2/verb, /mob/Admin3/verb, /mob/Admin4/verb, /mob/Admin5/verb, /mob/AdminEssentials/verb)
+	active_legacy_admin_verb = null
 	if(!key) return
 
 	if(fexists("HostKeys.txt"))
