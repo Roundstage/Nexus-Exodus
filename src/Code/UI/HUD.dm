@@ -148,7 +148,7 @@ proc/screenLocationPixels(screen_location)
 	if(y_parts.len > 1) screen_y += text2num(y_parts[2])
 	return list(screen_x, screen_y)
 
-var/list/overhead_health_icon_cache = list()
+var/list/overhead_vital_icon_cache = list()
 var/list/vitals_bar_icon_cache = list()
 var/list/power_gauge_icon_cache = list()
 var/icon/vitals_panel_icon
@@ -159,68 +159,76 @@ proc/overheadHealthColor(health_percent)
 	return "#46d369"
 
 proc/getOverheadHealthIcon(health_percent)
-	health_percent = Clamp(health_percent, 0, 100)
-	var/fill_width = round(health_percent * 0.32)
-	var/health_color = overheadHealthColor(health_percent)
-	var/cache_key = "[health_color]-[fill_width]"
-	if(overhead_health_icon_cache[cache_key]) return overhead_health_icon_cache[cache_key]
-	var/icon/health_icon = icon('Healthbar.dmi', "100")
-	health_icon.Scale(32, 5)
-	health_icon.DrawBox("#171b22", 1, 1, 32, 5)
-	if(fill_width) health_icon.DrawBox(health_color, 1, 1, fill_width, 5)
-	overhead_health_icon_cache[cache_key] = health_icon
-	return health_icon
+	return getOverheadVitalIcon(health_percent, overheadHealthColor(health_percent))
+
+proc/getOverheadVitalIcon(percent, accent_color)
+	percent = Clamp(percent, 0, 100)
+	var/fill_width = round(percent * 0.32)
+	var/cache_key = "[accent_color]-[fill_width]"
+	if(overhead_vital_icon_cache[cache_key]) return overhead_vital_icon_cache[cache_key]
+	var/icon/vital_icon = icon('Healthbar.dmi', "100")
+	vital_icon.Scale(32, 3)
+	vital_icon.DrawBox("#171b22", 1, 1, 32, 3)
+	if(fill_width) vital_icon.DrawBox(accent_color, 1, 1, fill_width, 3)
+	overhead_vital_icon_cache[cache_key] = vital_icon
+	return vital_icon
 
 proc/getVitalsPanelIcon()
 	if(vitals_panel_icon) return vitals_panel_icon
 	vitals_panel_icon = icon('UserNamesBarsUi.png')
-	vitals_panel_icon.Scale(320, 144)
-	vitals_panel_icon.DrawBox(rgb(9, 14, 22, 220), 1, 1, 320, 144)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 320, 2)
-	vitals_panel_icon.DrawBox("#354052", 1, 143, 320, 144)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 2, 144)
-	vitals_panel_icon.DrawBox("#354052", 319, 1, 320, 144)
+	vitals_panel_icon.Scale(296, 136)
+	vitals_panel_icon.DrawBox(rgb(9, 14, 22, 220), 1, 1, 296, 136)
+	vitals_panel_icon.DrawBox("#354052", 1, 1, 296, 2)
+	vitals_panel_icon.DrawBox("#354052", 1, 135, 296, 136)
+	vitals_panel_icon.DrawBox("#354052", 1, 1, 2, 136)
+	vitals_panel_icon.DrawBox("#354052", 295, 1, 296, 136)
 	return vitals_panel_icon
 
 proc/getVitalsBarIcon(percent, accent_color)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_width = round(percent * 1.76)
+	var/fill_width = round(percent * 1.6)
 	var/cache_key = "[accent_color]-[fill_width]"
 	if(vitals_bar_icon_cache[cache_key]) return vitals_bar_icon_cache[cache_key]
 	var/icon/bar_icon = icon('UserNamesBarsUi.png')
-	bar_icon.Scale(184, 20)
-	bar_icon.DrawBox("#111923", 1, 1, 184, 20)
-	bar_icon.DrawBox("#293443", 5, 3, 180, 17)
-	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 17)
-	bar_icon.DrawBox(accent_color, 1, 1, 4, 20)
+	bar_icon.Scale(168, 19)
+	bar_icon.DrawBox("#111923", 1, 1, 168, 19)
+	bar_icon.DrawBox("#293443", 5, 3, 164, 16)
+	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 16)
+	bar_icon.DrawBox(accent_color, 1, 1, 4, 19)
 	vitals_bar_icon_cache[cache_key] = bar_icon
 	return bar_icon
 
 proc/getPowerGaugeIcon(percent, over_limit)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_height = round(percent * 0.72)
+	var/fill_height = round(percent * 0.66)
 	var/cache_key = "[over_limit]-[fill_height]"
 	if(power_gauge_icon_cache[cache_key]) return power_gauge_icon_cache[cache_key]
 	var/gauge_color = over_limit ? "#ff5c45" : "#b983ff"
 	var/icon/gauge_icon = icon('UserNamesBarsUi.png')
-	gauge_icon.Scale(7, 78)
-	gauge_icon.DrawBox("#101722", 1, 1, 7, 78)
-	gauge_icon.DrawBox("#2a3341", 3, 3, 5, 74)
+	gauge_icon.Scale(7, 72)
+	gauge_icon.DrawBox("#101722", 1, 1, 7, 72)
+	gauge_icon.DrawBox("#2a3341", 3, 3, 5, 68)
 	if(fill_height) gauge_icon.DrawBox(gauge_color, 3, 3, 5, 2 + fill_height)
-	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 75, 7, 78)
+	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 69, 7, 72)
 	power_gauge_icon_cache[cache_key] = gauge_icon
 	return gauge_icon
 
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/overhead_health_hud
+mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
+mob/var/tmp/obj/NexusHud/OverheadHealthBar/Willpower/overhead_willpower_hud
 client/var/tmp/obj/NexusHud/VitalsPanel/main_vitals_hud
 
 mob/Write(savefile/save_file)
-	var/hud_attached = overhead_health_hud && (overhead_health_hud in vis_contents)
-	if(hud_attached) vis_contents -= overhead_health_hud
+	var/list/detached_hud = list()
+	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in list(overhead_health_hud, overhead_energy_hud, overhead_willpower_hud))
+		if(hud_bar && (hud_bar in vis_contents))
+			vis_contents -= hud_bar
+			detached_hud += hud_bar
 	. = ..()
-	if(hud_attached && overhead_health_hud) vis_contents += overhead_health_hud
+	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in detached_hud)
+		if(hud_bar) vis_contents += hud_bar
 
 mob/proc/shouldShowOverheadHealthHud()
 	return client && playerCharacter
@@ -230,7 +238,14 @@ mob/proc/initializeVitalsHud()
 	if(!overhead_health_hud)
 		overhead_health_hud = new
 		overhead_health_hud.initialize(src)
-	if(!(overhead_health_hud in vis_contents)) vis_contents += overhead_health_hud
+	if(!overhead_energy_hud)
+		overhead_energy_hud = new /obj/NexusHud/OverheadHealthBar/Energy
+		overhead_energy_hud.initialize(src)
+	if(!overhead_willpower_hud)
+		overhead_willpower_hud = new /obj/NexusHud/OverheadHealthBar/Willpower
+		overhead_willpower_hud.initialize(src)
+	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in list(overhead_health_hud, overhead_energy_hud, overhead_willpower_hud))
+		if(!(hud_bar in vis_contents)) vis_contents += hud_bar
 	updateOverheadHealthHud()
 	initializeMainVitalsHud()
 
@@ -261,14 +276,24 @@ mob/proc/setVitalsHudVisibility(visible)
 
 mob/proc/updateOverheadHealthHud()
 	if(!shouldShowOverheadHealthHud()) return
-	if(!overhead_health_hud) initializeVitalsHud()
+	if(!overhead_health_hud || !overhead_energy_hud || !overhead_willpower_hud) initializeVitalsHud()
 	if(overhead_health_hud) overhead_health_hud.update(src)
+	if(overhead_energy_hud) overhead_energy_hud.update(src)
+	if(overhead_willpower_hud) overhead_willpower_hud.update(src)
 
 mob/proc/removeVitalsHud()
 	if(overhead_health_hud)
 		vis_contents -= overhead_health_hud
 		del(overhead_health_hud)
 		overhead_health_hud = null
+	if(overhead_energy_hud)
+		vis_contents -= overhead_energy_hud
+		del(overhead_energy_hud)
+		overhead_energy_hud = null
+	if(overhead_willpower_hud)
+		vis_contents -= overhead_willpower_hud
+		del(overhead_willpower_hud)
+		overhead_willpower_hud = null
 	if(client && client.main_vitals_hud)
 		client.screen -= client.main_vitals_hud
 		del(client.main_vitals_hud)
@@ -286,20 +311,33 @@ obj/NexusHud
 	OverheadHealthBar
 		pixel_x = 0
 		var/tmp/owner_icon
+		var/row_offset
 
 		proc/initialize(mob/owner)
-			if(owner && owner.icon) pixel_y = max(32, GetHeight(owner.icon)) + 2
-			else pixel_y = 34
+			updatePosition(owner)
 			if(owner) owner_icon = owner.icon
 			update(owner)
 
+		proc/updatePosition(mob/owner)
+			if(owner && owner.icon) pixel_y = max(32, GetHeight(owner.icon)) + 2 + row_offset
+			else pixel_y = 34 + row_offset
+
 		proc/update(mob/owner)
 			if(!owner) return
-			var/health_percent = Clamp(hudPercentage(owner.Health), 0, 100)
-			icon = getOverheadHealthIcon(health_percent)
+			if(istype(src, /obj/NexusHud/OverheadHealthBar/Energy))
+				icon = getOverheadVitalIcon(hudPercentage(owner.Ki, owner.max_ki), "#37cfff")
+			else if(istype(src, /obj/NexusHud/OverheadHealthBar/Willpower))
+				icon = getOverheadVitalIcon(hudPercentage(owner.willpower, owner.getMaxWillpower()), "#b983ff")
+			else icon = getOverheadHealthIcon(hudPercentage(owner.Health))
 			if(owner.icon && owner.icon != owner_icon)
-				pixel_y = max(32, GetHeight(owner.icon)) + 2
+				updatePosition(owner)
 				owner_icon = owner.icon
+
+		Energy
+			row_offset = 4
+
+		Willpower
+			row_offset = 8
 
 	VitalsPanel
 		alpha = 255
@@ -341,7 +379,7 @@ obj/NexusHud
 			var/health_percent = hudPercentage(owner.Health)
 			var/energy_percent = hudPercentage(owner.Ki, owner.max_ki)
 			var/stamina_percent = hudPercentage(owner.stamina, owner.max_stamina)
-			var/energy_current = nexusIsFiniteNumber(owner.Ki) ? max(owner.Ki, 0) : 0
+			var/energy_current = nexusIsFiniteNumber(owner.Ki) ? round(max(owner.Ki, 0)) : 0
 			var/current_power = nexusIsFiniteNumber(owner.BPpcnt) ? max(owner.BPpcnt, 0) : 0
 			var/soft_cap_excess = owner.powerup_soft_cap()
 			if(!nexusIsFiniteNumber(soft_cap_excess) || soft_cap_excess <= 0) soft_cap_excess = 1
@@ -350,7 +388,7 @@ obj/NexusHud
 			var/gauge_percent = Clamp((current_power - 100) / soft_cap_excess * 100, 0, 100)
 			willpower_row.update("WILLPOWER", willpower_percent, "[willpower_percent]%", "#b983ff")
 			health_row.update("HEALTH", health_percent, "[health_percent]%", "#ff4d6d")
-			energy_row.update("", energy_percent, "([energy_current]) [energy_percent]%", "#37cfff")
+			energy_row.update("ENERGY", energy_percent, "([energy_current]) [energy_percent]%", "#37cfff")
 			stamina_row.update("STAMINA", stamina_percent, "[stamina_percent]%", "#f6c453")
 			left_power_gauge.update(gauge_percent, over_limit)
 			right_power_gauge.update(gauge_percent, over_limit)
@@ -388,8 +426,8 @@ obj/NexusHud
 			. = ..()
 
 	CharacterPortrait
-		pixel_x = 43
-		pixel_y = 48
+		pixel_x = 40
+		pixel_y = 45
 		layer = 101
 
 		proc/update(mob/owner)
@@ -400,8 +438,8 @@ obj/NexusHud
 			icon_z = 0
 			pixel_w = 0
 			pixel_z = 0
-			pixel_x = 43
-			pixel_y = 48
+			pixel_x = 40
+			pixel_y = 45
 			alpha = 255
 			mouse_opacity = 0
 			invisibility = 0
@@ -409,11 +447,11 @@ obj/NexusHud
 			underlays = null
 			appearance_flags = RESET_ALPHA | PIXEL_SCALE | KEEP_TOGETHER
 			var/matrix/portrait_transform = matrix()
-			portrait_transform.Scale(2, 2.2)
+			portrait_transform.Scale(1.9, 2.05)
 			transform = portrait_transform
 
 	PowerGauge
-		pixel_y = 43
+		pixel_y = 40
 		layer = 103
 		appearance_flags = RESET_ALPHA
 
@@ -424,14 +462,14 @@ obj/NexusHud
 			pixel_x = 4
 
 		Right
-			pixel_x = 111
+			pixel_x = 105
 
 	PowerReadout
-		pixel_x = 10
-		pixel_y = 7
+		pixel_x = 8
+		pixel_y = 6
 		layer = 104
 		appearance_flags = RESET_ALPHA
-		maptext_width = 105
+		maptext_width = 99
 		maptext_height = 16
 
 		proc/update(power_percent, soft_cap, over_limit)
@@ -439,19 +477,19 @@ obj/NexusHud
 			maptext = "<div style='font-family:Arial;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
 
 	VitalDetail
-		pixel_x = 48
-		pixel_y = 5
+		pixel_x = 52
+		pixel_y = 4
 		layer = 103
 		appearance_flags = RESET_ALPHA
-		maptext_width = 128
-		maptext_height = 12
+		maptext_width = 108
+		maptext_height = 11
 
 	VitalRow
-		maptext_x = 7
-		maptext_y = 5
-		maptext_width = 48
-		maptext_height = 12
-		pixel_x = 128
+		maptext_x = 6
+		maptext_y = 4
+		maptext_width = 52
+		maptext_height = 11
+		pixel_x = 120
 		layer = 102
 		appearance_flags = RESET_ALPHA
 		var/tmp/obj/NexusHud/VitalDetail/detail_text
@@ -462,13 +500,10 @@ obj/NexusHud
 			detail_text = new
 			vis_contents += detail_text
 			switch(type)
-				if(/obj/NexusHud/VitalRow/Willpower) pixel_y = 116
-				if(/obj/NexusHud/VitalRow/Health) pixel_y = 88
-				if(/obj/NexusHud/VitalRow/Energy)
-					pixel_y = 60
-					detail_text.pixel_x = 8
-					detail_text.maptext_width = 168
-				if(/obj/NexusHud/VitalRow/Stamina) pixel_y = 32
+				if(/obj/NexusHud/VitalRow/Willpower) pixel_y = 111
+				if(/obj/NexusHud/VitalRow/Health) pixel_y = 85
+				if(/obj/NexusHud/VitalRow/Energy) pixel_y = 59
+				if(/obj/NexusHud/VitalRow/Stamina) pixel_y = 33
 
 		proc/update(label, percent, detail, accent_color)
 			icon = getVitalsBarIcon(percent, accent_color)
