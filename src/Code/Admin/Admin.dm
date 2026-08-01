@@ -1172,6 +1172,7 @@ var/list/Stat_Settings=list("Year"=0,"No cap"=0,"Rearrange"=0,"Hard Cap"=0,"Modl
 
 
 proc/Log(mob/P,var/T)
+	if(!P) return
 	P.EmoteLog(T, P.ckey, "adminlogs", needs_client = FALSE)
 	P.EmoteLog(T, "all", "adminlogs", needs_client = FALSE)
 
@@ -1388,9 +1389,9 @@ var/Earth_Only
 var/can_admin_vote = 0
 
 mob/proc/admin_blame(mob/admin, var/blame, var/global_announce = FALSE)
-	if(Admins[admin.key]>=1)
+	if(admin && Admins[admin.key]>=1)
 		Admin_Msg(blame)
-		Log(admin.key, blame)
+		Log(admin, blame)
 		if(global_announce)
 			world << "<span style='color: yellow;'>\[world\]</span> [blame]"
 

@@ -54,7 +54,7 @@ datum/NexusAdminInspector
 		. = ..()
 
 	proc/canUse()
-		return owner && owner.client && owner.IsAdmin() && Admins[owner.key] >= 3 && target
+		return owner && owner.client && owner.AdminLevel() >= 3 && target
 
 	proc/editVariable(variable_name)
 		if(!canUse() || !(variable_name in target.vars)) return
@@ -72,8 +72,48 @@ datum/NexusAdminInspector
 			if("Empty List") target.vars[variable_name] = new/list
 		owner.admin_blame(owner, "[owner.key] edited [variable_name] from [original] to [target.vars[variable_name]] on [target]")
 
+	proc/editMutation(mutation_id)
+		if(!canUse() || !ismob(target) || !CHARACTER_MUTATIONS[mutation_id]) return
+		var/mob/character = target
+		if(!islist(character.character_mutations)) character.character_mutations = list()
+		var/current_percent = max(0, text2num("[character.character_mutations[mutation_id]]"))
+		var/new_percent = input(owner, "Set [mutation_id] on [character] from 0% to 30%. Use 0 to remove it.", "Character Mutation", current_percent) as null|num
+		if(isnull(new_percent)) return
+		new_percent = Clamp(round(new_percent), 0, 30)
+		if(!character.setCharacterMutationValue(mutation_id, new_percent))
+			owner << "The mutation could not be changed."
+			return
+		owner.admin_blame(owner, "[owner.key] changed [character]'s [mutation_id] mutation from [current_percent]% to [new_percent]%")
+
+	proc/buildMutationPanel()
+		if(!ismob(target)) return ""
+		var/mob/character = target
+		var/mutation_rows = ""
+		for(var/mutation_id in CHARACTER_MUTATIONS)
+			var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+			var/current_percent = islist(character.character_mutations) ? max(0, text2num("[character.character_mutations[mutation_id]]")) : 0
+			var/state_class = current_percent ? "mutation owned" : "mutation"
+			mutation_rows += "<a class='[state_class]' href='byond://?src=\ref[src]&action=set_mutation&mutation=[mutation_id]'><b>[html_encode(mutation.stat)]</b><small>[html_encode(mutation_id)]</small><span>[current_percent]%</span></a>"
+		var/rarity = character.mutation_rarity ? "[character.mutation_rarity]" : "None"
+		return "<section class='mutation-panel'><div><h2>Character Mutations</h2><p>Rarity: <b>[html_encode(rarity)]</b>. Select a mutation to add, adjust, or remove it without stacking its previous stat modifier.</p></div><div class='mutation-grid'>[mutation_rows]</div></section>"
+
+	proc/buildListHtml(variable_name)
+		if(!canUse() || !(variable_name in target.vars) || !islist(target.vars[variable_name])) return ""
+		var/list/value_list = target.vars[variable_name]
+		var/list_rows = ""
+		var/index = 0
+		for(var/entry in value_list)
+			index++
+			var/associated_value = value_list[entry]
+			list_rows += "<tr><td>[index]</td><td>[html_encode("[entry]")]</td><td>[html_encode("[associated_value]")]</td></tr>"
+		if(!list_rows) list_rows = "<tr><td colspan='3'>This list is empty.</td></tr>"
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>Admin List Inspector</title><style>
+		*{box-sizing:border-box}body{margin:0;padding:16px;background:#080c12;color:#e9eef6;font:13px Arial,sans-serif}a{color:#75caef;text-decoration:none}h1{margin:0 0 4px}p{color:#8fa0b6}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{padding:8px;border-bottom:1px solid #263345;text-align:left;vertical-align:top;word-break:break-word}th{color:#91a4bd;background:#111b28}.back{display:inline-block;padding:8px 12px;border:1px solid #49657a;background:#142433}
+		</style></head><body><a class='back' href='byond://?src=\ref[src]&action=back'>BACK TO ALL VARIABLES</a><h1>[html_encode(variable_name)]</h1><p>[value_list.len] complete list entries from [html_encode("[target]")].</p><table><thead><tr><th>#</th><th>Entry / key</th><th>Associated value</th></tr></thead><tbody>[list_rows]</tbody></table></body></html>"}
+
 	proc/buildHtml()
 		if(!canUse()) return ""
+		var/mutation_panel = buildMutationPanel()
 		var/list/category_order = list("Identity", "Combat", "Progression", "Appearance", "Position", "Collections", "System", "Other")
 		var/list/variable_names = list()
 		for(var/variable_name in target.vars)
@@ -88,23 +128,33 @@ datum/NexusAdminInspector
 				var/display_value = getNexusAdminVariableDisplay(variable_value)
 				var/search_key = lowertext("[category] [variable_name] [display_value]")
 				var/runtime_type = getNexusAdminVariableType(variable_value)
-				rows_html += "<tr data-category='[category]' data-search='[html_encode(search_key)]'><td><span class='category'>[category]</span></td><td><a href='byond://?src=\\ref[src]&action=edit&var=[variable_name]'>[html_encode(variable_name)]</a></td><td>[html_encode("[display_value]")]</td><td><small>[html_encode(runtime_type)]</small></td></tr>"
+				var/display_html = html_encode("[display_value]")
+				if(islist(variable_value)) display_html += " <a class='list-link' href='byond://?src=\ref[src]&action=view_list&var=[variable_name]'>VIEW ALL</a>"
+				rows_html += "<tr data-category='[category]' data-search='[html_encode(search_key)]'><td><span class='category'>[category]</span></td><td><a href='byond://?src=\ref[src]&action=edit&var=[variable_name]'>[html_encode(variable_name)]</a></td><td>[display_html]</td><td><small>[html_encode(runtime_type)]</small></td></tr>"
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Admin Inspector</title><style>
-		*{box-sizing:border-box}html,body{margin:0;height:100%;background:#080c12;color:#e9eef6;font:13px Arial,sans-serif}.shell{height:100%;display:flex;flex-direction:column;background:radial-gradient(circle at 80% 0,#273344,#0b111a 48%,#06090e)}.header{padding:14px 18px;border-bottom:1px solid #435067;background:rgba(12,18,28,.96)}.header-top{display:flex;align-items:center;gap:10px}.header h1{font-size:20px;margin:0 auto 0 0;letter-spacing:1px}.header h1 small{display:block;color:#8491a5;font-size:10px;font-weight:normal;margin-top:3px}.close{color:#ffad8f;text-decoration:none;border:1px solid #68463e;padding:7px 10px}.search{width:100%;margin-top:12px;padding:10px;border:1px solid #48566e;background:#101824;color:#fff;outline:none}.filters{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.filters button{padding:6px 9px;border:1px solid #3d4960;background:#121b29;color:#b9c5d5;cursor:pointer}.filters button.active{border-color:#70bde2;color:#fff;background:#193042}.content{overflow:auto;padding:0 14px 16px}table{width:100%;border-collapse:collapse;table-layout:fixed}th{position:sticky;top:0;background:#101824;color:#93a3ba;text-align:left;padding:9px;border-bottom:1px solid #46536a;font-size:10px;text-transform:uppercase}th:nth-child(1){width:120px}th:nth-child(2){width:240px}th:nth-child(4){width:180px}td{padding:8px 9px;border-bottom:1px solid #1e2937;vertical-align:top;word-wrap:break-word}tr:hover td{background:#101d2a}td a{color:#71c8ef;text-decoration:none;font-weight:bold}.category{display:inline-block;padding:3px 6px;border-left:3px solid #b28a58;background:#171d25;color:#d8c39c;font-size:9px;text-transform:uppercase}td small{color:#718096;font-family:Consolas,monospace}.empty{padding:30px;color:#77869b;text-align:center}
-		</style></head><body><div class='shell'><div class='header'><div class='header-top'><h1>[html_encode("[target]")]<small>[html_encode("[target.type]")] / [variable_names.len] editable variables</small></h1><a class='close' href='byond://?src=\\ref[src]&action=close'>CLOSE</a></div><input id='search' class='search' placeholder='Search variable, value or category...' oninput='applyFilters()'><div class='filters'><button class='active' data-filter='All' onclick='setCategory(this)'>All</button><button data-filter='Identity' onclick='setCategory(this)'>Identity</button><button data-filter='Combat' onclick='setCategory(this)'>Combat</button><button data-filter='Progression' onclick='setCategory(this)'>Progression</button><button data-filter='Appearance' onclick='setCategory(this)'>Appearance</button><button data-filter='Position' onclick='setCategory(this)'>Position</button><button data-filter='Collections' onclick='setCategory(this)'>Collections</button><button data-filter='System' onclick='setCategory(this)'>System</button><button data-filter='Other' onclick='setCategory(this)'>Other</button></div></div><div class='content'><table><thead><tr><th>Category</th><th>Variable</th><th>Current value</th><th>Runtime type</th></tr></thead><tbody>[rows_html]</tbody></table></div></div><script>
+		*{box-sizing:border-box}html,body{margin:0;height:100%;background:#080c12;color:#e9eef6;font:13px Arial,sans-serif}.shell{height:100%;display:flex;flex-direction:column;background:radial-gradient(circle at 80% 0,#273344,#0b111a 48%,#06090e)}.header{padding:14px 18px;border-bottom:1px solid #435067;background:rgba(12,18,28,.96)}.header-top{display:flex;align-items:center;gap:10px}.header h1{font-size:20px;margin:0 auto 0 0;letter-spacing:1px}.header h1 small{display:block;color:#8491a5;font-size:10px;font-weight:normal;margin-top:3px}.close{color:#ffad8f;text-decoration:none;border:1px solid #68463e;padding:7px 10px}.search{width:100%;margin-top:12px;padding:10px;border:1px solid #48566e;background:#101824;color:#fff;outline:none}.filters{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.filters button{padding:6px 9px;border:1px solid #3d4960;background:#121b29;color:#b9c5d5;cursor:pointer}.filters button.active{border-color:#70bde2;color:#fff;background:#193042}.mutation-panel{display:grid;grid-template-columns:230px 1fr;gap:12px;padding:12px 18px;border-bottom:1px solid #35445a;background:#0d1621}.mutation-panel h2{margin:0 0 5px;font-size:14px}.mutation-panel p{margin:0;color:#8fa0b4;font-size:11px}.mutation-grid{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:5px}.mutation{position:relative;display:block;padding:7px 42px 7px 8px;border:1px solid #2d3b4e;background:#101a27;color:#99a8bb;text-decoration:none}.mutation.owned{border-color:#ae7ada;background:#241a32;color:#f0dcff}.mutation b,.mutation small{display:block}.mutation small{font-size:9px;color:#718196}.mutation span{position:absolute;right:8px;top:12px;font:bold 12px Consolas}.content{flex:1;min-height:0;overflow:auto;padding:0 14px 16px}table{width:100%;border-collapse:collapse;table-layout:fixed}th{position:sticky;top:0;background:#101824;color:#93a3ba;text-align:left;padding:9px;border-bottom:1px solid #46536a;font-size:10px;text-transform:uppercase}th:nth-child(1){width:120px}th:nth-child(2){width:240px}th:nth-child(4){width:180px}td{padding:8px 9px;border-bottom:1px solid #1e2937;vertical-align:top;word-wrap:break-word}tr:hover td{background:#101d2a}td a{color:#71c8ef;text-decoration:none;font-weight:bold}.list-link{display:inline-block;margin-left:8px;padding:2px 5px;border:1px solid #486174;font-size:9px}.category{display:inline-block;padding:3px 6px;border-left:3px solid #b28a58;background:#171d25;color:#d8c39c;font-size:9px;text-transform:uppercase}td small{color:#718096;font-family:Consolas,monospace}.empty{padding:30px;color:#77869b;text-align:center}
+		</style></head><body><div class='shell'><div class='header'><div class='header-top'><h1>[html_encode("[target]")]<small>[html_encode("[target.type]")] / [variable_names.len] editable variables</small></h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><input id='search' class='search' placeholder='Search variable, value or category...' oninput='applyFilters()'><div class='filters'><button class='active' data-filter='All' onclick='setCategory(this)'>All</button><button data-filter='Identity' onclick='setCategory(this)'>Identity</button><button data-filter='Combat' onclick='setCategory(this)'>Combat</button><button data-filter='Progression' onclick='setCategory(this)'>Progression</button><button data-filter='Appearance' onclick='setCategory(this)'>Appearance</button><button data-filter='Position' onclick='setCategory(this)'>Position</button><button data-filter='Collections' onclick='setCategory(this)'>Collections</button><button data-filter='System' onclick='setCategory(this)'>System</button><button data-filter='Other' onclick='setCategory(this)'>Other</button></div></div>[mutation_panel]<div class='content'><table><thead><tr><th>Category</th><th>Variable</th><th>Current value</th><th>Runtime type</th></tr></thead><tbody>[rows_html]</tbody></table></div></div><script>
 		var activeCategory='All';function setCategory(button){activeCategory=button.getAttribute('data-filter');var buttons=document.querySelectorAll('.filters button');for(var i=0;i<buttons.length;i++)buttons.item(i).className='';button.className='active';applyFilters();}function applyFilters(){var query=document.getElementById('search').value.toLowerCase();var rows=document.querySelectorAll('tbody tr');for(var i=0;i<rows.length;i++){var row=rows.item(i);var categoryOk=activeCategory==='All'||row.getAttribute('data-category')===activeCategory;var searchOk=!query||row.getAttribute('data-search').indexOf(query)>=0;row.style.display=categoryOk&&searchOk?'table-row':'none';}}
 		</script></body></html>"}
 
 	proc/show()
 		if(!canUse())
+			if(owner) owner << "The Admin Inspector requires Admin Level 3 and a valid target."
 			del(src)
 			return
-		owner << browse(buildHtml(), "window=NexusAdminInspector;size=1180x760;can_resize=true;can_close=false")
+		owner << browse(buildHtml(), "window=NexusAdminInspector;size=1180x760;can_resize=true;can_close=true")
 
 	Topic(href, list/href_list)
 		if(!canUse() || usr != owner) return
 		switch(href_list["action"])
 			if("edit") editVariable(href_list["var"])
+			if("set_mutation") editMutation(href_list["mutation"])
+			if("view_list")
+				owner << browse(buildListHtml(href_list["var"]), "window=NexusAdminInspector;size=1180x760;can_resize=true;can_close=true")
+				return
+			if("back")
+				show()
+				return
 			if("close")
 				owner << browse(null, "window=NexusAdminInspector")
 				del(src)
@@ -112,7 +162,13 @@ datum/NexusAdminInspector
 		show()
 
 mob/proc/showNexusAdminInspector(atom/target)
-	if(!client || !IsAdmin() || Admins[key] < 3 || !target) return
+	if(!client) return
+	if(AdminLevel() < 3)
+		src << "The Admin Inspector requires Admin Level 3."
+		return
+	if(!target)
+		src << "The Admin Inspector needs a valid target."
+		return
 	if(client.nexus_admin_inspector) del(client.nexus_admin_inspector)
 	client.nexus_admin_inspector = new /datum/NexusAdminInspector(src, target)
 	client.nexus_admin_inspector.show()

@@ -30,6 +30,9 @@ Argument names, order, type annotations, and defaults below match the current de
 - `datum/CharacterMutation/New(stat)` records the affected internal stat.
 - `mob/proc/rollCharacterMutations(forced_rarity)` performs a one-time hidden rarity roll or accepts a forced rarity for internal tests.
 - `mob/proc/normalizeCharacterMutations()` migrates and sanitizes loaded internal state without rolling.
+- `mob/proc/getCharacterMutationRarity()` derives a compatible rarity from the current admin-editable mutation set.
+- `mob/proc/applyCharacterMutationRatio(mutation_id, ratio)` adjusts the affected live stat and growth modifier by a reversible ratio.
+- `mob/proc/setCharacterMutationValue(mutation_id, percent)` safely adds, changes, or removes an admin-managed mutation without stacking the previous bonus.
 - `mob/proc/applyCharacterMutations()` multiplicatively applies the saved percentages.
 
 ### NexusCharacterCreation.dm
