@@ -32,6 +32,7 @@ proc/getNexusRpgBrowserCss()
 client/var/tmp
 	datum/NexusHudWindow/nexus_hud_window
 	datum/NexusChatHud/nexus_chat_hud
+	datum/NexusInterfaceSettings/nexus_interface_settings
 	list/nexus_chat_history
 
 obj/HudWindow
@@ -98,6 +99,16 @@ mob/var
 	nexus_chat_hud_width = 500
 	nexus_chat_hud_height = 210
 	nexus_chat_hud_collapsed = FALSE
+	nexus_interface_layout = "overlay"
+	nexus_legacy_tab_skills = TRUE
+	nexus_legacy_tab_other = TRUE
+	nexus_legacy_tab_items = TRUE
+	nexus_legacy_tab_world = TRUE
+	nexus_legacy_tab_admin = TRUE
+
+proc/normalizeNexusInterfaceLayout(layout_id)
+	if(layout_id == "side_tabs") return "side_tabs"
+	return "overlay"
 
 client/proc/initializeNexusChatHistory()
 	if(!islist(nexus_chat_history)) nexus_chat_history = list()
@@ -146,7 +157,9 @@ datum/NexusChatHud
 		. = ..()
 
 	proc/getVisibleMessageCount()
-		return 80
+		if(owner && normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs") return 36
+		if(!owner) return 4
+		return max(4, round((owner.nexus_chat_hud_height - 70) / 18))
 
 	proc/buildMessageHtml()
 		if(!owner || !owner.client) return ""
@@ -184,24 +197,120 @@ datum/NexusChatHud
 
 	proc/attachSidePanel()
 		if(!owner || !owner.client) return
-		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=nexuschatwindow;splitter=74")
+		var/show_tabs = owner.hasEnabledNexusLegacyTabs()
+		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=rpane;splitter=74")
+		winset(owner, "rpane", "is-visible=true")
+		winset(owner, "rpane.button9", "is-visible=true;text='Settings';command=Settings")
+		winset(owner, "rpane.tabbutton", "is-visible=[show_tabs ? "true" : "false"]")
+		if(show_tabs)
+			winset(owner, "rpane.rpanewindow", "left=infowindow;right=nexuschatwindow;splitter=46")
+			winset(owner, "infowindow", "is-visible=true")
+			owner.tabs_hidden = FALSE
+		else
+			winset(owner, "rpane.rpanewindow", "left=;right=nexuschatwindow;splitter=0")
+			winset(owner, "infowindow", "is-visible=false")
+			owner.tabs_hidden = TRUE
 		winset(owner, "nexuschatwindow", "is-visible=true")
 		winset(owner, "nexuschatwindow.chat", "is-visible=true")
 		winset(owner, "nexuschatwindow.command", "is-visible=true")
+		for(var/window_id in list("outputwindow", "chat", "chat2", "chat3")) winset(owner, window_id, "is-visible=false")
+
+	proc/attachOverlay()
+		if(!owner || !owner.client) return
+		owner << browse(null, "window=nexuschatwindow.chat")
+		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+		winset(owner, "mapwindow", "is-visible=true")
+		winset(owner, "mapwindow.map", "is-visible=true")
+		winset(owner, "mpane.mpanewindow", "right=;splitter=100")
+		for(var/window_id in list("rpane", "infowindow", "nexuschatwindow", "outputwindow", "chat", "chat2", "chat3")) winset(owner, window_id, "is-visible=false")
+
+	proc/attachTabsOnly()
+		if(!owner || !owner.client) return
+		owner << browse(null, "window=nexuschatwindow.chat")
+		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=rpane;splitter=74")
+		winset(owner, "rpane", "is-visible=true")
+		winset(owner, "rpane.rpanewindow", "left=infowindow;right=;splitter=100")
+		winset(owner, "infowindow", "is-visible=true")
+		winset(owner, "nexuschatwindow", "is-visible=false")
+		owner.tabs_hidden = FALSE
+
+	proc/refreshOverlay()
+		if(!owner || !owner.client) return
+		var/panel_y = 8
+		var/panel_width = Clamp(round(owner.nexus_chat_hud_width), 360, 820)
+		var/panel_height = Clamp(round(owner.nexus_chat_hud_height), 130, 460)
+		owner.nexus_chat_hud_width = panel_width
+		owner.nexus_chat_hud_height = panel_height
+		if(owner.nexus_chat_hud_collapsed) panel_height = 24
+		addElementAt("", null, getRightAnchoredLocation(panel_width, 0, panel_width, panel_y), panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
+		var/header_y = panel_y + panel_height - 22
+		var/control_width = 21
+		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
+		var/control_x = panel_width - 4 - (header_actions.len * control_width)
+		addElementAt("CHAT / [uppertext(active_channel)]", null, getRightAnchoredLocation(panel_width, 4, max(60, control_x - 4), header_y), max(60, control_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
+		for(var/action_id in header_actions)
+			addElementAt(header_actions[action_id], action_id, getRightAnchoredLocation(panel_width, control_x, control_width, header_y), control_width, 20, "#46321d", "#987140", "", "#f2d8a0", "center", 8)
+			control_x += control_width
+		if(owner.nexus_chat_hud_collapsed) return
+		var/tab_y = panel_y + panel_height - 43
+		var/tab_width = round((panel_width - 8) / 4)
+		var/tab_x = 4
+		for(var/channel in list("all", "combat", "ic", "ooc"))
+			var/is_active = channel == active_channel
+			addElementAt(uppertext(channel), "channel:[channel]", getRightAnchoredLocation(panel_width, tab_x, tab_width, tab_y), tab_width, 19, is_active ? "#725027" : "#302319", is_active ? "#d2aa61" : "#725735", is_active ? "#e0bd74" : "", is_active ? "#fff0bd" : "#cbb389", "center", 8)
+			tab_x += tab_width
+		var/footer_height = 22
+		var/message_y = panel_y + footer_height
+		var/message_height = max(40, panel_height - 68)
+		var/obj/message_panel = addElementAt("", null, getRightAnchoredLocation(panel_width, 4, panel_width - 8, message_y), panel_width - 8, message_height, "#130f0b", "#574128", "", "#ead7b0", "left", 8, FALSE)
+		message_panel.maptext_x = 7
+		message_panel.maptext_y = 5
+		message_panel.maptext_width = panel_width - 22
+		message_panel.maptext_height = message_height - 10
+		message_panel.maptext = "<div style='font-family:Courier New;font-size:8px;color:#ead7b0'>[buildMessageHtml()]</div>"
+		var/list/footer_actions = list("cmd" = "CMD", "say" = "SAY", "ooc" = "OOC", "emote" = "EMOTE", "logs" = "LOGS")
+		var/footer_width = round((panel_width - 8) / footer_actions.len)
+		var/footer_x = 4
+		for(var/action_id in footer_actions)
+			addElementAt(footer_actions[action_id], action_id, getRightAnchoredLocation(panel_width, footer_x, footer_width, panel_y + 2), footer_width, 18, "#3c2b1a", "#846238", "", "#ead09a", "center", 8)
+			footer_x += footer_width
+
+	proc/applyLayout()
+		clearElements()
+		if(!owner || !owner.client) return
+		owner.nexus_interface_layout = normalizeNexusInterfaceLayout(owner.nexus_interface_layout)
+		if(!is_visible)
+			if(owner.nexus_interface_layout == "side_tabs" && owner.hasEnabledNexusLegacyTabs()) attachTabsOnly()
+			else attachOverlay()
+			winset(owner, "mapwindow.map", "focus=true")
+			return
+		if(owner.nexus_interface_layout == "side_tabs") attachSidePanel()
+		else attachOverlay()
+		refresh()
 
 	proc/refresh()
 		clearElements()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
-		owner << browse(buildHtml(), "window=nexuschatwindow.chat")
+		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs") owner << browse(buildHtml(), "window=nexuschatwindow.chat")
+		else refreshOverlay()
 
 	handleAction(action_id)
 		if(!owner || !owner.client) return
-		switch(action_id)
+		if(findtext(action_id, "channel:") == 1)
+			active_channel = normalizeNexusChatChannel(copytext(action_id, 9))
+			scroll_offset = 0
+		else switch(action_id)
 			if("scroll_up")
 				owner.client.initializeNexusChatHistory()
 				var/list/entries = owner.client.nexus_chat_history[active_channel]
 				scroll_offset = min(max(0, entries.len - 1), scroll_offset + getVisibleMessageCount())
 			if("scroll_down") scroll_offset = max(0, scroll_offset - getVisibleMessageCount())
+			if("width_down") owner.nexus_chat_hud_width = max(360, owner.nexus_chat_hud_width - 64)
+			if("width_up") owner.nexus_chat_hud_width = min(820, owner.nexus_chat_hud_width + 64)
+			if("height_down") owner.nexus_chat_hud_height = max(130, owner.nexus_chat_hud_height - 48)
+			if("height_up") owner.nexus_chat_hud_height = min(460, owner.nexus_chat_hud_height + 48)
+			if("collapse") owner.nexus_chat_hud_collapsed = !owner.nexus_chat_hud_collapsed
+			if("cmd") owner.showNexusCommandPrompt()
 			if("say") spawn() owner.Say()
 			if("ooc") spawn() owner.GlobalSay()
 			if("emote") owner.showNexusEmoteEditor()
@@ -224,26 +333,97 @@ datum/NexusChatHud
 	proc/setVisible(new_visibility)
 		is_visible = !!new_visibility
 		if(owner && owner.client) owner.client.show_chatbox = is_visible
-		if(is_visible)
-			attachSidePanel()
-			refresh()
-		else if(owner && owner.client)
-			owner << browse(null, "window=nexuschatwindow.chat")
-			winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
-			winset(owner, "mapwindow.map", "focus=true")
+		applyLayout()
+
+mob/proc/hasEnabledNexusLegacyTabs()
+	return nexus_legacy_tab_skills || nexus_legacy_tab_other || nexus_legacy_tab_items || (IsAdmin() && (nexus_legacy_tab_world || nexus_legacy_tab_admin))
+
+mob/proc/isNexusLegacyTabEnabled(tab_id)
+	if(normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs") return FALSE
+	switch(lowertext(tab_id))
+		if("skills") return nexus_legacy_tab_skills
+		if("other") return nexus_legacy_tab_other
+		if("items") return nexus_legacy_tab_items
+		if("world") return IsAdmin() && nexus_legacy_tab_world
+		if("admin") return IsAdmin() && nexus_legacy_tab_admin
+	return FALSE
+
+datum/NexusInterfaceSettings
+	var/tmp/mob/owner
+
+	New(mob/new_owner)
+		. = ..()
+		owner = new_owner
+
+	Del()
+		if(owner)
+			owner << browse(null, "window=NexusInterfaceSettings")
+			if(owner.client && owner.client.nexus_interface_settings == src) owner.client.nexus_interface_settings = null
+		owner = null
+		. = ..()
+
+	proc/buildToggle(label, description, action_id, enabled)
+		return "<a class='option [enabled ? "active" : ""]' href='byond://?src=\ref[src]&action=toggle&id=[action_id]'><b>[html_encode(label)]</b><span>[html_encode(description)]</span><em>[enabled ? "ON" : "OFF"]</em></a>"
+
+	proc/buildHtml()
+		var/overlay_active = owner.nexus_interface_layout == "overlay"
+		var/side_active = owner.nexus_interface_layout == "side_tabs"
+		var/tab_options = buildToggle("Skills", "Techniques in a native clickable tab.", "skills", owner.nexus_legacy_tab_skills)
+		tab_options += buildToggle("Other", "Stats, Sense, science and miscellaneous information.", "other", owner.nexus_legacy_tab_other)
+		tab_options += buildToggle("Items", "Inventory objects with native click and context actions.", "items", owner.nexus_legacy_tab_items)
+		if(owner.IsAdmin())
+			tab_options += buildToggle("World", "Connected characters and world information.", "world", owner.nexus_legacy_tab_world)
+			tab_options += buildToggle("Admin", "Administrative targets and inspection access.", "admin", owner.nexus_legacy_tab_admin)
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>Interface Settings</title><style>[getNexusRpgBrowserCss()]
+		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.head{display:flex;align-items:center;border:3px ridge #84643a;padding:10px}.head h1{margin:0 auto 0 0;font-size:18px}.close{padding:7px 10px}.layouts,.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}.layout,.option{position:relative;display:block;min-height:88px;padding:12px 70px 12px 12px;border:3px ridge #735631;background:#2b2117;color:#e8d4aa;text-decoration:none}.layout.active,.option.active{border-color:#d0a65d;background:#4a351e}.layout b,.layout span,.option b,.option span{display:block}.layout b,.option b{color:#f0d497;font-size:14px}.layout span,.option span{margin-top:7px;color:#bca47c;line-height:1.4}.layout em,.option em{position:absolute;right:12px;top:12px;color:#ffe6a8;font-style:normal;font-weight:bold}.section{margin-top:12px;padding:8px;border:2px solid #715735;background:#211a13}.section h2{margin:0 0 8px;padding:7px;font-size:13px}.note{margin-top:9px;padding:8px;border-left:4px solid #a77a3f;color:#bca47c}@media(max-width:650px){.layouts,.options{grid-template-columns:1fr}}
+		</style></head><body><main class='shell'><header class='head'><h1>INTERFACE SETTINGS</h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></header><div class='layouts'><a class='layout [overlay_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=overlay'><b>CLASSIC OVERLAY</b><span>Compact rustic chat over the map, with resize controls and CMD below it.</span><em>[overlay_active ? "ACTIVE" : "SELECT"]</em></a><a class='layout [side_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=side_tabs'><b>SIDE + TABS</b><span>Native tabs above a smaller chat and permanent CMD bar outside the map.</span><em>[side_active ? "ACTIVE" : "SELECT"]</em></a></div><section class='section'><h2>LEGACY TAB CATEGORIES</h2><div class='options'>[tab_options]</div><div class='note'>These switches control the legacy categories shown in Side + Tabs mode. Preferences are saved for this account.</div></section></main></body></html>"}
+
+	proc/show()
+		if(!owner || !owner.client)
+			del(src)
+			return
+		owner << browse(buildHtml(), "window=NexusInterfaceSettings;size=760x620;can_resize=true;can_close=true")
+
+	Topic(href, list/href_list)
+		if(!owner || !owner.client || usr != owner) return
+		switch(href_list["action"])
+			if("layout") owner.nexus_interface_layout = normalizeNexusInterfaceLayout(href_list["id"])
+			if("toggle")
+				switch(href_list["id"])
+					if("skills") owner.nexus_legacy_tab_skills = !owner.nexus_legacy_tab_skills
+					if("other") owner.nexus_legacy_tab_other = !owner.nexus_legacy_tab_other
+					if("items") owner.nexus_legacy_tab_items = !owner.nexus_legacy_tab_items
+					if("world") owner.nexus_legacy_tab_world = !owner.nexus_legacy_tab_world
+					if("admin") if(owner.IsAdmin()) owner.nexus_legacy_tab_admin = !owner.nexus_legacy_tab_admin
+			if("close")
+				owner.save_player_settings()
+				del(src)
+				return
+		owner.applyNexusInterfaceLayout()
+		owner.save_player_settings()
+		show()
+
+mob/proc/showNexusInterfaceSettings()
+	if(!client || !playerCharacter) return
+	if(client.nexus_interface_settings) del(client.nexus_interface_settings)
+	client.nexus_interface_settings = new /datum/NexusInterfaceSettings(src)
+	client.nexus_interface_settings.show()
+
+mob/proc/applyNexusInterfaceLayout()
+	if(!client || !playerCharacter) return
+	nexus_interface_layout = normalizeNexusInterfaceLayout(nexus_interface_layout)
+	if(!client.nexus_chat_hud) initializeNexusChatHud()
+	else client.nexus_chat_hud.applyLayout()
 
 mob/proc/hideNexusLegacyInterface()
 	if(!client) return
-	winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=nexuschatwindow;splitter=74")
-	winset(src, "mapwindow", "is-visible=true")
-	winset(src, "mapwindow.map", "is-visible=true")
-	winset(src, "nexuschatwindow", "is-visible=true")
-	winset(src, "mpane.mpanewindow", "right=;splitter=100")
-	for(var/window_id in list("rpane", "infowindow", "outputwindow", "chat", "chat2", "chat3")) winset(src, window_id, "is-visible=false")
+	if(client.nexus_chat_hud) client.nexus_chat_hud.applyLayout()
+	else
+		winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+		for(var/window_id in list("rpane", "infowindow", "nexuschatwindow", "outputwindow", "chat", "chat2", "chat3")) winset(src, window_id, "is-visible=false")
 
 mob/proc/initializeNexusChatHud()
 	if(!client || !playerCharacter) return
-	hideNexusLegacyInterface()
 	if(client.nexus_chat_hud) del(client.nexus_chat_hud)
 	client.nexus_chat_hud = new /datum/NexusChatHud(src)
 	client.nexus_chat_hud.setVisible(client.show_chatbox)

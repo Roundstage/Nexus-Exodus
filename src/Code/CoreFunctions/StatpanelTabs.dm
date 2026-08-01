@@ -12,7 +12,7 @@ mob/Stat()
 		return
 
 	if(!client) sleep(100)
-	else if(!Tabs || tabs_hidden) sleep(20) //tabs_hidden means they clicked the Hide Tabs button which lets them read a bigger chat box
+	else if(!Tabs || tabs_hidden || normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs") sleep(20) //Native tabs only refresh in the configured side layout.
 	else
 		RefreshAllTabs()
 		//SleepTabs()
@@ -30,23 +30,58 @@ mob/proc/RefreshAllTabs()
 	else
 		if(client.inactivity >= 1200) client.statpanel = "Other"
 		var/startTime = world.time - (last_logon + tabStartupDelay)
+		if(startTime > 1)
+			Stat_NexusSkills()
+			Stat_NexusOther()
 		if(startTime > 2)
-			Stat_Admin()
-			Stat_Nav()
-			Stat_Ship()
+			if(isNexusLegacyTabEnabled("world"))
+				Stat_Admin()
+				Stat_Nav()
+				Stat_Ship()
+			Stat_NexusAdmin()
 		if(startTime > 3)
-			Stat_Items()
-			Stat_Modules()
-			Stat_Souls()
+			if(isNexusLegacyTabEnabled("items")) Stat_Items()
+			if(isNexusLegacyTabEnabled("other"))
+				Stat_Modules()
+				Stat_Souls()
 		if(startTime > 4)
-			Stat_Vampire()
-			Stat_Scouter()
-			Stat_Radar()
+			if(isNexusLegacyTabEnabled("other"))
+				Stat_Vampire()
+				Stat_Scouter()
+				Stat_Radar()
 		if(startTime > 5)
-			Stat_Sense()
-			Stat_Sense_Tab()
-			Stat_leagues()
-			saga_tab()
+			if(isNexusLegacyTabEnabled("other"))
+				Stat_Sense()
+				Stat_Sense_Tab()
+				Stat_leagues()
+				saga_tab()
+
+mob/proc/Stat_NexusSkills()
+	if(!isNexusLegacyTabEnabled("skills") || !statpanel("Skills")) return
+	var/skill_count = 0
+	for(var/obj/skill in contents)
+		if(!skill.hotbar_type) continue
+		stat(skill)
+		skill_count++
+	if(!skill_count) stat("No learned skills")
+
+mob/proc/Stat_NexusOther()
+	if(!isNexusLegacyTabEnabled("other") || !statpanel("Other")) return
+	stat("Character", src)
+	stat("Location", "[x], [y], [z]")
+	stat("Health", "[round(Health, 0.1)]%")
+	stat("Energy", "[round(Ki / max(1, max_ki) * 100, 0.1)]%")
+	stat("Willpower", "[round(willpower / max(1, max_willpower) * 100, 0.1)]%")
+	if(Target) stat("Current target", Target)
+	stat("Interface", "Press Escape for Settings")
+
+mob/proc/Stat_NexusAdmin()
+	if(!isNexusLegacyTabEnabled("admin") || !statpanel("Admin")) return
+	stat("Structured tools", "Use the ADMIN navbar icon")
+	if(Target) stat("Selected target", Target)
+	stat("Connected characters")
+	for(var/mob/player in players)
+		if(player.client) stat(player)
 
 //Resetinactivity() handles instant refreshing upon changing tabs now, so this proc is a lot simple than its previous version
 mob/proc/SleepTab(timer = 0)

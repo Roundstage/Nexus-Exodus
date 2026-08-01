@@ -1,11 +1,11 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats/info tabs remain detached; their old splitter position now hosts only the new four-channel chat and its native CMD input, outside the map viewport. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, CMD focus, and the Escape menu; World and Admin are permission-gated administrator tools.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
-The HudLib chat owns All, Combat, IC, and OOC feeds in a rustic browser placed in the resizable right side of the main splitter, so it never obscures characters or combat. A native Dream Seeker command input sits directly below it, and Enter alternates focus between CMD and the map. Every entry has an explicit line break and separator. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
+The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Every entry has an explicit line break and separator. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
 All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Login uses a resizable RPG-style three-slot character selector instead of the New/Load alert.
 
@@ -34,10 +34,10 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `getNexusShortcutBarIcon()`, `getNexusShortcutButtonIcon()`, and `drawNexusShortcutGlyph()` build the top-left bolted strip and its license-independent pixel pictograms.
 - `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons plus the top-left shortcut strip as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain seven player shortcuts, including permanent CMD focus and Escape-menu access, and add World plus Admin only when the owner has an active admin level.
+- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain six player shortcuts and add World plus Admin only when the owner has an active admin level. CMD lives with chat instead of consuming a navbar slot.
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
-- `datum/NexusPlayerMenu` replaces the Inventory, Skills, Sense, and admin-only World stat tabs with a rustic browser surface. Inventory, Skills, and Sense cards have non-overlapping action footers with explicit Use/Target and Examine buttons; right mouse-down dispatches the same Examine action. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
-- `showNexusCommandPrompt()` makes the side chat visible and focuses its native CMD input. The shortcut is universal while the native verb list and admin level continue to decide what each player may execute.
+- `datum/NexusPlayerMenu` provides rustic Inventory, Skills, Sense, and admin-only World surfaces. Examine replaces the current browser content instead of relying on a second popup and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
+- `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
 - `showNexusPlayerMenu(section)` opens the requested player-menu section from its pixel shortcut.
 - `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
 
@@ -47,9 +47,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `getNexusRpgBrowserCss()` supplies the shared rustic RPG presentation layer used by the Character, creation, emote, log, hotkey, inspector, reward, item, and admin windows.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
-- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control into `nexuschatwindow.chat`; `attachSidePanel()` places that pane beside rather than over the map.
+- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `attachSidePanel()` shares the right pane with native tabs; `attachOverlay()` returns the full width to the map.
+- `datum/NexusInterfaceSettings` switches layouts and independently enables the Skills, Other, Items, World, and Admin legacy categories. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
-- `hideNexusLegacyInterface()` removes every legacy info/output tab, attaches `mapwindow` on the left and the dedicated `nexuschatwindow` on the right, and keeps the splitter user-resizable.
+- `applyNexusInterfaceLayout()` and `hideNexusLegacyInterface()` reconcile the configured panes while keeping obsolete output windows detached.
+
+### src/Code/UI/SavePlayerSettings.dm
+
+- `save_player_settings()` and `load_player_settings()` persist the selected interface layout and all five native-tab category switches.
 
 ### src/Code/UI/UIStuff.dm
 

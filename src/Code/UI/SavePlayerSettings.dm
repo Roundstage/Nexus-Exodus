@@ -23,6 +23,12 @@ mob/proc
 		f["TextColor"]<<TextColor
 		f["sort_sense_by"]<<sort_sense_by
 		f["block_music"] << block_music
+		f["nexus_interface_layout"] << normalizeNexusInterfaceLayout(nexus_interface_layout)
+		f["nexus_legacy_tab_skills"] << nexus_legacy_tab_skills
+		f["nexus_legacy_tab_other"] << nexus_legacy_tab_other
+		f["nexus_legacy_tab_items"] << nexus_legacy_tab_items
+		f["nexus_legacy_tab_world"] << nexus_legacy_tab_world
+		f["nexus_legacy_tab_admin"] << nexus_legacy_tab_admin
 
 		//if(hotbar_ids.len && client.connection == "seeker")
 		//	f["hotbar_ids"]<<hotbar_ids
@@ -61,6 +67,13 @@ mob/proc
 		if("tab_font_size" in f) f["tab_font_size"]>>tab_font_size
 		if("sort_sense_by" in f) f["sort_sense_by"]>>sort_sense_by
 		if("block_music" in f) f["block_music"] >> block_music
+		if("nexus_interface_layout" in f) f["nexus_interface_layout"] >> nexus_interface_layout
+		if("nexus_legacy_tab_skills" in f) f["nexus_legacy_tab_skills"] >> nexus_legacy_tab_skills
+		if("nexus_legacy_tab_other" in f) f["nexus_legacy_tab_other"] >> nexus_legacy_tab_other
+		if("nexus_legacy_tab_items" in f) f["nexus_legacy_tab_items"] >> nexus_legacy_tab_items
+		if("nexus_legacy_tab_world" in f) f["nexus_legacy_tab_world"] >> nexus_legacy_tab_world
+		if("nexus_legacy_tab_admin" in f) f["nexus_legacy_tab_admin"] >> nexus_legacy_tab_admin
+		nexus_interface_layout = normalizeNexusInterfaceLayout(nexus_interface_layout)
 
 		//if("hotbar_ids" in f)
 		//	f["hotbar_ids"] >> hotbar_ids

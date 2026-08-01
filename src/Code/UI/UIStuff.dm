@@ -18,6 +18,9 @@ client/Del()
 	if(nexus_chat_hud)
 		del(nexus_chat_hud)
 		nexus_chat_hud = null
+	if(nexus_interface_settings)
+		del(nexus_interface_settings)
+		nexus_interface_settings = null
 	if(nexus_hud_window)
 		del(nexus_hud_window)
 		nexus_hud_window = null
