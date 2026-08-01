@@ -1575,23 +1575,23 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Select neutral daylight or the current area's night color, respecting the client's lighting toggle.
 
 #### atom/movable/proc/setNexusGlow
-- Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
-- Purpose: Attach one reusable two-layer additive light emitter to a moving atom. `size` is treated as approximate falloff radius in tiles; a compact bright core sits inside a softer ranged gradient.
+- Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
+- Purpose: Attach one reusable two-layer additive light emitter to a moving atom. `size` is the total light diameter in tiles, while `gradient_offset` selects a tight (`1`) through slow (`10`) falloff profile.
 
 #### atom/movable/proc/pulseNexusGlow
-- Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')`
+- Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
 - Purpose: Render and automatically remove a short impact or charge light pulse.
 
 #### proc/getNexusGlowRangeScale
-- Signature: `getNexusGlowRangeScale(range_tiles)`
-- Purpose: Convert a requested tile radius to the transform scale required by the 517px radial mask.
+- Signature: `getNexusGlowRangeScale(size_tiles)`
+- Purpose: Convert a requested total tile diameter to the transform scale required by the 256px configurable gradient mask. A size of `1` covers one tile.
 
 #### obj/NexusLighting/Emitter/proc/configureNexusEmitter
-- Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'TorchLightCircle.dmi', enable_variation = TRUE)`
-- Purpose: Compose the low-alpha outer falloff and smaller bright core, then run subtle client-side intensity and scale variation for persistent lights.
+- Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
+- Purpose: Select one of ten CC0-derived falloff states, compose it with a range-relative compact core, then run subtle client-side intensity and scale variation for persistent lights.
 
 #### atom/movable/proc/setNexusActionGlow
-- Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
+- Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
 - Purpose: Attach a second reusable emitter for beam charging and temporary actions without replacing a transformation glow.
 
 #### mob/verb/toggleNexusLighting
@@ -1608,7 +1608,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/Admin2/verb/testNexusGlow
 - Signature: `testNexusGlow()`
-- Purpose: Prompt for a radius from 0.5 to 8 tiles and attach a maximum-intensity white test glow to the admin for ten seconds.
+- Purpose: Prompt for a total diameter from 0.5 to 12 tiles and a gradient offset from 1 to 10, then attach a maximum-intensity white test glow to the admin for ten seconds.
 
 #### mob/Admin2/verb/testNexusBlast
 - Signature: `testNexusBlast()`
@@ -1671,7 +1671,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: mutates game state and/or world resources.
 
 #### obj/proc/GiveLightSource
-- Signature: `GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'TorchLightCircle.dmi')`
+- Signature: `GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
 - Inputs: size = 1, max_alpha = 60, light_color = rgb(255, 255, 255
 - Purpose: Handle give light source.
 - Returns: none (implicit).
