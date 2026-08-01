@@ -878,6 +878,12 @@ Projectile movement, collision, beam segments, and damage behavior.
 
 ### src/Code/ProjectileSystem/Projectiles.dm
 
+#### obj/Blast/proc/getNexusCombatAttackName
+- Signature: `getNexusCombatAttackName()`
+- Purpose: Resolve a projectile's player-facing combat-log label from `from_attack`, with beam, bullet, explosive, and generic Ki fallbacks.
+
+Projectile Health, natural shield, cyber force-field, explosion, beam, and bleeding hit paths pass their owner and resolved attack name into the centralized combat log.
+
 #### obj/Blast/proc/applyPiercingDamageDecay
 - Signature: `obj/Blast/proc/applyPiercingDamageDecay()`
 - Inputs: None.

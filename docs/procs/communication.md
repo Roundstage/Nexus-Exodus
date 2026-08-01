@@ -1,7 +1,7 @@
 # Communication
 
 ## Overview
-Chat, OOC, LOOC, emotes, telepathy, and chat logging. Also includes spam control and simple text utilities.
+Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and combat damage summaries. Also includes spam control and simple text utilities.
 
 ## Files
 - `src/Code/Communication/Communication.dm`
@@ -9,15 +9,32 @@ Chat, OOC, LOOC, emotes, telepathy, and chat logging. Also includes spam control
 
 ## Proc Reference
 
-### mob/proc/ChatLog(info, the_key)
-- Purpose: Buffer a formatted HTML chat entry for later file write.
-- Inputs: `info` (HTML string), `the_key` (speaker label).
-- Side effects: updates `last_chatlog_write`, appends to `unwritten_chatlogs`.
+### mob/proc/receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
+- Purpose: Route one message to the All output and, when applicable, the IC, OOC, or Combat output in every supported HUD layout.
+- Inputs: formatted message, normalized channel, optional source key, and logging toggle.
+- Side effects: updates the active skin outputs and buffers the message in the player's combined and channel-specific logs.
+
+### mob/proc/ChatLog(info, the_key, channel = "all")
+- Purpose: Buffer a formatted HTML entry for the combined log and its IC, OOC, or Combat log.
+- Inputs: `info` (HTML string), `the_key` (speaker label), and channel identifier.
+- Side effects: updates `last_chatlog_write`, `unwritten_chatlogs`, and `nexus_unwritten_channel_logs`.
 
 ### mob/proc/Write_chatlogs(allow_splits = 1)
-- Purpose: Flush buffered chat entries to `data/Logs/ChatLogs/`.
+- Purpose: Flush combined and channel-specific chat entries to `data/Logs/ChatLogs/`.
 - Inputs: `allow_splits` toggles log file rollover.
 - Side effects: writes to disk, clears `unwritten_chatlogs`, calls `Split_File` when enabled.
+
+### mob/proc/queueNexusCombatDamage(attacker, amount, attack_name = "Attack", resource_name = "Health")
+- Purpose: Aggregate repeated hits from the same attack briefly, then publish one readable combat summary to attacker and target.
+- Inputs: attacker, applied damage, attack label, and damaged resource.
+- Side effects: creates a temporary `NexusCombatLogBatch`, routes the result to Combat and All, and persists it in both participants' logs.
+
+### mob/proc/applyNexusCombatShieldDamage(amount, attacker, attack_name = "Attack")
+- Purpose: Apply Ki shield damage while preserving the same attribution and logging used by Health damage.
+- Returns: applied Ki damage.
+
+### proc/buildNexusCombatLogMessage(...)
+- Purpose: Format attack, attacker, target, hit count, total/average damage, and remaining Health or Ki for the combat feed.
 
 ### proc/Split_File(the_key)
 - Purpose: Rotate the current chat log if it exceeds ~100 MB.
@@ -118,9 +135,9 @@ Chat, OOC, LOOC, emotes, telepathy, and chat logging. Also includes spam control
 - Purpose: Short speech cooldown helper (used by other systems).
 
 ### mob/verb/Emote(msg)
-- Purpose: Broadcast a styled emote block to nearby players.
-- Inputs: `msg` (optional; prompts if empty).
-- Side effects: logs chat and posts to RP windows depending on type.
+- Purpose: Open the rich emote editor, or submit the supplied text directly for compatibility with macros and command-line use.
+- Inputs: optional `msg`.
+- Side effects: routes the safe rendered emote to IC and All and posts it to the selected normal/development RP log.
 
 ### obj/Telepathy/verb/Hotbar_use()
 - Purpose: Hotbar wrapper to invoke telepathy.

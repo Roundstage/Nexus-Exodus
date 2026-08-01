@@ -97,7 +97,7 @@ mob/proc/hundredCrackFistHit(mob/target)
 	var/damage = getPhysicalCombatDamage(target, hundred_crack_hit_damage_mult)
 	flick("Attack", src)
 	player_view(12, src) << sound(pick('Weakpunch.ogg', 'Mediumpunch.ogg'), volume = 25)
-	target.TakeDamage(damage, 1)
+	target.TakeDamage(damage, 1, attacker = src, attack_name = "Hundred Crack Fist")
 	target.SetLastAttackedTime(src)
 	target.setOpponent(src)
 	return 1

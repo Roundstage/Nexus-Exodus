@@ -828,6 +828,28 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 
 ### src/Code/UI/RPWindow.dm
 
+#### proc/renderNexusEmoteMarkup
+- Signature: `renderNexusEmoteMarkup(raw_text)`
+- Purpose: Convert the editor's bracket markup for color, bold, italic, underline, and line breaks into balanced safe HTML while encoding raw HTML.
+
+#### datum/NexusEmoteEditor
+- Purpose: Provide a resizable two-pane emote editor with formatting controls, color swatches, custom color selection, counters, RP mode selection, and live preview.
+
+#### mob/proc/showNexusEmoteEditor
+- Signature: `showNexusEmoteEditor()`
+- Purpose: Open a fresh editor owned by the current client.
+
+#### mob/proc/submitNexusEmote
+- Signature: `submitNexusEmote(raw_text, emote_mode = "Normal")`
+- Purpose: Validate and render an emote, send it through the IC channel, and persist its normal or Character Development RP record.
+
+#### datum/NexusPlayerLogViewer
+- Purpose: Display searchable All, Combat, IC, and OOC tabs using both the current persisted file and entries waiting to be flushed.
+
+#### mob/proc/showNexusPlayerLogs
+- Signature: `showNexusPlayerLogs(channel = "all")`
+- Purpose: Open the current player's private channel log viewer.
+
 #### mob/proc/ViewEmoteWindow
 - Signature: `ViewEmoteWindow(mob/admin, mob/player, unwritten, type = "Emote", path = "emotelogs", overwrite_ckey = "none")`
 - Inputs: mob/admin, mob/player, unwritten, type = "Emote", path = "emotelogs", overwrite_ckey = "none"
@@ -852,7 +874,7 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 #### mob/verb/ViewSelfSayWindow
 - Signature: `ViewSelfSayWindow()`
 - Inputs: None
-- Purpose: Handle view self say window.
+- Purpose: Open the searchable private log viewer on its All tab.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

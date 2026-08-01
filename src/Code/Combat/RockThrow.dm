@@ -120,7 +120,7 @@ mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
 	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, visual_scale)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	showRockSkillImpact(target)
-	target.TakeDamage(damage, 1.5)
+	target.TakeDamage(damage, 1.5, attacker = src, attack_name = "Rock Throw")
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
@@ -128,7 +128,7 @@ mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, 0.9)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	showRockSkillImpact(target)
-	target.TakeDamage(damage, 1.2)
+	target.TakeDamage(damage, 1.2, attacker = src, attack_name = "Rock Slide")
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
@@ -141,10 +141,10 @@ mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
 		RockTombFX(impact_turf)
 		for(var/mob/area_target in range(2, target))
 			if(area_target == src || area_target == target || !canHitTenkaichiTechniqueTarget(area_target)) continue
-			area_target.TakeDamage(damage * 0.3, 1)
+			area_target.TakeDamage(damage * 0.3, 1, attacker = src, attack_name = "Rock Tomb Explosion")
 			area_target.Knockback(src, knockback * 0.5)
 			area_target << "You are caught in the rock explosion!"
-	target.TakeDamage(damage, 2)
+	target.TakeDamage(damage, 2, attacker = src, attack_name = "Rock Tomb")
 	target.Knockback(src, knockback, omega_kb = 1)
 	if(damage >= 200 + health_before_damage) target.KO(src, allow_anger = 0)
 	else if(damage >= health_before_damage) target.KO(src)

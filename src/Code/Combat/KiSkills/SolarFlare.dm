@@ -120,7 +120,7 @@ mob
 			if(m.Race == "Human") dmg *= humanSolarFlarePower
 			overlays += fireOverlay
 			for(var/v in 1 to loops)
-				TakeDamage(dmg)
+				TakeDamage(dmg, attacker = m, attack_name = "Solar Flare")
 				if(Health <= 0)
 					Death(m)
 				sleep(10)

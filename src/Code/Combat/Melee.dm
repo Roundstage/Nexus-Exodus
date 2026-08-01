@@ -81,9 +81,20 @@ mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 		n *= GetRevengeDmgMod(target)
 	return n
 
-mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
+mob/proc/getNexusMeleeAttackName(obj/Attacks/TenkaichiMeleeTechnique/technique)
+	if(technique) return "[technique]"
+	if(power_attacking) return "Power Attack"
+	if(lunge_attacking) return "Lunge Attack"
+	if(using_sword()) return "Sword Strike"
+	if(isFireFist) return "Fire Fist"
+	return "Melee Attack"
+
+mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker, attack_name)
 	if(rp_mode) return 0
 	var/health_before = Health
+	var/mob/damage_attacker = attacker
+	if(!damage_attacker && last_attacker && last_attacked_time == world.time) damage_attacker = last_attacker
+	if(!attack_name && damage_attacker) attack_name = "Attack"
 	if(grabbedObject && strangling && GrabAbsorber()) dmg *= 1.3 //take way more damage if busy grab absorbing someone's energy
 
 	if(stun_level || Frozen)
@@ -94,7 +105,9 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
 	if(Shielding())
 		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
 		if(Ki>=shield_drain)
+			var/ki_before = Ki
 			Ki-=shield_drain
+			if(damage_attacker || attack_name) queueNexusCombatDamage(damage_attacker, ki_before - Ki, attack_name, "Energy Shield")
 			return
 
 	Health -= dmg
@@ -103,6 +116,7 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
 		gainAngerFromDamage(applied_damage)
 		showDamageIndicator(applied_damage)
 		updateOverheadHealthHud()
+		if(damage_attacker || attack_name) queueNexusCombatDamage(damage_attacker, applied_damage, attack_name, "Health")
 		return applied_damage
 	return 0
 
@@ -114,7 +128,7 @@ mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" reg
 	var/dmg = 5 * n * AllAttacksDamageModifiers()
 	dmg *= (BP / m.BP) ** 0.5
 	dmg *= (Pow / m.Res) ** 0.5
-	m.TakeDamage(dmg)
+	m.TakeDamage(dmg, attacker = src, attack_name = "Power Grab")
 	Ki -= drain
 
 
@@ -890,7 +904,7 @@ mob/proc/Toggle_strangling()
 			if(grabbedObject.KO) dmg*=5
 			if(grabbedObject.Race=="Majin") dmg=0
 
-			grabbedObject.TakeDamage(dmg)
+			grabbedObject.TakeDamage(dmg, attacker = src, attack_name = "Strangle")
 
 			if(GrabAbsorber())
 				if(Health < 100)
@@ -1197,9 +1211,9 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				if(s)
 					var/bleedDmg = dmg * swordBleedDmg
 					dmg -= bleedDmg
-					target.BleedDamage(bleedDmg)
+					target.BleedDamage(bleedDmg, src, "[getNexusMeleeAttackName(tenkaichi_technique)] Bleed")
 
-				target.TakeDamage(dmg)
+				target.TakeDamage(dmg, attacker = src, attack_name = getNexusMeleeAttackName(tenkaichi_technique))
 				if(tenkaichi_technique && target) tenkaichi_technique.applyOnHit(src, target, dmg)
 
 				//if a Zombie or infected player hits a dead body it too becomes infected and turns into a zombie

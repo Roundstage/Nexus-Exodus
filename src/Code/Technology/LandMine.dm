@@ -106,7 +106,7 @@ mob/proc
 		var/dmg = 40 * (Tech_BP * 1.63 / BP) ** 1
 		//var/dmg = 100 * (highest_relative_base_bp * 0.63 / (base_bp / bp_mod))**5
 
-		TakeDamage(dmg)
+		TakeDamage(dmg, attack_name = "Land Mine")
 		if(Health <= 0)
 			Blood_splatter_effects()
 			//SaitamaBloodEffect()

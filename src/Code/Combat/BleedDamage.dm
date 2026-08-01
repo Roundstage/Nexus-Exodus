@@ -3,11 +3,15 @@ mob/var
 	tmp
 		bleed_loop
 		last_bleed_apply = 0 //world.time
+		mob/bleed_attacker
+		bleed_attack_name = "Bleed"
 
 mob/proc
-	BleedDamage(n = 0)
+	BleedDamage(n = 0, mob/attacker, attack_name = "Bleed")
 		last_bleed_apply = world.time
 		bleed_damage = n
+		if(attacker) bleed_attacker = attacker
+		if(attack_name) bleed_attack_name = "[attack_name]"
 		BleedLoop()
 
 	BleedLoop()
@@ -30,6 +34,7 @@ mob/proc
 			gainAngerFromDamage(dmg)
 			showDamageIndicator(dmg, "#d93452")
 			updateOverheadHealthHud()
+			queueNexusCombatDamage(bleed_attacker, dmg, bleed_attack_name, "Health")
 			if(Health <= 0) KO("low health")
 
 			sleep(10)
@@ -42,3 +47,5 @@ mob/proc
 				break
 
 		bleed_loop=0
+		bleed_attacker = null
+		bleed_attack_name = "Bleed"
