@@ -4,6 +4,10 @@ mob
 	var/tmp/tenkaichi_melee_context_id = 0
 	var/tmp/active_tenkaichi_riposte_until = 0
 
+var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight2.ogg')
+var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
+var/list/nexus_sword_impact_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordImpact1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact2.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact3.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact4.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact5.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact6.ogg')
+
 obj/Effect/TenkaichiTechniqueText
 	name = "technique announcement"
 	density = 0
@@ -65,9 +69,13 @@ obj/Attacks/TenkaichiMeleeTechnique
 		..()
 		if(effect_icon) icon = effect_icon
 		if(effect_icon_state) icon_state = effect_icon_state
-		if(requires_weapon) cast_text_color = "#8ecae6"
+		if(requires_weapon && cast_text_color == "#ffd166") cast_text_color = "#8ecae6"
 		else if(behavior == "grapple_throw" || behavior == "grapple_slam") cast_text_color = "#ff9f68"
 		else if(findtext(lowertext(name), "kick")) cast_text_color = "#ffe066"
+		if(requires_weapon)
+			icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+			icon_state = "slash"
+			color = cast_text_color
 
 	verb/Hotbar_use()
 		set hidden = 1
@@ -77,14 +85,15 @@ obj/Attacks/TenkaichiMeleeTechnique
 		if(user) user.castTenkaichiMeleeTechnique(src)
 
 	proc/getCastSound()
-		if(behavior == "iai_dash") return 'Teleport.ogg'
 		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'Throw.ogg'
-		if(requires_weapon) return 'Swoophit.ogg'
+		if(requires_weapon)
+			if(behavior == "iai_dash" || damage_multiplier < 1.25) return pick(nexus_sword_swing_light_sounds)
+			return pick(nexus_sword_swing_heavy_sounds)
 		return pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg')
 
 	proc/getImpactSound()
 		var/lower_name = lowertext(name)
-		if(requires_weapon) return 'Swordhit.ogg'
+		if(requires_weapon) return pick(nexus_sword_impact_sounds)
 		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'BigCrash.ogg'
 		if(findtext(lower_name, "kick") || findtext(lower_name, "wing clip")) return 'Strongkick.ogg'
 		if(knockback_multiplier >= 3 || damage_multiplier >= 1.8) return 'Strongpunch.ogg'
@@ -94,6 +103,25 @@ obj/Attacks/TenkaichiMeleeTechnique
 		if(!user) return
 		flick("Attack", user)
 		user.showTenkaichiTechniqueAnnouncement(name, cast_text_color, getCastSound(), 28)
+		if(behavior == "iai_dash") Play_Melee_Sound(sound_range = 10, origin = user, sound_file = 'Teleport.ogg', sound_volume = 14)
+
+	proc/showSwordSlashEffect(mob/target, impact_scale = 1)
+		set waitfor = 0
+		if(!target || !requires_weapon) return
+		var/obj/Effect/slash = GetEffect()
+		slash.icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+		slash.icon_state = "slash"
+		slash.color = cast_text_color
+		slash.blend_mode = BLEND_ADD
+		slash.alpha = 235
+		slash.SafeTeleport(target.loc)
+		CenterIcon(slash)
+		slash.transform = matrix() * Clamp(0.9 + (impact_scale * 0.28), 1.1, 1.55)
+		slash.pulseNexusGlow(cast_text_color, 2.2 + impact_scale, 205, 6)
+		flick("slash", slash)
+		animate(slash, alpha = 0, transform = matrix() * (impact_scale + 0.45), time = 7, easing = SINE_EASING)
+		sleep(7)
+		if(slash) del(slash)
 
 	proc/showImpact(mob/target)
 		if(!target || !effect_icon) return
@@ -110,6 +138,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		else flick(effect.icon, effect)
 		animate(effect, transform = matrix() * (impact_scale + 0.3), alpha = 0, time = 6, easing = SINE_EASING)
 		Play_Melee_Sound(sound_range = 12, origin = target, sound_file = getImpactSound(), sound_volume = 32)
+		if(requires_weapon) showSwordSlashEffect(target, impact_scale)
 		if(knockback_multiplier >= 3) Make_Shockwave(target, sw_icon_size = 128)
 		spawn(7) if(effect) del(effect)
 
@@ -425,6 +454,7 @@ mob/proc/setTenkaichiMeleeContext(obj/Attacks/TenkaichiMeleeTechnique/technique,
 obj/Attacks/TenkaichiMeleeTechnique/Slice
 	name = "Slice"
 	desc = "A fast weapon strike with regular damage and a very short cooldown."
+	cast_text_color = "#d8f3ff"
 	requires_weapon = TRUE
 	accuracy_bonus = 5
 	energy_cost = 4
@@ -437,6 +467,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Slice
 obj/Attacks/TenkaichiMeleeTechnique/Bash
 	name = "Bash"
 	desc = "Bash with a hammer or sword pommel, sacrificing damage to stun the target."
+	cast_text_color = "#ffd166"
 	requires_weapon = TRUE
 	damage_multiplier = 0.65
 	accuracy_bonus = 5
@@ -451,6 +482,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Bash
 obj/Attacks/TenkaichiMeleeTechnique/Flourish
 	name = "Flourish"
 	desc = "An elaborate weapon strike that converts speed into stronger impact."
+	cast_text_color = "#8ee3f5"
 	requires_weapon = TRUE
 	damage_multiplier = 1.35
 	accuracy_bonus = 10
@@ -465,6 +497,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Flourish
 obj/Attacks/TenkaichiMeleeTechnique/WindHowl
 	name = "Wind Howl"
 	desc = "Unleash a slicing shockwave that hits enemies around the wielder."
+	cast_text_color = "#a8f0d2"
 	requires_weapon = TRUE
 	damage_multiplier = 0.9
 	energy_cost = 30
@@ -482,6 +515,7 @@ obj/Attacks/TenkaichiMeleeTechnique/WindHowl
 obj/Attacks/TenkaichiMeleeTechnique/IaiSlash
 	name = "Iai Slash"
 	desc = "Rush up to six tiles and strike through the target with a speed-amplified slash."
+	cast_text_color = "#f2fbff"
 	requires_weapon = TRUE
 	damage_multiplier = 1.25
 	accuracy_bonus = 10
@@ -499,6 +533,7 @@ obj/Attacks/TenkaichiMeleeTechnique/IaiSlash
 obj/Attacks/TenkaichiMeleeTechnique/Riposte
 	name = "Riposte"
 	desc = "Ready your equipped weapon and counter the next incoming melee attack within four seconds."
+	cast_text_color = "#c9b8ff"
 	requires_weapon = TRUE
 	damage_multiplier = 1.15
 	accuracy_bonus = 100
@@ -513,6 +548,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Riposte
 obj/Attacks/TenkaichiMeleeTechnique/Cleave
 	name = "Cleave"
 	desc = "Sweep the three tiles in front of you with increased accuracy and damage."
+	cast_text_color = "#91d8ff"
 	requires_weapon = TRUE
 	damage_multiplier = 1.1
 	accuracy_bonus = 10
@@ -529,6 +565,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Cleave
 obj/Attacks/TenkaichiMeleeTechnique/SwordStab
 	name = "Sword Stab"
 	desc = "A focused stab that pierces the adjacent target and a second target directly behind them."
+	cast_text_color = "#e1e8ed"
 	requires_weapon = TRUE
 	damage_multiplier = 1.4
 	accuracy_bonus = 5
@@ -546,6 +583,7 @@ obj/Attacks/TenkaichiMeleeTechnique/SwordStab
 obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash
 	name = "Overhead Smash"
 	desc = "A heavy, less accurate overhead attack that crashes through three tiles in a straight line."
+	cast_text_color = "#ffc46b"
 	requires_weapon = TRUE
 	damage_multiplier = 1.35
 	accuracy_bonus = -15
@@ -562,6 +600,7 @@ obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash
 obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact
 	name = "Colossal Impact"
 	desc = "Drive your weapon down and unleash a gigantic close-range shockwave."
+	cast_text_color = "#ff9f4a"
 	requires_weapon = TRUE
 	damage_multiplier = 1.1
 	knockback_multiplier = 1.5
@@ -580,6 +619,7 @@ obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact
 obj/Attacks/TenkaichiMeleeTechnique/BurningSlash
 	name = "Burning Slash"
 	desc = "A three-hit weapon combo whose finishing strike tears open a bleeding wound."
+	cast_text_color = "#ff654f"
 	requires_weapon = TRUE
 	damage_multiplier = 0.65
 	extra_hits = 2

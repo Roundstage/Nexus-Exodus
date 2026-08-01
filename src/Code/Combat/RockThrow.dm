@@ -4,6 +4,11 @@ mob/var
 		last_RockSlide = 0
 		last_RockTomb = 0
 
+var/list/nexus_rock_launch_sounds = list('src/Sound/SoundEffects/Combat/Earth/RockLaunch1.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockLaunch2.ogg')
+var/list/nexus_rock_impact_sounds = list('src/Sound/SoundEffects/Combat/Earth/RockImpact1.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockImpact2.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockImpact3.ogg')
+var/list/nexus_rock_heavy_impact_sounds = list('src/Sound/SoundEffects/Combat/Earth/RockImpactHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockImpactHeavy2.ogg')
+var/list/nexus_rock_break_sounds = list('src/Sound/SoundEffects/Combat/Earth/RockBreak1.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockBreak2.ogg', 'src/Sound/SoundEffects/Combat/Earth/RockBreak3.ogg')
+
 obj
 	RockThrow
 		desc = "You throw a rock at your opponent and deal damage with your strength."
@@ -29,7 +34,7 @@ obj
 				
 	RockSlide
 		desc = "You throw lots of rocks at your opponent and deal damage with your strength. Each projectile is slightly weaker than Rock Throw."
-		icon = 'RTRockThrow.dmi'
+		icon = 'RisingRocks.dmi'
 		Cost_To_Learn = 35
 		Teach_Timer = 1
 		student_point_cost = 35
@@ -75,6 +80,34 @@ obj/Effect/RockSkillProjectile
 	mouse_opacity = 0
 	Grabbable = 0
 
+obj/Effect/RockSkillDebris
+	name = "rock debris"
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	icon = 'ResourceRocks.dmi'
+
+	proc/scatter(heavy = FALSE, trail = FALSE)
+		set waitfor = 0
+		icon_state = "[rand(1, 4)]"
+		pixel_x = rand(-7, 7)
+		pixel_y = rand(-5, 7)
+		alpha = trail ? 145 : 230
+		var/start_scale = trail ? rand(24, 42) / 100 : rand(42, heavy ? 85 : 65) / 100
+		transform = matrix() * start_scale
+		var/travel_x = trail ? rand(-8, 8) : rand(heavy ? -42 : -25, heavy ? 42 : 25)
+		var/travel_y = trail ? rand(-5, 5) : rand(heavy ? 24 : 14, heavy ? 58 : 38)
+		animate(src, pixel_x = pixel_x + travel_x, pixel_y = pixel_y + travel_y, alpha = 0, transform = matrix() * (start_scale * 0.55), time = trail ? 4 : 7, easing = SINE_EASING)
+		sleep(trail ? 4 : 7)
+		if(src) del(src)
+
+proc/showRockSkillDebris(turf/impact_turf, heavy = FALSE)
+	if(!impact_turf) return
+	var/fragment_count = heavy ? 9 : 5
+	for(var/fragment_index = 1, fragment_index <= fragment_count, fragment_index++)
+		var/obj/Effect/RockSkillDebris/debris = new(impact_turf)
+		debris.scatter(heavy)
+
 mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_scale = 1)
 	if(!target || !visual_icon) return
 	var/obj/Effect/RockSkillProjectile/rock = new
@@ -91,6 +124,9 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 		var/turf/next_turf = get_step_towards(rock, target)
 		if(!next_turf) break
 		rock.SafeTeleport(next_turf)
+		if(!(flight_step % 2))
+			var/obj/Effect/RockSkillDebris/trail = new(rock.loc)
+			trail.scatter(trail = TRUE)
 		sleep(1)
 	var/turf/impact_turf = target ? target.loc : rock.loc
 	if(rock)
@@ -110,10 +146,20 @@ mob/proc/showRockSkillImpact(mob/target, heavy = FALSE)
 	effect.pulseNexusGlow(heavy ? "#ffb35a" : "#e0aa72", heavy ? 4.2 : 3, heavy ? 230 : 190, 8)
 	flick(effect.icon, effect)
 	animate(effect, transform = matrix() * (impact_scale + 0.4), alpha = 0, time = 7, easing = SINE_EASING)
-	player_view(12, target) << sound(heavy ? 'BigCrash.ogg' : 'Wallhit.ogg', volume = heavy ? 48 : 32)
+	var/obj/Effect/rising_rocks = GetEffect()
+	rising_rocks.icon = 'RisingRocks.dmi'
+	rising_rocks.SafeTeleport(target.loc)
+	CenterIcon(rising_rocks)
+	rising_rocks.transform = matrix() * (heavy ? 1.5 : 0.9)
+	flick(rising_rocks.icon, rising_rocks)
+	animate(rising_rocks, alpha = 0, transform = matrix() * (heavy ? 1.9 : 1.2), time = 7, easing = SINE_EASING)
+	showRockSkillDebris(target.loc, heavy)
+	player_view(12, target) << sound(pick(heavy ? nexus_rock_heavy_impact_sounds : nexus_rock_impact_sounds), volume = heavy ? 48 : 34)
+	if(heavy) player_view(12, target) << sound(pick(nexus_rock_break_sounds), volume = 34)
 	if(heavy) Make_Shockwave(target, sw_icon_size = 128)
 	sleep(8)
 	if(effect) del(effect)
+	if(rising_rocks) del(rising_rocks)
 
 mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
 	set waitfor = 0
@@ -158,7 +204,7 @@ mob
 			e.icon = 'Dust.dmi'
 			CenterIcon(e)
 			animate(e, transform * 1.5, alpha = 180, time = 8)
-			player_view(15, src) << sound('Throw.ogg', volume = 50)
+			player_view(15, src) << sound(pick(nexus_rock_launch_sounds), volume = 38)
 			sleep(12)
 			del(e)
 
@@ -222,7 +268,8 @@ mob
 			e.icon = 'Dust.dmi'
 			CenterIcon(e)
 			animate(e, transform * 2, alpha = 220, time = 15)
-			player_view(15, src) << sound('Earthquakeshort.ogg', volume = 32)
+			player_view(15, src) << sound('src/Sound/SoundEffects/Combat/Earth/RockRumble.ogg', volume = 46)
+			player_view(15, src) << sound(pick(nexus_rock_launch_sounds), volume = 24)
 			sleep(20)
 			del(e)
 
@@ -277,7 +324,9 @@ mob
 			flick(e.icon, e)
 			e.transform = matrix() * 1.2
 			animate(e, transform = matrix() * 1.8, alpha = 0, time = 12, easing = CUBIC_EASING)
-			player_view(15, src) << sound('Explosion2.wav', volume = 55)
+			showRockSkillDebris(e.loc, heavy = TRUE)
+			player_view(15, e) << sound(pick(nexus_rock_break_sounds), volume = 52)
+			player_view(15, e) << sound(pick(nexus_rock_heavy_impact_sounds), volume = 42)
 			sleep(20)
 			del(e)
 
@@ -297,7 +346,7 @@ mob
 			usr.Ki = max(0, usr.Ki - 100)
 			
 			flick("Blast", usr)
-			showTenkaichiTechniqueAnnouncement("Rock Tomb", "#e0a15a", 'Throw.ogg', 42)
+			showTenkaichiTechniqueAnnouncement("Rock Tomb", "#e0a15a", pick(nexus_rock_launch_sounds), 42)
 			
 			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
 			if(target)
