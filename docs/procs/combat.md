@@ -380,7 +380,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### datum/SkillEngine/proc/castDashAttack
 - Signature: `datum/SkillEngine/proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)`
 - Inputs: mob/user, obj/Dash_Attack/skill_obj
-- Purpose: Execute Dash Attack rush behavior.
+- Purpose: Execute Dash Attack rush behavior while granting only the skill-controlled movement loop permission to bypass the attack movement lock.
 - Returns: 1 on success, else 0.
 - Side effects: moves user, applies melee damage and knockback.
 
@@ -2625,7 +2625,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/RockThrow
 - Signature: `RockThrow()`
 - Inputs: None
-- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math.
+- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math after a visible stone projectile reaches the target.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2639,23 +2639,30 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/RockSlide
 - Signature: `RockSlide()`
 - Inputs: None
-- Purpose: Search the forward spread and apply up to five victim-relative Strength-based hits.
+- Purpose: Search the forward spread and launch up to five visible rising-rock projectiles with victim-relative Strength-based hits.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/RockTombFX
-- Signature: `RockTombFX()`
-- Inputs: None
-- Purpose: Handle rock tomb fx.
+- Signature: `RockTombFX(turf/impact_turf)`
+- Inputs: impact turf.
+- Purpose: Render the imported rock explosion at the projectile impact rather than at the caster.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/RockTomb
 - Signature: `RockTomb()`
 - Inputs: None
-- Purpose: Handle rock tomb.
+- Purpose: Launch a visibly enlarged stone and defer direct and mastered area damage until impact.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### mob/proc/showRockSkillProjectile
+- Signature: `showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_scale)`
+- Inputs: target and visual configuration.
+- Purpose: Move a nondense visible rock actor from caster to target.
+- Returns: impact turf.
+- Side effects: creates and deletes a temporary visual actor.
 
 ### src/Code/Combat/Skills.dm
 
@@ -4225,6 +4232,20 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Purpose: Consume a prepared Riposte and counter the incoming attack before its energy and damage resolution.
 - Returns: boolean indicating whether the incoming attack was intercepted.
 - Side effects: stuns and counterattacks the attacker.
+
+#### mob/proc/getTenkaichiTechniqueTarget
+- Signature: `mob/proc/getTenkaichiTechniqueTarget(maximum_range)`
+- Inputs: maximum attack range.
+- Purpose: Use the selected target when valid and fall back to the mob directly in front for adjacent combo skills.
+- Returns: valid target mob or null.
+- Side effects: none.
+
+#### mob/proc/canUseTenkaichiGrappleTechnique
+- Signature: `mob/proc/canUseTenkaichiGrappleTechnique()`
+- Inputs: none.
+- Purpose: Apply normal melee validation while allowing the active grab required by Pile Driver and Megaton Throw.
+- Returns: boolean availability.
+- Side effects: temporarily excludes `grabbedObject` only during synchronous validation.
 
 ### src/Code/Combat/TenkaichiSpecialStyles.dm
 

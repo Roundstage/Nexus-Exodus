@@ -33,6 +33,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		splash_damage_multiplier = 0
 		splash_target_limit = 0
 		effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+		effect_icon_state
 		tmp/next_use = 0
 
 	verb/Hotbar_use()
@@ -46,6 +47,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		if(!target || !effect_icon) return
 		var/obj/Effect/effect = GetEffect()
 		effect.icon = effect_icon
+		if(effect_icon_state) effect.icon_state = effect_icon_state
 		effect.density = 0
 		effect.SafeTeleport(target.loc)
 		CenterIcon(effect)
@@ -87,7 +89,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 				if(!target || target.Health <= 0 || getdist(attacker, target) > 1) break
 				showImpact(target)
 				attacker.applyTenkaichiTechniqueDamage(target, damage * extra_hit_multiplier)
-		if(behavior == "kickback_combo") spawn() attacker.performTenkaichiKickbackFollowup(src, target, damage)
+		if(behavior == "kickback_combo") spawn() attacker.performTenkaichiKickbackFollowup(src, target)
 
 	proc/applyLineHits(mob/attacker, mob/primary_target, damage)
 		if(!attacker || line_reach < 2) return
@@ -169,7 +171,7 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	if(technique.behavior == "riposte") return activateTenkaichiRiposte(technique)
 	if(!can_melee()) return FALSE
 	var/maximum_range = max(1, technique.dash_range)
-	var/mob/target = getSelectedTarget(max_dist = maximum_range)
+	var/mob/target = getTenkaichiTechniqueTarget(maximum_range)
 	if(!target && technique.splash_mode == "radius")
 		for(var/mob/candidate in oview(1, src))
 			if(canHitTenkaichiTechniqueTarget(candidate))
@@ -197,6 +199,15 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	setTenkaichiMeleeContext(technique, target)
 	Melee(target, from_auto_attack = 1)
 	return TRUE
+
+mob/proc/getTenkaichiTechniqueTarget(maximum_range = 1)
+	var/mob/target = getSelectedTarget(max_dist = maximum_range)
+	if(canHitTenkaichiTechniqueTarget(target)) return target
+	if(maximum_range <= 1)
+		var/turf/front = get_step(src, dir)
+		if(front)
+			for(var/mob/candidate in front)
+				if(canHitTenkaichiTechniqueTarget(candidate)) return candidate
 
 mob/proc/castTenkaichiIaiSlash(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
@@ -247,7 +258,7 @@ mob/proc/castTenkaichiMarchOfFury(obj/Attacks/TenkaichiMeleeTechnique/technique)
 
 mob/proc/castTenkaichiDelayedBarrage(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
-	var/mob/target = getSelectedTarget(max_dist = 1)
+	var/mob/target = getTenkaichiTechniqueTarget(1)
 	if(!canHitTenkaichiTechniqueTarget(target))
 		src << "[technique] requires an adjacent target."
 		return FALSE
@@ -263,11 +274,13 @@ mob/proc/castTenkaichiDelayedBarrage(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	return TRUE
 
 mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)
-	if(!technique || !can_melee()) return FALSE
+	if(!technique) return FALSE
+	if(!grabbedObject) Grab()
 	var/mob/target = grabbedObject
 	if(!target || target.grabber != src || !canHitTenkaichiTechniqueTarget(target))
 		src << "You must grab a valid opponent before using [technique]."
 		return FALSE
+	if(!canUseTenkaichiGrappleTechnique()) return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
 	attacking = 1
 	move = 0
@@ -298,7 +311,14 @@ mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/techn
 	Reset_melee()
 	return TRUE
 
-mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/technique, mob/target, opening_damage)
+mob/proc/canUseTenkaichiGrappleTechnique()
+	var/mob/held_target = grabbedObject
+	grabbedObject = null
+	var/can_use = can_melee()
+	grabbedObject = held_target
+	return can_use
+
+mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/technique, mob/target)
 	set waitfor = 0
 	if(!technique || !target) return
 	sleep(5)
@@ -308,8 +328,7 @@ mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/te
 		if(!step_towards(src, target)) break
 		sleep(world.tick_lag)
 	if(target && getdist(src, target) <= 1)
-		technique.showImpact(target)
-		applyTenkaichiTechniqueDamage(target, opening_damage * 0.8)
+		resolveTenkaichiTechniqueHit(target, technique, 0.8)
 
 mob/proc/activateTenkaichiRiposte(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	if(!technique || !payTenkaichiTechniqueCost(technique)) return FALSE
@@ -532,6 +551,8 @@ obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo
 	knockback_multiplier = 1.5
 	energy_cost = 14
 	cooldown_ticks = 75
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi'
+	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi'
 	verb/Uppercut_Combo()
 		set name = "Uppercut Combo"
 		set category = "Skills"
@@ -559,6 +580,8 @@ obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo
 	energy_cost = 22
 	cooldown_ticks = 110
 	behavior = "kickback_combo"
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi'
+	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi'
 	verb/Kickback_Combo()
 		set name = "Kickback Combo"
 		set category = "Skills"
@@ -586,7 +609,10 @@ obj/Attacks/TenkaichiMeleeTechnique/PileDriver
 	energy_cost = 24
 	cooldown_ticks = 125
 	behavior = "grapple_slam"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	icon_state = "1"
+	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	effect_icon_state = "1"
 	verb/Pile_Driver()
 		set name = "Pile Driver"
 		set category = "Skills"
@@ -600,6 +626,10 @@ obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow
 	energy_cost = 20
 	cooldown_ticks = 110
 	behavior = "grapple_throw"
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	icon_state = "2"
+	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	effect_icon_state = "2"
 	verb/Megaton_Throw()
 		set name = "Megaton Throw"
 		set category = "Skills"

@@ -44,7 +44,7 @@ For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` comp
 
 ## Admin Coverage
 - Verifies both admin-log viewers are absent from `/mob/verb` and present under `/mob/Admin1/verb`.
-- Verifies cumulative legacy admin verbs and the Tenkaichi package sizes, weapon requirement, timed multi-hit data, Iai pass-through, Sword Stab line reach, grapple/pursuit behaviors, persistent Wall of Flame and beam routing.
+- Verifies cumulative legacy admin verbs and the Tenkaichi package sizes, original physical-skill icons, adjacent targeting fallback, valid-grab execution, Dash Attack controlled movement, visible rock projectile actors, persistent Wall of Flame and beam routing.
 
 ## Character-Creation Coverage
 - Forces Anomaly and verifies all 11 registered internal stats are selected independently with percentages in `1..30`.

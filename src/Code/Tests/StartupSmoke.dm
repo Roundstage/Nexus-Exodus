@@ -62,12 +62,17 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/TenkaichiMeleeTechnique/SwordStab/tenkaichi_stab = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow/tenkaichi_throw = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury/tenkaichi_march = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/PileDriver/tenkaichi_pile_driver = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo/tenkaichi_uppercut = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo/tenkaichi_kickback = new
 	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
 	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
 	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
 	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
 	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
 	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
+	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
+	nexusSmokeAssert(tenkaichi_uppercut.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi' && tenkaichi_kickback.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
 	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
 	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
 	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
@@ -79,9 +84,44 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(tenkaichi_stab)
 	del(tenkaichi_throw)
 	del(tenkaichi_march)
+	del(tenkaichi_pile_driver)
+	del(tenkaichi_uppercut)
+	del(tenkaichi_kickback)
 	del(tenkaichi_beam)
 	del(tenkaichi_guard_break)
 	del(tenkaichi_flame_wall)
+	var/turf/attack_movement_origin
+	var/turf/attack_movement_destination
+	for(var/turf/candidate_origin in world)
+		var/turf/candidate_destination = get_step(candidate_origin, EAST)
+		if(!candidate_origin.density && candidate_destination && !candidate_destination.density)
+			var/blocked_pair = FALSE
+			for(var/atom/movable/blocker in candidate_origin) if(blocker.density) blocked_pair = TRUE
+			for(var/atom/movable/blocker in candidate_destination) if(blocker.density) blocked_pair = TRUE
+			if(!blocked_pair)
+				attack_movement_origin = candidate_origin
+				attack_movement_destination = candidate_destination
+				break
+	nexusSmokeAssert(attack_movement_origin && attack_movement_destination, "startup map has no open pair for attack movement tests")
+	var/mob/NexusSmokeTest/dash_movement_test = new
+	dash_movement_test.SafeTeleport(attack_movement_origin)
+	dash_movement_test.dash_attacking = TRUE
+	dash_movement_test.attack_forced_movement = TRUE
+	nexusSmokeAssert(step(dash_movement_test, EAST) && dash_movement_test.loc == attack_movement_destination, "Dash Attack cannot move while its attack lock is active")
+	del(dash_movement_test)
+	var/mob/NexusSmokeTest/technique_targeting_test = new
+	var/mob/NexusSmokeTest/technique_target = new
+	technique_targeting_test.SafeTeleport(attack_movement_origin)
+	technique_target.SafeTeleport(attack_movement_destination)
+	technique_targeting_test.dir = EAST
+	nexusSmokeAssert(technique_targeting_test.getTenkaichiTechniqueTarget(1) == technique_target, "adjacent Tenkaichi combos require manual target selection")
+	technique_targeting_test.grabbedObject = technique_target
+	technique_target.grabber = technique_targeting_test
+	technique_targeting_test.last_melee_attack = -1000
+	nexusSmokeAssert(technique_targeting_test.canUseTenkaichiGrappleTechnique(), "a valid grab still blocks Pile Driver and Megaton Throw")
+	technique_targeting_test.ReleaseGrab()
+	del(technique_targeting_test)
+	del(technique_target)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")
@@ -152,8 +192,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/RockThrow/rock_throw_skill = new
 	var/obj/RockSlide/rock_slide_skill = new
 	var/obj/RockTomb/rock_tomb_skill = new
-	nexusSmokeAssert(rock_throw_skill.icon == 'ResourceRocks.dmi' && rock_slide_skill.icon == 'RisingRocks.dmi' && rock_tomb_skill.icon == 'RockExplosion.dmi', "rock skills are missing their icons")
+	nexusSmokeAssert(rock_throw_skill.icon == 'src/Icons/Effects/ResourceRocks.dmi' && rock_throw_skill.icon_state == "1" && rock_slide_skill.icon == 'src/Icons/Effects/RisingRocks.dmi' && rock_tomb_skill.icon_state == "4", "rock skills are missing their visible stone icons")
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
+	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
 	del(rock_throw_skill)
 	del(rock_slide_skill)
 	del(rock_tomb_skill)

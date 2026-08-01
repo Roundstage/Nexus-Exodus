@@ -533,7 +533,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/Move
 - Signature: `mob/Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)`
 - Inputs: turf/NewLoc, Dir = 0, step_x = 0, step_y = 0
-- Purpose: Handle move.
+- Purpose: Central movement implementation; attack locks reject ordinary movement while `attack_forced_movement` permits only skill-controlled steps such as Dash Attack.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
