@@ -56,13 +56,14 @@ mob/proc/Warp_To(turf/B,mob/M) if(B)
 
 mob/proc/cant_blast(ignore_attack_check)
 	if(rp_mode) return 1
+	if(isAttackBlockedByGrab()) return 1
 	if(attacking == DRAGON_RUSH) return 1
 	if(stun_level && stun_stops_movement) return 1
 	if(!ignore_attack_check && attacking > 1) return 1 //aka: not a melee attack. melee no longer disrupts being able to blast at any time
 	if(using_hokuto()) return 1
 	if(blocking || evading || lunge_attacking) return 1
 	if(Action in list("Meditating","Training")) return 1
-	if(!z||KO||KB||(Frozen&&!paralysis_immune)||grabbedObject||grabber) return 1
+	if(!z||KO||KB||(Frozen&&!paralysis_immune)||grabbedObject) return 1
 	if(Ki_Disabled)
 		Ki_Disabled_Message()
 		return 1
@@ -85,6 +86,7 @@ mob/proc/can_melee(trying_to_power_attack)
 //this checks if anything OTHER than you attacking is stopping you from being able to melee
 mob/proc/CanMeleeFromOtherCauses()
 	if(rp_mode) return
+	if(isAttackBlockedByGrab()) return
 	if(stun_level && stun_stops_movement) return
 	if(blocking || evading || Peebagging() || Shadow_Sparring || KO || grabbedObject || Final_Realm()) return
 	if(ki_shield_on()) return

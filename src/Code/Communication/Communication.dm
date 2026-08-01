@@ -294,6 +294,57 @@ mob/var
 mob/var/tmp
 	Spam=0
 	list/recent_ooc=new
+	obj/Effect/NexusSayText/nexus_say_text
+
+obj/Effect/NexusSayText
+	name = "speech"
+	mouse_opacity = 0
+	density = 0
+	Grabbable = 0
+	plane = 20
+	layer = 120
+	maptext_width = 256
+	maptext_height = 128
+	pixel_x = -112
+	pixel_y = 38
+
+proc/countNexusWords(raw_text)
+	raw_text = "[raw_text]"
+	var/word_count = 0
+	var/in_word = FALSE
+	for(var/character_index = 1, character_index <= length(raw_text), character_index++)
+		var/character_code = text2ascii(raw_text, character_index)
+		var/is_whitespace = character_code == 9 || character_code == 10 || character_code == 13 || character_code == 32
+		if(is_whitespace)
+			in_word = FALSE
+		else if(!in_word)
+			word_count++
+			in_word = TRUE
+	return word_count
+
+mob/proc/showNexusSayText(message)
+	var/word_count = countNexusWords(message)
+	if(!word_count || word_count > 50) return FALSE
+	if(nexus_say_text)
+		vis_contents -= nexus_say_text
+		del(nexus_say_text)
+	var/obj/Effect/NexusSayText/bubble = new
+	nexus_say_text = bubble
+	var/safe_color = nexusIsValidRichTextColor(TextColor) ? TextColor : "#f1e4c3"
+	var/safe_message = html_encode(copytext("[message]", 1, 1001))
+	safe_message = replacetext(safe_message, ascii2text(13), " ")
+	safe_message = replacetext(safe_message, "\n", " ")
+	bubble.maptext = "<div style='text-align:center;color:[safe_color];font:10px Arial,sans-serif;text-shadow:-1px -1px #000,1px -1px #000,-1px 1px #000,1px 1px #000;background-color:rgba(0,0,0,0.48);padding:3px'>[safe_message]</div>"
+	vis_contents += bubble
+	spawn(max(35, min(100, word_count * 2)))
+		if(src && nexus_say_text == bubble)
+			animate(bubble, pixel_y = 50, alpha = 0, time = 10)
+			sleep(10)
+			if(src && nexus_say_text == bubble)
+				vis_contents -= bubble
+				nexus_say_text = null
+				del(bubble)
+	return TRUE
 
 mob/proc/Spam_Check(var/Message)
 	if(key in Mutes)
@@ -434,6 +485,7 @@ mob/verb
 			for(var/obj/items/Clothes/Neko_Collar/neko in item_list)
 				if(neko.suffix == "Equipped" && neko_collar_adds_tilde)
 					msg = "[msg]～"
+			showNexusSayText(msg)
 			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[html_encode(name)]: [html_encode(msg)]</span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)

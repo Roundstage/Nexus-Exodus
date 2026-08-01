@@ -693,7 +693,7 @@ Instant Transmission retains its long-range signature targeting and now also exp
 #### mob/proc/cant_blast
 - Signature: `mob/proc/cant_blast(ignore_attack_check)`
 - Inputs: ignore_attack_check
-- Purpose: Handle cant blast.
+- Purpose: Reject Ki attacks during incompatible states, including being held by another character.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1431,6 +1431,11 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Side effects: see implementation.
 
 ### src/Code/PlayerMechanics/Grabbing.dm
+
+#### mob/proc/isAttackBlockedByGrab
+- Signature: `isAttackBlockedByGrab(show_message = TRUE)`
+- Purpose: Prevent a held character from using melee or Ki attacks and periodically direct them to move and struggle free.
+- Returns: true while `grabber` is active.
 
 #### mob/proc/item_count
 - Signature: `mob/proc/item_count()`

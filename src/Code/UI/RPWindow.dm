@@ -71,6 +71,10 @@ proc/renderNexusEmoteMarkup(raw_text)
 			if("color") rendered_text += "</span>"
 	return rendered_text
 
+proc/buildNexusEmoteMessage(character_name, rendered_text, emote_mode = "Normal")
+	var/mode_badge = emote_mode == "Character Development" ? "<span style='color:#79d9ff'>CHARACTER DEVELOPMENT</span>" : "<span style='color:#8ca0b7'>ROLEPLAY EMOTE</span>"
+	return "<div style='margin:4px 0;padding:9px 11px;border-left:3px solid #ffd166;background:#101923;color:#edf3fa;font:10pt Arial,sans-serif'><b style='color:#ffd166'>[html_encode(character_name)]</b> &nbsp; [mode_badge]<br><br><span style='line-height:1.5'>[rendered_text]</span></div>"
+
 client/var/tmp
 	datum/NexusEmoteEditor/nexus_emote_editor
 	datum/NexusPlayerLogViewer/nexus_player_log_viewer
@@ -197,8 +201,7 @@ mob/proc/submitNexusEmote(raw_text, emote_mode = "Normal")
 	if(!rendered_text) return FALSE
 	can_say = 0
 	Say_Spark()
-	var/mode_badge = emote_mode == "Character Development" ? "<span style='color:#79d9ff'>CHARACTER DEVELOPMENT</span>" : "<span style='color:#8ca0b7'>ROLEPLAY EMOTE</span>"
-	var/message = "<div style='margin:4px 0;padding:9px 11px;border-left:3px solid #ffd166;background:#101923;color:#edf3fa;font:10pt Arial,sans-serif'><div style='margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #35485d'><b style='color:#ffd166'>[html_encode(name)]</b> &nbsp; [mode_badge]</div><div style='line-height:1.5'>[rendered_text]</div></div>"
+	var/message = buildNexusEmoteMessage(name, rendered_text, emote_mode)
 	for(var/mob/recipient in Say_Recipients()) recipient.receiveNexusChatMessage(message, "ic", key)
 	if(emote_mode == "Character Development") PostDevelopmentRPWindow(message, key)
 	else PostEmoteRPWindow(message, key)
@@ -221,17 +224,9 @@ mob
 				name = overwrite_ckey == "all" ? "All" : overwrite_ckey
 
 			var/View={"
-				<html>
-					<head>
-						<title>[name] [type] Log</title>
-							<meta charset="UTF-8">
-					</head>
-					
-					<body bgcolor="#000000">
-						<font size=6><font color="#0099FF">
-							<b>
-					</body>
-				<html>
+				<!doctype html><html><head><title>[html_encode(name)] [html_encode(type)] Log</title><meta charset="UTF-8">
+				<style>html,body{margin:0;min-height:100%;background:#090b0e;color:#edf3fa;font:12px Arial,sans-serif}.log-shell{padding:12px}.log-title{margin:0 0 10px;padding:10px;border:2px solid #755a36;background:#21190f;color:#ffd166;font:18px 'Courier New',monospace}table{width:100%;border-collapse:collapse;margin-bottom:5px}td{padding:8px;vertical-align:top;border-bottom:1px solid #303943}</style>
+				</head><body><div class="log-shell"><h1 class="log-title">[html_encode(name)] / [html_encode(type)] LOG</h1>
 			"}
 
 			var/XXX=file("data/Logs/[path]/[ckey]Current.html")
@@ -251,6 +246,7 @@ mob
 					if(player && overwrite_ckey != "none")
 						for(var/log in unwritten)
 							View += log
+					View += "</div></body></html>"
 
 					admin << "Viewing [File]"
 					admin << browse(View,"window=Log;size=800x600")
@@ -314,17 +310,15 @@ mob/proc
 			last_emotelog_write=world.time //prevent writing unecessarily when someone has just logged in
 		var/log_entry = {"
 			<table>
-				<tr style="color: white; font-size: 10pt">
+				<tr style="font-size: 10pt">
 					<td style="width: 25%; border-right: 1px solid gray">
-						<span style='color: white; font-size: 10pt'>
+						<span style='color: #9fb0c2; font-size: 10pt'>
 							[time2text(world.timeofday,"DD/MM/YY hh:mm:ss")] <br> [the_key]
 						</span>
 					</td>
 
 					<td style="width: 75%">
-						<span style='color: white; font-size: 10pt'>
-							[info]
-						</span>
+						[info]
 					</td>
 				</tr>
 			</table>

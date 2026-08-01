@@ -77,6 +77,15 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Purpose: Re-enable speech after a delay.
 - Side effects: sets `can_say`, schedules `Remove_Say_Spark`.
 
+### proc/countNexusWords(raw_text)
+- Purpose: Count whitespace-delimited words for the overhead Say limit.
+- Returns: integer word count.
+
+### mob/proc/showNexusSayText(message)
+- Purpose: Display local Say text of up to 50 words above the speaking character as a temporary, following maptext actor.
+- Returns: true when the text is displayed, otherwise false.
+- Side effects: replaces the speaker's previous overhead text and fades it after a duration based on message length.
+
 ### mob/proc/Spam_Check(Message)
 - Purpose: Rate-limit OOC/LOOC/chat to prevent spam.
 - Inputs: `Message`.
@@ -124,7 +133,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 ### mob/verb/Say(msg)
 - Purpose: Standard local speech with optional neko collar suffix.
 - Inputs: `msg` (optional; prompts if empty).
-- Side effects: sends HTML to `Say_Recipients`, logs chat.
+- Side effects: sends HTML to `Say_Recipients`, logs chat, and displays messages of at most 50 words above the speaker.
 
 ### mob/verb/Think(msg)
 - Purpose: Send a local "thought" message formatted in italics.
