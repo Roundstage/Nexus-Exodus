@@ -45,7 +45,7 @@ For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` comp
 ## Admin Coverage
 - Verifies both admin-log viewers are absent from `/mob/verb` and present under `/mob/Admin1/verb`.
 - Verifies cumulative legacy admin verbs and the Tenkaichi package sizes (including the dedicated rock package), hotbar/impact icon mapping, weapon/kick/grapple audio profiles, adjacent targeting fallback, valid-grab execution, Dash Attack controlled movement, original Rock Throw/Rock Tomb art, visible rock projectile and floating-text actors, persistent Wall of Flame and beam routing.
-- Verifies the lighting plane master, additive emitters, the valid 517x517 radial DMI mask, independent beam/action glow cleanup, adapted legacy light intensity, dedicated player/admin test verbs, HUD plane isolation, and a representative transformation glow profile.
+- Verifies the lighting plane master, additive emitters, the valid 517x517 radial DMI mask, tile-radius conversion, compact-core/ranged-falloff composition, independent beam/action glow cleanup, adapted legacy light intensity, dedicated player/admin test verbs, HUD plane isolation, and a representative transformation glow profile.
 
 ## Character-Creation Coverage
 - Forces Anomaly and verifies all 11 registered internal stats are selected independently with percentages in `1..30`.
