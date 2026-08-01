@@ -68,6 +68,13 @@ proc/drawNexusShortcutGlyph(icon/button_icon, action_id, glyph_color)
 		if("hotkeys")
 			for(var/key_x in list(7, 12, 17))
 				for(var/key_y in list(9, 14, 19)) button_icon.DrawBox(glyph_color, key_x, key_y, key_x + 3, key_y + 3)
+		if("cmd")
+			button_icon.DrawBox(glyph_color, 5, 8, 21, 10)
+			button_icon.DrawBox(glyph_color, 5, 19, 21, 21)
+			button_icon.DrawBox(glyph_color, 5, 8, 7, 21)
+			button_icon.DrawBox(glyph_color, 19, 8, 21, 21)
+			button_icon.DrawBox("#21170e", 9, 12, 11, 14)
+			button_icon.DrawBox("#21170e", 13, 15, 17, 17)
 		if("admin")
 			button_icon.DrawBox(glyph_color, 7, 8, 20, 12)
 			button_icon.DrawBox(glyph_color, 9, 12, 18, 21)
@@ -109,7 +116,8 @@ mob/proc/getNexusShortcutTypes()
 		/obj/NexusHud/ShortcutButton/Skills,
 		/obj/NexusHud/ShortcutButton/Sense,
 		/obj/NexusHud/ShortcutButton/Chat,
-		/obj/NexusHud/ShortcutButton/Hotkeys)
+		/obj/NexusHud/ShortcutButton/Hotkeys,
+		/obj/NexusHud/ShortcutButton/Command)
 	if(IsAdmin())
 		shortcut_types += /obj/NexusHud/ShortcutButton/World
 		shortcut_types += /obj/NexusHud/ShortcutButton/Admin
@@ -313,6 +321,7 @@ obj/NexusHud/ShortcutButton
 			if("world") owner.showNexusPlayerMenu("world")
 			if("chat") owner.toggleNexusChatHud()
 			if("hotkeys") owner.showNexusHotkeyEditor()
+			if("cmd") owner.showNexusCommandPrompt()
 			if("admin") owner.showNexusAdminPanel(FALSE)
 		owner.refreshActionHud()
 
@@ -349,10 +358,23 @@ obj/NexusHud/ShortcutButton
 		accent_color = "#b39cff"
 		desc = "Hotkey editor"
 
+	Command
+		action_id = "cmd"
+		accent_color = "#d8d8d8"
+		desc = "Enter any available Dream Seeker command"
+
 	Admin
 		action_id = "admin"
 		accent_color = "#ff6d61"
 		desc = "Admin control panel"
+
+mob/proc/showNexusCommandPrompt()
+	if(!client || !playerCharacter) return
+	var/command_line = input(src, "Enter a command exactly as you would in Dream Seeker. Available verbs and admin permissions are still enforced normally.", "CMD") as null|text
+	if(isnull(command_line)) return
+	command_line = trimtext(copytext("[command_line]", 1, 1001))
+	if(!length(command_line)) return
+	winset(src, null, list2params(list("command" = command_line)))
 
 datum/NexusPlayerMenu
 	var/tmp/mob/owner
@@ -409,6 +431,187 @@ datum/NexusPlayerMenu
 			navigation += "<a class='[active_class]' href='byond://?src=\ref[src]&action=section&id=[menu_section]'>[uppertext(menu_section)]</a>"
 		return navigation
 
+	proc/getSkillDamageData(obj/skill)
+		var/list/data = list("factor" = 0, "model" = "Dynamic / utility", "range" = "See mechanics", "mechanics" = "Behavior is described by the technique.", "requirements" = "Owned and available on the skill bar.")
+		if(istype(skill, /obj/Attacks/TenkaichiMeleeTechnique))
+			var/obj/Attacks/TenkaichiMeleeTechnique/technique = skill
+			data["factor"] = technique.damage_multiplier * (1 + technique.extra_hits * technique.extra_hit_multiplier)
+			data["model"] = "Physical"
+			data["range"] = technique.dash_range > 1 ? "Up to [technique.dash_range] tiles" : "Adjacent target"
+			var/list/effects = list("[technique.extra_hits + 1] hit(s)", "[technique.knockback_multiplier]x knockback")
+			if(technique.stun_ticks) effects += "[round(technique.stun_ticks / 10, 0.1)]s stun"
+			if(technique.bleed_fraction) effects += "[round(technique.bleed_fraction * 100)]% bleed"
+			if(technique.breaks_guard) effects += "breaks guard"
+			if(technique.line_reach) effects += "pierces [technique.line_reach] extra tile(s)"
+			if(technique.splash_radius) effects += "[technique.splash_radius]-tile splash"
+			data["mechanics"] = "[technique.behavior]: [jointext(effects, ", ")]."
+			var/list/requirements = list()
+			if(technique.requires_weapon) requirements += owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING"
+			if(technique.requires_unarmed) requirements += owner.using_sword() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
+			if(technique.behavior in list("grapple_throw", "grapple_slam")) requirements += owner.grabbedObject ? "Must hold a grabbed target: READY" : "Must hold a grabbed target: MISSING"
+			if(!requirements.len) requirements += "No weapon or grab requirement"
+			data["requirements"] = jointext(requirements, " / ")
+			data["cost"] = "[technique.energy_cost] stamina-drain units"
+			data["cooldown"] = "[round(technique.cooldown_ticks / 10, 0.1)] seconds"
+			return data
+		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile))
+			var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/projectile_skill = skill
+			data["factor"] = projectile_skill.projectile_damage_factor * 2
+			data["model"] = projectile_skill.strength_scaled ? "Physical" : "Ki"
+			data["range"] = "40 tiles / [projectile_skill.explosion_size]-tile explosion"
+			data["mechanics"] = "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then deals direct and splash damage within a shared maximum budget."
+			data["requirements"] = projectile_skill.requires_weapon ? (owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING") : "No weapon requirement"
+			data["cost"] = "[projectile_skill.energy_cost] energy-drain units"
+			data["cooldown"] = "[round(projectile_skill.cooldown_ticks / 10, 0.1)] seconds"
+			return data
+		if(skill.hotbar_type == "Beam" && istype(skill, /obj/Attacks))
+			var/obj/Attacks/beam_skill = skill
+			data["factor"] = beam_skill.damage_factor
+			data["model"] = "Ki"
+			data["range"] = "[beam_skill.Range] tiles"
+			data["mechanics"] = "Sustained beam; can enter a beam clash. Its impact mode and distance modifiers can change the final result."
+			data["requirements"] = "Enough energy; cannot fire while grabbed, disabled or in RP Mode"
+			data["cost"] = "Drain [beam_skill.Drain]"
+			data["cooldown"] = "[round(beam_skill_cooldown_ticks / 10, 0.1)] seconds"
+			return data
+		if(istype(skill, /obj/Attacks/Big_Bang_Attack))
+			data["factor"] = skill_big_bang_damage_factor * 2
+			data["model"] = "Ki"
+			data["range"] = "Projectile / 4-tile explosion"
+			data["mechanics"] = "Charged direct hit plus explosion, capped by one shared damage budget."
+		else if(istype(skill, /obj/Attacks/Charge))
+			data["factor"] = skill_charge_damage_factor * 2
+			data["model"] = "Ki"
+			data["range"] = "Projectile / 2-tile explosion"
+			data["mechanics"] = "Charged direct hit plus explosion."
+		else if(istype(skill, /obj/Attacks/Cyber_Charge))
+			data["factor"] = skill_cyber_charge_damage_factor * 2
+			data["model"] = "Ki"
+			data["range"] = "Projectile / 1-tile explosion"
+		else if(istype(skill, /obj/Attacks/Makosen))
+			data["factor"] = skill_makosen_total_factor
+			data["model"] = "Ki"
+			data["range"] = "Short-range barrage"
+			data["mechanics"] = "Many small shots share one per-target damage budget."
+		else if(istype(skill, /obj/Attacks/Scatter_Shot))
+			data["factor"] = skill_scatter_shot_total_factor
+			data["model"] = "Ki"
+			data["range"] = "Selected target / homing barrage"
+			data["mechanics"] = "Surrounds the selected target with homing shots that share one damage budget."
+		else if(istype(skill, /obj/Attacks/Sokidan))
+			data["factor"] = skill_sokidan_total_factor
+			data["model"] = "Ki"
+			data["range"] = "Guided projectile"
+			data["mechanics"] = "Player-guided homing projectile with impact and splash damage."
+		else if(istype(skill, /obj/Attacks/Kienzan))
+			data["factor"] = skill_kienzan_damage_factor
+			data["model"] = "Ki"
+			data["range"] = "Guided piercing projectile"
+			data["mechanics"] = "Can hit multiple targets and loses half of its remaining damage after each pierce."
+		else if(istype(skill, /obj/RockThrow))
+			data["factor"] = 3.5
+			data["model"] = "Physical"
+			data["range"] = "Selected target / thrown projectile"
+			data["mechanics"] = "Powerful mode uses one heavy rock; rapid mode uses weaker repeated rocks."
+		else if(istype(skill, /obj/RockSlide))
+			data["factor"] = 8.25
+			data["model"] = "Physical"
+			data["range"] = "Area barrage"
+			data["mechanics"] = "Maximum preview for fifteen rocks; actual hits and total damage vary."
+		else if(istype(skill, /obj/RockTomb))
+			data["factor"] = 8
+			data["model"] = "Physical"
+			data["range"] = "Selected target / heavy projectile"
+			data["mechanics"] = "Heavy rock; mastery adds secondary explosion damage."
+		else if(istype(skill, /obj/Dropkick))
+			data["factor"] = skill_dropkick_opening_factor + skill_dropkick_finisher_factor
+			data["model"] = "Physical"
+			data["range"] = "Lunge to selected target"
+			data["mechanics"] = "Opening kick plus finisher; may initiate Dragon Rush on collision."
+		else if(istype(skill, /obj/WolfFangFist))
+			data["factor"] = 5
+			data["model"] = "Physical"
+			data["range"] = "Advancing five-hit melee"
+			data["mechanics"] = "Five advancing strikes; may initiate Dragon Rush on collision."
+		else if(istype(skill, /obj/Dash_Attack))
+			data["factor"] = skill_dash_attack_max_factor
+			data["model"] = "Physical"
+			data["range"] = "Movement-scaled dash"
+			data["mechanics"] = "Preview shows the maximum factor; actual damage grows with distance traveled."
+		else if(istype(skill, /obj/RoundhouseKick))
+			data["factor"] = 4
+			data["model"] = "Physical"
+			data["range"] = "Adjacent area strike"
+		else if(istype(skill, /obj/PressurePunch))
+			data["factor"] = 6
+			data["model"] = "Physical"
+			data["range"] = "Adjacent area strike"
+		else if(istype(skill, /obj/Attacks/Blast))
+			data["factor"] = skill_blast_total_factor
+			data["model"] = "Ki"
+			data["range"] = "Rapid projectile"
+			data["mechanics"] = "Repeated basic blasts; preview is the per-projectile damage budget."
+		if(skill.hotbar_type in list("Melee", "Blast", "Beam", "Ability")) data["requirements"] = "Cannot attack while grabbed, KO, disabled or in RP Mode; some techniques also need a selected target"
+		if("Drain" in skill.vars && isnum(skill.vars["Drain"]))
+			var/skill_drain = skill.vars["Drain"]
+			data["cost"] = "Drain [skill_drain]"
+		return data
+
+	proc/buildDetailRow(label, value)
+		return "<div><small>[html_encode(label)]</small><b>[html_encode("[value]")]</b></div>"
+
+	proc/showExamineWindow(title, subtitle, icon_html, body_html)
+		if(!owner || !owner.client) return
+		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>[html_encode(title)]</title><style>[getNexusRpgBrowserCss()]
+		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
+		</style></head><body><div class='shell'><div class='header'>[icon_html]<div><h1>[html_encode(title)]</h1><p>[html_encode(subtitle)]</p></div></div><div class='body'>[body_html]</div></div></body></html>"}
+		owner << browse(html, "window=NexusExamine;size=680x600;can_resize=true;can_close=true")
+
+	proc/showItemExamine(obj/items/item)
+		var/description_text = item.desc ? "[item.desc]" : "No description available."
+		var/details = buildDetailRow("STATUS", item.suffix ? item.suffix : "Carried")
+		details += buildDetailRow("TYPE", item.type)
+		if("Level" in item.vars && isnum(item.vars["Level"])) details += buildDetailRow("LEVEL", round(item.vars["Level"], 0.1))
+		if("Durability" in item.vars && isnum(item.vars["Durability"])) details += buildDetailRow("DURABILITY", round(item.vars["Durability"], 0.1))
+		if("Cost" in item.vars && isnum(item.vars["Cost"])) details += buildDetailRow("BASE VALUE", Commas(item.vars["Cost"]))
+		showExamineWindow("[item]", "INVENTORY ITEM", buildIcon(item, "[item]"), "<div class='description'>[html_encode(description_text)]</div><div class='details'>[details]</div><div class='notice'>Left-click the item in Inventory to open its interaction menu.</div>")
+
+	proc/showSkillExamine(obj/skill)
+		var/list/data = getSkillDamageData(skill)
+		var/mob/preview_target = ismob(owner.Target) && owner.Target != owner ? owner.Target : owner
+		var/factor = data["factor"]
+		var/raw_damage
+		if(isnum(factor) && factor > 0)
+			switch(data["model"])
+				if("Physical") raw_damage = owner.getPhysicalCombatDamage(preview_target, factor)
+				if("Ki") raw_damage = owner.getKiCombatDamage(preview_target, factor)
+				else raw_damage = owner.getHybridCombatDamage(preview_target, factor)
+		var/preview_label = preview_target == owner ? "SELF-STAT BASELINE" : "RAW VS [preview_target]"
+		var/preview_value = isnum(raw_damage) ? "[round(raw_damage, 0.01)] Health ([factor]x factor)" : "No fixed raw-damage formula"
+		var/details = buildDetailRow(preview_label, preview_value)
+		details += buildDetailRow("DAMAGE MODEL", data["model"])
+		details += buildDetailRow("RANGE", data["range"])
+		details += buildDetailRow("COST", data["cost"] ? data["cost"] : "Dynamic / see description")
+		details += buildDetailRow("COOLDOWN", data["cooldown"] ? data["cooldown"] : "No dedicated fixed cooldown documented")
+		details += buildDetailRow("REQUIREMENTS", data["requirements"])
+		var/description_text = skill.desc ? "[skill.desc]" : "No description available."
+		var/body = "<div class='description'>[html_encode(description_text)]</div><div class='details'>[details]</div><div class='notice'><b>MECHANICS</b><br>[html_encode(data["mechanics"])]<br><br>Raw damage is calculated from your current stats before block, critical hits, shields, positioning and other situational modifiers.</div>"
+		showExamineWindow("[skill]", "[skill.hotbar_type] / MASTERY [round(skill.Mastery, 0.1)]%", buildIcon(skill, "[skill]"), body)
+
+	proc/showSenseExamine(mob/target)
+		var/has_advanced_sense = !!(locate(/obj/Advanced_Sense) in owner)
+		var/has_sense_three = !!(locate(/obj/Sense3) in owner)
+		var/power_text = owner.Scouter || owner.Cyber_Scanner ? Commas(Scouter_Reading(target, owner.Scouter, unlimited = TRUE)) : "[owner.Sense_Power(target)]% of your power"
+		var/details = buildDetailRow("SIGNATURE", power_text)
+		details += buildDetailRow("POSITION", target.locz() == owner.locz() ? "[getdir(owner.base_loc(), target)] / [getdist(owner.base_loc(), target)] tiles" : "Different depth")
+		if(has_advanced_sense || has_sense_three || owner.Scouter || owner.Cyber_Scanner)
+			details += buildDetailRow("HEALTH", "[round(target.Health)]%")
+			details += buildDetailRow("ENERGY", "[round(target.Ki / max(1, target.max_ki) * 100)]%")
+		if(has_sense_three)
+			details += buildDetailRow("IDENTITY", "[target.Race] / [target.alignment]")
+			details += buildDetailRow("STAT READINGS", "STR [target.strpcnt_rate()] / END [target.durpcnt_rate()] / SPD [target.spdpcnt_rate()] / FOR [target.powpcnt_rate()] / RES [target.respcnt_rate()] / OFF [target.offpcnt_rate()] / DEF [target.defpcnt_rate()]")
+		showExamineWindow("[target]", "SENSE SIGNATURE", buildIcon(target, "[target]"), "<div class='description'>Only information available to your current Sense or scanner level is shown.</div><div class='details'>[details]</div>")
+
 	proc/buildInventory()
 		var/html = ""
 		var/obj/Resources/resources = owner.GetResourceObject()
@@ -420,7 +623,7 @@ datum/NexusPlayerMenu
 			item_count++
 			var/status_text = item.suffix ? "[item.suffix]" : "Carried"
 			var/description_text = item.desc ? "[item.desc]" : "No description available."
-			html += "<a class='card with-icon' href='byond://?src=\ref[src]&action=use_item&item=\ref[item]'>[buildIcon(item, "[item]")]<div class='card-copy'><span>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><em>CLICK TO INTERACT</em></a>"
+			html += "<a class='card with-icon' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_item&item=\ref[item]';return false;\" href='byond://?src=\ref[src]&action=use_item&item=\ref[item]'>[buildIcon(item, "[item]")]<div class='card-copy'><span>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><em>LEFT: USE / RIGHT: EXAMINE</em></a>"
 		if(!item_count) html += "<div class='empty'>This character is not carrying any items.</div>"
 		return html
 
@@ -432,7 +635,7 @@ datum/NexusPlayerMenu
 			skill_count++
 			var/mastery_text = nexusIsFiniteNumber(skill.Mastery) ? "Mastery [round(skill.Mastery, 0.1)]%" : "Learned"
 			var/use_link = hascall(skill, "Hotbar_use") ? "<a class='use' href='byond://?src=\ref[src]&action=use_skill&skill=\ref[skill]'>USE</a>" : ""
-			html += "<div class='card with-icon'>[buildIcon(skill, "[skill]")]<div class='card-copy'><span>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small></div>[use_link]</div>"
+			html += "<div class='card with-icon' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_skill&skill=\ref[skill]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>RIGHT CLICK: DAMAGE / RANGE / USAGE</small></div>[use_link]</div>"
 		if(!skill_count) html += "<div class='empty'>No techniques are registered on this character.</div>"
 		return html
 
@@ -457,7 +660,7 @@ datum/NexusPlayerMenu
 			if(has_sense_three)
 				details += "<small>[html_encode("[target.Race]")] / [html_encode("[target.alignment]")]</small>"
 				details += "<div class='sense-stats'><i>STR [target.strpcnt_rate()]</i><i>END [target.durpcnt_rate()]</i><i>SPD [target.spdpcnt_rate()]</i><i>FOR [target.powpcnt_rate()]</i><i>RES [target.respcnt_rate()]</i><i>OFF [target.offpcnt_rate()]</i><i>DEF [target.defpcnt_rate()]</i></div>"
-			html += "<a class='card with-icon sense-card' href='byond://?src=\ref[src]&action=target&target=\ref[target]'>[buildIcon(target, "[target]")]<div class='card-copy'><span>[html_encode(location_text)]</span><b>[html_encode("[target]")]</b>[details]</div><em>SET AS TARGET</em></a>"
+			html += "<a class='card with-icon sense-card' oncontextmenu=\"window.location='byond://?src=\ref[src]&action=examine_sense&target=\ref[target]';return false;\" href='byond://?src=\ref[src]&action=target&target=\ref[target]'>[buildIcon(target, "[target]")]<div class='card-copy'><span>[html_encode(location_text)]</span><b>[html_encode("[target]")]</b>[details]</div><em>LEFT: TARGET / RIGHT: EXAMINE</em></a>"
 		if(!target_count) html += "<div class='empty'>No readable energy signatures are nearby.</div>"
 		return html
 
@@ -507,6 +710,18 @@ datum/NexusPlayerMenu
 			if("use_skill")
 				var/obj/skill = locate(href_list["skill"])
 				if(skill && skill in owner.contents && skill.hotbar_type && hascall(skill, "Hotbar_use")) skill:Hotbar_use(owner)
+			if("examine_item")
+				var/obj/items/examined_item = locate(href_list["item"])
+				if(examined_item && examined_item in owner.item_list) showItemExamine(examined_item)
+				return
+			if("examine_skill")
+				var/obj/examined_skill = locate(href_list["skill"])
+				if(examined_skill && examined_skill in owner.contents && examined_skill.hotbar_type) showSkillExamine(examined_skill)
+				return
+			if("examine_sense")
+				var/mob/examined_target = locate(href_list["target"])
+				if(examined_target && examined_target != owner && examined_target.loc && owner.current_area && examined_target in owner.current_area.mob_list && CanSense(owner, examined_target)) showSenseExamine(examined_target)
+				return
 			if("target")
 				var/mob/new_target = locate(href_list["target"])
 				if(new_target && new_target != owner && new_target.loc && owner.current_area && new_target in owner.current_area.mob_list && CanSense(owner, new_target)) owner.Target = new_target

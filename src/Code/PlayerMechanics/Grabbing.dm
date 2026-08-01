@@ -8,6 +8,14 @@ mob/var/tmp
 	mob/grabbedObject //this is not just a mob but anything you are grabbing and carrying around
 	is_grabbing
 	grabbed_from_behind
+	last_grab_attack_warning = -1000
+
+mob/proc/isAttackBlockedByGrab(show_message = TRUE)
+	if(!grabber) return FALSE
+	if(show_message && world.time >= last_grab_attack_warning + 20)
+		last_grab_attack_warning = world.time
+		src << "You cannot attack while being grabbed. Move to struggle and try to escape."
+	return TRUE
 
 atom/var/Grabbable=1
 turf/Grabbable=0

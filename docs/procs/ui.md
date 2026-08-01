@@ -1,7 +1,7 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats and right-side chat/info panes are permanently detached; the detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, and Hotkeys; World and Admin are permission-gated administrator tools.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats and right-side chat/info panes are permanently detached; the detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and a permanent CMD prompt; World and Admin are permission-gated administrator tools.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
@@ -33,9 +33,10 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `getNexusShortcutBarIcon()`, `getNexusShortcutButtonIcon()`, and `drawNexusShortcutGlyph()` build the top-left bolted strip and its license-independent pixel pictograms.
 - `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons plus the top-left shortcut strip as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain five player shortcuts and add World plus Admin only when the owner has an active admin level.
+- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain six player shortcuts, including CMD for every player, and add World plus Admin only when the owner has an active admin level.
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
-- `datum/NexusPlayerMenu` replaces the Inventory, Skills, Sense, and admin-only World stat tabs with a rustic browser surface. Inventory and skill cards export their DMI icons, Sense exports character icons plus readable Health/Energy and Sense 3 qualitative stat ratings, and World exposes icon-backed live character diagnostics only to admins.
+- `datum/NexusPlayerMenu` replaces the Inventory, Skills, Sense, and admin-only World stat tabs with a rustic browser surface. Inventory, Skills, and Sense cards support right-click examination; skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
+- `showNexusCommandPrompt()` sends one safely parameterized command line to Dream Seeker's native command parser. The shortcut is universal while the native verb list and admin level continue to decide what each player may execute.
 - `showNexusPlayerMenu(section)` opens the requested player-menu section from its pixel shortcut.
 - `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
 
@@ -851,6 +852,10 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Signature: `renderNexusEmoteMarkup(raw_text)`
 - Purpose: Convert the editor's bracket markup for color, bold, italic, underline, and line breaks into balanced safe HTML while encoding raw HTML.
 
+#### proc/buildNexusEmoteMessage
+- Signature: `buildNexusEmoteMessage(character_name, rendered_text, emote_mode = "Normal")`
+- Purpose: Compose the IC/log representation with an explicit blank line between the roleplay title and body while preserving safe inline colors.
+
 #### datum/NexusEmoteEditor
 - Purpose: Provide a resizable two-pane emote editor with formatting controls, color swatches, custom color selection, counters, RP mode selection, and live preview.
 
@@ -872,7 +877,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/ViewEmoteWindow
 - Signature: `ViewEmoteWindow(mob/admin, mob/player, unwritten, type = "Emote", path = "emotelogs", overwrite_ckey = "none")`
 - Inputs: mob/admin, mob/player, unwritten, type = "Emote", path = "emotelogs", overwrite_ckey = "none"
-- Purpose: Handle view emote window.
+- Purpose: Render persisted and unwritten RP entries inside a complete HTML document without overriding their inline text colors.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
