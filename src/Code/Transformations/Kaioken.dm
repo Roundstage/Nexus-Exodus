@@ -57,6 +57,7 @@ mob/proc/God_FistStop()
 	God_Fist_level=0
 	super_God_Fist = 0
 	Aura_Overlays(remove_only=1)
+	spawn() updateTransformationGlow()
 
 mob/var/tmp/obj/God_Fist/God_Fist_obj
 
@@ -108,6 +109,7 @@ obj/God_Fist
 
 mob/proc/God_Fist(obj/God_Fist/K) if(!K.Using)
 	K.Using=1
+	setNexusGlow("#ff293d", 2.8, 175)
 	src<<"<font color=red>You have now enabled [K]. Tap the power up (G) key to use it."
 
 mob/proc/God_Fist_Revert(obj/God_Fist/K)

@@ -76,6 +76,7 @@ mob/proc/syncActivePrimaryTransformation(reason = "state change")
 	active_primary_transformation = detectPrimaryTransformation()
 	transformation_state_version = TRANSFORMATION_STATE_VERSION
 	rebuildPlayerAppearance("transformation [reason]")
+	updateTransformationGlow()
 
 mob/proc/revertPrimaryTransformations(reason = "manual")
 	if(ultra_instinct) clearUltraInstinctState()
@@ -90,6 +91,7 @@ mob/proc/revertPrimaryTransformations(reason = "manual")
 	active_primary_transformation = null
 	transformation_state_version = TRANSFORMATION_STATE_VERSION
 	rebuildPlayerAppearance("primary revert [reason]")
+	updateTransformationGlow()
 
 mob/proc/preparePrimaryTransformation(transformation_id)
 	var/current_id = detectPrimaryTransformation()
@@ -170,6 +172,7 @@ mob/proc/normalizePrimaryTransformation()
 		active_primary_transformation = detected_id
 		transformation_state_version = TRANSFORMATION_STATE_VERSION
 	rebuildPlayerAppearance("transformation login")
+	updateTransformationGlow()
 
 mob/verb/Transform()
 	set category = "Skills"

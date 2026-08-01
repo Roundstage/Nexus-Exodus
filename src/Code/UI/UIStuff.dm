@@ -11,6 +11,7 @@ var/list/clients = new
 
 client/Del()
 	clients -= src
+	removeNexusLighting()
 	if(nexus_hud_window)
 		del(nexus_hud_window)
 		nexus_hud_window = null

@@ -306,6 +306,7 @@ obj/NexusHud
 	attackable = 0
 	density = 0
 	mouse_opacity = 0
+	plane = 20 // Reserved above the per-client lighting plane.
 	layer = 99
 
 	OverheadHealthBar

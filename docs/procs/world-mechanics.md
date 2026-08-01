@@ -1472,17 +1472,17 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### area/proc/FadeToNight
 - Signature: `FadeToNight()`
-- Inputs: None
-- Purpose: Handle fade to night.
+- Inputs: None.
+- Purpose: Transition clients in the area through dusk into the area's dark ambient color.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: enables local light sources and fireflies and invalidates older overlapping transitions.
 
 #### area/proc/FadeToDay
 - Signature: `FadeToDay()`
-- Inputs: None
-- Purpose: Handle fade to day.
+- Inputs: None.
+- Purpose: Transition clients in the area through dawn back to neutral daylight.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: fades local light sources and fireflies and invalidates older overlapping transitions.
 
 ### src/Code/WorldMechanics/WeatherDayNight/Fireflies.dm
 
@@ -1557,6 +1557,38 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: mutates game state and/or world resources.
 
 ### src/Code/WorldMechanics/WeatherDayNight/Lighting.dm
+
+#### proc/getNexusAmbientMatrix
+- Signature: `getNexusAmbientMatrix(ambient_color)`
+- Purpose: Build the BYOND color matrix used by the multiplicative client lighting plane.
+
+#### proc/updateAreaNexusLighting
+- Signature: `updateAreaNexusLighting(area/a, ambient_color, fade_time = 0)`
+- Purpose: Apply an ambient transition only to clients currently inside an area.
+
+#### client/proc/initializeNexusLighting
+- Signature: `initializeNexusLighting()`
+- Purpose: Add one plane-master darkness screen to the client and synchronize it to the current area.
+
+#### client/proc/syncNexusLighting
+- Signature: `syncNexusLighting(area/target_area)`
+- Purpose: Select neutral daylight or the current area's night color, respecting the client's lighting toggle.
+
+#### atom/movable/proc/setNexusGlow
+- Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
+- Purpose: Attach one reusable additive light emitter to a moving atom.
+
+#### atom/movable/proc/pulseNexusGlow
+- Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')`
+- Purpose: Render and automatically remove a short impact or charge light pulse.
+
+#### mob/verb/toggleNexusLighting
+- Signature: `toggleNexusLighting()`
+- Purpose: Let a player disable or enable dynamic screen lighting locally.
+
+#### mob/Admin2/verb/testNexusLighting
+- Signature: `testNexusLighting()`
+- Purpose: Test day/night transitions and representative attack/transformation glows without granting skills.
 
 #### proc/FadeOutLights
 - Signature: `FadeOutLights(area/a)`
