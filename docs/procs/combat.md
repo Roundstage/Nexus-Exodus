@@ -1109,9 +1109,9 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### proc/CheckHakaiDeleteCharacter
 - Signature: `proc/CheckHakaiDeleteCharacter(mob/m)`
 - Inputs: mob/m
-- Purpose: Check Hakai Delete Character.
+- Purpose: Delete the victim's active character slot and matching feat progression when Hakai character wiping is enabled.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: deletes the live mob and both slot-specific persistence files.
 
 #### proc/HakaiOverlay
 - Signature: `proc/HakaiOverlay(mob/m, hakai_time = 50)`

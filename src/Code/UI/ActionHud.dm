@@ -5,11 +5,16 @@ proc/getNexusActionButtonIcon(active, accent_color)
 	if(nexus_action_button_icon_cache[cache_key]) return nexus_action_button_icon_cache[cache_key]
 	var/icon/button_icon = icon('UserNamesBarsUi.png')
 	button_icon.Scale(88, 20)
-	button_icon.DrawBox(active ? "#202c3b" : "#111821", 1, 1, 88, 20)
-	button_icon.DrawBox(active ? accent_color : "#455164", 1, 1, 3, 20)
-	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 1, 88, 2)
-	button_icon.DrawBox(active ? accent_color : "#2c3747", 1, 19, 88, 20)
-	button_icon.DrawBox(active ? "#35475b" : "#1a2430", 4, 3, 86, 18)
+	button_icon.DrawBox(active ? "#51391f" : "#251c13", 1, 1, 88, 20)
+	button_icon.DrawBox("#140e09", 1, 1, 88, 2)
+	button_icon.DrawBox("#140e09", 1, 19, 88, 20)
+	button_icon.DrawBox("#140e09", 1, 1, 2, 20)
+	button_icon.DrawBox("#140e09", 87, 1, 88, 20)
+	button_icon.DrawBox(active ? accent_color : "#765936", 3, 3, 86, 3)
+	button_icon.DrawBox(active ? accent_color : "#765936", 3, 18, 86, 18)
+	button_icon.DrawBox(active ? accent_color : "#765936", 3, 3, 3, 18)
+	button_icon.DrawBox("#c39a55", 5, 5, 6, 6)
+	button_icon.DrawBox("#c39a55", 83, 5, 84, 6)
 	nexus_action_button_icon_cache[cache_key] = button_icon
 	return button_icon
 
@@ -90,8 +95,8 @@ obj/NexusHud/ActionButton
 		owner = character
 		var/active = isActive(character)
 		icon = getNexusActionButtonIcon(active, accent_color)
-		var/text_color = active ? "#ffffff" : "#aeb9c8"
-		maptext = "<div style='font-family:Arial;font-size:8px;font-weight:bold;letter-spacing:.5px;color:[text_color];text-align:center;text-shadow:1px 1px #000'>[getLabel(character)]</div>"
+		var/text_color = active ? "#fff1bd" : "#d2bd93"
+		maptext = "<div style='font-family:Courier New;font-size:8px;font-weight:bold;letter-spacing:.5px;color:[text_color];text-align:center;text-shadow:1px 1px #000'>[getLabel(character)]</div>"
 
 	Click(location, control, params)
 		if(!owner || usr != owner || !owner.client) return

@@ -103,19 +103,23 @@ mob
 
 		SaveFeats()
 			if(!key) return
-			var/savefile/f = new("data/Feats/[key]")
+			ensureNexusCharacterSlots()
+			var/savefile/f = new(getNexusFeatSavePath())
 			CheckBlankFeats()
 			f["feats"] << feats
 
 		LoadFeats()
 			//this proc also updates their feats to the latest version so no new feats are missing
-			if(key && !fexists("data/Feats/[key]"))
+			if(!key) return
+			ensureNexusCharacterSlots()
+			var/feat_path = getNexusFeatSavePath()
+			if(!fexists(feat_path))
 				feats = new/list
 				feats = master_feats
 
-			if(key && fexists("data/Feats/[key]"))
+			if(fexists(feat_path))
 
-				var/savefile/f = new("data/Feats/[key]")
+				var/savefile/f = new(feat_path)
 				f["feats"] >> feats
 
 				for(var/v in master_feats) if(!(v in feats))

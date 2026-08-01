@@ -2,7 +2,7 @@ client/authenticate = 0
 
 var
 	noPacksOnRP = 0
-	classic_ui = 1 //use the classic user interface or not
+	classic_ui = 0 //HudLib interface; legacy right-side panes remain detached
 		//remember to check the right skin file to include so it matches which one we have here
 	daynight_enabled = 1
 	fireflies = 1

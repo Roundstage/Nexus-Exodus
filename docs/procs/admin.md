@@ -655,9 +655,9 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### mob/Admin4/verb/purgeOldSaves
 - Signature: `mob/Admin4/verb/purgeOldSaves()`
 - Inputs: None
-- Purpose: Handle purge old saves.
+- Purpose: Purge character saves inactive for two days while preserving character-slot migration markers.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: deletes each expired character file and its matching per-slot feat file.
 
 #### mob/Admin3/verb/enlarge
 - Signature: `mob/Admin3/verb/enlarge(atom/A as mob|obj in world)`
@@ -725,9 +725,9 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### proc/Delete_Save
 - Signature: `proc/Delete_Save(mob/M)`
 - Inputs: mob/M
-- Purpose: Delete Save.
+- Purpose: Delete the target's active character slot.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: deletes the live mob, selected character file, and matching feat file.
 
 #### mob/verb/Races
 - Signature: `mob/verb/Races()`
@@ -1019,9 +1019,9 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### mob/Admin3/verb/enterCharacter
 - Signature: `enterCharacter(mob/M in world)`
 - Inputs: mob/M in world
-- Purpose: Handle enter character.
+- Purpose: Copy a target's active character slot and feat progression into the admin's active slot before loading it.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: overwrites the admin's selected slot without mutating the target's save identity.
 
 #### mob/proc/MassReviveAlert
 - Signature: `mob/proc/MassReviveAlert()`

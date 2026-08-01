@@ -87,9 +87,13 @@ proc/CheckHakaiDeleteCharacter(mob/m)
 	set waitfor=0
 	if(!m || !m.key || !hakai_wipes_character) return
 	var/key = m.key
+	var/slot = m.active_character_slot
 	del(m)
 	sleep(10) //just a guess, may not be needed
-	fdel("data/Save/[key]")
+	var/save_path = getNexusCharacterSavePathForKey(key, slot)
+	var/feat_path = getNexusFeatSavePathForKey(key, slot)
+	if(save_path) fdel(save_path)
+	if(feat_path) fdel(feat_path)
 
 proc/HakaiOverlay(mob/m, hakai_time = 50)
 	set waitfor=0

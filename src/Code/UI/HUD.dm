@@ -168,7 +168,7 @@ proc/getOverheadVitalIcon(percent, accent_color)
 	if(overhead_vital_icon_cache[cache_key]) return overhead_vital_icon_cache[cache_key]
 	var/icon/vital_icon = icon('Healthbar.dmi', "100")
 	vital_icon.Scale(32, 3)
-	vital_icon.DrawBox("#171b22", 1, 1, 32, 3)
+	vital_icon.DrawBox("#21170f", 1, 1, 32, 3)
 	if(fill_width) vital_icon.DrawBox(accent_color, 1, 1, fill_width, 3)
 	overhead_vital_icon_cache[cache_key] = vital_icon
 	return vital_icon
@@ -177,11 +177,15 @@ proc/getVitalsPanelIcon()
 	if(vitals_panel_icon) return vitals_panel_icon
 	vitals_panel_icon = icon('UserNamesBarsUi.png')
 	vitals_panel_icon.Scale(296, 136)
-	vitals_panel_icon.DrawBox(rgb(9, 14, 22, 220), 1, 1, 296, 136)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 296, 2)
-	vitals_panel_icon.DrawBox("#354052", 1, 135, 296, 136)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 2, 136)
-	vitals_panel_icon.DrawBox("#354052", 295, 1, 296, 136)
+	vitals_panel_icon.DrawBox(rgb(31, 23, 15, 232), 1, 1, 296, 136)
+	vitals_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)
+	vitals_panel_icon.DrawBox("#140e09", 1, 134, 296, 136)
+	vitals_panel_icon.DrawBox("#140e09", 1, 1, 3, 136)
+	vitals_panel_icon.DrawBox("#140e09", 294, 1, 296, 136)
+	vitals_panel_icon.DrawBox("#826039", 4, 4, 293, 4)
+	vitals_panel_icon.DrawBox("#826039", 4, 132, 293, 132)
+	for(var/bolt_x in list(6, 289))
+		for(var/bolt_y in list(6, 128)) vitals_panel_icon.DrawBox("#c6a15c", bolt_x, bolt_y, bolt_x + 1, bolt_y + 1)
 	return vitals_panel_icon
 
 proc/getVitalsBarIcon(percent, accent_color)
@@ -192,8 +196,8 @@ proc/getVitalsBarIcon(percent, accent_color)
 	if(vitals_bar_icon_cache[cache_key]) return vitals_bar_icon_cache[cache_key]
 	var/icon/bar_icon = icon('UserNamesBarsUi.png')
 	bar_icon.Scale(168, 19)
-	bar_icon.DrawBox("#111923", 1, 1, 168, 19)
-	bar_icon.DrawBox("#293443", 5, 3, 164, 16)
+	bar_icon.DrawBox("#1a120c", 1, 1, 168, 19)
+	bar_icon.DrawBox("#46321f", 5, 3, 164, 16)
 	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 16)
 	bar_icon.DrawBox(accent_color, 1, 1, 4, 19)
 	vitals_bar_icon_cache[cache_key] = bar_icon
@@ -208,8 +212,8 @@ proc/getPowerGaugeIcon(percent, over_limit)
 	var/gauge_color = over_limit ? "#ff5c45" : "#b983ff"
 	var/icon/gauge_icon = icon('UserNamesBarsUi.png')
 	gauge_icon.Scale(7, 72)
-	gauge_icon.DrawBox("#101722", 1, 1, 7, 72)
-	gauge_icon.DrawBox("#2a3341", 3, 3, 5, 68)
+	gauge_icon.DrawBox("#1a120c", 1, 1, 7, 72)
+	gauge_icon.DrawBox("#5b4227", 3, 3, 5, 68)
 	if(fill_height) gauge_icon.DrawBox(gauge_color, 3, 3, 5, 2 + fill_height)
 	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 69, 7, 72)
 	power_gauge_icon_cache[cache_key] = gauge_icon
@@ -475,7 +479,7 @@ obj/NexusHud
 
 		proc/update(power_percent, soft_cap, over_limit)
 			var/status_color = over_limit ? "#ff705c" : "#cda8ff"
-			maptext = "<div style='font-family:Arial;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
+			maptext = "<div style='font-family:Courier New;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
 
 	VitalDetail
 		pixel_x = 52
@@ -508,8 +512,8 @@ obj/NexusHud
 
 		proc/update(label, percent, detail, accent_color)
 			icon = getVitalsBarIcon(percent, accent_color)
-			maptext = "<span style='font-family:Arial;font-size:8px;font-weight:bold;color:#f5f7fa;white-space:nowrap;text-shadow:1px 1px #000'>[label]</span>"
-			detail_text.maptext = "<div style='font-family:Arial;font-size:8px;font-weight:bold;color:#f5f7fa;text-align:[detail_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[detail]</div>"
+			maptext = "<span style='font-family:Courier New;font-size:8px;font-weight:bold;color:#f0dbaf;white-space:nowrap;text-shadow:1px 1px #000'>[label]</span>"
+			detail_text.maptext = "<div style='font-family:Courier New;font-size:8px;font-weight:bold;color:#f0dbaf;text-align:[detail_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[detail]</div>"
 
 		Del()
 			if(detail_text) del(detail_text)

@@ -1,4 +1,90 @@
 var/list/admin_objects = new
+var/const/NEXUS_CHARACTER_SLOT_LIMIT = 3
+
+proc/clampNexusCharacterSlot(slot)
+	return Clamp(round(text2num("[slot]")), 1, NEXUS_CHARACTER_SLOT_LIMIT)
+
+proc/getNexusCharacterSavePathForKey(character_key, slot = 1)
+	if(!character_key) return null
+	return "data/Save/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+
+proc/getNexusFeatSavePathForKey(character_key, slot = 1)
+	if(!character_key) return null
+	return "data/Feats/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+
+proc/getNexusCharacterMigrationPathForKey(character_key)
+	if(!character_key) return null
+	return "data/Save/[ckey(character_key)]-slots.migrated.sav"
+
+mob/var/tmp/active_character_slot = 1
+
+mob/proc/getNexusCharacterSavePath(slot = active_character_slot)
+	return getNexusCharacterSavePathForKey(key, slot)
+
+mob/proc/getNexusFeatSavePath(slot = active_character_slot)
+	return getNexusFeatSavePathForKey(key, slot)
+
+mob/proc/ensureNexusCharacterSlots()
+	if(!key) return
+	active_character_slot = clampNexusCharacterSlot(active_character_slot)
+	var/has_slotted_character = FALSE
+	for(var/slot = 1, slot <= NEXUS_CHARACTER_SLOT_LIMIT, slot++)
+		if(fexists(getNexusCharacterSavePath(slot)))
+			has_slotted_character = TRUE
+			break
+	var/legacy_save_path = "data/Save/[key]"
+	var/migration_marker_path = getNexusCharacterMigrationPathForKey(key)
+	if(!has_slotted_character && !fexists(migration_marker_path) && fexists(legacy_save_path))
+		var/slot_one_path = getNexusCharacterSavePath(1)
+		fcopy(legacy_save_path, slot_one_path)
+		var/savefile/migrated_save = new(slot_one_path)
+		var/slot_name = "Existing Character"
+		var/slot_race = "Unknown lineage"
+		var/slot_last_used = 0
+		migrated_save["name"] >> slot_name
+		migrated_save["Race"] >> slot_race
+		migrated_save["Last_Used"] >> slot_last_used
+		migrated_save["NexusSlotName"] << slot_name
+		migrated_save["NexusSlotRace"] << slot_race
+		migrated_save["NexusSlotLastUsed"] << slot_last_used
+		has_slotted_character = fexists(slot_one_path)
+	if(has_slotted_character && !fexists(migration_marker_path))
+		var/savefile/migration_marker = new(migration_marker_path)
+		migration_marker["migration_complete"] << TRUE
+	var/legacy_feat_path = "data/Feats/[key]"
+	var/slot_one_feat_path = getNexusFeatSavePath(1)
+	if(fexists(getNexusCharacterSavePath(1)) && !fexists(slot_one_feat_path) && fexists(legacy_feat_path))
+		fcopy(legacy_feat_path, slot_one_feat_path)
+
+mob/proc/getNexusCharacterSlotInfo(slot)
+	slot = clampNexusCharacterSlot(slot)
+	var/list/slot_info = list("slot" = slot, "exists" = FALSE, "name" = "Empty Slot", "race" = "Create a new character", "last_used" = 0)
+	var/save_path = getNexusCharacterSavePath(slot)
+	if(!save_path || !fexists(save_path)) return slot_info
+	var/savefile/character_save = new(save_path)
+	var/slot_name
+	var/slot_race
+	var/slot_last_used
+	character_save["NexusSlotName"] >> slot_name
+	character_save["NexusSlotRace"] >> slot_race
+	character_save["NexusSlotLastUsed"] >> slot_last_used
+	if(!slot_name) character_save["name"] >> slot_name
+	if(!slot_race) character_save["Race"] >> slot_race
+	if(!slot_last_used) character_save["Last_Used"] >> slot_last_used
+	slot_info["exists"] = TRUE
+	slot_info["name"] = slot_name ? "[slot_name]" : "Existing Character"
+	slot_info["race"] = slot_race ? "[slot_race]" : "Unknown lineage"
+	slot_info["last_used"] = text2num("[slot_last_used]")
+	return slot_info
+
+mob/proc/deleteNexusCharacterSlot(slot)
+	if(!key) return FALSE
+	slot = clampNexusCharacterSlot(slot)
+	var/save_path = getNexusCharacterSavePath(slot)
+	var/feat_path = getNexusFeatSavePath(slot)
+	if(save_path && fexists(save_path)) fdel(save_path)
+	if(feat_path && fexists(feat_path)) fdel(feat_path)
+	return TRUE
 
 proc/saveAdminObjects()
 	//set background=1
@@ -243,8 +329,8 @@ proc/saveLoop() while(1)
 
 mob/var/Can_Remake=1
 
-mob/proc/cantRemake() if(fexists("data/Save/[key]"))
-	var/savefile/f=new("data/Save/[key]")
+mob/proc/cantRemake() if(fexists(getNexusCharacterSavePath()))
+	var/savefile/f=new(getNexusCharacterSavePath())
 	f["Can_Remake"]>>Can_Remake
 	if(Can_Remake==0) return 1 //Cant use if(!Can_Vote) because if its 1 its the initial value and the entry is null
 
@@ -269,6 +355,7 @@ mob/proc/save()
 	if(is_saitama) return
 	if(!player_saving_on) return
 	if(key && displaykey && Savable)
+		ensureNexusCharacterSlots()
 
 		removeOverlaysThatDontSaveCorrectly()
 
@@ -283,9 +370,12 @@ mob/proc/save()
 			saved_y = t.y
 			saved_z = t.z
 
-		var/savefile/f=new("data/Save/[key]")
+		var/savefile/f=new(getNexusCharacterSavePath())
 		f["Last_Used"]<<world.realtime
 		Write(f)
+		f["NexusSlotName"] << name
+		f["NexusSlotRace"] << Race
+		f["NexusSlotLastUsed"] << world.realtime
 		if(blocking) overlays+=block_shield
 		Aura_Overlays()
 		Evil_overlay()
@@ -299,8 +389,10 @@ mob/proc/save()
 		SaveFeats()
 
 mob/proc/load() if(client)
-	if(fexists("data/Save/[key]") && Map_Loaded)
-		var/savefile/f = new("data/Save/[key]")
+	ensureNexusCharacterSlots()
+	var/save_path = getNexusCharacterSavePath()
+	if(fexists(save_path) && Map_Loaded)
+		var/savefile/f = new(save_path)
 		Read(f)
 		SafeTeleport(locate(saved_x, saved_y, saved_z))
 		Other_Load_Stuff()
@@ -311,9 +403,10 @@ mob/proc/load() if(client)
 		if(!Map_Loaded) alert(src,"You can not log in until the map loads.")
 		else alert(src,"You do not have any characters on this server.")
 
-mob/proc/hasSave()
+mob/proc/hasSave(slot = active_character_slot)
 	if(!key) return
-	if(fexists("data/Save/[key]")) return 1
+	ensureNexusCharacterSlots()
+	if(fexists(getNexusCharacterSavePath(slot))) return 1
 
 var/banned_from_hosting
 

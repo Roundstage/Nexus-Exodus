@@ -1505,8 +1505,13 @@ mob/Admin4/verb/purgeOldSaves()
 	world<<"<font color=#FFFF00>Purging old saves. This may take a bit."
 	sleep(5)
 	for(var/File in flist("data/Save/"))
+		if(findtext(File, "-slots.migrated.sav")) continue
 		var/savefile/F=new("data/Save/[File]")
-		if(F["Last_Used"]<=world.realtime-864000*2) fdel("data/Save/[File]")
+		var/last_used
+		F["Last_Used"] >> last_used
+		if(last_used && last_used <= world.realtime - 864000 * 2)
+			fdel("data/Save/[File]")
+			if(fexists("data/Feats/[File]")) fdel("data/Feats/[File]")
 
 	admin_blame(src, "[key] has purged old savefiles.")
 	world<<"<font color=#FFFF00>Savefile purge complete"
@@ -1598,11 +1603,14 @@ mob/Admin3/verb/deletePlayerSave(mob/A in players)
 proc/Delete_Save(mob/M)
 	if(!M.key) return
 	var/Key=M.key
+	var/slot = M.active_character_slot
 	del(M)
 	var/choice = alert(src, "Do you want to delete [Key]'s savefile?", "Delete Savefile", "Yes", "No")
 	if(choice == "No") return
-	if(Key&&fexists("data/Save/[Key]")) 
-		fdel("data/Save/[Key]")
+	var/save_path = getNexusCharacterSavePathForKey(Key, slot)
+	var/feat_path = getNexusFeatSavePathForKey(Key, slot)
+	if(save_path && fexists(save_path)) fdel(save_path)
+	if(feat_path && fexists(feat_path)) fdel(feat_path)
 
 mob/verb/Races()
 	//set category="Other"
@@ -2307,9 +2315,14 @@ mob/Admin3/verb
 		if(!M.client) M.key=key
 		else
 			M.save()
-			var/savefile/f=new("data/Save/[M.key]")
+			var/source_save_path = M.getNexusCharacterSavePath()
+			var/destination_save_path = getNexusCharacterSavePath()
+			var/source_feat_path = M.getNexusFeatSavePath()
+			var/destination_feat_path = getNexusFeatSavePath()
+			fcopy(source_save_path, destination_save_path)
+			if(fexists(source_feat_path)) fcopy(source_feat_path, destination_feat_path)
+			var/savefile/f=new(destination_save_path)
 			f["key"]<<key
-			fcopy("data/Save/[M.key]","data/Save/[key]")
 			load()
 		admin_blame(src, "[key] has entered [M]'s character.")
 

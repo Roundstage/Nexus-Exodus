@@ -1,9 +1,13 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats tab is no longer refreshed; the detailed Character sheet is opened from the top-right action HUD.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats and right-side chat/info panes are permanently detached; the detailed Character sheet is opened from the top-right action HUD.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+
+The lower-left HudLib chat owns All, Combat, IC, and OOC feeds without consuming map width. It can be collapsed or resized in both axes from its header. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
+
+All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Login uses a resizable RPG-style three-slot character selector instead of the New/Load alert.
 
 ## Files
 - `src/Code/UI/ActionHud.dm`
@@ -32,9 +36,19 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 
 ### src/Code/UI/HudLibrary.dm
 
-- `getNexusHudLibraryIcon()` creates and caches scalable panel/button surfaces used by native HUD windows.
+- `getNexusHudLibraryIcon()` creates and caches scalable bolted, square panel/button surfaces used by native HUD windows.
+- `getNexusRpgBrowserCss()` supplies the shared rustic RPG presentation layer used by the Character, creation, emote, log, hotkey, inspector, reward, item, and admin windows.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
+- `datum/NexusChatHud` renders the resizable/collapsible four-channel lower-left chat, navigation, composition, and personal-log actions as `client.screen` objects.
+- `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
+- `hideNexusLegacyInterface()` detaches both legacy split panes so resizing the client changes the map viewport rather than reserving space for DMF tabs.
+
+### src/Code/UI/UIStuff.dm
+
+- `datum/NexusCharacterSelect` renders and validates three independent character slots with Create, Enter World, and confirmed Delete actions.
+- `ShowNexusLoginPrompt()` now opens the slot selector; `NewClicked(slot)` and `LoadClicked(slot)` bind the selected slot before invoking creation or persistence.
+- `ToggleTabs()` is retained as a hidden hotkey compatibility entry but opens Character instead of restoring the removed tab pane.
 
 ### src/Code/UI/AdminInspector.dm
 

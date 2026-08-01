@@ -12,6 +12,12 @@ var/list/clients = new
 client/Del()
 	clients -= src
 	removeNexusLighting()
+	if(nexus_character_select)
+		del(nexus_character_select)
+		nexus_character_select = null
+	if(nexus_chat_hud)
+		del(nexus_chat_hud)
+		nexus_chat_hud = null
 	if(nexus_hud_window)
 		del(nexus_hud_window)
 		nexus_hud_window = null
@@ -24,6 +30,71 @@ client/Del()
 		del(main_vitals_hud)
 		main_vitals_hud = null
 	. = ..()
+
+client/var/tmp/datum/NexusCharacterSelect/nexus_character_select
+
+datum/NexusCharacterSelect
+	var/tmp/mob/owner
+
+	New(mob/new_owner)
+		. = ..()
+		owner = new_owner
+
+	Del()
+		if(owner && owner.client)
+			owner << browse(null, "window=NexusCharacterSelect")
+			if(owner.client.nexus_character_select == src) owner.client.nexus_character_select = null
+		owner = null
+		. = ..()
+
+	proc/canUse()
+		return owner && owner.client && usr == owner && !owner.playerCharacter
+
+	proc/buildHtml()
+		if(!owner) return ""
+		owner.ensureNexusCharacterSlots()
+		var/slot_html = ""
+		for(var/slot = 1, slot <= NEXUS_CHARACTER_SLOT_LIMIT, slot++)
+			var/list/slot_info = owner.getNexusCharacterSlotInfo(slot)
+			var/is_occupied = slot_info["exists"]
+			var/slot_state = is_occupied ? "occupied" : "empty"
+			var/last_used_text = "AVAILABLE"
+			if(is_occupied && slot_info["last_used"])
+				last_used_text = time2text(slot_info["last_used"], "MMM DD, YYYY")
+			var/actions = is_occupied ? "<a class='play' href='byond://?src=\ref[src]&action=play&slot=[slot]'>ENTER WORLD</a><a class='delete' href='byond://?src=\ref[src]&action=delete&slot=[slot]'>DELETE</a>" : "<a class='create' href='byond://?src=\ref[src]&action=create&slot=[slot]'>CREATE CHARACTER</a>"
+			slot_html += "<section class='slot [slot_state]'><div class='slot-number'>[slot]</div><div class='slot-copy'><small>CHARACTER SLOT [slot]</small><h2>[html_encode(slot_info["name"])]</h2><p>[html_encode(slot_info["race"])]</p><em>[last_used_text]</em></div><div class='slot-actions'>[actions]</div></section>"
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Exodus</title><style>[getNexusRpgBrowserCss()]
+		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:auto}.gate{min-height:100%;padding:22px;background:#17130f}.frame{max-width:920px;min-height:560px;margin:0 auto;border:4px ridge #9f7945;background:#211910;outline:3px solid #090604}.crest{text-align:center;padding:18px 12px;border-bottom:3px double #a27a43;background:#302216}.crest h1{margin:0;font-size:29px;letter-spacing:4px}.crest p{margin:6px 0 0;color:#bda477}.account{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #74552f;background:#1a140e;color:#c8ae7d}.slots{display:grid;gap:10px;padding:16px}.slot{position:relative;min-height:116px;display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:12px;padding:12px;border:3px ridge #775a34;background:#2a2016}.slot.empty{filter:saturate(.65)}.slot-number{width:64px;height:64px;padding-top:15px;border:3px double #b58b4d;background:#16110c;color:#e6c37e;text-align:center;font:bold 26px 'Courier New',monospace}.slot-copy small{color:#a88a5d;letter-spacing:2px}.slot-copy h2{margin:4px 0;padding:0;background:none!important;border:0!important;font-size:21px}.slot-copy p{margin:0 0 7px;color:#d0bb91}.slot-copy em{font-size:10px;color:#8f7958;font-style:normal}.slot-actions{display:flex;gap:7px;align-items:center}.slot-actions a{display:block;min-width:120px;padding:10px 12px;text-align:center;text-decoration:none}.play,.create{border:3px outset #b58a4b;background:#51391e;color:#f4d99b}.delete{min-width:70px!important;border:3px outset #844b3e;background:#3a211b;color:#e8a89b}.footnote{padding:10px 16px;border-top:1px solid #735530;color:#9f8965;text-align:center;font-size:10px}@media(max-width:700px){.gate{padding:6px}.slot{grid-template-columns:60px 1fr}.slot-number{width:50px;height:50px;padding-top:11px}.slot-actions{grid-column:1/3;justify-content:flex-end}.crest h1{font-size:22px}}
+		</style></head><body><main class='gate'><div class='frame'><header class='crest'><h1>NEXUS EXODUS</h1><p>Choose the soul that will cross the Nexus</p></header><div class='account'><span>ACCOUNT</span><b>[html_encode(owner.key)]</b></div><div class='slots'>[slot_html]</div><div class='footnote'>Three independent characters per account. Progress and feats are stored per slot.</div></div></main></body></html>"}
+
+	proc/show()
+		if(!owner || !owner.client || owner.playerCharacter)
+			del(src)
+			return
+		owner << browse(buildHtml(), "window=NexusCharacterSelect;size=960x720;can_resize=true;can_close=false")
+
+	Topic(href, list/href_list)
+		if(!canUse()) return
+		var/slot = clampNexusCharacterSlot(href_list["slot"])
+		switch(href_list["action"])
+			if("create")
+				if(owner.hasSave(slot)) return
+				var/mob/player = owner
+				del(src)
+				player.NewClicked(slot)
+			if("play")
+				if(!owner.hasSave(slot))
+					show()
+					return
+				var/mob/player = owner
+				del(src)
+				player.LoadClicked(slot)
+			if("delete")
+				if(!owner.hasSave(slot)) return
+				var/list/slot_info = owner.getNexusCharacterSlotInfo(slot)
+				if(alert(owner, "Permanently delete [slot_info["name"]] from slot [slot]? This cannot be undone.", "Delete Character", "Keep Character", "Delete Forever") != "Delete Forever") return
+				owner.deleteNexusCharacterSlot(slot)
+				show()
 
 client
 	var
@@ -117,6 +188,7 @@ client/New()
 			winset(src,"rpane.rpanewindow","is-visible=false")
 			winset(src,"mainwindow.mainvssplit","is-visible=false")
 			DisplayTitleScreen()
+		if(mob) mob.hideNexusLegacyInterface()
 		if(mob)
 			//var/musics = list('RoyalBlueTheme.ogg', 'UltraInstinctTheme1.ogg', 'GokuSpiritBombTheme.ogg')
 			var/musics = list('CarnivalMeme.ogg')
@@ -133,8 +205,7 @@ mob
 		HideAllUI()
 			set hidden = 1
 			client.uiHidden = !client.uiHidden
-			if(client.uiHidden) winset(src, "mainwindow.mainvsplit", "right=")
-			else winset(src, "mainwindow.mainvsplit", "right=rpane")
+			if(client.nexus_chat_hud) client.nexus_chat_hud.setVisible(!client.uiHidden)
 
 mob/proc
 	StatOverlayUpdateLoop()
@@ -165,9 +236,8 @@ mob/verb
 		set hidden = 1
 		if(!client) return
 		client.show_chatbox = !client.show_chatbox
-		var/bool = "true"
-		if(!client.show_chatbox) bool = "false"
-		winset(src, "outputwindow", "is-visible=[bool]")
+		if(!client.nexus_chat_hud && client.show_chatbox) initializeNexusChatHud()
+		else if(client.nexus_chat_hud) client.nexus_chat_hud.setVisible(client.show_chatbox)
 
 	SettingsButtonClicked()
 		set hidden = 1
@@ -201,11 +271,8 @@ mob/verb
 
 	ToggleTabs()
 		set hidden = 1
-		if(!client) return
-		client.show_tabs = !client.show_tabs
-		var/bool = "true"
-		if(!client.show_tabs) bool = "false"
-		winset(src, "infowindow", "is-visible=[bool]")
+		if(!client || !playerCharacter) return
+		showCharacterSheet()
 
 	ToggleBars()
 		set hidden = 1
@@ -245,23 +312,8 @@ mob/verb
 
 	PressEnter()
 		set hidden = 1
-		client.show_input = !client.show_input
-		if(classic_ui)
-			if(client.show_input)
-				winset(src, "outputwindow.input1", "is-visible=true")
-				winset(src, "outputwindow.input1", "focus=true")
-			else
-				winset(src, "outputwindow.input1", "focus=false")
-				winset(src, "mapwindow.map", "focus=true")
-			return
-		else
-			if(client.show_input)
-				winset(src, "inputWindow", "is-visible=true")
-				winset(src, "inputWindow.input", "focus=true")
-			else
-				winset(src, "inputWindow", "is-visible=false")
-				if(!classic_ui) winset(src, "mainwindow.map", "focus=true")
-				else winset(src,"mapwindow.map","focus=true")
+		if(!client || !playerCharacter) return
+		spawn() Say()
 
 	//keep in mind BYOND is calling this more than once when you click maximize for some reason
 	//its calling it like 3-5 times per resize
@@ -322,15 +374,35 @@ mob/proc
 		set waitfor=0
 		ShowNexusLoginPrompt()
 
-	NewClicked()
+	NewClicked(selected_slot = 0)
 		set waitfor=0
 		if(playerCharacter) return
+		ensureNexusCharacterSlots()
+		if(!selected_slot)
+			for(var/slot = 1, slot <= NEXUS_CHARACTER_SLOT_LIMIT, slot++)
+				if(!hasSave(slot))
+					selected_slot = slot
+					break
+		if(!selected_slot || hasSave(selected_slot))
+			alert(src, "All three character slots are occupied.")
+			ShowNexusLoginPrompt()
+			return
+		active_character_slot = clampNexusCharacterSlot(selected_slot)
 		return ClickMakeNewCharacter()
 
-	LoadClicked()
+	LoadClicked(selected_slot = 0)
 		set waitfor=0
 		if(playerCharacter) return
-		if(!hasSave()) return
+		ensureNexusCharacterSlots()
+		if(!selected_slot)
+			for(var/slot = 1, slot <= NEXUS_CHARACTER_SLOT_LIMIT, slot++)
+				if(hasSave(slot))
+					selected_slot = slot
+					break
+		if(!selected_slot || !hasSave(selected_slot))
+			ShowNexusLoginPrompt()
+			return
+		active_character_slot = clampNexusCharacterSlot(selected_slot)
 		if(load())
 			StuffThatRunsIfYouClickNewOrLoad()
 			return 1
@@ -338,11 +410,8 @@ mob/proc
 	ShowNexusLoginPrompt()
 		if(playerCharacter) return
 		while(!can_login || world.time < 100) sleep(10)
-		switch(alert(src, "Enter the Nexus", "Nexus Exodus", "New Character", "Load Character"))
-			if("New Character") NewClicked()
-			if("Load Character")
-				if(!hasSave())
-					alert(src, "You do not have any saved characters")
-					NewClicked()
-					return
-				LoadClicked()
+		ensureNexusCharacterSlots()
+		if(!client) return
+		if(client.nexus_character_select) del(client.nexus_character_select)
+		client.nexus_character_select = new /datum/NexusCharacterSelect(src)
+		client.nexus_character_select.show()

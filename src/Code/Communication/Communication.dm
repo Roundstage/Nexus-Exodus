@@ -1,9 +1,3 @@
-var/list/nexus_chat_output_controls = list(
-	"all" = list("General.output", "General2.output2", "General3.output3"),
-	"ic" = list("IC.ICoutput", "IC2.ICoutput2", "IC3.ICoutput3"),
-	"ooc" = list("OOC.OOCoutput", "OOC2.OOCoutput2", "OOC3.OOCoutput3"),
-	"combat" = list("Combat.Combatoutput", "Combat2.Combatoutput2", "Combat3.Combatoutput3"))
-
 proc/normalizeNexusChatChannel(channel)
 	channel = lowertext("[channel]")
 	if(!(channel in list("all", "ic", "ooc", "combat"))) return "all"
@@ -38,14 +32,7 @@ mob/proc
 	receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
 		if(!client || !message) return
 		channel = normalizeNexusChatChannel(channel)
-		var/list/destinations = list()
-		var/list/all_destinations = nexus_chat_output_controls["all"]
-		for(var/control_id in all_destinations) destinations += control_id
-		if(channel != "all")
-			var/list/channel_destinations = nexus_chat_output_controls[channel]
-			for(var/control_id in channel_destinations) destinations += control_id
-		for(var/control_id in destinations)
-			src << output(message, control_id)
+		client.receiveNexusHudChatMessage(message, channel)
 		if(write_log)
 			var/log_key = source_key
 			if(!log_key) log_key = key
