@@ -1968,7 +1968,7 @@ mob/proc/IncreaseGod_FistLevel()
 
 	if(old_God_Fist_level == 20) PowerUpGoNextForm()
 	CheckSuperGod_Fist()
-	setNexusGlow(super_God_Fist ? "#ff5570" : "#ff293d", 2.8 + min(God_Fist_level, 20) * 0.04, 175 + min(God_Fist_level, 20) * 3)
+	setNexusGlow(super_God_Fist ? "#ff5570" : "#ff293d", 2.8 + min(God_Fist_level, 20) * 0.04, 175 + min(God_Fist_level, 20) * 3, 'NexusLightGradient.dmi', 8, "aura")
 
 mob/var/tmp/obj/Ultra_Super_Saiyan/ussj_obj
 
@@ -2163,12 +2163,16 @@ mob/proc/Aura_Overlays(remove_only)
 	InitSuperGod_FistAura()
 
 	if(!Auras) for(var/obj/Auras/A in src) Auras=A
-	if(!Auras) return
+	if(!Auras)
+		if(remove_only || (BPpcnt<=100 && !God_Fist_level)) clearNexusAuraGlow()
+		else updateNexusAuraGlow()
+		return
 
 	if(remove_only || (BPpcnt<=100 && !God_Fist_level))
 		overlays -= Auras.Old
 		underlays -= Auras.Old
 		underlays -= super_God_Fist_aura
+		clearNexusAuraGlow()
 		Add_Sparks()
 
 	else
@@ -2217,6 +2221,7 @@ mob/proc/Aura_Overlays(remove_only)
 
 		if(is_gold_form) underlays += I
 		overlays += I
+		updateNexusAuraGlow()
 
 		if(ultra_instinct) underlays += I
 		//overlays += I

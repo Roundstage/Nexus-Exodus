@@ -972,7 +972,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/BeginChargingFinalExplosion
 - Signature: `BeginChargingFinalExplosion()`
 - Inputs: None
-- Purpose: Handle begin charging final explosion.
+- Purpose: Begin Final Explosion charging and grow a warm, flickering action light alongside its visual power.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -986,14 +986,14 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/FinalExplosionChargeupGraphics
 - Signature: `FinalExplosionChargeupGraphics()`
 - Inputs: None
-- Purpose: Handle final explosion chargeup graphics.
+- Purpose: Create the charge effect with an attached warm gradient light that follows the character.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/FinalExplosionGraphics
 - Signature: `FinalExplosionGraphics()`
 - Inputs: None
-- Purpose: Handle final explosion graphics.
+- Purpose: Expand the Final Explosion effect and its light together, capped at the lighting system's twelve-tile testable range.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1607,7 +1607,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/SpiritBombBegin
 - Signature: `SpiritBombBegin(obj/Attacks/Genki_Dama/sb)`
 - Inputs: obj/Attacks/Genki_Dama/sb
-- Purpose: Handle spirit bomb begin.
+- Purpose: Begin Spirit Bomb construction, attach the caster's charge light, and create the attack projectile whose own light grows through its automatic size profile.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1656,7 +1656,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/SpiritBombDone
 - Signature: `SpiritBombDone(obj/Attacks/Genki_Dama/sb)`
 - Inputs: obj/Attacks/Genki_Dama/sb
-- Purpose: Handle spirit bomb done.
+- Purpose: End Spirit Bomb charging state and clear the caster's temporary action light.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3465,7 +3465,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/Aura_Overlays
 - Signature: `mob/proc/Aura_Overlays(remove_only)`
 - Inputs: remove_only
-- Purpose: Handle aura overlays.
+- Purpose: Synchronize legacy aura overlays with an independent attack-colored lighting emitter; removal clears only the aura layer and preserves transformation/action lights.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

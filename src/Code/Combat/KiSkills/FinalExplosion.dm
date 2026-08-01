@@ -52,6 +52,7 @@ mob
 		DoFinalExplosion()
 			set waitfor=0
 			charging_final_explosion = 0
+			clearNexusActionGlow()
 
 			FinalExplosionGraphics()
 			FinalExplosionDamage()
@@ -71,6 +72,7 @@ mob
 			AlterInputDisabled(1)
 			final_explosion_dmg = 5
 			final_explosion_visual_power = 15
+			setNexusActionGlow("#ffe06b", 2.8, 210, 'NexusLightGradient.dmi', 8, "charge")
 
 			//mild knockaway and stun
 			for(var/mob/m in view(2,src)) if(m != src)
@@ -87,6 +89,7 @@ mob
 				else
 					final_explosion_dmg = min(25, final_explosion_dmg + (20 / final_explosion_max_charge_seconds))
 					final_explosion_visual_power += 25
+					setNexusActionGlow("#ffe06b", Clamp(2.5 + sqrt(final_explosion_visual_power) * 0.13, 2.8, 4.6), Clamp(190 + round(final_explosion_visual_power * 0.2), 190, 245), 'NexusLightGradient.dmi', 9, "charge")
 				sleep(10 * spirit_doll_final_explosion_time_mult)
 
 		FinalExplosionDamage()
@@ -112,6 +115,7 @@ mob
 			e.layer = layer + 0.1
 			e.transform *= 0.11
 			e.alpha = 200
+			e.setNexusGlow("#ffe06b", 3.2, 220, 'NexusLightGradient.dmi', 9, "charge")
 			final_explosion_explosion_obj = e
 			var/anim_time = final_explosion_max_charge_seconds * 10
 			if(Class == "Spirit Doll") anim_time *= spirit_doll_final_explosion_time_mult
@@ -126,6 +130,7 @@ mob
 			if(!e) return
 			final_explosion_explosion_obj = null
 			e.loc = loc
+			e.setNexusGlow("#fff08a", Clamp(explosion_total_size * 2.2, 4, 12), 255, 'NexusLightGradient.dmi', 10, "blast")
 
 			var/anim_time = 4
 			animate(e, transform = matrix() * 0.115, time = anim_time)
@@ -138,6 +143,7 @@ mob
 			anim_time = 15
 			animate(e, alpha = 0, time = anim_time)
 			sleep(anim_time + 1)
+			e.clearNexusGlow()
 			del(e)
 
 turf

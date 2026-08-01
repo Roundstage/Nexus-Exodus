@@ -44,6 +44,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/NexusLighting/PlaneMaster") && text2path("/obj/NexusLighting/Emitter"), "screen lighting plane types are missing")
 	nexusSmokeAssert(text2path("/mob/verb/toggleNexusLighting") && text2path("/mob/Admin2/verb/testNexusLighting"), "lighting control verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin2/verb/setMaximumDarkness") && text2path("/mob/Admin2/verb/testNexusGlow") && text2path("/mob/Admin2/verb/testNexusBlast"), "dedicated lighting test verbs are missing")
+	nexusSmokeAssert(text2path("/mob/Admin2/verb/testNexusBeamLighting") && text2path("/mob/Admin2/verb/testNexusLightVariations"), "beam or flicker lighting test verbs are missing")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusLightingTestBlast"), "harmless lighting test blast is missing")
 	var/obj/NexusLighting/PlaneMaster/lighting_plane = new
 	var/obj/NexusLighting/Emitter/lighting_emitter = new
@@ -61,15 +62,48 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(lighting_emitter.core_visual && lighting_emitter.range_tiles == 1 && lighting_emitter.gradient_offset == 10 && lighting_emitter.icon_state == "10" && lighting_emitter.core_visual.icon_state == "1", "layered glow did not apply its requested gradient profile")
 	nexusSmokeAssert(lighting_emitter.alpha < lighting_emitter.core_visual.alpha && lighting_emitter.base_core_scale < lighting_emitter.base_range_scale, "layered glow does not have a compact core and softer ranged falloff")
 	nexusSmokeAssert(round(getNexusGlowRangeScale(1) * 256 / world.icon_size, 0.1) == 1, "glow size no longer maps to total tile diameter")
+	lighting_emitter.configureNexusEmitter("#ffffff", 1.1, 145, 'NexusLightGradient.dmi', TRUE, 4, "small_blast")
+	nexusSmokeAssert(lighting_emitter.variation_style == "small_blast" && lighting_emitter.variation_enabled && lighting_emitter.range_tiles == 1.1, "small-blast flicker profile was not applied")
 	nexusSmokeAssert(static_light.plane == 15 && static_light.getRenderedAlpha() == 210 && static_light.core_visual, "legacy light sources were not adapted to layered screen lighting")
 	var/list/blue_glow_profile = getNexusTransformationGlowProfile("saiyan_blue")
 	var/list/test_ambient_matrix = getNexusAmbientMatrix(rgb(16, 22, 38, 255))
 	nexusSmokeAssert(islist(test_ambient_matrix) && test_ambient_matrix[4] == "#0000" && blue_glow_profile["color"] == "#42d9ff" && blue_glow_profile["alpha"] >= 200, "ambient alpha reset or transformation glow profiles are invalid")
 	var/mob/NexusSmokeTest/lighting_owner = new
-	var/obj/NexusLighting/Emitter/action_glow = lighting_owner.setNexusActionGlow("#ffffff", 1, 255, 'NexusLightGradient.dmi', 10)
+	var/obj/NexusLighting/Emitter/action_glow = lighting_owner.setNexusActionGlow("#ffffff", 1, 255, 'NexusLightGradient.dmi', 10, "charge")
+	var/obj/NexusLighting/Emitter/aura_glow = lighting_owner.setNexusAuraGlow("#76dfff", 3, 190, 'NexusLightGradient.dmi', 8, "aura")
 	nexusSmokeAssert(action_glow && (action_glow in lighting_owner.vis_contents) && action_glow.gradient_offset == 10, "independent beam/action glow was not attached with its requested falloff")
+	nexusSmokeAssert(aura_glow && aura_glow != action_glow && (aura_glow in lighting_owner.vis_contents) && aura_glow.variation_style == "aura", "independent aura flicker was not attached")
 	lighting_owner.clearNexusActionGlow()
 	nexusSmokeAssert(!lighting_owner.nexus_action_glow, "independent beam/action glow was not cleared")
+	lighting_owner.clearNexusAuraGlow()
+	nexusSmokeAssert(!lighting_owner.nexus_aura_glow, "independent aura glow was not cleared")
+	var/obj/Blast/small_light_projectile = new
+	var/obj/Attacks/Buster_Barrage/small_light_attack = new
+	small_light_projectile.percent_damage = 0.4
+	small_light_projectile.from_attack = small_light_attack
+	var/list/small_light_profile = getNexusProjectileLightProfile(small_light_projectile)
+	var/obj/Blast/large_light_projectile = new
+	var/obj/Attacks/Big_Bang_Attack/large_light_attack = new
+	large_light_projectile.percent_damage = 22
+	large_light_projectile.Explosive = 4
+	large_light_projectile.from_attack = large_light_attack
+	var/list/large_light_profile = getNexusProjectileLightProfile(large_light_projectile)
+	var/large_icon_diameter = getNexusProjectileVisualDiameter(large_light_attack.icon)
+	nexusSmokeAssert(large_icon_diameter >= world.icon_size && getNexusProjectileVisualDiameter(large_light_attack.icon) == large_icon_diameter, "projectile icon diameter cache is unstable")
+	var/obj/Blast/beam_light_projectile = new
+	beam_light_projectile.Beam = 1
+	beam_light_projectile.Owner = lighting_owner
+	var/list/beam_light_profile = getNexusProjectileLightProfile(beam_light_projectile)
+	nexusSmokeAssert(small_light_profile["variation"] == "small_blast" && small_light_profile["size"] <= 1.15, "small blasts do not receive a compact flickering light")
+	nexusSmokeAssert(large_light_profile["variation"] == "blast" && large_light_profile["size"] >= 4.2 && large_light_profile["size"] > small_light_profile["size"], "large blasts do not receive their larger light profile")
+	nexusSmokeAssert(beam_light_profile["variation"] == "beam" && beam_light_profile["size"] <= 2 && beam_light_profile["alpha"] < large_light_profile["alpha"], "beam segments do not receive a compact trail-light profile")
+	small_light_projectile.Is_Ki = 0
+	nexusSmokeAssert(!getNexusProjectileLightProfile(small_light_projectile), "physical projectiles incorrectly emit ki lighting")
+	del(small_light_projectile)
+	del(small_light_attack)
+	del(large_light_projectile)
+	del(large_light_attack)
+	del(beam_light_projectile)
 	del(lighting_plane)
 	del(lighting_emitter)
 	del(static_light)

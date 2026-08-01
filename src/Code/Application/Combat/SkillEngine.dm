@@ -438,7 +438,6 @@ datum/SkillEngine
 			a.from_attack = skill_obj
 			a.icon = skill_obj.icon
 			CenterIcon(a)
-			a.setNexusGlow(getNexusAttackGlowColor(skill_obj), 2.2, 195)
 			a.Shockwave = ToOne(1.4 * skill_obj.Shockwave / skill_obj.blast_refire ** 0.4)
 			if(prob(100)) a.Explosive = skill_obj.Explosive
 			a.dir = user.dir
@@ -475,10 +474,12 @@ datum/SkillEngine
 		skill_obj.Skill_Increase(2, user)
 		user.attacking = 3
 		skill_obj.charging = 1
+		user.startNexusKiCharge(skill_obj, 1.6)
 		user.overlays += user.BlastCharge
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 30)
 		sleep(TickMult(18 * user.Speed_delay_mult(severity = 0.4)))
 		user.overlays -= user.BlastCharge
+		user.clearNexusActionGlow()
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 70)
 			user.Say("BIG BANG ATTACK!!")
@@ -508,10 +509,12 @@ datum/SkillEngine
 		skill_obj.Skill_Increase(2, user)
 		user.attacking = 3
 		user.moving_charge = 1
+		user.startNexusKiCharge(skill_obj, 1.05)
 		user.overlays += user.BlastCharge
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(TickMult(7.5 * user.Speed_delay_mult(severity = 0.6)))
 		user.overlays -= user.BlastCharge
+		user.clearNexusActionGlow()
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 40)
 			var/obj/Blast/a = get_cached_blast()
@@ -540,10 +543,12 @@ datum/SkillEngine
 		skill_obj.Skill_Increase(2, user)
 		user.attacking = 3
 		skill_obj.charging = 1
+		user.startNexusKiCharge(skill_obj, 0.8)
 		user.overlays += user.BlastCharge
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(TickMult(5 * user.Speed_delay_mult(severity = 0.6)))
 		user.overlays -= user.BlastCharge
+		user.clearNexusActionGlow()
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('Blast.wav', volume = 30)
 			var/obj/Blast/a = get_cached_blast()
@@ -568,11 +573,13 @@ datum/SkillEngine
 		if(user.cant_blast()) return 0
 		if(user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)) return 0
 		user.attacking = 3
+		user.startNexusKiCharge(skill_obj, 0.75)
 		user.overlays += user.BlastCharge
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		skill_obj.charging = 1
 		sleep(TickMult(0.1 * skill_obj.ChargeTime * user.Speed_delay_mult(severity = 0.4)))
 		if(user) user.overlays -= user.BlastCharge
+		if(user) user.clearNexusActionGlow()
 		if(!user.cant_blast(ignore_attack_check = 1))
 			player_view(10, user) << sound('BasicbeamFire.ogg', volume = 10)
 			var/amount = Clamp(ToOne(17 * user.Eff ** 0.25), 1, 20)
@@ -692,6 +699,8 @@ datum/SkillEngine
 		user.attack_barrier_obj = skill_obj
 		if(skill_obj.Firing_Attack_Barrier)
 			skill_obj.Firing_Attack_Barrier = 0
+			user.overlays -= user.BlastCharge
+			user.clearNexusActionGlow()
 			user << "You stop using Attack Barrier"
 			return 1
 		if(user.cant_blast()) return 0
@@ -700,6 +709,7 @@ datum/SkillEngine
 		skill_obj.Experience += 0.05
 		skill_obj.Firing_Attack_Barrier = 1
 
+		user.startNexusKiCharge(skill_obj, 0.85)
 		user.overlays += user.BlastCharge
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
 		sleep(15 + (2 * user.Speed_delay_mult(severity = 0.5)))
@@ -743,6 +753,7 @@ datum/SkillEngine
 		skill_obj.Firing_Attack_Barrier = 0
 		user.attacking = 0
 		user.overlays -= user.BlastCharge
+		user.clearNexusActionGlow()
 		return 1
 
 	proc/castShockwave(mob/user, obj/Attacks/Shockwave/skill_obj)
@@ -898,6 +909,7 @@ datum/SkillEngine
 
 		user.attacking = 3
 		skill_obj.charging = 1
+		user.startNexusKiCharge(skill_obj, 1.15)
 		user.KikohoAtmosphereEffect()
 		user.KikohoChargeupEffect(grow_til = 0.6)
 
@@ -936,6 +948,7 @@ datum/SkillEngine
 
 		user.attacking = 0
 		skill_obj.charging = 0
+		user.clearNexusActionGlow()
 		return 1
 
 	proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)
@@ -1218,6 +1231,7 @@ datum/SkillEngine
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		if(skill_obj) skill_obj.Skill_Increase(3, user)
 		player_view(10, user) << sound('BasicbeamCharge.ogg', volume = 20)
+		user.startNexusKiCharge(skill_obj, 1)
 
 		var/obj/Blast/A = get_cached_blast()
 		A.Sokidan = 1
@@ -1239,6 +1253,7 @@ datum/SkillEngine
 
 		if(user.h1_overhead_gfx)
 			user.icon_state = ""
+		user.clearNexusActionGlow()
 
 		if(A && A.z)
 			player_view(10, user) << sound('Blast.wav', volume = 40)
@@ -1281,6 +1296,7 @@ datum/SkillEngine
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		if(skill_obj) skill_obj.Skill_Increase(3, user)
 		player_view(10, user) << sound('DestructodiscCharge.ogg', volume = 35)
+		user.startNexusKiCharge(skill_obj, 1.15)
 
 		var/obj/Blast/A = get_cached_blast()
 		A.Sokidan = 1
@@ -1297,10 +1313,9 @@ datum/SkillEngine
 		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1
 		A.blast_go_over_owner = 1
-		A.setNexusGlow("#fff176", 2.5, 220)
-		user.pulseNexusGlow("#fff176", 2.8, 195, 12)
 
 		sleep(TickMult(12 * user.Speed_delay_mult(severity = 0.3)))
+		if(user) user.clearNexusActionGlow()
 		if(user && user.h1_overhead_gfx)
 			user.icon_state = ""
 		if(A)

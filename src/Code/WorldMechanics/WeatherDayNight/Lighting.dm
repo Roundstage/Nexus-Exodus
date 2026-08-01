@@ -7,14 +7,33 @@ pixel offset aligned to their average pixel location (x * 32 and y * 32)
 
 var/list
 	light_sources = new
+	nexus_projectile_icon_diameters = new
+
+var/nexus_projectile_glow_serial_counter = 0
 
 #define NEXUS_LIGHTING_PLANE 15
 #define NEXUS_HUD_PLANE 20
 #define NEXUS_GLOW_MASK_DIAMETER 256
 #define NEXUS_GLOW_DEFAULT_OFFSET 7
+#define NEXUS_LIGHT_VARIATION_STEADY "steady"
+#define NEXUS_LIGHT_VARIATION_SMALL_BLAST "small_blast"
+#define NEXUS_LIGHT_VARIATION_BLAST "blast"
+#define NEXUS_LIGHT_VARIATION_BEAM "beam"
+#define NEXUS_LIGHT_VARIATION_BEAM_SOURCE "beam_source"
+#define NEXUS_LIGHT_VARIATION_AURA "aura"
+#define NEXUS_LIGHT_VARIATION_CHARGE "charge"
 
 proc/getNexusGlowRangeScale(size_tiles)
 	return max(0.25, size_tiles) * world.icon_size / NEXUS_GLOW_MASK_DIAMETER
+
+proc/getNexusProjectileVisualDiameter(icon_resource)
+	if(!icon_resource) return world.icon_size
+	var/cache_key = "[icon_resource]"
+	if(nexus_projectile_icon_diameters[cache_key]) return nexus_projectile_icon_diameters[cache_key]
+	var/icon/visual_icon = icon(icon_resource)
+	var/visual_diameter = max(visual_icon.Width(), visual_icon.Height())
+	nexus_projectile_icon_diameters[cache_key] = visual_diameter
+	return visual_diameter
 
 proc/getNexusAmbientMatrix(ambient_color)
 	if(!ambient_color) ambient_color = rgb(255, 255, 255, 255)
@@ -52,7 +71,102 @@ proc/getNexusAttackGlowColor(obj/Attacks/attack)
 	if(istype(attack, /obj/Attacks/RoleplayBeam/DoubleSunday)) return "#ff4d5f"
 	if(istype(attack, /obj/Attacks/RoleplayBeam/PhotonFlash)) return "#ffe96b"
 	if(istype(attack, /obj/Attacks/RoleplayBeam/BusterCannon)) return "#4ca8ff"
+	if(istype(attack, /obj/Attacks/Genki_Dama/Death_Ball)) return "#b767ff"
+	if(istype(attack, /obj/Attacks/Genki_Dama/Supernova)) return "#ff9b3d"
+	if(istype(attack, /obj/Attacks/Genki_Dama)) return "#76e8ff"
+	if(istype(attack, /obj/Attacks/Big_Bang_Attack)) return "#559dff"
+	if(istype(attack, /obj/Attacks/Buster_Barrage)) return "#72ff8c"
+	if(istype(attack, /obj/Attacks/Sokidan)) return "#d8fbff"
 	return "#59d8ff"
+
+proc/getNexusProjectileLightProfile(obj/Blast/projectile)
+	if(!projectile || !projectile.Is_Ki) return null
+	var/obj/Attacks/attack = istype(projectile.from_attack, /obj/Attacks) ? projectile.from_attack : null
+	var/light_color = getNexusAttackGlowColor(attack)
+	var/visual_diameter = getNexusProjectileVisualDiameter(projectile.icon)
+	var/visual_tiles = max(0.5, visual_diameter / world.icon_size)
+
+	if(projectile.Beam)
+		var/beam_scale = 1
+		if(ismob(projectile.Owner))
+			var/mob/beam_owner = projectile.Owner
+			beam_scale = beam_owner.get_beam_size()
+		return list(
+			"color" = light_color,
+			"size" = Clamp(0.85 + max(visual_tiles, beam_scale) * 0.35, 1.1, 2),
+			"alpha" = Clamp(round(105 + beam_scale * 18), 115, 155),
+			"offset" = 6,
+			"variation" = NEXUS_LIGHT_VARIATION_BEAM)
+
+	if(istype(projectile, /obj/Blast/Genki_Dama))
+		return list(
+			"color" = light_color,
+			"size" = Clamp(3 + projectile.Size * 0.22, 3, 7.5),
+			"alpha" = 245,
+			"offset" = 10,
+			"variation" = NEXUS_LIGHT_VARIATION_BLAST)
+
+	var/light_size
+	var/light_alpha
+	var/gradient_offset
+	var/variation_style
+	if(projectile.percent_damage <= 0.6 || visual_tiles <= 0.75)
+		light_size = Clamp(0.85 + visual_tiles * 0.3, 0.95, 1.2)
+		light_alpha = 145
+		gradient_offset = 4
+		variation_style = NEXUS_LIGHT_VARIATION_SMALL_BLAST
+	else if(projectile.percent_damage <= 3)
+		light_size = Clamp(1.25 + visual_tiles * 0.35, 1.4, 1.8)
+		light_alpha = 175
+		gradient_offset = 6
+		variation_style = NEXUS_LIGHT_VARIATION_SMALL_BLAST
+	else if(projectile.percent_damage <= 8 && projectile.Explosive <= 2)
+		light_size = Clamp(1.65 + visual_tiles * 0.4, 1.9, 2.5)
+		light_alpha = 205
+		gradient_offset = 7
+		variation_style = NEXUS_LIGHT_VARIATION_BLAST
+	else
+		light_size = Clamp(2.4 + visual_tiles * 0.55 + projectile.Explosive * 0.18, 2.8, 4.4)
+		light_alpha = 235
+		gradient_offset = 9
+		variation_style = NEXUS_LIGHT_VARIATION_BLAST
+
+	if(istype(attack, /obj/Attacks/Buster_Barrage) || istype(attack, /obj/Attacks/Makosen) || istype(attack, /obj/Attacks/Scatter_Shot) || istype(attack, /obj/Attacks/Attack_Barrier))
+		light_size = min(light_size, 1.15)
+		light_alpha = min(light_alpha, 155)
+		gradient_offset = 4
+		variation_style = NEXUS_LIGHT_VARIATION_SMALL_BLAST
+	else if(istype(attack, /obj/Attacks/Kienzan) || istype(attack, /obj/Attacks/Sokidan))
+		light_size = max(light_size, 2.35)
+		light_alpha = max(light_alpha, 220)
+		gradient_offset = 8
+	else if(istype(attack, /obj/Attacks/Big_Bang_Attack))
+		light_size = max(light_size, 4.2)
+		light_alpha = 245
+		gradient_offset = 10
+	else if(istype(attack, /obj/Attacks/Charge))
+		light_size = max(light_size, 2.65)
+		light_alpha = max(light_alpha, 225)
+		gradient_offset = 8
+
+	return list(
+		"color" = light_color,
+		"size" = light_size,
+		"alpha" = light_alpha,
+		"offset" = gradient_offset,
+		"variation" = variation_style)
+
+proc/getNexusAuraGlowProfile(mob/player)
+	if(!player) return null
+	if(player.God_Fist_level || player.super_God_Fist)
+		return list("color" = player.super_God_Fist ? "#ff5570" : "#ff293d", "size" = 3.3, "alpha" = 205)
+	var/list/transformation_profile = getNexusTransformationGlowProfile(player.detectPrimaryTransformation())
+	if(transformation_profile)
+		return list(
+			"color" = transformation_profile["color"],
+			"size" = max(2.6, transformation_profile["size"] + 0.35),
+			"alpha" = max(165, round(transformation_profile["alpha"] * 0.85)))
+	return list("color" = "#76dfff", "size" = 2.65, "alpha" = 175)
 
 client
 	var
@@ -114,6 +228,7 @@ obj/NexusLighting
 			range_tiles = 2
 			light_intensity = 180
 			variation_enabled = TRUE
+			variation_style = NEXUS_LIGHT_VARIATION_STEADY
 			gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET
 			base_outer_alpha = 60
 			base_core_alpha = 148
@@ -134,12 +249,13 @@ obj/NexusLighting
 			core_visual = null
 			. = ..()
 
-		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
+		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			animate(src)
 			if(core_visual) animate(core_visual)
 			range_tiles = Clamp(new_range_tiles, 0.25, 12)
 			light_intensity = Clamp(new_intensity, 0, 255)
 			variation_enabled = enable_variation
+			variation_style = new_variation_style || NEXUS_LIGHT_VARIATION_STEADY
 			gradient_offset = round(Clamp(new_gradient_offset, 1, 10))
 			icon = light_icon
 			icon_state = light_icon == 'NexusLightGradient.dmi' ? "[gradient_offset]" : ""
@@ -148,6 +264,10 @@ obj/NexusLighting
 			base_core_scale = base_range_scale * 0.42
 			base_outer_alpha = Clamp(round(light_intensity * 0.42), 1, 120)
 			base_core_alpha = Clamp(round(light_intensity * 0.78), 1, 220)
+			if(variation_style == NEXUS_LIGHT_VARIATION_BEAM)
+				base_core_scale = base_range_scale * 0.3
+				base_outer_alpha = Clamp(round(light_intensity * 0.32), 1, 90)
+				base_core_alpha = Clamp(round(light_intensity * 0.5), 1, 125)
 			alpha = base_outer_alpha
 			transform = matrix() * base_range_scale
 			if(core_visual)
@@ -158,10 +278,51 @@ obj/NexusLighting
 				core_visual.transform = matrix() * base_core_scale
 			if(enable_variation && light_intensity > 0)
 				var/variation_time = rand(7, 11)
-				animate(src, alpha = max(1, round(base_outer_alpha * 0.9)), transform = matrix() * base_range_scale * 1.025, time = variation_time, loop = -1, easing = SINE_EASING)
+				var/outer_alpha_ratio = 0.9
+				var/outer_scale_ratio = 1.025
+				var/core_alpha_ratio = 0.92
+				var/core_scale_ratio = 0.96
+				switch(variation_style)
+					if(NEXUS_LIGHT_VARIATION_SMALL_BLAST)
+						variation_time = rand(2, 4)
+						outer_alpha_ratio = 0.7
+						outer_scale_ratio = 1.08
+						core_alpha_ratio = 0.82
+						core_scale_ratio = 0.93
+					if(NEXUS_LIGHT_VARIATION_BLAST)
+						variation_time = rand(3, 6)
+						outer_alpha_ratio = 0.8
+						outer_scale_ratio = 1.055
+						core_alpha_ratio = 0.87
+						core_scale_ratio = 0.95
+					if(NEXUS_LIGHT_VARIATION_BEAM)
+						variation_time = rand(2, 4)
+						outer_alpha_ratio = 0.84
+						outer_scale_ratio = 1.025
+						core_alpha_ratio = 0.88
+						core_scale_ratio = 0.97
+					if(NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
+						variation_time = rand(2, 5)
+						outer_alpha_ratio = 0.7
+						outer_scale_ratio = 1.1
+						core_alpha_ratio = 0.78
+						core_scale_ratio = 0.92
+					if(NEXUS_LIGHT_VARIATION_AURA)
+						variation_time = rand(3, 6)
+						outer_alpha_ratio = 0.66
+						outer_scale_ratio = 1.085
+						core_alpha_ratio = 0.74
+						core_scale_ratio = 0.91
+					if(NEXUS_LIGHT_VARIATION_CHARGE)
+						variation_time = rand(2, 5)
+						outer_alpha_ratio = 0.58
+						outer_scale_ratio = 1.12
+						core_alpha_ratio = 0.68
+						core_scale_ratio = 0.89
+				animate(src, alpha = max(1, round(base_outer_alpha * outer_alpha_ratio)), transform = matrix() * base_range_scale * outer_scale_ratio, time = variation_time, loop = -1, easing = SINE_EASING)
 				animate(src, alpha = base_outer_alpha, transform = matrix() * base_range_scale, time = variation_time, easing = SINE_EASING)
 				if(core_visual)
-					animate(core_visual, alpha = max(1, round(base_core_alpha * 0.92)), transform = matrix() * base_core_scale * 0.96, time = variation_time + 1, loop = -1, easing = SINE_EASING)
+					animate(core_visual, alpha = max(1, round(base_core_alpha * core_alpha_ratio)), transform = matrix() * base_core_scale * core_scale_ratio, time = variation_time + 1, loop = -1, easing = SINE_EASING)
 					animate(core_visual, alpha = base_core_alpha, transform = matrix() * base_core_scale, time = variation_time + 1, easing = SINE_EASING)
 			return src
 
@@ -169,14 +330,16 @@ atom/movable
 	var/tmp
 		obj/NexusLighting/Emitter/nexus_glow
 		obj/NexusLighting/Emitter/nexus_action_glow
+		obj/NexusLighting/Emitter/nexus_aura_glow
 		nexus_action_glow_generation = 0
+		nexus_aura_glow_generation = 0
 
 	proc
-		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
+		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			if(!nexus_glow)
 				nexus_glow = new
 				vis_contents += nexus_glow
-			nexus_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset)
+			nexus_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
 			CenterIcon(nexus_glow)
 			return nexus_glow
 
@@ -186,12 +349,12 @@ atom/movable
 			del(nexus_glow)
 			nexus_glow = null
 
-		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
+		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			nexus_action_glow_generation++
 			if(!nexus_action_glow)
 				nexus_action_glow = new
 				vis_contents += nexus_action_glow
-			nexus_action_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset)
+			nexus_action_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
 			CenterIcon(nexus_action_glow)
 			return nexus_action_glow
 
@@ -201,6 +364,22 @@ atom/movable
 			vis_contents -= nexus_action_glow
 			del(nexus_action_glow)
 			nexus_action_glow = null
+
+		setNexusAuraGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_AURA)
+			nexus_aura_glow_generation++
+			if(!nexus_aura_glow)
+				nexus_aura_glow = new
+				vis_contents += nexus_aura_glow
+			nexus_aura_glow.configureNexusEmitter(light_color, size, light_alpha, light_icon, TRUE, gradient_offset, variation_style)
+			CenterIcon(nexus_aura_glow)
+			return nexus_aura_glow
+
+		clearNexusAuraGlow()
+			nexus_aura_glow_generation++
+			if(!nexus_aura_glow) return
+			vis_contents -= nexus_aura_glow
+			del(nexus_aura_glow)
+			nexus_aura_glow = null
 
 		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor = 0
@@ -221,7 +400,31 @@ mob/proc/updateTransformationGlow()
 	if(!profile)
 		clearNexusGlow()
 		return
-	setNexusGlow(profile["color"], profile["size"], profile["alpha"])
+	setNexusGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
+
+obj/Blast/proc/updateNexusProjectileGlow()
+	var/list/profile = getNexusProjectileLightProfile(src)
+	if(!profile)
+		clearNexusGlow()
+		return
+	if(nexus_glow && nexus_glow.color == profile["color"] && abs(nexus_glow.range_tiles - profile["size"]) < 0.01 && nexus_glow.light_intensity == profile["alpha"] && nexus_glow.gradient_offset == profile["offset"] && nexus_glow.variation_style == profile["variation"])
+		return nexus_glow
+	return setNexusGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', profile["offset"], profile["variation"])
+
+mob/proc/startNexusKiCharge(obj/attack, charge_scale = 1)
+	charge_scale = Clamp(charge_scale, 0.5, 2.5)
+	var/obj/Attacks/ki_attack = istype(attack, /obj/Attacks) ? attack : null
+	return setNexusActionGlow(getNexusAttackGlowColor(ki_attack), 1.9 + charge_scale * 0.85, 175 + round(charge_scale * 25), 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
+
+mob/proc/startNexusBeamGlow(obj/Attacks/attack)
+	return setNexusActionGlow(getNexusAttackGlowColor(attack), 3.5, 225, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
+
+mob/proc/updateNexusAuraGlow()
+	var/list/profile = getNexusAuraGlowProfile(src)
+	if(!profile)
+		clearNexusAuraGlow()
+		return
+	return setNexusAuraGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
 
 mob/verb/toggleNexusLighting()
 	set name = "Toggle Lighting"
@@ -244,14 +447,14 @@ obj/Effect/NexusLightingTestBlast
 		clearNexusGlow()
 		. = ..()
 
-mob/proc/launchNexusLightingTestBlast()
+mob/proc/launchNexusLightingTestBlast(light_size = 2.3, light_alpha = 215, variation_style = NEXUS_LIGHT_VARIATION_BLAST)
 	set waitfor = 0
 	if(!loc) return
 	var/obj/Effect/NexusLightingTestBlast/test_blast = new(loc)
 	test_blast.dir = dir
 	test_blast.pixel_x = pixel_x
 	test_blast.pixel_y = pixel_y
-	test_blast.setNexusGlow("#59d8ff", 3.2, 255)
+	test_blast.setNexusGlow("#59d8ff", light_size, light_alpha, 'NexusLightGradient.dmi', variation_style == NEXUS_LIGHT_VARIATION_SMALL_BLAST ? 4 : 8, variation_style)
 	player_view(10, src) << sound('Blast.wav', volume = 20)
 	for(var/flight_step = 1, flight_step <= 14 && test_blast, flight_step++)
 		if(!step(test_blast, test_blast.dir)) break
@@ -260,6 +463,19 @@ mob/proc/launchNexusLightingTestBlast()
 		test_blast.pulseNexusGlow("#c8f7ff", 4.5, 255, 8)
 		sleep(8)
 		if(test_blast) del(test_blast)
+
+mob/proc/launchNexusLightingTestBeam()
+	set waitfor = 0
+	if(!loc) return
+	var/turf/beam_loc = loc
+	for(var/beam_step = 1, beam_step <= 14, beam_step++)
+		beam_loc = get_step(beam_loc, dir)
+		if(!beam_loc || beam_loc.density) break
+		var/obj/Effect/NexusLightingTestBlast/segment = new(beam_loc)
+		segment.dir = dir
+		segment.setNexusGlow("#59d8ff", 1.25, 135, 'NexusLightGradient.dmi', 6, NEXUS_LIGHT_VARIATION_BEAM)
+		spawn(45) if(segment) del(segment)
+		sleep(1)
 
 mob/Admin2/verb/setMaximumDarkness()
 	set name = "Set Maximum Darkness"
@@ -294,11 +510,34 @@ mob/Admin2/verb/testNexusBlast()
 	set category = "Admin"
 	launchNexusLightingTestBlast()
 
+mob/Admin2/verb/testNexusBeamLighting()
+	set name = "Test Lighting Beam"
+	set category = "Admin"
+	launchNexusLightingTestBeam()
+
+mob/Admin2/verb/testNexusLightVariations()
+	set name = "Test Light Variations"
+	set category = "Admin"
+	var/choice = input(src, "Choose a flicker profile. Attached profiles remain for 10 seconds.", "Light Variations") in list("Cancel", "Small Blast", "Standard Blast", "Beam Trail", "Beam Source", "Aura", "Ki Charge")
+	switch(choice)
+		if("Small Blast") launchNexusLightingTestBlast(1.05, 145, NEXUS_LIGHT_VARIATION_SMALL_BLAST)
+		if("Standard Blast") launchNexusLightingTestBlast()
+		if("Beam Trail") launchNexusLightingTestBeam()
+		if("Beam Source") setNexusActionGlow("#59d8ff", 3.5, 225, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
+		if("Aura") setNexusAuraGlow("#76dfff", 3, 190, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
+		if("Ki Charge") setNexusActionGlow("#59d8ff", 2.75, 210, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
+	if(choice in list("Beam Source", "Ki Charge"))
+		var/action_generation = nexus_action_glow_generation
+		spawn(100) if(src && nexus_action_glow_generation == action_generation) clearNexusActionGlow()
+	else if(choice == "Aura")
+		var/aura_generation = nexus_aura_glow_generation
+		spawn(100) if(src && nexus_aura_glow_generation == aura_generation) clearNexusAuraGlow()
+
 mob/Admin2/verb/testNexusLighting()
 	set name = "Test Lighting"
 	set category = "Admin"
 	if(!client) return
-	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Maximum Darkness", "Night", "Day", "White Glow", "Lighting Blast", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
+	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Maximum Darkness", "Night", "Day", "White Glow", "Lighting Blast", "Beam Lighting", "Light Variations", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
 	switch(choice)
 		if("Maximum Darkness") setMaximumDarkness()
 		if("Night")
@@ -307,6 +546,8 @@ mob/Admin2/verb/testNexusLighting()
 			if(current_area) current_area.FadeToDay()
 		if("White Glow") testNexusGlow()
 		if("Lighting Blast") testNexusBlast()
+		if("Beam Lighting") testNexusBeamLighting()
+		if("Light Variations") testNexusLightVariations()
 		if("Warm Attack Glow") pulseNexusGlow("#ff7a35", 4, 230, 50)
 		if("Blue Transformation Glow") pulseNexusGlow("#42d9ff", 4, 230, 50)
 		if("Toggle Personal Lighting") toggleNexusLighting()

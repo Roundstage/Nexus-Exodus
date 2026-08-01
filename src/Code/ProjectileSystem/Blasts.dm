@@ -45,6 +45,7 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 	o.transform *= 0.5
 	o.alpha = 200
 	overlays += o
+	setNexusActionGlow("#72ff8c", 2.35, 175, 'NexusLightGradient.dmi', 6, "aura")
 
 	B.Barraging=1
 	var/projectiles_fired = 0
@@ -83,6 +84,7 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 
 	//overlays -= 'ShieldLegendary.dmi'
 	overlays -= o
+	clearNexusActionGlow()
 
 obj/proc/Buster_Barrage_Move()
 	set waitfor=0
@@ -1165,6 +1167,7 @@ obj/Attacks/Genocide
 			if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
 			Charging=1
 			usr.overlays+='SBombGivePower.dmi'
+			usr.startNexusKiCharge(src, 1)
 			usr.attacking=3
 			sleep(25*usr.Speed_delay_mult(severity=0.5))
 			var/projectiles_fired = 0
@@ -1190,6 +1193,7 @@ obj/Attacks/Genocide
 				else sleep(5)
 
 			usr.overlays-='SBombGivePower.dmi'
+			usr.clearNexusActionGlow()
 			usr.attacking=0
 			Charging=0
 		else Charging=0

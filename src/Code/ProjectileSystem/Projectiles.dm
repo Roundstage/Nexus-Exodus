@@ -38,7 +38,14 @@ obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, hom
 			var/new_size=(P.BPpcnt/100)**0.5
 			if(new_size<0.5) new_size=0.5
 			Update_transform_size(new_size)
+	queueNexusProjectileGlowUpdate()
 	//world<<"BP: [BP]<br>Force: [Force]<br>Offense: [Offense]"
+
+obj/Blast/proc/queueNexusProjectileGlowUpdate()
+	nexus_projectile_glow_serial = ++nexus_projectile_glow_serial_counter
+	var/update_serial = nexus_projectile_glow_serial
+	spawn(1)
+		if(src && nexus_projectile_glow_serial == update_serial) updateNexusProjectileGlow()
 
 mob/var/blast_homing_mod=1
 
@@ -170,6 +177,7 @@ obj/Blast
 	//blend_mode=BLEND_ADD
 	var/tmp/beam_loop_running
 	var/tmp/obj/from_attack //temporary debugging var
+	var/tmp/nexus_projectile_glow_serial
 
 	var
 		Is_Ki=1
@@ -268,6 +276,7 @@ obj/Blast
 			A.icon=icon
 			A.Owner = Owner
 			A.Is_Ki = Is_Ki
+			A.from_attack = from_attack
 			A.BP=BP/4
 			A.Force=Force
 			A.percent_damage=percent_damage
@@ -277,6 +286,7 @@ obj/Blast
 			A.Offense=Offense
 			A.Fatal=Fatal
 			A.Bounce=Bounce
+			A.queueNexusProjectileGlowUpdate()
 			A.startKiProjectileWalk(pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST))
 
 	var/delete_on_next_move=0

@@ -109,7 +109,7 @@ obj/God_Fist
 
 mob/proc/God_Fist(obj/God_Fist/K) if(!K.Using)
 	K.Using=1
-	setNexusGlow("#ff293d", 2.8, 175)
+	setNexusGlow("#ff293d", 2.8, 175, 'NexusLightGradient.dmi', 8, "aura")
 	src<<"<font color=red>You have now enabled [K]. Tap the power up (G) key to use it."
 
 mob/proc/God_Fist_Revert(obj/God_Fist/K)

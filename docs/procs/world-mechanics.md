@@ -1575,8 +1575,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Select neutral daylight or the current area's night color, respecting the client's lighting toggle.
 
 #### atom/movable/proc/setNexusGlow
-- Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
-- Purpose: Attach one reusable two-layer additive light emitter to a moving atom. `size` is the total light diameter in tiles, while `gradient_offset` selects a tight (`1`) through slow (`10`) falloff profile.
+- Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)`
+- Purpose: Attach one reusable two-layer additive light emitter to a moving atom. `size` is the total light diameter in tiles, `gradient_offset` selects a tight (`1`) through slow (`10`) falloff, and `variation_style` selects the steady, blast, beam, aura, or charging cadence.
 
 #### atom/movable/proc/pulseNexusGlow
 - Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
@@ -1586,13 +1586,41 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `getNexusGlowRangeScale(size_tiles)`
 - Purpose: Convert a requested total tile diameter to the transform scale required by the 256px configurable gradient mask. A size of `1` covers one tile.
 
+#### proc/getNexusProjectileVisualDiameter
+- Signature: `getNexusProjectileVisualDiameter(icon_resource)`
+- Purpose: Cache the largest pixel dimension of each projectile icon resource so automatic light classification does not reconstruct the same DMI for every shot in a barrage.
+
 #### obj/NexusLighting/Emitter/proc/configureNexusEmitter
-- Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
-- Purpose: Select one of ten CC0-derived falloff states, compose it with a range-relative compact core, then run subtle client-side intensity and scale variation for persistent lights.
+- Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)`
+- Purpose: Select one of ten CC0-derived falloff states, compose it with a range-relative compact core, then run an unsynchronized client-side intensity/scale loop tuned for steady light, small blast, blast, beam segment, beam source, aura, or ki charge.
 
 #### atom/movable/proc/setNexusActionGlow
-- Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)`
+- Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)`
 - Purpose: Attach a second reusable emitter for beam charging and temporary actions without replacing a transformation glow.
+
+#### atom/movable/proc/setNexusAuraGlow
+- Signature: `setNexusAuraGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_AURA)`
+- Purpose: Attach an independent flickering aura emitter so power-up visuals can coexist with transformation and temporary action lights.
+
+#### proc/getNexusProjectileLightProfile
+- Signature: `getNexusProjectileLightProfile(obj/Blast/projectile)`
+- Purpose: Derive color, total diameter, intensity, falloff, and flicker cadence from an energy projectile's attack, sprite dimensions, direct factor, explosive radius, beam state, and Spirit Bomb growth. Physical bullets and shuriken return no light profile.
+
+#### obj/Blast/proc/updateNexusProjectileGlow
+- Signature: `updateNexusProjectileGlow()`
+- Purpose: Attach or refresh the derived projectile profile only when its rendered settings changed. Because the emitter lives in `vis_contents`, it follows moving blasts and every active beam segment.
+
+#### mob/proc/startNexusKiCharge
+- Signature: `startNexusKiCharge(obj/attack, charge_scale = 1)`
+- Purpose: Attach an attack-colored, aggressively flickering charging light whose range scales with the technique.
+
+#### mob/proc/startNexusBeamGlow
+- Signature: `startNexusBeamGlow(obj/Attacks/attack)`
+- Purpose: Replace charging light with the wider source light used while streaming a beam.
+
+#### mob/proc/updateNexusAuraGlow
+- Signature: `updateNexusAuraGlow()`
+- Purpose: Select God Fist, primary transformation, or default cyan aura color and synchronize the independent aura emitter.
 
 #### mob/verb/toggleNexusLighting
 - Signature: `toggleNexusLighting()`
@@ -1613,6 +1641,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/Admin2/verb/testNexusBlast
 - Signature: `testNexusBlast()`
 - Purpose: Launch a harmless cyan projectile with persistent flight light and an impact pulse.
+
+#### mob/Admin2/verb/testNexusBeamLighting
+- Signature: `testNexusBeamLighting()`
+- Purpose: Build a harmless short-lived line of compact beam emitters for inspecting trail continuity in darkness.
+
+#### mob/Admin2/verb/testNexusLightVariations
+- Signature: `testNexusLightVariations()`
+- Purpose: Test small/standard blast, beam trail/source, aura, and ki-charge flicker profiles without granting an attack.
 
 #### proc/FadeOutLights
 - Signature: `FadeOutLights(area/a)`

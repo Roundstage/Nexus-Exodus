@@ -47,7 +47,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### mob/proc/BeamStreamLoop
 - Signature: `mob/proc/BeamStreamLoop(obj/Attacks/A)`
 - Inputs: obj/Attacks/A
-- Purpose: Handle beam stream loop.
+- Purpose: Generate and advance the continuous beam body. Every energy segment receives a compact, low-intensity emitter, producing a light trail that follows the complete beam without giving each tile a blast-sized halo.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -289,7 +289,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### mob/proc/Buster_Barrage
 - Signature: `mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)`
 - Inputs: obj/Attacks/Buster_Barrage/B
-- Purpose: Handle buster barrage.
+- Purpose: Fire the green energy barrage with compact per-shot lighting and a temporary green firing aura.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -765,7 +765,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### verb/Genocide
 - Signature: `verb/Genocide()`
 - Inputs: None
-- Purpose: Handle genocide.
+- Purpose: Charge and fire the guided Genocide volley, including a temporary charge light and compact automatic lights on its projectiles.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -888,9 +888,15 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### obj/Blast/proc/setStats
 - Signature: `obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, homing_mod = 1, explosion_percent = 0, max_damage_factor = 0, owner_immunity = 0, datum/CombatDamageBudget/shared_budget)`
 - Inputs: owner snapshot, direct factor, accuracy, radius, projectile type, homing, independent splash factor, optional budget, owner immunity, and optional shared budget.
-- Purpose: Snapshot projectile combat stats while keeping direct damage, splash damage, cast budget and owner collision behavior independent.
+- Purpose: Snapshot projectile combat stats while keeping direct damage, splash damage, cast budget and owner collision behavior independent, then queue automatic visual-light profiling after the caller assigns its attack and sprite.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
+
+#### obj/Blast/proc/queueNexusProjectileGlowUpdate
+- Signature: `queueNexusProjectileGlowUpdate()`
+- Purpose: Defer light profiling by one tick so legacy callers can finish assigning `from_attack`, `icon`, beam state, and location. A monotonic serial prevents an old cached-projectile callback from modifying a reused blast.
+- Returns: none (implicit).
+- Side effects: schedules `updateNexusProjectileGlow()`.
 
 #### proc/fill_cached_blasts
 - Signature: `proc/fill_cached_blasts()`
