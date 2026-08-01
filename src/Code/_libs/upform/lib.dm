@@ -247,9 +247,10 @@ upForm
 
 		global/refcount = 0
 		refnum
+		tmp/headless_mode = FALSE
 
 
-	New(client/_owner, datum/_host, list/_viewers)
+	New(client/_owner, datum/_host, list/_viewers, _headless_mode = FALSE)
 		..()
 
 		refnum = ++refcount
@@ -257,6 +258,13 @@ upForm
 		src.owner = _owner
 		src.host = _host
 		src.viewers = list()
+		src.headless_mode = _headless_mode
+
+		// Headless forms expose the existing setting bindings and validation to
+		// native HUDs without creating or refreshing a legacy browser window.
+		if(src.headless_mode)
+			InitSettings()
+			return
 
 		InitViewers(_viewers)
 		InitSettings()
@@ -269,6 +277,9 @@ upForm
 			del(src)
 
 	Del()
+		if(src.headless_mode)
+			..()
+			return
 		if(src.form_type != UPFORM_CLOSEWINDOW)
 			ClosePages()
 			for(var/client/C in src.viewers)
