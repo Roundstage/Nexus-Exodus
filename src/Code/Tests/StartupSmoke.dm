@@ -265,6 +265,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/inspector_list_test = list(1000, list("nested"), "mode" = "test")
 	nexusSmokeAssert(findtext(getNexusAdminVariableDisplay(inspector_list_test), "3 entries"), "Admin Inspector could not preview mixed list values")
 	nexusSmokeAssert(!profession_test.canAccessTechnology(profession_test) && !profession_test.canAccessTechnology(profession_test.loc), "Technology access accepted a non-object click target")
+	nexusSmokeAssert(!profession_test.isTechnologyReferenceClick(smoke_sword), "An inventory item was intercepted as a Technology catalog reference")
+	profession_test.player_tech_level = 1
+	smoke_sword.referenceObject = TRUE
+	nexusSmokeAssert(profession_test.isTechnologyReferenceClick(smoke_sword), "A Technology catalog reference did not receive its specialized click handling")
+	smoke_sword.referenceObject = FALSE
 	var/character_sheet_html = profession_test.buildCharacterSheetHtml("portrait.png")
 	nexusSmokeAssert(findtext(character_sheet_html, "Detailed DU assessment") && findtext(character_sheet_html, "Mining") && findtext(character_sheet_html, "Milestones"), "detailed Character sheet is incomplete")
 	del(profession_test)
