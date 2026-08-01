@@ -4,6 +4,29 @@ mob
 	var/tmp/tenkaichi_melee_context_id = 0
 	var/tmp/active_tenkaichi_riposte_until = 0
 
+obj/Effect/TenkaichiTechniqueText
+	name = "technique announcement"
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	maptext_width = 192
+	maptext_height = 32
+	layer = 99
+
+mob/proc/showTenkaichiTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
+	set waitfor = 0
+	if(!technique_name || !loc) return
+	var/obj/Effect/TenkaichiTechniqueText/announcement = new(loc)
+	announcement.maptext = "<center><span style='font-family:Arial;font-size:12pt;font-weight:bold;color:[text_color];text-shadow:1px 1px #000000'>[technique_name]</span></center>"
+	announcement.pixel_x = pixel_x - 80
+	announcement.pixel_y = pixel_y + (icon ? max(38, GetHeight(icon)) : 38)
+	animate(announcement, pixel_y = announcement.pixel_y + 8, transform = matrix() * 1.08, time = 2, easing = CUBIC_EASING)
+	animate(announcement, pixel_y = announcement.pixel_y + 24, alpha = 0, time = 8, easing = SINE_EASING)
+	player_view(15, src) << "<font color=[text_color]><b>[src]</b> uses <b>[technique_name]</b>!"
+	if(sound_file) Play_Melee_Sound(sound_range = 12, origin = src, sound_file = sound_file, sound_volume = sound_volume)
+	sleep(10)
+	if(announcement) del(announcement)
+
 obj/Attacks/TenkaichiMeleeTechnique
 	name = "Tenkaichi Melee Technique"
 	desc = "A Roleplay Tenkaichi technique adapted to the Nexus combat engine."
@@ -34,7 +57,16 @@ obj/Attacks/TenkaichiMeleeTechnique
 		splash_target_limit = 0
 		effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
 		effect_icon_state
+		cast_text_color = "#ffd166"
 		tmp/next_use = 0
+
+	New()
+		..()
+		if(effect_icon) icon = effect_icon
+		if(effect_icon_state) icon_state = effect_icon_state
+		if(requires_weapon) cast_text_color = "#8ecae6"
+		else if(behavior == "grapple_throw" || behavior == "grapple_slam") cast_text_color = "#ff9f68"
+		else if(findtext(lowertext(name), "kick")) cast_text_color = "#ffe066"
 
 	verb/Hotbar_use()
 		set hidden = 1
@@ -42,6 +74,25 @@ obj/Attacks/TenkaichiMeleeTechnique
 
 	proc/useTechnique(mob/user)
 		if(user) user.castTenkaichiMeleeTechnique(src)
+
+	proc/getCastSound()
+		if(behavior == "iai_dash") return 'Teleport.ogg'
+		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'Throw.ogg'
+		if(requires_weapon) return 'Swoophit.ogg'
+		return pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg')
+
+	proc/getImpactSound()
+		var/lower_name = lowertext(name)
+		if(requires_weapon) return 'Swordhit.ogg'
+		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'BigCrash.ogg'
+		if(findtext(lower_name, "kick") || findtext(lower_name, "wing clip")) return 'Strongkick.ogg'
+		if(knockback_multiplier >= 3 || damage_multiplier >= 1.8) return 'Strongpunch.ogg'
+		return 'Mediumpunch.ogg'
+
+	proc/playCastEffects(mob/user)
+		if(!user) return
+		flick("Attack", user)
+		user.showTenkaichiTechniqueAnnouncement(name, cast_text_color, getCastSound(), 28)
 
 	proc/showImpact(mob/target)
 		if(!target || !effect_icon) return
@@ -51,7 +102,14 @@ obj/Attacks/TenkaichiMeleeTechnique
 		effect.density = 0
 		effect.SafeTeleport(target.loc)
 		CenterIcon(effect)
-		spawn(5) if(effect) del(effect)
+		var/impact_scale = Clamp(0.9 + (damage_multiplier * 0.12) + (knockback_multiplier * 0.04), 1, 1.8)
+		effect.transform = matrix() * impact_scale
+		if(effect_icon_state) flick(effect_icon_state, effect)
+		else flick(effect.icon, effect)
+		animate(effect, transform = matrix() * (impact_scale + 0.3), alpha = 0, time = 6, easing = SINE_EASING)
+		Play_Melee_Sound(sound_range = 12, origin = target, sound_file = getImpactSound(), sound_volume = 32)
+		if(knockback_multiplier >= 3) Make_Shockwave(target, sw_icon_size = 128)
+		spawn(7) if(effect) del(effect)
 
 	proc/getSplashTargets(mob/attacker, mob/primary_target)
 		var/list/targets = list()
@@ -196,6 +254,7 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 		return FALSE
 	Ki -= technique_drain
 	technique.next_use = world.time + technique.cooldown_ticks
+	technique.playCastEffects(src)
 	setTenkaichiMeleeContext(technique, target)
 	Melee(target, from_auto_attack = 1)
 	return TRUE
@@ -216,6 +275,7 @@ mob/proc/castTenkaichiIaiSlash(obj/Attacks/TenkaichiMeleeTechnique/technique)
 		src << "Select a valid target within [technique.dash_range] tiles."
 		return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
 	var/dash_direction = get_dir(src, selected)
 	var/list/hit_targets = list()
 	attacking = 1
@@ -242,6 +302,7 @@ mob/proc/castTenkaichiMarchOfFury(obj/Attacks/TenkaichiMeleeTechnique/technique)
 		src << "March of Fury requires a selected target within [technique.dash_range] tiles."
 		return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
 	attacking = 1
 	for(var/hit_index = 1, hit_index <= 4, hit_index++)
 		if(!target || !canHitTenkaichiTechniqueTarget(target)) break
@@ -263,6 +324,7 @@ mob/proc/castTenkaichiDelayedBarrage(obj/Attacks/TenkaichiMeleeTechnique/techniq
 		src << "[technique] requires an adjacent target."
 		return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
 	attacking = 1
 	player_view(15, src) << "[src] prepares a rapid barrage."
 	sleep(5)
@@ -282,6 +344,7 @@ mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/techn
 		return FALSE
 	if(!canUseTenkaichiGrappleTechnique()) return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
 	attacking = 1
 	move = 0
 	target.ApplyStun(time = 8, no_immunity = 1, stun_power = 3)
@@ -332,6 +395,7 @@ mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/te
 
 mob/proc/activateTenkaichiRiposte(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	if(!technique || !payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
 	active_tenkaichi_riposte_until = world.time + 40
 	src << "Riposte is ready for four seconds. The next incoming melee attack will be countered."
 	return TRUE

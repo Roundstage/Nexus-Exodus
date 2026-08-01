@@ -7,8 +7,7 @@ mob/var
 obj
 	RockThrow
 		desc = "You throw a rock at your opponent and deal damage with your strength."
-		icon = 'ResourceRocks.dmi'
-		icon_state = "1"
+		icon = 'RTRockThrow.dmi'
 		Cost_To_Learn = 15
 		Teach_Timer = 1
 		student_point_cost = 15
@@ -30,7 +29,7 @@ obj
 				
 	RockSlide
 		desc = "You throw lots of rocks at your opponent and deal damage with your strength. Each projectile is slightly weaker than Rock Throw."
-		icon = 'RisingRocks.dmi'
+		icon = 'RTRockThrow.dmi'
 		Cost_To_Learn = 35
 		Teach_Timer = 1
 		student_point_cost = 35
@@ -50,8 +49,7 @@ obj
 
 	RockTomb
 		desc = "You throw a massive rock at your opponent and deal heavy damage with your strength. When mastered this rock explodes!"
-		icon = 'ResourceRocks.dmi'
-		icon_state = "4"
+		icon = 'RTRockTomb.dmi'
 		Cost_To_Learn = 50
 		Teach_Timer = 1
 		student_point_cost = 50
@@ -83,6 +81,7 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 	rock.icon = visual_icon
 	if(visual_state) rock.icon_state = visual_state
 	rock.SafeTeleport(loc)
+	rock.dir = get_dir(src, target)
 	CenterIcon(rock)
 	if(visual_scale != 1) rock.transform = matrix() * visual_scale
 	var/maximum_steps = max(1, getdist(src, target) + 4)
@@ -96,24 +95,43 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 	if(rock) del(rock)
 	return impact_turf
 
-mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_state = "1", visual_scale = 1)
+mob/proc/showRockSkillImpact(mob/target, heavy = FALSE)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'ResourceRocks.dmi', visual_state, visual_scale)
+	if(!target) return
+	var/obj/Effect/effect = GetEffect()
+	effect.icon = heavy ? 'RTShockwave.dmi' : 'RTImpactHeavy.dmi'
+	effect.SafeTeleport(target.loc)
+	CenterIcon(effect)
+	var/impact_scale = heavy ? 1.6 : 1
+	effect.transform = matrix() * impact_scale
+	flick(effect.icon, effect)
+	animate(effect, transform = matrix() * (impact_scale + 0.4), alpha = 0, time = 7, easing = SINE_EASING)
+	player_view(12, target) << sound(heavy ? 'BigCrash.ogg' : 'Wallhit.ogg', volume = heavy ? 48 : 32)
+	if(heavy) Make_Shockwave(target, sw_icon_size = 128)
+	sleep(8)
+	if(effect) del(effect)
+
+mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
+	set waitfor = 0
+	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, visual_scale)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.5)
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'RisingRocks.dmi')
+	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, 0.9)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.2)
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
 	set waitfor = 0
-	var/turf/impact_turf = showRockSkillProjectile(target, 'ResourceRocks.dmi', "4", 2)
+	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockTomb.dmi', null, 1.25)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	showRockSkillImpact(target, heavy = TRUE)
 	var/health_before_damage = target.Health
 	if(mastered)
 		RockTombFX(impact_turf)
@@ -166,7 +184,8 @@ mob
 					var/knockback = get_melee_knockback_distance(target)
 					usr << "You throw a rock at [target]!"
 					target << "[usr] throws a rock at you!"
-					spawn() deliverRockThrowHit(target, dmg, knockback, "[rand(1, 4)]")
+					showTenkaichiTechniqueAnnouncement("Rock Throw", "#d9b27c")
+					spawn() deliverRockThrowHit(target, dmg, knockback)
 					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
@@ -186,7 +205,8 @@ mob
 					var/knockback = get_melee_knockback_distance(target) * 0.5
 					usr << "You throw a small rock at [target]!"
 					target << "[usr] throws a small rock at you!"
-					spawn() deliverRockThrowHit(target, dmg, knockback, "[rand(1, 4)]", 0.8)
+					showTenkaichiTechniqueAnnouncement("Rock Throw", "#d9b27c")
+					spawn() deliverRockThrowHit(target, dmg, knockback, 0.8)
 					return
 				else
 					usr << "You throw a rock, but there is no one to hit!"
@@ -198,6 +218,7 @@ mob
 			e.icon = 'Dust.dmi'
 			CenterIcon(e)
 			animate(e, transform * 2, alpha = 220, time = 15)
+			player_view(15, src) << sound('Earthquakeshort.ogg', volume = 32)
 			sleep(20)
 			del(e)
 
@@ -215,6 +236,7 @@ mob
 			
 			flick("Blast", usr)
 			RockSlideFX()
+			showTenkaichiTechniqueAnnouncement("Rock Slide", "#c99a63")
 			
 			var/amount = 7 + round(usr.BP / 1000000) // Base skill level based on BP
 			if(amount > 15) amount = 15
@@ -249,6 +271,9 @@ mob
 			e.icon = 'RockExplosion.dmi'
 			CenterIcon(e)
 			flick(e.icon, e)
+			e.transform = matrix() * 1.2
+			animate(e, transform = matrix() * 1.8, alpha = 0, time = 12, easing = CUBIC_EASING)
+			player_view(15, src) << sound('Explosion2.wav', volume = 55)
 			sleep(20)
 			del(e)
 
@@ -268,6 +293,7 @@ mob
 			usr.Ki = max(0, usr.Ki - 100)
 			
 			flick("Blast", usr)
+			showTenkaichiTechniqueAnnouncement("Rock Tomb", "#e0a15a", 'Throw.ogg', 42)
 			
 			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
 			if(target)

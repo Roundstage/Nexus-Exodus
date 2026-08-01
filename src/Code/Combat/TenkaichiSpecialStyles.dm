@@ -40,6 +40,8 @@ obj/Attacks/TenkaichiSpecialStyle/WallOfFlame
 			return FALSE
 		user.Ki -= drain
 		next_use = world.time + cooldown_ticks
+		flick("Blast", user)
+		user.showTenkaichiTechniqueAnnouncement(name, "#ff7043", 'FogoNaMao.mp3', 45)
 		var/list/field_turfs = list(front)
 		var/left_direction = turn(user.dir, -90)
 		var/right_direction = turn(user.dir, 90)
@@ -74,6 +76,9 @@ obj/Effect/TenkaichiFlameField
 		next_pulse_by_target = list()
 		pulses_by_target = list()
 		if(new_location) SafeTeleport(new_location)
+		alpha = 0
+		transform = matrix() * 0.65
+		animate(src, alpha = 255, transform = matrix(), time = 5, easing = CUBIC_EASING)
 		spawn() processField()
 
 	proc/processField()
@@ -85,6 +90,9 @@ obj/Effect/TenkaichiFlameField
 				if(pulses_by_target[target] >= 6) continue
 				next_pulse_by_target[target] = world.time + 10
 				pulses_by_target[target] = pulses_by_target[target] + 1
+				if(pulses_by_target[target] == 1)
+					target.text_overlay("<center><b><font color=#ff7043>BURN</font></b></center>", xx = -16, yy = 40, timer = 8)
+					player_view(10, target) << sound('Kiplosion.ogg', volume = 28)
 				var/damage = owner.getKiCombatDamage(target, 0.45)
 				owner.applyTenkaichiTechniqueDamage(target, damage)
 				if(target)
