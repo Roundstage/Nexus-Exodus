@@ -83,6 +83,7 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 	rock.SafeTeleport(loc)
 	rock.dir = get_dir(src, target)
 	CenterIcon(rock)
+	rock.setNexusGlow("#d69a5a", 1.8 + visual_scale, 165)
 	if(visual_scale != 1) rock.transform = matrix() * visual_scale
 	var/maximum_steps = max(1, getdist(src, target) + 4)
 	for(var/flight_step = 1, flight_step <= maximum_steps && rock && target, flight_step++)
@@ -92,7 +93,9 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 		rock.SafeTeleport(next_turf)
 		sleep(1)
 	var/turf/impact_turf = target ? target.loc : rock.loc
-	if(rock) del(rock)
+	if(rock)
+		rock.clearNexusGlow()
+		del(rock)
 	return impact_turf
 
 mob/proc/showRockSkillImpact(mob/target, heavy = FALSE)
@@ -104,6 +107,7 @@ mob/proc/showRockSkillImpact(mob/target, heavy = FALSE)
 	CenterIcon(effect)
 	var/impact_scale = heavy ? 1.6 : 1
 	effect.transform = matrix() * impact_scale
+	effect.pulseNexusGlow(heavy ? "#ffb35a" : "#e0aa72", heavy ? 4.2 : 3, heavy ? 230 : 190, 8)
 	flick(effect.icon, effect)
 	animate(effect, transform = matrix() * (impact_scale + 0.4), alpha = 0, time = 7, easing = SINE_EASING)
 	player_view(12, target) << sound(heavy ? 'BigCrash.ogg' : 'Wallhit.ogg', volume = heavy ? 48 : 32)

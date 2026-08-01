@@ -11,6 +11,7 @@ obj/Effect/TenkaichiTechniqueText
 	Grabbable = 0
 	maptext_width = 192
 	maptext_height = 32
+	plane = 20 // Technique names remain above screen darkness.
 	layer = 99
 
 mob/proc/showTenkaichiTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
@@ -104,6 +105,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		CenterIcon(effect)
 		var/impact_scale = Clamp(0.9 + (damage_multiplier * 0.12) + (knockback_multiplier * 0.04), 1, 1.8)
 		effect.transform = matrix() * impact_scale
+		effect.pulseNexusGlow(cast_text_color, 2.4 + impact_scale, 215, 7)
 		if(effect_icon_state) flick(effect_icon_state, effect)
 		else flick(effect.icon, effect)
 		animate(effect, transform = matrix() * (impact_scale + 0.3), alpha = 0, time = 6, easing = SINE_EASING)

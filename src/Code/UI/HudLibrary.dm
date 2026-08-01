@@ -20,6 +20,7 @@ client/var/tmp/datum/NexusHudWindow/nexus_hud_window
 
 obj/HudWindow
 	mouse_opacity = 2
+	plane = 20 // Reserved above the per-client lighting plane.
 	layer = 120
 	appearance_flags = RESET_ALPHA | RESET_COLOR
 	var/tmp/datum/NexusHudWindow/window

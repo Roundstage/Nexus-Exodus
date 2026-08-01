@@ -167,6 +167,8 @@ area
 
 		day_color = rgb(100,0,0,40)
 		night_color = rgb(100,0,0,70)
+		night_ambient_color = rgb(50, 12, 14, 255)
+		dawndusk_ambient_color = rgb(125, 58, 48, 255)
 
 		has_fireflies = 0
 		firefly_color = rgb(255,0,0)
@@ -211,6 +213,8 @@ area
 		day_color = rgb(255,255,255,0)
 		night_color = rgb(255,188,0,70)
 		dawndusk_color = rgb(0,255,0,60)
+		night_ambient_color = rgb(48, 30, 12, 255)
+		dawndusk_ambient_color = rgb(112, 78, 30, 255)
 
 		//firefly_color = rgb(255,160,70)
 		firefly_color = rgb(70,255,120)
@@ -228,6 +232,8 @@ area
 		day_color = rgb(255,255,255,30)
 		night_color = rgb(0,30,100,70)
 		dawndusk_color = rgb(0,100,150,60)
+		night_ambient_color = rgb(12, 28, 54, 255)
+		dawndusk_ambient_color = rgb(62, 88, 112, 255)
 
 		firefly_color = rgb(70,140,255)
 		restricted_area = 1

@@ -185,6 +185,7 @@ mob/proc
 			winset(src,"mainwindow.mainvssplit","is-visible=true")
 		initializeVitalsHud()
 		initializeActionHud()
+		if(client) client.initializeNexusLighting()
 		SetSparringMode(sparring_mode, FALSE)
 
 		//this is for the GameJolt Launcher thing. but i had to disable it because if you enter this as your key in the buy packs window it wont work

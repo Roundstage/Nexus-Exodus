@@ -52,6 +52,7 @@ proc/fill_cached_blasts()
 proc/get_cached_blast()
 	for(var/obj/Blast/b in cached_blasts) if(!b.in_use)
 		animate(b) //stop all animations
+		b.clearNexusGlow()
 		ResetVars(b)
 		b.in_use=1
 		cached_blasts -= b
@@ -129,6 +130,7 @@ proc/get_cached_blast()
 
 obj/Blast/proc/cache_blast()
 	stopProjectileFlight()
+	clearNexusGlow()
 	loc = null
 	in_use=0
 	cached_blasts-=src

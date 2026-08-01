@@ -1296,6 +1296,8 @@ datum/SkillEngine
 		A.vector_speed = 22
 		A.weaker_obstacles_cant_destroy_blast = 1
 		A.blast_go_over_owner = 1
+		A.setNexusGlow("#fff176", 2.5, 220)
+		user.pulseNexusGlow("#fff176", 2.8, 195, 12)
 
 		sleep(TickMult(12 * user.Speed_delay_mult(severity = 0.3)))
 		if(user && user.h1_overhead_gfx)

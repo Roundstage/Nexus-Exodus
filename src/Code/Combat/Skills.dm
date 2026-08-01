@@ -1968,6 +1968,7 @@ mob/proc/IncreaseGod_FistLevel()
 
 	if(old_God_Fist_level == 20) PowerUpGoNextForm()
 	CheckSuperGod_Fist()
+	setNexusGlow(super_God_Fist ? "#ff5570" : "#ff293d", 2.8 + min(God_Fist_level, 20) * 0.04, 175 + min(God_Fist_level, 20) * 3)
 
 mob/var/tmp/obj/Ultra_Super_Saiyan/ussj_obj
 

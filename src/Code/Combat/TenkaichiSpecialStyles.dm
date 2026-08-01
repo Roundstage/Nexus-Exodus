@@ -78,8 +78,13 @@ obj/Effect/TenkaichiFlameField
 		if(new_location) SafeTeleport(new_location)
 		alpha = 0
 		transform = matrix() * 0.65
+		setNexusGlow("#ff632e", 3.2, 205)
 		animate(src, alpha = 255, transform = matrix(), time = 5, easing = CUBIC_EASING)
 		spawn() processField()
+
+	Del()
+		clearNexusGlow()
+		. = ..()
 
 	proc/processField()
 		set waitfor = 0

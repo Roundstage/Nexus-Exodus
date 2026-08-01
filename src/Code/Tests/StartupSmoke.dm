@@ -41,12 +41,26 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/Admin2/verb/controlCombatDummy"), "combat dummy controller is missing from the admin verb tree")
 	nexusSmokeAssert(text2path("/obj/DamageIndicator"), "damage indicator type is missing")
 	nexusSmokeAssert(text2path("/obj/NexusHud/VitalsPanel"), "main vitals HUD type is missing")
+	nexusSmokeAssert(text2path("/obj/NexusLighting/PlaneMaster") && text2path("/obj/NexusLighting/Emitter"), "screen lighting plane types are missing")
+	nexusSmokeAssert(text2path("/mob/verb/toggleNexusLighting") && text2path("/mob/Admin2/verb/testNexusLighting"), "lighting test verbs are missing")
+	var/obj/NexusLighting/PlaneMaster/lighting_plane = new
+	var/obj/NexusLighting/Emitter/lighting_emitter = new
+	var/obj/LightSource/static_light = new
+	nexusSmokeAssert(lighting_plane.plane == 15 && lighting_plane.blend_mode == BLEND_MULTIPLY && (lighting_plane.appearance_flags & PLANE_MASTER), "night screen is not a multiplicative plane master")
+	nexusSmokeAssert(lighting_emitter.plane == 15 && lighting_emitter.blend_mode == BLEND_ADD, "dynamic glow is not additive on the lighting plane")
+	nexusSmokeAssert(static_light.plane == 15 && static_light.getRenderedAlpha() == 210, "legacy light sources were not adapted to screen lighting")
+	var/list/blue_glow_profile = getNexusTransformationGlowProfile("saiyan_blue")
+	nexusSmokeAssert(islist(getNexusAmbientMatrix(rgb(16, 22, 38, 255))) && blue_glow_profile["color"] == "#42d9ff" && blue_glow_profile["alpha"] >= 200, "ambient or transformation glow profiles are invalid")
+	del(lighting_plane)
+	del(lighting_emitter)
+	del(static_light)
 	nexusSmokeAssert(text2path("/obj/NexusHud/ActionButton/Lethal") && text2path("/obj/NexusHud/ActionButton/RPMode") && text2path("/obj/NexusHud/ActionButton/Character"), "top-right action HUD is incomplete")
 	var/icon/action_button_icon = getNexusActionButtonIcon(TRUE, "#ff4d5f")
 	nexusSmokeAssert(action_button_icon.Width() == 88 && action_button_icon.Height() == 20, "action HUD button has invalid dimensions")
 	var/obj/NexusHud/ActionButton/Lethal/lethal_button = new
 	var/obj/NexusHud/ActionButton/RPMode/rp_mode_button = new
 	var/obj/NexusHud/ActionButton/Character/character_button = new
+	nexusSmokeAssert(lethal_button.plane == 20, "action HUD is not isolated above the lighting plane")
 	nexusSmokeAssert(lethal_button.screen_loc == "RIGHT:-8,TOP:-8" && rp_mode_button.screen_loc == "RIGHT:-8,TOP:-32" && character_button.screen_loc == "RIGHT:-8,TOP:-56", "action HUD buttons are not pixel-anchored in the upper-right corner")
 	nexusSmokeAssert(!lethal_button.loc && !rp_mode_button.loc && !character_button.loc, "action HUD buttons leaked into an atom's contents")
 	del(lethal_button)

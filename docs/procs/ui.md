@@ -946,6 +946,8 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 
 ### src/Code/UI/UIStuff.dm
 
+The Nexus HUD, HudLib windows, overhead vitals, damage numbers, and Tenkaichi technique announcements render on plane 20. The per-client lighting composition uses plane 15, so darkness and glows affect the game world without obscuring interaction or status text.
+
 #### client/Del
 - Signature: `client/Del()`
 - Inputs: None

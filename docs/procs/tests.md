@@ -3,7 +3,7 @@
 ## Overview
 Startup assertions run only when Dream Daemon receives the `nexus_smoke_tests` world parameter. The PowerShell smoke runner enables this parameter in an isolated temporary world.
 
-The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, compact vitals/action HUD dimensions and pixel-aware placement, labeled vitals and exact Energy formatting, stacked overhead Health/Energy/Willpower bars, mutation admin verbs, reversible mutation editing/rerolling, synchronized lethal intent, RP Mode, Mining/Smithing progression, forged quality, Character-sheet content, central combat balance, skill routing, character creation, serialization, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
+The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, compact vitals/action HUD dimensions and pixel-aware placement, labeled vitals and exact Energy formatting, stacked overhead Health/Energy/Willpower bars, multiplicative night lighting and additive glow planes, mutation admin verbs, reversible mutation editing/rerolling, synchronized lethal intent, RP Mode, Mining/Smithing progression, forged quality, Character-sheet content, central combat balance, skill routing, character creation, serialization, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
 
 For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` compiles the complete environment with BYOND 516.1685, requires zero errors and warnings plus both `DU.dmb` and `DU.rsc`, and does not start Dream Daemon. The default command performs the same compile before running startup assertions.
 
@@ -45,6 +45,7 @@ For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` comp
 ## Admin Coverage
 - Verifies both admin-log viewers are absent from `/mob/verb` and present under `/mob/Admin1/verb`.
 - Verifies cumulative legacy admin verbs and the Tenkaichi package sizes (including the dedicated rock package), hotbar/impact icon mapping, weapon/kick/grapple audio profiles, adjacent targeting fallback, valid-grab execution, Dash Attack controlled movement, original Rock Throw/Rock Tomb art, visible rock projectile and floating-text actors, persistent Wall of Flame and beam routing.
+- Verifies the lighting plane master, additive emitters, adapted legacy light intensity, player/admin test verbs, HUD plane isolation, and a representative transformation glow profile.
 
 ## Character-Creation Coverage
 - Forces Anomaly and verifies all 11 registered internal stats are selected independently with percentages in `1..30`.

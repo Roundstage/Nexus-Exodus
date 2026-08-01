@@ -41,9 +41,14 @@ area
 		day_color = rgb(255,255,255,0)
 		night_color = rgb(0,30,100,70)
 		dawndusk_color = rgb(255,200,0,60)
+		day_ambient_color = rgb(255, 255, 255, 255)
+		night_ambient_color = rgb(16, 22, 38, 255)
+		dawndusk_ambient_color = rgb(105, 88, 72, 255)
+		current_ambient_color = rgb(255, 255, 255, 255)
 		day_fade_time = 500
 		night_fade_time = 1000
 		hours_til_switch = 1
+		tmp/nexus_lighting_transition_id = 0
 
 		has_fireflies = 1
 		firefly_color
@@ -51,11 +56,11 @@ area
 	proc
 		DayNightLoop()
 			set waitfor=0
+			icon = null
+			color = null
+			current_ambient_color = is_day ? day_ambient_color : night_ambient_color
 			if(!daynight_enabled)
-				icon = null
 				return
-			icon = 'White.dmi'
-			color = day_color
 			while(1)
 				hours_til_switch--
 				if(hours_til_switch <= 0)
@@ -70,22 +75,30 @@ area
 
 		FadeToNight()
 			set waitfor=0
+			is_day = FALSE
+			nexus_lighting_transition_id++
+			var/transition_id = nexus_lighting_transition_id
 
 			FadeInLights(src)
 			ToggleAreaFireflies(src, 1)
-
-			animate(src)
-			animate(src, color = dawndusk_color, time = night_fade_time / 2)
+			current_ambient_color = dawndusk_ambient_color
+			updateAreaNexusLighting(src, dawndusk_ambient_color, night_fade_time / 2)
 			sleep(night_fade_time / 2)
-			animate(src, color = night_color, time = night_fade_time / 2)
+			if(transition_id != nexus_lighting_transition_id) return
+			current_ambient_color = night_ambient_color
+			updateAreaNexusLighting(src, night_ambient_color, night_fade_time / 2)
 
 		FadeToDay()
 			set waitfor=0
+			is_day = TRUE
+			nexus_lighting_transition_id++
+			var/transition_id = nexus_lighting_transition_id
 
 			FadeOutLights(src)
 			ToggleAreaFireflies(src, 0)
-
-			animate(src)
-			animate(src, color = dawndusk_color, time = day_fade_time / 2)
+			current_ambient_color = dawndusk_ambient_color
+			updateAreaNexusLighting(src, dawndusk_ambient_color, day_fade_time / 2)
 			sleep(day_fade_time / 2)
-			animate(src, color = day_color, time = day_fade_time / 2)
+			if(transition_id != nexus_lighting_transition_id) return
+			current_ambient_color = day_ambient_color
+			updateAreaNexusLighting(src, day_ambient_color, day_fade_time / 2)

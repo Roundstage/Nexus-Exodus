@@ -28,6 +28,7 @@ mob/proc/update_area()
 			if(has_client) a.player_list += src
 			else a.npc_list += src
 			current_area = a
+			if(has_client && client) client.syncNexusLighting(a)
 
 			movement_port.startCoreLoops(src, a)
 			movement_port.finalRealmLoop(src)
