@@ -3,7 +3,7 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
-Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Copper, Iron, Mythril, and Auracite ores can be forged into material-specific swords and armor at an Engineering Technology Level 3 forge.
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. The Roleplay Tenkaichi smithing port now includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment follows persistent upgrade branches: Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Copper -> Bronze -> Silver -> Auracite.
 
 Craft access is now checked through `canAccessTechnology()`: persistent Technology XP produces levels 1–8, and level 5/7/8 grant Genetics, Engineering, or Robotics path slots. Knowledge growth and successful crafting both award Technology XP; admin grants remain compatible as explicit overrides.
 
@@ -17,6 +17,7 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 - `src/Code/Technology/LandMine.dm`
 - `src/Code/Technology/NewDrones.dm`
 - `src/Code/Technology/Professions.dm`
+- `src/Code/Technology/ForgedEquipment.dm`
 - `src/Code/Technology/Shurikens.dm`
 - `src/Code/Technology/SmokeBomb.dm`
 - `src/Code/Technology/Technology.dm`
@@ -30,10 +31,17 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 
 - `gainProfessionExperience(profession, amount, reason, announce)` advances Mining or Smithing and applies Liberal Arts conversion.
 - `performMiningTick(base_yield)` applies profession level and Mining Expert multipliers, awards XP in mining caves, and rolls material drops.
-- `initializeSmithingRecipes()` registers Copper, Iron, Mythril, and Auracite sword/armor recipes with level and ore requirements.
-- `craftSmithingRecipe(recipe)` consumes stacked ore, creates the forged item, applies Master Blacksmith quality, and awards Smithing XP.
-- `/obj/Forge` is an Engineering Technology Level 3 station exposing the Smith menu.
-- `/obj/items/Ore`, `/obj/items/Sword/Forged`, and `/obj/items/Armor/Forged` use imported Roleplay Tenkaichi material artwork while retaining Nexus item contracts.
+- `tryMineOre()` rolls the expanded Tenkaichi ore table according to Mining level.
+- `/obj/items/Ore` stores stackable Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain materials.
+
+### src/Code/Technology/ForgedEquipment.dm
+
+- `initializeForgedEquipmentCatalogs()` registers seven material tiers, fourteen weapon designs, and thirteen armor designs.
+- `craftForgedWeapon()` and `craftForgedArmor()` create Copper equipment after selecting a persistent visual design.
+- `upgradeForgedEquipment(equipment)` consumes the next branch material and updates the same object, preserving its icon style and Master Blacksmith quality.
+- `openSmithingMenu(forge)` exposes weapon, armor, upgrade, pickaxe, and material-path workflows from the imported Tenkaichi forge.
+- `/obj/items/Sword/Forged` and `/obj/items/Armor/Forged` recalculate Nexus combat values from their material and design instead of reverting to the legacy DU item.
+- `Test Tenkaichi Smithing` and `Give Tenkaichi Equipment` are Admin Level 3 verbs for end-to-end testing of every ported asset and tier.
 
 ### src/Code/Technology/BodySwap.dm
 
