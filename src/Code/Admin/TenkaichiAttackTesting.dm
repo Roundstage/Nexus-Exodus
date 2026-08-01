@@ -50,6 +50,12 @@ proc/getTenkaichiSpecialStyleAttackTypes()
 		/obj/Attacks/Buster_Barrage,
 		/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame)
 
+proc/getTenkaichiRockAttackTypes()
+	return list(
+		/obj/RockThrow,
+		/obj/RockSlide,
+		/obj/RockTomb)
+
 proc/getTenkaichiRangedAttackTypes()
 	return getTenkaichiSpecialStyleAttackTypes()
 
@@ -71,17 +77,19 @@ mob/Admin3/verb/giveTenkaichiAttacks(mob/character in players)
 	set name = "Give Tenkaichi Attacks"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !character) return
-	var/category = input(src, "Choose an adapted Roleplay Tenkaichi attack package.", "Tenkaichi Attacks") in list("Cancel", "Weapon Techniques", "Unarmed Techniques", "Special Styles", "Beams", "All")
+	var/category = input(src, "Choose an adapted Roleplay Tenkaichi attack package.", "Tenkaichi Attacks") in list("Cancel", "Weapon Techniques", "Unarmed Techniques", "Rock Techniques", "Special Styles", "Beams", "All")
 	if(category == "Cancel") return
 	var/list/attack_types = list()
 	switch(category)
 		if("Weapon Techniques") attack_types = getTenkaichiWeaponAttackTypes()
 		if("Unarmed Techniques") attack_types = getTenkaichiUnarmedAttackTypes()
+		if("Rock Techniques") attack_types = getTenkaichiRockAttackTypes()
 		if("Special Styles") attack_types = getTenkaichiSpecialStyleAttackTypes()
 		if("Beams") attack_types = getTenkaichiBeamAttackTypes()
 		if("All")
 			attack_types.Add(getTenkaichiWeaponAttackTypes())
 			attack_types.Add(getTenkaichiUnarmedAttackTypes())
+			attack_types.Add(getTenkaichiRockAttackTypes())
 			attack_types.Add(getTenkaichiSpecialStyleAttackTypes())
 			attack_types.Add(getTenkaichiBeamAttackTypes())
 	var/granted = grantTenkaichiAttackTypes(character, attack_types)

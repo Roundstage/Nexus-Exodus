@@ -56,6 +56,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 2, "Tenkaichi special-style catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash/tenkaichi_iai = new
@@ -67,12 +68,14 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo/tenkaichi_kickback = new
 	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
 	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
+	nexusSmokeAssert(tenkaichi_slice.icon == tenkaichi_slice.effect_icon && tenkaichi_slice.getImpactSound() == 'Swordhit.ogg', "Tenkaichi weapon techniques are missing their adapted hotbar icons or sword audio")
 	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
 	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
 	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
 	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
 	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
 	nexusSmokeAssert(tenkaichi_uppercut.icon == 'RTUppercut.dmi' && tenkaichi_kickback.icon == 'RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
+	nexusSmokeAssert(tenkaichi_pile_driver.getImpactSound() == 'BigCrash.ogg' && tenkaichi_kickback.getImpactSound() == 'Strongkick.ogg', "Tenkaichi grapple and kick techniques are missing their adapted impact audio")
 	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
 	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
 	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
@@ -192,9 +195,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/RockThrow/rock_throw_skill = new
 	var/obj/RockSlide/rock_slide_skill = new
 	var/obj/RockTomb/rock_tomb_skill = new
-	nexusSmokeAssert(rock_throw_skill.icon == 'ResourceRocks.dmi' && rock_throw_skill.icon_state == "1" && rock_slide_skill.icon == 'RisingRocks.dmi' && rock_tomb_skill.icon_state == "4", "rock skills are missing their visible stone icons")
+	nexusSmokeAssert(rock_throw_skill.icon == 'RTRockThrow.dmi' && GetWidth(rock_throw_skill.icon) == 64 && rock_slide_skill.icon == 'RTRockThrow.dmi' && rock_tomb_skill.icon == 'RTRockTomb.dmi' && GetWidth(rock_tomb_skill.icon) == 62, "rock skills are missing their original Roleplay Tenkaichi technique icons")
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
+	nexusSmokeAssert(text2path("/obj/Effect/TenkaichiTechniqueText"), "Tenkaichi techniques are missing their floating combat announcement actor")
 	del(rock_throw_skill)
 	del(rock_slide_skill)
 	del(rock_tomb_skill)

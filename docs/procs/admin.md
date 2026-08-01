@@ -1858,7 +1858,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### mob/Admin3/verb/giveTenkaichiAttacks
 - Signature: `giveTenkaichiAttacks(mob/character in players)`
 - Inputs: connected target player and an interactive package selection.
-- Purpose: Grant weapon, unarmed, persistent special-style, beam or complete Roleplay Tenkaichi attack packages without duplicating owned attacks. Generic blast reskins are intentionally excluded.
+- Purpose: Grant weapon, unarmed, rock, persistent special-style, beam or complete Roleplay Tenkaichi attack packages without duplicating owned attacks. Generic blast reskins are intentionally excluded.
 - Returns: none (implicit).
 - Side effects: creates skill objects in the target inventory and writes an admin audit entry.
 
@@ -1868,3 +1868,10 @@ Administrative commands and management flows. Administrators receive a searchabl
 - Purpose: Instantiate only missing attacks for repeatable development testing.
 - Returns: count of newly granted attacks.
 - Side effects: adds attack objects to the character.
+
+#### proc/getTenkaichiRockAttackTypes
+- Signature: `proc/getTenkaichiRockAttackTypes()`
+- Inputs: none.
+- Purpose: Return Rock Throw, Rock Slide and Rock Tomb as a dedicated Roleplay Tenkaichi audiovisual testing package.
+- Returns: list of three attack object type paths.
+- Side effects: none.

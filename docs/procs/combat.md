@@ -2625,9 +2625,9 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/RockThrow
 - Signature: `RockThrow()`
 - Inputs: None
-- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math after a visible stone projectile reaches the target.
+- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math after the original animated Tenkaichi boulder reaches the target.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: shows floating cast text, dust, throw and impact audio, animated impact art, damage and knockback.
 
 #### mob/proc/RockSlideFX
 - Signature: `RockSlideFX()`
@@ -2639,9 +2639,16 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### mob/proc/RockSlide
 - Signature: `RockSlide()`
 - Inputs: None
-- Purpose: Search the forward spread and launch up to five visible rising-rock projectiles with victim-relative Strength-based hits.
+- Purpose: Search the forward spread and launch up to five original animated Tenkaichi boulders with victim-relative Strength-based hits.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: shows cast text, earth audio, impact art, damage and knockback.
+
+#### mob/proc/showRockSkillImpact
+- Signature: `showRockSkillImpact(mob/target, heavy = FALSE)`
+- Inputs: impact target and heavy-impact flag.
+- Purpose: Display the adapted Nexus impact presentation shared by Rock Throw, Rock Slide and Rock Tomb.
+- Returns: none (implicit).
+- Side effects: plays wall/crash audio, animates imported impact art and creates a shockwave for Rock Tomb.
 
 #### mob/proc/RockTombFX
 - Signature: `RockTombFX(turf/impact_turf)`
@@ -4198,6 +4205,20 @@ Guided blasts use one resolved control direction for collision checks and moveme
 
 ### src/Code/Combat/TenkaichiMeleeTechniques.dm
 
+#### mob/proc/showTenkaichiTechniqueAnnouncement
+- Signature: `showTenkaichiTechniqueAnnouncement(technique_name, text_color, sound_file, sound_volume)`
+- Inputs: visible technique name, presentation color and optional sound profile.
+- Purpose: Apply Nexus-style floating cast text, spectator messaging and positional audio to an imported technique.
+- Returns: none (implicit).
+- Side effects: creates and deletes a temporary maptext actor and plays the selected sound.
+
+#### obj/Attacks/TenkaichiMeleeTechnique/proc/playCastEffects
+- Signature: `playCastEffects(mob/user)`
+- Inputs: technique user.
+- Purpose: Dispatch the shared attack animation, floating name, message and weapon/unarmed/grapple cast audio.
+- Returns: none (implicit).
+- Side effects: changes transient animation state and creates audiovisual feedback.
+
 #### mob/proc/castTenkaichiMeleeTechnique
 - Signature: `mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)`
 - Inputs: the owned Roleplay Tenkaichi technique object.
@@ -4210,7 +4231,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Inputs: attacker, primary target and damage produced by the native melee calculation.
 - Purpose: Apply the adapted multi-hit, bleed, stun and front/radius effects after block and dodge resolution.
 - Returns: none (implicit).
-- Side effects: may damage secondary targets, apply crowd control and display imported Tenkaichi effects.
+- Side effects: may damage secondary targets, apply crowd control, animate imported Tenkaichi effects and play technique-specific impact audio.
 
 #### mob/proc/applyTenkaichiTechniqueDamage
 - Signature: `mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage)`
@@ -4254,7 +4275,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Inputs: attack owner.
 - Purpose: Create a five-tile persistent fire wall instead of approximating the technique as a projectile fan.
 - Returns: boolean success flag.
-- Side effects: spends energy and creates temporary flame-field controllers.
+- Side effects: spends energy, plays fire audio and cast text, and creates fading temporary flame-field controllers.
 
 #### obj/Effect/TenkaichiFlameField/proc/processField
 - Signature: `processField()`
