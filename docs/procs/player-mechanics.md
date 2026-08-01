@@ -45,6 +45,7 @@ The former cumulative KO counter is deprecated. Casual defeats recover automatic
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
 - `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
 - `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
+- `canAccessTechnology(technology)` rejects non-object click targets before reading science metadata, preventing map and character clicks from producing runtimes.
 - `refreshTechnologyUnlocks(announce)` grants science items allowed by level and selected path.
 - `Liberal Arts Degree`, `Mining Expert`, `Rapid Deployment`, and `Master Blacksmith` are Roleplay Tenkaichi milestone ports adapted to Nexus progression contracts.
 - `refreshCombatStatusOverlays()` keeps the imported Lethal and RP Mode character icons synchronized with the action HUD.

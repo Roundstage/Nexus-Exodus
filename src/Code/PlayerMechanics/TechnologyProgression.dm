@@ -21,7 +21,7 @@ mob/proc/getTechnologyPathSlots()
 	return 0
 
 mob/proc/canUnlockTechnology(obj/technology)
-	if(!technology || !technology.science) return FALSE
+	if(!istype(technology, /obj) || !technology.science) return FALSE
 	var/required_level = technology.science_level
 	if(!required_level) required_level = 1
 	required_level = max(1, required_level)
@@ -30,7 +30,7 @@ mob/proc/canUnlockTechnology(obj/technology)
 	return TRUE
 
 mob/proc/canAccessTechnology(obj/technology)
-	if(!technology) return FALSE
+	if(!istype(technology, /obj)) return FALSE
 	if(islist(GLOBAL_SCIENCE_TAB_ITEMS) && technology in GLOBAL_SCIENCE_TAB_ITEMS) return TRUE
 	if(islist(individual_science_items) && technology in individual_science_items) return TRUE
 	return canUnlockTechnology(technology)
