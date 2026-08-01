@@ -256,7 +256,6 @@ upForm
 	admin_panel
 		window_title = "Admin Panel"
 		window_size = "700x600"
-		settings = UPFORM_SET_HANDLE_FORMS
 		form_type = UPFORM_WINDOW
 		page_css = {"
 			body { background-color: #d0d0d0 }

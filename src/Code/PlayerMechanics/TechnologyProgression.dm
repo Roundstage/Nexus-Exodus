@@ -35,6 +35,9 @@ mob/proc/canAccessTechnology(obj/technology)
 	if(islist(individual_science_items) && technology in individual_science_items) return TRUE
 	return canUnlockTechnology(technology)
 
+mob/proc/isTechnologyReferenceClick(obj/technology)
+	return istype(technology, /obj) && technology.referenceObject && canAccessTechnology(technology)
+
 mob/proc/refreshTechnologyUnlocks(announce = FALSE)
 	if(!islist(individual_science_items)) individual_science_items = list()
 	if(!islist(player_tech_paths)) player_tech_paths = list()

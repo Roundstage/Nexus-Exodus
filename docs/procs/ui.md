@@ -34,7 +34,7 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 - `showNexusAdminInspector(target)` opens a level-3-admin-only replacement for the raw EDIT window.
 - `datum/NexusAdminInspector/buildHtml()` groups editable variables by identity, combat, progression, appearance, position, collection, system, or other and exposes live text/category filtering.
 - `datum/NexusAdminInspector/editVariable(variable_name)` preserves the legacy number/text/file/list/null edit choices and admin logging.
-- `datum/NexusAdminInspector/buildListHtml(variable_name)` exposes every entry in a legacy list instead of truncating it to the table preview and safely handles numeric or nested-list values.
+- `datum/NexusAdminInspector/buildListHtml(variable_name)` exposes every entry in a legacy list instead of truncating it to the table preview and only resolves associative values for safe text keys.
 - `datum/NexusAdminInspector/editMutation(mutation_id)` adds, updates, or removes a character mutation through the dedicated mutation panel.
 
 ### src/Code/UI/CharacterSheet.dm

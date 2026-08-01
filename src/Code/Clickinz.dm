@@ -22,7 +22,7 @@ client/DblClick(obj/A)
 
 client/Click(obj/A, location, control, params)
 	var/mob/player = usr
-	if(player.canAccessTechnology(A))
+	if(player.isTechnologyReferenceClick(A))
 		mob.DisplayItemCost(A)
 	else if(mob.Lootables&&mob&&isobj(A)&&(A in mob.Lootables)&&!istype(A,/obj/Cancel_Loot)) for(var/mob/B in view(1,mob)) if(A.loc==B)
 		if(!B.KO)
