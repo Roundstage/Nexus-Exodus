@@ -4,7 +4,7 @@ macro "macro"
 		command = "ToggleAutoAttack"
 	elem 
 		name = "Return"
-		command = ".winset \"outputwindow.input1.focus=true ? mapwindow.map.focus=true : outputwindow.input1.focus=true\""
+		command = ".winset \"nexuschatwindow.command.focus=true ? mapwindow.map.focus=true : nexuschatwindow.command.focus=true\""
 	elem 
 		name = "Escape"
 		command = "PressEscape"
@@ -2407,6 +2407,56 @@ window "outputwindow"
 		style = ".system {color:#FFFFFF;}"
 		enable-http-images = true
 		max-lines = 200
+
+window "nexuschatwindow"
+	elem "nexuschatwindow"
+		type = MAIN
+		pos = 0,0
+		size = 360x600
+		anchor1 = none
+		anchor2 = none
+		background-color = #120d08
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "chat"
+		type = BROWSER
+		pos = 0,0
+		size = 360x572
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = #120d08
+		border = line
+		saved-params = ""
+	elem "cmdlabel"
+		type = LABEL
+		pos = 0,574
+		size = 48x24
+		anchor1 = 0,100
+		anchor2 = 0,100
+		font-family = "Courier New"
+		font-size = 9
+		font-style = "bold"
+		text-color = #f0d497
+		background-color = #302317
+		border = line
+		text = " CMD>"
+	elem "command"
+		type = INPUT
+		pos = 48,574
+		size = 312x24
+		anchor1 = 0,100
+		anchor2 = 100,100
+		font-family = "Courier New"
+		font-size = 9
+		text-color = #f3dfb6
+		background-color = #120f0c
+		border = sunken
+		is-default = true
+		saved-params = ""
 
 window "rpane"
 	elem "rpane"

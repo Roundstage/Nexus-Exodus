@@ -140,12 +140,13 @@ datum/NexusChatHud
 		scroll_offset = 0
 
 	Del()
-		if(owner && owner.client && owner.client.nexus_chat_hud == src) owner.client.nexus_chat_hud = null
+		if(owner && owner.client)
+			owner << browse(null, "window=nexuschatwindow.chat")
+			if(owner.client.nexus_chat_hud == src) owner.client.nexus_chat_hud = null
 		. = ..()
 
 	proc/getVisibleMessageCount()
-		if(!owner) return 4
-		return max(4, round((owner.nexus_chat_hud_height - 70) / 18))
+		return 80
 
 	proc/buildMessageHtml()
 		if(!owner || !owner.client) return ""
@@ -165,79 +166,78 @@ datum/NexusChatHud
 		var/right_offset = 8 + panel_width - local_x - element_width
 		return "RIGHT:-[right_offset],BOTTOM:[bottom_y]"
 
+	proc/buildLink(label, action_id, class_name = "button")
+		return "<a class='[class_name]' href='byond://?src=\ref[src]&action=[action_id]'>[html_encode(label)]</a>"
+
+	proc/buildHtml()
+		var/tabs = ""
+		for(var/channel in list("all", "combat", "ic", "ooc"))
+			var/tab_class = channel == active_channel ? "tab active" : "tab"
+			tabs += buildLink(uppertext(channel), "channel&id=[channel]", tab_class)
+		var/footer = buildLink("SAY", "say")
+		footer += buildLink("OOC", "ooc")
+		footer += buildLink("EMOTE", "emote")
+		footer += buildLink("LOGS", "logs")
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusRpgBrowserCss()]
+		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:10px 'Courier New',monospace}.shell{height:100vh;display:flex;flex-direction:column;padding:4px;background:#17110c}.header{display:flex;align-items:center;gap:3px;flex:0 0 24px;padding:3px 4px;border:2px solid #755a36;background:#3a2a1b}.header b{margin-right:auto;color:#f0d497;font-size:11px}.button,.tab{display:block;padding:4px 6px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.header .button{padding:2px 5px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;flex:0 0 25px;margin-top:3px}.tab{padding:4px 2px}.tab.active{background:#76542a;color:#fff3bf;border-color:#d4ad65}.messages{flex:1;min-height:0;margin-top:3px;padding:7px;overflow-y:auto;border:2px inset #574128;background:#100d09;color:#ead7b0;font-size:10px;line-height:1.35}.footer{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;flex:0 0 25px;margin-top:3px}.footer .button{padding:4px 1px}.hint{flex:0 0 15px;padding-top:3px;color:#927b58;text-align:center;font-size:8px}::-webkit-scrollbar{width:12px}::-webkit-scrollbar-track{background:#17110c}::-webkit-scrollbar-thumb{background:#6b4e2d;border:2px outset #9b7441}
+		</style><script>window.onload=function(){var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><div class='shell'><div class='header'><b>CHAT / [uppertext(active_channel)]</b>[buildLink("UP", "scroll_up")][buildLink("DOWN", "scroll_down")][buildLink("HIDE", "hide")]</div><div class='tabs'>[tabs]</div><div class='messages' id='messages'>[buildMessageHtml()]</div><div class='footer'>[footer]</div><div class='hint'>CMD BAR BELOW / ENTER TO FOCUS OR RETURN TO MAP</div></div></body></html>"}
+
+	proc/attachSidePanel()
+		if(!owner || !owner.client) return
+		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=nexuschatwindow;splitter=74")
+		winset(owner, "nexuschatwindow", "is-visible=true")
+		winset(owner, "nexuschatwindow.chat", "is-visible=true")
+		winset(owner, "nexuschatwindow.command", "is-visible=true")
+
 	proc/refresh()
 		clearElements()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
-		var/panel_y = 8
-		var/panel_width = Clamp(round(owner.nexus_chat_hud_width), 360, 820)
-		var/panel_height = Clamp(round(owner.nexus_chat_hud_height), 130, 460)
-		owner.nexus_chat_hud_width = panel_width
-		owner.nexus_chat_hud_height = panel_height
-		if(owner.nexus_chat_hud_collapsed) panel_height = 24
-		addElementAt("", null, getRightAnchoredLocation(panel_width, 0, panel_width, panel_y), panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
-		var/header_y = panel_y + panel_height - 22
-		var/control_width = 21
-		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
-		var/control_x = panel_width - 4 - (header_actions.len * control_width)
-		addElementAt("CHAT / [uppertext(active_channel)]", null, getRightAnchoredLocation(panel_width, 4, max(60, control_x - 4), header_y), max(60, control_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
-		for(var/action_id in header_actions)
-			addElementAt(header_actions[action_id], action_id, getRightAnchoredLocation(panel_width, control_x, control_width, header_y), control_width, 20, "#46321d", "#987140", "", "#f2d8a0", "center", 8)
-			control_x += control_width
-		if(owner.nexus_chat_hud_collapsed) return
-		var/tab_y = panel_y + panel_height - 43
-		var/tab_width = round((panel_width - 8) / 4)
-		var/tab_x = 4
-		for(var/channel in list("all", "combat", "ic", "ooc"))
-			var/is_active = channel == active_channel
-			addElementAt(uppertext(channel), "channel:[channel]", getRightAnchoredLocation(panel_width, tab_x, tab_width, tab_y), tab_width, 19, is_active ? "#725027" : "#302319", is_active ? "#d2aa61" : "#725735", is_active ? "#e0bd74" : "", is_active ? "#fff0bd" : "#cbb389", "center", 8)
-			tab_x += tab_width
-		var/footer_height = 22
-		var/message_y = panel_y + footer_height
-		var/message_height = max(40, panel_height - 68)
-		var/obj/message_panel = addElementAt("", null, getRightAnchoredLocation(panel_width, 4, panel_width - 8, message_y), panel_width - 8, message_height, "#130f0b", "#574128", "", "#ead7b0", "left", 8, FALSE)
-		message_panel.maptext_x = 7
-		message_panel.maptext_y = 5
-		message_panel.maptext_width = panel_width - 22
-		message_panel.maptext_height = message_height - 10
-		message_panel.maptext = "<div style='font-family:Courier New;font-size:8px;color:#ead7b0'>[buildMessageHtml()]</div>"
-		var/list/footer_actions = list("say" = "SAY", "ooc" = "OOC", "emote" = "EMOTE", "logs" = "LOGS")
-		var/footer_width = round((panel_width - 8) / footer_actions.len)
-		var/footer_x = 4
-		for(var/action_id in footer_actions)
-			addElementAt(footer_actions[action_id], action_id, getRightAnchoredLocation(panel_width, footer_x, footer_width, panel_y + 2), footer_width, 18, "#3c2b1a", "#846238", "", "#ead09a", "center", 8)
-			footer_x += footer_width
+		owner << browse(buildHtml(), "window=nexuschatwindow.chat")
 
 	handleAction(action_id)
 		if(!owner || !owner.client) return
-		if(findtext(action_id, "channel:") == 1)
-			active_channel = normalizeNexusChatChannel(copytext(action_id, 9))
-			scroll_offset = 0
-		else switch(action_id)
+		switch(action_id)
 			if("scroll_up")
 				owner.client.initializeNexusChatHistory()
 				var/list/entries = owner.client.nexus_chat_history[active_channel]
 				scroll_offset = min(max(0, entries.len - 1), scroll_offset + getVisibleMessageCount())
 			if("scroll_down") scroll_offset = max(0, scroll_offset - getVisibleMessageCount())
-			if("width_down") owner.nexus_chat_hud_width = max(360, owner.nexus_chat_hud_width - 64)
-			if("width_up") owner.nexus_chat_hud_width = min(820, owner.nexus_chat_hud_width + 64)
-			if("height_down") owner.nexus_chat_hud_height = max(130, owner.nexus_chat_hud_height - 48)
-			if("height_up") owner.nexus_chat_hud_height = min(460, owner.nexus_chat_hud_height + 48)
-			if("collapse") owner.nexus_chat_hud_collapsed = !owner.nexus_chat_hud_collapsed
 			if("say") spawn() owner.Say()
 			if("ooc") spawn() owner.GlobalSay()
 			if("emote") owner.showNexusEmoteEditor()
 			if("logs") owner.showNexusPlayerLogs(active_channel)
+			if("hide")
+				setVisible(FALSE)
+				return
 		refresh()
+
+	Topic(href, list/href_list)
+		if(!owner || !owner.client || usr != owner) return
+		var/action_id = href_list["action"]
+		if(action_id == "channel")
+			active_channel = normalizeNexusChatChannel(href_list["id"])
+			scroll_offset = 0
+			refresh()
+			return
+		handleAction(action_id)
 
 	proc/setVisible(new_visibility)
 		is_visible = !!new_visibility
-		refresh()
+		if(owner && owner.client) owner.client.show_chatbox = is_visible
+		if(is_visible)
+			attachSidePanel()
+			refresh()
+		else if(owner && owner.client)
+			owner << browse(null, "window=nexuschatwindow.chat")
+			winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+			winset(owner, "mapwindow.map", "focus=true")
 
 mob/proc/hideNexusLegacyInterface()
 	if(!client) return
-	winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+	winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=nexuschatwindow;splitter=74")
 	winset(src, "mapwindow", "is-visible=true")
 	winset(src, "mapwindow.map", "is-visible=true")
+	winset(src, "nexuschatwindow", "is-visible=true")
 	winset(src, "mpane.mpanewindow", "right=;splitter=100")
 	for(var/window_id in list("rpane", "infowindow", "outputwindow", "chat", "chat2", "chat3")) winset(src, window_id, "is-visible=false")
 
@@ -246,7 +246,7 @@ mob/proc/initializeNexusChatHud()
 	hideNexusLegacyInterface()
 	if(client.nexus_chat_hud) del(client.nexus_chat_hud)
 	client.nexus_chat_hud = new /datum/NexusChatHud(src)
-	client.nexus_chat_hud.refresh()
+	client.nexus_chat_hud.setVisible(client.show_chatbox)
 
 mob/proc/toggleNexusChatHud()
 	if(!client || !playerCharacter) return
