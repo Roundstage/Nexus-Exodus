@@ -5,16 +5,12 @@ proc/getTenkaichiWeaponAttackTypes()
 		/obj/Attacks/TenkaichiMeleeTechnique/Flourish,
 		/obj/Attacks/TenkaichiMeleeTechnique/WindHowl,
 		/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash,
+		/obj/Attacks/TenkaichiMeleeTechnique/Riposte,
 		/obj/Attacks/TenkaichiMeleeTechnique/Cleave,
 		/obj/Attacks/TenkaichiMeleeTechnique/SwordStab,
 		/obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash,
 		/obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact,
-		/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash,
-		/obj/Attacks/Blast/RoleplayBlast/ExplodingBolt,
-		/obj/Attacks/Blast/RoleplayBlast/IceArrow,
-		/obj/Attacks/Blast/RoleplayBlast/BlockTheSky,
-		/obj/Attacks/Blast/RoleplayBlast/EchoingSlash,
-		/obj/Attacks/Blast/RoleplayBlast/SkyBreak)
+		/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash)
 
 proc/getTenkaichiUnarmedAttackTypes()
 	return list(
@@ -25,6 +21,7 @@ proc/getTenkaichiUnarmedAttackTypes()
 		/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury,
 		/obj/Attacks/TenkaichiMeleeTechnique/PileDriver,
 		/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow,
+		/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches,
 		/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike,
 		/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash,
 		/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak,
@@ -48,26 +45,13 @@ proc/getTenkaichiBeamAttackTypes()
 		/obj/Attacks/RoleplayBeam/TyrantLancer,
 		/obj/Attacks/RoleplayBeam/BusterCannon)
 
-proc/getTenkaichiRangedAttackTypes()
+proc/getTenkaichiSpecialStyleAttackTypes()
 	return list(
-		/obj/Attacks/Charge,
-		/obj/Attacks/Kienzan,
-		/obj/Attacks/Sokidan,
 		/obj/Attacks/Buster_Barrage,
-		/obj/Attacks/Blast/RoleplayBlast/MortarCharge,
-		/obj/Attacks/Blast/RoleplayBlast/HomingFinisher,
-		/obj/Attacks/Blast/RoleplayBlast/HellzoneGrenade,
-		/obj/Attacks/Blast/RoleplayBlast/BlasterMeteor,
-		/obj/Attacks/Blast/RoleplayBlast/KillDriver,
-		/obj/Attacks/Blast/RoleplayBlast/GuideBomb,
-		/obj/Attacks/Blast/RoleplayBlast/DragonNova,
-		/obj/Attacks/Blast/RoleplayBlast/HyperTornado,
-		/obj/Attacks/Blast/RoleplayBlast/MegaBurst,
-		/obj/Attacks/Blast/RoleplayBlast/TriBeam,
-		/obj/Attacks/Blast/RoleplayBlast/ExplosiveDemonWave,
-		/obj/Attacks/Blast/RoleplayBlast/SuperGhostKamikaze,
-		/obj/Attacks/Blast/RoleplayBlast/WallOfFlame,
-		/obj/Attacks/Blast/RoleplayBlast/SuperExplosiveWave)
+		/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame)
+
+proc/getTenkaichiRangedAttackTypes()
+	return getTenkaichiSpecialStyleAttackTypes()
 
 proc/grantTenkaichiAttackTypes(mob/character, list/attack_types)
 	if(!character || !islist(attack_types)) return 0
@@ -87,19 +71,19 @@ mob/Admin3/verb/giveTenkaichiAttacks(mob/character in players)
 	set name = "Give Tenkaichi Attacks"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !character) return
-	var/category = input(src, "Choose an adapted Roleplay Tenkaichi attack package.", "Tenkaichi Attacks") in list("Cancel", "Weapon Techniques", "Unarmed Techniques", "Beams", "Ranged Attacks", "All")
+	var/category = input(src, "Choose an adapted Roleplay Tenkaichi attack package.", "Tenkaichi Attacks") in list("Cancel", "Weapon Techniques", "Unarmed Techniques", "Special Styles", "Beams", "All")
 	if(category == "Cancel") return
 	var/list/attack_types = list()
 	switch(category)
 		if("Weapon Techniques") attack_types = getTenkaichiWeaponAttackTypes()
 		if("Unarmed Techniques") attack_types = getTenkaichiUnarmedAttackTypes()
+		if("Special Styles") attack_types = getTenkaichiSpecialStyleAttackTypes()
 		if("Beams") attack_types = getTenkaichiBeamAttackTypes()
-		if("Ranged Attacks") attack_types = getTenkaichiRangedAttackTypes()
 		if("All")
 			attack_types.Add(getTenkaichiWeaponAttackTypes())
 			attack_types.Add(getTenkaichiUnarmedAttackTypes())
+			attack_types.Add(getTenkaichiSpecialStyleAttackTypes())
 			attack_types.Add(getTenkaichiBeamAttackTypes())
-			attack_types.Add(getTenkaichiRangedAttackTypes())
 	var/granted = grantTenkaichiAttackTypes(character, attack_types)
 	admin_blame(src, "[key] gave [character] the [category] Roleplay Tenkaichi attack package ([granted] new attacks).")
 	src << "[character] received [granted] new attacks from the [category] package. Existing attacks were preserved."

@@ -4268,9 +4268,16 @@ Core world, persistence, combat-recovery, and utility functions.
 #### mob/proc/GiveAdmin
 - Signature: `mob/proc/GiveAdmin(Amount = 1, bypass_admin_ban)`
 - Inputs: Amount = 1, bypass_admin_ban
-- Purpose: Handle give admin.
+- Purpose: Register the administrator level and restore every legacy verb available at that level for CMD and original Admin-tab use.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: replaces the mob's current admin verb set and updates `Admins`.
+
+#### mob/proc/grantAdminVerbsForLevel
+- Signature: `mob/proc/grantAdminVerbsForLevel(admin_level)`
+- Inputs: administrator level.
+- Purpose: Add `AdminEssentials` plus every cumulative `Admin1` through `Admin5` verb tree allowed by the level.
+- Returns: none (implicit).
+- Side effects: mutates the mob's verb list.
 
 #### mob/proc/Remove_Admin
 - Signature: `mob/proc/Remove_Admin()`

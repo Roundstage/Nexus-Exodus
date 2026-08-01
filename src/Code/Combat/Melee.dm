@@ -1027,6 +1027,9 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		if(melee_target.rp_mode)
 			Reset_melee()
 			return
+		if(melee_target.tryTenkaichiRiposte(src))
+			Reset_melee()
+			return
 
 	if(target==chaser)
 		last_damaged_chaser=0

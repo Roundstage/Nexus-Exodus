@@ -453,19 +453,15 @@ datum/SkillEngine
 			a.bound_width = 16
 			a.bound_y = (32 - a.bound_height) / 2
 			a.bound_x = (32 - a.bound_width) / 2
-			a.Can_Home = skill_obj.roleplay_homing
-			a.vector_speed = skill_obj.roleplay_projectile_speed
-			a.Distance = skill_obj.roleplay_projectile_distance
+			a.Can_Home = 0
+			a.vector_speed = 44
+			a.Distance = 47
 			var/angle = dir_to_angle_0_360(a.dir)
 			var/mob/targ = user.getSelectedTarget(max_dist = 30, dir_angle = user.dir, angle_limit = 18)
 			a.blast_homing_target = targ
 			if(targ) angle = get_global_angle(a, targ)
-			var/spread_angle = 4
-			if(skill_obj.Spread == 2) spread_angle = 14
-			else if(skill_obj.Spread == 3) spread_angle = 35
-			angle += rand(-spread_angle, spread_angle)
-			if(skill_obj.roleplay_homing && targ) a.followSelectedTarget(targ)
-			else a.BlastVectorWalk(angle)
+			angle += rand(-4, 4)
+			a.BlastVectorWalk(angle)
 			amount--
 		return 1
 
