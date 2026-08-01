@@ -205,7 +205,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(inventory_button)
 	del(menu_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
-	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
+	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks") && text2path("/mob/Admin3/verb/testTenkaichiCombatEffects"), "Tenkaichi attack or audiovisual testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 4, "Tenkaichi special-style catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
@@ -220,7 +220,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo/tenkaichi_kickback = new
 	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
 	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
-	nexusSmokeAssert(tenkaichi_slice.icon == tenkaichi_slice.effect_icon && tenkaichi_slice.getImpactSound() == 'Swordhit.ogg', "Tenkaichi weapon techniques are missing their adapted hotbar icons or sword audio")
+	nexusSmokeAssert(tenkaichi_slice.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && (tenkaichi_slice.getCastSound() in nexus_sword_swing_light_sounds) && (tenkaichi_slice.getImpactSound() in nexus_sword_impact_sounds), "Tenkaichi weapon techniques are missing their animated hotbar icons or CC0 sword audio")
 	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
 	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
 	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
@@ -372,13 +372,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/RockThrow/rock_throw_skill = new
 	var/obj/RockSlide/rock_slide_skill = new
 	var/obj/RockTomb/rock_tomb_skill = new
-	nexusSmokeAssert(rock_throw_skill.icon == 'RTRockThrow.dmi' && GetWidth(rock_throw_skill.icon) == 64 && rock_slide_skill.icon == 'RTRockThrow.dmi' && rock_tomb_skill.icon == 'RTRockTomb.dmi' && GetWidth(rock_tomb_skill.icon) == 62, "rock skills are missing their original Roleplay Tenkaichi technique icons")
+	nexusSmokeAssert(rock_throw_skill.icon == 'RTRockThrow.dmi' && GetWidth(rock_throw_skill.icon) == 64 && rock_slide_skill.icon == 'RisingRocks.dmi' && rock_tomb_skill.icon == 'RTRockTomb.dmi' && GetWidth(rock_tomb_skill.icon) == 62, "rock skills are missing their differentiated technique icons")
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
+	nexusSmokeAssert(text2path("/obj/Effect/RockSkillDebris") && nexus_rock_launch_sounds.len == 2 && nexus_rock_impact_sounds.len == 3 && nexus_rock_heavy_impact_sounds.len == 2 && nexus_rock_break_sounds.len == 3, "rock attacks are missing their CC0 audio or debris profiles")
 	nexusSmokeAssert(text2path("/obj/Effect/TenkaichiTechniqueText"), "Tenkaichi techniques are missing their floating combat announcement actor")
+	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/sword_slice_skill = new
+	nexusSmokeAssert(sword_slice_skill.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && sword_slice_skill.icon_state == "slash" && GetWidth(sword_slice_skill.icon) == 64 && GetHeight(sword_slice_skill.icon) == 47, "weapon skills are missing the animated CC0 slash icon")
+	nexusSmokeAssert(nexus_sword_swing_light_sounds.len == 2 && nexus_sword_swing_heavy_sounds.len == 2 && nexus_sword_impact_sounds.len == 6 && (sword_slice_skill.getCastSound() in nexus_sword_swing_light_sounds) && (sword_slice_skill.getImpactSound() in nexus_sword_impact_sounds), "weapon skills are missing their CC0 swing and impact profiles")
 	del(rock_throw_skill)
 	del(rock_slide_skill)
 	del(rock_tomb_skill)
+	del(sword_slice_skill)
 	var/obj/Lunge/lunge_action = new
 	nexusSmokeAssert(lunge_action.can_hotbar && /obj/Lunge/verb/lunge in lunge_action.verbs, "Lunge is not available as a standalone action")
 	nexusSmokeAssert(text2path("/mob/Admin2/verb/orderCombatDummyLunge") && text2path("/obj/NexusHud/DragonRushPrompt"), "Dragon Rush dummy control or direction prompt is missing")

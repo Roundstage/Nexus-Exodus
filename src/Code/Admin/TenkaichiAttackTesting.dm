@@ -97,3 +97,27 @@ mob/Admin3/verb/giveTenkaichiAttacks(mob/character in players)
 	var/granted = grantTenkaichiAttackTypes(character, attack_types)
 	admin_blame(src, "[key] gave [character] the [category] Roleplay Tenkaichi attack package ([granted] new attacks).")
 	src << "[character] received [granted] new attacks from the [category] package. Existing attacks were preserved."
+
+
+mob/Admin3/verb/testTenkaichiCombatEffects()
+	set name = "Test Weapon and Rock Effects"
+	set category = "Admin"
+	if(AdminLevel() < 3 || !loc) return
+	var/test_profile = input(src, "Choose an audiovisual profile. These previews do not deal damage.", "Combat Effect Preview") in list("Cancel", "Sword - Light", "Sword - Heavy", "Rock - Launch and Rumble", "Rock - Impact", "Rock - Heavy Impact")
+	if(test_profile == "Cancel") return
+	switch(test_profile)
+		if("Sword - Light", "Sword - Heavy")
+			var/obj/Attacks/TenkaichiMeleeTechnique/preview_technique
+			if(test_profile == "Sword - Heavy") preview_technique = new /obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash(src)
+			else preview_technique = new /obj/Attacks/TenkaichiMeleeTechnique/Slice(src)
+			showTenkaichiTechniqueAnnouncement("[test_profile] Preview", preview_technique.cast_text_color, preview_technique.getCastSound(), 40)
+			sleep(3)
+			preview_technique.showImpact(src)
+			spawn(12) if(preview_technique) del(preview_technique)
+		if("Rock - Launch and Rumble")
+			player_view(15, src) << sound(pick(nexus_rock_launch_sounds), volume = 42)
+			sleep(5)
+			player_view(15, src) << sound('src/Sound/SoundEffects/Combat/Earth/RockRumble.ogg', volume = 48)
+		if("Rock - Impact") showRockSkillImpact(src)
+		if("Rock - Heavy Impact") showRockSkillImpact(src, heavy = TRUE)
+	src << "Previewed [test_profile]."

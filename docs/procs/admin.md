@@ -1862,6 +1862,13 @@ Administrative commands and management flows. Administrators receive a searchabl
 - Returns: none (implicit).
 - Side effects: creates skill objects in the target inventory and writes an admin audit entry.
 
+#### mob/Admin3/verb/testTenkaichiCombatEffects
+- Signature: `testTenkaichiCombatEffects()`
+- Inputs: interactive light/heavy sword, rock launch/rumble, or light/heavy rock-impact profile.
+- Purpose: Preview the new CC0 audio banks and layered visual effects at the administrator without dealing damage.
+- Returns: none (implicit).
+- Side effects: creates only short-lived preview effects and sounds; it is also searchable in the structured Admin Panel.
+
 #### proc/grantTenkaichiAttackTypes
 - Signature: `proc/grantTenkaichiAttackTypes(mob/character, list/attack_types)`
 - Inputs: target character and list of attack type paths.

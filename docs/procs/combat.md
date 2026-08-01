@@ -9,6 +9,8 @@ Sense tracking is persistent while Sense or a compatible scanner is owned. Clien
 
 Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Each warp fades both fighters out and back in and displays a centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
 
+Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its imported Tenkaichi effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
+
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
 - `src/Code/Application/Combat/SkillControllers.dm`
@@ -2652,7 +2654,14 @@ Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or 
 - Inputs: impact target and heavy-impact flag.
 - Purpose: Display the adapted Nexus impact presentation shared by Rock Throw, Rock Slide and Rock Tomb.
 - Returns: none (implicit).
-- Side effects: plays wall/crash audio, animates imported impact art and creates a shockwave for Rock Tomb.
+- Side effects: selects CC0 stone audio, animates imported impact and rising-rock art, scatters debris, and creates a shockwave for Rock Tomb.
+
+#### proc/showRockSkillDebris
+- Signature: `showRockSkillDebris(turf/impact_turf, heavy = FALSE)`
+- Inputs: impact turf and heavy-impact flag.
+- Purpose: Scatter varied resource-rock sprites with size, offset, and travel variation.
+- Returns: none (implicit).
+- Side effects: creates short-lived debris actors; projectile trails use smaller, fainter instances.
 
 #### mob/proc/RockTombFX
 - Signature: `RockTombFX(turf/impact_turf)`
@@ -2673,7 +2682,7 @@ Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or 
 - Inputs: target and visual configuration.
 - Purpose: Move a nondense visible rock actor from caster to target.
 - Returns: impact turf.
-- Side effects: creates and deletes a temporary visual actor.
+- Side effects: creates and deletes a temporary visual actor and emits a restrained fragment trail.
 
 ### src/Code/Combat/Skills.dm
 
@@ -4219,9 +4228,16 @@ Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or 
 #### obj/Attacks/TenkaichiMeleeTechnique/proc/playCastEffects
 - Signature: `playCastEffects(mob/user)`
 - Inputs: technique user.
-- Purpose: Dispatch the shared attack animation, floating name, message and weapon/unarmed/grapple cast audio.
+- Purpose: Dispatch the shared attack animation, floating name, message and behavior-aware CC0 weapon or legacy unarmed/grapple cast audio.
 - Returns: none (implicit).
 - Side effects: changes transient animation state and creates audiovisual feedback.
+
+#### obj/Attacks/TenkaichiMeleeTechnique/proc/showSwordSlashEffect
+- Signature: `showSwordSlashEffect(mob/target, impact_scale = 1)`
+- Inputs: hit target and calculated impact scale.
+- Purpose: Layer the nine-frame CC0 pixel slash over the technique's original Tenkaichi effect with per-technique color and additive light.
+- Returns: none (implicit).
+- Side effects: creates and deletes one transient animated slash actor.
 
 #### mob/proc/castTenkaichiMeleeTechnique
 - Signature: `mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)`
