@@ -1576,11 +1576,19 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### atom/movable/proc/setNexusGlow
 - Signature: `setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
-- Purpose: Attach one reusable additive light emitter to a moving atom.
+- Purpose: Attach one reusable two-layer additive light emitter to a moving atom. `size` is treated as approximate falloff radius in tiles; a compact bright core sits inside a softer ranged gradient.
 
 #### atom/movable/proc/pulseNexusGlow
 - Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')`
 - Purpose: Render and automatically remove a short impact or charge light pulse.
+
+#### proc/getNexusGlowRangeScale
+- Signature: `getNexusGlowRangeScale(range_tiles)`
+- Purpose: Convert a requested tile radius to the transform scale required by the 517px radial mask.
+
+#### obj/NexusLighting/Emitter/proc/configureNexusEmitter
+- Signature: `configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'TorchLightCircle.dmi', enable_variation = TRUE)`
+- Purpose: Compose the low-alpha outer falloff and smaller bright core, then run subtle client-side intensity and scale variation for persistent lights.
 
 #### atom/movable/proc/setNexusActionGlow
 - Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
@@ -1600,7 +1608,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/Admin2/verb/testNexusGlow
 - Signature: `testNexusGlow()`
-- Purpose: Attach a maximum-intensity white test glow to the admin for ten seconds.
+- Purpose: Prompt for a radius from 0.5 to 8 tiles and attach a maximum-intensity white test glow to the admin for ten seconds.
 
 #### mob/Admin2/verb/testNexusBlast
 - Signature: `testNexusBlast()`
@@ -1651,7 +1659,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### obj/LightSource/proc/FadeInLight
 - Signature: `FadeInLight(n = 100)`
 - Inputs: n = 100
-- Purpose: Handle fade in light.
+- Purpose: Fade both gradient layers in, then resume their subtle natural variation.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
