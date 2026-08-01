@@ -395,14 +395,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/Hotkey_server_backup_load
 - Signature: `Hotkey_server_backup_load()`
 - Inputs: None
-- Purpose: Handle hotkey server backup load.
+- Purpose: Restore legacy IDs, custom bindings, binding version, and the selected XKB keyboard layout.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Hotkey_server_backup_save
 - Signature: `Hotkey_server_backup_save()`
 - Inputs: None
-- Purpose: Handle hotkey server backup save.
+- Purpose: Persist legacy IDs, custom bindings, binding version, and the normalized XKB keyboard layout.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -815,10 +815,22 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 ### src/Code/UI/HotkeyEditor.dm
 
 #### proc/canonicalNexusHotkey
-- Signature: `canonicalNexusHotkey(base_key, use_ctrl = 0, use_shift = 0, use_alt = 0)`
-- Inputs: allowlisted base key and modifier flags.
-- Purpose: Produce stable combinations such as `CTRL+SHIFT+Numpad7`.
+- Signature: `canonicalNexusHotkey(base_key, use_ctrl = 0, use_shift = 0, use_alt = 0, tap_count = 1)`
+- Inputs: allowlisted base key, modifier flags, and single/double activation count.
+- Purpose: Produce stable combinations such as `CTRL+SHIFT+Numpad7` and `DOUBLE:Space`.
 - Returns: canonical combination or null for an unsupported key.
+- Side effects: none.
+
+#### proc/getNexusKeyboardLayoutRows
+- Signature: `getNexusKeyboardLayoutRows(layout_id)`
+- Purpose: Return keyboard rows for normalized XKB-style profiles (`us`, `br`, `gb`, `fr`, `de`, and `us(dvorak)`).
+- Returns: three keyboard rows; unsupported identifiers fall back to `us`.
+- Side effects: none.
+
+#### proc/getNexusUnixHotkeyName
+- Signature: `getNexusUnixHotkeyName(combination)`
+- Purpose: Present canonical BYOND keys using Unix/XKB labels such as `ctrl_l + kp_1` and `space + space`.
+- Returns: display-only key combination.
 - Side effects: none.
 
 #### datum/NexusHotkeyAction
@@ -826,8 +838,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Current actions: eight Zanzoken directions, available only while the player owns `/obj/Zanzoken`.
 
 #### mob/proc/initializeNexusHotkeys
-- Purpose: Migrate positional legacy bindings, initialize runtime state, and rebuild client-local dynamic macros.
+- Purpose: Migrate positional legacy bindings, normalize the saved keyboard profile, initialize tap state, and rebuild client-local dynamic macros.
 - Side effects: updates binding version and client macros.
+
+#### mob/proc/getNexusHotkeyBindingIdForPress
+- Signature: `getNexusHotkeyBindingIdForPress(trigger_combination, was_held = FALSE, press_time = world.time)`
+- Purpose: Select the single binding immediately or the double binding when a second genuine press arrives within four ticks.
+- Returns: canonical single or `DOUBLE:` binding ID.
+- Side effects: updates per-key transient press timestamps; held-key repeats never count as a second tap.
 
 #### mob/proc/resolveNexusHotkeyBinding
 - Signature: `resolveNexusHotkeyBinding(combination)`
@@ -841,11 +859,11 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Side effects: replaces only client-local macros created by this system.
 
 #### mob/proc/buildNexusHotkeyEditorHtml
-- Purpose: Render the searchable action deck, draggable virtual keyboard, modifier controls, independent numpad, and active binding summary.
+- Purpose: Render the enlarged rustic action deck, draggable XKB-profile keyboard, Unix key labels, single/double activation controls, independent numpad, and active binding summary.
 - Security: actions are represented by server-issued opaque tokens and revalidated in `Topic()`.
 
 #### datum/NexusHotkeyEditor/Topic
-- Purpose: Validate bind, unbind, clear, import, and close events sent by the in-game browser editor.
+- Purpose: Validate bind, unbind, layout, clear, import, and close events sent by the in-game browser editor.
 - Side effects: saves each change immediately and refreshes macros/editor state.
 
 #### mob/proc/showNexusHotkeyEditor

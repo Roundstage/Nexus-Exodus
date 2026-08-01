@@ -288,11 +288,11 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Side effects: updates movement input state; Ctrl no longer triggers Zanzoken.
 
 #### mob/proc/HotbarUseHandler
-- Signature: `mob/proc/HotbarUseHandler(d)`
-- Inputs: d
-- Purpose: Handle hotbar use handler.
+- Signature: `mob/proc/HotbarUseHandler(d, held_key, was_key_held = FALSE)`
+- Inputs: canonical trigger combination, physical held-key identity, and held/repeat state.
+- Purpose: Resolve a single-press or double-tap binding before executing its hotbar action.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: tracks the active resolved binding until key-up.
 
 #### mob/proc/HotbarKeyUpHandler
 - Signature: `mob/proc/HotbarKeyUpHandler(d)`
