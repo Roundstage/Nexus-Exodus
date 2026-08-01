@@ -7,6 +7,8 @@ Core world, persistence, combat-recovery, and utility functions.
 
 Player persistence supports three independent character slots. Character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; the old key-named character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
 
+`StatpanelTabs.dm` now refreshes native tabs only in Side + Tabs mode. Skills, Other, Items, and the admin-only World/Admin panels are independently configurable; their atom entries retain BYOND's native click and context-menu behavior.
+
 ## Files
 - `src/Code/CoreFunctions/DBModeCharacters.dm`
 - `src/Code/CoreFunctions/DBModeCore.dm`

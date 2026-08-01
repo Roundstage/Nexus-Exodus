@@ -124,7 +124,6 @@ mob/proc/getNexusShortcutTypes()
 		/obj/NexusHud/ShortcutButton/Sense,
 		/obj/NexusHud/ShortcutButton/Chat,
 		/obj/NexusHud/ShortcutButton/Hotkeys,
-		/obj/NexusHud/ShortcutButton/Command,
 		/obj/NexusHud/ShortcutButton/Menu)
 	if(IsAdmin())
 		shortcut_types += /obj/NexusHud/ShortcutButton/World
@@ -329,8 +328,7 @@ obj/NexusHud/ShortcutButton
 			if("world") owner.showNexusPlayerMenu("world")
 			if("chat") owner.toggleNexusChatHud()
 			if("hotkeys") owner.showNexusHotkeyEditor()
-			if("cmd") owner.showNexusCommandPrompt()
-			if("menu") owner.PressEscape()
+			if("menu") owner.Settings()
 			if("admin") owner.showNexusAdminPanel(FALSE)
 		owner.refreshActionHud()
 
@@ -367,11 +365,6 @@ obj/NexusHud/ShortcutButton
 		accent_color = "#b39cff"
 		desc = "Hotkey editor"
 
-	Command
-		action_id = "cmd"
-		accent_color = "#d8d8d8"
-		desc = "Focus the command bar below chat"
-
 	Menu
 		action_id = "menu"
 		accent_color = "#e0bd74"
@@ -386,7 +379,20 @@ mob/proc/showNexusCommandPrompt()
 	if(!client || !playerCharacter) return
 	if(!client.nexus_chat_hud) initializeNexusChatHud()
 	else if(!client.nexus_chat_hud.is_visible) client.nexus_chat_hud.setVisible(TRUE)
-	winset(src, "nexuschatwindow.command", "focus=true")
+	if(nexus_interface_layout == "side_tabs")
+		winset(src, "nexuschatwindow.command", "focus=true")
+		return
+	var/command_text = input(src, "Enter the same command you would type in the CMD bar.", "CMD") as text|null
+	if(command_text) winset(src, null, "command=[command_text]")
+
+mob/verb/focusNexusCommand()
+	set hidden = TRUE
+	if(!client || !playerCharacter) return
+	if(nexus_interface_layout == "side_tabs")
+		if(winget(src, "nexuschatwindow.command", "focus") == "true") winset(src, "mapwindow.map", "focus=true")
+		else showNexusCommandPrompt()
+		return
+	showNexusCommandPrompt()
 
 datum/NexusPlayerMenu
 	var/tmp/mob/owner
@@ -575,9 +581,9 @@ datum/NexusPlayerMenu
 	proc/showExamineWindow(title, subtitle, icon_html, body_html)
 		if(!owner || !owner.client) return
 		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>[html_encode(title)]</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
-		</style></head><body><div class='shell'><div class='header'>[icon_html]<div><h1>[html_encode(title)]</h1><p>[html_encode(subtitle)]</p></div></div><div class='body'>[body_html]</div></div></body></html>"}
-		owner << browse(html, "window=NexusExamine;size=680x600;can_resize=true;can_close=true")
+		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.header-copy{flex:1}.back{padding:7px 10px}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
+		</style></head><body><div class='shell'><div class='header'>[icon_html]<div class='header-copy'><h1>[html_encode(title)]</h1><p>[html_encode(subtitle)]</p></div><a class='back' href='byond://?src=\ref[src]&action=back'>BACK</a></div><div class='body'>[body_html]</div></div></body></html>"}
+		owner << browse(html, "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
 
 	proc/showItemExamine(obj/items/item)
 		var/description_text = item.desc ? "[item.desc]" : "No description available."
@@ -623,6 +629,19 @@ datum/NexusPlayerMenu
 			details += buildDetailRow("IDENTITY", "[target.Race] / [target.alignment]")
 			details += buildDetailRow("STAT READINGS", "STR [target.strpcnt_rate()] / END [target.durpcnt_rate()] / SPD [target.spdpcnt_rate()] / FOR [target.powpcnt_rate()] / RES [target.respcnt_rate()] / OFF [target.offpcnt_rate()] / DEF [target.defpcnt_rate()]")
 		showExamineWindow("[target]", "SENSE SIGNATURE", buildIcon(target, "[target]"), "<div class='description'>Only information available to your current Sense or scanner level is shown.</div><div class='details'>[details]</div>")
+
+	proc/showWorldExamine(mob/target)
+		if(!target || !owner.IsAdmin()) return
+		var/details = buildDetailRow("ACCOUNT", target.key ? target.key : "NPC / disconnected")
+		details += buildDetailRow("RACE / CLASS", "[target.Race] / [target.Class]")
+		details += buildDetailRow("COORDINATES", "[target.x], [target.y], [target.z]")
+		details += buildDetailRow("BASE POWER", Commas(target.BP))
+		details += buildDetailRow("HEALTH", "[round(target.Health, 0.1)]%")
+		details += buildDetailRow("ENERGY", "[round(target.Ki, 0.1)] / [round(target.max_ki, 0.1)]")
+		details += buildDetailRow("WILLPOWER", "[round(target.willpower, 0.1)] / [round(target.max_willpower, 0.1)]")
+		details += buildDetailRow("RP / LETHAL", "[target.rp_mode ? "RP MODE" : "NORMAL"] / [target.sparring_mode == LETHAL_COMBAT ? "LETHAL" : "NON-LETHAL"]")
+		var/edit_notice = owner.AdminLevel() >= 3 ? "Use EDIT in the World card to open the complete structured inspector." : "Editing requires Admin Level 3."
+		showExamineWindow("[target]", "ADMIN WORLD INSPECTION", buildIcon(target, "[target]"), "<div class='description'>Current server-side character information.</div><div class='details'>[details]</div><div class='notice'>[edit_notice]</div>")
 
 	proc/buildInventory()
 		var/html = ""
@@ -692,7 +711,9 @@ datum/NexusPlayerMenu
 		for(var/mob/player in players)
 			if(!player.client) continue
 			player_count++
-			player_cards += "<div class='card compact with-icon'>[buildIcon(player, "[player]")]<div class='card-copy'><span>ONLINE / [player.client.inactivity] inactivity</span><b>[html_encode("[player]")]</b><small>[html_encode("[player.Race] / [player.Class]")]</small><small>[player.x], [player.y], [player.z] / BP [Commas(player.BP)]</small></div></div>"
+			var/world_examine_url = "byond://?src=\ref[src]&action=examine_world&target=\ref[player]"
+			var/edit_link = owner.AdminLevel() >= 3 ? "<a href='byond://?src=\ref[src]&action=edit_world&target=\ref[player]'>EDIT</a>" : ""
+			player_cards += "<div class='card compact with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[world_examine_url]')\" oncontextmenu=\"window.location.href='[world_examine_url]';return false;\">[buildIcon(player, "[player]")]<div class='card-copy'><span>ONLINE / [player.client.inactivity] inactivity</span><b>[html_encode("[player]")]</b><small>[html_encode("[player.Race] / [player.Class]")]</small><small>[player.x], [player.y], [player.z] / BP [Commas(player.BP)]</small></div><div class='card-actions'><a href='[world_examine_url]'>EXAMINE</a>[edit_link]</div></div>"
 		return "<div class='world-grid'><div><small>YEAR</small><b>[round(Year, 0.1)]</b></div><div><small>PLAYERS</small><b>[player_count]</b></div><div><small>AREA</small><b>[html_encode(area_text)]</b></div><div><small>COORDINATES</small><b>[location_text]</b></div><div><small>OOC</small><b>[OOC ? "ENABLED" : "DISABLED"]</b></div><div><small>TOURNAMENT</small><b>[Tournament ? "ACTIVE" : "INACTIVE"]</b></div></div><h2>CONNECTED CHARACTERS</h2><div class='cards'>[player_cards]</div>"
 
 	proc/buildContent()
@@ -720,6 +741,9 @@ datum/NexusPlayerMenu
 	Topic(href, list/href_list)
 		if(!canUse()) return
 		switch(href_list["action"])
+			if("back")
+				show()
+				return
 			if("section") section = normalizeSection(href_list["id"])
 			if("use_item")
 				var/obj/items/item = locate(href_list["item"])
@@ -738,6 +762,14 @@ datum/NexusPlayerMenu
 			if("examine_sense")
 				var/mob/examined_target = locate(href_list["target"])
 				if(examined_target && examined_target != owner && examined_target.loc && owner.current_area && examined_target in owner.current_area.mob_list && CanSense(owner, examined_target)) showSenseExamine(examined_target)
+				return
+			if("examine_world")
+				var/mob/world_target = locate(href_list["target"])
+				if(owner.IsAdmin() && world_target && world_target in players) showWorldExamine(world_target)
+				return
+			if("edit_world")
+				var/mob/edit_target = locate(href_list["target"])
+				if(owner.AdminLevel() >= 3 && edit_target && edit_target in players) owner.showNexusAdminInspector(edit_target)
 				return
 			if("target")
 				var/mob/new_target = locate(href_list["target"])

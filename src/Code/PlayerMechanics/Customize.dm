@@ -62,7 +62,7 @@ mob/verb/Settings()
 		//if(Fullscreen) Choices+="Fullscreen Off"
 		//else Choices+="Fullscreen On"
 
-		Choices.Add("Choose Hair","Choose Clothes","Choose Aura Icon","Choose Blast Icons",\
+		Choices.Add("Interface Layout","Choose Hair","Choose Clothes","Choose Aura Icon","Choose Blast Icons",\
 		"Choose 'charging ki' Icon","Manage Visual Layers","View Visual Layers","Text Size","Text Color","Map Size","Tabs Font Size","View Update Logs","View Guides")
 
 		if(feats_on) Choices+="Feats & Accomplishments"
@@ -103,6 +103,9 @@ mob/verb/Settings()
 		switch(input(src,"Choose what you want to do. If you know the first letter of the option you seek you can press it to cycle through them faster") in Choices)
 			if("Cancel")
 				save_player_settings()
+				return
+			if("Interface Layout")
+				showNexusInterfaceSettings()
 				return
 
 			//if("Get Packs")

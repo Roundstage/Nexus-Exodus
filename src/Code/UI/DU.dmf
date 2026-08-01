@@ -4,7 +4,7 @@ macro "macro"
 		command = "ToggleAutoAttack"
 	elem 
 		name = "Return"
-		command = ".winset \"nexuschatwindow.command.focus=true ? mapwindow.map.focus=true : nexuschatwindow.command.focus=true\""
+		command = "focusNexusCommand"
 	elem 
 		name = "Escape"
 		command = "PressEscape"
