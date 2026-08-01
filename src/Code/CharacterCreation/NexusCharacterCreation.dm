@@ -502,6 +502,10 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	if(src.Race == "Android" || src.Race == "Majin")
 		src.max_ki = energy_cap * src.Eff
 		src.Ki = src.max_ki
+	// StuffThatRunsIfYouClickNewOrLoad() is asynchronous. Mark the transition complete
+	// before the creator is deleted so its close fallback cannot reopen character selection.
+	src.playerCharacter = TRUE
+	src.character_creation_committing = FALSE
 	src.StuffThatRunsIfYouClickNewOrLoad()
 	spawn(5) if(src) src.save()
 	return TRUE
@@ -553,7 +557,7 @@ upForm/NexusCharacterCreator
 		var/mob/player = src.getHost()
 		if(player && player.nexus_character_creator == src) player.nexus_character_creator = null
 		..()
-		if(player && player.client && !player.playerCharacter)
+		if(player && player.client && !player.playerCharacter && !player.character_creation_committing)
 			spawn() player.ShowNexusLoginPrompt()
 
 	canDisplayForm(client/C)

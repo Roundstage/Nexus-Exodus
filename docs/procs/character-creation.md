@@ -64,7 +64,7 @@ Argument names, order, type annotations, and defaults below match the current de
 - `mob/proc/commitNexusCharacter(..., cooler_available, list/alien_options, list/frost_form_ids, list/starter_clothing)` validates and completes creation.
 - `proc/nexusRaceDescription(race_name)` returns the short lineage description.
 - `upForm/NexusCharacterCreator/New(client/owner, datum/host, list/viewers)` rolls form-local Cooler availability, builds the hair catalog, and registers the form on its host.
-- `upForm/NexusCharacterCreator/Del()` clears the host's form reference and returns an uncommitted connected player to the three-slot selector.
+- `upForm/NexusCharacterCreator/Del()` clears the host's form reference and returns only a genuinely cancelled, non-committing player to the three-slot selector.
 - `upForm/NexusCharacterCreator/canDisplayForm(client/C)` restricts display to the uncommitted host mob.
 - `upForm/NexusCharacterCreator/Link(list/href_list, client/C)` resolves submitted fields and invokes the commit backend.
 - `upForm/NexusCharacterCreator/GenerateBody()` renders the staged menu and its native icon-reference preview catalog.
@@ -274,7 +274,7 @@ One allocation point changes Energy, Strength, Endurance, Speed, Force, Resistan
 6. The backend requires the client and loading state to remain valid, rechecks `can_login`, preview mode, remake restrictions, and the player cap, and requires the selected race to remain in a fresh `GetAvailableCharacterRaces()` result.
 7. The backend regenerates traits, bodies, Alien AP definitions, Frost form icons, and clothing types; it enforces Android compatibility, AP/clothing limits, required Frost slots, identity fields, and the exact stat allocation.
 8. Only after validation does it lock the commit, initialize the race, create hidden internal state, compute low-resource BP loss, run `Racial_Stats()`, and apply alignment, Alien options, appearance, starter clothing, name, and age.
-9. It applies race starting stats, chooses a random valid spawn, completes standard setup, loads feats, initializes Android/Majin energy, enters the normal new/load bootstrap, and schedules `save()` after five ticks. No hidden internal information is included in creator output or completion messages.
+9. It applies race starting stats, chooses a random valid spawn, completes standard setup, loads feats, initializes Android/Majin energy, marks the player session complete before the asynchronous new/load bootstrap can close the creator, and schedules `save()` after five ticks. No hidden internal information is included in creator output or completion messages.
 10. On success the form is deleted. On failure it displays a generic name/trait/icon/attribute error and refreshes without completing the character.
 
 Names are truncated to 49 characters by `copytext(..., 1, 50)`, HTML-encoded, and checked by `InvalidPlayerName()`. Gender is forced to male for Bio-Android, Namekian, and Android; other races use female only when explicitly submitted, otherwise male. Alignment accepts only `Good` or `Evil` and defaults to Good. Age is clamped to `0..1000` only when age selection is enabled; otherwise it is zero.
