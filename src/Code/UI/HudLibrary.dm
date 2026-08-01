@@ -94,6 +94,7 @@ datum/NexusHudWindow
 		return
 
 mob/var
+	nexus_chat_hud_x = 312
 	nexus_chat_hud_width = 500
 	nexus_chat_hud_height = 210
 	nexus_chat_hud_collapsed = FALSE
@@ -162,17 +163,18 @@ datum/NexusChatHud
 	proc/refresh()
 		clearElements()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
-		var/panel_x = 8
+		var/panel_x = Clamp(round(owner.nexus_chat_hud_x), 8, 900)
 		var/panel_y = 8
 		var/panel_width = Clamp(round(owner.nexus_chat_hud_width), 360, 820)
 		var/panel_height = Clamp(round(owner.nexus_chat_hud_height), 130, 460)
+		owner.nexus_chat_hud_x = panel_x
 		owner.nexus_chat_hud_width = panel_width
 		owner.nexus_chat_hud_height = panel_height
 		if(owner.nexus_chat_hud_collapsed) panel_height = 24
 		addElementAt("", null, "LEFT:[panel_x],BOTTOM:[panel_y]", panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
 		var/header_y = panel_y + panel_height - 22
 		var/control_width = 21
-		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
+		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "move_left" = "<-", "move_right" = "->", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
 		var/control_x = panel_x + panel_width - 4 - (header_actions.len * control_width)
 		addElementAt("CHAT / [uppertext(active_channel)]", null, "LEFT:[panel_x + 4],BOTTOM:[header_y]", max(60, control_x - panel_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
 		for(var/action_id in header_actions)
@@ -213,6 +215,8 @@ datum/NexusChatHud
 				var/list/entries = owner.client.nexus_chat_history[active_channel]
 				scroll_offset = min(max(0, entries.len - 1), scroll_offset + getVisibleMessageCount())
 			if("scroll_down") scroll_offset = max(0, scroll_offset - getVisibleMessageCount())
+			if("move_left") owner.nexus_chat_hud_x = max(8, owner.nexus_chat_hud_x - 64)
+			if("move_right") owner.nexus_chat_hud_x = min(900, owner.nexus_chat_hud_x + 64)
 			if("width_down") owner.nexus_chat_hud_width = max(360, owner.nexus_chat_hud_width - 64)
 			if("width_up") owner.nexus_chat_hud_width = min(820, owner.nexus_chat_hud_width + 64)
 			if("height_down") owner.nexus_chat_hud_height = max(130, owner.nexus_chat_hud_height - 48)
