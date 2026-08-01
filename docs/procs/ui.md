@@ -42,11 +42,11 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
 - `datum/NexusChatHud` renders the resizable/collapsible four-channel lower-left chat, navigation, composition, and personal-log actions as `client.screen` objects.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
-- `hideNexusLegacyInterface()` detaches both legacy split panes so resizing the client changes the map viewport rather than reserving space for DMF tabs.
+- `hideNexusLegacyInterface()` reattaches `mapwindow` as the full-width left pane and detaches both legacy split panes so resizing the client changes the map viewport rather than reserving space for DMF tabs.
 
 ### src/Code/UI/UIStuff.dm
 
-- `datum/NexusCharacterSelect` renders and validates three independent character slots with Create, Enter World, and confirmed Delete actions.
+- `datum/NexusCharacterSelect` renders and validates three independent character slots with Create, Enter World, and confirmed Delete actions. It remains visible when creation or loading is rejected and closes only after the requested transition succeeds.
 - `ShowNexusLoginPrompt()` now opens the slot selector; `NewClicked(slot)` and `LoadClicked(slot)` bind the selected slot before invoking creation or persistence.
 - `ToggleTabs()` is retained as a hidden hotkey compatibility entry but opens Character instead of restoring the removed tab pane.
 

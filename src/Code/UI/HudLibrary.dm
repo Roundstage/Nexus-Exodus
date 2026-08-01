@@ -230,7 +230,9 @@ datum/NexusChatHud
 
 mob/proc/hideNexusLegacyInterface()
 	if(!client) return
-	winset(src, "mainwindow.mainvsplit", "right=;splitter=100")
+	winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+	winset(src, "mapwindow", "is-visible=true")
+	winset(src, "mapwindow.map", "is-visible=true")
 	winset(src, "mpane.mpanewindow", "right=;splitter=100")
 	for(var/window_id in list("rpane", "infowindow", "outputwindow", "chat", "chat2", "chat3")) winset(src, window_id, "is-visible=false")
 
