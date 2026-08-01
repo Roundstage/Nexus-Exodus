@@ -53,6 +53,27 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(rp_mode_button)
 	del(character_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
+	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks"), "Tenkaichi attack testing verb is missing")
+	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 15 && getTenkaichiUnarmedAttackTypes().len == 14, "Tenkaichi physical attack catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiRangedAttackTypes().len == 18, "Tenkaichi ranged attack catalog is incomplete")
+	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
+	var/obj/Attacks/Blast/RoleplayBlast/HomingFinisher/tenkaichi_homing = new
+	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
+	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
+	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
+	nexusSmokeAssert(tenkaichi_homing.roleplay_homing && tenkaichi_homing.Blast_Count == 4, "Homing Finisher does not use active multi-projectile pursuit")
+	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
+	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
+	var/obj/Attacks/Blast/RoleplayBlast/WallOfFlame/tenkaichi_flame_wall = new
+	nexusSmokeAssert(tenkaichi_guard_break.breaks_guard && tenkaichi_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
+	nexusSmokeAssert(tenkaichi_flame_wall.Spread == 2 && tenkaichi_flame_wall.Blast_Count == 4, "Wall of Flame is not a bounded projectile fan")
+	del(tenkaichi_slice)
+	del(tenkaichi_combo)
+	del(tenkaichi_homing)
+	del(tenkaichi_beam)
+	del(tenkaichi_guard_break)
+	del(tenkaichi_flame_wall)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")

@@ -4189,6 +4189,29 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/Combat/TenkaichiMeleeTechniques.dm
+
+#### mob/proc/castTenkaichiMeleeTechnique
+- Signature: `mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)`
+- Inputs: the owned Roleplay Tenkaichi technique object.
+- Purpose: Validate equipment, RPMode, target, range, energy and cooldown before routing the strike through native `Melee()`.
+- Returns: boolean success flag.
+- Side effects: may dash to the selected target, spend energy and establish a one-use melee modifier context.
+
+#### obj/Attacks/TenkaichiMeleeTechnique/proc/applyOnHit
+- Signature: `applyOnHit(mob/attacker, mob/target, damage)`
+- Inputs: attacker, primary target and damage produced by the native melee calculation.
+- Purpose: Apply the adapted multi-hit, bleed, stun and front/radius effects after block and dodge resolution.
+- Returns: none (implicit).
+- Side effects: may damage secondary targets, apply crowd control and display imported Tenkaichi effects.
+
+#### mob/proc/applyTenkaichiTechniqueDamage
+- Signature: `mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage)`
+- Inputs: secondary target and native damage amount.
+- Purpose: Resolve supplemental technique hits using Nexus KO, lethal, safe-zone and RPMode rules.
+- Returns: boolean success flag.
+- Side effects: changes target Health and may trigger KO or Death.
+
 #### proc/BubbleSort
 - Signature: `proc/BubbleSort(list/l)`
 - Inputs: list/l

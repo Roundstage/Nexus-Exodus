@@ -1053,6 +1053,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		Reset_melee()
 		return //too tired to attack
 
+	var/obj/Attacks/TenkaichiMeleeTechnique/tenkaichi_technique = consumeTenkaichiMeleeTechnique(target)
 	var/dmg = get_melee_damage(target)
 	var/accuracy = get_melee_accuracy(target)
 	if(!dmg) accuracy=100
@@ -1060,6 +1061,10 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/obj/Shield/ki_shield
 	if(ismob(target)) ki_shield=target.get_active_shield()
 	var/knockback=get_melee_knockback_distance(target)
+	if(tenkaichi_technique)
+		dmg *= tenkaichi_technique.damage_multiplier
+		accuracy = Clamp(accuracy + tenkaichi_technique.accuracy_bonus, 0, 100)
+		knockback = ToOne(knockback * tenkaichi_technique.knockback_multiplier)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()
@@ -1068,7 +1073,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		knockback=0
 	last_melee_attack = world.time
 
-	if(ismob(target) && target.blocking)
+	if(ismob(target) && target.blocking && !(tenkaichi_technique && tenkaichi_technique.breaks_guard))
 		target.dir=get_dir(target,src)
 		knockback=0
 		var/evasion_gain=1
@@ -1192,6 +1197,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 					target.BleedDamage(bleedDmg)
 
 				target.TakeDamage(dmg)
+				if(tenkaichi_technique && target) tenkaichi_technique.applyOnHit(src, target, dmg)
 
 				//if a Zombie or infected player hits a dead body it too becomes infected and turns into a zombie
 				InfectedPlayerHitDeadBodyItBecomesZombie(target)

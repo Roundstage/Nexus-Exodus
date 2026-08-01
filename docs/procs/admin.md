@@ -1852,3 +1852,19 @@ Administrative commands and management flows. Administrators receive a searchabl
 - Purpose: Handle wipe bounty list.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/Admin/TenkaichiAttackTesting.dm
+
+#### mob/Admin3/verb/giveTenkaichiAttacks
+- Signature: `giveTenkaichiAttacks(mob/character in players)`
+- Inputs: connected target player and an interactive package selection.
+- Purpose: Grant weapon, unarmed, beam, ranged or complete Roleplay Tenkaichi attack packages without duplicating owned attacks.
+- Returns: none (implicit).
+- Side effects: creates skill objects in the target inventory and writes an admin audit entry.
+
+#### proc/grantTenkaichiAttackTypes
+- Signature: `proc/grantTenkaichiAttackTypes(mob/character, list/attack_types)`
+- Inputs: target character and list of attack type paths.
+- Purpose: Instantiate only missing attacks for repeatable development testing.
+- Returns: count of newly granted attacks.
+- Side effects: adds attack objects to the character.

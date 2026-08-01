@@ -1094,3 +1094,23 @@ Projectile movement, collision, beam segments, and damage behavior.
 - Purpose: Handle beam struggle power.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/ProjectileSystem/TenkaichiBeams.dm
+
+#### obj/Attacks/RoleplayBeam/proc/useRoleplayBeam
+- Signature: `useRoleplayBeam(mob/user)`
+- Inputs: beam user.
+- Purpose: Route the four missing Roleplay Tenkaichi beam families through `SkillEngine.castSkill()` and the native beam lifecycle.
+- Returns: none (implicit).
+- Side effects: starts, streams or stops Double Sunday, Photon Flash, Tyrant Lancer or Buster Cannon.
+
+### src/Code/ProjectileSystem/TenkaichiBlasts.dm
+
+#### obj/Attacks/Blast/RoleplayBlast/proc/useRoleplayBlast
+- Signature: `useRoleplayBlast(mob/user)`
+- Inputs: projectile user.
+- Purpose: Validate weapon requirements and cooldowns before routing an adapted Tenkaichi projectile through the native blast engine.
+- Returns: boolean success flag.
+- Side effects: may spend energy and create explosive, spreading, stunning or actively homing projectiles.
+
+Roleplay projectiles use `roleplay_homing` to select `followSelectedTarget()` in the skill engine. This is continuous pursuit; ordinary Nexus blasts retain their existing fixed-angle flight. Persistent fields, summoned clones and delayed tornado actors are deliberately represented by bounded native projectile volleys so they inherit Nexus damage budgets, collision and cleanup.
