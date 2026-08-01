@@ -39,6 +39,13 @@ obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, hom
 			if(new_size<0.5) new_size=0.5
 			Update_transform_size(new_size)
 	queueNexusProjectileGlowUpdate()
+
+obj/Blast/proc/getNexusCombatAttackName()
+	if(from_attack && from_attack.name) return "[from_attack.name]"
+	if(Beam) return "Energy Beam"
+	if(Bullet) return "Projectile"
+	if(Explosive) return "Explosive Blast"
+	return "Ki Blast"
 	//world<<"BP: [BP]<br>Force: [Force]<br>Offense: [Offense]"
 
 obj/Blast/proc/queueNexusProjectileGlowUpdate()
@@ -415,7 +422,7 @@ obj/Blast
 
 		if(A.Cyber_Force_Field)
 			var/dmg = scaled_damage * shield_pierce_mult
-			A.Ki -= (dmg / 100) * A.max_ki
+			A.applyNexusCombatShieldDamage((dmg / 100) * A.max_ki, ismob(Owner) ? Owner : null, getNexusCombatAttackName())
 			if(A.Ki<=0) for(var/obj/Module/Force_Field/F in A.active_modules)
 				F.Disable_Module(A)
 				A<<"Your cybernetic force field has been damaged. You must re-install it to make it active again."
@@ -427,7 +434,7 @@ obj/Blast
 		if(A.shield_obj && A.shield_obj.Using)
 			var/dmg = scaled_damage * (A.max_ki / 100 / (A.Eff ** shield_exponent)) * A.ShieldDamageReduction()
 			dmg *= A.Generator_reduction(is_melee = Bullet) * shield_pierce_mult
-			A.Ki -= dmg
+			A.applyNexusCombatShieldDamage(dmg, ismob(Owner) ? Owner : null, getNexusCombatAttackName())
 			if(A.Ki <= 0) A.Shield_Revert()
 			for(var/obj/Blast/B in Get_step(src,turn(dir,180))) if(B.Beam) B.icon_state = "struggle"
 			return
@@ -594,7 +601,7 @@ obj/Blast
 
 							if(P.Vampire) dmg *= vampire_damage_multiplier
 							if(!is_makosen) P.last_hit_by_beam = world.time
-							P.TakeDamage(dmg)
+							P.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
 							if(ismob(Owner)&&!P.KO) P.setOpponent(Owner)
 							if(P && P == A && !P.Safezone && beam_impact_mode != BEAM_IMPACT_EXPLOSIVE)
 								if(getdist(Owner,P) < beam_stun_start && P.last_beam_kb_pos != P.loc && apply_short_range_beam_knock && P.type != /mob/Body && !P.KO && P.client)
@@ -810,8 +817,8 @@ obj/Blast
 						if(Owner&&ismob(Owner)&&Owner.is_teamer) dmg/=teamer_dmg_mult
 						if(m.regenerator_obj) dmg *= regenerator_damage_mod
 
-						if(bleed_damage) m.BleedDamage(dmg)
-						else m.TakeDamage(dmg)
+						if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
+						else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
 
 						if(m.Health<=0)
 							if(Noob_Attack) m.KO()
@@ -928,8 +935,8 @@ obj/Blast
 			original_dmg = dmg
 			if(dir == m.dir) Offense *= 3
 			if(m.Vampire) dmg *= vampire_damage_multiplier
-			if(bleed_damage) m.BleedDamage(dmg)
-			else m.TakeDamage(dmg)
+			if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
+			else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
 			if(shuriken) m.ShurikenOverlayEffect(icon)
 			if(percent_damage >= 10) Make_Shockwave(m, sw_icon_size = Get_projectile_shockwave_size(src))
 			if(ismob(Owner) && !m.KO) m.setOpponent(Owner)

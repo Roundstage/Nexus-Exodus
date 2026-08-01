@@ -62,7 +62,7 @@ mob
 						M.Knockback(usr, knockback, omega_kb = 1)
 						M << "You are knocked back by [usr]!"
 						var/hp_before_dmg_hits = M.Health
-						M.TakeDamage(dmg, 1.5)
+						M.TakeDamage(dmg, 1.5, attacker = src, attack_name = "Pressure Punch")
 						if(dmg >= 100 + hp_before_dmg_hits) M.KO(src, allow_anger = 0)
 						else if(dmg >= hp_before_dmg_hits) M.KO(src)
 						return

@@ -784,78 +784,6 @@ window "Combat3"
 		style = "body\n{\n\tfont-family: sans-serif;\n}\n\nh1, h2, h3, h4, h5, h6\n{\n\tcolor: #00f;\n\tfont-family: Georgia, Verdana, sans-serif;\n}\n\n.motd\n{\n\tcolor: #638500;\n\tfont-family: Verdana, sans-serif;\n}\n\n.motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6\n{\n\tcolor: #638500;\n\ttext-decoration: underline;\n}\n\n.motd a, .motd a:link, .motd a:visited, .motd a:active, .motd a:hover\n{\n\tcolor: #638500;\n}\n\n.prefix\n{\n\tfont-weight: bold;\n}\n\n.say\n{\n\n}\n\n.whisper\n{\n\n}\n.snellroundhand\n{font:'Snell Roundhand', 'Comic Sans MS'}\n\n.papyrus\n{font:'Papyrus', 'Comic Sans MS'}\n\n.brushscriptmt\n{font:'Brush Script MT', 'Trattatello'}\n\n.newcenturyschoolbook\n{font:'New Century Schoolbook', 'Comic Sans MS'}\n\n.couriernew\n{font:'Courier New', 'Comic Sans MS'}\n\n.trattatello\n{font: 'Trattatello', 'Comic Sans MS'}\n\n.comicsansms\n{font:'Comic Sans MS', sans-serif}\n\n.timesnewroman\n{font:'Times New Roman', sans-serif}\n\n.abrilfatface\n{font:'Abril Fatface', cursive}\n\n.acme\n{font-family: 'Acme', sans-serif}\n.amaticsc\n{font-family: 'Amatic SC', cursive}\n.anton\n{font-family: 'Anton', sans-serif}\n.bigshouldersdisplay\n{font-family: 'Big Shoulders Display', cursive}\n.cinzel\n{font-family: 'Cinzel', serif}\n.crimsontext\n{font-family: 'Crimson Text', serif}\n.fjallaone\n{font-family: 'Fjalla One', sans-serif}\n.heptaslab\n{font-family: 'Hepta Slab', serif}\n.hind\n{font-family: 'Hind', sans-serif}\n.inconsolata\n{font-family: 'Inconsolata', monospace}\n.kanit\n{font-family: 'Kanit', sans-serif}\n.karla\n{font-family: 'Karla', sans-serif}\n.librebaskerville\n{font-family: 'Libre Baskerville', serif}\n.lobster\n{font-family: 'Lobster', cursive}\n.mansalva\n{font-family: 'Mansalva', cursive}\n.mavenpro\n{font-family: 'Maven Pro', sans-serif}\n.montserrat\n{font-family: 'Montserrat', sans-serif}\n.newscycle\n{font-family: 'News Cycle', sans-serif}\n.notosansjp\n{font-family: 'Noto Sans JP', sans-serif}\n.notosanskr\n{font-family: 'Noto Sans KR', sans-serif}\n.opensans\n{font-family: 'Open Sans', sans-serif}\n.opensanscondensed\n{font-family: 'Open Sans Condensed', sans-serif}\n.oswald\n{font-family: 'Oswald', sans-serif}\n.ptsans\n{font-family: 'PT Sans', sans-serif}\n.righteous\n{font-family: 'Righteous', cursive}\n.roboto\n{font-family: 'Roboto', sans-serif}\n.robotomono\n{font-family: 'Roboto Mono', monospace}\n.sourcecodepro\n{font-family: 'Source Code Pro', monospace}\n.sourceserifpro\n{font-family: 'Source Serif Pro', serif}\n.titilliumweb\n{font-family: 'Titillium Web', sans-serif}\n.turretroad\n{font-family: 'Turret Road', cursive}\n.ubuntu\n{font-family: 'Ubuntu', sans-serif}\n.vollkorn\n{font-family: 'Vollkorn', serif}\n.yanonekaffeesatz\n{font-family: 'Yanone Kaffeesatz', sans-serif}\n\n\n\n\n\n.telepathy\n{\n\tfont-family: sans-serif;\n}\n\n.evil_say\n{\n\tfont-family: sans-serif;\n}\n\n.subtle_message\n{\n\tfont-family: sans-serif;\n}\n\n.announce\n{\n\tcolor: #FFCC33;\n}\n\n.narrate\n{\n\tcolor: #E6CE00;\n}\n\n.emote\n{\n\tcolor: #FFFF00;\n}\n\n.ooc\n{\n\tfont-weight: bold;\n}\n\n.adminooc\n{\n\tfont-weight: bold;\n}\n\n.admin\n{\n\tfont-weight: bold;\n\tcolor: #386aff;\n\tfont-size: xx-small;\n}\n\n.name\n{\n\tfont-weight: bold;\n}"
 		max-lines = 300
 
-window "EmoteW"
-	elem "EmoteW"
-		type = MAIN
-		pos = 291,0
-		size = 515x377
-		anchor1 = -1,-1
-		anchor2 = -1,-1
-		background-color = #2c2c2c
-		is-visible = false
-		saved-params = "pos;size;is-minimized;is-maximized"
-		title = "Emote"
-		statusbar = false
-		can-minimize = false
-		alpha = 240
-		on-close = "EmoteClose"
-	elem "emoteinput"
-		type = INPUT
-		pos = 0,0
-		size = 515x343
-		anchor1 = 0,0
-		anchor2 = 100,100
-		font-family = "serif"
-		font-size = 10
-		text-color = #39bef0
-		background-color = #2c2c2c
-		border = sunken
-		saved-params = ""
-		command = "EmoteS"
-		multi-line = true
-	elem "WordCounter"
-		type = LABEL
-		pos = 215,350
-		size = 85x20
-		anchor1 = 0,100
-		anchor2 = -1,-1
-		font-family = "serif"
-		font-size = 8
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = ""
-		text = "Word Count: 0"
-		align = bottom
-		text-wrap = true
-	elem "button39"
-		type = BUTTON
-		pos = 5,345
-		size = 68x26
-		anchor1 = 0,100
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 15
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Clear"
-		command = "EmoteC"
-	elem "Proceed"
-		type = BUTTON
-		pos = 442,345
-		size = 68x26
-		anchor1 = 100,100
-		anchor2 = -1,-1
-		font-family = "Arial"
-		font-size = 15
-		font-style = "bold"
-		text-color = #39bef0
-		background-color = #2c2c2c
-		saved-params = "is-checked"
-		text = "Post"
-		command = "EmoteS"
-
 window "General"
 	elem "General"
 		type = MAIN
@@ -865,7 +793,7 @@ window "General"
 		anchor2 = -1,-1
 		background-color = #000000
 		saved-params = "pos;size;is-maximized"
-		title = "General"
+		title = "All"
 		titlebar = false
 		statusbar = false
 		can-close = false
@@ -896,7 +824,7 @@ window "General2"
 		anchor2 = -1,-1
 		background-color = #000000
 		saved-params = "pos;size;is-maximized"
-		title = "General"
+		title = "All"
 		titlebar = false
 		statusbar = false
 		can-close = false
@@ -926,7 +854,7 @@ window "General3"
 		anchor2 = -1,-1
 		background-color = #000000
 		saved-params = "pos;size;is-maximized"
-		title = "General"
+		title = "All"
 		titlebar = false
 		statusbar = false
 		can-close = false
@@ -1487,7 +1415,7 @@ window "chat"
 		is-default = true
 		border = sunken
 		saved-params = ""
-		tabs = "OOC,IC,General,Help"
+		tabs = "General,Combat,IC,OOC,Help"
 		current-tab = "General"
 
 window "chat2"
@@ -1515,7 +1443,7 @@ window "chat2"
 		is-default = true
 		border = sunken
 		saved-params = ""
-		tabs = "OOC2,IC2,General2,Combat2"
+		tabs = "General2,Combat2,IC2,OOC2"
 		current-tab = "General2"
 
 window "chat3"
@@ -1541,8 +1469,8 @@ window "chat3"
 		is-default = true
 		border = sunken
 		saved-params = ""
-		tabs = "OOC3,IC3,General3,Combat3"
-		current-tab = "Combat3"
+		tabs = "General3,Combat3,IC3,OOC3"
+		current-tab = "General3"
 
 window "mainwindow"
 	elem "mainwindow"

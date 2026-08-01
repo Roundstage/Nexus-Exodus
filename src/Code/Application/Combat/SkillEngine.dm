@@ -794,8 +794,8 @@ datum/SkillEngine
 					user.training_period(p)
 					if(p.ki_shield_on())
 						dmg *= (p.max_ki / 100) * p.ShieldDamageReduction() / (p.Eff ** shield_exponent) * p.Generator_reduction()
-						p.Ki -= dmg
-					else p.TakeDamage(dmg)
+						p.applyNexusCombatShieldDamage(dmg, user, skill_obj.name)
+					else p.TakeDamage(dmg, attacker = user, attack_name = skill_obj.name)
 					spawn if(p && p.drone_module) p.Drone_Attack(user, lethal = 1)
 			spawn if(user)
 				var/n = 0
@@ -877,9 +877,9 @@ datum/SkillEngine
 					dmg *= sagas_bonus(user, b)
 					user.training_period(b)
 					if(b.ki_shield_on())
-						b.Ki -= dmg * b.ShieldDamageReduction() * (b.max_ki / 100) / (b.Eff ** shield_exponent) * b.Generator_reduction()
+						b.applyNexusCombatShieldDamage(dmg * b.ShieldDamageReduction() * (b.max_ki / 100) / (b.Eff ** shield_exponent) * b.Generator_reduction(), user, skill_obj.name)
 					else
-						b.TakeDamage(dmg)
+						b.TakeDamage(dmg, attacker = user, attack_name = skill_obj.name)
 						if(b.Health <= 0)
 							if(!b.client) b.Death(user)
 							else b.KO("[user]")
@@ -990,9 +990,9 @@ datum/SkillEngine
 					if(prob(acc))
 						flick("Attack", user)
 						if(p.ki_shield_on())
-							p.Ki -= damage * p.ShieldDamageReduction() * (p.max_ki / 100) / (p.Eff ** shield_exponent) * p.Generator_reduction(is_melee = 1)
+							p.applyNexusCombatShieldDamage(damage * p.ShieldDamageReduction() * (p.max_ki / 100) / (p.Eff ** shield_exponent) * p.Generator_reduction(is_melee = 1), user, skill_obj.name)
 						else
-							p.TakeDamage(damage)
+							p.TakeDamage(damage, attacker = user, attack_name = skill_obj.name)
 						if(p.Health <= 0 || p.Ki <= 0) p.KO(user)
 						if(p) p.DashAttackPart2(user, kb_distance)
 						user.Ki -= drain
@@ -1068,7 +1068,7 @@ datum/SkillEngine
 			user.ScreenShake(Amount = 8, Offset = 5)
 			victim.ScreenShake(Amount = 12, Offset = 7)
 			var/dmg = user.getPhysicalCombatDamage(victim, wolf_fang_hit_damage_mult)
-			victim.TakeDamage(dmg, 1)
+			victim.TakeDamage(dmg, 1, attacker = user, attack_name = skill_obj.name)
 			if(victim && !victim.KO) victim.Knockback(user, Distance = wolf_fang_knockback_distance, bypass_immunity = 1)
 			sleep(2)
 		if(!hitcount)
@@ -1137,7 +1137,7 @@ datum/SkillEngine
 			m.ScreenShake(Amount = 15, Offset = 8)
 			var/dmg = user.getPhysicalCombatDamage(m, skill_dropkick_opening_factor)
 			var/hp_before_dmg = m.Health
-			m.TakeDamage(dmg)
+			m.TakeDamage(dmg, attacker = user, attack_name = skill_obj.name)
 			if(dmg >= 100 + hp_before_dmg) m.KO(user, allow_anger = 1)
 			else if(dmg >= hp_before_dmg) m.KO(user)
 			sleep(2)
@@ -1160,7 +1160,7 @@ datum/SkillEngine
 						m.Death(user)
 
 		user.last_dropkick_debuff_triggered = world.time
-		if(m && hit && user.selected_target == m) m.TakeDamage(user.getPhysicalCombatDamage(m, skill_dropkick_finisher_factor))
+		if(m && hit && user.selected_target == m) m.TakeDamage(user.getPhysicalCombatDamage(m, skill_dropkick_finisher_factor), attacker = user, attack_name = skill_obj.name)
 
 		if(user.Health < 0)
 			user.KO(user)

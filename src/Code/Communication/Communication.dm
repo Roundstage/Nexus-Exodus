@@ -1,14 +1,60 @@
+var/list/nexus_chat_output_controls = list(
+	"all" = list("General.output", "General2.output2", "General3.output3"),
+	"ic" = list("IC.ICoutput", "IC2.ICoutput2", "IC3.ICoutput3"),
+	"ooc" = list("OOC.OOCoutput", "OOC2.OOCoutput2", "OOC3.OOCoutput3"),
+	"combat" = list("Combat.Combatoutput", "Combat2.Combatoutput2", "Combat3.Combatoutput3"))
+
+proc/normalizeNexusChatChannel(channel)
+	channel = lowertext("[channel]")
+	if(!(channel in list("all", "ic", "ooc", "combat"))) return "all"
+	return channel
+
+proc/getNexusChatChannelLabel(channel)
+	switch(normalizeNexusChatChannel(channel))
+		if("ic") return "IC"
+		if("ooc") return "OOC"
+		if("combat") return "Combat"
+	return "All"
+
+proc/getNexusChannelLogPath(player_ckey, channel)
+	channel = normalizeNexusChatChannel(channel)
+	if(channel == "all") return "data/Logs/ChatLogs/[player_ckey]Current.html"
+	return "data/Logs/ChatLogs/[player_ckey]-[channel]Current.html"
+
 mob/var/tmp
 	last_chatlog_write=0
 	unwritten_chatlogs = list()
+	list/nexus_unwritten_channel_logs = list()
 	unwritten_chatlogs_timestamp = 0
 	last_drone_msg
 	waiting_for_chatlog_write = FALSE
 
 mob/proc
-	ChatLog(info,the_key)
+	initializeNexusChannelLogs()
+		if(!islist(nexus_unwritten_channel_logs)) nexus_unwritten_channel_logs = list()
+		for(var/channel in list("ic", "ooc", "combat"))
+			if(!islist(nexus_unwritten_channel_logs[channel])) nexus_unwritten_channel_logs[channel] = list()
+
+	receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
+		if(!client || !message) return
+		channel = normalizeNexusChatChannel(channel)
+		var/list/destinations = list()
+		var/list/all_destinations = nexus_chat_output_controls["all"]
+		for(var/control_id in all_destinations) destinations += control_id
+		if(channel != "all")
+			var/list/channel_destinations = nexus_chat_output_controls[channel]
+			for(var/control_id in channel_destinations) destinations += control_id
+		for(var/control_id in destinations)
+			src << output(message, control_id)
+		if(write_log)
+			var/log_key = source_key
+			if(!log_key) log_key = key
+			ChatLog(message, log_key, channel)
+
+	ChatLog(info,the_key, channel = "all")
 		if(!client) return
 		if(!last_chatlog_write) last_chatlog_write = world.time
+		channel = normalizeNexusChatChannel(channel)
 		
 		var/log_entry = {"
 			<table>
@@ -30,11 +76,15 @@ mob/proc
 		
 		
 		unwritten_chatlogs += log_entry
+		if(channel != "all")
+			initializeNexusChannelLogs()
+			var/list/channel_entries = nexus_unwritten_channel_logs[channel]
+			channel_entries += log_entry
 
 	Write_chatlogs(allow_splits=1)
 		if(!key) return
 		last_chatlog_write = world.time
-		var/f = file("data/Logs/ChatLogs/[ckey]Current.html")
+		var/f = file(getNexusChannelLogPath(ckey, "all"))
 
 		for (var/entry in unwritten_chatlogs)
 			text2file(entry,f)
@@ -43,6 +93,14 @@ mob/proc
 			Split_File(ckey)
 
 		unwritten_chatlogs = list()
+		initializeNexusChannelLogs()
+		for(var/channel in list("ic", "ooc", "combat"))
+			var/list/channel_entries = nexus_unwritten_channel_logs[channel]
+			if(channel_entries.len)
+				var/channel_file = file(getNexusChannelLogPath(ckey, channel))
+				for(var/entry in channel_entries) text2file(entry, channel_file)
+				if(allow_splits) SplitNexusChannelFile(ckey, channel)
+			nexus_unwritten_channel_logs[channel] = list()
 
 
 proc/Split_File(the_key)
@@ -53,6 +111,93 @@ proc/Split_File(the_key)
 			var/Y=length(flist("data/Logs/ChatLogs/"))
 			fcopy(f,"data/Logs/ChatLogs/[the_key][Y].html")
 			fdel(f)
+
+proc/SplitNexusChannelFile(the_key, channel)
+	set waitfor = 0
+	channel = normalizeNexusChatChannel(channel)
+	if(channel == "all") return Split_File(the_key)
+	var/current_path = getNexusChannelLogPath(the_key, channel)
+	var/f = file(current_path)
+	if(fexists(f) && length(f) >= 1024 * 1024)
+		var/archive_index = 1
+		while(fexists(file("data/Logs/ChatLogs/[the_key]-[channel]-[archive_index].html"))) archive_index++
+		fcopy(f, "data/Logs/ChatLogs/[the_key]-[channel]-[archive_index].html")
+		fdel(f)
+
+proc/buildNexusCombatLogMessage(attacker_name, target_name, attack_name, total_damage, hit_count = 1, resource_name = "Health", remaining_value = 0)
+	attacker_name = html_encode("[attacker_name]")
+	target_name = html_encode("[target_name]")
+	attack_name = html_encode("[attack_name]")
+	var/damage_text = round(max(0, total_damage), 0.01)
+	var/remaining_text = round(max(0, remaining_value), 0.01)
+	var/hit_text = "[damage_text] damage"
+	if(hit_count > 1)
+		var/average_damage = round(total_damage / hit_count, 0.01)
+		hit_text = "[hit_count] hits / [damage_text] total ([average_damage] average)"
+	var/remaining_label = resource_name == "Energy Shield" ? "[remaining_text] Ki remaining" : "[remaining_text]% Health remaining"
+	var/timestamp = time2text(world.timeofday, "hh:mm:ss")
+	return "<span style='color:#7c8ba1'>([timestamp])</span> <span style='color:#ffd166'><b>[attack_name]</b></span> <span style='color:#dce7f3'>[attacker_name] &rarr; [target_name]</span> <span style='color:#ff7688'><b>[hit_text]</b></span> <span style='color:#91a6bc'>| [resource_name]: [remaining_label]</span>"
+
+datum/NexusCombatLogBatch
+	var/tmp
+		mob/attacker
+		mob/target
+		attacker_name
+		target_name
+		attack_name = "Attack"
+		resource_name = "Health"
+		total_damage = 0
+		hit_count = 0
+		remaining_value = 0
+
+	New(mob/new_attacker, mob/new_target, new_attack_name, new_resource_name)
+		. = ..()
+		attacker = new_attacker
+		target = new_target
+		attacker_name = new_attacker ? "[new_attacker]" : "Environment"
+		target_name = new_target ? "[new_target]" : "Unknown target"
+		if(new_attack_name) attack_name = "[new_attack_name]"
+		if(new_resource_name) resource_name = "[new_resource_name]"
+
+	proc/addDamage(amount, new_remaining_value)
+		if(!isnum(amount) || amount <= 0) return
+		total_damage += amount
+		hit_count++
+		remaining_value = new_remaining_value
+
+	proc/flush()
+		if(total_damage <= 0 || hit_count <= 0) return
+		var/message = buildNexusCombatLogMessage(attacker_name, target_name, attack_name, total_damage, hit_count, resource_name, remaining_value)
+		var/source_key = attacker && attacker.key ? attacker.key : attacker_name
+		if(attacker && attacker.client) attacker.receiveNexusChatMessage(message, "combat", source_key)
+		if(target && target.client && target != attacker) target.receiveNexusChatMessage(message, "combat", source_key)
+
+mob/var/tmp/list/nexus_combat_log_batches = list()
+
+mob/proc/queueNexusCombatDamage(mob/attacker, amount, attack_name = "Attack", resource_name = "Health")
+	if(!isnum(amount) || amount <= 0) return
+	if(!islist(nexus_combat_log_batches)) nexus_combat_log_batches = list()
+	var/attacker_reference = attacker ? "\ref[attacker]" : "environment"
+	var/normalized_attack_name = lowertext("[attack_name]")
+	var/batch_key = "[attacker_reference]|[normalized_attack_name]|[resource_name]"
+	var/datum/NexusCombatLogBatch/batch = nexus_combat_log_batches[batch_key]
+	if(!batch)
+		batch = new(attacker, src, attack_name, resource_name)
+		nexus_combat_log_batches[batch_key] = batch
+		spawn(5)
+			if(batch) batch.flush()
+			if(src && nexus_combat_log_batches[batch_key] == batch) nexus_combat_log_batches -= batch_key
+			if(batch) del(batch)
+	var/remaining_value = resource_name == "Energy Shield" ? Ki : Health
+	batch.addDamage(amount, remaining_value)
+
+mob/proc/applyNexusCombatShieldDamage(amount, mob/attacker, attack_name = "Attack")
+	if(!isnum(amount) || amount <= 0) return 0
+	var/ki_before = Ki
+	Ki -= amount
+	var/applied_damage = ki_before - Ki
+	queueNexusCombatDamage(attacker, applied_damage, attack_name, "Energy Shield")
+	return applied_damage
 
 
 proc/TimeStamp(var/Z)
@@ -243,7 +388,8 @@ mob/verb
 		if(name == displaykey) ooc_name = name
 
 		for(var/mob/M in players) if(M.OOCon)
-			M<<"<font size=[M.TextSize]><font color=[TextColor]>[ooc_name]: <font color=white>[html_encode(msg)]"
+			var/ooc_message = "<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'><b>[html_encode(ooc_name)]:</b> <span style='color:white'>[html_encode(msg)]</span></span>"
+			M.receiveNexusChatMessage(ooc_message, "ooc", key)
 
 	OOC(msg as text)
 		//set category = "Other"
@@ -260,15 +406,14 @@ mob/verb
 		if(!msg) msg = input("Type a message for the Local OOC", "LOOC") as null|text
 
 		if(msg)
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'><span style='color: white;'>(LOOC)</span> [name]: <span style='color: white;'>[msg]</span></span>"
+			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'><span style='color: white;'>(LOOC)</span> [html_encode(name)]: <span style='color: white;'>[html_encode(msg)]</span></span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
 						if(m.stop_messages.len > 5) m.stop_messages.len = 5
 						m.stop_messages.Insert(1, key)
 						m.stop_messages[key] = world.time
-					m << t
-					m.ChatLog(t,key)
+					m.receiveNexusChatMessage(t, "ooc", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
 		usr.End_Say()
@@ -280,11 +425,10 @@ mob/verb
 		usr.can_say=0
 		spawn(1) if(usr) usr.can_say=1
 		for(var/mob/M in Say_Recipients())
-			M<<"<font size=[M.TextSize]>-[name] whispers something..."
+			M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
 			if(getdist(src,M)<=2)
-				var/t="<font size=[M.TextSize]><font color=[TextColor]>*[name] whispers: [html_encode(msg)]"
-				M<<t
-				M.ChatLog(t,key)
+				var/t="<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'>*[html_encode(name)] whispers: [html_encode(msg)]</span>"
+				M.receiveNexusChatMessage(t, "ic", key)
 		usr.Say_Spark()
 
 	ToggleNekoCollar()
@@ -303,15 +447,14 @@ mob/verb
 			for(var/obj/items/Clothes/Neko_Collar/neko in item_list)
 				if(neko.suffix == "Equipped" && neko_collar_adds_tilde)
 					msg = "[msg]～"
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[name]: [msg]</span>"
+			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[html_encode(name)]: [html_encode(msg)]</span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
 						if(m.stop_messages.len > 5) m.stop_messages.len = 5
 						m.stop_messages.Insert(1, key)
 						m.stop_messages[key] = world.time
-					m << t
-					m.ChatLog(t,key)
+					m.receiveNexusChatMessage(t, "ic", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
 		usr.End_Say()
@@ -324,15 +467,14 @@ mob/verb
 		if(!msg) msg = input("What is your character thinking?", "Local Chat") as null|text
 		if(msg)
 
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[name] thinks, <i>[msg]</i></span>"
+			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[html_encode(name)] thinks, <i>[html_encode(msg)]</i></span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
 						if(m.stop_messages.len > 5) m.stop_messages.len = 5
 						m.stop_messages.Insert(1, key)
 						m.stop_messages[key] = world.time
-					m << t
-					m.ChatLog(t,key)
+					m.receiveNexusChatMessage(t, "ic", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
 		usr.End_Say()
@@ -345,27 +487,10 @@ mob/verb
 
 	Emote(msg as null|message)
 		set category="Other"
-		if(!usr.can_say) return
-		usr.can_say = 0
-		usr.Say_Spark()
-		if(!msg||msg=="") msg=input("Type a message that people in sight can see") as null|message
-		if(msg)
-			usr.can_say=0
-			spawn(1) if(usr) usr.can_say=1
-
-			var/type = input("What type of emote is this?") as null|anything in list("Normal", "Character Development")
-			var/message = "<span style='font-size:10pt;color:yellow;font-family:Walk The Moon'><center>_____| [name] |_____</center><span style='color: white;'>[html_encode(msg)]</span></span>"
-
-			for(var/mob/M in Say_Recipients())
-				M << message
-				M.ChatLog(message,key)
-
-			if(type == "Character Development")
-				PostDevelopmentRPWindow(message, key)
-			else 
-				PostEmoteRPWindow(message, key)
-			
-		usr.End_Say()
+		if(msg && msg != "")
+			submitNexusEmote(msg, "Normal")
+			return
+		showNexusEmoteEditor()
 
 mob/var/tmp
 	can_telepathy=1
@@ -398,10 +523,8 @@ obj/Telepathy
 					return
 				var/msg="(Telepathy)<font color=[usr.TextColor]>[usr]: [html_encode(message)]"
 				msg=copytext(msg,1,1000)
-				M<<"<font size=[M.TextSize]>[msg]"
-				usr<<"<font size=[usr.TextSize]>[msg]"
-				M.ChatLog(msg,usr.key)
-				usr.ChatLog(msg,usr.key)
+				M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>[msg]</span>", "ic", usr.key)
+				usr.receiveNexusChatMessage("<span style='font-size:[usr.TextSize + 8]pt'>[msg]</span>", "ic", usr.key)
 		else usr<<"They have their telepathy turned off."
 
 mob/verb/Who()

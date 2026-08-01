@@ -2391,10 +2391,10 @@ obj/Self_Destruct
 					break //no need for more than 1 crater in the same spot
 			for(var/mob/P in T) if(P!=usr)
 				if(!P.AOE_auto_dodge(usr,usr.loc))
-					if(P.ki_shield_on()) P.Ki -= 2 * Get_self_destruct_damage(usr,P) * P.ShieldDamageReduction() * (P.max_ki/100)/(P.Eff**shield_exponent)*P.Generator_reduction()
+					if(P.ki_shield_on()) P.applyNexusCombatShieldDamage(2 * Get_self_destruct_damage(usr,P) * P.ShieldDamageReduction() * (P.max_ki/100)/(P.Eff**shield_exponent)*P.Generator_reduction(), usr, "Self Destruct")
 					else
 						var/dmg = Get_self_destruct_damage(usr,P)
-						P.TakeDamage(dmg)
+						P.TakeDamage(dmg, attacker = usr, attack_name = "Self Destruct")
 					if(P.Health<=0||P.Ki<=0)
 						var/anger_wait=2400
 						if(world.time>P.last_anger+anger_wait)

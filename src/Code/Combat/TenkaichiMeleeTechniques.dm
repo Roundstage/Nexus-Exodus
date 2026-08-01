@@ -132,7 +132,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 	proc/applyOnHit(mob/attacker, mob/target, damage)
 		if(!attacker || !target) return
 		showImpact(target)
-		if(target && bleed_fraction > 0) target.BleedDamage(damage * bleed_fraction)
+		if(target && bleed_fraction > 0) target.BleedDamage(damage * bleed_fraction, attacker, "[name] Bleed")
 		if(target && stun_ticks > 0) target.ApplyStun(time = stun_ticks, stun_power = 1.5)
 		if(line_reach > 1) applyLineHits(attacker, target, damage)
 		var/secondary_count = 0
@@ -141,14 +141,14 @@ obj/Attacks/TenkaichiMeleeTechnique
 			if(!attacker.canHitTenkaichiTechniqueTarget(secondary_target)) continue
 			secondary_count++
 			showImpact(secondary_target)
-			attacker.applyTenkaichiTechniqueDamage(secondary_target, damage * splash_damage_multiplier)
+			attacker.applyTenkaichiTechniqueDamage(secondary_target, damage * splash_damage_multiplier, name)
 			if(secondary_target && knockback_multiplier > 1) secondary_target.Knockback(attacker, max(1, round(knockback_multiplier)))
 		if(extra_hits > 0) spawn()
 			for(var/hit_index = 1, hit_index <= extra_hits, hit_index++)
 				sleep(extra_hit_delay)
 				if(!target || target.Health <= 0 || getdist(attacker, target) > 1) break
 				showImpact(target)
-				attacker.applyTenkaichiTechniqueDamage(target, damage * extra_hit_multiplier)
+				attacker.applyTenkaichiTechniqueDamage(target, damage * extra_hit_multiplier, name)
 		if(behavior == "kickback_combo") spawn() attacker.performTenkaichiKickbackFollowup(src, target)
 
 	proc/applyLineHits(mob/attacker, mob/primary_target, damage)
@@ -160,15 +160,15 @@ obj/Attacks/TenkaichiMeleeTechnique
 			for(var/mob/line_target in line_turf)
 				if(line_target == primary_target || !attacker.canHitTenkaichiTechniqueTarget(line_target)) continue
 				showImpact(line_target)
-				attacker.applyTenkaichiTechniqueDamage(line_target, damage * 0.75)
+				attacker.applyTenkaichiTechniqueDamage(line_target, damage * 0.75, name)
 
 mob/proc/canHitTenkaichiTechniqueTarget(mob/target)
 	if(!target || target == src || target.rp_mode || target.Safezone) return FALSE
 	return TRUE
 
-mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage)
+mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage, attack_name = "Tenkaichi Technique")
 	if(!canHitTenkaichiTechniqueTarget(target) || damage <= 0) return FALSE
-	target.TakeDamage(damage)
+	target.TakeDamage(damage, attacker = src, attack_name = attack_name)
 	if(target && target.Health <= 0)
 		if(!target.KO) target.KO(src)
 		else if(Fatal) target.Death(src)
@@ -186,9 +186,9 @@ mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTech
 			return FALSE
 		damage_multiplier *= 0.23
 	var/damage = get_melee_damage(target) * technique.damage_multiplier * damage_multiplier
-	if(!applyTenkaichiTechniqueDamage(target, damage)) return FALSE
+	if(!applyTenkaichiTechniqueDamage(target, damage, technique.name)) return FALSE
 	technique.showImpact(target)
-	if(technique.bleed_fraction > 0) target.BleedDamage(damage * technique.bleed_fraction)
+	if(technique.bleed_fraction > 0) target.BleedDamage(damage * technique.bleed_fraction, src, "[technique.name] Bleed")
 	if(technique.stun_ticks > 0) target.ApplyStun(time = technique.stun_ticks, stun_power = 1.5)
 	if(technique.knockback_multiplier > 1) target.Knockback(src, max(1, round(technique.knockback_multiplier)), bypass_immunity = 1)
 	return TRUE

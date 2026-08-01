@@ -19,7 +19,7 @@ mob/proc/AlreadyHasModule(t)
 
 mob/proc/Firewall(mob/P)
 	for(var/obj/Module/Firewall/F in active_modules)
-		P.TakeDamage(50)
+		P.TakeDamage(50, attacker = src, attack_name = "Firewall")
 		P.SafeTeleport(loc)
 		Make_Shockwave(src,sw_icon_size=256)
 		player_view(15,src)<<"[P] tried to jump into [src]'s body, but they are repelled and take damage from the firewall!"

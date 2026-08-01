@@ -109,7 +109,7 @@ mob/proc
 		a.ApplyStun(time = stun, no_immunity = 1, stun_power = 6)
 
 		var/dmg = a.KikohoDamageTo(src)
-		TakeDamage(dmg)
+		TakeDamage(dmg, attacker = a, attack_name = "Kikoho")
 		if(Health <= 0) KO(a)
 
 	KikohoKnockAwayNonTargets(mob/t) //t = target, usr = firer

@@ -529,9 +529,9 @@ Guided blasts use one resolved control direction for collision checks and moveme
 ### src/Code/Combat/BleedDamage.dm
 
 #### mob/proc/BleedDamage
-- Signature: `BleedDamage(n = 0)`
-- Inputs: n = 0
-- Purpose: Handle bleed damage.
+- Signature: `BleedDamage(n = 0, mob/attacker, attack_name = "Bleed")`
+- Inputs: queued bleed amount plus optional source and attack attribution.
+- Purpose: Start the bleed loop while retaining combat-log attribution.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1830,11 +1830,11 @@ Guided blasts use one resolved control direction for collision checks and moveme
 - Side effects: see implementation.
 
 #### mob/proc/TakeDamage
-- Signature: `mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)`
-- Inputs: dmg = 0, stun_damage_mod = 0.6, knockback = 0
-- Purpose: Apply stun state and the target's dynamic racial incoming-damage multiplier before shield or Health processing.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker, attack_name)`
+- Inputs: raw damage, stun modifier, knockback metadata, optional attacker, and attack label.
+- Purpose: Apply racial/stun modifiers and Health or shield damage, then publish the actual applied damage to the combat feed when attribution is available.
+- Returns: applied Health damage, or zero when no Health was removed.
+- Side effects: updates anger, damage indicators, overhead vitals, and batched combat logs.
 
 #### mob/proc/PowerupDamageGrabber
 - Signature: `mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate`

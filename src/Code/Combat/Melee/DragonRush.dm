@@ -187,7 +187,7 @@ proc
 			base_stun *= 2
 			dr_dmg *= 2
 
-		loser.TakeDamage(dr_dmg)
+		loser.TakeDamage(dr_dmg, attacker = winner, attack_name = "Dragon Rush")
 		loser.Knockback(winner, 20)
 		loser.ApplyStun(time = stun, no_immunity = 1, stun_power = 10)
 		winner.AfterImage(25)

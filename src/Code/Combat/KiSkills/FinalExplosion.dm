@@ -170,8 +170,8 @@ turf
 						if(v == 1) RockExplode(m.loc)
 
 						var/dmg = calculateScaledCombatDamage(dmg_percent / max_stacks, user_bp, m.BP, user_force, m.Res)
-						if(m.ki_shield_on()) m.Ki -= dmg * m.ShieldDamageReduction() * (m.max_ki / 100)
-						else m.TakeDamage(dmg)
+						if(m.ki_shield_on()) m.applyNexusCombatShieldDamage(dmg * m.ShieldDamageReduction() * (m.max_ki / 100), user, "Final Explosion")
+						else m.TakeDamage(dmg, attacker = user, attack_name = "Final Explosion")
 
 						var/base_stun = 5
 						var/stun = base_stun * (user_bp / m.BP)**bp_exponent * (user_force / m.Res)**0.5

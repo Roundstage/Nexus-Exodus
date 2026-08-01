@@ -59,7 +59,7 @@ mob/CombatDummy
 		icon_state = initial(icon_state)
 		updateOverheadHealthHud()
 
-	TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0)
+	TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker, attack_name)
 		. = ..()
 		if(Health <= 0) resetCombatDummy()
 

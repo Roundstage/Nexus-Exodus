@@ -216,7 +216,7 @@ obj/items/Nuke
 				player_view(10,src)<<sound('Wallhit.ogg',volume=25)
 				for(var/mob/P in view(7,loc))
 					var/Damage=(Force/P.End)*sqrt(BP/P.BP)*15
-					P.TakeDamage(Damage)
+					P.TakeDamage(Damage, attack_name = "Bomb Explosion")
 					if(P.KO) P.Death(src)
 				sleep(5)
 			del(src)
