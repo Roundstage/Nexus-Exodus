@@ -1582,6 +1582,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')`
 - Purpose: Render and automatically remove a short impact or charge light pulse.
 
+#### atom/movable/proc/setNexusActionGlow
+- Signature: `setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')`
+- Purpose: Attach a second reusable emitter for beam charging and temporary actions without replacing a transformation glow.
+
 #### mob/verb/toggleNexusLighting
 - Signature: `toggleNexusLighting()`
 - Purpose: Let a player disable or enable dynamic screen lighting locally.
@@ -1589,6 +1593,18 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/Admin2/verb/testNexusLighting
 - Signature: `testNexusLighting()`
 - Purpose: Test day/night transitions and representative attack/transformation glows without granting skills.
+
+#### mob/Admin2/verb/setMaximumDarkness
+- Signature: `setMaximumDarkness()`
+- Purpose: Apply full black ambient light to the current area immediately so additive emitters can be inspected in isolation.
+
+#### mob/Admin2/verb/testNexusGlow
+- Signature: `testNexusGlow()`
+- Purpose: Attach a maximum-intensity white test glow to the admin for ten seconds.
+
+#### mob/Admin2/verb/testNexusBlast
+- Signature: `testNexusBlast()`
+- Purpose: Launch a harmless cyan projectile with persistent flight light and an impact pulse.
 
 #### proc/FadeOutLights
 - Signature: `FadeOutLights(area/a)`

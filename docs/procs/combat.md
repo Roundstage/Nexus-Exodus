@@ -296,9 +296,9 @@ Guided blasts use one resolved control direction for collision checks and moveme
 #### datum/SkillEngine/proc/castBlast
 - Signature: `datum/SkillEngine/proc/castBlast(mob/user, obj/Attacks/Blast/skill_obj)`
 - Inputs: mob/user, obj/Attacks/Blast/skill_obj
-- Purpose: Fire basic blast patterns using engine logic.
+- Purpose: Fire basic blast patterns using engine logic and attach a cached, colored light source to each projectile.
 - Returns: 1 on success, else 0.
-- Side effects: drains Ki, spawns blasts, updates refire.
+- Side effects: drains Ki, spawns luminous blasts, updates refire.
 
 #### datum/SkillEngine/proc/castBigBang
 - Signature: `datum/SkillEngine/proc/castBigBang(mob/user, obj/Attacks/Big_Bang_Attack/skill_obj)`

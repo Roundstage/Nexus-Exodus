@@ -113,6 +113,7 @@ mob/proc/BeamStream(obj/Attacks/A)
 	charging_beam=0
 	A.charging=0
 	A.streaming=1
+	setNexusActionGlow(getNexusAttackGlowColor(A), 3.8, 235)
 	overlays-=BlastCharge
 
 	var/list/states = icon_states(icon)
@@ -196,6 +197,7 @@ mob/proc/BeamCharge(obj/Attacks/A)
 	StopMovement()
 	attacking=2 //Was 3
 	current_beam=A
+	setNexusActionGlow(getNexusAttackGlowColor(A), 3.2, 215)
 	overlays.Remove(BlastCharge,BlastCharge)
 	overlays+=BlastCharge
 	player_view(10,src)<<sound('BasicbeamCharge.ogg',volume=20)
@@ -210,6 +212,7 @@ mob/proc/BeamCharge(obj/Attacks/A)
 		 //beam_struggling=0
 		 spawn(10) if(!KO) move=1
 		 overlays-=BlastCharge
+		 clearNexusActionGlow()
 	spawn while(A && A.charging && !A.streaming)
 		if(!God_Fist_level&&!super_God_Fist)
 			if(!A.chargelvl) A.chargelvl=1
@@ -242,6 +245,7 @@ mob/proc/BeamStop(obj/Attacks/A, immediate = 0, obj/Blast/impact_segment)
 	A.streaming=0
 	attacking=0
 	current_beam=0
+	clearNexusActionGlow()
 	//BPpcnt = bp_percent_before_charging
 	//spawn(10) BPpcnt = bp_percent_before_charging //im doing this because im too lazy to fix the bug where for some reason if i ONLY use the line above
 	//then when you stop firing your beam, instead of it actually going back to bp_percent_before_charging, it does far lower. so every time you use a

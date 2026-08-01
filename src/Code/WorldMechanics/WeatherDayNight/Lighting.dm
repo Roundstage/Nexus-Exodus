@@ -40,6 +40,15 @@ proc/getNexusTransformationGlowProfile(transformation_id)
 		if("ultra_instinct") return list("color" = "#d9f5ff", "size" = 3.7, "alpha" = 215)
 	return null
 
+proc/getNexusAttackGlowColor(obj/Attacks/attack)
+	if(!attack) return "#59d8ff"
+	if(istype(attack, /obj/Attacks/Final_Flash) || istype(attack, /obj/Attacks/Masenko) || istype(attack, /obj/Attacks/Kienzan)) return "#fff176"
+	if(istype(attack, /obj/Attacks/Garlic_Gun) || istype(attack, /obj/Attacks/RoleplayBeam/TyrantLancer)) return "#b56cff"
+	if(istype(attack, /obj/Attacks/RoleplayBeam/DoubleSunday)) return "#ff4d5f"
+	if(istype(attack, /obj/Attacks/RoleplayBeam/PhotonFlash)) return "#ffe96b"
+	if(istype(attack, /obj/Attacks/RoleplayBeam/BusterCannon)) return "#4ca8ff"
+	return "#59d8ff"
+
 client
 	var
 		nexus_lighting_enabled = TRUE
@@ -97,7 +106,10 @@ obj/NexusLighting
 		alpha = 180
 
 atom/movable
-	var/tmp/obj/NexusLighting/Emitter/nexus_glow
+	var/tmp
+		obj/NexusLighting/Emitter/nexus_glow
+		obj/NexusLighting/Emitter/nexus_action_glow
+		nexus_action_glow_generation = 0
 
 	proc
 		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')
@@ -116,6 +128,25 @@ atom/movable
 			vis_contents -= nexus_glow
 			del(nexus_glow)
 			nexus_glow = null
+
+		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'TorchLightCircle.dmi')
+			nexus_action_glow_generation++
+			if(!nexus_action_glow)
+				nexus_action_glow = new
+				vis_contents += nexus_action_glow
+			nexus_action_glow.icon = light_icon
+			nexus_action_glow.color = light_color
+			nexus_action_glow.alpha = Clamp(light_alpha, 0, 255)
+			nexus_action_glow.transform = matrix() * max(0.1, size) * 0.18
+			CenterIcon(nexus_action_glow)
+			return nexus_action_glow
+
+		clearNexusActionGlow()
+			nexus_action_glow_generation++
+			if(!nexus_action_glow) return
+			vis_contents -= nexus_action_glow
+			del(nexus_action_glow)
+			nexus_action_glow = null
 
 		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'TorchLightCircle.dmi')
 			set waitfor = 0
@@ -148,16 +179,75 @@ mob/verb/toggleNexusLighting()
 	var/state_text = client.nexus_lighting_enabled ? "enabled" : "disabled"
 	src << "Dynamic lighting [state_text]."
 
+obj/Effect/NexusLightingTestBlast
+	name = "lighting test blast"
+	icon = 'Blast11.dmi'
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	Savable = 0
+
+	Del()
+		clearNexusGlow()
+		. = ..()
+
+mob/proc/launchNexusLightingTestBlast()
+	set waitfor = 0
+	if(!loc) return
+	var/obj/Effect/NexusLightingTestBlast/test_blast = new(loc)
+	test_blast.dir = dir
+	test_blast.pixel_x = pixel_x
+	test_blast.pixel_y = pixel_y
+	test_blast.setNexusGlow("#59d8ff", 3.2, 255)
+	player_view(10, src) << sound('Blast.wav', volume = 20)
+	for(var/flight_step = 1, flight_step <= 14 && test_blast, flight_step++)
+		if(!step(test_blast, test_blast.dir)) break
+		sleep(2)
+	if(test_blast)
+		test_blast.pulseNexusGlow("#c8f7ff", 4.5, 255, 8)
+		sleep(8)
+		if(test_blast) del(test_blast)
+
+mob/Admin2/verb/setMaximumDarkness()
+	set name = "Set Maximum Darkness"
+	set category = "Admin"
+	if(!current_area)
+		src << "You must be inside an area to test maximum darkness."
+		return
+	current_area.nexus_lighting_transition_id++
+	current_area.is_day = FALSE
+	current_area.hours_til_switch = max(1, current_area.hours_of_night)
+	current_area.current_ambient_color = rgb(0, 0, 0, 255)
+	FadeInLights(current_area)
+	updateAreaNexusLighting(current_area, current_area.current_ambient_color)
+	src << "Maximum darkness applied instantly to [current_area]. Use Change Day Night or Test Lighting > Day to restore daylight."
+
+mob/Admin2/verb/testNexusGlow()
+	set name = "Test Glow"
+	set category = "Admin"
+	setNexusActionGlow("#ffffff", 4.8, 255)
+	var/test_generation = nexus_action_glow_generation
+	src << "A maximum-intensity white glow will remain attached to you for 10 seconds."
+	spawn(100) if(src && nexus_action_glow_generation == test_generation) clearNexusActionGlow()
+
+mob/Admin2/verb/testNexusBlast()
+	set name = "Test Lighting Blast"
+	set category = "Admin"
+	launchNexusLightingTestBlast()
+
 mob/Admin2/verb/testNexusLighting()
 	set name = "Test Lighting"
 	set category = "Admin"
 	if(!client) return
-	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Night", "Day", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
+	var/choice = input(src, "Choose a lighting test for your current area.", "Nexus Lighting") in list("Cancel", "Maximum Darkness", "Night", "Day", "White Glow", "Lighting Blast", "Warm Attack Glow", "Blue Transformation Glow", "Toggle Personal Lighting")
 	switch(choice)
+		if("Maximum Darkness") setMaximumDarkness()
 		if("Night")
 			if(current_area) current_area.FadeToNight()
 		if("Day")
 			if(current_area) current_area.FadeToDay()
+		if("White Glow") testNexusGlow()
+		if("Lighting Blast") testNexusBlast()
 		if("Warm Attack Glow") pulseNexusGlow("#ff7a35", 4, 230, 50)
 		if("Blue Transformation Glow") pulseNexusGlow("#42d9ff", 4, 230, 50)
 		if("Toggle Personal Lighting") toggleNexusLighting()

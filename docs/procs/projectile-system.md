@@ -40,7 +40,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### mob/proc/BeamStream
 - Signature: `mob/proc/BeamStream(obj/Attacks/A)`
 - Inputs: obj/Attacks/A
-- Purpose: Handle beam stream.
+- Purpose: Begin beam streaming and intensify the caster's attack-colored action glow.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -54,7 +54,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 #### mob/proc/BeamCharge
 - Signature: `mob/proc/BeamCharge(obj/Attacks/A)`
 - Inputs: obj/Attacks/A
-- Purpose: Handle beam charge.
+- Purpose: Begin charging a beam and attach an independent attack-colored glow without replacing transformation light.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -63,7 +63,7 @@ Projectile movement, collision, beam segments, and damage behavior.
 - Inputs: beam skill, immediate teardown flag, and optional contacting segment.
 - Purpose: Stop beam state; raw player impacts use immediate teardown instead of the legacy delayed tail animation.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: clears charging, streaming, beam segments, and the temporary beam glow.
 
 #### mob/proc/deleteBeamSegmentsImmediately
 - Signature: `mob/proc/deleteBeamSegmentsImmediately(obj/Attacks/A, obj/Blast/impact_segment)`
