@@ -110,6 +110,9 @@ proc/normalizeNexusInterfaceLayout(layout_id)
 	if(layout_id == "side_tabs") return "side_tabs"
 	return "overlay"
 
+proc/getNexusChatMessageSeparatorHtml()
+	return "<hr class='nexus-message-separator' size='1' color='#4b3927' style='display:block;width:100%;height:0;margin:5px 0;border:0;border-top:1px dashed #4b3927'>"
+
 client/proc/initializeNexusChatHistory()
 	if(!islist(nexus_chat_history)) nexus_chat_history = list()
 	for(var/channel in list("all", "combat", "ic", "ooc"))
@@ -172,7 +175,7 @@ datum/NexusChatHud
 		var/start_index = max(1, end_index - visible_count + 1)
 		var/rendered = ""
 		for(var/entry_index = start_index, entry_index <= end_index, entry_index++)
-			if(length(rendered)) rendered += "<br><span style='color:#4b3927'>------------------------------------------------------------</span><br>"
+			if(length(rendered)) rendered += getNexusChatMessageSeparatorHtml()
 			rendered += "<span>[entries[entry_index]]</span>"
 		return rendered
 
@@ -193,7 +196,7 @@ datum/NexusChatHud
 		footer += buildLink("EMOTE", "emote")
 		footer += buildLink("LOGS", "logs")
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:10px 'Courier New',monospace}.shell{height:100vh;display:flex;flex-direction:column;padding:4px;background:#17110c}.header{display:flex;align-items:center;gap:3px;flex:0 0 24px;padding:3px 4px;border:2px solid #755a36;background:#3a2a1b}.header b{margin-right:auto;color:#f0d497;font-size:11px}.button,.tab{display:block;padding:4px 6px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.header .button{padding:2px 5px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;flex:0 0 25px;margin-top:3px}.tab{padding:4px 2px}.tab.active{background:#76542a;color:#fff3bf;border-color:#d4ad65}.messages{flex:1;min-height:0;margin-top:3px;padding:7px;overflow-y:auto;border:2px inset #574128;background:#100d09;color:#ead7b0;font-size:10px;line-height:1.35}.footer{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;flex:0 0 25px;margin-top:3px}.footer .button{padding:4px 1px}.hint{flex:0 0 15px;padding-top:3px;color:#927b58;text-align:center;font-size:8px}::-webkit-scrollbar{width:12px}::-webkit-scrollbar-track{background:#17110c}::-webkit-scrollbar-thumb{background:#6b4e2d;border:2px outset #9b7441}
+		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:10px 'Courier New',monospace}.shell{height:100vh;display:flex;flex-direction:column;padding:4px;background:#17110c}.header{display:flex;align-items:center;gap:3px;flex:0 0 24px;padding:3px 4px;border:2px solid #755a36;background:#3a2a1b}.header b{margin-right:auto;color:#f0d497;font-size:11px}.button,.tab{display:block;padding:4px 6px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.header .button{padding:2px 5px}.tabs{display:flex;gap:3px;flex:0 0 25px;min-height:25px;max-height:25px;margin-top:3px;overflow:hidden}.tab{flex:1 1 0;min-width:0;padding:4px 2px}.tab.active{background:#76542a;color:#fff3bf;border-color:#d4ad65}.messages{flex:1 1 auto;min-height:0;margin-top:3px;padding:7px;overflow-y:auto;border:2px inset #574128;background:#100d09;color:#ead7b0;font-size:10px;line-height:1.35}.footer{display:flex;gap:3px;flex:0 0 25px;min-height:25px;max-height:25px;margin-top:3px;overflow:hidden}.footer .button{flex:1 1 0;min-width:0;padding:4px 1px}.hint{flex:0 0 15px;padding-top:3px;color:#927b58;text-align:center;font-size:8px}::-webkit-scrollbar{width:12px}::-webkit-scrollbar-track{background:#17110c}::-webkit-scrollbar-thumb{background:#6b4e2d;border:2px outset #9b7441}
 		</style><script>window.onload=function(){var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><div class='shell'><div class='header'><b>CHAT / [uppertext(active_channel)]</b>[buildLink("UP", "scroll_up")][buildLink("DOWN", "scroll_down")][buildLink("HIDE", "hide")]</div><div class='tabs'>[tabs]</div><div class='messages' id='messages'>[buildMessageHtml()]</div><div class='footer'>[footer]</div><div class='hint'>CMD BAR BELOW / ENTER TO FOCUS OR RETURN TO MAP</div></div></body></html>"}
 
 	proc/attachSidePanel()
