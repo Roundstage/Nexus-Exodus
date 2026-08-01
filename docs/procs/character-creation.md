@@ -9,7 +9,7 @@
 - `src/Code/_libs/upform/lib.dm`
 
 ## Architecture
-`mob/proc/ClickMakeNewCharacter()` delegates to `openNexusCharacterCreator()`. The creator is a server-rendered `/upForm/NexusCharacterCreator`; it does not use the legacy sequence of blocking race, skin, hair, and stat prompts. `GenerateBody()` emits one backend form presented as five browser stages, `Link()` accepts only the final `action=create`, and `commitNexusCharacter()` validates the complete submission before mutating the player mob.
+The RPG-style login selector registers up to three independent characters per account and binds the chosen slot before creation or loading. `mob/proc/ClickMakeNewCharacter()` then delegates to `openNexusCharacterCreator()`. The creator is a server-rendered `/upForm/NexusCharacterCreator`; it does not use the legacy sequence of blocking race, skin, hair, and stat prompts. `GenerateBody()` emits one backend form presented as five browser stages, `Link()` accepts only the final `action=create`, and `commitNexusCharacter()` validates the complete submission before mutating the player mob.
 
 The 1180x760 window cannot be closed or minimized through `upForm`. Its five stages are:
 
@@ -64,7 +64,7 @@ Argument names, order, type annotations, and defaults below match the current de
 - `mob/proc/commitNexusCharacter(..., cooler_available, list/alien_options, list/frost_form_ids, list/starter_clothing)` validates and completes creation.
 - `proc/nexusRaceDescription(race_name)` returns the short lineage description.
 - `upForm/NexusCharacterCreator/New(client/owner, datum/host, list/viewers)` rolls form-local Cooler availability, builds the hair catalog, and registers the form on its host.
-- `upForm/NexusCharacterCreator/Del()` clears the host's form reference.
+- `upForm/NexusCharacterCreator/Del()` clears the host's form reference and returns an uncommitted connected player to the three-slot selector.
 - `upForm/NexusCharacterCreator/canDisplayForm(client/C)` restricts display to the uncommitted host mob.
 - `upForm/NexusCharacterCreator/Link(list/href_list, client/C)` resolves submitted fields and invokes the commit backend.
 - `upForm/NexusCharacterCreator/GenerateBody()` renders the staged menu and its native icon-reference preview catalog.

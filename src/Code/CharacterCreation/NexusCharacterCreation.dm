@@ -553,6 +553,8 @@ upForm/NexusCharacterCreator
 		var/mob/player = src.getHost()
 		if(player && player.nexus_character_creator == src) player.nexus_character_creator = null
 		..()
+		if(player && player.client && !player.playerCharacter)
+			spawn() player.ShowNexusLoginPrompt()
 
 	canDisplayForm(client/C)
 		. = ..()
@@ -765,5 +767,5 @@ upForm/NexusCharacterCreator
 			function goStage(delta){if(delta>0&&!validateStage())return;currentStage=Math.max(0,Math.min(4,currentStage+delta));showStage();}
 			window.onload=function(){var races=document.getElementsByName('selected_race');if(races.length){races\[0\].checked=true;selectRace(races\[0\].value);}updateClothing();showStage();};
 		"}
-		page_css = css
+		page_css = "[css][getNexusRpgBrowserCss()]"
 		UpdatePage(body, js)

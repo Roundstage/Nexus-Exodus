@@ -10,9 +10,9 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 ## Proc Reference
 
 ### mob/proc/receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
-- Purpose: Route one message to the All output and, when applicable, the IC, OOC, or Combat output in every supported HUD layout.
+- Purpose: Route one message to the HudLib All feed and, when applicable, its IC, OOC, or Combat feed.
 - Inputs: formatted message, normalized channel, optional source key, and logging toggle.
-- Side effects: updates the active skin outputs and buffers the message in the player's combined and channel-specific logs.
+- Side effects: refreshes the active native chat HUD and buffers the message in the player's combined and channel-specific logs.
 
 ### mob/proc/ChatLog(info, the_key, channel = "all")
 - Purpose: Buffer a formatted HTML entry for the combined log and its IC, OOC, or Combat log.

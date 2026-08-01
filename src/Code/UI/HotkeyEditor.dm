@@ -317,7 +317,7 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	if(!binding_summary) binding_summary = "<p class='empty'>No bindings configured.</p>"
 
 	return {"<!doctype html>
-	<html><head><meta charset='utf-8'><title>Nexus Hotkeys</title><style>
+	<html><head><meta charset='utf-8'><title>Nexus Hotkeys</title><style>[getNexusRpgBrowserCss()]
 	*{box-sizing:border-box}body{margin:0;background:#070b12;color:#edf2fa;font:13px Arial,sans-serif;overflow:hidden}
 	.shell{height:100vh;display:grid;grid-template-columns:300px 1fr;background:radial-gradient(circle at 75% 20%,#18203a 0,#090e18 42%,#05080e 100%)}
 	.catalog{padding:22px 18px;border-right:1px solid #2c3547;background:rgba(8,12,20,.92);overflow:auto}.catalog h1{margin:0 0 4px;font-size:22px;letter-spacing:.08em}.catalog p{margin:0 0 15px;color:#8d9bb0}.catalog input{width:100%;padding:10px;border:1px solid #38445b;background:#101722;color:white;border-radius:4px;margin-bottom:12px}

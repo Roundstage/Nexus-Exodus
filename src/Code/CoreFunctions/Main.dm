@@ -11,8 +11,9 @@ mob/proc/ban_alert(msg)
 	//spawn alert(src,msg)
 	src<<msg
 mob/proc/Carry_over_imprisonments()
-	if(!fexists("data/Save/[key]")) return
-	var/savefile/F=new("data/Save/[key]")
+	var/save_path = getNexusCharacterSavePath()
+	if(!save_path || !fexists(save_path)) return
+	var/savefile/F=new(save_path)
 	F["Imprisonments"]>>Imprisonments
 
 mob/proc/ClickMakeNewCharacter()
@@ -40,7 +41,6 @@ mob/proc
 					sleep(15)
 					del(src)
 					return
-		Carry_over_imprisonments()
 		if(!dbz_character_mode)
 			sleep(100)
 			//src<<"<font color=yellow>AI training automaticly loaded your character"
@@ -51,7 +51,7 @@ mob/proc
 		if(!client) return
 		last_logon = world.time
 		playerCharacter = 1
-		winset(src, "mainwindow.mainvsplit", "right=rpane")
+		hideNexusLegacyInterface()
 		src << sound(0)
 		spawn(200) Great_Ape_revert()
 		if(Race=="Namekian") verbs+=typesof(/mob/Namekian/verb)
@@ -169,22 +169,15 @@ mob/proc
 		if(!give_countdown_verb) verbs -= /mob/verb/Countdown
 		if(!give_whisper_verb) verbs -= /mob/verb/Whisper
 
-		if(!classic_ui)
-			winset(src, "statsOverlay", "is-visible=true")
-			winset(src, "infowindow", "is-visible=true")
-			winset(src, "mainwindow.map", "is-visible=true")
-			winset(src, "Bars", "is-visible=false")
-			winset(src, "outputwindow", "is-visible=true")
-			winset(src, "mainwindow", "image=;") //i dont want to have to render the title screen background if i dont have to
-		else
-			winset(src,"Bars","is-visible=false")
-			winset(src, "outputwindow", "is-visible=true")
-			winset(src, "mapwindow.map", "is-visible=true")
-			winset(src, "infowindow", "is-visible=true")
-			winset(src,"rpane.rpanewindow","is-visible=true")
-			winset(src,"mainwindow.mainvssplit","is-visible=true")
+		winset(src, "statsOverlay", "is-visible=false")
+		winset(src, "Bars", "is-visible=false")
+		winset(src, "mainwindow.map", "is-visible=true")
+		winset(src, "mapwindow.map", "is-visible=true")
+		winset(src, "mainwindow", "image=;")
+		hideNexusLegacyInterface()
 		initializeVitalsHud()
 		initializeActionHud()
+		initializeNexusChatHud()
 		if(client) client.initializeNexusLighting()
 		SetSparringMode(sparring_mode, FALSE)
 

@@ -5,6 +5,8 @@ Core world, persistence, combat-recovery, and utility functions.
 
 `KoSystem.dm` now coordinates Casual/Lethal recovery through RP Mode and Willpower. `combat_ko_total` remains only as a save-compatibility field and is normalized to zero; it is no longer a three-KO health resource.
 
+Player persistence supports three independent character slots. Character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; the old key-named character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
+
 ## Files
 - `src/Code/CoreFunctions/DBModeCharacters.dm`
 - `src/Code/CoreFunctions/DBModeCore.dm`
@@ -39,6 +41,14 @@ Core world, persistence, combat-recovery, and utility functions.
 - `src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm`
 
 ## Proc Reference
+
+### src/Code/CoreFunctions/Saving.dm
+
+- `getNexusCharacterSavePathForKey()` and `getNexusFeatSavePathForKey()` produce clamped slot-specific paths for slots 1 through 3.
+- `ensureNexusCharacterSlots()` performs idempotent legacy migration and creates the per-account migration marker.
+- `getNexusCharacterSlotInfo()` reads lightweight selector metadata without loading a character into the live mob.
+- `deleteNexusCharacterSlot()` removes only the selected character and its feat progression.
+- `save()`, `load()`, `hasSave()`, and `cantRemake()` operate on `active_character_slot`; normal mob serialization records selector name, race, and last-used metadata.
 
 ### src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm
 
