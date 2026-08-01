@@ -47,7 +47,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `getNexusRpgBrowserCss()` supplies the shared rustic RPG presentation layer used by the Character, creation, emote, log, hotkey, inspector, reward, item, and admin windows.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
-- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `attachSidePanel()` shares the right pane with native tabs; `attachOverlay()` returns the full width to the map.
+- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
 - `datum/NexusInterfaceSettings` switches layouts and independently enables the Skills, Other, Items, World, and Admin legacy categories. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
 - `applyNexusInterfaceLayout()` and `hideNexusLegacyInterface()` reconcile the configured panes while keeping obsolete output windows detached.

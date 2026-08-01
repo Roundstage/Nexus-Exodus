@@ -149,6 +149,7 @@ datum/NexusChatHud
 		active_channel = "all"
 		is_visible = TRUE
 		scroll_offset = 0
+		side_attach_generation = 0
 
 	Del()
 		if(owner && owner.client)
@@ -211,12 +212,29 @@ datum/NexusChatHud
 			winset(owner, "infowindow", "is-visible=false")
 			owner.tabs_hidden = TRUE
 		winset(owner, "nexuschatwindow", "is-visible=true")
-		winset(owner, "nexuschatwindow.chat", "is-visible=true")
+		winset(owner, "nexuschatwindow.chat", "is-visible=false")
 		winset(owner, "nexuschatwindow.command", "is-visible=true")
 		for(var/window_id in list("outputwindow", "chat", "chat2", "chat3")) winset(owner, window_id, "is-visible=false")
+		queueSideBrowserRefresh()
+
+	proc/refreshSideBrowser()
+		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
+		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) != "side_tabs") return
+		winset(owner, "nexuschatwindow", "is-visible=true")
+		winset(owner, "nexuschatwindow.chat", "is-visible=true")
+		owner << browse(buildHtml(), "window=nexuschatwindow.chat")
+
+	proc/queueSideBrowserRefresh()
+		side_attach_generation++
+		var/expected_generation = side_attach_generation
+		spawn(1)
+			if(src && expected_generation == side_attach_generation) refreshSideBrowser()
+		spawn(5)
+			if(src && expected_generation == side_attach_generation) refreshSideBrowser()
 
 	proc/attachOverlay()
 		if(!owner || !owner.client) return
+		side_attach_generation++
 		owner << browse(null, "window=nexuschatwindow.chat")
 		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
 		winset(owner, "mapwindow", "is-visible=true")
@@ -226,6 +244,7 @@ datum/NexusChatHud
 
 	proc/attachTabsOnly()
 		if(!owner || !owner.client) return
+		side_attach_generation++
 		owner << browse(null, "window=nexuschatwindow.chat")
 		winset(owner, "mainwindow.mainvsplit", "left=mapwindow;right=rpane;splitter=74")
 		winset(owner, "rpane", "is-visible=true")
@@ -291,7 +310,7 @@ datum/NexusChatHud
 	proc/refresh()
 		clearElements()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
-		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs") owner << browse(buildHtml(), "window=nexuschatwindow.chat")
+		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs") refreshSideBrowser()
 		else refreshOverlay()
 
 	handleAction(action_id)
