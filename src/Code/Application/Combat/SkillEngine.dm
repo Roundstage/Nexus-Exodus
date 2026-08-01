@@ -438,6 +438,7 @@ datum/SkillEngine
 			a.from_attack = skill_obj
 			a.icon = skill_obj.icon
 			CenterIcon(a)
+			a.setNexusGlow(getNexusAttackGlowColor(skill_obj), 2.2, 195)
 			a.Shockwave = ToOne(1.4 * skill_obj.Shockwave / skill_obj.blast_refire ** 0.4)
 			if(prob(100)) a.Explosive = skill_obj.Explosive
 			a.dir = user.dir
