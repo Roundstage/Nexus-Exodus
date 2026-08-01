@@ -44,7 +44,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/NexusLighting/PlaneMaster") && text2path("/obj/NexusLighting/Emitter"), "screen lighting plane types are missing")
 	nexusSmokeAssert(text2path("/mob/verb/toggleNexusLighting") && text2path("/mob/Admin2/verb/testNexusLighting"), "lighting control verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin2/verb/setMaximumDarkness") && text2path("/mob/Admin2/verb/testNexusGlow") && text2path("/mob/Admin2/verb/testNexusBlast"), "dedicated lighting test verbs are missing")
-	nexusSmokeAssert(text2path("/mob/Admin2/verb/testNexusBeamLighting") && text2path("/mob/Admin2/verb/testNexusLightVariations"), "beam or flicker lighting test verbs are missing")
+	nexusSmokeAssert(text2path("/mob/Admin2/verb/testNexusBeamLighting") && text2path("/mob/Admin2/verb/testNexusLightVariations") && text2path("/mob/Admin2/verb/testNexusTurfOcclusion"), "beam, flicker, or turf-collision lighting test verbs are missing")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusLightingTestBlast"), "harmless lighting test blast is missing")
 	var/obj/NexusLighting/PlaneMaster/lighting_plane = new
 	var/obj/NexusLighting/Emitter/lighting_emitter = new
@@ -99,6 +99,46 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(beam_light_profile["variation"] == "beam" && beam_light_profile["size"] <= 2 && beam_light_profile["alpha"] < large_light_profile["alpha"], "beam segments do not receive a compact trail-light profile")
 	small_light_projectile.Is_Ki = 0
 	nexusSmokeAssert(!getNexusProjectileLightProfile(small_light_projectile), "physical projectiles incorrectly emit ki lighting")
+	var/turf/light_collision_source
+	var/turf/light_collision_wall
+	var/turf/light_collision_shadow
+	for(var/turf/candidate_light_source in world)
+		var/turf/candidate_light_wall = get_step(candidate_light_source, EAST)
+		var/turf/candidate_light_shadow = candidate_light_wall ? get_step(candidate_light_wall, EAST) : null
+		if(candidate_light_wall && candidate_light_shadow)
+			light_collision_source = candidate_light_source
+			light_collision_wall = candidate_light_wall
+			light_collision_shadow = candidate_light_shadow
+			break
+	nexusSmokeAssert(light_collision_source && light_collision_wall && light_collision_shadow, "startup map has no turf line for light-collision tests")
+	var/original_light_source_density = light_collision_source.density
+	var/original_light_source_opacity = light_collision_source.opacity
+	var/original_light_wall_density = light_collision_wall.density
+	var/original_light_wall_opacity = light_collision_wall.opacity
+	var/original_light_shadow_density = light_collision_shadow.density
+	var/original_light_shadow_opacity = light_collision_shadow.opacity
+	light_collision_source.density = 0
+	light_collision_source.opacity = 0
+	light_collision_wall.density = 1
+	light_collision_wall.opacity = 1
+	light_collision_shadow.density = 0
+	light_collision_shadow.opacity = 0
+	nexusSmokeAssert(nexusLightCanReach(light_collision_source, light_collision_wall), "light does not illuminate the visible face of a blocking turf")
+	nexusSmokeAssert(!nexusLightCanReach(light_collision_source, light_collision_shadow), "dense opaque turf does not cast a lighting shadow")
+	var/light_collision_key = getNexusLightOcclusionCacheKey(light_collision_source, 6)
+	var/icon/light_collision_mask = getNexusLightOcclusionMask(light_collision_source, 6, light_collision_key)
+	nexusSmokeAssert(light_collision_mask && light_collision_mask.GetPixel(171, 129), "light collision mask removed the blocking turf face")
+	nexusSmokeAssert(!light_collision_mask.GetPixel(214, 129), "light collision mask did not clear pixels behind a blocking turf")
+	var/obj/NexusLighting/Emitter/occluded_emitter = new(light_collision_source)
+	occluded_emitter.configureNexusEmitter("#ffffff", 6, 220, 'NexusLightGradient.dmi', FALSE, 10, "charge")
+	nexusSmokeAssert(occluded_emitter.filters && occluded_emitter.occlusion_mask_key == light_collision_key, "eligible light emitter did not apply its turf alpha mask")
+	light_collision_source.density = original_light_source_density
+	light_collision_source.opacity = original_light_source_opacity
+	light_collision_wall.density = original_light_wall_density
+	light_collision_wall.opacity = original_light_wall_opacity
+	light_collision_shadow.density = original_light_shadow_density
+	light_collision_shadow.opacity = original_light_shadow_opacity
+	del(occluded_emitter)
 	del(small_light_projectile)
 	del(small_light_attack)
 	del(large_light_projectile)
