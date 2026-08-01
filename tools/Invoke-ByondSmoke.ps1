@@ -326,7 +326,7 @@ try {
 	Write-Host "Compiling with BYOND $ByondVersion..."
 	Push-Location $worldDirectory
 	try {
-		$compilerLines = @(& $dreamMakerPath -full_paths DU.dme 2>&1)
+		$compilerLines = @(& $dreamMakerPath DU.dme 2>&1)
 		$compilerExitCode = $LASTEXITCODE
 	}
 	finally {

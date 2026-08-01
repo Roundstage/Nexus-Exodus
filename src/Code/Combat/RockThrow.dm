@@ -7,7 +7,7 @@ mob/var
 obj
 	RockThrow
 		desc = "You throw a rock at your opponent and deal damage with your strength."
-		icon = 'src/Icons/Effects/ResourceRocks.dmi'
+		icon = 'ResourceRocks.dmi'
 		icon_state = "1"
 		Cost_To_Learn = 15
 		Teach_Timer = 1
@@ -30,7 +30,7 @@ obj
 				
 	RockSlide
 		desc = "You throw lots of rocks at your opponent and deal damage with your strength. Each projectile is slightly weaker than Rock Throw."
-		icon = 'src/Icons/Effects/RisingRocks.dmi'
+		icon = 'RisingRocks.dmi'
 		Cost_To_Learn = 35
 		Teach_Timer = 1
 		student_point_cost = 35
@@ -50,7 +50,7 @@ obj
 
 	RockTomb
 		desc = "You throw a massive rock at your opponent and deal heavy damage with your strength. When mastered this rock explodes!"
-		icon = 'src/Icons/Effects/ResourceRocks.dmi'
+		icon = 'ResourceRocks.dmi'
 		icon_state = "4"
 		Cost_To_Learn = 50
 		Teach_Timer = 1
@@ -98,21 +98,21 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 
 mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_state = "1", visual_scale = 1)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'src/Icons/Effects/ResourceRocks.dmi', visual_state, visual_scale)
+	showRockSkillProjectile(target, 'ResourceRocks.dmi', visual_state, visual_scale)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	target.TakeDamage(damage, 1.5)
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'src/Icons/Effects/RisingRocks.dmi')
+	showRockSkillProjectile(target, 'RisingRocks.dmi')
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	target.TakeDamage(damage, 1.2)
 	target.Knockback(src, knockback)
 
 mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
 	set waitfor = 0
-	var/turf/impact_turf = showRockSkillProjectile(target, 'src/Icons/Effects/ResourceRocks.dmi', "4", 2)
+	var/turf/impact_turf = showRockSkillProjectile(target, 'ResourceRocks.dmi', "4", 2)
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	var/health_before_damage = target.Health
 	if(mastered)
@@ -246,7 +246,7 @@ mob
 			set waitfor = 0
 			var/obj/Effect/e = GetEffect()
 			e.loc = impact_turf ? impact_turf : loc
-			e.icon = 'src/Icons/Effects/RockExplosion.dmi'
+			e.icon = 'RockExplosion.dmi'
 			CenterIcon(e)
 			flick(e.icon, e)
 			sleep(20)

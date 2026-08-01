@@ -551,8 +551,8 @@ obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo
 	knockback_multiplier = 1.5
 	energy_cost = 14
 	cooldown_ticks = 75
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi'
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi'
+	icon = 'RTUppercut.dmi'
+	effect_icon = 'RTUppercut.dmi'
 	verb/Uppercut_Combo()
 		set name = "Uppercut Combo"
 		set category = "Skills"
@@ -580,8 +580,8 @@ obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo
 	energy_cost = 22
 	cooldown_ticks = 110
 	behavior = "kickback_combo"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi'
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi'
+	icon = 'RTSweepingKick.dmi'
+	effect_icon = 'RTSweepingKick.dmi'
 	verb/Kickback_Combo()
 		set name = "Kickback Combo"
 		set category = "Skills"
@@ -609,9 +609,9 @@ obj/Attacks/TenkaichiMeleeTechnique/PileDriver
 	energy_cost = 24
 	cooldown_ticks = 125
 	behavior = "grapple_slam"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	icon = 'RTGrappleImpact.dmi'
 	icon_state = "1"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	effect_icon = 'RTGrappleImpact.dmi'
 	effect_icon_state = "1"
 	verb/Pile_Driver()
 		set name = "Pile Driver"
@@ -626,9 +626,9 @@ obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow
 	energy_cost = 20
 	cooldown_ticks = 110
 	behavior = "grapple_throw"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	icon = 'RTGrappleImpact.dmi'
 	icon_state = "2"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi'
+	effect_icon = 'RTGrappleImpact.dmi'
 	effect_icon_state = "2"
 	verb/Megaton_Throw()
 		set name = "Megaton Throw"

@@ -71,8 +71,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
 	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
 	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
-	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
-	nexusSmokeAssert(tenkaichi_uppercut.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTUppercut.dmi' && tenkaichi_kickback.icon == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
+	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
+	nexusSmokeAssert(tenkaichi_uppercut.icon == 'RTUppercut.dmi' && tenkaichi_kickback.icon == 'RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
 	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
 	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
 	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
@@ -192,7 +192,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/RockThrow/rock_throw_skill = new
 	var/obj/RockSlide/rock_slide_skill = new
 	var/obj/RockTomb/rock_tomb_skill = new
-	nexusSmokeAssert(rock_throw_skill.icon == 'src/Icons/Effects/ResourceRocks.dmi' && rock_throw_skill.icon_state == "1" && rock_slide_skill.icon == 'src/Icons/Effects/RisingRocks.dmi' && rock_tomb_skill.icon_state == "4", "rock skills are missing their visible stone icons")
+	nexusSmokeAssert(rock_throw_skill.icon == 'ResourceRocks.dmi' && rock_throw_skill.icon_state == "1" && rock_slide_skill.icon == 'RisingRocks.dmi' && rock_tomb_skill.icon_state == "4", "rock skills are missing their visible stone icons")
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
 	del(rock_throw_skill)
