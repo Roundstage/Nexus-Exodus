@@ -44,6 +44,13 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/NexusHud/ActionButton/Lethal") && text2path("/obj/NexusHud/ActionButton/RPMode") && text2path("/obj/NexusHud/ActionButton/Character"), "top-right action HUD is incomplete")
 	var/icon/action_button_icon = getNexusActionButtonIcon(TRUE, "#ff4d5f")
 	nexusSmokeAssert(action_button_icon.Width() == 128 && action_button_icon.Height() == 28, "action HUD button has invalid dimensions")
+	var/obj/NexusHud/ActionButton/Lethal/lethal_button = new
+	var/obj/NexusHud/ActionButton/RPMode/rp_mode_button = new
+	var/obj/NexusHud/ActionButton/Character/character_button = new
+	nexusSmokeAssert(lethal_button.screen_loc == "EAST-3:-8,NORTH:-4" && rp_mode_button.screen_loc == "EAST-3:-8,NORTH-1:-4" && character_button.screen_loc == "EAST-3:-8,NORTH-2:-4", "action HUD buttons are not anchored in the upper-right corner")
+	del(lethal_button)
+	del(rp_mode_button)
+	del(character_button)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")
@@ -55,16 +62,19 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vitals_owner.icon = 'BaseHumanPale.dmi'
 	vitals_owner.Ki = 80
 	vitals_owner.max_ki = 100
+	vitals_owner.willpower = 50
+	vitals_owner.max_willpower = 100
 	vitals_panel.initialize(vitals_owner)
-	nexusSmokeAssert(vitals_panel.vis_contents.len == 7 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
+	nexusSmokeAssert(vitals_panel.vis_contents.len == 8 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
 	var/icon/main_vitals_bar = getVitalsBarIcon(50, "#46d369")
 	var/icon/power_gauge = getPowerGaugeIcon(50, FALSE)
 	nexusSmokeAssert(vitals_panel.icon, "main vitals HUD did not retain its generated backdrop")
-	nexusSmokeAssert(main_vitals_icon.Width() == 380 && main_vitals_icon.Height() == 160, "main vitals HUD has invalid dimensions")
-	nexusSmokeAssert(main_vitals_bar.Width() == 220 && main_vitals_bar.Height() == 24, "main vitals bar has invalid dimensions")
-	nexusSmokeAssert(power_gauge.Width() == 9 && power_gauge.Height() == 96, "main vitals power gauge has invalid dimensions")
+	nexusSmokeAssert(main_vitals_icon.Width() == 320 && main_vitals_icon.Height() == 144, "main vitals HUD has invalid dimensions")
+	nexusSmokeAssert(main_vitals_bar.Width() == 184 && main_vitals_bar.Height() == 20, "main vitals bar has invalid dimensions")
+	nexusSmokeAssert(power_gauge.Width() == 7 && power_gauge.Height() == 78, "main vitals power gauge has invalid dimensions")
 	nexusSmokeAssert(!text2path("/obj/NexusHud/VitalRow/Power"), "redundant horizontal power bar still exists")
+	nexusSmokeAssert(findtext(vitals_panel.willpower_row.detail_text.maptext, "50%") && vitals_panel.willpower_row.pixel_y > vitals_panel.health_row.pixel_y, "Willpower percentage is not rendered above Health")
 	nexusSmokeAssert(findtext(vitals_panel.energy_row.detail_text.maptext, "(80) 80%") && vitals_panel.energy_row.detail_alignment == "right", "Energy amount and percentage are not rendered together on the right")
 	nexusSmokeAssert(!findtext(vitals_panel.power_readout.maptext, "<br>"), "power readout still renders duplicate lines")
 	del(vitals_panel)
@@ -419,6 +429,20 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	other_mutation_player.normalizeCharacterMutations()
 	nexusSmokeAssert(other_mutation_player.mutation_save_version == CHARACTER_MUTATION_SAVE_VERSION, "legacy mutation state was not migrated")
 	nexusSmokeAssert(!other_mutation_player.character_mutations.len, "legacy character received a retroactive mutation")
+	var/mob/NexusSmokeTest/admin_mutation_player = new
+	admin_mutation_player.Str = 100
+	admin_mutation_player.strmod = 1
+	admin_mutation_player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	nexusSmokeAssert(admin_mutation_player.setCharacterMutationValue("adaptive_musculature", 10), "admin mutation setter rejected a valid mutation")
+	nexusSmokeAssertNear(admin_mutation_player.Str, 110, 0.001, "admin mutation setter did not apply its stat modifier")
+	nexusSmokeAssertNear(admin_mutation_player.strmod, 1.1, 0.001, "admin mutation setter did not apply its growth modifier")
+	nexusSmokeAssert(admin_mutation_player.mutation_rarity == "Common", "admin mutation setter did not derive rarity")
+	admin_mutation_player.setCharacterMutationValue("adaptive_musculature", 20)
+	nexusSmokeAssertNear(admin_mutation_player.Str, 120, 0.001, "editing an admin mutation stacked its previous modifier")
+	admin_mutation_player.setCharacterMutationValue("adaptive_musculature", 0)
+	nexusSmokeAssertNear(admin_mutation_player.Str, 100, 0.001, "removing an admin mutation did not restore its stat")
+	nexusSmokeAssert(!admin_mutation_player.character_mutations.len && !admin_mutation_player.mutation_rarity, "removing the last admin mutation left stale state")
+	del(admin_mutation_player)
 	del(other_mutation_player)
 	del(mutation_player)
 	var/mob/NexusSmokeTest/creation_player = new

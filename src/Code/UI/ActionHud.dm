@@ -15,6 +15,24 @@ proc/getNexusActionButtonIcon(active, accent_color)
 
 client/var/tmp/list/nexus_action_buttons
 
+mob/proc/hasCompleteActionHud()
+	if(!client || !islist(client.nexus_action_buttons) || client.nexus_action_buttons.len != 3) return FALSE
+	var/list/found_actions = list()
+	for(var/obj/NexusHud/ActionButton/button in client.nexus_action_buttons)
+		if(button && button.action_id) found_actions[button.action_id] = TRUE
+	return found_actions["lethal"] && found_actions["rp_mode"] && found_actions["character"]
+
+mob/proc/rebuildActionHud()
+	if(!client) return
+	if(islist(client.nexus_action_buttons))
+		for(var/obj/NexusHud/ActionButton/old_button in client.nexus_action_buttons)
+			client.screen -= old_button
+			del(old_button)
+	client.nexus_action_buttons = list(
+		new /obj/NexusHud/ActionButton/Lethal(src),
+		new /obj/NexusHud/ActionButton/RPMode(src),
+		new /obj/NexusHud/ActionButton/Character(src))
+
 mob/proc/initializeActionHud()
 	if(!client || !playerCharacter) return
 	winset(src, "button24", "is-visible=false")
@@ -22,18 +40,18 @@ mob/proc/initializeActionHud()
 	winset(src, "button62", "is-visible=false")
 	winset(src, "LETHAL", "is-visible=false")
 	winset(src, "lethalcombat", "is-visible=false")
-	if(!islist(client.nexus_action_buttons))
-		client.nexus_action_buttons = list(
-			new /obj/NexusHud/ActionButton/Lethal(src),
-			new /obj/NexusHud/ActionButton/RPMode(src),
-			new /obj/NexusHud/ActionButton/Character(src))
+	if(!hasCompleteActionHud()) rebuildActionHud()
 	for(var/obj/NexusHud/ActionButton/button in client.nexus_action_buttons)
 		if(!(button in client.screen)) client.screen += button
 	refreshActionHud()
 
 mob/proc/refreshActionHud()
-	if(!client || !islist(client.nexus_action_buttons)) return
+	if(!client || !playerCharacter) return
+	if(!hasCompleteActionHud())
+		initializeActionHud()
+		return
 	for(var/obj/NexusHud/ActionButton/button in client.nexus_action_buttons)
+		if(!(button in client.screen)) client.screen += button
 		button.update(src)
 
 mob/proc/removeActionHud()
@@ -84,7 +102,7 @@ obj/NexusHud/ActionButton
 	Lethal
 		action_id = "lethal"
 		accent_color = "#ff4d5f"
-		screen_loc = "EAST-3,NORTH"
+		screen_loc = "EAST-3:-8,NORTH:-4"
 		desc = "Toggle lethal intent."
 
 		isActive(mob/character)
@@ -96,7 +114,7 @@ obj/NexusHud/ActionButton
 	RPMode
 		action_id = "rp_mode"
 		accent_color = "#ff9b54"
-		screen_loc = "EAST-3,NORTH-1"
+		screen_loc = "EAST-3:-8,NORTH-1:-4"
 		desc = "Toggle RP Mode. While active, combat interaction is blocked."
 
 		isActive(mob/character)
@@ -108,7 +126,7 @@ obj/NexusHud/ActionButton
 	Character
 		action_id = "character"
 		accent_color = "#62c8ff"
-		screen_loc = "EAST-3,NORTH-2"
+		screen_loc = "EAST-3:-8,NORTH-2:-4"
 		desc = "Open the detailed character sheet."
 
 		getLabel(mob/character)

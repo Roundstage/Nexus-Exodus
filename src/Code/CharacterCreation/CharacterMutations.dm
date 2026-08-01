@@ -114,6 +114,65 @@ mob/proc/normalizeCharacterMutations()
 	if(!valid_mutations.len) src.mutation_rarity = null
 	src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
 
+mob/proc/getCharacterMutationRarity()
+	if(!islist(src.character_mutations) || !src.character_mutations.len) return null
+	var/highest_percent = 0
+	for(var/mutation_id in src.character_mutations)
+		highest_percent = max(highest_percent, text2num("[src.character_mutations[mutation_id]]"))
+	if(src.character_mutations.len == 1 && highest_percent <= 10) return "Common"
+	if(src.character_mutations.len == 1 && highest_percent <= 20) return "Uncommon"
+	if(src.character_mutations.len <= 3 && highest_percent <= 20) return "Rare"
+	return "Anomaly"
+
+mob/proc/applyCharacterMutationRatio(mutation_id, ratio)
+	var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+	if(!mutation || !isnum(ratio) || ratio <= 0) return FALSE
+	switch(mutation.stat)
+		if("Energy")
+			src.Eff *= ratio
+			src.max_ki *= ratio
+			src.Ki *= ratio
+		if("Strength")
+			src.strmod *= ratio
+			src.Str *= ratio
+		if("Durability")
+			src.endmod *= ratio
+			src.End *= ratio
+		if("Speed")
+			src.spdmod *= ratio
+			src.Spd *= ratio
+		if("Force")
+			src.formod *= ratio
+			src.Pow *= ratio
+		if("Resistance")
+			src.resmod *= ratio
+			src.Res *= ratio
+		if("Offense")
+			src.offmod *= ratio
+			src.Off *= ratio
+		if("Defense")
+			src.defmod *= ratio
+			src.Def *= ratio
+		if("Regeneration") src.regen *= ratio
+		if("Recovery") src.recov *= ratio
+		if("Anger") src.max_anger *= ratio
+	return TRUE
+
+mob/proc/setCharacterMutationValue(mutation_id, percent)
+	if(!CHARACTER_MUTATIONS[mutation_id]) return FALSE
+	if(!islist(src.character_mutations)) src.character_mutations = list()
+	var/old_percent = max(0, text2num("[src.character_mutations[mutation_id]]"))
+	var/new_percent = Clamp(round(text2num("[percent]")), 0, 30)
+	if(old_percent == new_percent) return TRUE
+	var/old_multiplier = 1 + old_percent / 100
+	var/new_multiplier = 1 + new_percent / 100
+	if(!applyCharacterMutationRatio(mutation_id, new_multiplier / old_multiplier)) return FALSE
+	if(new_percent) src.character_mutations[mutation_id] = new_percent
+	else src.character_mutations -= mutation_id
+	src.mutation_rarity = getCharacterMutationRarity()
+	src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	return TRUE
+
 mob/proc/applyCharacterMutations()
 	if(!islist(src.character_mutations)) return
 	for(var/mutation_id in src.character_mutations)

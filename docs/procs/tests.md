@@ -3,7 +3,7 @@
 ## Overview
 Startup assertions run only when Dream Daemon receives the `nexus_smoke_tests` world parameter. The PowerShell smoke runner enables this parameter in an isolated temporary world.
 
-The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, vitals/action HUD dimensions, synchronized lethal intent, RP Mode and Willpower, Mining/Smithing progression, forged quality, Character-sheet content, central combat balance, skill routing, character creation, serialization, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
+The startup suite covers admin log access paths, combat-dummy verb isolation and reset behavior, explicit dummy selection, compact vitals/action HUD dimensions and placement, the Willpower row, reversible admin mutation editing, synchronized lethal intent, RP Mode, Mining/Smithing progression, forged quality, Character-sheet content, central combat balance, skill routing, character creation, serialization, technology catalog invariants, and text handling. It runs against both versioned and clean runtime data in the full smoke baseline.
 
 For headless compile coverage, `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly` compiles the complete environment with BYOND 516.1685, requires zero errors and warnings plus both `DU.dmb` and `DU.rsc`, and does not start Dream Daemon. The default command performs the same compile before running startup assertions.
 

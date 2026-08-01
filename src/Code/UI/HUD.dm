@@ -174,42 +174,42 @@ proc/getOverheadHealthIcon(health_percent)
 proc/getVitalsPanelIcon()
 	if(vitals_panel_icon) return vitals_panel_icon
 	vitals_panel_icon = icon('UserNamesBarsUi.png')
-	vitals_panel_icon.Scale(380, 160)
-	vitals_panel_icon.DrawBox(rgb(9, 14, 22, 220), 1, 1, 380, 160)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 380, 2)
-	vitals_panel_icon.DrawBox("#354052", 1, 159, 380, 160)
-	vitals_panel_icon.DrawBox("#354052", 1, 1, 2, 160)
-	vitals_panel_icon.DrawBox("#354052", 379, 1, 380, 160)
+	vitals_panel_icon.Scale(320, 144)
+	vitals_panel_icon.DrawBox(rgb(9, 14, 22, 220), 1, 1, 320, 144)
+	vitals_panel_icon.DrawBox("#354052", 1, 1, 320, 2)
+	vitals_panel_icon.DrawBox("#354052", 1, 143, 320, 144)
+	vitals_panel_icon.DrawBox("#354052", 1, 1, 2, 144)
+	vitals_panel_icon.DrawBox("#354052", 319, 1, 320, 144)
 	return vitals_panel_icon
 
 proc/getVitalsBarIcon(percent, accent_color)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_width = round(percent * 2.12)
+	var/fill_width = round(percent * 1.76)
 	var/cache_key = "[accent_color]-[fill_width]"
 	if(vitals_bar_icon_cache[cache_key]) return vitals_bar_icon_cache[cache_key]
 	var/icon/bar_icon = icon('UserNamesBarsUi.png')
-	bar_icon.Scale(220, 24)
-	bar_icon.DrawBox("#111923", 1, 1, 220, 24)
-	bar_icon.DrawBox("#293443", 5, 3, 216, 21)
-	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 21)
-	bar_icon.DrawBox(accent_color, 1, 1, 4, 24)
+	bar_icon.Scale(184, 20)
+	bar_icon.DrawBox("#111923", 1, 1, 184, 20)
+	bar_icon.DrawBox("#293443", 5, 3, 180, 17)
+	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 17)
+	bar_icon.DrawBox(accent_color, 1, 1, 4, 20)
 	vitals_bar_icon_cache[cache_key] = bar_icon
 	return bar_icon
 
 proc/getPowerGaugeIcon(percent, over_limit)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_height = round(percent * 0.9)
+	var/fill_height = round(percent * 0.72)
 	var/cache_key = "[over_limit]-[fill_height]"
 	if(power_gauge_icon_cache[cache_key]) return power_gauge_icon_cache[cache_key]
 	var/gauge_color = over_limit ? "#ff5c45" : "#b983ff"
 	var/icon/gauge_icon = icon('UserNamesBarsUi.png')
-	gauge_icon.Scale(9, 96)
-	gauge_icon.DrawBox("#101722", 1, 1, 9, 96)
-	gauge_icon.DrawBox("#2a3341", 3, 3, 7, 92)
-	if(fill_height) gauge_icon.DrawBox(gauge_color, 3, 3, 7, 2 + fill_height)
-	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 93, 9, 96)
+	gauge_icon.Scale(7, 78)
+	gauge_icon.DrawBox("#101722", 1, 1, 7, 78)
+	gauge_icon.DrawBox("#2a3341", 3, 3, 5, 74)
+	if(fill_height) gauge_icon.DrawBox(gauge_color, 3, 3, 5, 2 + fill_height)
+	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 75, 7, 78)
 	power_gauge_icon_cache[cache_key] = gauge_icon
 	return gauge_icon
 
@@ -249,6 +249,7 @@ mob/proc/updateMainVitalsHud()
 	if(!client || !playerCharacter) return
 	if(!client.main_vitals_hud) initializeMainVitalsHud()
 	if(client.main_vitals_hud) client.main_vitals_hud.update(src)
+	refreshActionHud()
 
 mob/proc/setVitalsHudVisibility(visible)
 	if(!client) return
@@ -311,6 +312,7 @@ obj/NexusHud
 		var/tmp/drag_start_x
 		var/tmp/drag_start_y
 		var/tmp/obj/NexusHud/CharacterPortrait/portrait
+		var/tmp/obj/NexusHud/VitalRow/willpower_row
 		var/tmp/obj/NexusHud/VitalRow/health_row
 		var/tmp/obj/NexusHud/VitalRow/energy_row
 		var/tmp/obj/NexusHud/VitalRow/stamina_row
@@ -321,18 +323,21 @@ obj/NexusHud
 		proc/initialize(mob/owner)
 			icon = getVitalsPanelIcon()
 			portrait = new
+			willpower_row = new /obj/NexusHud/VitalRow/Willpower
 			health_row = new /obj/NexusHud/VitalRow/Health
 			energy_row = new /obj/NexusHud/VitalRow/Energy
 			stamina_row = new /obj/NexusHud/VitalRow/Stamina
 			left_power_gauge = new /obj/NexusHud/PowerGauge/Left
 			right_power_gauge = new /obj/NexusHud/PowerGauge/Right
 			power_readout = new
-			vis_contents.Add(portrait, left_power_gauge, right_power_gauge, power_readout, health_row, energy_row, stamina_row)
+			vis_contents.Add(portrait, left_power_gauge, right_power_gauge, power_readout, willpower_row, health_row, energy_row, stamina_row)
 			update(owner)
 
 		proc/update(mob/owner)
 			if(!owner || !portrait) return
 			portrait.update(owner)
+			var/max_willpower = owner.getMaxWillpower()
+			var/willpower_percent = hudPercentage(owner.willpower, max_willpower)
 			var/health_percent = hudPercentage(owner.Health)
 			var/energy_percent = hudPercentage(owner.Ki, owner.max_ki)
 			var/stamina_percent = hudPercentage(owner.stamina, owner.max_stamina)
@@ -343,6 +348,7 @@ obj/NexusHud
 			var/soft_cap = 100 + soft_cap_excess
 			var/over_limit = current_power > soft_cap
 			var/gauge_percent = Clamp((current_power - 100) / soft_cap_excess * 100, 0, 100)
+			willpower_row.update("WILLPOWER", willpower_percent, "[willpower_percent]%", "#b983ff")
 			health_row.update("HEALTH", health_percent, "[health_percent]%", "#ff4d6d")
 			energy_row.update("", energy_percent, "([energy_current]) [energy_percent]%", "#37cfff")
 			stamina_row.update("STAMINA", stamina_percent, "[stamina_percent]%", "#f6c453")
@@ -382,8 +388,8 @@ obj/NexusHud
 			. = ..()
 
 	CharacterPortrait
-		pixel_x = 54
-		pixel_y = 55
+		pixel_x = 43
+		pixel_y = 48
 		layer = 101
 
 		proc/update(mob/owner)
@@ -394,8 +400,8 @@ obj/NexusHud
 			icon_z = 0
 			pixel_w = 0
 			pixel_z = 0
-			pixel_x = 54
-			pixel_y = 55
+			pixel_x = 43
+			pixel_y = 48
 			alpha = 255
 			mouse_opacity = 0
 			invisibility = 0
@@ -403,11 +409,11 @@ obj/NexusHud
 			underlays = null
 			appearance_flags = RESET_ALPHA | PIXEL_SCALE | KEEP_TOGETHER
 			var/matrix/portrait_transform = matrix()
-			portrait_transform.Scale(2.35, 2.65)
+			portrait_transform.Scale(2, 2.2)
 			transform = portrait_transform
 
 	PowerGauge
-		pixel_y = 49
+		pixel_y = 43
 		layer = 103
 		appearance_flags = RESET_ALPHA
 
@@ -415,17 +421,17 @@ obj/NexusHud
 			icon = getPowerGaugeIcon(percent, over_limit)
 
 		Left
-			pixel_x = 5
+			pixel_x = 4
 
 		Right
-			pixel_x = 132
+			pixel_x = 111
 
 	PowerReadout
-		pixel_x = 15
-		pixel_y = 9
+		pixel_x = 10
+		pixel_y = 7
 		layer = 104
 		appearance_flags = RESET_ALPHA
-		maptext_width = 114
+		maptext_width = 105
 		maptext_height = 16
 
 		proc/update(power_percent, soft_cap, over_limit)
@@ -433,19 +439,19 @@ obj/NexusHud
 			maptext = "<div style='font-family:Arial;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
 
 	VitalDetail
-		pixel_x = 60
-		pixel_y = 7
+		pixel_x = 48
+		pixel_y = 5
 		layer = 103
 		appearance_flags = RESET_ALPHA
-		maptext_width = 152
-		maptext_height = 13
+		maptext_width = 128
+		maptext_height = 12
 
 	VitalRow
-		maptext_x = 8
-		maptext_y = 7
-		maptext_width = 58
-		maptext_height = 13
-		pixel_x = 150
+		maptext_x = 7
+		maptext_y = 5
+		maptext_width = 48
+		maptext_height = 12
+		pixel_x = 128
 		layer = 102
 		appearance_flags = RESET_ALPHA
 		var/tmp/obj/NexusHud/VitalDetail/detail_text
@@ -456,22 +462,24 @@ obj/NexusHud
 			detail_text = new
 			vis_contents += detail_text
 			switch(type)
-				if(/obj/NexusHud/VitalRow/Health) pixel_y = 112
+				if(/obj/NexusHud/VitalRow/Willpower) pixel_y = 116
+				if(/obj/NexusHud/VitalRow/Health) pixel_y = 88
 				if(/obj/NexusHud/VitalRow/Energy)
-					pixel_y = 76
+					pixel_y = 60
 					detail_text.pixel_x = 8
-					detail_text.maptext_width = 204
-				if(/obj/NexusHud/VitalRow/Stamina) pixel_y = 40
+					detail_text.maptext_width = 168
+				if(/obj/NexusHud/VitalRow/Stamina) pixel_y = 32
 
 		proc/update(label, percent, detail, accent_color)
 			icon = getVitalsBarIcon(percent, accent_color)
-			maptext = "<span style='font-family:Arial;font-size:9px;font-weight:bold;color:#f5f7fa;white-space:nowrap;text-shadow:1px 1px #000'>[label]</span>"
-			detail_text.maptext = "<div style='font-family:Arial;font-size:9px;font-weight:bold;color:#f5f7fa;text-align:[detail_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[detail]</div>"
+			maptext = "<span style='font-family:Arial;font-size:8px;font-weight:bold;color:#f5f7fa;white-space:nowrap;text-shadow:1px 1px #000'>[label]</span>"
+			detail_text.maptext = "<div style='font-family:Arial;font-size:8px;font-weight:bold;color:#f5f7fa;text-align:[detail_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[detail]</div>"
 
 		Del()
 			if(detail_text) del(detail_text)
 			. = ..()
 
+		Willpower
 		Health
 		Energy
 			detail_alignment = "right"

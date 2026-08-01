@@ -1,7 +1,7 @@
 # Admin
 
 ## Overview
-Administrative commands and management flows. The `Edit` verb now routes to the structured, searchable Nexus inspector documented under UI while preserving the existing edit permission level and audit logging.
+Administrative commands and management flows. The `Edit` verb routes to the structured, searchable Nexus inspector documented under UI while preserving the existing edit permission level and audit logging. Admin logging now passes the acting mob to `Log()` correctly, avoiding the runtime that previously interrupted inspector actions.
 
 ## Files
 - `src/Code/Admin/Admin.dm`

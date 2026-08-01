@@ -3,6 +3,8 @@
 ## Overview
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. The legacy Stats tab is no longer refreshed; the detailed Character sheet is opened from the top-right action HUD.
 
+The compact lower-left vitals panel renders Willpower above Health, followed by Energy and Stamina. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+
 ## Files
 - `src/Code/UI/ActionHud.dm`
 - `src/Code/UI/AdminInspector.dm`
@@ -23,7 +25,8 @@ Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client
 ### src/Code/UI/ActionHud.dm
 
 - `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons and hides their obsolete skin controls.
-- `refreshActionHud()` keeps button labels and colors synchronized with live combat state.
+- `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
+- `refreshActionHud()` keeps button labels/colors synchronized and reattaches buttons removed by another screen system.
 - `removeActionHud()` detaches runtime screen objects during client/HUD cleanup.
 
 ### src/Code/UI/AdminInspector.dm
@@ -31,6 +34,8 @@ Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client
 - `showNexusAdminInspector(target)` opens a level-3-admin-only replacement for the raw EDIT window.
 - `datum/NexusAdminInspector/buildHtml()` groups editable variables by identity, combat, progression, appearance, position, collection, system, or other and exposes live text/category filtering.
 - `datum/NexusAdminInspector/editVariable(variable_name)` preserves the legacy number/text/file/list/null edit choices and admin logging.
+- `datum/NexusAdminInspector/buildListHtml(variable_name)` exposes every entry in a legacy list instead of truncating it to the table preview.
+- `datum/NexusAdminInspector/editMutation(mutation_id)` adds, updates, or removes a character mutation through the dedicated mutation panel.
 
 ### src/Code/UI/CharacterSheet.dm
 
