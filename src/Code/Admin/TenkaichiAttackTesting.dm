@@ -104,9 +104,11 @@ mob/Admin3/verb/testTenkaichiCombatEffects()
 	set name = "Test Combat Effects"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !loc) return
-	var/test_profile = input(src, "Choose an audiovisual profile. These previews do not deal damage.", "Combat Effect Preview") in list("Cancel", "Sword - Light", "Sword - Heavy", "Sword Wave - Echoing Slash", "Rock - Launch and Rumble", "Rock - Impact", "Rock - Heavy Impact", "Explosion - Maximum Light", "Beam Clash - Marker", "Beam Explosion - Knockback")
+	var/test_profile = input(src, "Choose an audiovisual profile. These previews do not deal damage.", "Combat Effect Preview") in list("Cancel", "Critical - Black Flash", "Sword - Light", "Sword - Heavy", "Sword Wave - Echoing Slash", "Rock - Launch and Rumble", "Rock - Impact", "Rock - Heavy Impact", "Explosion - Maximum Light", "Beam Clash - Marker", "Beam Explosion - Knockback")
 	if(test_profile == "Cancel") return
 	switch(test_profile)
+		if("Critical - Black Flash")
+			showNexusCriticalImpact(src)
 		if("Sword - Light", "Sword - Heavy")
 			var/obj/Attacks/TenkaichiMeleeTechnique/preview_technique
 			if(test_profile == "Sword - Heavy") preview_technique = new /obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash(src)
