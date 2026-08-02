@@ -1746,6 +1746,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 
 #### mob/proc/getPhysicalCombatDamage
 - Signature: `mob/proc/getPhysicalCombatDamage(mob/target, factor = 0)`
+- Forged armor contributes its material-specific BP reinforcement to the target's Endurance-side BP calculation.
 - Inputs: target and parity factor.
 - Purpose: Scale physical damage from Strength against Endurance.
 - Returns: percentage damage.

@@ -15,7 +15,7 @@ proc/calculateScaledCombatDamage(factor = 0, attacker_bp = 0, defender_bp = 0, s
 
 mob/proc/getPhysicalCombatDamage(mob/target, factor = 0)
 	if(!target) return 0
-	return calculateScaledCombatDamage(factor, BP, target.BP, Swordless_strength(), target.End)
+	return calculateScaledCombatDamage(factor, BP, target.getForgedArmorEnduranceBP(), Swordless_strength(), target.End)
 
 mob/proc/getKiCombatDamage(mob/target, factor = 0)
 	if(!target) return 0

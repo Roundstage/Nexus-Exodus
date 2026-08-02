@@ -11,6 +11,9 @@ The forge, pickaxe, Tin/Silver ore, Bardock armor, hammer, sledgehammer, mage st
 - `src/Code/Technology/Professions.dm` owns profession XP and mined material stacks.
 - `src/Code/Technology/ForgedEquipment.dm` owns visual catalogs, material branches, forge interactions, equipment recalculation, and test verbs.
 - Weapon and armor appearance IDs persist independently of material IDs, so improving an item never replaces it with the basic DU sword or armor.
+- Rebellion, Buster, Bardock, and other named designs are cosmetic skins. The actual objects are material-named (`Copper Sword`, `Mythril Sword`, `Auracite Armor`) and receive every statistic from their material module.
+- Forged swords add a bounded material-dependent share of the wielder's BP to melee attack calculations. Forged armor adds a bounded share of the wearer's BP to physical endurance calculations, in addition to Nexus Protection and weight effects.
+- The forge uses a resizable pixel-styled browser with 96px icon previews and an in-window guide explaining every material, upgrade branch, BP bonus, damage type, protection value, and weight.
 - Admin Level 3 can use `Test Tenkaichi Smithing` for a complete material/forge setup or `Give Tenkaichi Equipment` for a specific tier and design.
 
 ## Combat presentation
