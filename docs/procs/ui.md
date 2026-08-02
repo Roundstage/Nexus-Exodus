@@ -3,7 +3,7 @@
 ## Overview
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools.
 
-The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Typing and Say text render above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
 The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
@@ -213,14 +213,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### proc/getNexusTypingIndicatorPixelY
 - Signature: `proc/getNexusTypingIndicatorPixelY(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Place `KhunTyping.dmi` above the owner's sprite independently from the lower-bar offset.
+- Purpose: Account for the icon's transparent cell padding so the visible Typing bubble sits below Say text and above the owner's sprite, independently from the lower-bar offset.
 - Returns: world-space pixel Y offset for the typing actor.
 - Side effects: none.
 
 #### proc/getNexusOverheadFeedbackPixelY
 - Signature: `proc/getNexusOverheadFeedbackPixelY(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Resolve the sprite-height-aware Say and typing position above the character.
+- Purpose: Resolve the sprite-height-aware Say position above the Typing bubble and character.
 - Returns: world-space pixel Y offset.
 - Side effects: none.
 

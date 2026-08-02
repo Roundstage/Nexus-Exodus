@@ -244,11 +244,13 @@ proc/getNexusOverheadVitalsBasePixelY(mob/owner)
 	return -12 + vertical_offset
 
 proc/getNexusTypingIndicatorPixelY(mob/owner)
-	return getNexusOverheadFeedbackPixelY(owner)
+	// KhunTyping's visible ten pixels occupy the top of its 32px cell; keep them below Say text.
+	return getNexusOverheadFeedbackPixelY(owner) - 34
 
 proc/getNexusOverheadFeedbackPixelY(mob/owner)
 	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
-	return icon_height + 2
+	// Reserve the typing bubble plus two clear pixels between the sprite, typing, and Say text.
+	return icon_height + 14
 
 proc/getNexusOverheadPercentagePixelY(mob/owner)
 	// The 12px Sense readout ends one clear pixel below the bottom Energy row.
