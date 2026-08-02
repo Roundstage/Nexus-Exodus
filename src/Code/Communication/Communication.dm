@@ -283,7 +283,7 @@ mob/proc/Say_Spark()
 	Remove_Say_Spark()
 	var/obj/Effect/NexusTypingIndicator/typing_indicator = new
 	nexus_typing_indicator = typing_indicator
-	typing_indicator.pixel_x = getNexusOverheadVitalsBasePixelX(src)
+	typing_indicator.pixel_x = 8
 	typing_indicator.pixel_y = getNexusTypingIndicatorPixelY(src)
 	vis_contents += typing_indicator
 	sleep(50)

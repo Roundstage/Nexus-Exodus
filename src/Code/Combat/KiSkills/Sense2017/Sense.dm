@@ -104,13 +104,13 @@ mob
 				if(!readout)
 					readout = image(icon = null, loc = target)
 					readout.layer = 1000
-					readout.maptext_x = -32
-					readout.maptext_y = -12
 					readout.maptext_width = 96
 					readout.maptext_height = 12
 					readout.mouse_opacity = 0
 					nexus_sense_readouts[target] = readout
 					client.images += readout
+				readout.maptext_x = getNexusOverheadVitalsBasePixelX(target) - 32
+				readout.maptext_y = getNexusOverheadPercentagePixelY(target)
 				var/power_percent = Sense_Power(target)
 				readout.maptext = "<div style='font-family:Courier New;font-size:7px;font-weight:bold;text-align:center;color:#9de8ff;text-shadow:1px 1px #000'>[power_percent]%</div>"
 			for(var/mob/old_target in nexus_sense_readouts.Copy())
