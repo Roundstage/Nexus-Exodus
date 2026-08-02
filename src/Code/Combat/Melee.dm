@@ -565,7 +565,9 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 				if(FF) resist_n=Avg_Res()
 				str_mult=((swordless_str*0.5)+(Pow*0.5))/resist_n
 				dmg *= energy_sword_damage_mod
-		dmg = calculateScaledCombatDamage(dmg, BP, m.BP, str_mult, 1)
+		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : BP
+		var/defender_combat_bp = m.getForgedArmorEnduranceBP()
+		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, str_mult, 1)
 
 		if(m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
 		if(alignment=="Evil"&&alignment_on) dmg*=villain_damage_penalty

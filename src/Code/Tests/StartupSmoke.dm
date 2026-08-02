@@ -596,6 +596,27 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/items/Sword/Forged/smoke_sword = new(profession_test)
 	profession_test.applyMasterBlacksmithQuality(smoke_sword)
 	nexusSmokeAssertNear(smoke_sword.Damage, 1.26, 0.001, "Master Blacksmith did not improve forged equipment")
+	var/obj/items/Sword/Forged/rebellion_skin_test = new(profession_test)
+	rebellion_skin_test.forged_style_id = "rebellion"
+	rebellion_skin_test.refreshForgedWeapon()
+	nexusSmokeAssert(rebellion_skin_test.name == "Copper Sword" && rebellion_skin_test.icon == 'ItemSword1.dmi' && rebellion_skin_test.forged_attack_bp_bonus == 0.12, "Rebellion is not a cosmetic skin on a material-named weapon")
+	var/obj/items/Sword/Forged/mythril_weapon_test = new(profession_test)
+	mythril_weapon_test.forged_material_id = "mythril"
+	mythril_weapon_test.forged_style_id = "rebellion"
+	mythril_weapon_test.refreshForgedWeapon()
+	nexusSmokeAssert(mythril_weapon_test.name == "Mythril Sword" && mythril_weapon_test.forged_attack_bp_bonus == 0.32 && mythril_weapon_test.Damage == 1.52, "Mythril weapon modules did not determine the forged weapon statistics")
+	var/obj/items/Armor/Forged/mythril_armor_test = new(profession_test)
+	mythril_armor_test.forged_material_id = "mythril"
+	mythril_armor_test.forged_style_id = "bardock"
+	mythril_armor_test.refreshForgedArmor()
+	nexusSmokeAssert(mythril_armor_test.name == "Mythril Armor" && mythril_armor_test.heaviness == 1.04 && mythril_armor_test.forged_defense_bp_bonus == 0.2, "Mythril armor did not retain its lightweight defensive module")
+	profession_test.BP = 1000
+	mythril_weapon_test.suffix = "Equipped"
+	profession_test.equipped_sword = mythril_weapon_test
+	nexusSmokeAssertNear(profession_test.getForgedWeaponAttackBP(), 1320, 0.001, "forged weapon BP was not added to melee attack power")
+	mythril_armor_test.suffix = "Equipped"
+	profession_test.armor_obj = mythril_armor_test
+	nexusSmokeAssertNear(profession_test.getForgedArmorEnduranceBP(), 1200, 0.001, "forged armor BP was not added to endurance defense")
 	var/list/copper_upgrades = getForgedMaterialUpgradeOptions("copper")
 	var/list/bronze_upgrades = getForgedMaterialUpgradeOptions("bronze")
 	nexusSmokeAssert(copper_upgrades.len == 1 && bronze_upgrades.len == 2, "Tenkaichi material upgrade paths are incomplete")

@@ -5,6 +5,8 @@ Technology objects, crafting rules, and item-specific systems.
 
 Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. The Roleplay Tenkaichi smithing port now includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment follows persistent upgrade branches: Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Copper -> Bronze -> Silver -> Auracite.
 
+Forged equipment is modular. Material owns sharpness, damage type, attack-BP reinforcement, protection, endurance-BP reinforcement, and weight; named designs such as Rebellion and Bardock are cosmetic skins only. Items therefore use material-first names such as `Copper Sword`, `Mythril Sword`, and `Auracite Armor`. Mythril is the lightest advanced armor, Iron is deliberately heavy, and Auracite is the energy-conducting branch.
+
 Craft access is now checked through `canAccessTechnology()`: persistent Technology XP produces levels 1–8, and level 5/7/8 grant Genetics, Engineering, or Robotics path slots. Knowledge growth and successful crafting both award Technology XP; admin grants remain compatible as explicit overrides.
 
 ## Files
@@ -37,10 +39,12 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 ### src/Code/Technology/ForgedEquipment.dm
 
 - `initializeForgedEquipmentCatalogs()` registers seven material tiers, fourteen weapon designs, and thirteen armor designs.
-- `craftForgedWeapon()` and `craftForgedArmor()` create Copper equipment after selecting a persistent visual design.
+- `craftForgedWeapon(style_id)` and `craftForgedArmor(style_id)` create material-named Copper equipment after selecting a persistent cosmetic skin.
 - `upgradeForgedEquipment(equipment)` consumes the next branch material and updates the same object, preserving its icon style and Master Blacksmith quality.
-- `openSmithingMenu(forge)` exposes weapon, armor, upgrade, pickaxe, and material-path workflows from the imported Tenkaichi forge.
-- `/obj/items/Sword/Forged` and `/obj/items/Armor/Forged` recalculate Nexus combat values from their material and design instead of reverting to the legacy DU item.
+- `openSmithingMenu(forge)`, `openForgeStyleBrowser(forge, equipment_kind)`, and `openForgeMaterialGuide(forge)` expose a pixel-styled visual forge, icon gallery, and complete material comparison.
+- `getForgedWeaponAttackBP()` adds the equipped material's bounded BP reinforcement to melee attack calculation.
+- `getForgedArmorEnduranceBP()` adds the equipped material's bounded BP reinforcement to physical endurance calculation.
+- `/obj/items/Sword/Forged` and `/obj/items/Armor/Forged` recalculate all combat values from material while retaining a separately persisted cosmetic skin.
 - `Test Tenkaichi Smithing` and `Give Tenkaichi Equipment` are Admin Level 3 verbs for end-to-end testing of every ported asset and tier.
 
 ### src/Code/Technology/BodySwap.dm
