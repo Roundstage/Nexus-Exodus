@@ -266,23 +266,39 @@ mob/verb/Countdown(Seconds as num, message as text|null, final_message as text|n
 
 		if(client) ChatLog(t2,key)
 
-//var/image/saySpark = image(icon = 'SaySpark.dmi', pixel_y = 6)
-var/image/saySpark = image(icon = 'KhunTyping.dmi', pixel_y = 8, pixel_x = 8)
+mob/var/tmp/obj/Effect/NexusTypingIndicator/nexus_typing_indicator
+
+obj/Effect/NexusTypingIndicator
+	name = "typing"
+	icon = 'KhunTyping.dmi'
+	mouse_opacity = 0
+	density = 0
+	Grabbable = 0
+	Savable = 0
+	plane = 20
+	layer = 121
 
 mob/proc/Say_Spark()
 	set waitfor=0
-	overlays -= saySpark
-	overlays += saySpark
+	Remove_Say_Spark()
+	var/obj/Effect/NexusTypingIndicator/typing_indicator = new
+	nexus_typing_indicator = typing_indicator
+	typing_indicator.pixel_x = 8
+	typing_indicator.pixel_y = getNexusOverheadFeedbackPixelY(src)
+	vis_contents += typing_indicator
 	sleep(50)
 
 mob/proc/Remove_Say_Spark()
-	overlays -= saySpark
+	if(!nexus_typing_indicator) return
+	vis_contents -= nexus_typing_indicator
+	del(nexus_typing_indicator)
+	nexus_typing_indicator = null
 
 var/OOC=1
 
 mob/proc/End_Say()
 	can_say = 1
-	spawn(25) Remove_Say_Spark()
+	Remove_Say_Spark()
 
 
 mob/var
@@ -306,7 +322,6 @@ obj/Effect/NexusSayText
 	maptext_width = 256
 	maptext_height = 128
 	pixel_x = -112
-	pixel_y = 38
 
 proc/countNexusWords(raw_text)
 	raw_text = "[raw_text]"
@@ -335,10 +350,12 @@ mob/proc/showNexusSayText(message)
 	safe_message = replacetext(safe_message, ascii2text(13), " ")
 	safe_message = replacetext(safe_message, "\n", " ")
 	bubble.maptext = "<div style='text-align:center;color:[safe_color];font:10px Arial,sans-serif;text-shadow:-1px -1px #000,1px -1px #000,-1px 1px #000,1px 1px #000;background-color:rgba(0,0,0,0.48);padding:3px'>[safe_message]</div>"
+	var/start_pixel_y = getNexusOverheadFeedbackPixelY(src)
+	bubble.pixel_y = start_pixel_y
 	vis_contents += bubble
 	spawn(max(35, min(100, word_count * 2)))
 		if(src && nexus_say_text == bubble)
-			animate(bubble, pixel_y = 50, alpha = 0, time = 10)
+			animate(bubble, pixel_y = start_pixel_y + 12, alpha = 0, time = 10)
 			sleep(10)
 			if(src && nexus_say_text == bubble)
 				vis_contents -= bubble
@@ -459,15 +476,16 @@ mob/verb
 	Whisper(msg as text)
 		//set category="Other"
 		if(!usr.can_say) return
-		if(!msg||msg=="") msg=input("Type a message that people in sight can see") as text
 		usr.can_say=0
-		spawn(1) if(usr) usr.can_say=1
-		for(var/mob/M in Say_Recipients())
-			M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
-			if(getdist(src,M)<=2)
-				var/t="<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'>*[html_encode(name)] whispers: [html_encode(msg)]</span>"
-				M.receiveNexusChatMessage(t, "ic", key)
 		usr.Say_Spark()
+		if(!msg||msg=="") msg=input("Type a message that people in sight can see") as text
+		if(msg)
+			for(var/mob/M in Say_Recipients())
+				M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
+				if(getdist(src,M)<=2)
+					var/t="<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'>*[html_encode(name)] whispers: [html_encode(msg)]</span>"
+					M.receiveNexusChatMessage(t, "ic", key)
+		usr.End_Say()
 
 	ToggleNekoCollar()
 		set category = "Other"

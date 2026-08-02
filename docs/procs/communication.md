@@ -67,22 +67,22 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Side effects: sleeps, sends chat to nearby players, writes chat logs.
 
 ### mob/proc/Say_Spark()
-- Purpose: Show a "typing" overlay effect.
-- Side effects: mutates `overlays`, sleeps briefly.
+- Purpose: Attach an individual typing actor above the complete Health/Energy/Willpower stack using the owner's current sprite height.
+- Side effects: replaces `nexus_typing_indicator` in `vis_contents` and sleeps briefly.
 
 ### mob/proc/Remove_Say_Spark()
-- Purpose: Remove the typing overlay.
+- Purpose: Remove and delete the current typing actor.
 
 ### mob/proc/End_Say()
-- Purpose: Re-enable speech after a delay.
-- Side effects: sets `can_say`, schedules `Remove_Say_Spark`.
+- Purpose: Re-enable speech and immediately clear typing feedback after submission or cancellation.
+- Side effects: sets `can_say` and calls `Remove_Say_Spark`.
 
 ### proc/countNexusWords(raw_text)
 - Purpose: Count whitespace-delimited words for the overhead Say limit.
 - Returns: integer word count.
 
 ### mob/proc/showNexusSayText(message)
-- Purpose: Display local Say text of up to 50 words above the speaking character as a temporary, following maptext actor.
+- Purpose: Display local Say text of up to 50 words above the speaking character as a temporary, following maptext actor positioned clear of all three overhead vitals rows.
 - Returns: true when the text is displayed, otherwise false.
 - Side effects: replaces the speaker's previous overhead text and fades it after a duration based on message length.
 
