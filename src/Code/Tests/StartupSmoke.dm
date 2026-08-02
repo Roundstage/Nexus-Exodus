@@ -187,7 +187,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/verb/focusNexusCommand"), "Return-key CMD routing verb is missing")
 	nexusSmokeAssert(!text2path("/mob/proc/Stat_NexusSkills") && !text2path("/mob/proc/Stat_NexusOther") && !text2path("/mob/proc/Stat_NexusAdmin"), "synthetic statpanels duplicate native Skills, Other, or Admin tabs")
 	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("invalid") == "overlay", "interface layout normalization is invalid")
-	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText"), "short Say messages are missing their overhead text actor")
+	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
+	var/mob/NexusSmokeTest/overhead_layout_test = new
+	overhead_layout_test.icon = 'Healthbar.dmi'
+	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 34 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 47, "speech or typing feedback overlaps the three-row overhead vitals stack")
+	del(overhead_layout_test)
 	var/icon/shortcut_button_icon = getNexusShortcutButtonIcon("inventory", FALSE, "#d6aa5d")
 	var/icon/shortcut_bar_icon = getNexusShortcutBarIcon(6)
 	nexusSmokeAssert(shortcut_button_icon.Width() == 26 && shortcut_button_icon.Height() == 26, "shortcut HUD button has invalid dimensions")

@@ -224,6 +224,14 @@ mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Willpower/overhead_willpower_hud
 client/var/tmp/obj/NexusHud/VitalsPanel/main_vitals_hud
 
+proc/getNexusOverheadVitalsBasePixelY(mob/owner)
+	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
+	return icon_height + 2
+
+proc/getNexusOverheadFeedbackPixelY(mob/owner)
+	// Three 3px bars start four pixels apart. Keep two clear pixels above the last row.
+	return getNexusOverheadVitalsBasePixelY(owner) + 8 + 3 + 2
+
 mob/Write(savefile/save_file)
 	var/list/detached_hud = list()
 	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in list(overhead_health_hud, overhead_energy_hud, overhead_willpower_hud))
@@ -324,8 +332,7 @@ obj/NexusHud
 			update(owner)
 
 		proc/updatePosition(mob/owner)
-			if(owner && owner.icon) pixel_y = max(32, GetHeight(owner.icon)) + 2 + row_offset
-			else pixel_y = 34 + row_offset
+			pixel_y = getNexusOverheadVitalsBasePixelY(owner) + row_offset
 
 		proc/update(mob/owner)
 			if(!owner) return
