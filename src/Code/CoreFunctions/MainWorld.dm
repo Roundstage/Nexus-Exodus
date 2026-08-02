@@ -127,6 +127,9 @@ mob/var
 	logout_time=0 //realtime
 
 mob/Logout(body_swap_user)
+	if(nexus_reconnect_handoff)
+		players -= src
+		return
 
 	if(istype(src,/mob/Enemy)) key=null //fixes some bug i dont remember now
 

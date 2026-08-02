@@ -7,7 +7,7 @@ The compact lower-left vitals panel renders labeled Willpower, Health, Energy, a
 
 The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
-All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Login uses a resizable RPG-style three-slot character selector instead of the New/Load alert.
+All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Login and Dream Seeker reconnect both use the resizable RPG-style three-slot character selector instead of the New/Load alert. A reconnect saves and cleans up the previously attached character, transfers the client to a fresh lobby mob, and applies the oversized title view only to that lobby host; live characters retain their clamped saved view.
 
 ## Files
 - `src/Code/UI/DU.dmf`
@@ -60,6 +60,8 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 
 - `datum/NexusCharacterSelect` renders and validates three independent character slots with Create, Enter World, and confirmed Delete actions. It remains visible when creation or loading is rejected and closes only after the requested transition succeeds.
 - `ShowNexusLoginPrompt()` now opens the slot selector; `NewClicked(slot)` and `LoadClicked(slot)` bind the selected slot before invoking creation or persistence.
+- `returnToNexusReconnectLobby()` saves a reattached live character, performs normal volatile combat cleanup, transfers the client to a fresh lobby mob, and deletes the stale body without running the normal Logout path twice.
+- `getNexusInitialConnectViewWidth(current_mob, title_view_width)` returns the large title-screen width only for lobby mobs; a live character receives zero so `DetermineViewSize()` restores and clamps its existing preference.
 - `ToggleTabs()` is retained as a hidden hotkey compatibility entry but opens Character instead of restoring the removed tab pane.
 
 ### src/Code/UI/AdminInspector.dm

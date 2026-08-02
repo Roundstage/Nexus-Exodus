@@ -117,6 +117,38 @@ client
 			uiHidden = 0
 			image/titleScreenImg //this client's title screen image that has been scaled to fit their resolution
 
+proc/getNexusInitialConnectViewWidth(mob/current_mob, title_view_width)
+	if(current_mob && current_mob.playerCharacter) return 0
+	return max(1, title_view_width)
+
+mob/var/tmp/nexus_reconnect_handoff = FALSE
+
+mob/proc/isNexusReconnectCharacter()
+	return playerCharacter && loc
+
+mob/proc/prepareNexusReconnectHandoff()
+	if(!isNexusReconnectCharacter() || !client) return FALSE
+	DeleteMajinGoo()
+	Stop_Powering_Up()
+	Destroy_Splitforms()
+	Bebi_Undo(logout = 1)
+	Remove_Say_Spark()
+	for(var/obj/Blast/blast in all_blast_objs)
+		if(blast.Owner == src && blast.z) del(blast)
+	Drop_dragonballs()
+	DropShikon()
+	save()
+	nexus_reconnect_handoff = TRUE
+	return TRUE
+
+client/proc/returnToNexusReconnectLobby()
+	var/mob/reconnected_character = mob
+	if(!reconnected_character || !reconnected_character.prepareNexusReconnectHandoff()) return FALSE
+	var/mob/login_mob = new /mob
+	mob = login_mob
+	if(reconnected_character && reconnected_character != mob) del(reconnected_character)
+	return mob == login_mob
+
 client/proc
 	DisplayTitleScreen()
 		set waitfor=0
@@ -150,7 +182,10 @@ client/New()
 	JSresolutionCheck()
 	clients += src
 	. = ..()
-	mob.DetermineViewSize(forceWidth = startViewX)
+	if(mob && mob.isNexusReconnectCharacter()) returnToNexusReconnectLobby()
+	var/initial_view_width = getNexusInitialConnectViewWidth(mob, startViewX)
+	if(initial_view_width) mob.DetermineViewSize(forceWidth = initial_view_width)
+	else mob.DetermineViewSize()
 	fps = client_fps
 	MaxFPSTrick()
 	if(connection == "telnet") mob = new/mob
