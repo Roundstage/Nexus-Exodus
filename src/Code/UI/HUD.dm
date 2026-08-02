@@ -411,8 +411,8 @@ mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)
 	return list(
 		"active" = TRUE,
 		"title" = title,
-		"first_row" = jointext(first_fragments, "  "),
-		"second_row" = jointext(second_fragments, "  "))
+		"first_row" = jointext(first_fragments, " | "),
+		"second_row" = jointext(second_fragments, " | "))
 
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/overhead_health_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
@@ -734,29 +734,70 @@ obj/NexusHud
 		pixel_y = 140
 		layer = 105
 		appearance_flags = RESET_ALPHA
-		maptext_x = 10
-		maptext_y = 5
-		maptext_width = 276
-		maptext_height = 29
+		var/tmp/obj/NexusHud/ActiveModifierText/header_text
+		var/tmp/obj/NexusHud/ActiveModifierText/first_row_text
+		var/tmp/obj/NexusHud/ActiveModifierText/second_row_text
 
 		New()
 			. = ..()
 			icon = getActiveModifiersPanelIcon()
-			alpha = 0
+			header_text = new /obj/NexusHud/ActiveModifierText/Header
+			first_row_text = new /obj/NexusHud/ActiveModifierText/FirstRow
+			second_row_text = new /obj/NexusHud/ActiveModifierText/SecondRow
+			vis_contents.Add(header_text, first_row_text, second_row_text)
+			setVisible(FALSE)
+
+		proc/setVisible(visible)
+			var/new_alpha = visible ? 255 : 0
+			alpha = new_alpha
+			if(header_text) header_text.alpha = new_alpha
+			if(first_row_text) first_row_text.alpha = new_alpha
+			if(second_row_text) second_row_text.alpha = new_alpha
 
 		proc/update(mob/owner)
 			var/list/summary = owner.getNexusActiveHudModifierSummary()
 			if(!summary["active"])
-				alpha = 0
-				maptext = ""
+				setVisible(FALSE)
+				if(header_text) header_text.setText("")
+				if(first_row_text) first_row_text.setText("")
+				if(second_row_text) second_row_text.setText("")
 				return
-			alpha = 255
-			var/safe_title = html_encode(summary["title"])
-			var/safe_first_row = html_encode(summary["first_row"])
-			var/safe_second_row = html_encode(summary["second_row"])
-			var/stat_rows = safe_first_row
-			if(safe_second_row) stat_rows += "<br>[safe_second_row]"
-			maptext = "<div style='font-family:Courier New;font-size:7px;line-height:9px;color:#d9c293;white-space:nowrap;text-shadow:1px 1px #000'><b style='color:#f2d79e'>ACTIVE · [safe_title]</b><br><span style='color:#cda8ff'>[stat_rows]</span></div>"
+			setVisible(TRUE)
+			header_text.setText("BUFFS / [summary["title"]]")
+			first_row_text.setText(summary["first_row"])
+			second_row_text.setText(summary["second_row"])
+
+		Del()
+			if(header_text) del(header_text)
+			if(first_row_text) del(first_row_text)
+			if(second_row_text) del(second_row_text)
+			. = ..()
+
+	ActiveModifierText
+		pixel_x = 0
+		layer = 106
+		appearance_flags = RESET_ALPHA
+		maptext_x = 10
+		maptext_width = 276
+		maptext_height = 9
+		var/text_color = "#cda8ff"
+		var/font_size = 7
+		var/font_weight = "normal"
+
+		proc/setText(value)
+			var/safe_value = html_encode("[value]")
+			maptext = "<span style='font-family:Courier New;font-size:[font_size]px;font-weight:[font_weight];color:[text_color];white-space:nowrap;text-shadow:1px 1px #000'>[safe_value]</span>"
+
+		Header
+			pixel_y = 25
+			text_color = "#f2d79e"
+			font_weight = "bold"
+
+		FirstRow
+			pixel_y = 14
+
+		SecondRow
+			pixel_y = 4
 
 	VitalDetail
 		pixel_x = 52

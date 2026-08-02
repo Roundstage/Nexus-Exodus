@@ -363,7 +363,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(findtext(vitals_panel.willpower_row.maptext, "WILLPOWER") && findtext(vitals_panel.health_row.maptext, "HEALTH") && findtext(vitals_panel.energy_row.maptext, "ENERGY") && findtext(vitals_panel.stamina_row.maptext, "STAMINA"), "main vitals HUD is missing status labels")
 	nexusSmokeAssert(findtext(vitals_panel.energy_row.detail_text.maptext, "(8000) 100%") && vitals_panel.energy_row.detail_alignment == "right", "Energy does not use the (ki) percentage% format")
 	nexusSmokeAssert(!findtext(vitals_panel.power_readout.maptext, "<br>"), "power readout still renders duplicate lines")
-	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 0, "active modifier strip is visible without an active buff")
+	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 0 && vitals_panel.active_modifiers_readout.vis_contents.len == 3, "active modifier strip is visible without an active buff or is missing its fixed text rows")
 	var/obj/Buff/Focus/hud_focus = new(vitals_owner)
 	hud_focus.suffix = "Active"
 	vitals_owner.current_buff = hud_focus
@@ -374,7 +374,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssertNear(focus_modifiers["SPD"], 1.2, 0.001, "Focus speed is not represented by the active modifier HUD")
 	nexusSmokeAssertNear(focus_modifiers["REC"], 1.1, 0.001, "Focus recovery is not represented by the active modifier HUD")
 	vitals_panel.update(vitals_owner)
-	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 255 && findtext(vitals_panel.active_modifiers_readout.maptext, "Focus") && findtext(vitals_panel.active_modifiers_readout.maptext, "BP 1.18x"), "active modifier strip did not render the live Focus summary")
+	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 255 && findtext(vitals_panel.active_modifiers_readout.header_text.maptext, "Focus") && findtext(vitals_panel.active_modifiers_readout.first_row_text.maptext, "BP 1.18x"), "active modifier strip did not render the live Focus summary")
+	nexusSmokeAssert(vitals_panel.active_modifiers_readout.header_text.pixel_y > vitals_panel.active_modifiers_readout.first_row_text.pixel_y && vitals_panel.active_modifiers_readout.first_row_text.pixel_y > vitals_panel.active_modifiers_readout.second_row_text.pixel_y, "active modifier text rows can overlap vertically")
+	nexusSmokeAssert(!findtext(vitals_panel.active_modifiers_readout.header_text.maptext, "<br>") && !findtext(vitals_panel.active_modifiers_readout.first_row_text.maptext, "<br>"), "active modifier strip still depends on unreliable multiline maptext")
 	vitals_owner.current_buff = null
 	hud_focus.suffix = null
 	vitals_owner.bp_mult -= hud_focus.buff_bp - 1

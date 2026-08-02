@@ -206,7 +206,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/getNexusActiveHudModifierSummary
 - Signature: `mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)`
 - Inputs: maximum number of stat fragments to render.
-- Purpose: Produce a compact title and at most two stat rows for the active-modifier strip, prioritizing BP, Speed, Recovery, Regeneration, and Energy. Long custom names and oversized stat sets are compacted.
+- Purpose: Produce a compact title and at most two stat rows for the active-modifier strip, prioritizing BP, Speed, Recovery, Regeneration, and Energy. Long custom names and oversized stat sets are compacted; each returned row is rendered by an independently positioned maptext object so Dream Seeker cannot collapse the lines together.
 - Returns: an associative render summary.
 - Side effects: none.
 
