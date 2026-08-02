@@ -952,8 +952,12 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Signature: `buildNexusEmoteMessage(character_name, rendered_text, emote_mode = "Normal")`
 - Purpose: Compose the IC/log representation with an explicit blank line between the roleplay title and body while preserving safe inline colors.
 
+#### proc/getNexusEmoteColorSwatchesHtml
+- Signature: `getNexusEmoteColorSwatchesHtml()`
+- Purpose: Build the nine editor palette buttons with priority inline backgrounds so the shared rustic button theme cannot replace their visible colors.
+
 #### datum/NexusEmoteEditor
-- Purpose: Provide a resizable two-pane emote editor with formatting controls, color swatches, custom color selection, counters, RP mode selection, and live preview.
+- Purpose: Provide a resizable two-pane emote editor with visible theme-safe color swatches, custom color selection, formatting controls, counters, RP mode selection, and live preview.
 
 #### mob/proc/showNexusEmoteEditor
 - Signature: `showNexusEmoteEditor()`
