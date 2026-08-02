@@ -59,6 +59,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!findtext(rich_emote_test, "<script>"), "rich emote markup allowed raw HTML")
 	var/formatted_emote_test = buildNexusEmoteMessage("Smoke", rich_emote_test, "Normal")
 	nexusSmokeAssert(findtext(formatted_emote_test, "<br><br>") && findtext(formatted_emote_test, "color:#ff667a"), "roleplay title spacing or inline colors were lost")
+	var/emote_swatches_test = getNexusEmoteColorSwatchesHtml()
+	nexusSmokeAssert(findtext(emote_swatches_test, "background:#f5f7fa!important") && findtext(emote_swatches_test, "background:#ff667a!important") && findtext(emote_swatches_test, "background:#bd93f9!important"), "rustic browser theme can override emote editor color swatches")
 	var/fifty_word_test = ""
 	for(var/word_index = 1, word_index <= 50, word_index++) fifty_word_test += word_index == 1 ? "word" : " word"
 	nexusSmokeAssert(countNexusWords(fifty_word_test) == 50 && countNexusWords("one\ttwo\nthree") == 3, "Say overhead word limit does not count whitespace-delimited words")
