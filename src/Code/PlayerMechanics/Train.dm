@@ -457,7 +457,7 @@ var/Stat_Leech=1
 mob/var/Stat_Focus="Balanced"
 mob/verb/Stat_Focus()
 	set category="Other"
-	var/list/L=list("Balanced","Strength","Durability","Speed","Force","Resistance","Accuracy","Reflex","Toggle knowledge training")
+	var/list/L=list("Balanced","Strength","Durability","Speed","Force","Resistance","Accuracy","Reflex","Meditation: Power","Meditation: Knowledge","Meditation: Magic","Toggle knowledge training")
 	switch(input(src,"Here you can choose what stat you want to focus on during training. Default is Balanced.") in L)
 		if("Balanced") Stat_Focus="Balanced"
 		if("Energy") Stat_Focus="Energy"
@@ -470,8 +470,21 @@ mob/verb/Stat_Focus()
 		if("Reflex") Stat_Focus="Defense"
 		if("Toggle knowledge training")
 			knowledge_training=!knowledge_training
+			magic_training=FALSE
 			if(knowledge_training) src<<"You will now train knowledge instead of power when meditating"
 			else src<<"You will now train power instead of knowledge when meditating"
+		if("Meditation: Power")
+			knowledge_training = FALSE
+			magic_training = FALSE
+			src << "Meditation will now train power."
+		if("Meditation: Knowledge")
+			knowledge_training = TRUE
+			magic_training = FALSE
+			src << "Meditation will now train Knowledge."
+		if("Meditation: Magic")
+			knowledge_training = FALSE
+			magic_training = TRUE
+			src << "Meditation will now train Magic."
 
 
 var/isSparring = 0

@@ -177,6 +177,13 @@ proc/nexusRaceIconOptions(race_name)
 			return nexusFrostIconOptions()
 		if("Kai")
 			return list("kai_male" = 'CustomMale.dmi', "kai_female" = 'CustomFemale.dmi', "kai_avatar" = 'Avatar.dmi', "kai_white" = 'WhiteKaio.dmi')
+		if("Kanassan")
+			return list("kanassan_native" = 'Kanassan.dmi', "kanassan_alien" = 'AlienKanassa.dmi')
+		if("Heran")
+			return list(
+				"heran_pirate" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranSpacePirate.dmi',
+				"heran_female" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranFemale.dmi',
+				"heran_female_blue" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranFemaleBlue.dmi')
 		if("Makyo")
 			return list("makyo_1" = 'Makyojin2.dmi', "makyo_2" = 'Konatsu.dmi', "makyo_3" = 'KidAlien.dmi', "makyo_4" = 'Alien4.dmi')
 		if("Majin")
@@ -206,6 +213,7 @@ proc/nexusRaceTraitOptions(race_name, mob/player, cooler_available = 0)
 		if("Android")
 			traits["android_chassis"] = nexusTrait("Synthetic Chassis", "A visibly mechanical body designed for modular upgrades.")
 			traits["android_infiltrator"] = nexusTrait("Infiltrator Shell", "A human-like shell concealing an artificial core.")
+			if(player && player.canSelectAncientProgenitor()) traits["android_progenitor"] = nexusTrait("Ancient Progenitor (Rare)", "A relic chassis with exceptional sensors, science aptitude, and system mastery.")
 		if("Bio-Android") traits["bio_adaptation"] = nexusTrait("Adaptive Genome", "Absorption and regeneration drive future evolution.")
 		if("Demigod") traits["demigod_heritage"] = nexusTrait("Divine Heritage", "Exceptional potential balanced by slow adaptation.")
 		if("Demon") traits["demon_soulbound"] = nexusTrait("Soulbound", "Demonic regeneration and access to Soul Energy.")
@@ -213,9 +221,13 @@ proc/nexusRaceTraitOptions(race_name, mob/player, cooler_available = 0)
 			traits["frost_heir"] = nexusTrait("Imperial Heir", "Standard Frost Lord transformation lineage.")
 			if(cooler_available) traits["frost_cooler"] = nexusTrait("Ascendant Strain", "An exceptionally rare fifth-form lineage.")
 		if("Kai") traits["kai_guardian"] = nexusTrait("Guardian", "Mystic energy control, recovery, and afterlife techniques.")
+		if("Kanassan") traits["kanassan_seer"] = nexusTrait("Seer", "Precognition, telepathy, advanced sensing, and defensive energy control.")
+		if("Heran") traits["heran_pirate"] = nexusTrait("Space Pirate", "Physical pressure, high durability, and strong combat growth.")
 		if("Makyo") traits["makyo_starborn"] = nexusTrait("Starborn", "Power responds strongly to the Makyo Star cycle.")
 		if("Majin") traits["majin_fragment"] = nexusTrait("Primal Fragment", "A regenerative fragment descended from primordial Majin matter.")
-		if("Namekian") traits["namek_dragon_clan"] = nexusTrait("Dragon Clan", "Regeneration, spiritual techniques, and Namekian fusion.")
+		if("Namekian")
+			traits["namek_dragon_clan"] = nexusTrait("Dragon Clan", "Regeneration, spiritual techniques, and Namekian fusion.")
+			if(player && player.canSelectAncientNamekian()) traits["namek_ancient"] = nexusTrait("Ancient Namekian (Rare)", "A rare arcane lineage with stronger regeneration, meditation, and mystical techniques.")
 		if("Spirit Doll") traits["doll_awakened"] = nexusTrait("Awakened Soul", "A constructed body animated by a highly focused soul.")
 		if("Tsujin") traits["tsujin_engineer"] = nexusTrait("Engineer", "Advanced knowledge and technology-focused development.")
 	return traits
@@ -235,6 +247,8 @@ mob/proc/initializeNexusRaceByTrait(race_name, trait_id)
 	var/force_normal_class = trait_id == "saiyan_warrior"
 	var/force_cooler = trait_id == "frost_cooler"
 	src.InitializeRaceTemplate(race_name, force_elite, force_low_class, 0, force_cooler, force_normal_class)
+	if(trait_id == "namek_ancient") src.applyAncientNamekianLineage()
+	if(trait_id == "android_progenitor") src.applyAncientProgenitorLineage()
 
 mob/proc/raiseNexusCreationStat(stat_name, amount = 1)
 	switch(stat_name)
@@ -531,6 +545,8 @@ proc/nexusRaceDescription(race_name)
 		if("Demon") return "Immortal denizens of Hell empowered by souls."
 		if("Frost Lord") return "Imperial shapeshifters born with extreme power."
 		if("Kai") return "Mystic guardians of the living world and afterlife."
+		if("Kanassan") return "Psionic seers who excel at awareness and defensive control."
+		if("Heran") return "Powerful space pirates driven by pressure and combat growth."
 		if("Makyo") return "Star-bound fighters empowered by celestial cycles."
 		if("Majin") return "Regenerative magical fragments of primordial chaos."
 		if("Namekian") return "Spiritual warriors with regeneration and fusion."

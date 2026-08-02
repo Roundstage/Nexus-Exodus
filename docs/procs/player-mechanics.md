@@ -4109,3 +4109,9 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Purpose: Handle zenkai reset.
 - Returns: none (implicit).
 - Side effects: see implementation.
+### Research progression
+
+- `syncMagicProgression(silent)` derives Magic Level from Magic XP and grants eligible research nodes without modifying Knowledge.
+- `gainMagicExperience(amount, reason, announce)` advances Magic through the race-specific potential multiplier.
+- `showScienceResearchTree()` and `showMagicResearchTree()` render the current branches, requirements, and unlock state.
+- `mob/verb/researchTrees()` opens either tree; `mob/Admin4/verb/testResearchTrees()` caps one or both trees for testing.

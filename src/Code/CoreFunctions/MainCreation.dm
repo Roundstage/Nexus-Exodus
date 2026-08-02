@@ -24,8 +24,14 @@ mob/proc/Get_spawns(excludeShips = 0)
 			for(var/obj/Spawn/s in Spawn_List) if(s.z&&!s.is_on_destroyed_planet())
 				var/area/a = s.get_area()
 				if(excludeShips && a && a.type == /area/ship_area) continue
-				if(s.name==Race) L+=s
+				if(s.name == getRaceSpawnName(Race)) L+=s
 	return L
+
+proc/getRaceSpawnName(race_name)
+	switch(race_name)
+		if("Kanassan") return "Alien"
+		if("Heran") return "Saiyan"
+	return race_name
 
 mob/proc/Go_to_spawn(First_time = 0, butNotInShipArea, choose_random = 0)
 	if(world.maxz<5)

@@ -28,6 +28,12 @@ proc/initializeMilestoneCatalog()
 	milestone_catalog["mining_expert"] = new /datum/MilestoneDefinition("mining_expert", "Mining Expert", "Increases natural mining yield by 50% and improves ore discovery.", 3, 1)
 	milestone_catalog["rapid_deployment"] = new /datum/MilestoneDefinition("rapid_deployment", "Rapid Deployment", "Reduces lethal combat pressure duration by 25% per rank.", 3, 2)
 	milestone_catalog["master_blacksmith"] = new /datum/MilestoneDefinition("master_blacksmith", "Master Blacksmith", "Forged equipment gains 5% quality and recipes consume one less ore.", 4, 1)
+	milestone_catalog["ub_high_tension"] = new /datum/MilestoneDefinition("ub_high_tension", "UB: High Tension", "Unlocks the strength and durability Ultimate Buff. Only one UB may be owned.", 6, 1)
+	milestone_catalog["ub_godspeed"] = new /datum/MilestoneDefinition("ub_godspeed", "UB: Godspeed", "Unlocks the speed and precision Ultimate Buff. Only one UB may be owned.", 6, 1)
+	milestone_catalog["ub_fists_of_fury"] = new /datum/MilestoneDefinition("ub_fists_of_fury", "UB: Fists of Fury", "Unlocks the strength and offense Ultimate Buff. Only one UB may be owned.", 6, 1)
+	milestone_catalog["ub_arcane_power"] = new /datum/MilestoneDefinition("ub_arcane_power", "UB: Arcane Power", "Unlocks the energy and force Ultimate Buff. Only one UB may be owned.", 6, 1)
+	milestone_catalog["ub_bestial_wrath"] = new /datum/MilestoneDefinition("ub_bestial_wrath", "UB: Bestial Wrath", "Unlocks the ferocity and regeneration Ultimate Buff. Only one UB may be owned.", 6, 1)
+	milestone_catalog["ub_bushido"] = new /datum/MilestoneDefinition("ub_bushido", "UB: Bushido", "Unlocks the balanced weapon-combat Ultimate Buff. Only one UB may be owned.", 6, 1)
 
 mob/var
 	milestone_points = 0
@@ -43,6 +49,9 @@ mob/proc/getMilestoneRank(milestone_id)
 	return max(0, rank)
 
 mob/proc/syncMilestoneProgression(silent = FALSE)
+	if(islist(milestones_owned))
+		for(var/owned_id in milestones_owned)
+			if(findtext("[owned_id]", "ub_") == 1 && getMilestoneRank(owned_id) > 0) grantUltimateBuffForMilestone(owned_id)
 	if(milestone_progression_version < 1)
 		milestone_points += MILESTONE_STARTING_POINTS
 		total_milestone_points += MILESTONE_STARTING_POINTS
@@ -69,14 +78,31 @@ mob/proc/purchaseMilestone(milestone_id)
 	if(current_rank >= milestone.max_rank)
 		src << "[milestone.name] is already at its maximum rank."
 		return FALSE
+	if(findtext(milestone_id, "ub_") == 1)
+		for(var/owned_id in milestones_owned)
+			if(findtext("[owned_id]", "ub_") == 1 && getMilestoneRank(owned_id) > 0)
+				src << "You already own an Ultimate Buff. That choice is permanent."
+				return FALSE
 	if(milestone_points < milestone.cost)
 		src << "You need [milestone.cost] Milestone Points for [milestone.name]."
 		return FALSE
 	milestone_points -= milestone.cost
 	milestones_owned[milestone_id] = current_rank + 1
 	if(milestone_id == "iron_will") restoreWillpower(10, "Iron Will strengthens your resolve.", announce = FALSE)
+	grantUltimateBuffForMilestone(milestone_id)
 	src << "<font color=#ffff80>Purchased [milestone.name] rank [current_rank + 1]/[milestone.max_rank]."
 	return TRUE
+
+mob/proc/grantUltimateBuffForMilestone(milestone_id)
+	var/buff_type
+	switch(milestone_id)
+		if("ub_high_tension") buff_type = /obj/Buff/Ultimate/HighTension
+		if("ub_godspeed") buff_type = /obj/Buff/Ultimate/Godspeed
+		if("ub_fists_of_fury") buff_type = /obj/Buff/Ultimate/FistsOfFury
+		if("ub_arcane_power") buff_type = /obj/Buff/Ultimate/ArcanePower
+		if("ub_bestial_wrath") buff_type = /obj/Buff/Ultimate/BestialWrath
+		if("ub_bushido") buff_type = /obj/Buff/Ultimate/Bushido
+	if(buff_type && !(locate(buff_type) in src)) contents += new buff_type(src)
 
 mob/verb/milestones()
 	set name = "Milestones"

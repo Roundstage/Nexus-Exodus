@@ -314,7 +314,7 @@ mob/proc
 		for(var/A in L)
 			var/Spawn
 			for(var/obj/Spawn/S in Spawn_List)
-				if(S.name == A && !S.is_on_destroyed_planet())
+				if(S.name == getRaceSpawnName(A) && !S.is_on_destroyed_planet())
 					var/turf/t=S.loc
 					if(t&&isturf(t)&&!t.density)
 						Spawn=1
@@ -368,6 +368,8 @@ mob/proc
 			if("Bio-Android") Bio(interactive_options)
 			if("Android") Android(interactive_options)
 			if("Makyo") Makyo(interactive_options)
+			if("Kanassan") Kanassan(interactive_options)
+			if("Heran") Heran(interactive_options)
 			if("Kai") Kai(interactive_options)
 			if("Spirit Doll") Doll(interactive_options)
 			if("Tsujin") Tsujin(interactive_options)
@@ -378,6 +380,7 @@ mob/proc
 			if("Demon") Demon(interactive_options)
 			if("Demigod") Demigod(interactive_options)
 			if("Legendary Saiyan") Legendary_Saiyan()
+		if(!(locate(/obj/Buff/Focus) in src)) contents += new /obj/Buff/Focus
 		ascension_bp *= bp_mod
 
 	Race(force_race,force_elite,force_low_class,interactive_options=1,force_cooler=0,force_normal_class=0)
