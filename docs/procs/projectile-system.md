@@ -5,7 +5,9 @@ Projectile movement, collision, beam segments, and damage behavior.
 
 `obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
 
-Every Beam skill now receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Beam clashes report the pressure ratio to both owners, emit impact feedback, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break through physical Strength-versus-Endurance resolution.
+Every Beam skill now receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Beam clashes report the pressure ratio to both owners, emit impact feedback, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break and Echoing Slash through physical Strength-versus-Endurance resolution. Explosive beam impacts now calculate a power-relative knockback before immediately tearing down the stream.
+
+Configured projectile-impact art, color and audio are carried on `obj/Blast`, including cached and shrapnel projectiles. This gives physical cutting waves sword impacts without routing them through generic blast sounds, while explosive Ki techniques retain their own presentation. Named skill projectiles with a damage factor of at least 3 receive a shared RPT impact effect when they do not define specialized art; small barrage shots are intentionally excluded.
 
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
@@ -1030,7 +1032,27 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Inputs: contacted atom and optional player-impact override.
 - Purpose: Produce a violent raw-damage explosion and immediately stop a streaming beam after player contact.
 - Returns: 1 when explosive mode consumed the beam segment, otherwise 0.
-- Side effects: creates size-4 explosion graphics, a 256px shockwave, screen shake and sound; calls `BeamStop()` for streaming attacks and deletes the contacting segment.
+- Side effects: creates size-4 explosion graphics and strong transient light, a 256px shockwave, power-relative target knockback, screen shake and sound; calls `BeamStop()` for streaming attacks and deletes the contacting segment.
+
+#### obj/Blast/proc/getExplosiveBeamKnockbackDistance
+- Signature: `getExplosiveBeamKnockbackDistance(mob/impact_mob)`
+- Inputs: optional directly contacted mob.
+- Purpose: Scale explosive-beam knockback from the beam's damage factor, then apply the normal attacker/defender relative-power adjustment and safety clamps.
+- Returns: integer knockback distance from 3 to 15 tiles.
+- Side effects: none.
+
+#### obj/Blast/proc/showConfiguredProjectileImpact
+- Signature: `showConfiguredProjectileImpact(atom/impact_target)`
+- Inputs: mob, object or turf contacted by a projectile.
+- Purpose: Render an attack-configured impact DMI, colored light pulse and sound before collision teardown.
+- Returns: none (asynchronous).
+- Side effects: creates and removes one cached visual effect and broadcasts the configured local sound.
+
+#### obj/Blast/proc/getNexusProjectileImpactIcon
+- Signature: `getNexusProjectileImpactIcon()`
+- Purpose: Prefer attack-specific impact art, otherwise select the shared RPT impact for named projectiles at or above the anti-spam damage threshold.
+- Returns: icon resource or null.
+- Side effects: none.
 
 #### obj/Blast/proc/getBeamDamageWindow
 - Signature: `getBeamDamageWindow(loop_delay)`

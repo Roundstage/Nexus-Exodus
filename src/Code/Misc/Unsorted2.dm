@@ -946,11 +946,12 @@ proc/Initialize_explosion_icons()
 		i=Scaled_Icon(i, GetWidth(i) * (1.5 ** v) * size, GetHeight(i) * (1.5 ** v) * size)
 		explosion_icons+=i
 
-proc/Explosion_Graphics(obj/O,Distance=1,not_used=0)
+proc/Explosion_Graphics(atom/O,Distance=1,not_used=0)
 	set waitfor=0
 	//not_used is a 3rd arg from the old explosion graphics, remove it whenever
 	Initialize_explosion_icons()
 	if(!O) return
+	showNexusExplosionLight(O, Distance)
 	var/obj/Explosion/e=Get_explosion()
 	e.SafeTeleport(O.base_loc())
 	var/i=Clamp(Distance,0,explosion_icons.len)

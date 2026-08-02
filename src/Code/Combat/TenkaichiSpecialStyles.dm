@@ -65,8 +65,14 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		charge_ticks = 18
 		projectile_damage_factor = 10
 		explosion_size = 2
+		projectile_shockwave = 2
 		strength_scaled = FALSE
 		requires_weapon = FALSE
+		weapon_projectile = FALSE
+		cast_text_color = "#ffd45c"
+		impact_effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+		impact_effect_state
+		impact_sound_volume = 55
 		tmp/next_use = 0
 
 	verb/Hotbar_use()
@@ -90,29 +96,44 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		user.Ki -= drain
 		user.attacking = 3
 		charging = TRUE
-		user.overlays += user.BlastCharge
-		user.showTenkaichiTechniqueAnnouncement("Charging [name]", strength_scaled ? "#a9d3ff" : "#ffd45c", 'BasicbeamCharge.ogg', 42)
-		user.pulseNexusGlow(strength_scaled ? "#a8d5ff" : "#ffd75a", 4.5, 225, max(8, charge_ticks))
+		if(weapon_projectile)
+			user.showTenkaichiTechniqueAnnouncement("Preparing [name]", cast_text_color, pick(nexus_sword_swing_light_sounds), 26)
+			user.pulseNexusGlow(cast_text_color, 3.2, 190, max(8, charge_ticks))
+		else
+			user.overlays += user.BlastCharge
+			user.showTenkaichiTechniqueAnnouncement("Charging [name]", cast_text_color, 'BasicbeamCharge.ogg', 42)
+			user.pulseNexusGlow(cast_text_color, 4.5, 225, max(8, charge_ticks))
 		sleep(charge_ticks)
-		if(user) user.overlays -= user.BlastCharge
+		if(user && !weapon_projectile) user.overlays -= user.BlastCharge
 		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast(ignore_attack_check = 1))
 			if(user) user.attacking = 0
 			charging = FALSE
 			return FALSE
 		var/obj/Blast/projectile = get_cached_blast()
-		projectile.setStats(user, Percent = projectile_damage_factor, Off_Mult = strength_scaled ? 1.2 : 1, Explosion = explosion_size, explosion_percent = projectile_damage_factor, max_damage_factor = projectile_damage_factor * 2)
+		var/total_damage_budget = projectile_damage_factor * (explosion_size ? 2 : 1)
+		projectile.setStats(user, Percent = projectile_damage_factor, Off_Mult = strength_scaled ? 1.2 : 1, Explosion = explosion_size, explosion_percent = explosion_size ? projectile_damage_factor : 0, max_damage_factor = total_damage_budget)
 		projectile.strength_scaled = strength_scaled
 		projectile.from_attack = src
 		projectile.icon = icon
+		projectile.projectile_impact_icon = impact_effect_icon
+		projectile.projectile_impact_icon_state = impact_effect_state
+		projectile.projectile_impact_color = cast_text_color
+		projectile.projectile_impact_sound = weapon_projectile ? pick(nexus_sword_impact_sounds) : 'Explosion2.wav'
+		projectile.projectile_impact_sound_volume = impact_sound_volume
 		projectile.dir = user.dir
 		projectile.Distance = 40
 		projectile.vector_speed = 32
-		projectile.Shockwave = 2
+		projectile.Shockwave = projectile_shockwave
 		projectile.SafeTeleport(user.loc)
 		CenterIcon(projectile)
 		projectile.queueNexusProjectileGlowUpdate()
-		player_view(15, user) << sound('Blast.wav', volume = 55)
-		flick("Blast", user)
+		if(weapon_projectile)
+			showNexusSwordSlashEffect(user, cast_text_color, 1.35)
+			player_view(15, user) << sound(pick(nexus_sword_swing_heavy_sounds), volume = 42)
+			flick("Attack", user)
+		else
+			player_view(15, user) << sound('Blast.wav', volume = 55)
+			flick("Blast", user)
 		user.attacking = 0
 		charging = FALSE
 		projectile.startKiProjectileWalk(user.dir)
@@ -127,6 +148,9 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova
 	charge_ticks = 24
 	projectile_damage_factor = 12
 	explosion_size = 4
+	projectile_shockwave = 4
+	cast_text_color = "#ffb347"
+	impact_sound_volume = 72
 
 	verb/Dragon_Nova()
 		set name = "Dragon Nova"
@@ -142,11 +166,40 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak
 	charge_ticks = 16
 	projectile_damage_factor = 8
 	explosion_size = 2
+	projectile_shockwave = 4
 	strength_scaled = TRUE
 	requires_weapon = TRUE
+	weapon_projectile = TRUE
+	cast_text_color = "#8ed8ff"
+	impact_effect_icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+	impact_effect_state = "slash"
+	impact_sound_volume = 42
 
 	verb/Sky_Break()
 		set name = "Sky Break"
+		set category = "Skills"
+		fireChargedProjectile(usr)
+
+obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash
+	name = "Echoing Slash"
+	desc = "A fast weapon swing that launches a physical cutting wave with sword audiovisuals and no blast explosion."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTEchoingSlash.dmi'
+	energy_cost = 120
+	cooldown_ticks = 90
+	charge_ticks = 8
+	projectile_damage_factor = 7
+	explosion_size = 0
+	projectile_shockwave = 3
+	strength_scaled = TRUE
+	requires_weapon = TRUE
+	weapon_projectile = TRUE
+	cast_text_color = "#b8ecff"
+	impact_effect_icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+	impact_effect_state = "slash"
+	impact_sound_volume = 38
+
+	verb/Echoing_Slash()
+		set name = "Echoing Slash"
 		set category = "Skills"
 		fireChargedProjectile(usr)
 

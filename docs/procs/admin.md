@@ -1864,10 +1864,10 @@ Administrative commands and management flows. Administrators receive a searchabl
 
 #### mob/Admin3/verb/testTenkaichiCombatEffects
 - Signature: `testTenkaichiCombatEffects()`
-- Inputs: interactive light/heavy sword, rock launch/rumble, or light/heavy rock-impact profile.
-- Purpose: Preview the new CC0 audio banks and layered visual effects at the administrator without dealing damage.
+- Inputs: interactive sword, sword-wave, rock, maximum explosion-light or explosive-beam knockback profile.
+- Purpose: Preview shared audiovisual combat profiles and verify beam knockback without damaging a player.
 - Returns: none (implicit).
-- Side effects: creates only short-lived preview effects and sounds; it is also searchable in the structured Admin Panel.
+- Side effects: creates only short-lived preview effects, sounds and an automatically removed combat dummy; it is also searchable in the structured Admin Panel.
 
 #### proc/grantTenkaichiAttackTypes
 - Signature: `proc/grantTenkaichiAttackTypes(mob/character, list/attack_types)`

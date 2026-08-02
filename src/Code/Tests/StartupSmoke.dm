@@ -207,7 +207,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks") && text2path("/mob/Admin3/verb/testTenkaichiCombatEffects"), "Tenkaichi attack or audiovisual testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
-	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 4, "Tenkaichi special-style catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 5, "Tenkaichi special-style catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
@@ -233,16 +233,21 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
 	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova/tenkaichi_dragon_nova = new
 	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak/tenkaichi_sky_break = new
+	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash/tenkaichi_echoing_slash = new
 	nexusSmokeAssert(tenkaichi_guard_break.breaks_guard && tenkaichi_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
 	nexusSmokeAssert(tenkaichi_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
 	nexusSmokeAssert(tenkaichi_dragon_nova.projectile_damage_factor == 12 && tenkaichi_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its RPT balance or icon")
-	nexusSmokeAssert(tenkaichi_sky_break.strength_scaled && tenkaichi_sky_break.requires_weapon && tenkaichi_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated Strength projectile")
+	nexusSmokeAssert(tenkaichi_sky_break.strength_scaled && tenkaichi_sky_break.requires_weapon && tenkaichi_sky_break.weapon_projectile && tenkaichi_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated physical sword projectile")
+	nexusSmokeAssert(tenkaichi_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && tenkaichi_echoing_slash.weapon_projectile && tenkaichi_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
+	nexusSmokeAssert(tenkaichi_echoing_slash.icon == 'RTEchoingSlash.dmi' && tenkaichi_echoing_slash.projectile_damage_factor == 7, "Echoing Slash is missing its RPT projectile art or adapted balance")
 	var/mob/NexusSmokeTest/skill_examine_owner = new
 	var/datum/NexusPlayerMenu/skill_examine_contract = new(skill_examine_owner, "skills")
 	var/list/dragon_nova_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_dragon_nova)
 	var/list/iai_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_iai)
+	var/list/echoing_slash_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_echoing_slash)
 	nexusSmokeAssert(dragon_nova_damage_data["factor"] == 24 && dragon_nova_damage_data["model"] == "Ki", "skill examination does not expose Dragon Nova's full direct/splash budget")
 	nexusSmokeAssert(iai_damage_data["model"] == "Physical" && findtext(iai_damage_data["requirements"], "Weapon equipped"), "skill examination omits Iai Slash damage model or weapon requirement")
+	nexusSmokeAssert(echoing_slash_damage_data["factor"] == 7 && findtext(echoing_slash_damage_data["range"], "direct impact"), "skill examination treats Echoing Slash as an explosive blast")
 	del(skill_examine_contract)
 	del(skill_examine_owner)
 	del(tenkaichi_slice)
@@ -259,6 +264,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(tenkaichi_flame_wall)
 	del(tenkaichi_dragon_nova)
 	del(tenkaichi_sky_break)
+	del(tenkaichi_echoing_slash)
 	var/turf/attack_movement_origin
 	var/turf/attack_movement_destination
 	for(var/turf/candidate_origin in world)
@@ -342,6 +348,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(beam_mode_player.beam_impact_mode == BEAM_IMPACT_EXPLOSIVE, "player beam mode did not default to raw damage")
 	var/obj/Blast/beam_impact_segment = new
 	nexusSmokeAssert(beam_impact_segment.getBeamDamageWindow(world.tick_lag) == beam_raw_damage_mod, "raw beam impact does not use immediate damage")
+	beam_impact_segment.percent_damage = 10
+	nexusSmokeAssert(beam_impact_segment.getExplosiveBeamKnockbackDistance(null) >= 5, "explosive beam impact has no knockback profile")
 	beam_impact_segment.beam_impact_mode = BEAM_IMPACT_LOCK
 	nexusSmokeAssert(beam_impact_segment.getBeamDamageWindow(world.tick_lag) == world.tick_lag, "beam lock does not retain tick damage")
 	var/mob/NexusSmokeTest/beam_impact_target = new
@@ -355,16 +363,26 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	beam_impact_segment.Owner = beam_mode_player
 	beam_impact_segment.from_attack = streaming_beam
 	beam_impact_segment.beam_impact_mode = BEAM_IMPACT_EXPLOSIVE
+	beam_impact_segment.dir = EAST
 	var/obj/Blast/trailing_beam_segment = new(beam_mode_player.loc)
 	trailing_beam_segment.Owner = beam_mode_player
 	trailing_beam_segment.Beam = 1
 	beam_mode_player.my_beam_objs.Add(beam_impact_segment, trailing_beam_segment)
 	streaming_beam.beam_objects.Add(beam_impact_segment, trailing_beam_segment)
 	beam_impact_segment.showExplosiveBeamImpact(beam_impact_target, force_mob_impact = 1)
+	nexusSmokeAssert(beam_impact_target.last_knockbacked > 0 && beam_impact_target.knock_dir == EAST, "raw beam explosion did not knock its target in the beam direction")
 	nexusSmokeAssert(!streaming_beam.streaming && !beam_mode_player.beaming, "raw player impact did not stop the streaming beam")
 	nexusSmokeAssert(!streaming_beam.beam_objects.len && !beam_mode_player.my_beam_objs.len, "raw player impact did not clear beam segment lists")
 	nexusSmokeAssert(!beam_impact_segment.z && !trailing_beam_segment.z, "raw player impact left beam segments on the map")
+	var/list/explosion_light_profile = getNexusExplosionLightProfile(5)
+	nexusSmokeAssert(explosion_light_profile["size"] >= 8 && explosion_light_profile["alpha"] == 255 && explosion_light_profile["variation"] == "blast", "large explosions do not emit a strong flickering light")
+	nexusSmokeAssert(text2path("/obj/NexusLighting/ExplosionPulse"), "explosions are missing their transient light actor")
 	var/obj/Attacks/Blast/nonbeam_skill = new
+	var/obj/Blast/named_impact_projectile = new
+	named_impact_projectile.from_attack = nonbeam_skill
+	named_impact_projectile.percent_damage = 4
+	nexusSmokeAssert(named_impact_projectile.getNexusProjectileImpactIcon() == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi', "named damaging projectiles without custom art receive no shared impact VFX")
+	del(named_impact_projectile)
 	del(beam_impact_target)
 	del(beam_mode_player)
 	del(nonbeam_skill)
