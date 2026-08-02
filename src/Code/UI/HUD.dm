@@ -152,6 +152,10 @@ var/list/overhead_vital_icon_cache = list()
 var/list/vitals_bar_icon_cache = list()
 var/list/power_gauge_icon_cache = list()
 var/icon/vitals_panel_icon
+var/icon/active_modifiers_panel_icon
+
+var/list/nexus_hud_modifier_order = list(
+	"BP", "SPD", "REC", "REGEN", "KI", "STR", "END", "FOR", "RES", "OFF", "DEF", "ANGER", "PWR", "MELEE", "MASTERY", "MEDITATION")
 
 proc/overheadHealthColor(health_percent)
 	if(health_percent < 50) return "#ef4758"
@@ -218,6 +222,197 @@ proc/getPowerGaugeIcon(percent, over_limit)
 	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 69, 7, 72)
 	power_gauge_icon_cache[cache_key] = gauge_icon
 	return gauge_icon
+
+proc/getActiveModifiersPanelIcon()
+	if(active_modifiers_panel_icon) return active_modifiers_panel_icon
+	active_modifiers_panel_icon = icon('UserNamesBarsUi.png')
+	active_modifiers_panel_icon.Scale(296, 38)
+	active_modifiers_panel_icon.DrawBox(rgb(31, 23, 15, 242), 1, 1, 296, 38)
+	active_modifiers_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)
+	active_modifiers_panel_icon.DrawBox("#140e09", 1, 36, 296, 38)
+	active_modifiers_panel_icon.DrawBox("#140e09", 1, 1, 3, 38)
+	active_modifiers_panel_icon.DrawBox("#140e09", 294, 1, 296, 38)
+	active_modifiers_panel_icon.DrawBox("#826039", 4, 4, 293, 4)
+	active_modifiers_panel_icon.DrawBox("#826039", 4, 34, 293, 34)
+	active_modifiers_panel_icon.DrawBox("#c6a15c", 6, 6, 7, 7)
+	active_modifiers_panel_icon.DrawBox("#c6a15c", 289, 6, 290, 7)
+	return active_modifiers_panel_icon
+
+proc/addNexusHudModifier(list/modifiers, stat_id, multiplier)
+	if(!islist(modifiers) || !istext(stat_id) || !nexusIsFiniteNumber(multiplier) || multiplier <= 0) return
+	var/current_multiplier = modifiers[stat_id]
+	if(!nexusIsFiniteNumber(current_multiplier) || current_multiplier <= 0) current_multiplier = 1
+	modifiers[stat_id] = current_multiplier * multiplier
+
+proc/addNexusHudModifierName(list/names, modifier_name)
+	if(!islist(names) || !modifier_name) return
+	modifier_name = copytext("[modifier_name]", 1, 49)
+	if(modifier_name && !(modifier_name in names)) names += modifier_name
+
+proc/formatNexusHudMultiplier(multiplier)
+	if(!nexusIsFiniteNumber(multiplier)) return "1x"
+	return "[round(multiplier, 0.01)]x"
+
+mob/proc/getNexusActiveHudModifiers()
+	var/list/names = list()
+	var/list/modifiers = list()
+	var/active_bp_addition = 0
+	var/primary_id = detectPrimaryTransformation()
+
+	if(is_ussj)
+		addNexusHudModifierName(names, "Ultra Super Saiyan")
+	else if(primary_id == "alien_transform" && current_buff && current_buff.suffix)
+		addNexusHudModifierName(names, current_buff.name)
+	else if(primary_id)
+		initializeNexusTransformationRegistry()
+		var/datum/TransformationDefinition/transformation = nexus_transformation_registry[primary_id]
+		addNexusHudModifierName(names, transformation ? transformation.display_name : primary_id)
+
+	var/natural_bp = max(base_bp + hbtc_bp + unlockedBP, 1)
+	if(ssj)
+		var/form_bp_multiplier = (natural_bp * max(ssj_bp_mult, 0.01) + max(ssj_power(), 0)) / natural_bp
+		addNexusHudModifier(modifiers, "BP", form_bp_multiplier)
+	if(is_ssg) addNexusHudModifier(modifiers, "BP", ssjg_bp_mult)
+	if(is_ssj_blue) addNexusHudModifier(modifiers, "BP", ssj_blue_mult)
+	if(is_gold_form) addNexusHudModifier(modifiers, "BP", gold_form_mult)
+	if(Form && Race == "Frost Lord")
+		var/frost_base = max(bp_mult * natural_bp, 1)
+		addNexusHudModifier(modifiers, "BP", 1 + max(Frost_Lord_Form_Addition(), 0) / frost_base)
+
+	if(is_ussj)
+		active_bp_addition += ussj_bp
+		addNexusHudModifier(modifiers, "KI", ussj_ki)
+		addNexusHudModifier(modifiers, "STR", ussj_str)
+		addNexusHudModifier(modifiers, "END", ussj_dur)
+		addNexusHudModifier(modifiers, "SPD", ussj_spd)
+		addNexusHudModifier(modifiers, "RES", ussj_res)
+	if(ssj == 4)
+		addNexusHudModifier(modifiers, "SPD", ssj4_speed_mult)
+		addNexusHudModifier(modifiers, "REGEN", ssj4_regen_mult)
+		addNexusHudModifier(modifiers, "REC", ssj4_recov_mult)
+	if(is_ssg)
+		addNexusHudModifier(modifiers, "SPD", ssjg_speed_mult)
+		addNexusHudModifier(modifiers, "DEF", ssjg_def_mult)
+		addNexusHudModifier(modifiers, "FOR", ssjg_for_mult)
+		addNexusHudModifier(modifiers, "RES", ssjg_res_mult)
+		addNexusHudModifier(modifiers, "REGEN", ssjg_regen_mult)
+		addNexusHudModifier(modifiers, "REC", ssjg_recov_mult)
+	if(ultra_instinct)
+		active_bp_addition += ui_bp_mult_add
+		addNexusHudModifier(modifiers, "SPD", ultra_instinct_speed)
+		addNexusHudModifier(modifiers, "OFF", ultra_instinct_acc)
+		addNexusHudModifier(modifiers, "DEF", ultra_instinct_ref)
+
+	if(using_giant_form)
+		active_bp_addition += Race == "Makyo" ? 0.3 : 0.2
+		if(Race != "Makyo")
+			addNexusHudModifier(modifiers, "STR", 1.25)
+			addNexusHudModifier(modifiers, "END", 1.25)
+			addNexusHudModifier(modifiers, "RES", 1.25)
+			addNexusHudModifier(modifiers, "SPD", 0.75)
+			addNexusHudModifier(modifiers, "OFF", 0.75)
+			addNexusHudModifier(modifiers, "DEF", 0.75)
+	if(IsGreatApe())
+		active_bp_addition += oozaruBPMultAdd
+		addNexusHudModifier(modifiers, "STR", 1.3)
+		addNexusHudModifier(modifiers, "END", 1.3)
+		addNexusHudModifier(modifiers, "RES", 1.3)
+		addNexusHudModifier(modifiers, "SPD", 0.1)
+		addNexusHudModifier(modifiers, "DEF", 0.1)
+
+	if(ismystic)
+		addNexusHudModifierName(names, "Mystic")
+		addNexusHudModifier(modifiers, "SPD", 1.1)
+		addNexusHudModifier(modifiers, "PWR", 1.2)
+		if(ssj && Class != "Legendary Saiyan") addNexusHudModifier(modifiers, "BP", 1.15)
+	if(current_buff && current_buff.suffix)
+		addNexusHudModifierName(names, current_buff.name)
+		active_bp_addition += current_buff.buff_bp - 1
+		addNexusHudModifier(modifiers, "KI", current_buff.buff_ki)
+		addNexusHudModifier(modifiers, "STR", current_buff.buff_str)
+		addNexusHudModifier(modifiers, "END", current_buff.buff_dur)
+		addNexusHudModifier(modifiers, "SPD", current_buff.buff_spd)
+		addNexusHudModifier(modifiers, "FOR", current_buff.buff_for)
+		addNexusHudModifier(modifiers, "RES", current_buff.buff_res)
+		addNexusHudModifier(modifiers, "OFF", current_buff.buff_off)
+		addNexusHudModifier(modifiers, "DEF", current_buff.buff_def)
+		addNexusHudModifier(modifiers, "REGEN", current_buff.buff_reg)
+		addNexusHudModifier(modifiers, "REC", current_buff.buff_rec)
+		if("transformation" in current_buff.buff_attributes)
+			var/transform_base = max(bp_mult * natural_bp, 1)
+			var/transform_power = buff_transform_bp / Clamp(Powerup_mult() ** 0.7, 1, 1.#INF)
+			addNexusHudModifier(modifiers, "BP", 1 + max(transform_power, 0) / transform_base)
+
+	if(limit_breaker_on)
+		addNexusHudModifierName(names, "Limit Breaker")
+		active_bp_addition += 0.5
+		addNexusHudModifier(modifiers, "REGEN", 3)
+		addNexusHudModifier(modifiers, "REC", 3)
+		addNexusHudModifier(modifiers, "OFF", 3)
+	if(third_eye)
+		addNexusHudModifierName(names, "Third Eye")
+		active_bp_addition += third_eye_bp_add
+		addNexusHudModifier(modifiers, "MEDITATION", 2)
+		addNexusHudModifier(modifiers, "MASTERY", thirdEyeMasteryMult)
+	if(ismajin)
+		addNexusHudModifierName(names, "Majin")
+		active_bp_addition += majin_skill_bp_add
+		addNexusHudModifier(modifiers, "ANGER", majin_skill_anger_mult)
+	if(isFireFist)
+		addNexusHudModifierName(names, "Fire Fist")
+		addNexusHudModifier(modifiers, "MELEE", 1.2)
+	if(God_Fist_level || super_God_Fist)
+		addNexusHudModifierName(names, super_God_Fist ? "Super Kaioken" : "Kaioken [God_Fist_level]")
+		if(super_God_Fist) addNexusHudModifier(modifiers, "BP", super_God_Fist_mult)
+		else
+			var/kaioken_base = max(bp_mult * natural_bp, 1)
+			addNexusHudModifier(modifiers, "BP", 1 + max(God_Fist_bp() * God_FistMod, 0) / kaioken_base)
+	if(Overdrive)
+		addNexusHudModifierName(names, "Overdrive")
+		if(cyber_bp) addNexusHudModifier(modifiers, "BP", 1.5)
+	if(Roid_Power)
+		addNexusHudModifierName(names, "Steroids")
+		addNexusHudModifier(modifiers, "BP", Roid_Power + 1)
+
+	if(active_bp_addition)
+		var/base_bp_multiplier = bp_mult - active_bp_addition
+		var/bp_ratio = base_bp_multiplier > 0 ? bp_mult / base_bp_multiplier : 1 + active_bp_addition
+		addNexusHudModifier(modifiers, "BP", bp_ratio)
+	if(IsGreatApe())
+		var/ape_base = max(bp_mult * natural_bp, 1)
+		addNexusHudModifier(modifiers, "BP", 1 + max(Great_Ape_power(), 0) / ape_base)
+
+	return list("names" = names, "modifiers" = modifiers)
+
+mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)
+	var/list/modifier_data = getNexusActiveHudModifiers()
+	var/list/names = modifier_data["names"]
+	var/list/modifiers = modifier_data["modifiers"]
+	if(!names.len) return list("active" = FALSE, "title" = "", "first_row" = "", "second_row" = "")
+
+	var/title = jointext(names, " + ")
+	if(length(title) > 46) title = "[copytext(title, 1, 44)]..."
+	var/list/stat_fragments = list()
+	var/hidden_stats = 0
+	for(var/stat_id in nexus_hud_modifier_order)
+		var/multiplier = modifiers[stat_id]
+		if(!nexusIsFiniteNumber(multiplier) || abs(multiplier - 1) < 0.005) continue
+		if(stat_fragments.len < maximum_stats) stat_fragments += "[stat_id] [formatNexusHudMultiplier(multiplier)]"
+		else hidden_stats++
+	if(hidden_stats && stat_fragments.len)
+		stat_fragments[stat_fragments.len] = "+[hidden_stats + 1] MORE"
+
+	var/split_at = min(4, stat_fragments.len)
+	var/list/first_fragments = list()
+	var/list/second_fragments = list()
+	for(var/index in 1 to stat_fragments.len)
+		if(index <= split_at) first_fragments += stat_fragments[index]
+		else second_fragments += stat_fragments[index]
+	return list(
+		"active" = TRUE,
+		"title" = title,
+		"first_row" = jointext(first_fragments, "  "),
+		"second_row" = jointext(second_fragments, "  "))
 
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/overhead_health_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
@@ -405,6 +600,7 @@ obj/NexusHud
 		var/tmp/obj/NexusHud/PowerGauge/left_power_gauge
 		var/tmp/obj/NexusHud/PowerGauge/right_power_gauge
 		var/tmp/obj/NexusHud/PowerReadout/power_readout
+		var/tmp/obj/NexusHud/ActiveModifiersReadout/active_modifiers_readout
 
 		proc/initialize(mob/owner)
 			panel_owner = owner
@@ -418,7 +614,8 @@ obj/NexusHud
 			left_power_gauge = new /obj/NexusHud/PowerGauge/Left
 			right_power_gauge = new /obj/NexusHud/PowerGauge/Right
 			power_readout = new
-			vis_contents.Add(portrait, left_power_gauge, right_power_gauge, power_readout, willpower_row, health_row, energy_row, stamina_row)
+			active_modifiers_readout = new
+			vis_contents.Add(portrait, left_power_gauge, right_power_gauge, power_readout, willpower_row, health_row, energy_row, stamina_row, active_modifiers_readout)
 			update(owner)
 
 		proc/update(mob/owner)
@@ -443,6 +640,7 @@ obj/NexusHud
 			left_power_gauge.update(gauge_percent, over_limit)
 			right_power_gauge.update(gauge_percent, over_limit)
 			power_readout.update(round(current_power, 0.1), round(soft_cap, 0.1), over_limit)
+			active_modifiers_readout.update(owner)
 
 		proc/setScreenPosition(new_x, new_y, update_owner = TRUE)
 			screen_x = max(0, round(new_x))
@@ -530,6 +728,35 @@ obj/NexusHud
 		proc/update(power_percent, soft_cap, over_limit)
 			var/status_color = over_limit ? "#ff705c" : "#cda8ff"
 			maptext = "<div style='font-family:Courier New;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
+
+	ActiveModifiersReadout
+		pixel_x = 0
+		pixel_y = 140
+		layer = 105
+		appearance_flags = RESET_ALPHA
+		maptext_x = 10
+		maptext_y = 5
+		maptext_width = 276
+		maptext_height = 29
+
+		New()
+			. = ..()
+			icon = getActiveModifiersPanelIcon()
+			alpha = 0
+
+		proc/update(mob/owner)
+			var/list/summary = owner.getNexusActiveHudModifierSummary()
+			if(!summary["active"])
+				alpha = 0
+				maptext = ""
+				return
+			alpha = 255
+			var/safe_title = html_encode(summary["title"])
+			var/safe_first_row = html_encode(summary["first_row"])
+			var/safe_second_row = html_encode(summary["second_row"])
+			var/stat_rows = safe_first_row
+			if(safe_second_row) stat_rows += "<br>[safe_second_row]"
+			maptext = "<div style='font-family:Courier New;font-size:7px;line-height:9px;color:#d9c293;white-space:nowrap;text-shadow:1px 1px #000'><b style='color:#f2d79e'>ACTIVE · [safe_title]</b><br><span style='color:#cda8ff'>[stat_rows]</span></div>"
 
 	VitalDetail
 		pixel_x = 52

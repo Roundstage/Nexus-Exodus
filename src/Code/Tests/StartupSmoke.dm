@@ -348,19 +348,47 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() >= 4, "overlay chat visible message calculation is invalid")
 	del(chat_hud_contract)
 	del(chat_contract_owner)
-	nexusSmokeAssert(vitals_panel.vis_contents.len == 8 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
+	nexusSmokeAssert(vitals_panel.vis_contents.len == 9 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
 	var/icon/main_vitals_bar = getVitalsBarIcon(50, "#46d369")
 	var/icon/power_gauge = getPowerGaugeIcon(50, FALSE)
+	var/icon/active_modifiers_icon = getActiveModifiersPanelIcon()
 	nexusSmokeAssert(vitals_panel.icon, "main vitals HUD did not retain its generated backdrop")
 	nexusSmokeAssert(main_vitals_icon.Width() == 296 && main_vitals_icon.Height() == 136, "main vitals HUD has invalid dimensions")
 	nexusSmokeAssert(main_vitals_bar.Width() == 168 && main_vitals_bar.Height() == 19, "main vitals bar has invalid dimensions")
 	nexusSmokeAssert(power_gauge.Width() == 7 && power_gauge.Height() == 72, "main vitals power gauge has invalid dimensions")
+	nexusSmokeAssert(active_modifiers_icon.Width() == 296 && active_modifiers_icon.Height() == 38, "active modifier strip has invalid dimensions")
 	nexusSmokeAssert(!text2path("/obj/NexusHud/VitalRow/Power"), "redundant horizontal power bar still exists")
 	nexusSmokeAssert(findtext(vitals_panel.willpower_row.detail_text.maptext, "50%") && vitals_panel.willpower_row.pixel_y > vitals_panel.health_row.pixel_y, "Willpower percentage is not rendered above Health")
 	nexusSmokeAssert(findtext(vitals_panel.willpower_row.maptext, "WILLPOWER") && findtext(vitals_panel.health_row.maptext, "HEALTH") && findtext(vitals_panel.energy_row.maptext, "ENERGY") && findtext(vitals_panel.stamina_row.maptext, "STAMINA"), "main vitals HUD is missing status labels")
 	nexusSmokeAssert(findtext(vitals_panel.energy_row.detail_text.maptext, "(8000) 100%") && vitals_panel.energy_row.detail_alignment == "right", "Energy does not use the (ki) percentage% format")
 	nexusSmokeAssert(!findtext(vitals_panel.power_readout.maptext, "<br>"), "power readout still renders duplicate lines")
+	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 0, "active modifier strip is visible without an active buff")
+	var/obj/Buff/Focus/hud_focus = new(vitals_owner)
+	hud_focus.suffix = "Active"
+	vitals_owner.current_buff = hud_focus
+	vitals_owner.bp_mult += hud_focus.buff_bp - 1
+	var/list/focus_modifier_data = vitals_owner.getNexusActiveHudModifiers()
+	var/list/focus_modifiers = focus_modifier_data["modifiers"]
+	nexusSmokeAssertNear(focus_modifiers["BP"], 1.18, 0.001, "Focus BP is not represented by the active modifier HUD")
+	nexusSmokeAssertNear(focus_modifiers["SPD"], 1.2, 0.001, "Focus speed is not represented by the active modifier HUD")
+	nexusSmokeAssertNear(focus_modifiers["REC"], 1.1, 0.001, "Focus recovery is not represented by the active modifier HUD")
+	vitals_panel.update(vitals_owner)
+	nexusSmokeAssert(vitals_panel.active_modifiers_readout.alpha == 255 && findtext(vitals_panel.active_modifiers_readout.maptext, "Focus") && findtext(vitals_panel.active_modifiers_readout.maptext, "BP 1.18x"), "active modifier strip did not render the live Focus summary")
+	vitals_owner.current_buff = null
+	hud_focus.suffix = null
+	vitals_owner.bp_mult -= hud_focus.buff_bp - 1
+	del(hud_focus)
+	vitals_owner.ssj = 1
+	vitals_owner.ssj_bp_mult = 1.35
+	vitals_owner.base_bp = 10000000
+	vitals_owner.ismystic = TRUE
+	var/list/stacked_modifier_summary = vitals_owner.getNexusActiveHudModifierSummary()
+	var/list/stacked_modifier_data = vitals_owner.getNexusActiveHudModifiers()
+	var/list/stacked_modifiers = stacked_modifier_data["modifiers"]
+	nexusSmokeAssert(findtext(stacked_modifier_summary["title"], "Super Saiyan") && findtext(stacked_modifier_summary["title"], "Mystic"), "stacked transformation and Mystic names are missing from the HUD summary")
+	nexusSmokeAssertNear(stacked_modifiers["SPD"], 1.1, 0.001, "Mystic speed is missing from a stacked HUD summary")
+	nexusSmokeAssertNear(stacked_modifiers["PWR"], 1.2, 0.001, "Mystic power-up speed is missing from a stacked HUD summary")
 	del(vitals_panel)
 	del(vitals_owner)
 	for(var/beam_type in typesof(/obj/Attacks))

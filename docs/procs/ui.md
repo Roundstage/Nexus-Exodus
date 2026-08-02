@@ -189,6 +189,27 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Returns: cached 7x72 icon.
 - Side effects: initializes a cache entry on first use.
 
+#### proc/getActiveModifiersPanelIcon
+- Signature: `proc/getActiveModifiersPanelIcon()`
+- Inputs: None.
+- Purpose: Build or reuse the 296x38 rustic strip displayed directly above the main vitals panel while temporary modifiers are active.
+- Returns: cached icon.
+- Side effects: initializes the shared modifier-strip icon on first use.
+
+#### mob/proc/getNexusActiveHudModifiers
+- Signature: `mob/proc/getNexusActiveHudModifiers()`
+- Inputs: None.
+- Purpose: Aggregate active transformations, Mystic, preset/custom buffs, Ultimate Buffs, Kaioken, Limit Breaker, Giant/Great Ape, Third Eye, Majin, Overdrive, Fire Fist, and steroids using their authoritative balance variables. Additive BP changes become one effective ratio instead of being multiplied together.
+- Returns: an associative list containing ordered active names and combined stat multipliers.
+- Side effects: none.
+
+#### mob/proc/getNexusActiveHudModifierSummary
+- Signature: `mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)`
+- Inputs: maximum number of stat fragments to render.
+- Purpose: Produce a compact title and at most two stat rows for the active-modifier strip, prioritizing BP, Speed, Recovery, Regeneration, and Energy. Long custom names and oversized stat sets are compacted.
+- Returns: an associative render summary.
+- Side effects: none.
+
 #### proc/normalizeNexusHudOffset
 - Signature: `proc/normalizeNexusHudOffset(value)`
 - Inputs: requested world-space HUD offset.
@@ -255,14 +276,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/initializeMainVitalsHud
 - Signature: `mob/proc/initializeMainVitalsHud()`
 - Inputs: None.
-- Purpose: Create the lower-left panel with a centered enlarged character, four vitals rows, lateral power gauges, and a percentage readout.
+- Purpose: Create the lower-left panel with a centered enlarged character, four vitals rows, lateral power gauges, a percentage readout, and a contextual active-modifier strip above it.
 - Returns: none (implicit).
 - Side effects: creates one client-owned screen-object tree and synchronizes visibility with `client.show_bars`.
 
 #### mob/proc/updateMainVitalsHud
 - Signature: `mob/proc/updateMainVitalsHud()`
 - Inputs: None.
-- Purpose: Refresh the centered character, right-aligned `(current Energy) percentage%`, raw power percentage, and powerup soft-cap state.
+- Purpose: Refresh the centered character, right-aligned `(current Energy) percentage%`, raw power percentage, powerup soft-cap state, and combined temporary stat modifiers. The modifier strip stays transparent in base state.
 - Returns: none (implicit).
 - Side effects: updates screen appearances and maptext.
 
