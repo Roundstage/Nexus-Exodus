@@ -5,6 +5,132 @@ mob/proc/GetSpeedDamageDecrease()
 	var/attack_rate_ratio = baseline_delay / current_delay
 	return Clamp(attack_rate_ratio ** -0.65, 0.55, 1.35)
 
+var/icon/nexus_critical_spark_icon
+var/list/nexus_critical_impact_sounds = list(
+	'src/Sound/SoundEffects/Combat/Strongpunch.ogg',
+	'src/Sound/SoundEffects/Combat/Kiplosion.ogg')
+
+proc/drawNexusCriticalSparkLine(icon/canvas, x1, y1, x2, y2, line_color, thickness = 1)
+	if(!canvas || !line_color) return
+	var/delta_x = x2 - x1
+	var/delta_y = y2 - y1
+	var/steps = max(abs(delta_x), abs(delta_y))
+	if(!steps)
+		canvas.DrawBox(line_color, x1, y1, x1, y1)
+		return
+	for(var/step_index = 0, step_index <= steps, step_index++)
+		var/progress = step_index / steps
+		var/point_x = round(x1 + (delta_x * progress))
+		var/point_y = round(y1 + (delta_y * progress))
+		canvas.DrawBox(line_color, max(1, point_x - thickness), max(1, point_y - thickness), min(96, point_x + thickness), min(96, point_y + thickness))
+
+proc/getNexusCriticalSparkIcon()
+	if(nexus_critical_spark_icon) return nexus_critical_spark_icon
+	var/icon/spark_icon = icon('Healthbar.dmi', "100")
+	spark_icon.Scale(96, 96)
+	spark_icon.DrawBox(null, 1, 1, 96, 96)
+	var/list/segments = list(
+		list(48, 49, 32, 61), list(32, 61, 17, 58), list(17, 58, 5, 72),
+		list(47, 48, 59, 66), list(59, 66, 78, 70), list(78, 70, 91, 84),
+		list(49, 47, 66, 37), list(66, 37, 75, 20), list(75, 20, 91, 13),
+		list(46, 47, 34, 33), list(34, 33, 36, 18), list(36, 18, 20, 6),
+		list(48, 50, 44, 75), list(44, 75, 51, 93),
+		list(50, 47, 54, 27), list(54, 27, 49, 4),
+		list(34, 61, 25, 79), list(59, 65, 68, 88),
+		list(66, 37, 85, 40), list(34, 33, 13, 30))
+	for(var/list/segment in segments)
+		drawNexusCriticalSparkLine(spark_icon, segment[1], segment[2], segment[3], segment[4], "#050005", 3)
+	for(var/list/segment in segments)
+		drawNexusCriticalSparkLine(spark_icon, segment[1], segment[2], segment[3], segment[4], "#d10932", 1)
+	for(var/list/segment in segments)
+		drawNexusCriticalSparkLine(spark_icon, segment[1], segment[2], segment[3], segment[4], "#ff6b79", 0)
+	spark_icon.DrawBox("#080006", 42, 42, 54, 54)
+	spark_icon.DrawBox("#c8082f", 46, 39, 50, 57)
+	spark_icon.DrawBox("#c8082f", 39, 46, 57, 50)
+	nexus_critical_spark_icon = spark_icon
+	return nexus_critical_spark_icon
+
+obj/Effect/NexusCriticalCore
+	name = "critical impact rupture"
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	Savable = 0
+	plane = 20
+	layer = 98
+
+obj/Effect/NexusCriticalSpark
+	name = "critical impact sparks"
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	Savable = 0
+	plane = 20
+	layer = 99
+
+obj/Effect/NexusCriticalText
+	name = "critical impact title"
+	density = 0
+	mouse_opacity = 0
+	Grabbable = 0
+	Savable = 0
+	maptext_width = 192
+	maptext_height = 32
+	plane = 20
+	layer = 100
+
+mob/proc/showNexusCriticalImpact(atom/impact_target)
+	set waitfor = 0
+	if(!impact_target || !impact_target.base_loc()) return
+	var/turf/impact_turf = impact_target.base_loc()
+	var/obj/Effect/NexusCriticalCore/dark_core = new(impact_turf)
+	dark_core.color = "#100007"
+	dark_core.alpha = 245
+	CenterIcon(dark_core)
+	dark_core.transform = matrix() * 0.55
+	animate(dark_core, alpha = 0, transform = matrix() * 1.45, time = 7, easing = CUBIC_EASING)
+
+	var/obj/Effect/NexusCriticalCore/crimson_flare = new(impact_turf)
+	crimson_flare.color = "#e3133b"
+	crimson_flare.alpha = 190
+	crimson_flare.blend_mode = BLEND_ADD
+	CenterIcon(crimson_flare)
+	crimson_flare.transform = matrix() * 0.4
+	crimson_flare.pulseNexusGlow("#e3133b", 3.2, 235, 7)
+	animate(crimson_flare, alpha = 0, transform = matrix() * 1.75, time = 6, easing = SINE_EASING)
+
+	for(var/spark_index = 1, spark_index <= 3, spark_index++)
+		var/obj/Effect/NexusCriticalSpark/spark = new(impact_turf)
+		spark.icon = getNexusCriticalSparkIcon()
+		spark.alpha = 255 - ((spark_index - 1) * 45)
+		CenterIcon(spark)
+		spark.pixel_x += rand(-5, 5)
+		spark.pixel_y += rand(-5, 5)
+		var/start_scale = 0.42 + (spark_index * 0.1)
+		var/start_angle = rand(0, 359)
+		spark.transform = turn(matrix() * start_scale, start_angle)
+		animate(spark, alpha = 0, transform = turn(matrix() * (start_scale + 0.7), start_angle + rand(-18, 18)), time = 5 + spark_index, easing = CUBIC_EASING)
+		spawn(8) if(spark) del(spark)
+
+	var/obj/Effect/NexusCriticalText/critical_text = new(impact_turf)
+	critical_text.maptext = "<center><span style='font-family:Arial;font-size:13pt;font-weight:bold;color:#e3133b;text-shadow:-2px 0 #050005,0 2px #050005,2px 0 #050005,0 -2px #050005'>BLACK FLASH</span></center>"
+	critical_text.pixel_x = impact_target.pixel_x - 80
+	critical_text.pixel_y = impact_target.pixel_y + (impact_target.icon ? max(38, GetHeight(impact_target.icon)) : 38)
+	critical_text.transform = matrix() * 0.72
+	animate(critical_text, pixel_y = critical_text.pixel_y + 8, transform = matrix() * 1.08, time = 2, easing = CUBIC_EASING)
+	animate(critical_text, pixel_y = critical_text.pixel_y + 21, alpha = 0, time = 6, easing = SINE_EASING)
+
+	Make_Shockwave(impact_target, sw_icon_size = 128)
+	for(var/mob/viewer in player_view(12, impact_target))
+		if(viewer.client) viewer.ScreenShake(Amount = 8, Offset = 5)
+	Play_Melee_Sound(sound_range = 14, origin = src, sound_file = nexus_critical_impact_sounds[1], sound_volume = 72)
+	spawn(1) if(src) Play_Melee_Sound(sound_range = 14, origin = src, sound_file = nexus_critical_impact_sounds[2], sound_volume = 52)
+	spawn(8)
+		if(dark_core) del(dark_core)
+		if(crimson_flare) del(crimson_flare)
+		if(critical_text) del(critical_text)
+
 mob/var
 	tmp
 		last_melee_self_injury = 0
@@ -1182,7 +1308,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		if(prob(GetCriticalChance()))
 			dmg*=1.25
 			knockback*=5
-			player_view(15,src) << sound('Strongpunch.ogg', volume = 60)
+			showNexusCriticalImpact(target)
 			player_view(15,src) << "<font color=red>[src] lands a critical hit on [target]!"
 		else
 			Play_Melee_Sound(sound_range=10,origin=src,sound_file=pick(sounds),sound_volume=20)
