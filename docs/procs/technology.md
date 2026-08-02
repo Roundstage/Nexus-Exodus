@@ -2294,3 +2294,9 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 - Purpose: Handle synthesize.
 - Returns: none (implicit).
 - Side effects: see implementation.
+### World ore deposits
+
+- `generateWorldOreDeposits(target_count)` tops resource-bearing planets up to the configured deposit target.
+- `startWorldOreGeneration()` replenishes deposits on a Year-Speed-aware interval.
+- `obj/WorldOreDeposit/mineDeposit(miner)` validates range/level, completes interruptible mining, grants ore and profession XP, and depletes the node.
+- `mob/Admin4/verb/seedWorldOreDeposits()` exposes non-destructive distribution testing.

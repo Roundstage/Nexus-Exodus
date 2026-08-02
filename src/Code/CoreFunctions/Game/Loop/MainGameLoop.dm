@@ -28,6 +28,7 @@ mob/proc/update_character_progression()
 	var/mob/player = src
 	while(TRUE)
 		player.syncTechnologyProgression(silent = FALSE)
+		player.syncMagicProgression(silent = FALSE)
 		player.syncMilestoneProgression(silent = FALSE)
 		sleep(100)
 

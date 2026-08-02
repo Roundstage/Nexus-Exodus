@@ -1895,3 +1895,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Purpose: Handle found most.
 - Returns: none (implicit).
 - Side effects: see implementation.
+### Planetary clocks
+
+- `getNexusPlanetaryClock(area)` registers an area with the shared clock for its planet type.
+- `datum/PlanetaryClock/advanceHour()` advances the local phase using a duration scaled by `Year_Speed`.
+- `datum/PlanetaryClock/applyPhase(with_fade)` synchronizes ambient light and transitions for every linked area/player.
+- `area/proc/setPlanetaryPhase(day_phase, remaining_hours)` changes the shared clock instead of only one client or area instance.
+- Admin test verbs inspect the planetary clock, force a phase, and tune real minutes per planetary hour.

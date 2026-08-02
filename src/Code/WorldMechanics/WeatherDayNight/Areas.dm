@@ -146,7 +146,7 @@ area
 		can_planet_destroy = 0
 		zombies_can_reproduce_here = 0
 		has_daynight_cycle = 1
-		hours_of_day = 4
+		hours_of_day = 16
 		hours_of_night = 8
 		has_fireflies = 1
 
@@ -179,8 +179,8 @@ area
 		resource_refill_mod=1000
 		can_planet_destroy=1
 
-		hours_of_day = 3
-		hours_of_night = 6
+		hours_of_day = 18
+		hours_of_night = 10
 
 		firefly_color = rgb(200,70,255)
 		restricted_area = 1

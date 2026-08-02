@@ -36,7 +36,8 @@ var
 	frost_lord_combat_bp_mult = 0.8
 	cooler_combat_bp_mult = 0.76
 	cooler_dmg_taken_mult = 0.89
-	makyo_combat_bp_mult = 0.77
+	makyo_combat_bp_mult = 0.94
+	makyo_star_combat_bp_mult = 1.08
 
 	bp_exponent = 0.50 //how much bp matters in a fight
 	one_shot_start = 4 //you will begin inflicting insane damage against someone if you are more than this multiple stronger than them,

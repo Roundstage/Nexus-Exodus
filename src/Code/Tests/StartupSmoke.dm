@@ -573,6 +573,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(milestone_test.milestone_points == MILESTONE_STARTING_POINTS, "legacy milestone initialization did not grant its starter budget")
 	nexusSmokeAssert(milestone_test.purchaseMilestone("iron_will") && milestone_test.getMilestoneRank("iron_will") == 1, "milestone purchase did not persist its rank")
 	nexusSmokeAssert(milestone_test.getMaxWillpower() == 110, "Iron Will did not raise maximum Willpower")
+	milestone_test.milestone_points = 20
+	nexusSmokeAssert(milestone_test.purchaseMilestone("ub_godspeed") && (locate(/obj/Buff/Ultimate/Godspeed) in milestone_test), "Ultimate Buff milestone did not grant Godspeed")
+	nexusSmokeAssert(!milestone_test.purchaseMilestone("ub_high_tension"), "a character purchased more than one Ultimate Buff")
 	milestone_test.milestone_last_year = floor(Year) - 1
 	milestone_test.syncMilestoneProgression(silent = TRUE)
 	nexusSmokeAssert(milestone_test.total_milestone_points == MILESTONE_STARTING_POINTS + 1, "yearly Milestone Point progression did not advance")
@@ -585,6 +588,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(profession_test.mining_level == 6, "Mining experience did not advance profession levels")
 	profession_test.milestones_owned["mining_expert"] = 1
 	nexusSmokeAssertNear(profession_test.getMiningYieldMultiplier(), 1.65, 0.001, "Mining Expert did not increase mining yield")
+	var/obj/WorldOreDeposit/ore_deposit_test = new
+	ore_deposit_test.configureOre(/obj/items/Ore/Auracite)
+	nexusSmokeAssert(ore_deposit_test.required_mining_level == 30 && ore_deposit_test.ore_type == /obj/items/Ore/Auracite && ore_deposit_test.icon == 'RTAuraciteOre.dmi', "world Auracite deposits are not configured or level-gated")
+	del(ore_deposit_test)
 	profession_test.milestones_owned["master_blacksmith"] = 1
 	var/obj/items/Sword/Forged/smoke_sword = new(profession_test)
 	profession_test.applyMasterBlacksmithQuality(smoke_sword)
@@ -621,6 +628,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	technology_progression_test.syncTechnologyProgression(silent = TRUE)
 	nexusSmokeAssert(technology_progression_test.player_tech_level == 5, "Knowledge migration did not derive Technology Level 5")
 	nexusSmokeAssert(technology_progression_test.getTechnologyPathSlots() == 1, "Technology Level 5 did not award a specialization slot")
+	var/knowledge_before_magic = technology_progression_test.Knowledge
+	technology_progression_test.magic_experience = magic_level_thresholds[magic_level_thresholds.len]
+	technology_progression_test.syncMagicProgression(silent = TRUE)
+	nexusSmokeAssert(technology_progression_test.magic_level == magic_level_thresholds.len && magic_research_catalog.len == 9, "Magic research did not reach or register its complete tree")
+	nexusSmokeAssert((locate(/obj/Attacks/Explosion) in technology_progression_test) && technology_progression_test.Knowledge == knowledge_before_magic, "Magic progression failed to grant its capstone or modified Knowledge")
 	del(technology_progression_test)
 	del(milestone_test)
 	del(rp_combat_test)
@@ -871,6 +883,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(majin_balance_test.racialCombatBPMult() == 1.13 && majin_balance_test.racialDamageTakenMult() == 0.96, "Majin sustainable exceptional package is inconsistent")
 	nexusSmokeAssert(third_eye_bp_add == 0.2, "Third Eye BP no longer matches its 1.2x description")
 	nexusSmokeAssert(jirenAlienBPMult == 0.95 && jirenTakeDmgMult == 1 && jirenAlienPowerupMult == 0.75, "Alien Apex Genome escaped the Standard-tier package")
+	var/old_makyo_star_state = Makyo_Star
+	Makyo_Star = FALSE
 	var/list/race_balance_cases = list(
 		list("Human", "Human", null, FALSE, FALSE, 1.33, 1),
 		list("Spirit Doll", "Human", "Spirit Doll", FALSE, FALSE, 1.197, 1),
@@ -886,7 +900,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		list("Frost Lord", "Frost Lord", null, FALSE, FALSE, 1.68, 1),
 		list("Cooler", "Frost Lord", "Cooler", FALSE, TRUE, 1.596, 0.89),
 		list("Kai", "Kai", null, FALSE, FALSE, 1.8, 1),
-		list("Makyo", "Makyo", null, FALSE, FALSE, 1.4245, 1),
+		list("Kanassan", "Kanassan", "Seer", FALSE, FALSE, 1.75, 1),
+		list("Heran", "Heran", "Space Pirate", FALSE, FALSE, 2.05, 1),
+		list("Makyo", "Makyo", null, FALSE, FALSE, 1.739, 1),
 		list("Majin", "Majin", null, FALSE, FALSE, 2.8815, 0.96),
 		list("Namekian", "Namekian", null, FALSE, FALSE, 1.65, 1),
 		list("Tsujin", "Tsujin", null, FALSE, FALSE, 1.28, 1))
@@ -900,6 +916,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		nexusSmokeAssertNear(effective_creation_bp, balance_case[6], 0.0001, "creation BP package diverged from the balance workbook: [balance_case[1]]")
 		nexusSmokeAssertNear(race_balance_test.racialDamageTakenMult(), balance_case[7], 0.0001, "incoming damage package diverged from the balance workbook: [balance_case[1]]")
 		del(race_balance_test)
+	Makyo_Star = TRUE
+	var/mob/NexusSmokeTest/makyo_star_balance_test = new
+	makyo_star_balance_test.Race = "Makyo"
+	nexusSmokeAssertNear(makyo_star_balance_test.racialCombatBPMult(), 1.08, 0.0001, "Makyo Star combat bonus is missing or excessive")
+	del(makyo_star_balance_test)
+	Makyo_Star = old_makyo_star_state
 	var/list/expected_creation_budgets = list(
 		"Human|human_adaptability" = 72,
 		"Spirit Doll|doll_awakened" = 72,
@@ -914,20 +936,44 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		"Alien|alien_anomaly" = 75,
 		"Android|android_chassis" = 61,
 		"Android|android_infiltrator" = 61,
+		"Android|android_progenitor" = 61,
 		"Bio-Android|bio_adaptation" = 31,
 		"Demigod|demigod_heritage" = 24,
 		"Demon|demon_soulbound" = 44,
 		"Frost Lord|frost_heir" = 29,
 		"Frost Lord|frost_cooler" = 29,
 		"Kai|kai_guardian" = 42,
+		"Kanassan|kanassan_seer" = 44,
+		"Heran|heran_pirate" = 37,
 		"Makyo|makyo_starborn" = 48,
 		"Majin|majin_fragment" = 34,
 		"Namekian|namek_dragon_clan" = 45,
+		"Namekian|namek_ancient" = 45,
 		"Tsujin|tsujin_engineer" = 55)
 	for(var/profile_id in expected_creation_budgets)
 		var/list/profile_parts = splittext(profile_id, "|")
 		var/list/balance_profile = nexusCreationStatProfile(profile_parts[1], profile_parts[2])
 		nexusSmokeAssert(balance_profile["budget"] == expected_creation_budgets[profile_id], "creation budget diverged from the balance workbook: [profile_id]")
+	var/mob/NexusSmokeTest/ported_race_test = new
+	ported_race_test.Kanassan(FALSE)
+	nexusSmokeAssert(ported_race_test.Race == "Kanassan" && ported_race_test.precog && (locate(/obj/Telepathy) in ported_race_test), "Kanassan template lacks its psionic identity")
+	ported_race_test.Heran(FALSE)
+	nexusSmokeAssert(ported_race_test.Race == "Heran" && ported_race_test.Class == "Space Pirate" && ported_race_test.zenkai_mod == 1, "Heran template lacks its combat-growth identity")
+	ported_race_test.Namekian(FALSE)
+	ported_race_test.applyAncientNamekianLineage()
+	nexusSmokeAssert(ported_race_test.Class == "Ancient" && (locate(/obj/Materialization) in ported_race_test), "Ancient Namekian lineage was not applied")
+	ported_race_test.Android(FALSE)
+	ported_race_test.applyAncientProgenitorLineage()
+	nexusSmokeAssert(ported_race_test.Class == "Ancient Progenitor" && ported_race_test.Knowledge >= 900 && (locate(/obj/Advanced_Sense) in ported_race_test), "Ancient Progenitor lineage was not applied")
+	del(ported_race_test)
+	var/datum/PlanetaryClock/planet_clock_test = new("smoke")
+	planet_clock_test.hours_of_day = 15
+	planet_clock_test.hours_of_night = 9
+	planet_clock_test.is_day = TRUE
+	planet_clock_test.hours_remaining = 1
+	planet_clock_test.advanceHour()
+	nexusSmokeAssert(!planet_clock_test.is_day && planet_clock_test.hours_remaining == 9 && nexus_planetary_hour_ticks >= 3000, "planetary clock did not synchronize a longer day/night phase")
+	del(planet_clock_test)
 	var/legendary_sustainable_bp = 11 * 1.35 * 1.35 * lssj_combat_bp_mult
 	var/bio_sustainable_bp = base_ascension_mod * 1.265 * bio_android_combat_bp_mult * 1.6
 	var/majin_sustainable_bp = base_ascension_mod * 1.265 * 1.3 * majin_combat_bp_mult * 1.2

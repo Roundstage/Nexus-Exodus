@@ -161,4 +161,149 @@ mob/proc/consumeOre(ore_type, amount)
 		if(amount <= 0) break
 	return TRUE
 
+var/list/world_ore_deposits = list()
+var/world_ore_target_count = 180
+var/world_ore_generation_running = FALSE
+
+proc/getWorldOreTypeForRoll(roll)
+	if(roll <= 450) return /obj/items/Ore/Copper
+	if(roll <= 660) return /obj/items/Ore/Tin
+	if(roll <= 810) return /obj/items/Ore/Iron
+	if(roll <= 890) return /obj/items/Ore/Silver
+	if(roll <= 950) return /obj/items/Ore/Mythril
+	if(roll <= 995) return /obj/items/Ore/Auracite
+	return /obj/items/Ore/HeartOfTheMountain
+
+proc/getWorldOreRequirement(ore_type)
+	switch(ore_type)
+		if(/obj/items/Ore/Tin) return 3
+		if(/obj/items/Ore/Iron) return 7
+		if(/obj/items/Ore/Silver) return 14
+		if(/obj/items/Ore/Mythril) return 20
+		if(/obj/items/Ore/Auracite) return 30
+		if(/obj/items/Ore/HeartOfTheMountain) return 35
+	return 1
+
+proc/getWorldOreIcon(ore_type)
+	switch(ore_type)
+		if(/obj/items/Ore/Tin) return 'RTTinOre.dmi'
+		if(/obj/items/Ore/Iron) return 'RTIronOre.dmi'
+		if(/obj/items/Ore/Silver) return 'RTSilverOre.dmi'
+		if(/obj/items/Ore/Mythril) return 'RTMythrilOre.dmi'
+		if(/obj/items/Ore/Auracite) return 'RTAuraciteOre.dmi'
+		if(/obj/items/Ore/HeartOfTheMountain) return 'RTMythrilOre.dmi'
+	return 'RTCopperOre.dmi'
+
+proc/getWorldOreName(ore_type)
+	var/obj/items/Ore/example = new ore_type
+	var/result = example.ore_name
+	del(example)
+	return result
+
+proc/isValidWorldOreTurf(turf/target)
+	if(!target || target.density || target.Water || istype(target, /turf/Other/Blank)) return FALSE
+	var/area/target_area = target.get_area()
+	if(!target_area || !target_area.has_resources || istype(target_area, /area/ship_area)) return FALSE
+	for(var/obj/WorldOreDeposit/deposit in target) return FALSE
+	return TRUE
+
+proc/generateWorldOreDeposits(target_count = 0)
+	if(target_count <= 0) target_count = world_ore_target_count
+	world_ore_deposits = remove_nulls(world_ore_deposits)
+	var/needed = max(0, target_count - world_ore_deposits.len)
+	var/attempts = max(needed * 60, 200)
+	while(needed > 0 && attempts-- > 0)
+		var/turf/target = locate(rand(1, world.maxx), rand(1, world.maxy), rand(1, world.maxz))
+		if(!isValidWorldOreTurf(target)) continue
+		var/ore_type = getWorldOreTypeForRoll(rand(1, 1000))
+		var/obj/WorldOreDeposit/deposit = new(target)
+		deposit.configureOre(ore_type)
+		needed--
+	return target_count - needed
+
+proc/startWorldOreGeneration()
+	set waitfor = FALSE
+	if(world_ore_generation_running) return
+	world_ore_generation_running = TRUE
+	sleep(100)
+	while(TRUE)
+		generateWorldOreDeposits()
+		sleep(max(1200, round(6000 / max(0.1, Year_Speed))))
+
+obj/WorldOreDeposit
+	name = "Ore Deposit"
+	desc = "A naturally occurring mineral deposit."
+	Savable = 0
+	Grabbable = 0
+	attackable = 0
+	density = 1
+	var
+		ore_type = /obj/items/Ore/Copper
+		ore_amount = 2
+		required_mining_level = 1
+		tmp/being_mined = FALSE
+
+	New()
+		. = ..()
+		world_ore_deposits += src
+
+	Del()
+		world_ore_deposits -= src
+		. = ..()
+
+	proc/configureOre(new_ore_type)
+		ore_type = new_ore_type
+		required_mining_level = getWorldOreRequirement(ore_type)
+		ore_amount = ore_type == /obj/items/Ore/HeartOfTheMountain ? 1 : rand(2, 5)
+		var/ore_name = getWorldOreName(ore_type)
+		name = "[ore_name] Deposit"
+		desc = "A [ore_name] deposit containing approximately [ore_amount] ore. Mining level [required_mining_level] required."
+		icon = getWorldOreIcon(ore_type)
+		if(ore_type == /obj/items/Ore/HeartOfTheMountain) color = rgb(255, 164, 72)
+
+	proc/refreshDepositDescription()
+		var/ore_name = getWorldOreName(ore_type)
+		desc = "A [ore_name] deposit containing approximately [ore_amount] ore. Mining level [required_mining_level] required."
+
+	proc/mineDeposit(mob/miner)
+		if(!miner || !(miner in range(1, src)) || miner.KO || being_mined) return
+		miner.syncProfessionProgression()
+		if(miner.mining_level < required_mining_level)
+			miner << "Mining level [required_mining_level] is required for [src]."
+			return
+		being_mined = TRUE
+		var/turf/start_turf = miner.base_loc()
+		player_view(10, miner) << "[miner] begins extracting [src]."
+		var/mining_time = max(15, round(55 - miner.mining_level * 0.7))
+		spawn(mining_time)
+			if(!src || !miner) return
+			if(miner.KO || miner.base_loc() != start_turf || !(miner in range(1, src)))
+				being_mined = FALSE
+				miner << "Mining interrupted."
+				return
+			var/yield_amount = max(1, round(miner.getMiningYieldMultiplier()))
+			yield_amount = min(yield_amount, ore_amount)
+			miner.addMinedOre(ore_type, yield_amount)
+			miner.gainProfessionExperience("Mining", max(2, required_mining_level * 1.5), "mining [src]", announce = TRUE)
+			ore_amount -= yield_amount
+			player_view(10, miner) << "[miner] extracts [yield_amount] ore from [src]."
+			if(ore_amount <= 0)
+				del(src)
+			else
+				being_mined = FALSE
+				refreshDepositDescription()
+
+	verb/Mine()
+		set src in oview(1)
+		mineDeposit(usr)
+
+mob/Admin4/verb/seedWorldOreDeposits()
+	set name = "Seed World Ore Deposits"
+	set category = "Admin"
+	var/target_count = input(src, "Top the world up to how many ore deposits?", "World Ore Generation", world_ore_target_count) as num
+	target_count = Clamp(round(target_count), 1, 1000)
+	world_ore_target_count = target_count
+	var/generated_total = generateWorldOreDeposits(target_count)
+	src << "World ore generation now tracks [world_ore_deposits.len]/[target_count] deposits ([generated_total] target result)."
+
 #undef NEXUS_PROFESSION_LEVEL_CAP

@@ -240,6 +240,8 @@ mob
 				if("Frost Lord") return rgb(180,0,255)
 				if("Kai") return rgb(0,222,255)
 				if("Makyo") return rgb(130,0,170)
+				if("Kanassan") return rgb(40,180,220)
+				if("Heran") return rgb(70,190,110)
 				if("Majin") return rgb(255,0,233)
 				if("Tsujin") return rgb(180,180,180)
 

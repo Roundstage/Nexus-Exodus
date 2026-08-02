@@ -10,6 +10,8 @@ mob/proc/GetNewZenkaiMod()
 		if("Majin") return 0
 		if("Bio-Android") return 1
 		if("Makyo") return 0
+		if("Kanassan") return 0
+		if("Heran") return 1
 		if("Namekian") return 0
 		if("Frost Lord") return 0
 		if("Kai") return 0
@@ -34,6 +36,8 @@ mob/proc/Get_race_starting_bp_mod()
 		if("Majin") return new_majin_bp_mod
 		if("Bio-Android") return 2.1
 		if("Makyo") return 1.85
+		if("Kanassan") return 1.75
+		if("Heran") return 2.05
 		if("Namekian") return 1.65
 		if("Frost Lord") return 2.1
 		if("Kai") return 1.8

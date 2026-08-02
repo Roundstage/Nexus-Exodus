@@ -80,7 +80,7 @@ mob/proc
 			if("Majin") return majin_combat_bp_mult
 			if("Demigod") return demigod_combat_bp_mult
 			if("Frost Lord") return frost_lord_combat_bp_mult
-			if("Makyo") return makyo_combat_bp_mult
+			if("Makyo") return Makyo_Star ? makyo_star_combat_bp_mult : makyo_combat_bp_mult
 		return 1
 
 	racialDamageTakenMult()
@@ -1094,8 +1094,9 @@ mob/proc/Makyo_Star()
 			if(!shield||!shield.Using)
 				var/mode_mod=2
 				if(race_stats_only_mode) mode_mod *= 2
-				if(Can_recover_health(health_limit=100)) applyRegenerationHealth(1.3 * RegenMod() * mode_mod)
-				if(Can_recover_ki(ki_limit=max_ki * 2)) Ki += (max_ki / 40) * recov**0.5 * mode_mod
+				if(Can_recover_health(health_limit=100)) applyRegenerationHealth(0.35 * RegenMod() * mode_mod)
+				if(Can_recover_ki(ki_limit=max_ki)) Ki += (max_ki / 160) * recov**0.5 * mode_mod
+				if(Ki > max_ki) Ki = max_ki
 			sleep(10)
 		else sleep(600)
 
@@ -1666,7 +1667,8 @@ mob/proc/Meditate_gain_loop()
 		if(D&&!Stat_Settings["Rearrange"]) Devil_Mat(n)
 		else if(meditate_obj)
 			Med_Gain(n)
-			if(!knowledge_training) Raise_SP((1 / 60 / 60 / 1) * n) //1 per 1 hours
+			if(!knowledge_training && !magic_training) Raise_SP((1 / 60 / 60 / 1) * n) //1 per 1 hours
+		if(magic_training) gainMagicExperience(n * 0.35, "meditation", announce = FALSE)
 		sleep(n*10)
 	meditate_looping=0
 

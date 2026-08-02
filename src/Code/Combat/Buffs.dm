@@ -75,7 +75,7 @@ obj/Buff
 			verbs-=/obj/Buff/verb/Buff
 
 		spawn(50) if(src)
-			if(buff_bp>max_buff_bp)
+			if(!preset_buff && buff_bp>max_buff_bp)
 				var/mob/m=loc
 				if(m&&ismob(m)) m.revert_all_buffs()
 				buff_bp=max_buff_bp
@@ -87,7 +87,7 @@ obj/Buff
 			var/mob/m=loc
 			if(m&&ismob(m)) m.current_buff=src
 
-		spawn(10) if(!custom_buffs_allowed) del(src)
+		spawn(10) if(!preset_buff && !custom_buffs_allowed) del(src)
 
 		. = ..()
 
@@ -122,6 +122,7 @@ obj/Buff
 		list/buff_overlays=list("Cancel")
 		list/buff_opening //the opening transformation graphics customizable by the player
 		list/buff_attributes=new
+		preset_buff = FALSE
 
 	verb/Hotbar_use()
 		set hidden=1
@@ -137,6 +138,9 @@ obj/Buff
 
 	verb/Buff_Options()
 		set category="Other"
+		if(!editable)
+			usr << "[src] is a fixed combat style and cannot be customized."
+			return
 		if(being_edited) return
 		being_edited=1
 
@@ -393,6 +397,86 @@ mob/proc
 
 		current_buff=null
 		if(was_transformation) syncActivePrimaryTransformation("custom transformation revert")
+
+obj/Buff/Focus
+	name = "Focus"
+	desc = "A sustained Tenkaichi focus: moderate power, speed, regeneration, and recovery at a continuous energy cost."
+	editable = FALSE
+	preset_buff = TRUE
+	Duplicates_Allowed = FALSE
+	buff_bp = 1.18
+	buff_spd = 1.2
+	buff_reg = 1.15
+	buff_rec = 1.1
+
+obj/Buff/Ultimate
+	editable = FALSE
+	preset_buff = TRUE
+	teachable = FALSE
+	Reteachable = FALSE
+	Relearnable = FALSE
+	Duplicates_Allowed = FALSE
+	Cost_To_Learn = 0
+
+	HighTension
+		name = "High Tension"
+		desc = "An Ultimate Buff favoring raw power and durability."
+		buff_bp = 1.22
+		buff_str = 1.25
+		buff_dur = 1.15
+
+	Godspeed
+		name = "Godspeed"
+		desc = "An Ultimate Buff favoring extreme movement, accuracy, and reflex."
+		buff_bp = 1.15
+		buff_spd = 1.35
+		buff_off = 1.15
+		buff_def = 1.15
+
+	FistsOfFury
+		name = "Fists of Fury"
+		desc = "An Ultimate Buff favoring strength and relentless offense."
+		buff_bp = 1.18
+		buff_str = 1.15
+		buff_off = 1.3
+
+	ArcanePower
+		name = "Arcane Power"
+		desc = "An Ultimate Buff favoring energy capacity, force, and recovery."
+		buff_bp = 1.18
+		buff_ki = 1.35
+		buff_for = 1.3
+		buff_rec = 1.15
+
+	BestialWrath
+		name = "Bestial Wrath"
+		desc = "An Ultimate Buff favoring ferocity, strength, and regeneration."
+		buff_bp = 1.28
+		buff_str = 1.2
+		buff_reg = 1.25
+
+	Bushido
+		name = "Bushido"
+		desc = "An Ultimate Buff favoring balanced weapon combat and precision."
+		buff_bp = 1.2
+		buff_spd = 1.15
+		buff_off = 1.2
+		buff_def = 1.2
+
+mob/Admin4/verb/testTenkaichiBuffs(mob/character in players)
+	set name = "Test Tenkaichi Buffs"
+	set category = "Admin"
+	var/list/buff_types = list(
+		/obj/Buff/Focus,
+		/obj/Buff/Ultimate/HighTension,
+		/obj/Buff/Ultimate/Godspeed,
+		/obj/Buff/Ultimate/FistsOfFury,
+		/obj/Buff/Ultimate/ArcanePower,
+		/obj/Buff/Ultimate/BestialWrath,
+		/obj/Buff/Ultimate/Bushido)
+	for(var/buff_type in buff_types)
+		if(!(locate(buff_type) in character)) character.contents += new buff_type(character)
+	src << "[character] received Focus and every Ultimate Buff for testing."
 
 mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin
 	set name = ".buff_point"

@@ -125,6 +125,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 4
 			if("Makyo") cap = 2.5
+			if("Kanassan") cap = 3
+			if("Heran") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -151,6 +153,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 1.8
+			if("Heran") cap = 2.5
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -173,6 +177,8 @@ mob/proc
 			if("Half Saiyan") cap = 2.5
 			if("Android", "Alien", "Kai") cap = 5
 			if("Demigod", "Makyo", "Frost Lord") cap = 2
+			if("Kanassan") cap = 2.3
+			if("Heran") cap = 2.2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Demon") cap = 2
@@ -197,6 +203,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 1.9
+			if("Heran") cap = 2.4
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -223,6 +231,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 2.2
+			if("Heran") cap = 2.1
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -249,6 +259,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 2.2
+			if("Heran") cap = 1.9
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -275,6 +287,8 @@ mob/proc
 			if("Alien") cap = 5
 			if("Demigod") cap = 2
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 2.4
+			if("Heran") cap = 2
 			if("Bio-Android") cap = 2.5
 			if("Majin") cap = 3
 			if("Kai") cap = 5
@@ -301,6 +315,8 @@ mob/proc
 			if("Alien") cap = 4
 			if("Demigod") cap = 3
 			if("Makyo") cap = 2
+			if("Kanassan") cap = 1.8
+			if("Heran") cap = 1.6
 			if("Bio-Android") cap = 6
 			if("Majin") cap = 999
 			if("Kai") cap = 1
@@ -327,6 +343,8 @@ mob/proc
 			if("Alien") cap = 3
 			if("Demigod") cap = 3
 			if("Makyo") cap = 1.6
+			if("Kanassan") cap = 2.4
+			if("Heran") cap = 1.8
 			if("Bio-Android") cap = 2
 			if("Majin") cap = 2.4
 			if("Kai") cap = 3
@@ -353,6 +371,8 @@ mob/proc
 			if("Alien") cap = 150
 			if("Demigod") cap = 200
 			if("Makyo") cap = 150
+			if("Kanassan") cap = 140
+			if("Heran") cap = 170
 			if("Bio-Android") cap = 200
 			if("Majin") cap = 160
 			if("Kai") cap = 120
@@ -464,6 +484,8 @@ mob/proc/RaceBonusStatPoints()
 	if(Race == "Alien") return 11
 	if(Race == "Android") return 11
 	if(Race == "Makyo") return 18
+	if(Race == "Kanassan") return 12
+	if(Race == "Heran") return 8
 	if(Race == "Saiyan") return 6
 	
 	return 0
@@ -530,6 +552,14 @@ mob/proc/ApplyRaceBuild()
 		"Makyo" = list(
 			"Durability" = 7, "Speed" = 7,
 			"Points" = -14
+		),
+		"Kanassan" = list(
+			"Energy" = 3, "Defense" = 5, "Recovery" = 4,
+			"Points" = -12
+		),
+		"Heran" = list(
+			"Strength" = 6, "Durability" = 5, "Offense" = 4,
+			"Points" = -15
 		),
 		"Namekian" = list(
 			"Regeneration" = 10, "Defense" = 5,

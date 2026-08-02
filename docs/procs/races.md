@@ -790,3 +790,11 @@ The shared dispatchers have these current signatures:
 - Purpose: Handle aura walk.
 - Returns: none (implicit).
 - Side effects: see implementation.
+### RPT race adaptation
+
+- `mob/proc/Kanassan(interactive_options)` initializes the psionic Kanassan race.
+- `mob/proc/Heran(interactive_options)` initializes the combat-focused Heran race.
+- `mob/proc/canSelectAncientNamekian()` enforces the rare-lineage population/offer rule.
+- `mob/proc/applyAncientNamekianLineage()` layers Ancient stats and skills onto the existing Namekian implementation.
+- `mob/proc/applyAncientProgenitorLineage()` layers the rare sensor/science package onto an existing Android implementation.
+- `mob/Admin4/verb/testRoleplayRacePort()` applies a ported template to a selected test character.
