@@ -241,8 +241,8 @@ proc/getNexusOverheadVitalsBasePixelX(mob/owner)
 proc/getNexusOverheadVitalsBasePixelY(mob/owner)
 	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
 	var/vertical_offset = owner ? normalizeNexusHudOffset(owner.nexus_overhead_vitals_offset_y) : 0
-	// Reserve ten visible typing pixels plus four clear pixels above the sprite.
-	return icon_height + 14 + vertical_offset
+	// Fit the ten visible typing pixels directly above the sprite and keep two clear pixels below the bars.
+	return icon_height + 12 + vertical_offset
 
 proc/getNexusTypingIndicatorPixelY(mob/owner)
 	// KhunTyping is a 32px cell whose visible bubble occupies its upper ten pixels.
@@ -359,7 +359,7 @@ obj/NexusHud
 	OverheadHealthBar
 		pixel_x = 0
 		var/tmp/owner_icon
-		var/row_offset
+		var/row_offset = 4
 
 		proc/initialize(mob/owner)
 			updatePosition(owner)
@@ -381,7 +381,7 @@ obj/NexusHud
 			if(owner.icon && owner.icon != owner_icon) owner_icon = owner.icon
 
 		Energy
-			row_offset = 4
+			row_offset = 0
 
 		Willpower
 			row_offset = 8

@@ -3,7 +3,7 @@
 ## Overview
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools.
 
-The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. Typing occupies a reserved, sprite-height-aware slot immediately below the three bars while Say text remains above them. Players can persistently reposition the overhead stack for unusually large sprites and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead bars ordered Willpower, Health, and Energy from top to bottom. Typing occupies a reserved, sprite-height-aware slot immediately below the lowered three-bar stack while Say text remains above it. Players can persistently reposition the overhead stack for unusually large sprites and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
 The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
@@ -206,7 +206,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### proc/getNexusOverheadVitalsBasePixelY
 - Signature: `proc/getNexusOverheadVitalsBasePixelY(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Position the first overhead vitals row above the owner's current sprite height with reserved room for the visible typing bubble and the configured vertical offset.
+- Purpose: Position the bottom Energy row at the lowest collision-free height above the owner's sprite, accounting for the visible typing bubble and configured vertical offset.
 - Returns: world-space pixel Y offset.
 - Side effects: none.
 
@@ -344,7 +344,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### obj/NexusHud/OverheadHealthBar/proc/update
 - Signature: `update(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Render one row of the stacked 32x3 overhead Health, Energy, and Willpower display; Health changes color at its existing thresholds.
+- Purpose: Render one row of the 32x3 overhead display ordered Willpower, Health, and Energy from top to bottom; Health changes color at its existing thresholds.
 - Returns: none (implicit).
 - Side effects: swaps the cached world-space icon.
 
