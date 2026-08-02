@@ -1,5 +1,15 @@
 var/list/damage_indicator_cache = list()
 
+proc/formatNexusCombatAmount(amount)
+	if(!isnum(amount)) return "0"
+	var/cent_amount = round(max(0, amount) * 100)
+	var/cent_remainder = cent_amount % 100
+	var/whole_amount = (cent_amount - cent_remainder) / 100
+	if(!cent_remainder) return "[whole_amount]"
+	if(cent_remainder < 10) return "[whole_amount].0[cent_remainder]"
+	if(!(cent_remainder % 10)) return "[whole_amount].[cent_remainder / 10]"
+	return "[whole_amount].[cent_remainder]"
+
 proc/acquireDamageIndicator()
 	var/obj/DamageIndicator/indicator
 	if(damage_indicator_cache.len)
@@ -30,8 +40,7 @@ obj/DamageIndicator
 		animate(src)
 		alpha = 255
 		transform = matrix()
-		var/display_amount = round(amount, amount < 10 ? 0.1 : 1)
-		var/display_text = display_amount < 1000000 ? num2text(display_amount, 10) : Commas(display_amount, FALSE)
+		var/display_text = formatNexusCombatAmount(amount)
 		maptext = "<center><span style='font-family:Arial;font-size:14pt;font-weight:bold;color:[text_color];text-shadow:1px 1px #000000'>-[display_text]</span></center>"
 		pixel_x = target.pixel_x - 16 + rand(-8, 8)
 		pixel_y = target.pixel_y + (target.icon ? max(32, GetHeight(target.icon)) : 32)
