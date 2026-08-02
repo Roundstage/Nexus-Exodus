@@ -115,11 +115,11 @@ proc/buildNexusCombatLogMessage(attacker_name, target_name, attack_name, total_d
 	attacker_name = html_encode("[attacker_name]")
 	target_name = html_encode("[target_name]")
 	attack_name = html_encode("[attack_name]")
-	var/damage_text = round(max(0, total_damage), 0.01)
-	var/remaining_text = round(max(0, remaining_value), 0.01)
+	var/damage_text = formatNexusCombatAmount(total_damage)
+	var/remaining_text = formatNexusCombatAmount(remaining_value)
 	var/hit_text = "[damage_text] damage"
 	if(hit_count > 1)
-		var/average_damage = round(total_damage / hit_count, 0.01)
+		var/average_damage = formatNexusCombatAmount(total_damage / hit_count)
 		hit_text = "[hit_count] hits / [damage_text] total ([average_damage] average)"
 	var/remaining_label = resource_name == "Energy Shield" ? "[remaining_text] Ki remaining" : "[remaining_text]% Health remaining"
 	var/timestamp = time2text(world.timeofday, "hh:mm:ss")

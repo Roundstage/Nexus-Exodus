@@ -34,7 +34,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Returns: applied Ki damage.
 
 ### proc/buildNexusCombatLogMessage(...)
-- Purpose: Format attack, attacker, target, hit count, total/average damage, and remaining Health or Ki for the combat feed.
+- Purpose: Format attack, attacker, target, hit count, total/average damage, and remaining Health or Ki for the combat feed using the same hundredth-precision formatter as world-space damage indicators.
 
 ### proc/Split_File(the_key)
 - Purpose: Rotate the current chat log if it exceeds ~100 MB.

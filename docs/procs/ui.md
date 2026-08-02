@@ -78,6 +78,13 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 
 ### src/Code/UI/DamageIndicators.dm
 
+#### proc/formatNexusCombatAmount
+- Signature: `proc/formatNexusCombatAmount(amount)`
+- Inputs: numeric combat amount.
+- Purpose: Format the actual applied amount to hundredth precision for both floating damage indicators and combat-log messages.
+- Returns: a compact decimal string without exposing BYOND floating-point noise.
+- Side effects: none.
+
 #### proc/acquireDamageIndicator
 - Signature: `proc/acquireDamageIndicator()`
 - Inputs: None.
@@ -95,7 +102,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### obj/DamageIndicator/proc/show
 - Signature: `show(atom/target, amount, text_color)`
 - Inputs: target, damage amount, and text color.
-- Purpose: Format, position, animate, and release one damage indicator.
+- Purpose: Format the exact applied hit to hundredth precision, position it, animate it, and release one damage indicator. Multi-hit attacks show each hit separately while the combat log additionally batches their total.
 - Returns: none (asynchronous).
 - Side effects: moves and animates the pooled object in the world.
 
