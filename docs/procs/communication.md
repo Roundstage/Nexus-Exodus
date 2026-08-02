@@ -67,7 +67,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Side effects: sleeps, sends chat to nearby players, writes chat logs.
 
 ### mob/proc/Say_Spark()
-- Purpose: Attach an individual typing actor above the complete Health/Energy/Willpower stack using the owner's current sprite height.
+- Purpose: Attach an individual typing actor in the reserved slot immediately below the Health/Energy/Willpower stack, aligned to the owner's configured HUD offset.
 - Side effects: replaces `nexus_typing_indicator` in `vis_contents` and sleeps briefly.
 
 ### mob/proc/Remove_Say_Spark()

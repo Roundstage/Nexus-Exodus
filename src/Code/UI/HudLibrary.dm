@@ -387,6 +387,9 @@ datum/NexusInterfaceSettings
 	proc/buildToggle(label, description, action_id, enabled)
 		return "<a class='option [enabled ? "active" : ""]' href='byond://?src=\ref[src]&action=toggle&id=[action_id]'><b>[html_encode(label)]</b><span>[html_encode(description)]</span><em>[enabled ? "ON" : "OFF"]</em></a>"
 
+	proc/buildHudControls()
+		return {"<div class='hud-grid'><article class='hud-control'><b>OVERHEAD VITALS</b><span>Offset X [owner.nexus_overhead_vitals_offset_x] / Y [owner.nexus_overhead_vitals_offset_y]. Use this when a large character icon needs different spacing.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=overhead'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=overhead'>RESET</a></div></article><article class='hud-control'><b>MAIN VITALS PANEL</b><span>Position X [owner.nexus_main_vitals_x] / Y [owner.nexus_main_vitals_y]. You can also drag the panel directly during play.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=main_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=main'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=main'>RESET</a></div></article></div>"}
+
 	proc/buildHtml()
 		var/overlay_active = owner.nexus_interface_layout == "overlay"
 		var/side_active = owner.nexus_interface_layout == "side_tabs"
@@ -396,9 +399,10 @@ datum/NexusInterfaceSettings
 		if(owner.IsAdmin())
 			tab_options += buildToggle("World", "Connected characters and world information.", "world", owner.nexus_legacy_tab_world)
 			tab_options += buildToggle("Admin", "Administrative targets and inspection access.", "admin", owner.nexus_legacy_tab_admin)
+		var/hud_controls = buildHudControls()
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Interface Settings</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.head{display:flex;align-items:center;border:3px ridge #84643a;padding:10px}.head h1{margin:0 auto 0 0;font-size:18px}.close{padding:7px 10px}.layouts,.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}.layout,.option{position:relative;display:block;min-height:88px;padding:12px 70px 12px 12px;border:3px ridge #735631;background:#2b2117;color:#e8d4aa;text-decoration:none}.layout.active,.option.active{border-color:#d0a65d;background:#4a351e}.layout b,.layout span,.option b,.option span{display:block}.layout b,.option b{color:#f0d497;font-size:14px}.layout span,.option span{margin-top:7px;color:#bca47c;line-height:1.4}.layout em,.option em{position:absolute;right:12px;top:12px;color:#ffe6a8;font-style:normal;font-weight:bold}.section{margin-top:12px;padding:8px;border:2px solid #715735;background:#211a13}.section h2{margin:0 0 8px;padding:7px;font-size:13px}.note{margin-top:9px;padding:8px;border-left:4px solid #a77a3f;color:#bca47c}@media(max-width:650px){.layouts,.options{grid-template-columns:1fr}}
-		</style></head><body><main class='shell'><header class='head'><h1>INTERFACE SETTINGS</h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></header><div class='layouts'><a class='layout [overlay_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=overlay'><b>CLASSIC OVERLAY</b><span>Compact rustic chat over the map, with resize controls and CMD below it.</span><em>[overlay_active ? "ACTIVE" : "SELECT"]</em></a><a class='layout [side_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=side_tabs'><b>SIDE + TABS</b><span>Native tabs above a smaller chat and permanent CMD bar outside the map.</span><em>[side_active ? "ACTIVE" : "SELECT"]</em></a></div><section class='section'><h2>LEGACY TAB CATEGORIES</h2><div class='options'>[tab_options]</div><div class='note'>These switches control the legacy categories shown in Side + Tabs mode. Preferences are saved for this account.</div></section></main></body></html>"}
+		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.head{display:flex;align-items:center;border:3px ridge #84643a;padding:10px}.head h1{margin:0 auto 0 0;font-size:18px}.close{padding:7px 10px}.layouts,.options,.hud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}.layout,.option,.hud-control{position:relative;display:block;min-height:88px;padding:12px;border:3px ridge #735631;background:#2b2117;color:#e8d4aa;text-decoration:none}.layout,.option{padding-right:70px}.layout.active,.option.active{border-color:#d0a65d;background:#4a351e}.layout b,.layout span,.option b,.option span,.hud-control b,.hud-control span{display:block}.layout b,.option b,.hud-control b{color:#f0d497;font-size:14px}.layout span,.option span,.hud-control span{margin-top:7px;color:#bca47c;line-height:1.4}.layout em,.option em{position:absolute;right:12px;top:12px;color:#ffe6a8;font-style:normal;font-weight:bold}.section{margin-top:12px;padding:8px;border:2px solid #715735;background:#211a13}.section h2{margin:0 0 8px;padding:7px;font-size:13px}.nudge{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}.nudge a{padding:6px 3px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.note{margin-top:9px;padding:8px;border-left:4px solid #a77a3f;color:#bca47c}@media(max-width:650px){.layouts,.options,.hud-grid{grid-template-columns:1fr}}
+		</style></head><body><main class='shell'><header class='head'><h1>INTERFACE &amp; HUD SETTINGS</h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></header><div class='layouts'><a class='layout [overlay_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=overlay'><b>CLASSIC OVERLAY</b><span>Compact rustic chat over the map, with resize controls and CMD below it.</span><em>[overlay_active ? "ACTIVE" : "SELECT"]</em></a><a class='layout [side_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=side_tabs'><b>SIDE + TABS</b><span>Native tabs above a smaller chat and permanent CMD bar outside the map.</span><em>[side_active ? "ACTIVE" : "SELECT"]</em></a></div><section class='section'><h2>HUD POSITION</h2>[hud_controls]<div class='note'>Overhead adjustments move the bars and typing indicator together. All positions are saved for this account.</div></section><section class='section'><h2>LEGACY TAB CATEGORIES</h2><div class='options'>[tab_options]</div><div class='note'>These switches control the legacy categories shown in Side + Tabs mode. Preferences are saved for this account.</div></section></main></body></html>"}
 
 	proc/show()
 		if(!owner || !owner.client)
@@ -408,20 +412,46 @@ datum/NexusInterfaceSettings
 
 	Topic(href, list/href_list)
 		if(!owner || !owner.client || usr != owner) return
+		var/layout_changed = FALSE
 		switch(href_list["action"])
-			if("layout") owner.nexus_interface_layout = normalizeNexusInterfaceLayout(href_list["id"])
+			if("layout")
+				owner.nexus_interface_layout = normalizeNexusInterfaceLayout(href_list["id"])
+				layout_changed = TRUE
 			if("toggle")
+				layout_changed = TRUE
 				switch(href_list["id"])
 					if("skills") owner.nexus_legacy_tab_skills = !owner.nexus_legacy_tab_skills
 					if("other") owner.nexus_legacy_tab_other = !owner.nexus_legacy_tab_other
 					if("items") owner.nexus_legacy_tab_items = !owner.nexus_legacy_tab_items
 					if("world") owner.nexus_legacy_tab_world = !owner.nexus_legacy_tab_world
 					if("admin") if(owner.IsAdmin()) owner.nexus_legacy_tab_admin = !owner.nexus_legacy_tab_admin
+			if("hud_move")
+				switch(href_list["id"])
+					if("overhead_left") owner.setNexusOverheadVitalsOffset(owner.nexus_overhead_vitals_offset_x - 4, owner.nexus_overhead_vitals_offset_y)
+					if("overhead_right") owner.setNexusOverheadVitalsOffset(owner.nexus_overhead_vitals_offset_x + 4, owner.nexus_overhead_vitals_offset_y)
+					if("overhead_up") owner.setNexusOverheadVitalsOffset(owner.nexus_overhead_vitals_offset_x, owner.nexus_overhead_vitals_offset_y + 4)
+					if("overhead_down") owner.setNexusOverheadVitalsOffset(owner.nexus_overhead_vitals_offset_x, owner.nexus_overhead_vitals_offset_y - 4)
+					if("main_left") owner.setNexusMainVitalsPosition(owner.nexus_main_vitals_x - 8, owner.nexus_main_vitals_y)
+					if("main_right") owner.setNexusMainVitalsPosition(owner.nexus_main_vitals_x + 8, owner.nexus_main_vitals_y)
+					if("main_up") owner.setNexusMainVitalsPosition(owner.nexus_main_vitals_x, owner.nexus_main_vitals_y + 8)
+					if("main_down") owner.setNexusMainVitalsPosition(owner.nexus_main_vitals_x, owner.nexus_main_vitals_y - 8)
+			if("hud_set")
+				var/current_x = href_list["id"] == "overhead" ? owner.nexus_overhead_vitals_offset_x : owner.nexus_main_vitals_x
+				var/current_y = href_list["id"] == "overhead" ? owner.nexus_overhead_vitals_offset_y : owner.nexus_main_vitals_y
+				var/new_x = input(owner, "Horizontal pixel position or offset.", "HUD X", current_x) as num|null
+				if(isnull(new_x)) return
+				var/new_y = input(owner, "Vertical pixel position or offset.", "HUD Y", current_y) as num|null
+				if(isnull(new_y)) return
+				if(href_list["id"] == "overhead") owner.setNexusOverheadVitalsOffset(new_x, new_y)
+				else owner.setNexusMainVitalsPosition(new_x, new_y)
+			if("hud_reset")
+				if(href_list["id"] == "overhead") owner.setNexusOverheadVitalsOffset(0, 0)
+				else owner.setNexusMainVitalsPosition(8, 8)
 			if("close")
 				owner.save_player_settings()
 				del(src)
 				return
-		owner.applyNexusInterfaceLayout()
+		if(layout_changed) owner.applyNexusInterfaceLayout()
 		owner.save_player_settings()
 		show()
 

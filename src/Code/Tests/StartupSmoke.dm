@@ -200,7 +200,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
 	overhead_layout_test.icon = 'Healthbar.dmi'
-	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 34 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 47, "speech or typing feedback overlaps the three-row overhead vitals stack")
+	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 46 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 12 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 59, "typing is not stacked below the overhead vitals with speech above them")
+	overhead_layout_test.setNexusOverheadVitalsOffset(6, 12)
+	nexusSmokeAssert(getNexusOverheadVitalsBasePixelX(overhead_layout_test) == 6 && getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 58 && getNexusTypingIndicatorPixelY(overhead_layout_test) + 32 <= getNexusOverheadVitalsBasePixelY(overhead_layout_test), "custom overhead vitals offsets overlap the typing indicator")
 	del(overhead_layout_test)
 	var/icon/shortcut_button_icon = getNexusShortcutButtonIcon("inventory", FALSE, "#d6aa5d")
 	var/icon/shortcut_bar_icon = getNexusShortcutBarIcon(6)
@@ -318,16 +320,20 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")
-	var/obj/NexusHud/VitalsPanel/vitals_panel = new
-	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8", "main vitals HUD is not fully inside the lower-left corner")
-	vitals_panel.setScreenPosition(92, 62)
-	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:92,BOTTOM:62", "main vitals HUD drag positioning is invalid")
 	var/mob/NexusSmokeTest/vitals_owner = new
 	vitals_owner.icon = 'BaseHumanPale.dmi'
 	vitals_owner.Ki = 8000
 	vitals_owner.max_ki = 8000
 	vitals_owner.willpower = 50
 	vitals_owner.max_willpower = 100
+	var/obj/NexusHud/VitalsPanel/vitals_panel = new
+	vitals_panel.initialize(vitals_owner)
+	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8", "main vitals HUD is not fully inside the lower-left corner")
+	vitals_panel.setScreenPosition(92, 62)
+	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:92,BOTTOM:62" && vitals_owner.nexus_main_vitals_x == 92 && vitals_owner.nexus_main_vitals_y == 62, "main vitals HUD drag positioning is not retained by its owner")
+	var/datum/NexusInterfaceSettings/interface_settings_contract = new(vitals_owner)
+	nexusSmokeAssert(findtext(interface_settings_contract.buildHtml(), "action=hud_move") && findtext(interface_settings_contract.buildHtml(), "action=hud_set"), "interface settings are missing HUD position controls")
+	del(interface_settings_contract)
 	var/mob/NexusSmokeTest/chat_contract_owner = new
 	chat_contract_owner.nexus_interface_layout = "side_tabs"
 	var/datum/NexusChatHud/chat_hud_contract = new(chat_contract_owner)
@@ -338,7 +344,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() >= 4, "overlay chat visible message calculation is invalid")
 	del(chat_hud_contract)
 	del(chat_contract_owner)
-	vitals_panel.initialize(vitals_owner)
 	nexusSmokeAssert(vitals_panel.vis_contents.len == 8 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
 	var/icon/main_vitals_bar = getVitalsBarIcon(50, "#46d369")

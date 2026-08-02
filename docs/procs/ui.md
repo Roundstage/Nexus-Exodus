@@ -3,7 +3,7 @@
 ## Overview
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools.
 
-The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. Speech and per-character typing actors share a sprite-height-aware feedback position above that complete stack instead of overlapping or rendering behind its rows. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Characters also carry thin overhead Health, Energy, and Willpower bars. Typing occupies a reserved, sprite-height-aware slot immediately below the three bars while Say text remains above them. Players can persistently reposition the overhead stack for unusually large sprites and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
 The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
@@ -48,13 +48,13 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
 - `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
-- `datum/NexusInterfaceSettings` switches layouts and independently enables the Skills, Other, Items, World, and Admin legacy categories. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
+- `datum/NexusInterfaceSettings` switches layouts, independently enables the Skills, Other, Items, World, and Admin legacy categories, and provides nudge, exact-coordinate, and reset controls for both vitals displays. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
 - `applyNexusInterfaceLayout()` and `hideNexusLegacyInterface()` reconcile the configured panes while keeping obsolete output windows detached.
 
 ### src/Code/UI/SavePlayerSettings.dm
 
-- `save_player_settings()` and `load_player_settings()` persist the selected interface layout and all five native-tab category switches.
+- `save_player_settings()` and `load_player_settings()` persist the selected interface layout, all five native-tab category switches, the overhead-vitals offsets, and the main-panel screen position.
 
 ### src/Code/UI/UIStuff.dm
 
@@ -189,19 +189,54 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Returns: cached 7x72 icon.
 - Side effects: initializes a cache entry on first use.
 
+#### proc/normalizeNexusHudOffset
+- Signature: `proc/normalizeNexusHudOffset(value)`
+- Inputs: requested world-space HUD offset.
+- Purpose: Round and clamp a player-selected overhead offset to the supported -128 through 128 pixel range.
+- Returns: normalized integer offset.
+- Side effects: none.
+
+#### proc/getNexusOverheadVitalsBasePixelX
+- Signature: `proc/getNexusOverheadVitalsBasePixelX(mob/owner)`
+- Inputs: displayed character.
+- Purpose: Resolve the account-configured horizontal offset for the overhead vitals and typing stack.
+- Returns: world-space pixel X offset.
+- Side effects: none.
+
 #### proc/getNexusOverheadVitalsBasePixelY
 - Signature: `proc/getNexusOverheadVitalsBasePixelY(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Position the first overhead vitals row two pixels above the owner's current sprite height.
+- Purpose: Position the first overhead vitals row above the owner's current sprite height with reserved room for the visible typing bubble and the configured vertical offset.
 - Returns: world-space pixel Y offset.
+- Side effects: none.
+
+#### proc/getNexusTypingIndicatorPixelY
+- Signature: `proc/getNexusTypingIndicatorPixelY(mob/owner)`
+- Inputs: displayed character.
+- Purpose: Place the visible portion of `KhunTyping.dmi` directly below the first overhead bar with two clear pixels between the full 32-pixel actors.
+- Returns: world-space pixel Y offset for the typing actor.
 - Side effects: none.
 
 #### proc/getNexusOverheadFeedbackPixelY
 - Signature: `proc/getNexusOverheadFeedbackPixelY(mob/owner)`
 - Inputs: displayed character.
-- Purpose: Resolve a shared speech/typing position with two clear pixels above the complete three-row vitals stack.
+- Purpose: Resolve the Say-text position with two clear pixels above the complete three-row vitals stack.
 - Returns: world-space pixel Y offset.
 - Side effects: none.
+
+#### mob/proc/setNexusOverheadVitalsOffset
+- Signature: `mob/proc/setNexusOverheadVitalsOffset(new_x, new_y)`
+- Inputs: requested horizontal and vertical pixel offsets.
+- Purpose: Apply a player's overhead-stack placement and immediately realign active bars, typing, and Say feedback.
+- Returns: none (implicit).
+- Side effects: updates persistent preference variables and live world-space HUD actors.
+
+#### mob/proc/setNexusMainVitalsPosition
+- Signature: `mob/proc/setNexusMainVitalsPosition(new_x, new_y)`
+- Inputs: requested lower-left screen coordinates.
+- Purpose: Apply a non-negative main-panel position and synchronize an active panel.
+- Returns: none (implicit).
+- Side effects: updates persistent preference variables and `screen_loc`.
 
 #### mob/proc/initializeVitalsHud
 - Signature: `mob/proc/initializeVitalsHud()`
@@ -255,7 +290,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### obj/NexusHud/VitalsPanel/proc/initialize
 - Signature: `initialize(mob/owner)`
 - Inputs: owning player.
-- Purpose: Compose the centered character, two power gauges, percentage readout, and four labeled stat rows over the panel root.
+- Purpose: Restore the owner's saved screen position and compose the centered character, two power gauges, percentage readout, and four labeled stat rows over the panel root.
 - Returns: none (implicit).
 - Side effects: populates `vis_contents`.
 
@@ -274,9 +309,9 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Side effects: updates panel screen position.
 
 #### obj/NexusHud/VitalsPanel/proc/setScreenPosition
-- Signature: `setScreenPosition(new_x, new_y)`
-- Inputs: absolute lower-left pixel coordinates.
-- Purpose: Store the panel position using BYOND's icon-aware `LEFT` and `BOTTOM` anchors.
+- Signature: `setScreenPosition(new_x, new_y, update_owner = TRUE)`
+- Inputs: absolute lower-left pixel coordinates and whether to copy them to the owner preference.
+- Purpose: Store the panel position using BYOND's icon-aware `LEFT` and `BOTTOM` anchors and retain player-driven changes.
 - Returns: none (implicit).
 - Side effects: updates `screen_loc`.
 
@@ -319,6 +354,13 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Purpose: Drag the client-owned vitals panel directly by its translucent background.
 - Returns: none (implicit).
 - Side effects: updates the panel position.
+
+#### obj/NexusHud/VitalsPanel/MouseDrop
+- Signature: `MouseDrop(over_object, src_location, over_location, src_control, over_control, params)`
+- Inputs: standard BYOND mouse-drop context.
+- Purpose: Finish direct panel placement and persist the resulting screen coordinates.
+- Returns: none (implicit).
+- Side effects: updates the panel position and exports player settings.
 
 #### proc/DrawHUD
 - Signature: `proc/DrawHUD(mob/M=usr)`
@@ -996,14 +1038,14 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/save_player_settings
 - Signature: `save_player_settings()`
 - Inputs: None
-- Purpose: Save player settings.
+- Purpose: Save player settings, including interface layout, enabled native tabs, overhead-vitals offsets, and the main-vitals screen position.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
 #### mob/proc/load_player_settings
 - Signature: `load_player_settings()`
 - Inputs: None
-- Purpose: Load player settings.
+- Purpose: Load player settings and normalize the saved HUD offsets and screen coordinates before HUD initialization.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
