@@ -144,6 +144,8 @@ proc/getNexusTransformationGlowProfile(transformation_id)
 
 proc/getNexusAttackGlowColor(obj/Attacks/attack)
 	if(!attack) return "#59d8ff"
+	if(istype(attack, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash)) return "#b8ecff"
+	if(istype(attack, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak)) return "#8ed8ff"
 	if(istype(attack, /obj/Attacks/Final_Flash) || istype(attack, /obj/Attacks/Masenko) || istype(attack, /obj/Attacks/Kienzan)) return "#fff176"
 	if(istype(attack, /obj/Attacks/Garlic_Gun) || istype(attack, /obj/Attacks/RoleplayBeam/TyrantLancer)) return "#b56cff"
 	if(istype(attack, /obj/Attacks/RoleplayBeam/DoubleSunday)) return "#ff4d5f"
@@ -156,6 +158,20 @@ proc/getNexusAttackGlowColor(obj/Attacks/attack)
 	if(istype(attack, /obj/Attacks/Buster_Barrage)) return "#72ff8c"
 	if(istype(attack, /obj/Attacks/Sokidan)) return "#d8fbff"
 	return "#59d8ff"
+
+proc/getNexusExplosionLightProfile(explosion_size = 1, light_color = "#ffc45f")
+	var/normalized_size = Clamp(explosion_size, 1, 8)
+	return list(
+		"color" = light_color,
+		"size" = Clamp(3.6 + normalized_size * 0.9, 4.5, 9.5),
+		"alpha" = Clamp(round(230 + normalized_size * 7), 237, 255),
+		"offset" = 10,
+		"duration" = Clamp(round(7 + normalized_size * 1.35), 8, 18),
+		"variation" = NEXUS_LIGHT_VARIATION_BLAST)
+
+proc/showNexusExplosionLight(atom/origin, explosion_size = 1, light_color = "#ffc45f")
+	if(!origin || !getNexusLightTurf(origin)) return null
+	return new /obj/NexusLighting/ExplosionPulse(origin, explosion_size, light_color)
 
 proc/getNexusProjectileLightProfile(obj/Blast/projectile)
 	if(!projectile || !projectile.Is_Ki) return null
@@ -449,6 +465,35 @@ obj/NexusLighting
 					animate(core_visual, alpha = base_core_alpha, transform = matrix() * base_core_scale, time = variation_time + 1, easing = SINE_EASING)
 			refreshNexusLightOcclusion(TRUE)
 			return src
+
+	ExplosionPulse
+		parent_type = /obj/NexusLighting/Emitter
+
+		New(atom/origin, explosion_size = 1, light_color = "#ffc45f")
+			..()
+			var/turf/light_turf = getNexusLightTurf(origin)
+			if(!light_turf)
+				del(src)
+				return
+			SafeTeleport(light_turf)
+			light_origin = src
+			var/list/profile = getNexusExplosionLightProfile(explosion_size, light_color)
+			configureNexusEmitter(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', TRUE, profile["offset"], profile["variation"])
+			CenterIcon(src)
+			spawn() fadeExplosionLight(profile["duration"])
+
+		proc/fadeExplosionLight(duration)
+			set waitfor = 0
+			var/flicker_time = max(2, round(duration * 0.35))
+			sleep(flicker_time)
+			if(!src) return
+			animate(src)
+			if(core_visual) animate(core_visual)
+			var/fade_time = max(2, duration - flicker_time)
+			animate(src, alpha = 0, transform = matrix() * base_range_scale * 1.2, time = fade_time, easing = SINE_EASING)
+			if(core_visual) animate(core_visual, alpha = 0, transform = matrix() * base_core_scale * 1.25, time = fade_time, easing = SINE_EASING)
+			sleep(fade_time)
+			if(src) del(src)
 
 atom/movable
 	var/tmp

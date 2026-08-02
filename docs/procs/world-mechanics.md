@@ -1638,6 +1638,18 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Signature: `getNexusProjectileLightProfile(obj/Blast/projectile)`
 - Purpose: Derive color, total diameter, intensity, falloff, and flicker cadence from an energy projectile's attack, sprite dimensions, direct factor, explosive radius, beam state, and Spirit Bomb growth. Physical bullets and shuriken return no light profile.
 
+#### proc/getNexusExplosionLightProfile
+- Signature: `getNexusExplosionLightProfile(explosion_size = 1, light_color = "#ffc45f")`
+- Purpose: Convert an explosion radius into a high-intensity 4.5-to-9.5-tile warm light, blast flicker cadence and short fade duration.
+
+#### proc/showNexusExplosionLight
+- Signature: `showNexusExplosionLight(atom/origin, explosion_size = 1, light_color = "#ffc45f")`
+- Purpose: Spawn a transient, turf-occluded explosion emitter at any map atom. `Explosion_Graphics()` calls this centrally, so projectile, beam, vehicle and world explosions share the same light behavior.
+
+#### obj/NexusLighting/ExplosionPulse/proc/fadeExplosionLight
+- Signature: `fadeExplosionLight(duration)`
+- Purpose: Preserve an initial irregular blast flicker, then expand and fade both gradient layers before deleting the temporary emitter.
+
 #### obj/Blast/proc/updateNexusProjectileGlow
 - Signature: `updateNexusProjectileGlow()`
 - Purpose: Attach or refresh the derived projectile profile only when its rendered settings changed. Because the emitter lives in `vis_contents`, it follows moving blasts and every active beam segment.

@@ -16,8 +16,8 @@ The forge, pickaxe, Tin/Silver ore, Bardock armor, hammer, sledgehammer, mage st
 ## Combat presentation
 
 - Rock Throw and Rock Slide use the original animated `bouldertest2.dmi`, imported as `RTRockThrow.dmi`; Rock Tomb uses the original directional `Meteor.dmi`, imported as `RTRockTomb.dmi`.
-- Dragon Nova uses the original `16.dmi` projectile art as `RTDragonNova.dmi`. Sky Break uses the original `blackslash.dmi` as `RTSkyBreak.dmi` and is implemented as a weapon-gated projectile whose damage resolves from Strength against Endurance.
+- Dragon Nova uses the original `16.dmi` projectile art as `RTDragonNova.dmi`. Sky Break uses the original `blackslash.dmi` as `RTSkyBreak.dmi`; Echoing Slash uses `RTEchoingSlash.dmi`. Both sword waves require an equipped weapon, resolve Strength against Endurance, and use sword swings, impacts and slash VFX instead of generic blast audio.
 - Rock Slide restores the RPT 7-to-15 projectile cadence instead of the previous five-hit cap; Rock Throw and Rock Tomb use factors 3.5 and 8 respectively, retaining Nexus damage caps and audiovisual feedback.
-- The **Give Tenkaichi Attacks** admin verb exposes a dedicated **Rock Techniques** package containing all three skills for immediate testing.
+- The **Give Tenkaichi Attacks** admin verb exposes dedicated Rock Techniques and Special Styles packages containing the adapted skills for immediate testing. **Test Combat Effects** previews sword waves, rocks, maximum explosion light and explosive-beam knockback.
 - Imported melee impact art also supplies each technique's hotbar icon. Casts use Nexus attack animations, floating names, spectator messages and weapon/unarmed/grapple sound profiles; impacts animate, fade and create heavy shockwaves where appropriate.
 - Wall of Flame uses Nexus cast text, fire audio, field fade-in and first-contact burn feedback. Ported beams and Buster Barrage continue through their native Nexus engines, which already own charge, firing and impact presentation.

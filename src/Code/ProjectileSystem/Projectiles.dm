@@ -48,6 +48,34 @@ obj/Blast/proc/getNexusCombatAttackName()
 	return "Ki Blast"
 	//world<<"BP: [BP]<br>Force: [Force]<br>Offense: [Offense]"
 
+obj/Blast/proc/getNexusProjectileImpactIcon()
+	if(projectile_impact_icon) return projectile_impact_icon
+	if(istype(from_attack, /obj/Attacks) && percent_damage >= 3) return 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+	return null
+
+obj/Blast/proc/showConfiguredProjectileImpact(atom/impact_target)
+	set waitfor = 0
+	if(!impact_target || !impact_target.base_loc()) return
+	var/impact_color = projectile_impact_color || getNexusAttackGlowColor(istype(from_attack, /obj/Attacks) ? from_attack : null)
+	var/impact_icon = getNexusProjectileImpactIcon()
+	if(impact_icon)
+		var/obj/Effect/impact = GetEffect()
+		impact.icon = impact_icon
+		impact.icon_state = projectile_impact_icon_state
+		impact.color = impact_color
+		impact.blend_mode = BLEND_ADD
+		impact.alpha = 245
+		impact.SafeTeleport(impact_target.base_loc())
+		CenterIcon(impact)
+		var/impact_scale = Clamp(0.95 + percent_damage * 0.035, 1.05, 1.65)
+		impact.transform = matrix() * impact_scale
+		impact.pulseNexusGlow(impact_color, Clamp(2.3 + percent_damage * 0.12, 2.6, 5.2), 225, 8)
+		if(projectile_impact_icon_state) flick(projectile_impact_icon_state, impact)
+		animate(impact, alpha = 0, transform = matrix() * (impact_scale + 0.35), time = 7, easing = SINE_EASING)
+		spawn(8) if(impact) del(impact)
+	if(projectile_impact_sound)
+		player_view(12, impact_target) << sound(projectile_impact_sound, volume = projectile_impact_sound_volume)
+
 obj/Blast/proc/queueNexusProjectileGlowUpdate()
 	nexus_projectile_glow_serial = ++nexus_projectile_glow_serial_counter
 	var/update_serial = nexus_projectile_glow_serial
@@ -101,6 +129,11 @@ proc/get_cached_blast()
 		b.shield_pierce_mult = 1
 		b.bleed_damage = 0
 		b.explosion_damage_factor = 0
+		b.projectile_impact_icon = null
+		b.projectile_impact_icon_state = null
+		b.projectile_impact_color = null
+		b.projectile_impact_sound = null
+		b.projectile_impact_sound_volume = 40
 		b.damage_budget = null
 		b.shuriken = 0
 		b.deflected=0
@@ -206,6 +239,11 @@ obj/Blast
 	var/strength_scaled = FALSE
 	var/tmp/clash_damage_bonus_applied = FALSE
 	var/explosion_damage_factor = 0
+	var/projectile_impact_icon
+	var/projectile_impact_icon_state
+	var/projectile_impact_color
+	var/projectile_impact_sound
+	var/projectile_impact_sound_volume = 40
 	var/datum/CombatDamageBudget/damage_budget
 	var/owner_immune = 0
 	var/Force=1
@@ -290,6 +328,11 @@ obj/Blast
 			A.Force=Force
 			A.percent_damage=percent_damage
 			A.explosion_damage_factor = explosion_damage_factor
+			A.projectile_impact_icon = projectile_impact_icon
+			A.projectile_impact_icon_state = projectile_impact_icon_state
+			A.projectile_impact_color = projectile_impact_color
+			A.projectile_impact_sound = projectile_impact_sound
+			A.projectile_impact_sound_volume = projectile_impact_sound_volume
 			A.damage_budget = damage_budget
 			A.owner_immune = owner_immune
 			A.Offense=Offense
@@ -453,6 +496,11 @@ obj/Blast
 		if(beam_impact_mode == BEAM_IMPACT_EXPLOSIVE) return beam_raw_damage_mod
 		return loop_delay
 
+	proc/getExplosiveBeamKnockbackDistance(mob/impact_mob)
+		var/knockback_distance = Clamp(round(3 + sqrt(max(1, percent_damage)) * 2), 5, 11)
+		if(impact_mob) knockback_distance = impact_mob.relative_kb_dist(src, knockback_distance)
+		return Clamp(ToOne(knockback_distance), 3, 15)
+
 	proc/showExplosiveBeamImpact(atom/impact_target, force_mob_impact = 0)
 		if(beam_impact_mode != BEAM_IMPACT_EXPLOSIVE) return 0
 		var/is_mob_impact = force_mob_impact || ismob(impact_target)
@@ -464,6 +512,10 @@ obj/Blast
 			if(impact_mob) impact_mob.ScreenShake(20, 8)
 			player_view(12, impact_target) << sound('Explosion2.wav', volume = 70)
 			var/mob/beam_owner = Owner
+			if(impact_mob && beam_owner && impact_mob != beam_owner)
+				var/knockback_direction = dir
+				if(!knockback_direction) knockback_direction = get_dir(beam_owner, impact_mob)
+				impact_mob.Knockback(beam_owner, Distance = getExplosiveBeamKnockbackDistance(impact_mob), override_dir = knockback_direction)
 			var/obj/Attacks/beam_attack = from_attack
 			if(beam_owner && beam_attack && beam_attack.streaming) beam_owner.BeamStop(beam_attack, immediate = 1, impact_segment = src)
 		SafeTeleport(null)
@@ -954,6 +1006,7 @@ obj/Blast
 			if(m.Vampire) dmg *= vampire_damage_multiplier
 			if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
 			else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
+			showConfiguredProjectileImpact(m)
 			if(shuriken) m.ShurikenOverlayEffect(icon)
 			if(percent_damage >= 10) Make_Shockwave(m, sw_icon_size = Get_projectile_shockwave_size(src))
 			if(ismob(Owner) && !m.KO) m.setOpponent(Owner)
@@ -1019,6 +1072,7 @@ obj/Blast
 						Bump(m)
 						break
 				else
+					showConfiguredProjectileImpact(A)
 					Explode()
 					if(!Beam) Make_Shockwave(A,sw_icon_size=Get_projectile_shockwave_size(src))
 					var/obj/Blast/b=A
@@ -1046,6 +1100,7 @@ obj/Blast
 					else if(!Piercer && !Bounce && !override_delete) del_self = 1
 
 					if(do_explosion)
+						showConfiguredProjectileImpact(A)
 						Explode()
 						if(!Beam)
 							if(percent_damage >= 10 && A != last_object_shockwaved_against) Make_Shockwave(A,sw_icon_size=Get_projectile_shockwave_size(src))
@@ -1055,6 +1110,7 @@ obj/Blast
 			Bounce_Dir()
 
 		if(isturf(A) && A.density)
+			showConfiguredProjectileImpact(A)
 			Explode()
 			if(A != last_object_shockwaved_against) Make_Shockwave(A,sw_icon_size=Get_projectile_shockwave_size(src))
 			last_object_shockwaved_against=A

@@ -8,6 +8,24 @@ var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/We
 var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
 var/list/nexus_sword_impact_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordImpact1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact2.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact3.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact4.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact5.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact6.ogg')
 
+proc/showNexusSwordSlashEffect(atom/target, effect_color = "#8ecae6", impact_scale = 1)
+	set waitfor = 0
+	if(!target || !target.base_loc()) return
+	var/obj/Effect/slash = GetEffect()
+	slash.icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+	slash.icon_state = "slash"
+	slash.color = effect_color
+	slash.blend_mode = BLEND_ADD
+	slash.alpha = 235
+	slash.SafeTeleport(target.base_loc())
+	CenterIcon(slash)
+	slash.transform = matrix() * Clamp(0.9 + (impact_scale * 0.28), 1.1, 1.55)
+	slash.pulseNexusGlow(effect_color, 2.2 + impact_scale, 205, 6)
+	flick("slash", slash)
+	animate(slash, alpha = 0, transform = matrix() * (impact_scale + 0.45), time = 7, easing = SINE_EASING)
+	sleep(7)
+	if(slash) del(slash)
+
 obj/Effect/TenkaichiTechniqueText
 	name = "technique announcement"
 	density = 0
@@ -106,22 +124,8 @@ obj/Attacks/TenkaichiMeleeTechnique
 		if(behavior == "iai_dash") Play_Melee_Sound(sound_range = 10, origin = user, sound_file = 'Teleport.ogg', sound_volume = 14)
 
 	proc/showSwordSlashEffect(mob/target, impact_scale = 1)
-		set waitfor = 0
 		if(!target || !requires_weapon) return
-		var/obj/Effect/slash = GetEffect()
-		slash.icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
-		slash.icon_state = "slash"
-		slash.color = cast_text_color
-		slash.blend_mode = BLEND_ADD
-		slash.alpha = 235
-		slash.SafeTeleport(target.loc)
-		CenterIcon(slash)
-		slash.transform = matrix() * Clamp(0.9 + (impact_scale * 0.28), 1.1, 1.55)
-		slash.pulseNexusGlow(cast_text_color, 2.2 + impact_scale, 205, 6)
-		flick("slash", slash)
-		animate(slash, alpha = 0, transform = matrix() * (impact_scale + 0.45), time = 7, easing = SINE_EASING)
-		sleep(7)
-		if(slash) del(slash)
+		showNexusSwordSlashEffect(target, cast_text_color, impact_scale)
 
 	proc/showImpact(mob/target)
 		if(!target || !effect_icon) return

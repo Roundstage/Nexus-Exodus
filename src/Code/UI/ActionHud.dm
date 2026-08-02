@@ -474,10 +474,10 @@ datum/NexusPlayerMenu
 			return data
 		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile))
 			var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/projectile_skill = skill
-			data["factor"] = projectile_skill.projectile_damage_factor * 2
+			data["factor"] = projectile_skill.projectile_damage_factor * (projectile_skill.explosion_size ? 2 : 1)
 			data["model"] = projectile_skill.strength_scaled ? "Physical" : "Ki"
-			data["range"] = "40 tiles / [projectile_skill.explosion_size]-tile explosion"
-			data["mechanics"] = "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then deals direct and splash damage within a shared maximum budget."
+			data["range"] = projectile_skill.explosion_size ? "40 tiles / [projectile_skill.explosion_size]-tile explosion" : "40 tiles / direct impact"
+			data["mechanics"] = projectile_skill.explosion_size ? "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then deals direct and splash damage within a shared maximum budget." : "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then launches a cutting projectile with [projectile_skill.projectile_shockwave]-tile knockback."
 			data["requirements"] = projectile_skill.requires_weapon ? (owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING") : "No weapon requirement"
 			data["cost"] = "[projectile_skill.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(projectile_skill.cooldown_ticks / 10, 0.1)] seconds"

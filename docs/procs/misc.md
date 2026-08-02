@@ -1429,11 +1429,11 @@ These legacy proc summaries are retained for reference. Their implementations no
 - Side effects: see implementation.
 
 #### proc/Explosion_Graphics
-- Signature: `proc/Explosion_Graphics(obj/O,Distance=1,not_used=0)`
-- Inputs: obj/O, Distance=1, not_used=0
-- Purpose: Handle explosion graphics.
+- Signature: `proc/Explosion_Graphics(atom/O,Distance=1,not_used=0)`
+- Inputs: map atom, visual radius and deprecated compatibility argument.
+- Purpose: Spawn the cached explosion animation and a size-scaled, flickering transient light at the same turf.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: creates cached visual and temporary lighting objects.
 
 #### proc/Explosion_Count
 - Signature: `proc/Explosion_Count(list/L)`
