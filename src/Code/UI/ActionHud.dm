@@ -2,6 +2,18 @@ var/list/nexus_action_button_icon_cache = list()
 var/list/nexus_shortcut_button_icon_cache = list()
 var/list/nexus_shortcut_bar_icon_cache = list()
 
+var/nexus_live_browser_refresh_ticks = 10
+
+proc/getNexusLiveBrowserScript(datum/handler, restore_scroll_y = 0)
+	restore_scroll_y = round(Clamp(text2num("[restore_scroll_y]"), 0, 100000))
+	return {"<script>
+	var nexusLiveHandler='\ref[handler]';
+	function nexusLiveTopic(data){data.src=nexusLiveHandler;if(window.BYOND&&BYOND.topic){BYOND.topic(data);return;}var query='';for(var key in data){if(query)query+='&';query+=encodeURIComponent(key)+'='+encodeURIComponent(data\[key]);}window.location.href='byond://?'+query;}
+	function nexusLiveScrollY(){return Math.max(document.documentElement?document.documentElement.scrollTop:0,document.body?document.body.scrollTop:0,window.pageYOffset||0);}
+	function nexusStartLiveUpdates(){window.setTimeout(function(){window.scrollTo(0,[restore_scroll_y]);nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});window.setInterval(function(){nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});},500);},0);}
+	if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',nexusStartLiveUpdates);else nexusStartLiveUpdates();
+	</script>"}
+
 proc/getNexusActionButtonIcon(active, accent_color)
 	var/cache_key = "[active]-[accent_color]"
 	if(nexus_action_button_icon_cache[cache_key]) return nexus_action_button_icon_cache[cache_key]
@@ -225,6 +237,7 @@ mob/proc/removeActionHud()
 		del(client.nexus_shortcut_bar)
 		client.nexus_shortcut_bar = null
 	if(client.nexus_player_menu) del(client.nexus_player_menu)
+	if(client.nexus_character_sheet) del(client.nexus_character_sheet)
 
 obj/NexusHud/ShortcutBarBackground
 	mouse_opacity = 0
@@ -399,12 +412,18 @@ datum/NexusPlayerMenu
 	var/tmp/section = "inventory"
 	var/tmp/list/browser_icon_resources
 	var/tmp/browser_icon_index = 0
+	var/tmp/live_refresh_loop
+	var/tmp/last_browser_heartbeat
+	var/tmp/last_scroll_y
+	var/tmp/last_render_signature
+	var/tmp/auto_refresh_paused
 
 	New(mob/new_owner, starting_section = "inventory")
 		. = ..()
 		owner = new_owner
 		browser_icon_resources = list()
 		section = normalizeSection(starting_section)
+		last_browser_heartbeat = world.time
 
 	Del()
 		if(owner)
@@ -414,6 +433,33 @@ datum/NexusPlayerMenu
 
 	proc/canUse()
 		return owner && owner.client && owner.playerCharacter && usr == owner
+
+	proc/hasLiveOwner()
+		return owner && owner.client && owner.playerCharacter && owner.client.nexus_player_menu == src
+
+	proc/isBrowserOpen()
+		if(!hasLiveOwner()) return FALSE
+		var/window_visibility = winget(owner, "NexusPlayerMenu", "is-visible")
+		if(window_visibility == "false") return FALSE
+		if(window_visibility == "true") return TRUE
+		return world.time - last_browser_heartbeat <= 30
+
+	proc/recordHeartbeat(scroll_y)
+		last_browser_heartbeat = world.time
+		var/numeric_scroll_y = text2num("[scroll_y]")
+		if(isnum(numeric_scroll_y)) last_scroll_y = round(Clamp(numeric_scroll_y, 0, 100000))
+
+	proc/startLiveRefresh()
+		set waitfor = FALSE
+		if(live_refresh_loop) return
+		live_refresh_loop = TRUE
+		while(src && hasLiveOwner())
+			sleep(nexus_live_browser_refresh_ticks)
+			if(!src || !hasLiveOwner() || !isBrowserOpen()) break
+			if(!auto_refresh_paused) show(FALSE)
+		if(src)
+			live_refresh_loop = FALSE
+			del(src)
 
 	proc/normalizeSection(requested_section)
 		if(requested_section == "world" && owner && owner.IsAdmin()) return requested_section
@@ -580,9 +626,10 @@ datum/NexusPlayerMenu
 
 	proc/showExamineWindow(title, subtitle, icon_html, body_html)
 		if(!owner || !owner.client) return
+		auto_refresh_paused = TRUE
 		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>[html_encode(title)]</title><style>[getNexusRpgBrowserCss()]
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.header-copy{flex:1}.back{padding:7px 10px}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
-		</style></head><body><div class='shell'><div class='header'>[icon_html]<div class='header-copy'><h1>[html_encode(title)]</h1><p>[html_encode(subtitle)]</p></div><a class='back' href='byond://?src=\ref[src]&action=back'>BACK</a></div><div class='body'>[body_html]</div></div></body></html>"}
+		</style>[getNexusLiveBrowserScript(src, last_scroll_y)]</head><body><div class='shell'><div class='header'>[icon_html]<div class='header-copy'><h1>[html_encode(title)]</h1><p>[html_encode(subtitle)]</p></div><a class='back' href='byond://?src=\ref[src]&action=back'>BACK</a></div><div class='body'>[body_html]</div></div></body></html>"}
 		owner << browse(html, "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
 
 	proc/showItemExamine(obj/items/item)
@@ -724,25 +771,36 @@ datum/NexusPlayerMenu
 			if("world") return buildWorld()
 		return ""
 
-	proc/buildHtml()
-		var/rendered_content = buildContent()
+	proc/buildHtml(rendered_content_override)
+		var/rendered_content = isnull(rendered_content_override) ? buildContent() : rendered_content_override
 		if(section != "world") rendered_content = "<div class='cards'>[rendered_content]</div>"
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Menu</title><style>[getNexusRpgBrowserCss()]
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{min-height:100vh;padding:10px}.header{position:sticky;top:0;z-index:2;border:2px solid #755a36;padding:8px;background:#21190f}.top{display:flex;align-items:center;gap:8px}.title{margin-right:auto}.title b{display:block;font-size:17px;letter-spacing:1px}.title small{display:block;margin-top:2px}.close{padding:6px 9px}.tabs{display:flex;gap:4px;margin-top:8px}.tab{flex:1;padding:7px;text-align:center}.content{margin-top:7px;border:2px solid #684e2f;padding:8px}.cards{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:6px}.card{position:relative;display:block;min-height:92px;padding:9px;border:2px solid #624b30;background:#2a2117;color:#ead7ad;text-decoration:none}.card.with-actions{padding-bottom:42px}.card:hover{border-color:#bd9655;background:#392a1b}.card span,.card b,.card small{display:block}.card span{color:#c69c57;font-size:9px}.card b{margin:6px 0;font-size:13px}.card small{color:#b9a37c;line-height:1.35}.card.resource{border-color:#85652e}.card.compact{min-height:72px}.card-actions{position:absolute;left:8px;right:8px;bottom:7px;display:flex;justify-content:flex-end;gap:5px}.card-actions a{display:block;padding:4px 8px;border:2px outset #9a7440;background:#49351f;color:#ffe2a5;text-decoration:none;font-size:9px;font-weight:bold}.card-actions a:active{border-style:inset}.world-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}.world-grid div{min-height:64px;padding:9px;border:2px solid #644b2e;background:#2a2117}.world-grid small,.world-grid b{display:block}.world-grid b{margin-top:7px;color:#f0d79e}.empty{padding:36px;text-align:center;color:#b9a37c}h2{margin:10px 0 7px;padding:7px;border:2px solid #755a36;font-size:13px}@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}.world-grid{grid-template-columns:repeat(2,1fr)}}
 		.card.with-icon{display:flex;gap:9px}.card-copy{flex:1;min-width:0}.item-icon{width:48px;height:48px;flex:0 0 48px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:44px;max-height:44px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}.sense-card{min-height:132px}.sense-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;margin-top:5px}.sense-stats i{font-size:8px;color:#d1b47d;font-style:normal}
-		</style><script>function nexusRightClick(e,url){e=e||window.event;if(e&&e.button==2){window.location.href=url;return false;}return true;}</script></head><body><div class='shell'><div class='header'><div class='top'><div class='title'><b>NEXUS MENU / [uppertext(section)]</b><small>Pixel interface for the systems formerly hidden in legacy tabs</small></div><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><div class='tabs'>[buildNavigation()]</div></div><div class='content'>[rendered_content]</div></div></body></html>"}
+		.live-state{padding:5px 8px;border:2px solid #4f7f43;background:#1c2b18;color:#9ee88b;font-size:9px;font-weight:bold}
+		</style><script>function nexusRightClick(e,url){e=e||window.event;if(e&&e.button==2){window.location.href=url;return false;}return true;}</script>[getNexusLiveBrowserScript(src, last_scroll_y)]</head><body><div class='shell'><div class='header'><div class='top'><div class='title'><b>NEXUS MENU / [uppertext(section)]</b><small>Live server state; updates automatically when values change</small></div><span class='live-state'>LIVE / 1s</span><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><div class='tabs'>[buildNavigation()]</div></div><div class='content'>[rendered_content]</div></div></body></html>"}
 
-	proc/show()
+	proc/show(force_refresh = TRUE)
 		if(!owner || !owner.client || !owner.playerCharacter)
 			del(src)
 			return
-		owner << browse(buildHtml(), "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
+		auto_refresh_paused = FALSE
+		var/rendered_content = buildContent()
+		var/render_signature = md5("[section]|[rendered_content]")
+		if(!force_refresh && render_signature == last_render_signature) return
+		last_render_signature = render_signature
+		owner << browse(buildHtml(rendered_content), "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
+		if(force_refresh) last_browser_heartbeat = world.time
+		startLiveRefresh()
 
 	Topic(href, list/href_list)
 		if(!canUse()) return
 		switch(href_list["action"])
+			if("heartbeat")
+				recordHeartbeat(href_list["scroll_y"])
+				return
 			if("back")
-				show()
+				show(TRUE)
 				return
 			if("section") section = normalizeSection(href_list["id"])
 			if("use_item")
@@ -777,7 +835,7 @@ datum/NexusPlayerMenu
 			if("close")
 				del(src)
 				return
-		show()
+		show(TRUE)
 
 mob/proc/showNexusPlayerMenu(section = "inventory")
 	if(!client || !playerCharacter) return
