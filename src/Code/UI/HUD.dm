@@ -239,27 +239,25 @@ proc/getNexusOverheadVitalsBasePixelX(mob/owner)
 	return normalizeNexusHudOffset(owner.nexus_overhead_vitals_offset_x)
 
 proc/getNexusOverheadVitalsBasePixelY(mob/owner)
-	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
 	var/vertical_offset = owner ? normalizeNexusHudOffset(owner.nexus_overhead_vitals_offset_y) : 0
-	// Fit the ten visible typing pixels directly above the sprite and keep two clear pixels below the bars.
-	return icon_height + 12 + vertical_offset
+	// Energy is the bottom row; -12 keeps the complete three-row stack below the sprite origin.
+	return -12 + vertical_offset
 
 proc/getNexusTypingIndicatorPixelY(mob/owner)
-	// KhunTyping is a 32px cell whose visible bubble occupies its upper ten pixels.
-	return getNexusOverheadVitalsBasePixelY(owner) - 34
+	return getNexusOverheadFeedbackPixelY(owner)
 
 proc/getNexusOverheadFeedbackPixelY(mob/owner)
-	// Speech remains above all three 3px rows while typing occupies the reserved space below them.
-	return getNexusOverheadVitalsBasePixelY(owner) + 8 + 3 + 2
+	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
+	return icon_height + 2
+
+proc/getNexusOverheadPercentagePixelY(mob/owner)
+	// The 12px Sense readout ends one clear pixel below the bottom Energy row.
+	return getNexusOverheadVitalsBasePixelY(owner) - 13
 
 mob/proc/setNexusOverheadVitalsOffset(new_x, new_y)
 	nexus_overhead_vitals_offset_x = normalizeNexusHudOffset(new_x)
 	nexus_overhead_vitals_offset_y = normalizeNexusHudOffset(new_y)
 	updateOverheadHealthHud()
-	if(nexus_typing_indicator)
-		nexus_typing_indicator.pixel_x = getNexusOverheadVitalsBasePixelX(src)
-		nexus_typing_indicator.pixel_y = getNexusTypingIndicatorPixelY(src)
-	if(nexus_say_text) nexus_say_text.pixel_y = getNexusOverheadFeedbackPixelY(src)
 
 mob/proc/setNexusMainVitalsPosition(new_x, new_y)
 	nexus_main_vitals_x = max(0, round(new_x))

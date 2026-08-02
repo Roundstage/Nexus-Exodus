@@ -200,9 +200,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
 	overhead_layout_test.icon = 'Healthbar.dmi'
-	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 44 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 10 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 57, "typing is not stacked directly below the lowered overhead vitals with speech above them")
+	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == -12 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 34 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 34, "typing and speech are not above the character while overhead vitals are below it")
+	nexusSmokeAssert(getNexusOverheadPercentagePixelY(overhead_layout_test) == -25 && getNexusOverheadPercentagePixelY(overhead_layout_test) + 12 < getNexusOverheadVitalsBasePixelY(overhead_layout_test), "Sense percentage is not below the overhead vitals")
 	overhead_layout_test.setNexusOverheadVitalsOffset(6, 12)
-	nexusSmokeAssert(getNexusOverheadVitalsBasePixelX(overhead_layout_test) == 6 && getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 56 && getNexusTypingIndicatorPixelY(overhead_layout_test) + 32 <= getNexusOverheadVitalsBasePixelY(overhead_layout_test), "custom overhead vitals offsets overlap the typing indicator")
+	nexusSmokeAssert(getNexusOverheadVitalsBasePixelX(overhead_layout_test) == 6 && getNexusOverheadVitalsBasePixelY(overhead_layout_test) == 0 && getNexusOverheadPercentagePixelY(overhead_layout_test) == -13 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 34, "custom vitals offsets do not keep Sense below the bars and typing above the character")
 	del(overhead_layout_test)
 	var/icon/shortcut_button_icon = getNexusShortcutButtonIcon("inventory", FALSE, "#d6aa5d")
 	var/icon/shortcut_bar_icon = getNexusShortcutBarIcon(6)
