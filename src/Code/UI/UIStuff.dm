@@ -15,6 +15,12 @@ client/Del()
 	if(nexus_character_select)
 		del(nexus_character_select)
 		nexus_character_select = null
+	if(nexus_character_sheet)
+		del(nexus_character_sheet)
+		nexus_character_sheet = null
+	if(nexus_player_menu)
+		del(nexus_player_menu)
+		nexus_player_menu = null
 	if(nexus_chat_hud)
 		del(nexus_chat_hud)
 		nexus_chat_hud = null
