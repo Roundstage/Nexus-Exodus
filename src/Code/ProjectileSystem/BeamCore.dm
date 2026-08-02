@@ -5,6 +5,10 @@ var
 #define BEAM_IMPACT_LOCK 0
 #define BEAM_IMPACT_EXPLOSIVE 1
 
+proc/createBeamDamageBudget(impact_mode, damage_factor)
+	if(impact_mode == BEAM_IMPACT_LOCK) return
+	return new /datum/CombatDamageBudget(max(0, damage_factor))
+
 obj/Attacks/var
 	say_name_when_fired
 	shield_pierce_mult = 1 //multiplies normal damage vs shields
@@ -28,9 +32,135 @@ mob/var/tmp
 	beaming
 	next_beam_clash_notice = 0
 	beam_struggling = -999999
+	obj/NexusHud/BeamClashPrompt/beam_clash_prompt
+	beam_clash_prompt_expires_at = 0
+	beam_clash_prompt_loop = FALSE
 	charging_beam
 	can_generate_beam_segment = 1
 	beamMoveLoop
+
+mob/proc/isNexusDirectionPressRecent(direction, input_window = 3)
+	var/north_recent = last_north_down > 0 && world.time - last_north_down >= 0 && world.time - last_north_down <= input_window
+	var/south_recent = last_south_down > 0 && world.time - last_south_down >= 0 && world.time - last_south_down <= input_window
+	var/east_recent = last_east_down > 0 && world.time - last_east_down >= 0 && world.time - last_east_down <= input_window
+	var/west_recent = last_west_down > 0 && world.time - last_west_down >= 0 && world.time - last_west_down <= input_window
+	switch(direction)
+		if(NORTH) return north_recent
+		if(SOUTH) return south_recent
+		if(EAST) return east_recent
+		if(WEST) return west_recent
+		if(NORTHEAST) return north_recent && east_recent
+		if(NORTHWEST) return north_recent && west_recent
+		if(SOUTHEAST) return south_recent && east_recent
+		if(SOUTHWEST) return south_recent && west_recent
+	return FALSE
+
+mob/proc/getBeamClashInputMultiplier(required_direction)
+	return isNexusDirectionPressRecent(required_direction) ? beam_clash_input_mult : 1
+
+mob/proc/showBeamClashPrompt(required_direction)
+	if(!client) return
+	if(!beam_clash_prompt)
+		beam_clash_prompt = new
+		client.screen += beam_clash_prompt
+	beam_clash_prompt.updateDirection(required_direction)
+	beam_clash_prompt_expires_at = world.time + 15
+	if(!beam_clash_prompt_loop) beamClashPromptLoop()
+
+mob/proc/beamClashPromptLoop()
+	set waitfor = 0
+	if(beam_clash_prompt_loop) return
+	beam_clash_prompt_loop = TRUE
+	while(beam_clash_prompt && world.time < beam_clash_prompt_expires_at)
+		sleep(2)
+	if(beam_clash_prompt) clearBeamClashPrompt()
+	beam_clash_prompt_loop = FALSE
+
+mob/proc/clearBeamClashPrompt()
+	if(client && beam_clash_prompt) client.screen -= beam_clash_prompt
+	if(beam_clash_prompt) del(beam_clash_prompt)
+	beam_clash_prompt = null
+	beam_clash_prompt_expires_at = 0
+
+obj/NexusHud/BeamClashPrompt
+	mouse_opacity = 0
+	plane = 20
+	layer = 125
+	screen_loc = "CENTER-3:0,CENTER:102"
+	maptext_x = 0
+	maptext_y = 5
+	maptext_width = 192
+	maptext_height = 52
+
+	New()
+		. = ..()
+		icon = getNexusHudLibraryIcon(192, 52, "#18110a", "#f0bd45", "#784b17")
+
+	proc/updateDirection(direction)
+		var/arrow = "?"
+		var/direction_name = "WAIT"
+		switch(direction)
+			if(NORTH)
+				arrow = "&#8593;"
+				direction_name = "UP"
+			if(SOUTH)
+				arrow = "&#8595;"
+				direction_name = "DOWN"
+			if(EAST)
+				arrow = "&#8594;"
+				direction_name = "RIGHT"
+			if(WEST)
+				arrow = "&#8592;"
+				direction_name = "LEFT"
+			if(NORTHEAST)
+				arrow = "&#8593;+&#8594;"
+				direction_name = "UP + RIGHT"
+			if(NORTHWEST)
+				arrow = "&#8593;+&#8592;"
+				direction_name = "UP + LEFT"
+			if(SOUTHEAST)
+				arrow = "&#8595;+&#8594;"
+				direction_name = "DOWN + RIGHT"
+			if(SOUTHWEST)
+				arrow = "&#8595;+&#8592;"
+				direction_name = "DOWN + LEFT"
+		maptext = "<div style='font-family:Courier New;font-size:10px;font-weight:bold;text-align:center;color:#ffe19b;text-shadow:1px 1px #000'>BEAM CLASH<br><span style='font-size:15px'>[arrow]</span> MASH [direction_name]</div>"
+
+obj/BeamClashMarker
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	layer = MOB_LAYER + 5
+	mouse_opacity = 0
+	Grabbable = 0
+	Bolted = 1
+	Savable = 0
+	var/tmp/expires_at
+
+	New()
+		. = ..()
+		CenterIcon(src)
+		setNexusGlow("#fff0a0", 2.4, 230, 'NexusLightGradient.dmi', 6, "blast")
+		transform = matrix() * 0.72
+		animate(src, alpha = 255, transform = matrix() * 1.08, time = 2, loop = -1, easing = SINE_EASING)
+		animate(src, alpha = 150, transform = matrix() * 0.82, time = 2, easing = SINE_EASING)
+		refreshMarker()
+		lifetimeLoop()
+
+	proc/refreshMarker()
+		expires_at = world.time + 12
+
+	proc/lifetimeLoop()
+		set waitfor = 0
+		while(src && world.time < expires_at)
+			sleep(2)
+		if(src) del(src)
+
+proc/showNexusBeamClashMarker(turf/clash_turf)
+	if(!clash_turf) return
+	var/obj/BeamClashMarker/marker = locate(/obj/BeamClashMarker) in clash_turf
+	if(marker)
+		marker.refreshMarker()
+		return marker
+	return new /obj/BeamClashMarker(clash_turf)
 
 obj/proc/beam_move_loop(mob/m)
 	set waitfor=0
@@ -109,7 +239,7 @@ mob/proc/BeamSizeLoop(obj/Attacks/a)
 mob/proc/BeamStream(obj/Attacks/A)
 	set waitfor=0
 	A.immediate_beam_teardown = 0
-	A.beam_damage_budget = new(A.damage_factor)
+	A.beam_damage_budget = createBeamDamageBudget(beam_impact_mode, A.damage_factor)
 	beaming=1
 	charging_beam=0
 	A.charging=0
@@ -248,6 +378,7 @@ mob/proc/BeamStop(obj/Attacks/A, immediate = 0, obj/Blast/impact_segment)
 	A.streaming=0
 	attacking=0
 	current_beam=0
+	clearBeamClashPrompt()
 	clearNexusActionGlow()
 	//BPpcnt = bp_percent_before_charging
 	//spawn(10) BPpcnt = bp_percent_before_charging //im doing this because im too lazy to fix the bug where for some reason if i ONLY use the line above

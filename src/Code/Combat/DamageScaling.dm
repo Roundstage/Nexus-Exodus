@@ -2,7 +2,7 @@
 #define COMBAT_DAMAGE_KI 2
 
 var
-	combat_damage_bp_exponent = 0.5
+	combat_damage_bp_exponent = 1
 	combat_damage_stat_exponent = 0.85
 
 proc/calculateScaledCombatDamage(factor = 0, attacker_bp = 0, defender_bp = 0, source_stat = 0, guard_stat = 0)

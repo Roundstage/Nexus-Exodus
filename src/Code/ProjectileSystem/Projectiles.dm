@@ -765,6 +765,10 @@ obj/Blast
 									C.icon_state="tail"
 									C.layer = initial(C.layer) - 0.2
 
+							if(Owner && A.Owner)
+								Owner.showBeamClashPrompt(dir)
+								A.Owner.showBeamClashPrompt(A.dir)
+								showNexusBeamClashMarker(loc)
 							var/winning = BeamStruggleWinning(src, A)
 							if(Owner && A.Owner && world.time >= Owner.next_beam_clash_notice)
 								var/your_pressure = round(BeamStrugglePower() / max(1, A.BeamStrugglePower()), 0.01)
@@ -1212,4 +1216,5 @@ proc
 obj/Blast/proc/BeamStrugglePower()
 	//we divide percent_damage by Beam_Delay because in BeamStream it is multiplied by Beam_Delay and we need to undo that
 	var/beam_struggle_power = (BP ** 0.5) * (Force ** 0.4) * ((percent_damage / Beam_Delay) ** 1)
+	if(Owner) beam_struggle_power *= Owner.getBeamClashInputMultiplier(dir)
 	return beam_struggle_power

@@ -17,6 +17,13 @@ mob/proc/isAttackBlockedByGrab(show_message = TRUE)
 		src << "You cannot attack while being grabbed. Move to struggle and try to escape."
 	return TRUE
 
+mob/proc/canGrabMovable(atom/movable/target)
+	if(!target || target == src || target.grabber || !target.Grabbable) return FALSE
+	if(ismob(target))
+		var/mob/target_mob = target
+		if(target_mob.rp_mode) return FALSE
+	return TRUE
+
 atom/var/Grabbable=1
 turf/Grabbable=0
 
@@ -41,7 +48,7 @@ mob/proc/ReleaseGrab()
 mob/verb/Grab()
 	set category="Skills"
 
-	if(dash_attacking || in_dragon_rush) return
+	if(rp_mode || dash_attacking || in_dragon_rush) return
 
 	if(Final_Realm())
 		src<<"Grab can not be used in the final realm"
@@ -80,7 +87,7 @@ mob/verb/Grab()
 		var/list/obj_list = new
 
 		for(var/atom/movable/O in Get_step(src,dir))
-			if(O != src && !O.grabber && O.Grabbable && !(O.name in L))
+			if(canGrabMovable(O) && !(O.name in L))
 				if(O.type != /obj/items/Dragon_Ball || !(O.type in obj_list))
 					L += O.name
 					obj_list += O
@@ -92,23 +99,23 @@ mob/verb/Grab()
 		else T=input(src,"Grab what?") in L
 		if(T=="Cancel") return
 		var/obj/O
-		for(var/atom/movable/A in Get_step(src,dir)) if(A.name==T && !A.grabber && A.Grabbable && A != src)
+		for(var/atom/movable/A in Get_step(src,dir)) if(A.name==T && canGrabMovable(A))
 			O=A
 			break
 
 		if(!O)
-			for(var/mob/m in Get_step(src,turn(dir,45))) if(!m.grabber && m != src)
+			for(var/mob/m in Get_step(src,turn(dir,45))) if(canGrabMovable(m))
 				O=m
 				break
 			if(!O)
-				for(var/mob/m in Get_step(src,turn(dir,-45))) if(!m.grabber && m != src)
+				for(var/mob/m in Get_step(src,turn(dir,-45))) if(canGrabMovable(m))
 					O=m
 					break
 
 		if(!O && (arm_stretch || Extendo_module()))
 			O = GetArmStretchTarget(arm_stretch_range)
 
-		if(!O || !O.Grabbable) return
+		if(!canGrabMovable(O)) return
 
 		if(ismob(O))
 			var/mob/Temp=O
@@ -242,14 +249,13 @@ mob/proc
 		return targets
 
 	CanExtendoGrab(atom/movable/m)
-		if(!m) return
+		if(!canGrabMovable(m)) return
 		if(ismob(m))
 			var/mob/target_mob = m
-			if(!target_mob.grabber && target_mob.Grabbable)
-				if(!Tournament || (!target_mob.client || !target_mob.tournament_override(show_message = 0)))
-					return 1
+			if(!Tournament || (!target_mob.client || !target_mob.tournament_override(show_message = 0)))
+				return 1
 		if(isobj(m))
-			if(m.Grabbable && !istype(m, /obj/Trees) && !istype(m, /obj/Turfs)) return 1
+			if(!istype(m, /obj/Trees) && !istype(m, /obj/Turfs)) return 1
 
 	/*GetArmStretchTarget(grab_dist=10)
 		if(Extendo_module()) grab_dist = Extendo_module_range()

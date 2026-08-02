@@ -159,13 +159,8 @@ proc
 				player_view(20,a) << sound('Teleport.ogg',volume = 20)
 				a.AfterImage(25)
 				b.AfterImage(25)
-				animate(a, alpha = 0, time = 2)
-				animate(b, alpha = 0, time = 2)
-				sleep(2)
 				a.NewDragonRushLoc(b)
 				if(get_dist(a,b) > 1) return //dragon rush warp to new loc failed
-				animate(a, alpha = 255, time = 2)
-				animate(b, alpha = 255, time = 2)
 				a.ShowDragonRushPrompt(b)
 				b.ShowDragonRushPrompt(a)
 				warps++
@@ -236,30 +231,30 @@ obj/NexusHud/DragonRushPrompt
 	mouse_opacity = 0
 	plane = 20
 	layer = 125
-	screen_loc = "CENTER-1:0,CENTER:48"
+	screen_loc = "CENTER-3:8,CENTER:42"
 	maptext_x = 0
-	maptext_y = 4
-	maptext_width = 112
-	maptext_height = 28
+	maptext_y = 5
+	maptext_width = 184
+	maptext_height = 52
 
 	New()
 		. = ..()
-		icon = getNexusHudLibraryIcon(112, 28, "#21180f", "#d3a54e", "#6c4a22")
+		icon = getNexusHudLibraryIcon(184, 52, "#21180f", "#d3a54e", "#6c4a22")
 
 	proc/updateDirection(direction)
 		var/arrow = "?"
 		var/direction_name = "WAIT"
 		switch(direction)
 			if(NORTH)
-				arrow = "^"
+				arrow = "&#8593;"
 				direction_name = "UP"
 			if(SOUTH)
-				arrow = "v"
+				arrow = "&#8595;"
 				direction_name = "DOWN"
 			if(EAST)
-				arrow = ">"
+				arrow = "&#8594;"
 				direction_name = "RIGHT"
 			if(WEST)
-				arrow = "<"
+				arrow = "&#8592;"
 				direction_name = "LEFT"
-		maptext = "<div style='font-family:Courier New;font-size:10px;font-weight:bold;text-align:center;color:#ffe19b;text-shadow:1px 1px #000'>[arrow] [direction_name] [arrow]</div>"
+		maptext = "<div style='font-family:Courier New;font-size:10px;font-weight:bold;text-align:center;color:#ffe19b;text-shadow:1px 1px #000'>DRAGON RUSH<br><span style='font-size:18px'>[arrow]</span> PRESS [direction_name]</div>"

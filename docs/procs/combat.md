@@ -7,7 +7,7 @@ Guided blasts use one resolved control direction for collision checks and moveme
 
 Sense tracking is persistent while Sense or a compatible scanner is owned. Client-local world images render each readable character's relative power percentage below their sprite, while appearance-matched arrows keep off-screen signatures discoverable. The replacement Sense menu adds sprite icons and exposes qualitative Strength, Endurance, Speed, Force, Resistance, Offense, and Defense ratings to Sense 3.
 
-Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Each warp fades both fighters out and back in and displays a centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
+Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Its original instant warp/input cadence is preserved, with a larger centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt identifying the required key for each fighter. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
 
 Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its imported Tenkaichi effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
 
@@ -1738,7 +1738,7 @@ Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact
 #### proc/calculateScaledCombatDamage
 - Signature: `proc/calculateScaledCombatDamage(factor = 0, attacker_bp = 0, defender_bp = 0, source_stat = 0, guard_stat = 0)`
 - Inputs: parity damage factor, attacker/defender BP, and relevant offensive/defensive stats.
-- Purpose: Apply the shared `BP^0.5 * (2*source/(source+guard))^0.85` curve.
+- Purpose: Apply the shared linear `BP ratio * (2*source/(source+guard))^0.85` curve. Equal-power damage is unchanged, while a 65x BP advantage turns a factor-3 standard beam into 195 raw damage before incoming racial modifiers.
 - Returns: scaled percentage damage, or zero for a nonpositive factor, BP, or source stat.
 - Side effects: none.
 
@@ -1840,7 +1840,7 @@ Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact
 - Inputs: raw damage, stun modifier, knockback metadata, optional attacker, and attack label.
 - Purpose: Apply racial/stun modifiers and Health or shield damage, then publish the actual applied damage to the combat feed when attribution is available.
 - Returns: applied Health damage, or zero when no Health was removed.
-- Side effects: updates anger, damage indicators, overhead vitals, and batched combat logs.
+- Side effects: records lethal-combat pressure for both fighters when the attacker uses Lethal intent, then updates anger, damage indicators, overhead vitals, and batched combat logs.
 
 #### mob/proc/PowerupDamageGrabber
 - Signature: `mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate`
