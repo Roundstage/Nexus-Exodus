@@ -95,6 +95,9 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 	var/mob/damage_attacker = attacker
 	if(!damage_attacker && last_attacker && last_attacked_time == world.time) damage_attacker = last_attacker
 	if(!attack_name && damage_attacker) attack_name = "Attack"
+	if(damage_attacker && damage_attacker != src && damage_attacker.sparring_mode == LETHAL_COMBAT)
+		damage_attacker.enterLethalCombat()
+		enterLethalCombat()
 	if(grabbedObject && strangling && GrabAbsorber()) dmg *= 1.3 //take way more damage if busy grab absorbing someone's energy
 
 	if(stun_level || Frozen)

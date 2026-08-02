@@ -859,7 +859,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Side effects: replaces only client-local macros created by this system.
 
 #### mob/proc/buildNexusHotkeyEditorHtml
-- Purpose: Render the enlarged rustic action deck, draggable XKB-profile keyboard, Unix key labels, single/double activation controls, independent numpad, and active binding summary.
+- Purpose: Render the enlarged rustic action deck, draggable XKB-profile keyboard, Unix key labels, single/double activation controls, complete F-key row, navigation/editing block, visible arrow keys, independent numpad, and active binding summary without wrapping keyboard groups over one another.
 - Security: actions are represented by server-issued opaque tokens and revalidated in `Topic()`.
 
 #### datum/NexusHotkeyEditor/Topic

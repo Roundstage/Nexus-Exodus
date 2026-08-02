@@ -3,7 +3,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. RP Mode now owns an input lock in addition to its existing damage/attack immunity, so it is fully immobile. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored while the character is in combat; auto-repair can opt out and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones, Technology Levels, Mining, and Smithing are persistent, player-driven progressions that migrate old saves lazily.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Milestones, Technology Levels, Mining, and Smithing are persistent, player-driven progressions that migrate old saves lazily.
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
@@ -42,7 +42,9 @@ Instant Transmission retains its long-range signature targeting and now also exp
 ### Roleplay combat and progression
 
 - `gainAngerFromDamage(applied_damage)` converts actual health loss into proportional Anger without healing.
-- `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, and displacement while active.
+- `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, displacement, and grab retention while active.
+- `forceWillpowerBreakKnockout()` converts zero Willpower into a lethal KO state before locking the character in RP Mode.
+- `canGrabMovable(target)` is the shared normal/fallback/extended-grab gate and rejects RP Mode targets.
 - `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
 - `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.

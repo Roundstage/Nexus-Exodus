@@ -140,6 +140,7 @@ var
 	skill_kienzan_pierce_decay = 0.5
 	beam_skill_cooldown_ticks = 30
 	beam_clash_winner_damage_mult = 1.35
+	beam_clash_input_mult = 1.15
 
 	// Roleplay combat and Willpower settings adapted from Roleplay Tenkaichi.
 	WILLPOWER_LETHAL_KO_DRAIN = 30

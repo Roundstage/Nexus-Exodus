@@ -43,7 +43,7 @@
 The workbook gives every profile a neutral round-robin allocation using the same eight-stat order as character creation. It then compares both physical and Ki matchups against Human with the live damage curve:
 
 ```text
-DamageFactor = (BP ratio)^0.50 * (2 * source / (source + guard))^0.85
+DamageFactor = (BP ratio)^1.00 * (2 * source / (source + guard))^0.85
 ```
 
 The final screening index combines:

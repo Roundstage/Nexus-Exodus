@@ -3,12 +3,14 @@
 #define NEXUS_HOTKEY_DOUBLE_TAP_WINDOW 4
 
 var/list/nexus_hotkey_base_keys = list(\
-	"Space", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",\
+	"Space", "Escape", "Tab", "Return", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",\
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",\
 	"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",\
+	"North", "South", "East", "West", "Northeast", "Northwest", "Southeast", "Southwest", "Center",\
 	"Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",\
 	"Numpad6", "Numpad7", "Numpad8", "Numpad9", "Multiply", "Add", "Subtract", "Divide", "Separator",\
-	"F3", "F4", "F7", "F8", "F9", "F10", "F12", "Back", "Insert", "Delete", "Pause")
+	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",\
+	"Back", "Insert", "Delete", "Home", "End", "PageUp", "PageDown", "Pause")
 
 var/list/nexus_static_hotkey_base_keys = list(\
 	"Space", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",\
@@ -49,10 +51,26 @@ proc/getNexusUnixKeyName(base_key)
 	if(!base_key) return "unknown"
 	switch(base_key)
 		if("Space") return "space"
+		if("Escape") return "escape"
+		if("Tab") return "tab"
+		if("Return") return "return"
 		if("Back") return "backspace"
 		if("Insert") return "insert"
 		if("Delete") return "delete"
+		if("Home") return "home"
+		if("End") return "end"
+		if("PageUp") return "page_up"
+		if("PageDown") return "page_down"
 		if("Pause") return "pause"
+		if("North") return "up"
+		if("South") return "down"
+		if("East") return "right"
+		if("West") return "left"
+		if("Northeast") return "up_right"
+		if("Northwest") return "up_left"
+		if("Southeast") return "down_right"
+		if("Southwest") return "down_left"
+		if("Center") return "center"
 		if("Multiply") return "kp_multiply"
 		if("Add") return "kp_add"
 		if("Subtract") return "kp_subtract"
@@ -361,9 +379,12 @@ mob/proc/getNexusKeyBindingBadges(base_key)
 		badges += "<span class='[binding_class]'><i>[html_encode(getNexusUnixHotkeyName(combination))]</i><b>[display_name]</b><button onclick=\"event.stopPropagation();clearBinding('[combination]')\">x</button></span>"
 	return badges
 
-mob/proc/renderNexusVirtualKey(base_key, display_label)
+mob/proc/renderNexusVirtualKey(base_key, display_label, raw_label = FALSE)
 	var/key_class = base_key == "Space" ? "key space-key" : "key"
-	return "<div class='[key_class]' ondragover='event.preventDefault()' ondrop=\"dropAction(event,'[base_key]')\"><strong>[html_encode(display_label || getNexusUnixKeyName(base_key))]</strong><small>[html_encode(base_key)]</small>[getNexusKeyBindingBadges(base_key)]</div>"
+	if(base_key in list("North", "South", "East", "West")) key_class += " direction-key"
+	var/key_label = display_label || getNexusUnixKeyName(base_key)
+	if(!raw_label) key_label = html_encode(key_label)
+	return "<div class='[key_class]' ondragover='event.preventDefault()' ondrop=\"dropAction(event,'[base_key]')\"><strong>[key_label]</strong><small>[html_encode(base_key)]</small>[getNexusKeyBindingBadges(base_key)]</div>"
 
 mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	initializeNexusHotkeys()
@@ -397,16 +418,23 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 
 	var/keyboard_html = ""
 	keyboard_html += "<div class='key-row'>"
-	for(var/key_name in list("F3", "F4", "F7", "F8", "F9", "F10", "F12", "Back", "Insert", "Delete", "Pause")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+	for(var/key_name in list("Escape", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Pause")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
 	keyboard_html += "</div><div class='key-row'>"
-	for(var/key_name in list("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+	for(var/key_name in list("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Back")) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
 	var/list/layout_rows = getNexusKeyboardLayoutRows(nexus_keyboard_layout)
 	for(var/row_number in 1 to layout_rows.len)
 		var/row_class = row_number == 1 ? "offset-one" : row_number == 2 ? "offset-two" : "offset-three"
 		keyboard_html += "</div><div class='key-row [row_class]'>"
+		if(row_number == 1) keyboard_html += renderNexusVirtualKey("Tab", "tab")
 		var/list/layout_row = layout_rows[row_number]
 		for(var/key_name in layout_row) keyboard_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+		if(row_number == 2) keyboard_html += renderNexusVirtualKey("Return", "return")
 	keyboard_html += "</div><div class='key-row space-row'>[renderNexusVirtualKey("Space", "space")]</div>"
+
+	var/navigation_html = ""
+	for(var/key_name in list("Insert", "Home", "PageUp", "Delete", "End", "PageDown")) navigation_html += renderNexusVirtualKey(key_name, getNexusUnixKeyName(key_name))
+	navigation_html += "<div class='nav-spacer'></div>[renderNexusVirtualKey("North", "&uarr;<br>up", TRUE)]<div class='nav-spacer'></div>"
+	navigation_html += "[renderNexusVirtualKey("West", "&larr;<br>left", TRUE)][renderNexusVirtualKey("South", "&darr;<br>down", TRUE)][renderNexusVirtualKey("East", "&rarr;<br>right", TRUE)]"
 
 	var/numpad_html = ""
 	for(var/key_name in list("Numpad7", "Numpad8", "Numpad9", "Divide", "Numpad4", "Numpad5", "Numpad6", "Multiply", "Numpad1", "Numpad2", "Numpad3", "Subtract", "Numpad0", "Separator", "Add"))
@@ -422,23 +450,23 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	return {"<!doctype html>
 	<html><head><meta charset='utf-8'><title>Nexus Hotkeys</title><style>[getNexusRpgBrowserCss()]
 	*{box-sizing:border-box}body{margin:0;background:#100d08;color:#ead9b5;font:14px Arial,sans-serif;overflow:hidden}
-	.shell{height:100vh;display:grid;grid-template-columns:360px minmax(900px,1fr);background:#100d08;border:3px solid #8f692f}
+	.shell{height:100vh;display:grid;grid-template-columns:320px minmax(0,1fr);background:#100d08;border:3px solid #8f692f}
 	.catalog{padding:18px;border-right:3px double #8f692f;background:#19130c;overflow:auto}.catalog h1{margin:0 0 5px;color:#ffd77a;font:24px Nexus,Georgia,serif;letter-spacing:.08em}.catalog p{margin:0 0 15px;color:#bca579}.catalog input{width:100%;padding:11px;border:2px inset #8f692f;background:#080706;color:#fff1c8;margin-bottom:12px;font:14px Consolas,monospace}
 	.action-card{padding:11px 12px;margin:7px 0;border:2px solid #66502c;border-left:7px solid #c6923c;background:#241b10;cursor:grab}.action-card:hover{border-color:#ffd77a;background:#302313}.action-card b{display:block;color:#fff1c8}.action-card span{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#bca579}
-	.workspace{padding:17px 20px;overflow:auto}.toolbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:12px;padding:10px;border:2px solid #72552c;background:#1b150d}.toolbar h2{margin:0 auto 0 0;align-self:center;color:#ffd77a;font:18px Nexus,Georgia,serif;letter-spacing:.08em}.control{display:block;color:#cdb787;font-size:10px;text-transform:uppercase}.control select{display:block;min-width:230px;margin-top:3px;padding:7px;border:2px inset #8f692f;background:#090806;color:#fff1c8;font:12px Consolas,monospace}.modifier{padding:7px 9px;border:1px solid #6c522c;background:#2a2013;font:12px Consolas,monospace}.toolbar button,.summary button{border:2px outset #8f692f;background:#3a2a16;color:#fff1c8;padding:7px 10px;cursor:pointer;font:11px Nexus,Georgia,serif;text-transform:uppercase}.toolbar button:hover,.summary button:hover{color:#ffd77a;background:#51391b}
+	.workspace{padding:17px 20px;overflow:auto}.toolbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;min-width:1380px;margin-bottom:12px;padding:10px;border:2px solid #72552c;background:#1b150d}.toolbar h2{margin:0 auto 0 0;align-self:center;color:#ffd77a;font:18px Nexus,Georgia,serif;letter-spacing:.08em}.control{display:block;color:#cdb787;font-size:10px;text-transform:uppercase}.control select{display:block;min-width:230px;margin-top:3px;padding:7px;border:2px inset #8f692f;background:#090806;color:#fff1c8;font:12px Consolas,monospace}.modifier{padding:7px 9px;border:1px solid #6c522c;background:#2a2013;font:12px Consolas,monospace}.toolbar button,.summary button{border:2px outset #8f692f;background:#3a2a16;color:#fff1c8;padding:7px 10px;cursor:pointer;font:11px Nexus,Georgia,serif;text-transform:uppercase}.toolbar button:hover,.summary button:hover{color:#ffd77a;background:#51391b}
 	.trigger-strip{display:flex;align-items:center;gap:7px;margin:0 0 12px;padding:8px 12px;border:2px solid #72552c;background:#171109}.trigger-strip>strong{color:#ffd77a;margin-right:8px}.trigger-strip label{padding:7px 12px;border:1px solid #66502c;background:#281e12;font:12px Consolas,monospace}.trigger-strip small{margin-left:auto;color:#bca579}
-	.keyboard-wrap{display:grid;grid-template-columns:minmax(720px,1fr) 315px;gap:14px}.keyboard{padding:13px;border:3px double #8f692f;background:#18120b}.key-row{display:flex;gap:5px;margin-bottom:5px}.offset-one{padding-left:21px}.offset-two{padding-left:40px}.offset-three{padding-left:66px}.space-row{justify-content:center;margin-top:8px}
-	.key{position:relative;min-width:64px;min-height:76px;flex:1;padding:7px 4px;border:2px outset #75603a;border-bottom-width:4px;background:#292116;color:#f4dfad;text-align:center;overflow:hidden}.key:hover{border-color:#ffd77a;background:#392b17}.key strong{display:block;font:12px Consolas,monospace}.key small{display:block;color:#907e5e;font:8px Consolas,monospace;margin-bottom:3px}.space-key{max-width:480px;min-height:80px}
+	.keyboard-wrap{display:grid;grid-template-columns:minmax(820px,1fr) 230px 300px;gap:12px;min-width:1380px}.keyboard{padding:13px;border:3px double #8f692f;background:#18120b}.key-row{display:flex;gap:4px;margin-bottom:5px}.offset-one{padding-left:12px}.offset-two{padding-left:28px}.offset-three{padding-left:48px}.space-row{justify-content:center;margin-top:8px}
+	.key{position:relative;min-width:52px;min-height:76px;flex:1;padding:7px 3px;border:2px outset #75603a;border-bottom-width:4px;background:#292116;color:#f4dfad;text-align:center;overflow:hidden}.key:hover{border-color:#ffd77a;background:#392b17}.key strong{display:block;font:11px Consolas,monospace}.key small{display:block;color:#907e5e;font:8px Consolas,monospace;margin-bottom:3px}.space-key{max-width:500px;min-height:80px}.direction-key strong{font-size:14px;line-height:1.05}
 	.binding{display:block;margin-top:3px;padding:3px 18px 3px 4px;color:#fff8df;font-size:8px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}.binding.single{background:#355229}.binding.double{background:#62402a}.binding i,.binding b{display:block;overflow:hidden;text-overflow:ellipsis}.binding i{color:#ffdb7d;font-style:normal}.binding button{position:absolute;right:2px;top:1px;border:0;background:none;color:#ffc2a3;cursor:pointer}
-	.numpad{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:13px;border:3px double #8f692f;background:#18120b;align-content:start}.numpad .key{min-width:0;min-height:84px}
+	.navigation,.numpad{display:grid;gap:5px;padding:13px;border:3px double #8f692f;background:#18120b;align-content:start}.navigation{grid-template-columns:repeat(3,1fr)}.navigation .key,.numpad .key{min-width:0;min-height:84px}.nav-spacer{min-height:84px}.numpad{grid-template-columns:repeat(4,1fr)}
 	.summary{margin-top:15px;border:3px double #8f692f;background:#18120b;padding:10px}.summary h3{margin:0 0 7px;color:#ffd77a;font:14px Nexus,Georgia,serif;letter-spacing:.1em}.summary>div{display:grid;grid-template-columns:65px 230px 1fr auto;align-items:center;gap:10px;padding:7px 8px;border-top:1px solid #4f3a1e}.summary em{color:#cdb787;font:10px Consolas,monospace}.summary code{color:#ffd77a}.empty{color:#907e5e}
 	.hint{color:#bca579;font-size:11px;margin:8px 2px 12px}.warning{color:#ff9a80}
 	</style></head><body><div class='shell'>
 	<aside class='catalog'><h1>ACTION DECK</h1><p>Drag an action onto its key. The same action may be used more than once.</p><input id='filter' placeholder='Search actions...' oninput='filterActions()'>[actions_html]</aside>
 	<main class='workspace'><div class='toolbar'><h2>HOTKEY FORGE</h2><label class='control'>XKB keyboard layout<select onchange='selectLayout(this.value)'>[layout_options]</select></label><label class='modifier'><input id='ctrl' type='checkbox'[editor.use_ctrl ? " checked" : ""]> ctrl_l</label><label class='modifier'><input id='shift' type='checkbox'[editor.use_shift ? " checked" : ""]> shift_l</label><label class='modifier'><input id='alt' type='checkbox'[editor.use_alt ? " checked" : ""]> alt_l</label><button onclick='importLegacy()'>Import legacy</button><button onclick='clearAll()'>Clear all</button><button onclick='closeEditor()'>Close</button></div>
 	<div class='trigger-strip'><strong>ACTIVATION</strong><label><input name='tap_count' type='radio' value='1'[editor.tap_count == 1 ? " checked" : ""]> single press</label><label><input name='tap_count' type='radio' value='2'[editor.tap_count == 2 ? " checked" : ""]> double tap</label><small>Example: space = Manual Attack &nbsp; / &nbsp; space + space = Lunge</small></div>
-	<p class='hint'>Choose an XKB layout, modifiers and activation type, then drop an action. Unix/XKB names are shown first. <span class='warning'>System keys and alt_l + f4 are reserved.</span></p>
-	<div class='keyboard-wrap'><section class='keyboard'>[keyboard_html]</section><section class='numpad'>[numpad_html]</section></div>
+	<p class='hint'>Choose an XKB layout, modifiers and activation type, then drop an action. Unix/XKB names are shown first. <span class='warning'>F1/F2 keep their client functions; alt_l + f4 is reserved.</span></p>
+	<div class='keyboard-wrap'><section class='keyboard'>[keyboard_html]</section><section class='navigation'>[navigation_html]</section><section class='numpad'>[numpad_html]</section></div>
 	<section class='summary'><h3>Active bindings</h3>[binding_summary]</section></main></div>
 	<script>
 	var handlerRef='\ref[editor]';
@@ -468,7 +496,7 @@ datum/NexusHotkeyEditor
 
 	proc/show()
 		if(!owner || !owner.client) return
-		owner << browse(owner.buildNexusHotkeyEditorHtml(src), "window=NexusHotkeys;size=1480x900;can_resize=true;can_close=false")
+		owner << browse(owner.buildNexusHotkeyEditorHtml(src), "window=NexusHotkeys;size=1720x980;can_resize=true;can_close=false")
 
 	Topic(href, list/href_list)
 		if(!owner || usr != owner || !owner.client) return

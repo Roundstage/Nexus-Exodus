@@ -105,7 +105,7 @@ Add-Row $readme.Rows @((New-Cell "Nexus Exodus Skill Damage Balance" 2), (New-Ce
 Add-Row $readme.Rows @((New-Cell "Section" 1), (New-Cell "Details" 1), (New-Cell "Primary source" 1))
 Add-Row $readme.Rows @((New-Cell "Purpose" 6), (New-Cell "Compare current skill damage under repeatable attacker/defender scenarios. Yellow cells are scenario inputs; green cells are formulas." 5), (New-Cell "Repository combat code" 5))
 Add-Row $readme.Rows @((New-Cell "Scope" 6), (New-Cell "Includes standard melee, special melee, rocks, projectiles, beams, custom AoE/execution skills, race profiles, modules, powerup, anger, cyber BP and transformations." 5), (New-Cell "Skill Catalog and Modifiers sheets" 5))
-Add-Row $readme.Rows @((New-Cell "Damage basis" 6), (New-Cell "Factors are equal-stat percentages. Physical damage uses Strength/Endurance; Ki uses Force/Resistance; both use BP^0.5 and the bounded stat term (2*source/(source+guard))^0.85. Offense/Defense affect hit outcomes only." 5), (New-Cell "Combat/DamageScaling.dm" 5))
+Add-Row $readme.Rows @((New-Cell "Damage basis" 6), (New-Cell "Factors are equal-stat percentages. Physical damage uses Strength/Endurance; Ki uses Force/Resistance; both use a linear BP ratio and the bounded stat term (2*source/(source+guard))^0.85. Offense/Defense affect hit outcomes only." 5), (New-Cell "Combat/DamageScaling.dm" 5))
 Add-Row $readme.Rows @((New-Cell "BP pipeline" 6), (New-Cell "The BP Pipeline sheet exposes the major ordering stages. The game has additional situational branches; use current Effective BP in Combatants when exact runtime BP is known." 5), (New-Cell "BackgroundCode/StatLoop.dm:95-242" 5))
 Add-Row $readme.Rows @((New-Cell "Powerup and anger" 6), (New-Cell "Current mixture is additive: anger/100 + BPpcnt/100 - 1 + Super Kaioken addition. It is not anger multiplied by powerup." 5), (New-Cell "BackgroundCode/StatLoop.dm:25-49" 5))
 Add-Row $readme.Rows @((New-Cell "Cyber BP" 6), (New-Cell "With current cyber_bp_cuts_natural_bp_by=0, any cyber BP replaces natural BP before cyber contribution is added. Overdrive multiplies cyber contribution by 1.5." 5), (New-Cell "BackgroundCode/StatLoop.dm:183-193" 5))
@@ -120,7 +120,7 @@ $settingRows = @(
 	@("Base melee damage", 2.5, "damage", "GlobalCombatSettings.dm"),
 	@("Melee power", 1, "multiplier", "GlobalCombatSettings.dm"),
 	@("Ki power", 1, "multiplier", "GlobalCombatSettings.dm"),
-	@("BP exponent", 0.5, "ratio exponent", "GlobalCombatSettings.dm:52"),
+	@("BP exponent", 1, "ratio exponent", "Combat/DamageScaling.dm"),
 	@("Combat stat exponent", 0.85, "bounded ratio exponent", "Combat/DamageScaling.dm"),
 	@("Legacy Strength exponent", 0.45, "unused by balanced damage", "GlobalCombatSettings.dm"),
 	@("Legacy Force exponent", 0.7, "unused by balanced damage", "GlobalCombatSettings.dm"),
@@ -133,6 +133,7 @@ $settingRows = @(
 	@("Beam post-force multiplier", 0.6, "multiplier", "ProjectileSystem/Projectiles.dm"),
 	@("Beam skill cooldown", 3, "seconds", "GlobalCombatSettings.dm"),
 	@("Beam clash winner damage", 1.35, "multiplier", "GlobalCombatSettings.dm"),
+	@("Beam clash input pulse", 1.15, "multiplier", "GlobalCombatSettings.dm"),
 	@("Owner resistance penalty", 1, "scenario default", "ProjectileSystem/Projectiles.dm"),
 	@("Ki projectile cadence", 0.5, "deciseconds", "ProjectileSystem/Blasts.dm"),
 	@("World FPS", 60, "frames/second", "Application/Movement/MovementInput.dm"),
@@ -409,18 +410,19 @@ Add-SkillRow "Scatter Shot" "/obj/Attacks/Scatter_Shot" "Learnable" "Ki" 0.3 "Dy
 Add-SkillRow "Genocide" "/obj/Attacks/Genocide" "Learnable" "Ki" 0.25 12 0 0 3 0 "5ds between shots" 500 "None" "Activation capped at 12" "ProjectileSystem/Blasts.dm"
 Add-SkillRow "Buster Barrage" "/obj/Attacks/Buster_Barrage" "Learnable" "Ki" 0.4 20 0 "10% equal splash" 9 0 "Per-shot interval" 250 "None" "20 shots; shared budget 16" "ProjectileSystem/Blasts.dm"
 Add-SkillRow "Attack Barrier" "/obj/Attacks/Attack_Barrier" "Learnable" "Ki" 0.2 20 0 0 6 0 "Initial delay" 3 "None" "Activation capped at 20 orbs" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
-Add-SkillRow "Noob Ray" "/obj/Attacks/Noob_Ray" "Unobtainable normally" "Ki Beam" 52 1 1 0 "Recalculated 500.8" 3 "Beam toggle" 50 "None" "Highest factor; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 4 1 1 0 "Recalculated 27.2" 3 "Beam toggle" 60 "None" "Cumulative budget 4; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 3 1 1.5 0 "Recalculated 4.3" 3 "Beam toggle" 40 "None" "Cumulative budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 3 1 1 0 "Recalculated 5" 3 "Beam toggle" 30 "None" "Cumulative budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 5 1 1 0 "Recalculated 13.7" 3 "Beam toggle" 60 "None" "Shield pierce; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 8 1 1.5 0 "Recalculated 12.9" 3 "Beam toggle" 40 "None" "Cumulative budget 8; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 5 1 1.2 0 "Recalculated 8.6" 3 "Beam toggle" 32 "None" "Range utility; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 12 1 2 0 "Recalculated 21.2" 3 "Beam toggle" 60 "None" "Cumulative budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 7 1 1.8 0 "Recalculated 9" 3 "Beam toggle" 40 "None" "Cumulative budget 7; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 6 1 1.4 0 "Recalculated 9.1" 3 "Beam toggle" 32 "None" "Range utility; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Noob Ray" "/obj/Attacks/Noob_Ray" "Unobtainable normally" "Ki Beam" 52 1 1 0 "Recalculated 500.8" 3 "Beam toggle" 50 "None" "Lock ticks uncapped; explosive budget 52; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 4 1 1 0 "Recalculated 27.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 4; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 3 1 1.5 0 "Recalculated 4.3" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 3 1 1 0 "Recalculated 5" 3 "Beam toggle" 30 "None" "Lock ticks uncapped; explosive budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 5 1 1 0 "Recalculated 13.7" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 5; shield pierce; 3s cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 8 1 1.5 0 "Recalculated 12.9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 8; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 5 1 1.2 0 "Recalculated 8.6" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 5; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 12 1 2 0 "Recalculated 21.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 7 1 1.8 0 "Recalculated 9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 7; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 6 1 1.4 0 "Recalculated 9.1" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 6; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
 Add-SkillRow "Dragon Nova" "/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova" "Test package" "Ki" 12 2 0 4 200 14 "2.4s charge" 40 "None" "Direct plus equal splash; budget cap 24" "Combat/TenkaichiSpecialStyles.dm"
 Add-SkillRow "Sky Break" "/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak" "Test package" "Physical" 8 2 0 2 180 13 "1.6s charge" 40 "None" "Strength-scaled direct plus splash; weapon required; budget cap 16" "Combat/TenkaichiSpecialStyles.dm"
+Add-SkillRow "Echoing Slash" "/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash" "Test package" "Physical" 7 1 0 0 120 9 "0.8s charge" 40 "None" "Strength-scaled cutting wave; weapon required; no explosion" "Combat/TenkaichiSpecialStyles.dm"
 Add-SkillRow "Explosion" "/obj/Attacks/Explosion" "Learnable" "Ki AoE" 3 1 0 5 150 "2*SD(.35)" "No charge" 20 "None" "Force versus Resistance" "SkillEngine.dm"
 Add-SkillRow "Shockwave" "/obj/Attacks/Shockwave" "Learnable" "Hybrid AoE" 0.5 7 0 10 15 "7*SD(.25)" "No charge" 10 "None" "Half physical and half Ki per pulse" "SkillEngine.dm"
 Add-SkillRow "Kikoho" "/obj/Attacks/Kikoho" "Granted" "Ki" 7 1 0 0 100 0 "0.5*(5+11*SD(.4))" 11 "None" "Instant hit; separate self-damage pool +24" "Combat/KiSkills/Kikoho2016.dm"
@@ -447,12 +449,13 @@ $damageRows = @(
 	@("Sokidan", "Ki", 3.5, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 0.5, 4, 0, "Direct only"),
 	@("Makosen", "Ki", 0.4, 20, 0, "Emission cap"), @("Scatter Shot", "Ki", 0.3, 40, 0, "Budget caps actual total at 18"),
 	@("Buster Barrage", "Ki", 0.4, 20, 0, "Budget caps actual total at 16"), @("Attack Barrier", "Ki", 0.2, 20, 0, "Emission cap"),
-	@("Noob Ray", "Ki", 52, 1, 0, "Cumulative beam factor"), @("Cyber Laser", "Ki", 4, 1, 0, "Cumulative beam factor"),
-	@("Beam", "Ki", 3, 1, 0, "Cumulative beam factor"), @("Death Beam", "Ki", 3, 1, 0, "Cumulative beam factor"),
-	@("Makankosappo", "Ki", 5, 1, 0, "Cumulative beam factor"), @("Kamehameha", "Ki", 8, 1, 0, "Cumulative beam factor"),
-	@("Dodompa", "Ki", 5, 1, 0, "Cumulative beam factor"), @("Final Flash", "Ki", 12, 1, 0, "Cumulative beam factor"),
-	@("Galick Gun", "Ki", 7, 1, 0, "Cumulative beam factor"), @("Masenko", "Ki", 6, 1, 0, "Cumulative beam factor"),
-	@("Dragon Nova", "Ki", 12, 2, 0, "Direct plus equal splash"), @("Sky Break", "Physical", 8, 2, 0, "Strength-scaled direct plus splash")
+	@("Noob Ray", "Ki", 52, 1, 0, "Lock uncapped; explosive budget 52"), @("Cyber Laser", "Ki", 4, 1, 0, "Lock uncapped; explosive budget 4"),
+	@("Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"), @("Death Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"),
+	@("Makankosappo", "Ki", 5, 1, 0, "Lock uncapped; explosive budget 5"), @("Kamehameha", "Ki", 8, 1, 0, "Lock uncapped; explosive budget 8"),
+	@("Dodompa", "Ki", 5, 1, 0, "Lock uncapped; explosive budget 5"), @("Final Flash", "Ki", 12, 1, 0, "Lock uncapped; explosive budget 12"),
+	@("Galick Gun", "Ki", 7, 1, 0, "Lock uncapped; explosive budget 7"), @("Masenko", "Ki", 6, 1, 0, "Lock uncapped; explosive budget 6"),
+	@("Dragon Nova", "Ki", 12, 2, 0, "Direct plus equal splash"), @("Sky Break", "Physical", 8, 2, 0, "Strength-scaled direct plus splash"),
+	@("Echoing Slash", "Physical", 7, 1, 0, "Strength-scaled cutting wave")
 )
 foreach ($entry in $damageRows) {
 	$rowNumber = $calculator.Rows.Count + 1
@@ -467,7 +470,7 @@ foreach ($entry in $damageRows) {
 }
 $sheets.Add($calculator) | Out-Null
 
-$validation = New-Sheet "Validation" @(28, 18, 18, 18, 72) 2
+$validation = New-Sheet "Validation" @(42, 18, 18, 18, 72) 2
 Add-Row $validation.Rows @((New-Cell "Validation Scenarios" 2), (New-Cell "Equal-BP/equal-stat expected raw values before crit and situational modifiers." 2))
 Add-Row $validation.Rows @((New-Cell "Scenario" 1), (New-Cell "Expected" 1), (New-Cell "Workbook result" 1), (New-Cell "Difference" 1), (New-Cell "Reason" 1))
 $validationRows = @(
@@ -481,13 +484,16 @@ $validationRows = @(
 	@("Charge direct plus splash", 8, 13, "4 x2"),
 	@("Big Bang direct plus splash", 44, 12, "22 x2"),
 	@("Dragon Nova direct plus splash", 24, 32, "12 x2"),
-	@("Sky Break direct plus splash", 16, 33, "8 x2")
+	@("Sky Break direct plus splash", 16, 33, "8 x2"),
+	@("Echoing Slash", 7, 34, "Strength-scaled factor")
 )
 foreach ($row in $validationRows) {
 	$resultFormula = if ($row[0] -like "*five hits*") { "'Damage Calculator'!J$($row[2])*5" } elseif ($row[0] -like "*minimum total*") { "'Damage Calculator'!J$($row[2])*24" } elseif ($row[0] -like "*plus splash*") { "'Damage Calculator'!J$($row[2])*2" } else { "'Damage Calculator'!J$($row[2])" }
 	$rowNumber = $validation.Rows.Count + 1
 	Add-Row $validation.Rows @((New-Cell $row[0]), (New-Cell $row[1]), (New-FormulaCell $resultFormula), (New-FormulaCell "C$rowNumber-B$rowNumber"), (New-Cell $row[3] 5))
 }
+$powerGapRow = $validation.Rows.Count + 1
+Add-Row $validation.Rows @((New-Cell "Standard Beam at 13000 BP vs 200 BP"), (New-Cell 195), (New-FormulaCell "3*POWER(13000/200,Settings!`$B`$6)"), (New-FormulaCell "C$powerGapRow-B$powerGapRow"), (New-Cell "Linear BP scaling makes a 65x advantage immediately decisive" 5))
 $sheets.Add($validation) | Out-Null
 
 $sources = New-Sheet "Sources" @(44, 100) 2

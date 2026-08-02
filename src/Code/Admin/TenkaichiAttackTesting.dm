@@ -104,7 +104,7 @@ mob/Admin3/verb/testTenkaichiCombatEffects()
 	set name = "Test Combat Effects"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !loc) return
-	var/test_profile = input(src, "Choose an audiovisual profile. These previews do not deal damage.", "Combat Effect Preview") in list("Cancel", "Sword - Light", "Sword - Heavy", "Sword Wave - Echoing Slash", "Rock - Launch and Rumble", "Rock - Impact", "Rock - Heavy Impact", "Explosion - Maximum Light", "Beam Explosion - Knockback")
+	var/test_profile = input(src, "Choose an audiovisual profile. These previews do not deal damage.", "Combat Effect Preview") in list("Cancel", "Sword - Light", "Sword - Heavy", "Sword Wave - Echoing Slash", "Rock - Launch and Rumble", "Rock - Impact", "Rock - Heavy Impact", "Explosion - Maximum Light", "Beam Clash - Marker", "Beam Explosion - Knockback")
 	if(test_profile == "Cancel") return
 	switch(test_profile)
 		if("Sword - Light", "Sword - Heavy")
@@ -127,6 +127,12 @@ mob/Admin3/verb/testTenkaichiCombatEffects()
 		if("Explosion - Maximum Light")
 			Explosion_Graphics(src, 5)
 			player_view(15, src) << sound('Explosion2.wav', volume = 75)
+		if("Beam Clash - Marker")
+			var/turf/clash_turf = get_step(src, dir)
+			if(!clash_turf) clash_turf = loc
+			showNexusBeamClashMarker(clash_turf)
+			Make_Shockwave(clash_turf, sw_icon_size = 128)
+			player_view(15, src) << sound('Explosion2.wav', volume = 36)
 		if("Beam Explosion - Knockback")
 			var/turf/dummy_turf = get_step(src, dir)
 			if(!dummy_turf || dummy_turf.density)

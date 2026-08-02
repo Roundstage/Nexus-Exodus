@@ -63,9 +63,22 @@ mob/proc/drainWillpower(amount, reason, announce = TRUE)
 	if(announce && drained > 0)
 		src << "<font color=#ff8080>[reason] Willpower: [round(willpower)]/[round(getMaxWillpower())]."
 	if(willpower <= 0)
-		setRPMode(TRUE, announce = FALSE)
+		forceWillpowerBreakKnockout()
 		if(announce) src << "<font color=red>Your will is broken. You cannot rise until the lethal combat pressure fades."
 	return drained
+
+mob/proc/forceWillpowerBreakKnockout()
+	ko_is_lethal = TRUE
+	ko_recovery_ready_at = max(ko_recovery_ready_at, world.time + time_to_heal_ko(src))
+	if(!KO)
+		if(client) KO(last_attacker, allow_anger = FALSE, combat_ko_handled = TRUE)
+		else
+			KO = TRUE
+			icon_state = "KO"
+			move = 0
+			attacking = 0
+	setRPMode(TRUE, announce = FALSE)
+	updateOverheadHealthHud()
 
 mob/proc/restoreWillpower(amount, reason, announce = TRUE)
 	if(amount <= 0) return 0
@@ -90,6 +103,8 @@ mob/proc/setRPMode(enabled, announce = TRUE)
 		return
 	rp_mode = enabled
 	if(enabled)
+		if(grabbedObject) ReleaseGrab()
+		if(grabber) grabber.ReleaseGrab()
 		if(!rp_mode_input_lock)
 			AlterInputDisabled(1)
 			rp_mode_input_lock = TRUE
@@ -109,7 +124,7 @@ mob/proc/applyRegenerationHealth(amount, drains_willpower = TRUE)
 	var/health_before = Health
 	Health = min(100, Health + amount)
 	var/healed = Health - health_before
-	if(drains_willpower && healed > 0 && has_entered_combat(victim = src))
+	if(drains_willpower && healed > 0 && isInLethalCombat())
 		drainWillpower(healed * 0.25, "Regenerating under combat pressure costs Willpower.", announce = FALSE)
 	return healed
 
