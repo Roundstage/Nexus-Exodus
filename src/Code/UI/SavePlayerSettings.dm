@@ -29,6 +29,10 @@ mob/proc
 		f["nexus_legacy_tab_items"] << nexus_legacy_tab_items
 		f["nexus_legacy_tab_world"] << nexus_legacy_tab_world
 		f["nexus_legacy_tab_admin"] << nexus_legacy_tab_admin
+		f["nexus_overhead_vitals_offset_x"] << normalizeNexusHudOffset(nexus_overhead_vitals_offset_x)
+		f["nexus_overhead_vitals_offset_y"] << normalizeNexusHudOffset(nexus_overhead_vitals_offset_y)
+		f["nexus_main_vitals_x"] << max(0, round(nexus_main_vitals_x))
+		f["nexus_main_vitals_y"] << max(0, round(nexus_main_vitals_y))
 
 		//if(hotbar_ids.len && client.connection == "seeker")
 		//	f["hotbar_ids"]<<hotbar_ids
@@ -73,7 +77,15 @@ mob/proc
 		if("nexus_legacy_tab_items" in f) f["nexus_legacy_tab_items"] >> nexus_legacy_tab_items
 		if("nexus_legacy_tab_world" in f) f["nexus_legacy_tab_world"] >> nexus_legacy_tab_world
 		if("nexus_legacy_tab_admin" in f) f["nexus_legacy_tab_admin"] >> nexus_legacy_tab_admin
+		if("nexus_overhead_vitals_offset_x" in f) f["nexus_overhead_vitals_offset_x"] >> nexus_overhead_vitals_offset_x
+		if("nexus_overhead_vitals_offset_y" in f) f["nexus_overhead_vitals_offset_y"] >> nexus_overhead_vitals_offset_y
+		if("nexus_main_vitals_x" in f) f["nexus_main_vitals_x"] >> nexus_main_vitals_x
+		if("nexus_main_vitals_y" in f) f["nexus_main_vitals_y"] >> nexus_main_vitals_y
 		nexus_interface_layout = normalizeNexusInterfaceLayout(nexus_interface_layout)
+		nexus_overhead_vitals_offset_x = normalizeNexusHudOffset(nexus_overhead_vitals_offset_x)
+		nexus_overhead_vitals_offset_y = normalizeNexusHudOffset(nexus_overhead_vitals_offset_y)
+		nexus_main_vitals_x = max(0, round(nexus_main_vitals_x))
+		nexus_main_vitals_y = max(0, round(nexus_main_vitals_y))
 
 		//if("hotbar_ids" in f)
 		//	f["hotbar_ids"] >> hotbar_ids

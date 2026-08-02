@@ -224,13 +224,48 @@ mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Willpower/overhead_willpower_hud
 client/var/tmp/obj/NexusHud/VitalsPanel/main_vitals_hud
 
+mob/var
+	nexus_overhead_vitals_offset_x = 0
+	nexus_overhead_vitals_offset_y = 0
+	nexus_main_vitals_x = 8
+	nexus_main_vitals_y = 8
+
+proc/normalizeNexusHudOffset(value)
+	if(!nexusIsFiniteNumber(value)) return 0
+	return round(Clamp(value, -128, 128))
+
+proc/getNexusOverheadVitalsBasePixelX(mob/owner)
+	if(!owner) return 0
+	return normalizeNexusHudOffset(owner.nexus_overhead_vitals_offset_x)
+
 proc/getNexusOverheadVitalsBasePixelY(mob/owner)
 	var/icon_height = owner && owner.icon ? max(32, GetHeight(owner.icon)) : 32
-	return icon_height + 2
+	var/vertical_offset = owner ? normalizeNexusHudOffset(owner.nexus_overhead_vitals_offset_y) : 0
+	// Reserve ten visible typing pixels plus four clear pixels above the sprite.
+	return icon_height + 14 + vertical_offset
+
+proc/getNexusTypingIndicatorPixelY(mob/owner)
+	// KhunTyping is a 32px cell whose visible bubble occupies its upper ten pixels.
+	return getNexusOverheadVitalsBasePixelY(owner) - 34
 
 proc/getNexusOverheadFeedbackPixelY(mob/owner)
-	// Three 3px bars start four pixels apart. Keep two clear pixels above the last row.
+	// Speech remains above all three 3px rows while typing occupies the reserved space below them.
 	return getNexusOverheadVitalsBasePixelY(owner) + 8 + 3 + 2
+
+mob/proc/setNexusOverheadVitalsOffset(new_x, new_y)
+	nexus_overhead_vitals_offset_x = normalizeNexusHudOffset(new_x)
+	nexus_overhead_vitals_offset_y = normalizeNexusHudOffset(new_y)
+	updateOverheadHealthHud()
+	if(nexus_typing_indicator)
+		nexus_typing_indicator.pixel_x = getNexusOverheadVitalsBasePixelX(src)
+		nexus_typing_indicator.pixel_y = getNexusTypingIndicatorPixelY(src)
+	if(nexus_say_text) nexus_say_text.pixel_y = getNexusOverheadFeedbackPixelY(src)
+
+mob/proc/setNexusMainVitalsPosition(new_x, new_y)
+	nexus_main_vitals_x = max(0, round(new_x))
+	nexus_main_vitals_y = max(0, round(new_y))
+	if(client && client.main_vitals_hud)
+		client.main_vitals_hud.setScreenPosition(nexus_main_vitals_x, nexus_main_vitals_y, FALSE)
 
 mob/Write(savefile/save_file)
 	var/list/detached_hud = list()
@@ -332,18 +367,18 @@ obj/NexusHud
 			update(owner)
 
 		proc/updatePosition(mob/owner)
+			pixel_x = getNexusOverheadVitalsBasePixelX(owner)
 			pixel_y = getNexusOverheadVitalsBasePixelY(owner) + row_offset
 
 		proc/update(mob/owner)
 			if(!owner) return
+			updatePosition(owner)
 			if(istype(src, /obj/NexusHud/OverheadHealthBar/Energy))
 				icon = getOverheadVitalIcon(hudPercentage(owner.Ki, owner.max_ki), "#37cfff")
 			else if(istype(src, /obj/NexusHud/OverheadHealthBar/Willpower))
 				icon = getOverheadVitalIcon(hudPercentage(owner.willpower, owner.getMaxWillpower()), "#b983ff")
 			else icon = getOverheadHealthIcon(hudPercentage(owner.Health))
-			if(owner.icon && owner.icon != owner_icon)
-				updatePosition(owner)
-				owner_icon = owner.icon
+			if(owner.icon && owner.icon != owner_icon) owner_icon = owner.icon
 
 		Energy
 			row_offset = 4
@@ -355,6 +390,7 @@ obj/NexusHud
 		alpha = 255
 		mouse_opacity = 2
 		screen_loc = "LEFT:8,BOTTOM:8"
+		var/tmp/mob/panel_owner
 		var/tmp/screen_x = 8
 		var/tmp/screen_y = 8
 		var/tmp/drag_mouse_x
@@ -371,6 +407,8 @@ obj/NexusHud
 		var/tmp/obj/NexusHud/PowerReadout/power_readout
 
 		proc/initialize(mob/owner)
+			panel_owner = owner
+			if(owner) setScreenPosition(owner.nexus_main_vitals_x, owner.nexus_main_vitals_y, FALSE)
 			icon = getVitalsPanelIcon()
 			portrait = new
 			willpower_row = new /obj/NexusHud/VitalRow/Willpower
@@ -406,10 +444,13 @@ obj/NexusHud
 			right_power_gauge.update(gauge_percent, over_limit)
 			power_readout.update(round(current_power, 0.1), round(soft_cap, 0.1), over_limit)
 
-		proc/setScreenPosition(new_x, new_y)
+		proc/setScreenPosition(new_x, new_y, update_owner = TRUE)
 			screen_x = max(0, round(new_x))
 			screen_y = max(0, round(new_y))
 			screen_loc = "LEFT:[screen_x],BOTTOM:[screen_y]"
+			if(update_owner && panel_owner)
+				panel_owner.nexus_main_vitals_x = screen_x
+				panel_owner.nexus_main_vitals_y = screen_y
 
 		proc/moveToMouse(screen_location)
 			var/list/screen_pixels = screenLocationPixels(screen_location)
@@ -432,9 +473,11 @@ obj/NexusHud
 		MouseDrop(over_object, src_location, over_location, src_control, over_control, params)
 			var/list/mouse_params = params2list(params)
 			moveToMouse(mouse_params["screen-loc"])
+			if(panel_owner) panel_owner.save_player_settings()
 
 		Del()
 			for(var/obj/hud_object in vis_contents) del(hud_object)
+			panel_owner = null
 			. = ..()
 
 	CharacterPortrait
