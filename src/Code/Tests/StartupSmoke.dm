@@ -40,6 +40,16 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/datum/NexusChatHud") && text2path("/obj/HudWindow"), "HudLib chat types are missing")
 	nexusSmokeAssert(text2path("/datum/NexusCharacterSelect"), "three-slot character selector is missing")
 	nexusSmokeAssert(NEXUS_CHARACTER_SLOT_LIMIT == 3, "character slot limit is not three")
+	nexusSmokeAssert(text2path("/client/proc/returnToNexusReconnectLobby"), "reconnect-to-character-select handoff is missing")
+	var/mob/NexusSmokeTest/reconnect_character_test = new
+	var/obj/reconnect_location_test = new
+	reconnect_character_test.loc = reconnect_location_test
+	reconnect_character_test.playerCharacter = TRUE
+	nexusSmokeAssert(reconnect_character_test.isNexusReconnectCharacter() && getNexusInitialConnectViewWidth(reconnect_character_test, 61) == 0, "a reconnected live character can still receive the oversized title-screen view")
+	reconnect_character_test.playerCharacter = FALSE
+	nexusSmokeAssert(!reconnect_character_test.isNexusReconnectCharacter() && getNexusInitialConnectViewWidth(reconnect_character_test, 61) == 61, "a lobby mob no longer receives the title-screen view")
+	del(reconnect_character_test)
+	del(reconnect_location_test)
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1) == "data/Save/smokekey-slot1.sav", "slot-one save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 3) == "data/Save/smokekey-slot3.sav", "slot-three save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 4) == getNexusCharacterSavePathForKey("Smoke Key", 3), "character slot clamping is invalid")
