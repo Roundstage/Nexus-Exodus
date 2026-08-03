@@ -80,7 +80,7 @@ mob/proc
 					src << output(o, "[win].grid1")
 					sleep(3) //i find that i crash if it tries to load too many at once
 		else
-			for(var/obj/Build/b in Builds) if(b.build_category == cat)
+			for(var/obj/Build/b in getBuildCatalogForCategory(cat))
 				added++
 				winset(src, "[win].grid1", "current-cell=[added]")
 				src << output(b, "[win].grid1")

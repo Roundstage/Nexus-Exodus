@@ -87,26 +87,34 @@ mob/var/blast_homing_mod=1
 obj/var/Stun
 
 var/list/cached_blasts=new
+var
+	cached_blast_refill_size = 50
+	cached_blast_retention_limit = 500
 
-proc/fill_cached_blasts()
-	for(var/v in 1 to 50) cached_blasts += new/obj/Blast
+proc/fill_cached_blasts(amount = cached_blast_refill_size)
+	amount = max(1, round(amount))
+	for(var/v in 1 to amount) cached_blasts += new/obj/Blast
 
 proc/get_cached_blast()
-	for(var/obj/Blast/b in cached_blasts) if(!b.in_use)
+	while(TRUE)
+		if(!cached_blasts.len) fill_cached_blasts()
+		var/obj/Blast/b = cached_blasts[cached_blasts.len]
+		cached_blasts.len--
+		if(!b) continue
 		animate(b) //stop all animations
 		b.clearNexusGlow()
 		ResetVars(b)
 		b.in_use=1
-		cached_blasts -= b
 
 		//reset everything back to defaults
 		b.skip_all_collisions = 0
 		b.pixel_x=0
 		b.pixel_y=0
 		b.overlays = new/list
-		b.New()
+		b.startBlastLifecycle()
 
 		b.Owner=null
+		b.from_attack = null
 		b.stopProjectileFlight()
 		b.gain_power_with_range=0
 		b.lose_power_with_range=0
@@ -137,6 +145,9 @@ proc/get_cached_blast()
 		b.damage_budget = null
 		b.shuriken = 0
 		b.deflected=0
+		b.steps_since_last_homing_check = 0
+		b.last_object_shockwaved_against = null
+		b.clash_damage_bonus_applied = FALSE
 		b.is_makosen=0
 		b.wall_breaking_power=0
 		b.vampire_damage_multiplier=1
@@ -171,9 +182,6 @@ proc/get_cached_blast()
 		b.scattershot_target = null
 
 		return b
-	//no blasts found, create more
-	fill_cached_blasts()
-	return get_cached_blast()
 
 obj/Blast/proc/cache_blast()
 	stopProjectileFlight()
@@ -198,10 +206,13 @@ obj/Blast/Del()
 	if(m && ismob(m)) m.my_beam_objs -= src
 	if(Shrapnel) Shrapnel()
 
-	if(blast_caches)
+	if(blast_caches && cached_blasts.len < cached_blast_retention_limit)
 		cache_blast()
 		loc = null
 	else
+		all_blast_objs -= src
+		if(blast_caches) reallyDelete = TRUE
+		blast_caches = FALSE
 		stopProjectileFlight()
 		SafeTeleport(null) //attempt to fix spirit bombs hitting multiple times bug. 12/16/2018
 		. = ..()
@@ -282,12 +293,17 @@ obj/Blast
 	var/tmp/turf/last_object_shockwaved_against //to prevent shockwave spamming the same turf repeatedly, causing lag
 
 	New()
+		startBlastLifecycle()
+
+	proc/startBlastLifecycle()
 		projectile_creation_time = world.time
 		spawn if(src)
 			var/area/a=get_area()
-			if(a) a.blast_objs+=src
+			if(a)
+				a.blast_objs -= src
+				a.blast_objs += src
 
-		all_blast_objs+=src
+		if(!(src in all_blast_objs)) all_blast_objs += src
 		spawn if(src) if(GetWidth(icon)>36||GetHeight(icon)>36) CenterIcon(src)
 		if(type!=/obj/Blast/Genki_Dama)
 			spawn(1) if(Owner&&ismob(Owner)&&Owner.icon_state!="Attack") if(Owner.client) flick("Attack",Owner)

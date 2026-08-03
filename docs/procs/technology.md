@@ -1070,9 +1070,9 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 #### proc/Turret_loop
 - Signature: `proc/Turret_loop()`
 - Inputs: None
-- Purpose: Handle turret loop.
+- Purpose: Schedule one target reconciliation per active turret, independent of the number of nearby players.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: wakes idle turret target workers at a fixed cadence.
 
 #### verb/Upgrade
 - Signature: `verb/Upgrade()`
@@ -1105,14 +1105,14 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 #### proc/Turret_Target
 - Signature: `proc/Turret_Target()`
 - Inputs: None
-- Purpose: Handle turret target.
+- Purpose: Reconcile one turret's unauthorized targets with duplicate-worker protection.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: updates `Target` and starts at most one firing worker.
 
 #### proc/Turret_Fire_Loop
 - Signature: `proc/Turret_Fire_Loop()`
 - Inputs: None
-- Purpose: Handle turret fire loop.
+- Purpose: Fire at the selected target until it leaves range, with reentry protection.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1504,6 +1504,14 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 
 ### src/Code/Technology/Technology.dm
 
+#### proc/rebuildTechnologySearchIndex
+- Signature: `proc/rebuildTechnologySearchIndex()`
+- Purpose: Build normalized name/type prefix buckets once after the technology catalog is sorted.
+
+#### proc/searchTechnologyCatalog
+- Signature: `proc/searchTechnologyCatalog(query, list/accessible_entries, maximum_results = 100)`
+- Purpose: Intersect technology prefix buckets and then restrict results to recipes accessible to the caller.
+
 #### mob/proc/TryCreateScienceItem
 - Signature: `mob/proc/TryCreateScienceItem(obj/A)`
 - Inputs: obj/A
@@ -1542,9 +1550,9 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 #### proc/Random_resource_drops
 - Signature: `proc/Random_resource_drops()`
 - Inputs: None
-- Purpose: Handle random resource drops.
+- Purpose: Place a random resource cache after a bounded, periodically yielding search for an eligible turf.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: may create a cached resource object; abandons the current cycle when no eligible turf is found within the attempt budget.
 
 #### proc/Planet_Resources
 - Signature: `proc/Planet_Resources(N=1)`

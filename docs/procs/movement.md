@@ -130,8 +130,15 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 #### mob/proc/GetVectorMovePixels
 - Signature: `GetVectorMovePixels(d = NORTH)`
 - Inputs: d = NORTH
-- Purpose: Return computed vector move distance in pixels.
-- Returns: computed value (see implementation).
+- Purpose: Return vector movement distance from the configured base speed, bounded Speed-stat multiplier, movement conditions, and tick duration.
+- Returns: pixels to advance during the current vector step.
+- Side effects: none expected.
+
+#### mob/proc/GetVectorMovementStatMultiplier
+- Signature: `GetVectorMovementStatMultiplier()`
+- Inputs: None
+- Purpose: Convert the combat Speed delay curve into a bounded movement multiplier while preserving the configured average base speed.
+- Returns: multiplier between `vector_move_speed_stat_minimum` and `vector_move_speed_stat_maximum`.
 - Side effects: none expected.
 
 #### mob/proc/VectorMoveDir

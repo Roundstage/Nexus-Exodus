@@ -24,6 +24,10 @@ var/vector_glide_min = 1
 var/vector_glide_target = 0
 var/vector_glide_max = 0
 var/vector_glide_high_speed_scale = 1
+var/vector_move_base_pixels_per_second = 70
+var/vector_move_speed_stat_severity = 0.2
+var/vector_move_speed_stat_minimum = 0.7
+var/vector_move_speed_stat_maximum = 1.4
 
 mob/proc
 	GetInputMoveDelay(d = NORTH, raw_mult_only)
@@ -45,10 +49,15 @@ mob/proc
 		if(!client) return
 		return 1
 
+	GetVectorMovementStatMultiplier()
+		var/speed_delay = Speed_delay_mult(severity = vector_move_speed_stat_severity)
+		if(!isnum(speed_delay) || speed_delay <= 0) return 1
+		var/speed_multiplier = speedDelayMultMod / speed_delay
+		return Clamp(speed_multiplier, vector_move_speed_stat_minimum, vector_move_speed_stat_maximum)
+
 	GetVectorMovePixels(d = NORTH)
 		if(!d) d = NORTH
-		// debug: force a high base speed (pixels per second) instead of stat-based scaling
-		var/speed = 70
+		var/speed = vector_move_base_pixels_per_second * GetVectorMovementStatMultiplier()
 		var/delay_mult = GetInputMoveDelay(d, raw_mult_only = 1)
 		if(delay_mult) speed /= delay_mult
 		speed *= world.tick_lag

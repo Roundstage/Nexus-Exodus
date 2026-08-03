@@ -901,7 +901,7 @@ mob/Body/var
 	body_expire_time=0
 	was_zombie
 
-proc/ResetVars(mob/m)
+proc/ResetVars(atom/movable/m)
 	if(!m) return
 	m.transform = null
 	m.color = null
@@ -911,10 +911,13 @@ proc/ResetVars(mob/m)
 			m.vars[v] = initial(m.vars[v])
 
 var/list/cached_bodies=new
+var/cached_body_retention_limit = 100
 proc/Get_cached_body()
-	for(var/mob/m in cached_bodies)
+	while(cached_bodies.len)
+		var/mob/m = cached_bodies[cached_bodies.len]
+		cached_bodies.len--
+		if(!m) continue
 		ResetVars(m)
-		cached_bodies-=m
 		return m
 	return new/mob/Body
 

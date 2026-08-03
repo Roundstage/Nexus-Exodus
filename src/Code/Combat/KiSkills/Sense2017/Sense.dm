@@ -31,6 +31,12 @@ obj/Screen_Indicator
 			base_trans_size = 0.7
 			last_size_update = 0
 			last_appearance_update = 0
+			last_source_cx
+			last_source_cy
+			last_target_cx
+			last_target_cy
+			last_can_sense = FALSE
+			next_visibility_update = 0
 
 	New()
 		//verbs = new //new/list
@@ -39,10 +45,14 @@ obj/Screen_Indicator
 		. = ..()
 
 	Del()
-		screen_indicator_cache -= src
-		screen_indicator_cache += src
-		loc = null
-		target = null
+		if(screen_indicator_cache.len < screen_indicator_cache_retention_limit)
+			screen_indicator_cache -= src
+			screen_indicator_cache += src
+			loc = null
+			target = null
+		else
+			reallyDelete = TRUE
+			. = ..()
 
 	proc
 		SenseArrowMatchAppearance(update_overlays = 1)
@@ -68,9 +78,13 @@ mob
 	var
 		tmp
 			list/sense_arrows = new
+			list/sense_arrow_by_target = new
 			list/nexus_sense_readouts = new
 			next_nexus_sense_refresh = 0
 			next_nexus_sense_arrow_refresh = 0
+			area/last_nexus_sense_area
+			last_nexus_sense_area_revision = -1
+			last_nexus_sense_enabled = FALSE
 
 	proc
 		hasNexusSenseDisplay()
@@ -90,43 +104,69 @@ mob
 					if(old_readout) client.images -= old_readout
 			nexus_sense_readouts = list()
 
+		removeNexusSenseReadout(mob/target)
+			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			var/image/readout = nexus_sense_readouts[target]
+			if(readout && client) client.images -= readout
+			nexus_sense_readouts -= target
+
+		ensureNexusSenseReadout(mob/target)
+			if(!client || !target) return
+			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			var/image/readout = nexus_sense_readouts[target]
+			if(readout) return readout
+			readout = image(icon = null, loc = target)
+			readout.layer = 1000
+			readout.maptext_width = 96
+			readout.maptext_height = 12
+			readout.mouse_opacity = 0
+			nexus_sense_readouts[target] = readout
+			client.images += readout
+			return readout
+
+		syncNexusSenseReadouts(area/a)
+			if(!client || !current_area || !hasNexusSenseDisplay())
+				clearNexusSenseReadouts()
+				return
+			if(a != current_area) a = current_area
+			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			var/list/active_targets = list()
+			for(var/mob/target in a.mob_list)
+				if(target == src || target.type == /mob/Body || target.unsenseable || !target.loc) continue
+				if(target.locz() != locz() || !CanSense(src, target)) continue
+				active_targets[target] = TRUE
+				ensureNexusSenseReadout(target)
+			for(var/mob/old_target in nexus_sense_readouts.Copy())
+				if(active_targets[old_target]) continue
+				removeNexusSenseReadout(old_target)
+			refreshNexusSenseReadouts()
+
 		refreshNexusSenseReadouts()
 			if(!client || !current_area || !hasNexusSenseDisplay())
 				clearNexusSenseReadouts()
 				return
 			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
-			var/list/active_targets = list()
-			for(var/mob/target in current_area.mob_list)
-				if(target == src || target.type == /mob/Body || target.unsenseable || !target.loc) continue
-				if(target.locz() != locz() || !CanSense(src, target)) continue
-				active_targets[target] = TRUE
+			for(var/mob/target in nexus_sense_readouts.Copy())
+				if(!target || !target.loc || target.current_area != current_area || target.locz() != locz() || !CanSense(src, target))
+					removeNexusSenseReadout(target)
+					continue
 				var/image/readout = nexus_sense_readouts[target]
-				if(!readout)
-					readout = image(icon = null, loc = target)
-					readout.layer = 1000
-					readout.maptext_width = 96
-					readout.maptext_height = 12
-					readout.mouse_opacity = 0
-					nexus_sense_readouts[target] = readout
-					client.images += readout
+				if(!readout) continue
 				readout.maptext_x = getNexusOverheadVitalsBasePixelX(target) - 32
 				readout.maptext_y = getNexusOverheadPercentagePixelY(target)
 				var/power_percent = Sense_Power(target)
 				readout.maptext = "<div style='font-family:Courier New;font-size:7px;font-weight:bold;text-align:center;color:#9de8ff;text-shadow:1px 1px #000'>[power_percent]%</div>"
-			for(var/mob/old_target in nexus_sense_readouts.Copy())
-				if(active_targets[old_target]) continue
-				var/image/old_readout = nexus_sense_readouts[old_target]
-				if(old_readout) client.images -= old_readout
-				nexus_sense_readouts -= old_target
 
 		UpdateSenseArrowPositionsLoop()
 			set waitfor=0
 			while(1)
 				if(client)
 					UpdateSenseArrowPositions()
-					if(world.time >= next_nexus_sense_arrow_refresh)
+					var/area/a = current_area
+					var/sense_enabled = hasNexusSenseDisplay()
+					if(sense_enabled != last_nexus_sense_enabled || a != last_nexus_sense_area || (a && a.sense_target_revision != last_nexus_sense_area_revision) || world.time >= next_nexus_sense_arrow_refresh)
 						UpdateSenseArrowList(current_area)
-						next_nexus_sense_arrow_refresh = world.time + 50
+						next_nexus_sense_arrow_refresh = world.time + 300
 					if(world.time >= next_nexus_sense_refresh)
 						refreshNexusSenseReadouts()
 						next_nexus_sense_refresh = world.time + 10
@@ -152,9 +192,22 @@ mob
 				RemoveSenseArrow(si)
 				return
 
-			if(!CanSense(src,si.target) || si.target.locz() != locz()) si.alpha = 0
-			else
-				si.alpha = 116
+			var/source_cx = Cx()
+			var/source_cy = Cy()
+			var/target_cx = si.target.Cx()
+			var/target_cy = si.target.Cy()
+			var/position_changed = source_cx != si.last_source_cx || source_cy != si.last_source_cy || target_cx != si.last_target_cx || target_cy != si.last_target_cy
+			si.last_source_cx = source_cx
+			si.last_source_cy = source_cy
+			si.last_target_cx = target_cx
+			si.last_target_cy = target_cy
+
+			if(instant_update || world.time >= si.next_visibility_update)
+				var/was_senseable = si.last_can_sense
+				si.last_can_sense = CanSense(src, si.target) && si.target.locz() == locz()
+				si.next_visibility_update = world.time + 10
+				si.alpha = si.last_can_sense ? 116 : 0
+				if(si.last_can_sense && !was_senseable) position_changed = TRUE
 
 				if(world.time - si.last_size_update > 10)
 					UpdateSenseArrowSizeBasedOnPower(si)
@@ -164,6 +217,7 @@ mob
 					si.SenseArrowMatchAppearance(update_overlays = prob(20))
 					si.last_appearance_update = world.time
 
+			if(si.last_can_sense && position_changed)
 				PointArrow(si, si.target, instant_update = instant_update, dist_mod = SenseArrowDistanceMod(si), do_rotation = 0)
 
 		SenseArrowDistanceMod(obj/Screen_Indicator/si)
@@ -188,32 +242,54 @@ mob
 			si.transform_size = new_trans_size
 
 		RemoveSenseArrow(obj/Screen_Indicator/si)
+			if(!si) return
+			var/atom/movable/old_target = si.target
 			if(client) client.screen -= si
 			sense_arrows -= si
+			if(islist(sense_arrow_by_target) && old_target && sense_arrow_by_target[old_target] == si)
+				sense_arrow_by_target -= old_target
 			del(si)
 
 		AddSenseArrow(obj/Screen_Indicator/si, clr)
-			if(!client) return
+			if(!client || !si || !si.target) return
+			if(!islist(sense_arrow_by_target)) sense_arrow_by_target = list()
 			client.screen += si
 			sense_arrows += si
+			sense_arrow_by_target[si.target] = si
 			UpdateSenseArrowPosition(si, instant_update = 1)
 			if(clr) si.color = clr
 
 		RemoveAllSenseArrows()
-			for(var/obj/o in sense_arrows) RemoveSenseArrow(o)
+			for(var/obj/o in sense_arrows.Copy()) RemoveSenseArrow(o)
 			sense_arrows = new/list
+			sense_arrow_by_target = new/list
 
 		UpdateSenseArrowList(area/a)
-			RemoveAllSenseArrows()
 			if(!a || !hasNexusSenseDisplay())
+				RemoveAllSenseArrows()
 				clearNexusSenseReadouts()
+				last_nexus_sense_area = a
+				last_nexus_sense_area_revision = a ? a.sense_target_revision : -1
+				last_nexus_sense_enabled = FALSE
 				return
+			if(!islist(sense_arrow_by_target)) sense_arrow_by_target = list()
+			var/list/active_targets = list()
 			for(var/mob/m in a.player_list)
-				if(m != src)
-					var/obj/Screen_Indicator/si = GetNewScreenIndicator()
-					si.target = m
-					si.SenseArrowMatchAppearance()
-					AddSenseArrow(si, clr = GetSenseArrowColor(m))
+				if(m == src || !m.loc) continue
+				active_targets[m] = TRUE
+				var/obj/Screen_Indicator/si = sense_arrow_by_target[m]
+				if(si) continue
+				si = GetNewScreenIndicator()
+				si.target = m
+				si.SenseArrowMatchAppearance()
+				AddSenseArrow(si, clr = GetSenseArrowColor(m))
+			for(var/mob/old_target in sense_arrow_by_target.Copy())
+				if(active_targets[old_target]) continue
+				RemoveSenseArrow(sense_arrow_by_target[old_target])
+			syncNexusSenseReadouts(a)
+			last_nexus_sense_area = a
+			last_nexus_sense_area_revision = a.sense_target_revision
+			last_nexus_sense_enabled = TRUE
 
 		GetSenseArrowColor(mob/m)
 
@@ -248,25 +324,21 @@ mob
 area
 	var
 		tmp
-			last_sense_target_update = 0 //world.time
+			sense_target_revision = 0
 			sense_update_queued
-			max_sense_target_update_rate = 50
+			max_sense_target_update_rate = 5
 	proc
-		//whenever someone enters or exits an area it updates sense targets for everyone
+		//Coalesce area membership changes so each observer reconciles at most once per movement burst.
 		AreaUpdateSenseTargets()
+			set waitfor=0
 			if(sense_update_queued) return
 			sense_update_queued = 1
-			if(world.time - last_sense_target_update < max_sense_target_update_rate)
-				sleep(max_sense_target_update_rate - (world.time - last_sense_target_update))
-
-			for(var/mob/m in player_list)
-				if(m.client)
-					m.UpdateSenseArrowList(src)
-
-			last_sense_target_update = world.time
+			sleep(max_sense_target_update_rate)
+			sense_target_revision++
 			sense_update_queued = 0
 
 var/list/screen_indicator_cache = new
+var/screen_indicator_cache_retention_limit = 500
 
 proc
 	GetNewScreenIndicator()
@@ -279,6 +351,12 @@ proc
 			ResetVars(si)
 			si.last_size_update = 0
 			si.last_appearance_update = 0
+			si.last_source_cx = null
+			si.last_source_cy = null
+			si.last_target_cx = null
+			si.last_target_cy = null
+			si.last_can_sense = FALSE
+			si.next_visibility_update = 0
 			/*animate(si) //stop all animations
 			si.transform = matrix()
 			si.target = null

@@ -5176,50 +5176,29 @@ Player persistence supports three independent character slots. Character and fea
 #### mob/proc/try_applying_burn_effect
 - Signature: `mob/proc/try_applying_burn_effect()`
 - Inputs: None
-- Purpose: Handle try applying burn effect.
+- Purpose: Start the asynchronous burn drain once; repeated scheduler calls are ignored while the effect is already running.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: Drains health and temporarily reduces regeneration until all burn stacks are consumed.
 
 ### src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm
 
-#### mob/proc/cycle_energies
-- Signature: `mob/proc/cycle_energies()`
-- Inputs: None
-- Purpose: Handle cycle energies.
+#### mob/proc/process_player_action_cycle
+- Signature: `mob/proc/process_player_action_cycle(run_background_tasks = FALSE)`
+- Inputs: Whether the slower logging and progression work is due in this cycle.
+- Purpose: Process burn, knockout recovery, HUD/target validation, energy schedules, and optionally background player tasks in one scheduler cycle.
 - Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/update_logging_system
-- Signature: `mob/proc/update_logging_system()`
-- Inputs: None
-- Purpose: Update logging system.
-- Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
-
-#### mob/proc/try_to_apply_burn_effect
-- Signature: `mob/proc/try_to_apply_burn_effect()`
-- Inputs: None
-- Purpose: Handle try to apply burn effect.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/try_to_heal_combat_ko
-- Signature: `mob/proc/try_to_heal_combat_ko()`
-- Inputs: None
-- Purpose: Handle try to heal combat ko.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: Mutates player effects and progression; writes chat logs only when buffered entries exist.
 
 #### mob/proc/execute_player_actions
 - Signature: `mob/proc/execute_player_actions()`
 - Inputs: None
-- Purpose: Handle execute player actions.
+- Purpose: Run one lifecycle-bound player action loop at ten-tick intervals, with background tasks every one hundred ticks.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: Sets `player_action_loop_running` while the player remains registered in the active player list.
 
 #### proc/LogicLoop
 - Signature: `proc/LogicLoop()`
 - Inputs: None
-- Purpose: Handle logic loop.
+- Purpose: Start the consolidated action loop for active players that do not already have one.
 - Returns: none (implicit).
 - Side effects: see implementation.

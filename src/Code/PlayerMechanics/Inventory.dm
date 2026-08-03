@@ -947,8 +947,8 @@ obj/Bounty_Computer
 						if(L&&L.len)
 							var/mob/prisoner=Get_by_key(L["Key"])
 							for(var/obj/bc in bounty_computers)
-								if(prisoner) player_view(bc,15)<<"[usr] just claimed the bounty on [prisoner]"
-								else player_view(bc,15)<<"[usr] just claimed the bounty on [L["Key"]]"
+								if(prisoner) player_view(15,bc)<<"[usr] just claimed the bounty on [prisoner]"
+								else player_view(15,bc)<<"[usr] just claimed the bounty on [L["Key"]]"
 
 							usr<<"Congratulations you just collected [Commas(L["Bounty"])]$!"
 							usr.Alter_Res(L["Bounty"])

@@ -1,57 +1,37 @@
-mob/proc/cycle_energies()
-	var/mob/player = src
-	while(TRUE)
-		for(var/name in player.energies)
-			var/Energy/energy = player.energies[name]
-			energy.cycle_energy()
-		sleep(10)
+mob/var/tmp/player_action_loop_running = FALSE
 
-mob/proc/update_logging_system()
-	var/mob/player = src
-	while(TRUE)
-		player.Write_chatlogs()
-		sleep(100)
+mob/proc/process_player_action_cycle(run_background_tasks = FALSE)
+	try_applying_burn_effect()
+	try_healing_combat_ko(src)
+	Update_health_bars()
+	if(islist(energies))
+		for(var/name in energies)
+			var/Energy/energy = energies[name]
+			if(energy) energy.cycle_energy()
 
-mob/proc/try_to_apply_burn_effect()
-	var/mob/player = src
-	while(TRUE)
-		player.try_applying_burn_effect()
-		sleep(10)
-
-mob/proc/try_to_heal_combat_ko()
-	var/mob/victim = src
-	while(TRUE)
-		victim.try_healing_combat_ko(victim)
-		sleep(10)
-
-mob/proc/update_character_progression()
-	var/mob/player = src
-	while(TRUE)
-		player.syncTechnologyProgression(silent = FALSE)
-		player.syncMagicProgression(silent = FALSE)
-		player.syncMilestoneProgression(silent = FALSE)
-		sleep(100)
+	if(!run_background_tasks) return
+	if(islist(unwritten_chatlogs) && unwritten_chatlogs.len) Write_chatlogs()
+	syncTechnologyProgression(silent = FALSE)
+	syncMagicProgression(silent = FALSE)
+	syncMilestoneProgression(silent = FALSE)
 
 mob/proc/execute_player_actions()
-	var/mob/player = src
-	spawn(1)
-		player.try_to_apply_burn_effect()
-	spawn(1)
-		player.try_to_heal_combat_ko()
-	spawn(1)
-		player.cycle_energies()
-	spawn(1)
-		player.update_logging_system()
-	spawn(1)
-		player.update_character_progression()
+	set waitfor = 0
+	if(player_action_loop_running) return
+	player_action_loop_running = TRUE
+	var/next_background_update = 0
 
-var/list/already_started = list()
+	while(src && (src in players))
+		var/run_background_tasks = world.time >= next_background_update
+		process_player_action_cycle(run_background_tasks)
+		if(run_background_tasks) next_background_update = world.time + 100
+		sleep(10)
+
+	player_action_loop_running = FALSE
 
 proc/LogicLoop()
 	while(TRUE)
 		for(var/mob/player in players)
-			if(!(player in already_started))
-				already_started += player
-				player.execute_player_actions()
+			if(player && !player.player_action_loop_running) player.execute_player_actions()
 		sleep(10) //sleep(world.tick_lag)
 		//if(world.tick_usage > 80) sleep(world.tick_lag)

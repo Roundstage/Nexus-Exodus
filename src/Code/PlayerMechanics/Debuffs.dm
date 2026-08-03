@@ -66,7 +66,7 @@ mob/proc
 					if(m.alignment=="Evil"&&m!=Opponent&&m!=src&&m.Opponent==Opponent)
 						if(Extrapolated_target_is(Opponent)&&m.Extrapolated_target_is(Opponent))
 							if(Most_recent_attack_time(m,Opponent)<=50)
-								player_view(src,15)<<"<font color=red>[src] has been marked as evil for helping an evil person fight against \
+								player_view(15,src)<<"<font color=red>[src] has been marked as evil for helping an evil person fight against \
 								another good person"
 								good_attack_good_time=world.time
 								next_alignment_change=world.realtime+(3*60*60*10)
@@ -100,7 +100,7 @@ mob/proc
 		var/stop_message_seconds_ago=world.time-stop_messages[t.key]
 		for(var/hit_time in hit_list) if(world.time-hit_time<stop_message_seconds_ago) hits++
 		if(hits>=4)
-			player_view(src,15)<<"<font color=red>[src] has been marked as evil for attacking another good person against \
+			player_view(15,src)<<"<font color=red>[src] has been marked as evil for attacking another good person against \
 			their will after they were told to stop"
 			good_attack_good_time=world.time
 			next_alignment_change=world.realtime+(3*60*60*10)

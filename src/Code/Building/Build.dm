@@ -1,4 +1,30 @@
 var/Map_Loaded
+var/const/MAP_SAVE_SEGMENT_SIZE = 20000
+
+proc/getMapSavePath(segment = 1)
+	segment = max(1, round(segment))
+	return "data/Map[segment]"
+
+proc/writeMapSaveSegment(segment, list/types, list/healths, list/builders, list/xs, list/ys, list/zs, list/fly_over)
+	var/savefile/f = new(getMapSavePath(segment))
+	f["Types"] << types
+	f["Healths"] << healths
+	f["Builders"] << builders
+	f["Xs"] << xs
+	f["Ys"] << ys
+	f["Zs"] << zs
+	f["FlyOver"] << fly_over
+
+proc/writeMapSaveManifest(segment_count)
+	var/savefile/manifest = new("data/MapManifest")
+	manifest["SegmentCount"] << segment_count
+
+proc/getMapSaveSegmentCount()
+	if(!fexists("data/MapManifest")) return 0
+	var/savefile/manifest = new("data/MapManifest")
+	var/segment_count
+	manifest["SegmentCount"] >> segment_count
+	return max(0, round(segment_count))
 
 /*proc/Save_Map()
 	var/turf_count=0
@@ -12,7 +38,7 @@ proc/mapSave()
 	//set background = 1
 	var/amount=0
 	var/e=1
-	var/savefile/f=new("data/Map[e]")
+	var/segments_written = 0
 	var/list/types=new
 	var/list/healths=new
 	//var/list/Levels=new
@@ -34,17 +60,10 @@ proc/mapSave()
 		zs+=a.z
 		fly_over+=a.FlyOverAble
 		amount+=1
-		if(amount % 20000 == 0)
-			f["Types"]<<types
-			f["Healths"]<<healths
-			//F["Levels"]<<Levels
-			f["Builders"]<<builders
-			f["Xs"]<<xs
-			f["Ys"]<<ys
-			f["Zs"]<<zs
-			f["FlyOver"]<<fly_over
+		if(amount % MAP_SAVE_SEGMENT_SIZE == 0)
+			writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over)
+			segments_written = e
 			e ++
-			f=new("Map[e]")
 			types=new
 			healths=new
 			//Levels=new
@@ -54,15 +73,11 @@ proc/mapSave()
 			zs=new
 			fly_over=new
 
-	if(amount % 20000 != 0)
-		f["Types"]<<types
-		f["Healths"]<<healths
-		//F["Levels"]<<Levels
-		f["Builders"]<<builders
-		f["Xs"]<<xs
-		f["Ys"]<<ys
-		f["Zs"]<<zs
-		f["FlyOver"]<<fly_over
+	if(amount % MAP_SAVE_SEGMENT_SIZE != 0 || !segments_written)
+		writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over)
+		segments_written = e
+
+	writeMapSaveManifest(segments_written)
 
 	world<<"Map Saved ([amount])"
 
@@ -73,10 +88,14 @@ proc/mapLoad()
 		var/amount=0
 		var/debug_amount= 0
 		var/e=1
+		var/segment_count = getMapSaveSegmentCount()
 		load
-		if(!fexists("data/Map[e]"))
+		if(segment_count && e > segment_count)
 			goto end
-		var/savefile/f=new("data/Map[e]")
+		var/map_path = getMapSavePath(e)
+		if(!fexists(map_path))
+			goto end
+		var/savefile/f=new(map_path)
 		sleep(1)
 		var/list/types=f["Types"]
 		var/list/healths=f["Healths"]
@@ -115,11 +134,11 @@ proc/mapLoad()
 					o.DeleteNoWait();
 					o.SafeTeleport(null)
 
-			if(amount == 20000)
+			if(amount == MAP_SAVE_SEGMENT_SIZE)
 				sleep(world.tick_lag)
 				break
 
-		if(amount == 20000)
+		if(amount == MAP_SAVE_SEGMENT_SIZE)
 			e ++
 			goto load
 
@@ -269,6 +288,68 @@ turf/var/FlyOverAble=1
 atom/var/Buildable=1
 
 var/list/Builds=new
+var/list/builds_by_category = new
+var/list/build_search_index = new
+
+proc/getCatalogSearchTokens(search_text)
+	var/normalized_text = lowertext("[search_text]")
+	for(var/separator in list("/", "\\", "-", "_", ".", ":", "(", ")", "\[", "]"))
+		normalized_text = replacetext(normalized_text, separator, " ")
+	var/list/tokens = list()
+	for(var/token in dd_text2list(normalized_text, " "))
+		if(length(token) < 2 || (token in tokens)) continue
+		tokens += token
+	return tokens
+
+proc/registerCatalogSearchEntry(list/search_index, atom/entry, search_text)
+	if(!islist(search_index) || !entry) return
+	for(var/token in getCatalogSearchTokens(search_text))
+		for(var/prefix_length = 2, prefix_length <= length(token), prefix_length++)
+			var/prefix = copytext(token, 1, prefix_length + 1)
+			if(!islist(search_index[prefix])) search_index[prefix] = list()
+			var/list/prefix_entries = search_index[prefix]
+			if(!(entry in prefix_entries)) prefix_entries += entry
+
+proc/searchCatalogIndex(list/search_index, query, list/category_entries, maximum_results = 100)
+	maximum_results = max(1, round(maximum_results))
+	var/list/query_tokens = getCatalogSearchTokens(query)
+	if(!query_tokens.len)
+		var/list/unfiltered_results = islist(category_entries) ? category_entries.Copy() : list()
+		if(unfiltered_results.len > maximum_results) unfiltered_results.Cut(maximum_results + 1)
+		return unfiltered_results
+	var/list/results
+	for(var/token in query_tokens)
+		var/list/token_entries = search_index[token]
+		if(!islist(token_entries)) return list()
+		if(!islist(results)) results = token_entries.Copy()
+		else
+			for(var/atom/entry in results.Copy())
+				if(!(entry in token_entries)) results -= entry
+	if(!islist(results)) return list()
+	for(var/atom/entry in results.Copy())
+		if(islist(category_entries) && !(entry in category_entries)) results -= entry
+	if(results.len > maximum_results) results.Cut(maximum_results + 1)
+	return results
+
+proc/rebuildBuildCatalogIndexes()
+	builds_by_category = list()
+	build_search_index = list()
+	for(var/obj/Build/build_entry in Builds)
+		var/category_key = "category-[build_entry.build_category]"
+		if(!islist(builds_by_category[category_key])) builds_by_category[category_key] = list()
+		var/list/category_entries = builds_by_category[category_key]
+		category_entries += build_entry
+		registerCatalogSearchEntry(build_search_index, build_entry, "[build_entry.name] [build_entry.Creates]")
+
+proc/getBuildCatalogForCategory(build_category)
+	var/list/category_entries = builds_by_category["category-[build_category]"]
+	return islist(category_entries) ? category_entries : list()
+
+proc/searchBuildCatalog(query, build_category = null, maximum_results = 100)
+	var/list/category_entries
+	if(!isnull(build_category)) category_entries = getBuildCatalogForCategory(build_category)
+	else category_entries = Builds
+	return searchCatalogIndex(build_search_index, query, category_entries, maximum_results)
 
 proc/addBuilds()
 	for(var/a in typesof(/turf))
@@ -320,6 +401,7 @@ proc/addBuilds()
 			c.Creates=b.type
 			c.name="[b.name]-B"
 			Builds+=c
+	rebuildBuildCatalogIndexes()
 
 mob/var/tmp/turf_lay_cost=0
 

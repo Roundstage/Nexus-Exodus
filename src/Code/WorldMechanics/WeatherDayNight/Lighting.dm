@@ -9,6 +9,7 @@ var/list
 	light_sources = new
 	nexus_projectile_icon_diameters = new
 	nexus_light_occlusion_mask_cache = new
+	nexus_light_occlusion_cache_order = new
 
 var/nexus_projectile_glow_serial_counter = 0
 var/nexus_static_light_occlusion_updates_running = FALSE
@@ -45,16 +46,7 @@ proc/nexusTurfBlocksLight(turf/target_turf)
 
 proc/nexusLightCanReach(turf/source_turf, turf/target_turf)
 	if(!source_turf || !target_turf || source_turf.z != target_turf.z) return FALSE
-	if(source_turf == target_turf) return TRUE
-	var/turf/current_turf = source_turf
-	var/maximum_steps = get_dist(source_turf, target_turf) + 1
-	for(var/line_step = 1, line_step <= maximum_steps, line_step++)
-		var/turf/next_turf = get_step(current_turf, get_dir(current_turf, target_turf))
-		if(!next_turf) return FALSE
-		if(next_turf == target_turf) return TRUE
-		if(nexusTurfBlocksLight(next_turf)) return FALSE
-		current_turf = next_turf
-	return FALSE
+	return gridRayCanReach(source_turf, target_turf, GRID_RAY_LIGHT)
 
 proc/getNexusLightOcclusionCacheKey(turf/source_turf, size_tiles)
 	if(!source_turf) return null
@@ -90,8 +82,13 @@ proc/getNexusLightOcclusionMask(turf/source_turf, size_tiles, cache_key)
 			occlusion_mask.DrawBox(rgb(255, 255, 255, 255), min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
 
 	if(nexus_light_occlusion_mask_cache.len >= NEXUS_LIGHT_OCCLUSION_CACHE_LIMIT)
-		nexus_light_occlusion_mask_cache = new/list
+		if(nexus_light_occlusion_cache_order.len)
+			var/oldest_cache_key = nexus_light_occlusion_cache_order[1]
+			nexus_light_occlusion_cache_order.Cut(1, 2)
+			nexus_light_occlusion_mask_cache -= oldest_cache_key
+		else nexus_light_occlusion_mask_cache = new/list
 	nexus_light_occlusion_mask_cache[cache_key] = occlusion_mask
+	nexus_light_occlusion_cache_order += cache_key
 	return occlusion_mask
 
 proc/startNexusStaticLightOcclusionUpdates()
