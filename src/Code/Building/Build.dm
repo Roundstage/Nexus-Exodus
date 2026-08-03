@@ -410,23 +410,26 @@ obj/Build
 		Creates
 
 	Click()
-		if(!usr.is_out_of_combat(victim = usr))
-			var/combat_timer = round((KO_SYSTEM_OUT_OF_COMBAT_TIMER - usr.get_time_out_of_combat(victim = usr)) / 10, 1)
-			usr << "You can not build while in combat. You will be able to build again in [combat_timer] seconds."
-			return
-		if(usr.Target==src)
-			usr<<"You have deselected [src]"
-			usr.Target=null
-			return
-		usr.turf_lay_cost = usr.turfLayCost()
-		buildLay(src,usr)
-		if(usr.Target!=src)
-			usr.Target=src
-			usr<<"You have selected [src]"
-			usr<<"It will cost [Commas(usr.turfLayCost())] resources per tile you build. This cost will go up later based on how much tiles \
-			have been built by all players."
-		if(usr.client) winset(usr,"mapwindow.map","focus=true")
-		if(usr.client) winset(usr,"mainwindow.map","focus=true")
+		if(usr) usr.selectBuildBlueprint(src)
+
+mob/proc/selectBuildBlueprint(obj/Build/build)
+	if(!build || !(build in Builds)) return FALSE
+	if(!is_out_of_combat(victim = src))
+		var/combat_timer = round((KO_SYSTEM_OUT_OF_COMBAT_TIMER - get_time_out_of_combat(victim = src)) / 10, 1)
+		src << "You can not build while in combat. You will be able to build again in [combat_timer] seconds."
+		return FALSE
+	if(Target == build)
+		src << "You have deselected [build]"
+		Target = null
+		return TRUE
+	turf_lay_cost = turfLayCost()
+	buildLay(build, src)
+	if(Target != build)
+		Target = build
+		src << "You have selected [build]"
+		src << "It will cost [Commas(turfLayCost())] resources per tile you build. This cost rises as the shared map grows."
+	MapFocus()
+	return TRUE
 
 mob/proc/turfLayCost()
 	var/n = 1000 * 1.6**(Turfs.len/10000)
@@ -541,7 +544,7 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 
 	for(var/obj/Turret/T in Turrets) if(T.z&&T.z==D.z&&getdist(T,D)<=15&&T.Password)
 		Turrets=1
-		for(var/obj/items/Door_Pass/i in p.item_list) if(i.Password==T.Password) Turrets=0
+		for(var/obj/items/Door_Pass/i in p.item_list) if(istype(i, /obj/items/AdvancedDoorPass) || i.Password==T.Password) Turrets=0
 	if(Turrets)
 		p<<"You cannot build this close to turrets that want to attack you"
 		return

@@ -217,5 +217,5 @@ mob/proc/Alien_Stuff()
 			if(choice=="Elite Alien +[Commas(Starting_BP)] BP (20 AP)")
 				hbtc_bp+=Starting_BP
 			if(choice=="[Starting_SP] SP (10 AP)")
-				Experience+=Starting_SP
+				gainProgressionExperience(Starting_SP, "alien starting trait", announce = FALSE)
 			L-=choice

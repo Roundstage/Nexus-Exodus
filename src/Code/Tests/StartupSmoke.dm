@@ -271,7 +271,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(menu_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks") && text2path("/mob/Admin3/verb/testTenkaichiCombatEffects"), "Tenkaichi attack or audiovisual testing verb is missing")
-	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 11 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
+	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 13 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
+	nexusSmokeAssert(getProgressionUnarmedAttackTypes().len == 20, "the Unarmed progression catalog omits legacy physical attacks or still duplicates foundational Dash Attack")
 	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 5, "Tenkaichi special-style catalog is incomplete")
 	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
@@ -280,6 +281,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/TenkaichiMeleeTechnique/SwordStab/tenkaichi_stab = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow/tenkaichi_throw = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury/tenkaichi_march = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash/tenkaichi_texas_smash = new
+	var/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike/tenkaichi_exploding_heart = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/PileDriver/tenkaichi_pile_driver = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo/tenkaichi_uppercut = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo/tenkaichi_kickback = new
@@ -290,6 +293,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
 	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
 	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
+	nexusSmokeAssert(tenkaichi_march.damage_multiplier * 4 * 0.45 == 1.8 && tenkaichi_texas_smash.damage_multiplier == 1.6 && tenkaichi_exploding_heart.damage_multiplier == 1.45 && tenkaichi_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
 	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
 	nexusSmokeAssert(tenkaichi_uppercut.icon == 'RTUppercut.dmi' && tenkaichi_kickback.icon == 'RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
 	nexusSmokeAssert(tenkaichi_pile_driver.getImpactSound() == 'BigCrash.ogg' && tenkaichi_kickback.getImpactSound() == 'Strongkick.ogg', "Tenkaichi grapple and kick techniques are missing their adapted impact audio")
@@ -326,6 +330,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(tenkaichi_stab)
 	del(tenkaichi_throw)
 	del(tenkaichi_march)
+	del(tenkaichi_texas_smash)
+	del(tenkaichi_exploding_heart)
 	del(tenkaichi_pile_driver)
 	del(tenkaichi_uppercut)
 	del(tenkaichi_kickback)
@@ -548,6 +554,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Final_Flash/final_flash_skill = new
 	var/obj/Attacks/Noob_Ray/noob_ray_skill = new
 	nexusSmokeAssert(final_flash_skill.damage_factor == 12 && noob_ray_skill.damage_factor == 52, "beam damage factors are invalid")
+	var/strongest_progression_beam_factor = 0
+	for(var/progression_beam_type in getTenkaichiBeamAttackTypes())
+		strongest_progression_beam_factor = max(strongest_progression_beam_factor, initial(progression_beam_type:damage_factor))
+	nexusSmokeAssert(final_flash_skill.damage_factor == strongest_progression_beam_factor, "Final Flash is not the strongest raw-damage beam in Combat/Ki")
+	var/makankosappo_type = /obj/Attacks/Piercer
+	nexusSmokeAssert(initial(makankosappo_type:shield_pierce_mult) == 2.3, "Makankosappo lost its high shield-penetration profile")
 	var/list/expected_beam_factors = list(
 		/obj/Attacks/Noob_Ray = 52,
 		/obj/Attacks/Laser_Beam = 4,
@@ -564,7 +576,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Genki_Dama/omega_bomb_balance = new
 	var/obj/Attacks/Genki_Dama/Death_Ball/death_ball_balance = new
 	var/obj/Attacks/Genki_Dama/Supernova/supernova_balance = new
-	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 4 && omega_bomb_balance.sb_max_dmg == 15, "Omega Bomb charge curve diverged from the balance workbook")
+	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 4 && omega_bomb_balance.sb_max_dmg == 18, "Genki Dama charge curve diverged from its tier-ten damage budget")
 	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 2.5 && death_ball_balance.sb_max_dmg == 10, "Death Ball charge curve diverged from the balance workbook")
 	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 2 && supernova_balance.sb_max_dmg == 5, "Supernova charge curve diverged from the balance workbook")
 	del(big_bang_projectile)
@@ -650,12 +662,305 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(milestone_test.milestone_points == MILESTONE_STARTING_POINTS, "legacy milestone initialization did not grant its starter budget")
 	nexusSmokeAssert(milestone_test.purchaseMilestone("iron_will") && milestone_test.getMilestoneRank("iron_will") == 1, "milestone purchase did not persist its rank")
 	nexusSmokeAssert(milestone_test.getMaxWillpower() == 110, "Iron Will did not raise maximum Willpower")
-	milestone_test.milestone_points = 20
-	nexusSmokeAssert(milestone_test.purchaseMilestone("ub_godspeed") && (locate(/obj/Buff/Ultimate/Godspeed) in milestone_test), "Ultimate Buff milestone did not grant Godspeed")
-	nexusSmokeAssert(!milestone_test.purchaseMilestone("ub_high_tension"), "a character purchased more than one Ultimate Buff")
 	milestone_test.milestone_last_year = floor(Year) - 1
 	milestone_test.syncMilestoneProgression(silent = TRUE)
 	nexusSmokeAssert(milestone_test.total_milestone_points == MILESTONE_STARTING_POINTS + 1, "yearly Milestone Point progression did not advance")
+	milestone_test.milestone_points = 20
+	nexusSmokeAssert(milestone_test.purchaseMilestone("rapid_recovery") && milestone_test.purchaseMilestone("steadfast_spirit"), "independent Milestone list picks could not be purchased directly")
+	milestone_test.milestones_owned["unarmed_mastery"] = 2
+	milestone_test.milestones_owned["deft_hands"] = 4
+	milestone_test.milestones_owned["bleeding_edge"] = 1
+	milestone_test.milestones_owned["thundering_blows"] = 1
+	milestone_test.milestones_owned["burning_fists"] = 1
+	milestone_test.milestones_owned["this_drill_will_pierce_the_heavens"] = 1
+	milestone_test.ensureMilestoneCombatRewards()
+	nexusSmokeAssertNear(milestone_test.getMilestoneMeleeDamageMultiplier(null, FALSE), 1.05, 0.001, "Unarmed Mastery did not affect unarmed damage")
+	nexusSmokeAssertNear(milestone_test.getMilestoneMeleeAccuracyBonus(null), 10, 0.001, "Deft Hands did not grant flat melee accuracy")
+	nexusSmokeAssertNear(milestone_test.getMilestoneGuardMultiplier(), 0.9, 0.001, "This Drill Will Pierce the Heavens did not penetrate guard stats")
+	nexusSmokeAssert((locate(/obj/FireFist) in milestone_test) && (locate(/obj/MilestoneTechnique/BleedingEdge) in milestone_test) && (locate(/obj/MilestoneTechnique/ThunderingBlows) in milestone_test), "combat milestone techniques were not granted or restored")
+	initializeProgressionTreeCatalog()
+	var/list/progression_categories = list()
+	for(var/progression_node_id in progression_node_catalog)
+		var/datum/ProgressionNode/progression_node = progression_node_catalog[progression_node_id]
+		progression_categories[progression_node.category] = TRUE
+		for(var/prerequisite_id in progression_node.prerequisites)
+			var/datum/ProgressionNode/prerequisite_node = progression_node_catalog[prerequisite_id]
+			nexusSmokeAssert(!prerequisite_node || prerequisite_node.tier < progression_node.tier, "a progression prerequisite shares or exceeds its child's display tier: [prerequisite_id] -> [progression_node.id]")
+	for(var/milestone_id in milestone_catalog)
+		var/datum/MilestoneDefinition/milestone_node = milestone_catalog[milestone_id]
+		nexusSmokeAssert(!milestone_node.prerequisites.len, "Milestone still depends on a talent-tree prerequisite: [milestone_node.id]")
+	nexusSmokeAssert(progression_node_catalog.len >= 85 && progression_categories.len == 5 && milestone_catalog.len >= 41, "unified progression catalog is missing skills, talents or a primary category")
+	nexusSmokeAssert(milestone_catalog["bleeding_edge"] && milestone_catalog["burning_fists"] && milestone_catalog["fire_lord"] && milestone_catalog["this_drill_will_pierce_the_heavens"], "the signature RPT combat Milestones are missing")
+	nexusSmokeAssert(progression_node_catalog["mining_prospector"]:tier == 1 && progression_node_catalog["mining_tin"]:tier == 2 && progression_node_catalog["mining_iron"]:tier == 3 && progression_node_catalog["mining_silver"]:tier == 4 && progression_node_catalog["mining_mythril"]:tier == 4 && progression_node_catalog["mining_auracite"]:tier == 5 && progression_node_catalog["mining_heart"]:tier == 5, "Prospecting nodes are not distributed across their authored tier branches")
+	nexusSmokeAssert(progression_node_catalog["smithing_apprentice"]:tier == 1 && progression_node_catalog["smithing_bronze"]:tier == 2 && progression_node_catalog["smithing_iron"]:tier == 3 && progression_node_catalog["smithing_silver"]:tier == 3 && progression_node_catalog["smithing_mythril"]:tier == 4 && progression_node_catalog["smithing_auracite"]:tier == 4 && progression_node_catalog["smithing_masterwork"]:tier == 5, "Smithing material nodes are not distributed across their authored tier branches")
+	var/list/specialized_science_counts = list()
+	for(var/obj/technology in tech_list)
+		if(!(technology.science_path in list("Engineering", "Robotics", "Genetics"))) continue
+		var/level_key = "[technology.science_path]|[technology.science_level]"
+		specialized_science_counts[level_key] = specialized_science_counts[level_key] ? specialized_science_counts[level_key] + 1 : 1
+	for(var/science_branch in list("Engineering", "Robotics", "Genetics"))
+		var/distributed_total = 0
+		for(var/science_level = 5, science_level <= 8, science_level++)
+			var/level_count = specialized_science_counts["[science_branch]|[science_level]"]
+			nexusSmokeAssert(level_count > 0, "[science_branch] has no technology distributed to Technology Level [science_level]")
+			distributed_total += level_count
+		nexusSmokeAssert(specialized_science_counts["[science_branch]|5"] * 2 < distributed_total, "[science_branch] remains overcrowded at Technology Level 5")
+	nexusSmokeAssert(!milestone_catalog["ub_godspeed"] && !progression_node_catalog["combat_buffs_advanced"] && !progression_node_catalog["combat_buffs_mastery"], "Ultimate Buffs or obsolete straight-list gateways remain in Milestones")
+	var/godspeed_progression_id = getProgressionNodeIdForType(/obj/Buff/Ultimate/Godspeed)
+	var/high_tension_progression_id = getProgressionNodeIdForType(/obj/Buff/Ultimate/HighTension)
+	var/datum/ProgressionNode/godspeed_progression_node = progression_node_catalog[godspeed_progression_id]
+	var/datum/ProgressionNode/high_tension_progression_node = progression_node_catalog[high_tension_progression_id]
+	nexusSmokeAssert(godspeed_progression_node && high_tension_progression_node && godspeed_progression_node.category == "Combat" && godspeed_progression_node.branch == "Buffs" && godspeed_progression_node.tier == 5 && godspeed_progression_node.exclusive_group == "ultimate_buff", "Ultimate Buffs are not Combat/Buffs tier-five capstones")
+	var/focus_progression_id = getProgressionNodeIdForType(/obj/Buff/Focus)
+	var/defensive_stance_progression_id = getProgressionNodeIdForType(/obj/Buff/Preset/DefensiveStance)
+	var/angelic_grace_progression_id = getProgressionNodeIdForType(/obj/Buff/Preset/AngelicGrace)
+	var/datum/ProgressionNode/defensive_stance_progression_node = progression_node_catalog[defensive_stance_progression_id]
+	var/datum/ProgressionNode/angelic_grace_progression_node = progression_node_catalog[angelic_grace_progression_id]
+	nexusSmokeAssert((focus_progression_id in defensive_stance_progression_node.prerequisites) && (defensive_stance_progression_id in angelic_grace_progression_node.prerequisites) && (angelic_grace_progression_id in godspeed_progression_node.prerequisites), "Buff progression does not form a meaningful multi-tier path")
+	var/beam_progression_id = getProgressionNodeIdForType(/obj/Attacks/Beam)
+	var/kamehameha_progression_id = getProgressionNodeIdForType(/obj/Attacks/Kamehameha)
+	var/final_flash_progression_id = getProgressionNodeIdForType(/obj/Attacks/Final_Flash)
+	var/tyrant_lancer_progression_id = getProgressionNodeIdForType(/obj/Attacks/RoleplayBeam/TyrantLancer)
+	var/makankosappo_progression_id = getProgressionNodeIdForType(/obj/Attacks/Piercer)
+	var/datum/ProgressionNode/beam_progression_node = progression_node_catalog[beam_progression_id]
+	var/datum/ProgressionNode/kamehameha_progression_node = progression_node_catalog[kamehameha_progression_id]
+	var/datum/ProgressionNode/final_flash_progression_node = progression_node_catalog[final_flash_progression_id]
+	var/datum/ProgressionNode/tyrant_lancer_progression_node = progression_node_catalog[tyrant_lancer_progression_id]
+	var/datum/ProgressionNode/makankosappo_progression_node = progression_node_catalog[makankosappo_progression_id]
+	nexusSmokeAssert(beam_progression_node.branch == "Foundation" && beam_progression_node.tier == 4 && kamehameha_progression_node.branch == "Beam" && kamehameha_progression_node.tier == 6 && final_flash_progression_node.branch == "Beam" && final_flash_progression_node.tier == 8 && (kamehameha_progression_id in final_flash_progression_node.prerequisites), "Final Flash does not rise from foundational Beam through the dedicated raw-power Beam path")
+	nexusSmokeAssert(tyrant_lancer_progression_node.branch == "Beam" && tyrant_lancer_progression_node.tier == 7 && makankosappo_progression_node.branch == "Beam" && makankosappo_progression_node.tier == 8 && (tyrant_lancer_progression_id in makankosappo_progression_node.prerequisites), "Makankosappo does not cap the dedicated shield-piercing Beam path")
+	for(var/beam_skill_type in getTenkaichiBeamAttackTypes())
+		var/datum/ProgressionNode/dedicated_beam_node = progression_node_catalog[getProgressionNodeIdForType(beam_skill_type)]
+		var/expected_beam_branch = beam_skill_type == /obj/Attacks/Beam ? "Foundation" : "Beam"
+		nexusSmokeAssert(dedicated_beam_node && dedicated_beam_node.branch == expected_beam_branch, "beam skill is outside Foundation or the dedicated Beam tree: [beam_skill_type]")
+	var/power_control_progression_id = getProgressionNodeIdForType(/obj/Power_Control)
+	var/blast_progression_id = getProgressionNodeIdForType(/obj/Attacks/Blast)
+	var/lunge_progression_id = getProgressionNodeIdForType(/obj/Lunge)
+	var/fly_progression_id = getProgressionNodeIdForType(/obj/Fly)
+	var/shield_progression_id = getProgressionNodeIdForType(/obj/Shield)
+	var/charge_progression_id = getProgressionNodeIdForType(/obj/Attacks/Charge)
+	var/dash_attack_progression_id = getProgressionNodeIdForType(/obj/Dash_Attack)
+	var/zanzoken_progression_id = getProgressionNodeIdForType(/obj/Zanzoken)
+	var/custom_buff_progression_id = getProgressionNodeIdForType(/obj/Buff)
+	var/sokidan_progression_id = getProgressionNodeIdForType(/obj/Attacks/Sokidan)
+	var/list/foundation_progression_ids = list(power_control_progression_id, blast_progression_id, lunge_progression_id, fly_progression_id, shield_progression_id, charge_progression_id, dash_attack_progression_id, zanzoken_progression_id, custom_buff_progression_id, beam_progression_id, sokidan_progression_id)
+	for(var/foundation_progression_id in foundation_progression_ids)
+		var/datum/ProgressionNode/foundation_progression_node = progression_node_catalog[foundation_progression_id]
+		nexusSmokeAssert(foundation_progression_node && foundation_progression_node.category == "Combat" && foundation_progression_node.branch == "Foundation" && !foundation_progression_node.external_unlock, "a universal combat skill is missing from purchasable Foundation: [foundation_progression_id]")
+	var/datum/ProgressionNode/shield_progression_node = progression_node_catalog[shield_progression_id]
+	var/datum/ProgressionNode/dash_foundation_node = progression_node_catalog[dash_attack_progression_id]
+	var/datum/ProgressionNode/zanzoken_progression_node = progression_node_catalog[zanzoken_progression_id]
+	var/datum/ProgressionNode/sokidan_progression_node = progression_node_catalog[sokidan_progression_id]
+	nexusSmokeAssert(shield_progression_node && (power_control_progression_id in shield_progression_node.prerequisites) && (blast_progression_id in shield_progression_node.prerequisites), "Shield does not require both ki regulation and basic projection")
+	nexusSmokeAssert(dash_foundation_node && zanzoken_progression_node && (lunge_progression_id in dash_foundation_node.prerequisites) && (fly_progression_id in zanzoken_progression_node.prerequisites) && (dash_attack_progression_id in zanzoken_progression_node.prerequisites), "Foundation movement does not progress from Lunge and Flight into Dash Attack and Zanzoken")
+	nexusSmokeAssert(sokidan_progression_node && (power_control_progression_id in sokidan_progression_node.prerequisites) && (beam_progression_id in sokidan_progression_node.prerequisites), "Sokidan does not require ki control and sustained projection")
+	var/genki_progression_id = getProgressionNodeIdForType(/obj/Attacks/Genki_Dama)
+	var/kaioken_progression_id = getProgressionNodeIdForType(/obj/God_Fist)
+	var/datum/ProgressionNode/genki_progression_node = progression_node_catalog[genki_progression_id]
+	var/datum/ProgressionNode/kaioken_progression_node = progression_node_catalog[kaioken_progression_id]
+	nexusSmokeAssert(genki_progression_node && genki_progression_node.branch == "Ki" && genki_progression_node.tier == 10 && (sokidan_progression_id in genki_progression_node.prerequisites), "Genki Dama is not the tier-ten Ki damage capstone")
+	nexusSmokeAssert(kaioken_progression_node && kaioken_progression_node.branch == "Buffs" && kaioken_progression_node.tier == 10, "Kaioken is not a tier-ten Buff capstone")
+	nexusSmokeAssert(getProgressionBaseActiveExperiencePerHour() == 2, "active-time Progression XP is not calibrated to two XP per hour")
+	nexusSmokeAssert(getProgressionTierLifetimeRequirement(5) == 72 && getProgressionTierLifetimeRequirement(10) == 330, "Progression lifetime gates diverged from the 24-hour Foundation or 110-hour tier-ten targets")
+	var/foundation_progression_cost = progression_node_catalog["combat_foundation_root"].cost
+	for(var/foundation_cost_id in foundation_progression_ids)
+		var/datum/ProgressionNode/foundation_cost_node = progression_node_catalog[foundation_cost_id]
+		foundation_progression_cost += foundation_cost_node.cost
+	nexusSmokeAssert(foundation_progression_cost == 74, "Combat Foundation no longer costs roughly 24 hours of engaged progression")
+	var/mob/NexusSmokeTest/tier_gate_test = new
+	tier_gate_test.progression_experience = 1000
+	tier_gate_test.progression_lifetime_experience = 329
+	var/datum/ProgressionNode/tier_ten_gate_test = new("tier_ten_smoke", "Tier Ten Smoke", "", "Combat", "Ki", 10, 1)
+	nexusSmokeAssert(findtext(tier_gate_test.getProgressionNodeLockReason(tier_ten_gate_test), "330 lifetime"), "tier ten ignored its lifetime Progression XP gate")
+	tier_gate_test.progression_lifetime_experience = 330
+	nexusSmokeAssert(!tier_gate_test.getProgressionNodeLockReason(tier_ten_gate_test), "tier ten remained time-locked after reaching its lifetime target")
+	del(tier_ten_gate_test)
+	del(tier_gate_test)
+	var/mob/NexusSmokeTest/roleplay_session_test = new
+	roleplay_session_test.progression_roleplay_session_started_time = world.time - (30 * 60 * 10)
+	roleplay_session_test.progression_roleplay_session_last_time = world.time
+	roleplay_session_test.progression_roleplay_session_messages = 6
+	roleplay_session_test.progression_roleplay_session_words = 120
+	roleplay_session_test.progression_roleplay_session_participants = list("partner" = TRUE)
+	var/roleplay_session_smoke_reward = roleplay_session_test.tryAwardProgressionRoleplaySession()
+	nexusSmokeAssert(roleplay_session_smoke_reward == 3 && roleplay_session_test.progression_roleplay_sessions_completed == 1, "a qualified roleplay session did not grant its single session award: reward [roleplay_session_smoke_reward], start [roleplay_session_test.progression_roleplay_session_started_time], now [world.time], messages [roleplay_session_test.progression_roleplay_session_messages], words [roleplay_session_test.progression_roleplay_session_words], partners [roleplay_session_test.progression_roleplay_session_participants.len]")
+	nexusSmokeAssert(roleplay_session_test.tryAwardProgressionRoleplaySession() == 0 && roleplay_session_test.progression_chat_experience == 3, "a roleplay session paid more than once")
+	roleplay_session_test.resetProgressionRoleplaySession()
+	roleplay_session_test.progression_roleplay_session_started_time = world.time - (10 * 60 * 10)
+	roleplay_session_test.progression_roleplay_session_messages = 20
+	roleplay_session_test.progression_roleplay_session_words = 500
+	roleplay_session_test.progression_roleplay_session_participants = list("partner" = TRUE)
+	nexusSmokeAssert(roleplay_session_test.tryAwardProgressionRoleplaySession() == 0, "an undersized roleplay session bypassed the minimum duration")
+	del(roleplay_session_test)
+	var/obj/Attacks/Genki_Dama/genki_damage_test = new
+	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova/dragon_nova_damage_test = new
+	nexusSmokeAssert(genki_damage_test.sb_max_dmg * 2 > dragon_nova_damage_test.projectile_damage_factor * 2, "Genki Dama does not have the largest authored player projectile damage budget")
+	del(dragon_nova_damage_test)
+	del(genki_damage_test)
+	var/list/excluded_combat_progression_types = list(
+		/obj/Majin, /obj/Keep_Body, /obj/Demon_Contract, /obj/Attacks/Cyber_Charge, /obj/Attacks/Laser_Beam,
+		/obj/Mystic, /obj/Observe, /obj/Invisibility, /obj/Make_Swarm, /obj/Make_Fruit, /obj/Attacks/Time_Freeze,
+		/obj/Hakai, /obj/Make_Holy_Pendant, /obj/MilestoneTechnique, /obj/Buff/Preset/CombatMathematics,
+		/obj/Buff/Preset/BleedingEdge, /obj/Focusin_revert, /obj/Overdrive, /obj/Great_Ape, /obj/ArcaneSpell,
+		/obj/ArcaneSpell/Projectile, /obj/MakeAmulet, /obj/Make_Dragon_Balls, /obj/Namekian_Fusion, /obj/Third_Eye,
+		/obj/Unlock_Potential, /obj/Bind, /obj/Shunkan_Ido, /obj/FireFist)
+	for(var/excluded_combat_type in excluded_combat_progression_types)
+		nexusSmokeAssert(!progression_node_catalog[getProgressionNodeIdForType(excluded_combat_type)], "rank, module, milestone, magic or utility reward leaked into Combat progression: [excluded_combat_type]")
+	for(var/progression_node_id in progression_node_catalog)
+		var/datum/ProgressionNode/combat_skill_node = progression_node_catalog[progression_node_id]
+		if(combat_skill_node.category != "Combat" || combat_skill_node.reward_kind != "skill") continue
+		nexusSmokeAssert(isProgressionCombatSkillType(combat_skill_node.reward_type) && !combat_skill_node.external_unlock, "non-combat or external-only object leaked into the purchasable Combat catalog: [combat_skill_node.reward_type]")
+	for(var/rock_skill_type in getTenkaichiRockAttackTypes())
+		var/datum/ProgressionNode/rock_progression_node = progression_node_catalog[getProgressionNodeIdForType(rock_skill_type)]
+		nexusSmokeAssert(rock_progression_node && rock_progression_node.branch == "Physical", "physical rock technique was categorized as Ki: [rock_skill_type]")
+	for(var/weapon_wave_type in list(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak))
+		var/datum/ProgressionNode/weapon_wave_node = progression_node_catalog[getProgressionNodeIdForType(weapon_wave_type)]
+		nexusSmokeAssert(weapon_wave_node && weapon_wave_node.branch == "Weapon" && initial(weapon_wave_type:weapon_projectile), "sword wave is not a weapon-scaled Weapon-tree technique: [weapon_wave_type]")
+	var/consecutive_punches_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches)
+	var/march_of_fury_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury)
+	var/pile_driver_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/PileDriver)
+	var/texas_smash_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash)
+	var/critical_edge_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/CriticalEdge)
+	var/exploding_heart_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike)
+	var/datum/ProgressionNode/march_of_fury_progression_node = progression_node_catalog[march_of_fury_progression_id]
+	var/datum/ProgressionNode/texas_smash_progression_node = progression_node_catalog[texas_smash_progression_id]
+	var/datum/ProgressionNode/exploding_heart_progression_node = progression_node_catalog[exploding_heart_progression_id]
+	nexusSmokeAssert(march_of_fury_progression_node.tier == 5 && (consecutive_punches_progression_id in march_of_fury_progression_node.prerequisites), "March of Fury does not cap the authored Unarmed combo path")
+	nexusSmokeAssert(texas_smash_progression_node.tier == 5 && (pile_driver_progression_id in texas_smash_progression_node.prerequisites), "Texas Smash does not cap the authored Unarmed impact path")
+	nexusSmokeAssert(exploding_heart_progression_node.tier == 5 && (critical_edge_progression_id in exploding_heart_progression_node.prerequisites), "Exploding Heart Strike does not cap the authored Unarmed precision path")
+	for(var/legacy_unarmed_type in list(/obj/PressurePunch, /obj/RoundhouseKick, /obj/Dropkick, /obj/WolfFangFist, /obj/Hokuto_Shinken))
+		var/legacy_unarmed_id = getProgressionNodeIdForType(legacy_unarmed_type)
+		var/datum/ProgressionNode/legacy_unarmed_node = progression_node_catalog[legacy_unarmed_id]
+		nexusSmokeAssert(legacy_unarmed_node && legacy_unarmed_node.category == "Combat" && legacy_unarmed_node.branch == "Unarmed", "legacy physical attack is missing from Combat/Unarmed: [legacy_unarmed_type]")
+	var/datum/ProgressionNode/dropkick_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Dropkick)]
+	var/datum/ProgressionNode/hundred_crack_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Hokuto_Shinken)]
+	nexusSmokeAssert(dash_foundation_node.tier == 3 && dropkick_progression_node.tier == 5 && hundred_crack_progression_node.tier == 5, "Dash Attack did not move to Foundation or peak Unarmed attacks lost their capstone tiers")
+	var/datum/ProgressionNode/alchemy_circle_progression_node = progression_node_catalog["magic_transmutation_circle"]
+	nexusSmokeAssert(alchemy_circle_progression_node && !("magic_attunement" in alchemy_circle_progression_node.prerequisites), "high-tier Magic still bypasses its branch choices")
+	nexusSmokeAssert(typesof(/obj/Buff/Preset).len == 13 && typesof(/obj/Buff/Ultimate).len == 7, "ported Tenkaichi buff catalog is incomplete")
+	nexusSmokeAssert(typesof(/obj/Peebag).len >= 10, "ported Tenkaichi Punching Bag or Magic Goo tiers are incomplete")
+	nexusSmokeAssert(magic_research_catalog["magic_goo_4"] && magic_research_catalog["transmutation_circle"] && magic_research_catalog["philosophers_stone"], "Tenkaichi Alchemy research is incomplete")
+	initializeArcaneFormulaCatalog()
+	nexusSmokeAssert(arcane_formula_catalog.len == 41, "the complete Tenkaichi arcane formula catalog was not registered")
+	for(var/arcane_formula_id in arcane_formula_catalog)
+		nexusSmokeAssert(magic_research_catalog[arcane_formula_id], "an arcane formula has no Magic progression node: [arcane_formula_id]")
+	nexusSmokeAssert(magic_research_catalog["fireball"] && magic_research_catalog["frost_nova"] && magic_research_catalog["earth_prison"] && magic_research_catalog["create_portal"] && magic_research_catalog["enchant"], "ported RPT spell research is incomplete")
+	var/has_tier_six_bag_design = FALSE
+	var/has_translator_design = FALSE
+	var/has_mutagen_design = FALSE
+	var/has_sequencer_design = FALSE
+	var/has_code_injector_design = FALSE
+	var/has_power_armor_design = FALSE
+	var/has_prospecting_design = FALSE
+	var/has_combat_mathematics_module = FALSE
+	var/has_cyber_charge_module = FALSE
+	var/has_cyber_laser_module = FALSE
+	var/has_overdrive_module = FALSE
+	for(var/obj/technology in tech_list)
+		if(technology.type == /obj/Peebag/Tier6) has_tier_six_bag_design = TRUE
+		if(technology.type == /obj/items/UniversalTranslator) has_translator_design = TRUE
+		if(technology.type == /obj/items/MutagenInjector) has_mutagen_design = TRUE
+		if(technology.type == /obj/items/GeneticSequencer) has_sequencer_design = TRUE
+		if(technology.type == /obj/items/SelfReplicatingCodeInjector) has_code_injector_design = TRUE
+		if(technology.type == /obj/items/Armor/PowerArmor) has_power_armor_design = TRUE
+		if(technology.type == /obj/items/ProspectingToolkit) has_prospecting_design = TRUE
+		if(technology.type == /obj/Module/Cyber_Charge) has_cyber_charge_module = TRUE
+		if(technology.type == /obj/Module/Laser_Beam) has_cyber_laser_module = TRUE
+		if(technology.type == /obj/Module/Overdrive) has_overdrive_module = TRUE
+		if(technology.type == /obj/Module/Combat_Mathematics)
+			var/obj/Module/Combat_Mathematics/combat_mathematics_module = technology
+			for(var/obj/module_ability in combat_mathematics_module.Abilities)
+				if(module_ability.type == /obj/Buff/Preset/CombatMathematics) has_combat_mathematics_module = TRUE
+	nexusSmokeAssert(has_tier_six_bag_design && has_translator_design, "Tenkaichi training or translation technology was not registered")
+	nexusSmokeAssert(has_mutagen_design && has_sequencer_design && has_code_injector_design, "Tenkaichi Genetics or Robotics technology was not registered")
+	nexusSmokeAssert(has_power_armor_design && has_prospecting_design, "expanded Tenkaichi engineering technology was not registered")
+	nexusSmokeAssert(has_combat_mathematics_module && has_cyber_charge_module && has_cyber_laser_module && has_overdrive_module, "module-exclusive combat abilities are missing a Robotics module")
+	var/mob/NexusSmokeTest/language_speaker = new
+	language_speaker.Race = "Saiyan"
+	language_speaker.syncNexusLanguages()
+	var/mob/NexusSmokeTest/language_listener = new
+	language_listener.Race = "Human"
+	language_listener.syncNexusLanguages()
+	nexusSmokeAssert(language_speaker.spoken_language == "saiyan" && language_speaker.getKnownLanguageMastery("saiyan") == 100, "racial language initialization failed")
+	var/garbled_saiyan = language_speaker.renderSpokenLanguageFor(language_listener, "Kakarot returns before sunset", allow_learning = FALSE)
+	nexusSmokeAssert(garbled_saiyan != "Kakarot returns before sunset", "an untrained listener understood a foreign language")
+	language_listener.known_languages["saiyan"] = 100
+	nexusSmokeAssert(language_speaker.renderSpokenLanguageFor(language_listener, "Kakarot returns", allow_learning = FALSE) == "Kakarot returns", "a fluent listener could not understand a known language")
+	var/obj/items/MagicCircle/smoke_circle = new(language_listener)
+	language_listener.item_list += smoke_circle
+	nexusSmokeAssert(language_listener.getArcaneMeditationMultiplier() == 1.5, "Magic Circle did not amplify Arcane Essence meditation")
+	var/obj/items/PhilosophersStone/smoke_stone = new(language_listener)
+	language_listener.item_list += smoke_stone
+	nexusSmokeAssert(language_listener.getPhilosophersStoneRegenerationBonus() == 0.5, "Philosopher's Stone did not grant its regeneration bonus")
+	var/obj/Peebag/MagicGoo/Tier4/smoke_goo = new
+	nexusSmokeAssert(smoke_goo.training_tier == 4 && smoke_goo.training_gain_multiplier == 2.25 && smoke_goo.magic_training_equipment, "Magic Goo IV is not configured as peak magic training equipment")
+	del(smoke_goo)
+	del(language_listener)
+	del(language_speaker)
+	var/mob/NexusSmokeTest/progression_test = new
+	progression_test.Experience = 25
+	new /obj/Attacks/TenkaichiMeleeTechnique/Slice(progression_test)
+	progression_test.syncProgressionTrees(silent = TRUE)
+	var/slice_progression_id = progression_test.getProgressionNodeIdForReward(/obj/Attacks/TenkaichiMeleeTechnique/Slice)
+	nexusSmokeAssert(progression_test.Experience == 0 && progression_test.progression_experience == 25 && progression_test.hasProgressionNode(slice_progression_id), "legacy Skill Points or learned skills were not migrated into progression")
+	progression_test.progression_experience = 400
+	progression_test.progression_lifetime_experience = 400
+	nexusSmokeAssert(progression_test.purchaseProgressionNode("combat_foundation_root"), "Combat Foundation gateway could not be purchased")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(power_control_progression_id) && progression_test.purchaseProgressionNode(blast_progression_id) && progression_test.purchaseProgressionNode(lunge_progression_id), "tier-two Combat Foundation skills could not be purchased")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(fly_progression_id) && progression_test.purchaseProgressionNode(shield_progression_id) && progression_test.purchaseProgressionNode(charge_progression_id) && progression_test.purchaseProgressionNode(dash_attack_progression_id), "tier-three Combat Foundation skills could not be purchased")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(zanzoken_progression_id) && progression_test.purchaseProgressionNode(custom_buff_progression_id) && progression_test.purchaseProgressionNode(beam_progression_id), "tier-four Combat Foundation skills could not be purchased")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(sokidan_progression_id) && progression_test.hasExactProgressionRewardObject(/obj/Lunge) && progression_test.hasExactProgressionRewardObject(/obj/Buff) && progression_test.hasExactProgressionRewardObject(/obj/Attacks/Sokidan), "Combat Foundation did not reach Sokidan or grant its exact reward objects")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode("combat_buffs_root"), "combat branch gateway could not be purchased")
+	var/muscle_force_id = progression_test.getProgressionNodeIdForReward(/obj/Buff/Preset/MuscleForce)
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(muscle_force_id) && (locate(/obj/Buff/Preset/MuscleForce) in progression_test), "progression purchase did not grant its preset buff")
+	var/offensive_stance_id = progression_test.getProgressionNodeIdForReward(/obj/Buff/Preset/OffensiveStance)
+	var/demonic_fury_id = progression_test.getProgressionNodeIdForReward(/obj/Buff/Preset/DemonicFury)
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(offensive_stance_id) && progression_test.purchaseProgressionNode(demonic_fury_id), "the offensive Buff path could not reach its capstone tier")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(focus_progression_id) && progression_test.purchaseProgressionNode(defensive_stance_progression_id) && progression_test.purchaseProgressionNode(angelic_grace_progression_id), "the defensive Buff path could not reach its capstone tier")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode(godspeed_progression_id) && (locate(/obj/Buff/Ultimate/Godspeed) in progression_test), "the Combat/Buffs capstone did not grant Godspeed")
+	nexusSmokeAssert(!progression_test.purchaseProgressionNode(high_tension_progression_id), "a character purchased more than one Ultimate Buff capstone")
+	progression_test.smithing_level = 35
+	nexusSmokeAssert(!progression_test.hasSmithingMaterialUnlock("bronze"), "Smithing level bypassed its progression node")
+	nexusSmokeAssert(progression_test.purchaseProgressionNode("smithing_apprentice") && progression_test.purchaseProgressionNode("smithing_bronze") && progression_test.hasSmithingMaterialUnlock("bronze"), "Smithing material prerequisite chain did not unlock")
+	var/datum/NexusProgressionTreeWindow/tree_navigation_test = new(progression_test, "Magic")
+	var/list/divination_entries = tree_navigation_test.collectVisibleEntries()
+	var/total_magic_entries = 0
+	for(var/progression_node_id in progression_node_catalog)
+		var/datum/ProgressionNode/magic_progression_node = progression_node_catalog[progression_node_id]
+		if(magic_progression_node.category == "Magic") total_magic_entries++
+	nexusSmokeAssert(tree_navigation_test.branch_filter == "Divination" && divination_entries.len > 1 && divination_entries.len < total_magic_entries, "progression navigation did not limit its initial render to one branch")
+	tree_navigation_test.search_query = "Philosopher"
+	var/list/searched_magic_entries = tree_navigation_test.collectVisibleEntries()
+	var/found_philosophers_stone = FALSE
+	for(var/datum/ProgressionNode/searched_node in searched_magic_entries)
+		if(searched_node.id == "magic_philosophers_stone") found_philosophers_stone = TRUE
+	nexusSmokeAssert(found_philosophers_stone && searched_magic_entries.len < total_magic_entries, "progression search did not return the matching node with a bounded result graph")
+	del(tree_navigation_test)
+	var/datum/NexusProgressionTreeWindow/combat_navigation_test = new(progression_test, "Combat")
+	nexusSmokeAssert(combat_navigation_test.branch_filter == "Foundation", "Combat progression does not open on the universal Foundation branch")
+	del(combat_navigation_test)
+	var/datum/NexusProgressionTreeWindow/milestone_list_test = new(progression_test, "Milestones")
+	var/milestone_list_html = milestone_list_test.buildGraph()
+	nexusSmokeAssert(findtext(milestone_list_html, "milestone-list") && !findtext(milestone_list_html, "connections"), "Milestones still render as a prerequisite graph instead of an independent list")
+	del(milestone_list_test)
+	var/datum/NexusBuildWindow/build_catalog_test = new(progression_test)
+	var/list/floor_blueprints = build_catalog_test.getBlueprints(FALSE)
+	var/build_category_isolated = floor_blueprints.len > 0
+	for(var/obj/Build/floor_blueprint in floor_blueprints)
+		if(floor_blueprint.build_category != BUILD_FLOOR) build_category_isolated = FALSE
+	nexusSmokeAssert(build_catalog_test.category == "Floors" && build_category_isolated, "the M-key build catalog did not default to an isolated Floors category")
+	var/obj/Build/first_floor_blueprint = floor_blueprints[1]
+	build_catalog_test.search_query = lowertext(build_catalog_test.getDisplayName(first_floor_blueprint))
+	nexusSmokeAssert(first_floor_blueprint in build_catalog_test.getBlueprints(), "build catalog search hid an exact blueprint match")
+	del(build_catalog_test)
+	del(progression_test)
+	var/mob/NexusSmokeTest/ultimate_migration_test = new
+	ultimate_migration_test.milestone_progression_version = 1
+	ultimate_migration_test.milestones_owned["ub_bushido"] = 1
+	ultimate_migration_test.syncMilestoneProgression(silent = TRUE)
+	var/bushido_progression_id = ultimate_migration_test.getProgressionNodeIdForReward(/obj/Buff/Ultimate/Bushido)
+	nexusSmokeAssert(ultimate_migration_test.hasProgressionNode(bushido_progression_id) && (locate(/obj/Buff/Ultimate/Bushido) in ultimate_migration_test), "legacy Ultimate Buff milestones were not migrated to Combat/Buffs capstones")
+	del(ultimate_migration_test)
 	initializeForgedEquipmentCatalogs()
 	nexusSmokeAssert(forged_material_catalog.len == 7 && forged_material_catalog["masterwork"] && forged_material_catalog["auracite"], "Tenkaichi material catalog is incomplete")
 	nexusSmokeAssert(forged_weapon_style_catalog.len == 14 && forged_weapon_style_catalog["hammer"] && forged_weapon_style_catalog["mage_staff"], "Tenkaichi weapon catalog is incomplete")
@@ -734,7 +1039,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/knowledge_before_magic = technology_progression_test.Knowledge
 	technology_progression_test.magic_experience = magic_level_thresholds[magic_level_thresholds.len]
 	technology_progression_test.syncMagicProgression(silent = TRUE)
-	nexusSmokeAssert(technology_progression_test.magic_level == magic_level_thresholds.len && magic_research_catalog.len == 9, "Magic research did not reach or register its complete tree")
+	nexusSmokeAssert(technology_progression_test.magic_level == magic_level_thresholds.len && magic_research_catalog.len >= 18, "Magic research did not reach or register its complete tree")
 	nexusSmokeAssert((locate(/obj/Attacks/Explosion) in technology_progression_test) && technology_progression_test.Knowledge == knowledge_before_magic, "Magic progression failed to grant its capstone or modified Knowledge")
 	del(technology_progression_test)
 	del(milestone_test)
@@ -947,6 +1252,21 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(admin_mutation_player.clearCharacterMutations(), "admin mutation clear failed")
 	nexusSmokeAssert(!admin_mutation_player.character_mutations.len && !admin_mutation_player.mutation_rarity, "admin mutation clear left stale state")
 	del(admin_mutation_player)
+	var/mob/NexusSmokeTest/mutagen_player = new
+	mutagen_player.Race = "Human"
+	mutagen_player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	nexusSmokeAssert(mutagen_player.awakenRandomMutation(5, 5, 2, FALSE), "organic mutagen did not awaken its first mutation")
+	nexusSmokeAssert(mutagen_player.awakenRandomMutation(5, 5, 2, FALSE), "organic mutagen did not awaken its second mutation")
+	nexusSmokeAssert(mutagen_player.character_mutations.len == 2 && !mutagen_player.awakenRandomMutation(5, 5, 2, FALSE), "organic mutagen bypassed its two-mutation safety limit")
+	for(var/mutation_id in mutagen_player.character_mutations)
+		nexusSmokeAssert(mutagen_player.character_mutations[mutation_id] == 5, "mutagen applied a value outside its requested test range")
+	var/mob/NexusSmokeTest/android_mutagen_player = new
+	android_mutagen_player.Race = "Android"
+	android_mutagen_player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	nexusSmokeAssert(!android_mutagen_player.awakenRandomMutation(5, 5, 2, FALSE), "organic mutagen altered an Android core")
+	nexusSmokeAssert(android_mutagen_player.awakenRandomMutation(5, 5, 2, TRUE) && android_mutagen_player.character_mutations.len == 1, "self-replicating code did not awaken an Android mutation")
+	del(android_mutagen_player)
+	del(mutagen_player)
 	del(other_mutation_player)
 	del(mutation_player)
 	var/mob/NexusSmokeTest/creation_player = new

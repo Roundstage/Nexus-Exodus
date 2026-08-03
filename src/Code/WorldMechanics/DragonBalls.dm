@@ -499,8 +499,8 @@ obj/items/Dragon_Ball
 					var/n=round(1*Year)
 					if(n<30) n=30
 					if(n>100) n=100
-					a.Experience+=n
-					player_view(15,usr)<<"[usr] wishes to give [a] skill points!"
+					a.gainProgressionExperience(n, "dragon wish", announce = TRUE)
+					player_view(15,usr)<<"[usr] wishes to give [a] Progression XP!"
 					usr.wish_count++
 				if("Knowledge") if(Wishes)
 					if(!DBs_Gathered()) return

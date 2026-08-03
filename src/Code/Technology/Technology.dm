@@ -2,6 +2,7 @@ var/item_tile_limit = 6 //how many science items you can lay on 1 tile to preven
 
 mob/proc/TryCreateScienceItem(obj/A)
 	if(!A || !A.referenceObject || !A.Cost) return
+	syncProgressionTrees(silent = TRUE)
 	syncTechnologyProgression(silent = TRUE)
 	if(!canAccessTechnology(A))
 		var/required_level = A ? A.science_level : 0

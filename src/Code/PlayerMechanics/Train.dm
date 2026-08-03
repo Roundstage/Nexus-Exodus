@@ -5,11 +5,15 @@ var
 	peebagEnergy = 0
 	peebagBP = 4
 
-mob/proc/Peebag_Gains(delay = 10) //delay is how often they were allowed to punch the peebag
+mob/proc/Peebag_Gains(delay = 10, equipment_multiplier = 1, magic_equipment = FALSE) //delay is how often they were allowed to punch the peebag
 	var/mod = delay / 10 //convert to gains per second
+	mod *= max(1, equipment_multiplier)
 	if(peebagStats) Raise_Stats(peebagStats * mod)
 	if(peebagEnergy) Raise_Ki(peebagEnergy * mod)
 	if(peebagBP) Raise_BP(peebagBP * weights() * mod)
+	if(magic_equipment)
+		gainMagicExperience(0.15 * mod, "Magic Goo training", announce = FALSE)
+		gainArcaneEssence(0.05 * mod, "Magic Goo training", announce = FALSE)
 
 var/last_input=1
 

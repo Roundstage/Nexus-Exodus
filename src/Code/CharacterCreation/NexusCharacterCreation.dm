@@ -386,7 +386,7 @@ mob/proc/applyNexusAlienOptions(list/selected_options)
 			if("absorb") src.contents += new /obj/Absorb
 			if("precognition") src.precog = 1
 			if("death_regeneration") src.Regenerate += 0.5
-			if("starting_sp") src.Experience += round(15 * SP_Multiplier ** 0.5)
+			if("starting_sp") src.gainProgressionExperience(round(15 * SP_Multiplier ** 0.5), "starting trait", announce = FALSE)
 			if("zenkai")
 				src.zenkai_mod = 1
 				src.alien_zenkai = 1

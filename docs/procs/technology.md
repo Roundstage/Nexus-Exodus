@@ -3,11 +3,15 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
-Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. The Roleplay Tenkaichi smithing port now includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment follows persistent upgrade branches: Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Copper -> Bronze -> Silver -> Auracite.
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Roleplay Tenkaichi smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment follows persistent upgrade branches: Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
+
+Specialized technologies that historically shared Technology Level 5 are sorted by base resource cost and divided evenly across levels 5-8 within Engineering, Robotics, and Genetics. This preserves inexpensive entry projects, moves complex designs deeper into their specialization, and prevents a single tier from containing most of the science catalog.
 
 Forged equipment is modular. Material owns sharpness, damage type, attack-BP reinforcement, protection, endurance-BP reinforcement, and weight; named designs such as Rebellion and Bardock are cosmetic skins only. Items therefore use material-first names such as `Copper Sword`, `Mythril Sword`, and `Auracite Armor`. Mythril is the lightest advanced armor, Iron is deliberately heavy, and Auracite is the energy-conducting branch.
 
-Craft access is now checked through `canAccessTechnology()`: persistent Technology XP produces levels 1–8, and level 5/7/8 grant Genetics, Engineering, or Robotics path slots. Knowledge growth and successful crafting both award Technology XP; admin grants remain compatible as explicit overrides.
+Craft access is checked through `canAccessTechnology()`: persistent Technology XP produces levels 1-8, and level 5/7/8 makes Genetics, Engineering, or Robotics path nodes eligible for purchase. Knowledge growth and successful crafting award Technology XP, while spendable Progression XP controls the registered design unlocks; admin grants remain compatible as explicit overrides.
+
+Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed modules. `obj/Module/Combat_Mathematics` adds the same lifecycle for Combat Mathematics, granting and removing its fixed buff with module activation instead of exposing it in Combat progression.
 
 ## Files
 - `src/Code/Technology/BodySwap.dm`
@@ -22,6 +26,9 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 - `src/Code/Technology/ForgedEquipment.dm`
 - `src/Code/Technology/Shurikens.dm`
 - `src/Code/Technology/SmokeBomb.dm`
+- `src/Code/Technology/TenkaichiMagic.dm`
+- `src/Code/Technology/TenkaichiResearch.dm`
+- `src/Code/Technology/TenkaichiScience.dm`
 - `src/Code/Technology/Technology.dm`
 - `src/Code/Technology/ToxicWaste.dm`
 - `src/Code/Technology/Vampires.dm`
@@ -2310,5 +2317,20 @@ Craft access is now checked through `canAccessTechnology()`: persistent Technolo
 
 - `generateWorldOreDeposits(target_count)` tops resource-bearing planets up to the configured deposit target.
 - `startWorldOreGeneration()` replenishes deposits on a Year-Speed-aware interval.
-- `obj/WorldOreDeposit/mineDeposit(miner)` validates range/level, completes interruptible mining, grants ore and profession XP, and depletes the node.
+- `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, applies yield talents, grants ore/profession XP, and depletes the node.
 - `mob/Admin4/verb/seedWorldOreDeposits()` exposes non-destructive distribution testing.
+
+### Tenkaichi training technology and alchemy
+
+- `obj/Peebag/Tier2` through `Tier6` are registered Science designs with increasing training multipliers and original RPT presentation.
+- `obj/Peebag/MagicGoo` through `Tier4` are Alchemy constructs that also grant bounded Magic XP and Arcane Essence when struck.
+- `gainArcaneEssence(amount, reason, announce)` owns the persistent crafting currency produced by magic meditation and Magic Goo practice.
+- `initializeArcaneFormulaCatalog()` registers all 41 active arcane craft adaptations.
+- `openArcaneWorkshop()` lists every purchased formula and delegates costs, ore catalysts, circle requirements, and creation to `craftArcaneFormula(formula_id)`.
+- `performArcaneTransmutation()` owns resource-to-essence and ore-to-ore equivalent exchange.
+- `getPhilosophersStoneRegenerationBonus()` contributes the carried stone's `+0.5` effective Regeneration without mutating the character's base stat.
+- `obj/ArcaneSpell` contains the twelve RPT spell adaptations and routes damage, healing, speed, cooldown, projectiles, sound, and VFX through Nexus systems.
+- `awakenRandomMutation(minimum, maximum, limit, synthetic)` validates organic/Android compatibility and applies one random native mutation without stacking stat multipliers incorrectly.
+- `getMutationProfileText()` supplies output shared by the Genetic Sequencer, Magic Scanner, and Medical Assessment.
+- The Genetic Sequencer improves a chosen awakened mutation by one percentage point per ten-minute equipment cooldown; Mutagen and code injectors retain a two-mutation safety limit.
+- `getScientificHealingMultiplier()` adds the nearby Healing Pylon bonus to the authoritative health-regeneration calculation.

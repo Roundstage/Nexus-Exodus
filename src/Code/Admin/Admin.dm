@@ -1666,13 +1666,13 @@ mob/Admin2/verb/reward(mob/A in players)
 	set name = "Reward"
 	set category="Admin"
 	switch(input(src,"Choose what kind of boost to give [A]") in \
-	list("BP","BP Mod","Energy","Resources","Skill Points","Cancel"))
-		if("Skill Points")
-			var/N=input(src,"How many skill points do you want to give [A]?") as num
+	list("BP","BP Mod","Energy","Resources","Progression XP","Cancel"))
+		if("Progression XP")
+			var/N=input(src,"How much Progression XP do you want to give [A]?") as num
 			if(N > 10000) N = 10000
-			A.Experience+=N
+			A.gainProgressionExperience(N, "admin reward", announce = TRUE)
 
-			admin_blame(src, "[key] has given [A] ([A.key]) [N] skill points.")
+			admin_blame(src, "[key] has given [A] ([A.key]) [N] Progression XP.")
 		if("Resources")
 			var/Amount=input(src,"How many resources?") as num
 			A.Alter_Res(Amount)

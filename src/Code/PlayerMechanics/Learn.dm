@@ -69,6 +69,9 @@ mob/verb/Learn()
 		return
 
 	if(!client) return
+	syncProgressionTrees(silent = TRUE)
+	showProgressionTrees("Combat", "Ki")
+	return
 	Initialize_Learnable_Skills_List()
 	var/list/L = list("Cancel")
 	for(var/A in Learnable_Skills)

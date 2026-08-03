@@ -113,6 +113,7 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		var/total_damage_budget = projectile_damage_factor * (explosion_size ? 2 : 1)
 		projectile.setStats(user, Percent = projectile_damage_factor, Off_Mult = strength_scaled ? 1.2 : 1, Explosion = explosion_size, explosion_percent = explosion_size ? projectile_damage_factor : 0, max_damage_factor = total_damage_budget)
 		projectile.strength_scaled = strength_scaled
+		projectile.weapon_scaled = weapon_projectile
 		projectile.from_attack = src
 		projectile.icon = icon
 		projectile.projectile_impact_icon = impact_effect_icon

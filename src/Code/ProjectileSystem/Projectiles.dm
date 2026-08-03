@@ -248,6 +248,7 @@ obj/Blast
 
 	var/percent_damage=1
 	var/strength_scaled = FALSE
+	var/weapon_scaled = FALSE
 	var/tmp/clash_damage_bonus_applied = FALSE
 	var/explosion_damage_factor = 0
 	var/projectile_impact_icon
@@ -402,7 +403,11 @@ obj/Blast
 		//return //this seems to be the old blast homing code idk why it was on
 		//its on so that things such as Big Bang and Charge can home in some, instead of being useless because they only go in straight lines
 
-		if(prob(homing_chance * 0.73))
+		var/effective_homing_chance = homing_chance * 0.73
+		if(ismob(Owner))
+			var/mob/homing_owner = Owner
+			effective_homing_chance += homing_owner.getMilestoneProjectileHomingBonus()
+		if(prob(effective_homing_chance))
 
 			CheckBlastHomingTarget()
 
@@ -465,9 +470,15 @@ obj/Blast
 		if(!target) return 0
 		if(strength_scaled && ismob(Owner))
 			var/mob/physical_owner = Owner
+			if(weapon_scaled) return physical_owner.getWeaponCombatDamage(target, factor)
 			return physical_owner.getPhysicalCombatDamage(target, factor)
 		var/guard_stat = Bullet ? target.End : target.Res
-		return calculateScaledCombatDamage(factor, BP, target.BP, Force, guard_stat)
+		var/damage_multiplier = 1
+		if(ismob(Owner))
+			var/mob/projectile_owner = Owner
+			guard_stat *= projectile_owner.getMilestoneGuardMultiplier()
+			if(!Bullet) damage_multiplier *= projectile_owner.getMilestoneKiDamageMultiplier()
+		return calculateScaledCombatDamage(factor, BP, target.BP, Force, guard_stat) * damage_multiplier
 
 	proc/applyPiercingDamageDecay()
 		Damage /= 2
@@ -636,7 +647,8 @@ obj/Blast
 						else if(!A.regenerator_obj && A.Absorb_Blast(src))
 							if(!showExplosiveBeamImpact(A)) del(src)
 							return
-						if(A && !A.regenerator_obj && A.precog && A.precogs && prob(A.precog_chance) && !A.KO && (A.Flying || A.icon_state == "") && A.Ki > A.max_ki * 0.2 && !A.Disabled())
+						var/ignores_precognition = ismob(Owner) && Owner:getMilestoneRank("energy_marksmanship") && prob(30)
+						if(A && !A.regenerator_obj && !ignores_precognition && A.precog && A.precogs && prob(A.precog_chance) && !A.KO && (A.Flying || A.icon_state == "") && A.Ki > A.max_ki * 0.2 && !A.Disabled())
 							A.precogs--
 							//A.Ki-=A.Ki/30/A.Eff**0.4
 							var/turf/old_loc=A.loc
@@ -675,6 +687,7 @@ obj/Blast
 							if(P.Vampire) dmg *= vampire_damage_multiplier
 							if(!is_makosen) P.last_hit_by_beam = world.time
 							P.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
+							if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(P)
 							if(ismob(Owner)&&!P.KO) P.setOpponent(Owner)
 							if(P && P == A && !P.Safezone && beam_impact_mode != BEAM_IMPACT_EXPLOSIVE)
 								if(getdist(Owner,P) < beam_stun_start && P.last_beam_kb_pos != P.loc && apply_short_range_beam_knock && P.type != /mob/Body && !P.KO && P.client)
@@ -908,6 +921,7 @@ obj/Blast
 
 						if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
 						else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
+						if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
 
 						if(m.Health<=0)
 							if(Noob_Attack) m.KO()
@@ -992,10 +1006,12 @@ obj/Blast
 		if(m.fearful || m.Good_attacking_good()) hit_chance *= m.Fear_dmg_mult()
 		if(m.is_teamer) hit_chance *= teamer_dmg_mult
 		if(ismob(Owner) && Owner.is_teamer) hit_chance /= teamer_dmg_mult
-		if(ismob(Owner)) hit_chance *= Owner.Speed_accuracy_mult(defender = m)
+		var/mob/projectile_owner = ismob(Owner) ? Owner : null
+		if(projectile_owner) hit_chance *= projectile_owner.Speed_accuracy_mult(defender = m)
 		if(m.dir in list(turn(dir,180), turn(dir,135), turn(dir,225))) hit_chance /= blast_front_deflection_mod
 		if(dir == m.dir && !m.knockback_immune && !m.KB && !m.standing_powerup)
 			hit_chance *= 2
+		if(projectile_owner) hit_chance += projectile_owner.getMilestoneProjectileAccuracyBonus()
 		hit_chance = Clamp(hit_chance, 15, 95)
 		if(dodging_mode == MANUAL_DODGE)
 			m.last_stamina_drain = world.time + 10 //prevent stam recharging and +whatever to add a lil more delay than usual
@@ -1006,7 +1022,8 @@ obj/Blast
 				m.AddStamina(-stam_drain)
 		if(m.grabber || m.KO || m.regenerator_obj) hit_chance = 100
 		if(prob(hit_chance) || !Deflectable || m.Disabled())
-			if(!m.regenerator_obj && m.precog && m.precogs && prob(m.precog_chance) && !m.KO && (m.Flying || m.icon_state == "") && m.Ki > m.max_ki * 0.2 && !m.Disabled())
+			var/ignores_precognition = ismob(Owner) && Owner:getMilestoneRank("energy_marksmanship") && prob(30)
+			if(!m.regenerator_obj && !ignores_precognition && m.precog && m.precogs && prob(m.precog_chance) && !m.KO && (m.Flying || m.icon_state == "") && m.Ki > m.max_ki * 0.2 && !m.Disabled())
 				m.precogs--
 				var/turf/old_loc = m.loc
 				step(m, turn(dir,pick(-45,45)), 32)
@@ -1026,6 +1043,7 @@ obj/Blast
 			if(m.Vampire) dmg *= vampire_damage_multiplier
 			if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
 			else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
+			if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
 			showConfiguredProjectileImpact(m)
 			if(shuriken) m.ShurikenOverlayEffect(icon)
 			if(percent_damage >= 10) Make_Shockwave(m, sw_icon_size = Get_projectile_shockwave_size(src))

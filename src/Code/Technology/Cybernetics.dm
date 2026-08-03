@@ -265,6 +265,12 @@ obj/Module
 		is made of light, not ki."
 		Abilities=list(new/obj/Attacks/Laser_Beam)
 
+	Combat_Mathematics
+		name = "Combat Mathematics Module"
+		Cost = 1000000
+		desc = "A tactical coprocessor that grants the Combat Mathematics buff while this module is installed and active."
+		Abilities = list(new /obj/Buff/Preset/CombatMathematics)
+
 	Time_normalizer
 		Cost=5000000
 		desc="Nullifies time freeze, allowing you to still move around while the time freeze is active on \

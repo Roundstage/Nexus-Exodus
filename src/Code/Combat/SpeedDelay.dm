@@ -17,4 +17,6 @@ mob/proc/Speed_delay_mult(severity = 1)
 		if(mod < minMod) mod = minMod
 	mod = 1 / mod //must be inverted to represent a "delay"
 
-	return mod * speedDelayMultMod
+	var/final_delay = mod * speedDelayMultMod
+	if(arcane_accelerated_until > world.time) final_delay *= 0.8
+	return final_delay

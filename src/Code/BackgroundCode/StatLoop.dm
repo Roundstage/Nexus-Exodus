@@ -1003,6 +1003,7 @@ proc/Recover_energy_loop()
 				if(m.z == Z_LEVEL_HBTC) n *= 2 //hbtc
 				if(m.Internally_Injured()) n*=0.25
 				if(m.ki_shield_on()) n*=0.15
+				if(m.arcane_replenishment_until > world.time) n *= 2
 
 				m.Ki+= 0.5 * n*Server_Recovery*(m.max_ki/100) * m.recov**1.1 * m.Recov_Mult/m.Gravity_Health_Ratio()
 				if(m.Ki>m.max_ki) m.Ki=m.max_ki
@@ -1102,21 +1103,23 @@ mob/proc/Makyo_Star()
 
 mob/proc/RegenMod()
 	var/regen_mult = 1
-	if(regen < 1)
-		regen_mult = regen**0.5
-		return regen_mult
+	var/effective_regen = regen + getPhilosophersStoneRegenerationBonus()
+	if(effective_regen < 1)
+		regen_mult = effective_regen**0.5
 	else
 		var/max_regen_before_scaledown = 2.5
-		regen_mult = Clamp(regen, 1, max_regen_before_scaledown)
-		if(regen > max_regen_before_scaledown)
-			var/extra = regen - max_regen_before_scaledown
+		regen_mult = Clamp(effective_regen, 1, max_regen_before_scaledown)
+		if(effective_regen > max_regen_before_scaledown)
+			var/extra = effective_regen - max_regen_before_scaledown
 			if(extra > 1) extra = extra ** 0.5
 			regen_mult += extra * 0.65
 		regen_mult = regen_mult ** health_regen_exponent
 
 		//regen_mult *= DuraRegenMod() //we have this thing where more dura lowers healing rate because its like you have more "max health" to heal
 
-		return regen_mult
+	if(arcane_regeneration_until > world.time) regen_mult *= 3
+	regen_mult *= getScientificHealingMultiplier()
+	return regen_mult
 
 mob/proc
 	DuraRegenMod()
@@ -1668,7 +1671,9 @@ mob/proc/Meditate_gain_loop()
 		else if(meditate_obj)
 			Med_Gain(n)
 			if(!knowledge_training && !magic_training) Raise_SP((1 / 60 / 60 / 1) * n) //1 per 1 hours
-		if(magic_training) gainMagicExperience(n * 0.35, "meditation", announce = FALSE)
+		if(magic_training)
+			gainMagicExperience(n * 0.35, "meditation", announce = FALSE)
+			gainArcaneEssence(n * 0.15 * getArcaneMeditationMultiplier(), "meditation", announce = FALSE)
 		sleep(n*10)
 	meditate_looping=0
 
@@ -1695,7 +1700,7 @@ mob/proc/Raise_SP(Amount)
 	Amount *= SP_Multiplier
 	Amount *= decline_gains()
 	if(alignment_on && alignment=="Evil") Amount *= 1.25
-	Experience += Amount * sp_mod
+	// Active-time progression already includes training. Awarding it again here made training count twice.
 
 mob/var
 	bp_loss_from_low_ki = 1

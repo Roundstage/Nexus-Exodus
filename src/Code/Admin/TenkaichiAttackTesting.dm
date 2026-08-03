@@ -10,7 +10,9 @@ proc/getTenkaichiWeaponAttackTypes()
 		/obj/Attacks/TenkaichiMeleeTechnique/SwordStab,
 		/obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash,
 		/obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact,
-		/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash)
+		/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash,
+		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash,
+		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak)
 
 proc/getTenkaichiUnarmedAttackTypes()
 	return list(

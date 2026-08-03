@@ -221,6 +221,12 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 	var/mob/damage_attacker = attacker
 	if(!damage_attacker && last_attacker && last_attacked_time == world.time) damage_attacker = last_attacker
 	if(!attack_name && damage_attacker) attack_name = "Attack"
+	if(damage_attacker && damage_attacker != src)
+		dmg *= damage_attacker.getMilestoneOutgoingDamageMultiplier(src)
+		dmg *= getMilestoneIncomingDamageMultiplier(damage_attacker)
+	if(damage_attacker && damage_attacker.arcane_attack_empowered_until > world.time) dmg *= 1.1
+	if(arcane_defense_empowered_until > world.time) dmg *= 0.85
+	if(has_adamantine_skeleton) dmg *= 0.92
 	if(damage_attacker && damage_attacker != src && damage_attacker.sparring_mode == LETHAL_COMBAT)
 		damage_attacker.enterLethalCombat()
 		enterLethalCombat()
@@ -554,20 +560,22 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		if(m.is_teamer) dmg*=teamer_dmg_mult
 		if(is_teamer) dmg/=teamer_dmg_mult
 
-		var/str_mult=swordless_str / m.End
+		var/guard_multiplier = getMilestoneGuardMultiplier()
+		var/str_mult = swordless_str / max(0.01, m.End * guard_multiplier)
 		if(s && count_sword)
 			dmg *= 1 + ((s.Damage - 1) * sword_damage_mod * swordMod)
 			if(s.is_silver)
 				if(m.Vampire||istype(m,/mob/Enemy/Zombie)) dmg*=silver_sword_damage_mult
 				else dmg*=silver_sword_damage_penalty
 			if(s.Style=="Energy")
-				var/resist_n=m.Res
+				var/resist_n = m.Res * guard_multiplier
 				if(FF) resist_n=Avg_Res()
 				str_mult=((swordless_str*0.5)+(Pow*0.5))/resist_n
 				dmg *= energy_sword_damage_mod
 		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : BP
 		var/defender_combat_bp = m.getForgedArmorEnduranceBP()
 		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, str_mult, 1)
+		dmg *= getMilestoneMeleeDamageMultiplier(m, !!s)
 
 		if(m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
 		if(alignment=="Evil"&&alignment_on) dmg*=villain_damage_penalty
@@ -823,6 +831,7 @@ mob/proc/get_melee_accuracy(mob/m)
 
 		if(m.Action=="Meditating") accuracy*=10
 		if(m.KO || m.KB || m.Frozen || m.regenerator_obj) accuracy=100
+		accuracy += getMilestoneMeleeAccuracyBonus(m)
 
 	if(!ismob(m)) return accuracy
 	else
@@ -1062,6 +1071,7 @@ mob/proc/Get_melee_delay(mult=1,injuries_matter=1)
 	var/obj/items/Sword/s = using_sword()
 	if(s)
 		delay *= 1 + (s.Damage - 1) * sword_refire_mod
+	delay *= getMilestoneMeleeDelayMultiplier(!!s)
 
 	return TickMult(delay)
 
@@ -1343,8 +1353,13 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 					var/bleedDmg = dmg * swordBleedDmg
 					dmg -= bleedDmg
 					target.BleedDamage(bleedDmg, src, "[getNexusMeleeAttackName(tenkaichi_technique)] Bleed")
+					if(milestone_bleeding_edge_active && prob(50))
+						target.BleedDamage(dmg * 0.125, src, "Bleeding Edge")
 
 				target.TakeDamage(dmg, attacker = src, attack_name = getNexusMeleeAttackName(tenkaichi_technique))
+				if(target && s && milestone_thundering_blows_active && prob(50))
+					target.TakeDamage(dmg * 0.1, attacker = src, attack_name = "Thundering Blows")
+					if(target) target.ApplyStun(time = 2, stun_power = 1.25)
 				if(tenkaichi_technique && target) tenkaichi_technique.applyOnHit(src, target, dmg)
 
 				//if a Zombie or infected player hits a dead body it too becomes infected and turns into a zombie

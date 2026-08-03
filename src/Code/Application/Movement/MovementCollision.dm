@@ -237,7 +237,7 @@ mob/proc/_mobcross_handle_door(atom/A)
 		d.Open()
 		return 1
 	for(var/obj/items/Door_Pass/dp in item_list)
-		if(dp.Password == d.Password)
+		if(istype(dp, /obj/items/AdvancedDoorPass) || dp.Password == d.Password)
 			d.Open()
 			return 1
 	for(var/obj/items/Door_Hacker/dh in item_list)

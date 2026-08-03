@@ -21,15 +21,86 @@ datum/MagicResearchNode
 proc/initializeMagicResearchCatalog()
 	if(islist(magic_research_catalog) && magic_research_catalog.len) return
 	magic_research_catalog = list()
+	// Divination
 	magic_research_catalog["arcane_sense"] = new /datum/MagicResearchNode("arcane_sense", "Arcane Sense", "Perceive the flow of living energy.", "Divination", 1, /obj/Sense)
 	magic_research_catalog["telepathy"] = new /datum/MagicResearchNode("telepathy", "Telepathy", "Project speech directly into another mind.", "Divination", 2, /obj/Telepathy)
-	magic_research_catalog["mending"] = new /datum/MagicResearchNode("mending", "Rejuvenation", "Channel energy to heal another being.", "Restoration", 3, /obj/Heal)
-	magic_research_catalog["warding"] = new /datum/MagicResearchNode("warding", "Mystic Shield", "Shape energy into a sustained defensive ward.", "Warding", 4, /obj/Shield)
-	magic_research_catalog["materialization"] = new /datum/MagicResearchNode("materialization", "Materialization", "Conjure matter through disciplined will.", "Conjuration", 5, /obj/Materialization)
+	magic_research_catalog["magic_scanner"] = new /datum/MagicResearchNode("magic_scanner", "Magic Scanner", "Craft a lens that reads magic and mutation signatures.", "Divination", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["locator"] = new /datum/MagicResearchNode("locator", "Locator", "Craft a compass that locates visible souls in the same realm.", "Divination", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["crystal_ball"] = new /datum/MagicResearchNode("crystal_ball", "Crystal Ball", "Craft a focus for remote observation.", "Divination", 7, /obj/Arcane_Crafting)
+
+	// Restoration
+	magic_research_catalog["mending"] = new /datum/MagicResearchNode("mending", "Mending", "Channel native energy to heal another being.", "Restoration", 2, /obj/Heal)
+	magic_research_catalog["rejuvenate"] = new /datum/MagicResearchNode("rejuvenate", "Rejuvenate", "Port the RPT restorative aura for nearby allies.", "Restoration", 4, /obj/ArcaneSpell/Rejuvenate)
+
+	// Warding
+	magic_research_catalog["warding"] = new /datum/MagicResearchNode("warding", "Mystic Shield", "Shape energy into a sustained defensive ward.", "Warding", 2, /obj/Shield)
+	magic_research_catalog["empowered_defenses"] = new /datum/MagicResearchNode("empowered_defenses", "Empowered Defenses", "Ward nearby allies against incoming damage.", "Warding", 4, /obj/ArcaneSpell/EmpoweredDefenses)
+	magic_research_catalog["grand_ward"] = new /datum/MagicResearchNode("grand_ward", "Grand Ward", "Project a defensive barrier around yourself.", "Warding", 7, /obj/Attacks/Attack_Barrier)
+
+	// Evocation
+	magic_research_catalog["fireball"] = new /datum/MagicResearchNode("fireball", "Fireball", "Hurl an explosive sphere of arcane fire.", "Evocation", 2, /obj/ArcaneSpell/Projectile/Fireball)
+	magic_research_catalog["frost_bolt"] = new /datum/MagicResearchNode("frost_bolt", "Frost Bolt", "Launch a chilling projectile that can stun its target.", "Evocation", 3, /obj/ArcaneSpell/Projectile/FrostBolt)
+	magic_research_catalog["lightning_bolt"] = new /datum/MagicResearchNode("lightning_bolt", "Lightning Bolt", "Cast a fast, high-impact bolt of lightning.", "Evocation", 4, /obj/ArcaneSpell/Projectile/LightningBolt)
+	magic_research_catalog["frost_nova"] = new /datum/MagicResearchNode("frost_nova", "Frost Nova", "Freeze and damage enemies around the caster.", "Evocation", 5, /obj/ArcaneSpell/FrostNova)
 	magic_research_catalog["force"] = new /datum/MagicResearchNode("force", "Magic Force", "Release arcane force as a radial shockwave.", "Evocation", 6, /obj/Attacks/Shockwave)
-	magic_research_catalog["translocation"] = new /datum/MagicResearchNode("translocation", "Translocation", "Fold space to travel to a known destination.", "Conjuration", 7, /obj/Teleport)
-	magic_research_catalog["grand_ward"] = new /datum/MagicResearchNode("grand_ward", "Grand Ward", "Project a defensive barrier around yourself.", "Warding", 8, /obj/Attacks/Attack_Barrier)
 	magic_research_catalog["destruction"] = new /datum/MagicResearchNode("destruction", "Arcane Detonation", "Release destructive energy around a selected point.", "Evocation", 9, /obj/Attacks/Explosion)
+
+	// Conjuration
+	magic_research_catalog["materialization"] = new /datum/MagicResearchNode("materialization", "Materialization", "Conjure matter through disciplined will.", "Conjuration", 2, /obj/Materialization)
+	magic_research_catalog["earth_prison"] = new /datum/MagicResearchNode("earth_prison", "Earth Prison", "Raise a temporary ring of earthen walls.", "Conjuration", 4, /obj/ArcaneSpell/EarthPrison)
+	magic_research_catalog["gravity_well"] = new /datum/MagicResearchNode("gravity_well", "Gravity Well", "Conjure a temporary high-gravity field.", "Conjuration", 6, /obj/ArcaneSpell/GravityWell)
+	magic_research_catalog["translocation"] = new /datum/MagicResearchNode("translocation", "Translocation", "Fold space to travel to a known destination.", "Conjuration", 7, /obj/Teleport)
+	magic_research_catalog["create_portal"] = new /datum/MagicResearchNode("create_portal", "Create Portal", "Bind an anchor and open a temporary two-way portal.", "Conjuration", 9, /obj/ArcaneSpell/CreatePortal)
+
+	// Enchantment
+	magic_research_catalog["boxing_gloves"] = new /datum/MagicResearchNode("boxing_gloves", "Boxing Gloves", "Craft enchanted gloves for controlled sparring.", "Enchantment", 2, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_sword"] = new /datum/MagicResearchNode("magic_sword", "Magic Sword", "Forge a copper blade through an arcane ritual.", "Enchantment", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_armor"] = new /datum/MagicResearchNode("magic_armor", "Magic Armor", "Forge copper armor through an arcane ritual.", "Enchantment", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["door_pass"] = new /datum/MagicResearchNode("door_pass", "Magic Door Pass", "Craft a configurable arcane access token.", "Enchantment", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_hammer"] = new /datum/MagicResearchNode("magic_hammer", "Magic Hammer", "Forge an enchanted war hammer.", "Enchantment", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_gauntlets"] = new /datum/MagicResearchNode("magic_gauntlets", "Magic Gauntlets", "Craft a focus that improves Magic training.", "Enchantment", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["empowered_attacks"] = new /datum/MagicResearchNode("empowered_attacks", "Empowered Attacks", "Empower the attacks of nearby allies.", "Enchantment", 5, /obj/ArcaneSpell/EmpoweredAttacks)
+	magic_research_catalog["accelerate"] = new /datum/MagicResearchNode("accelerate", "Accelerate", "Temporarily hasten movement and combat cadence.", "Enchantment", 5, /obj/ArcaneSpell/Accelerate)
+	magic_research_catalog["disguise"] = new /datum/MagicResearchNode("disguise", "Disguise", "Craft a reusable glamour veil.", "Enchantment", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["enchant"] = new /datum/MagicResearchNode("enchant", "Enchant", "Imbue forged equipment with arcane masterwork quality.", "Enchantment", 6, /obj/ArcaneSpell/Enchant)
+	magic_research_catalog["upgrade_kit"] = new /datum/MagicResearchNode("upgrade_kit", "Upgrade Kit", "Bottle one permanent equipment enchantment.", "Enchantment", 7, /obj/Arcane_Crafting)
+
+	// Constructs
+	magic_research_catalog["magic_dummy"] = new /datum/MagicResearchNode("magic_dummy", "Magic Dummy", "Create a basic sparring construct.", "Constructs", 2, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_door"] = new /datum/MagicResearchNode("magic_door", "Magic Door", "Create a password-secured arcane door.", "Constructs", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["mana_pylon"] = new /datum/MagicResearchNode("mana_pylon", "Mana Pylon", "Build a focus that amplifies nearby essence gathering.", "Constructs", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_vault"] = new /datum/MagicResearchNode("magic_vault", "Magic Vault", "Build a protected reservoir for Arcane Essence.", "Constructs", 6, /obj/Arcane_Crafting)
+	magic_research_catalog["enchanted_doll"] = new /datum/MagicResearchNode("enchanted_doll", "Enchanted Doll", "Create a temporary arcane companion.", "Constructs", 7, /obj/Arcane_Crafting)
+
+	// Artifacts
+	magic_research_catalog["spell_book"] = new /datum/MagicResearchNode("spell_book", "Spell Book", "Craft a grimoire linked to the Magic tree.", "Artifacts", 2, /obj/Arcane_Crafting)
+	magic_research_catalog["utility_belt"] = new /datum/MagicResearchNode("utility_belt", "Utility Belt", "Create a compact pocket-space container.", "Artifacts", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["book_case"] = new /datum/MagicResearchNode("book_case", "Book Case", "Create a portable enchanted book case.", "Artifacts", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["cooking_bag"] = new /datum/MagicResearchNode("cooking_bag", "Cooking Bag", "Create an expanded pocket-space cooking bag.", "Artifacts", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["simulation_crystal"] = new /datum/MagicResearchNode("simulation_crystal", "Simulation Crystal", "Bind the native simulator design into a crystal focus.", "Artifacts", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["orb_of_mastery"] = new /datum/MagicResearchNode("orb_of_mastery", "Orb of Mastery", "Craft an artifact that improves Magic training.", "Artifacts", 6, /obj/Arcane_Crafting)
+	magic_research_catalog["book_lessons"] = new /datum/MagicResearchNode("book_lessons", "Book of Lessons", "Record knowledge that grants Progression XP once.", "Artifacts", 7, /obj/Arcane_Crafting)
+	magic_research_catalog["book_fortitude"] = new /datum/MagicResearchNode("book_fortitude", "Book of Fortitude", "Record a long-lasting defensive ward.", "Artifacts", 7, /obj/Arcane_Crafting)
+	magic_research_catalog["book_ages"] = new /datum/MagicResearchNode("book_ages", "Book of Ages", "Create a dangerous grimoire that trades age for talent.", "Artifacts", 8, /obj/Arcane_Crafting)
+	magic_research_catalog["book_power"] = new /datum/MagicResearchNode("book_power", "Book of Power", "Create a one-use grimoire of permanent growth.", "Artifacts", 9, /obj/Arcane_Crafting)
+
+	// Alchemy
+	magic_research_catalog["arcane_crafting"] = new /datum/MagicResearchNode("arcane_crafting", "Arcane Crafting", "Shape Arcane Essence into persistent magical constructs.", "Alchemy", 2, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_goo_1"] = new /datum/MagicResearchNode("magic_goo_1", "Magic Goo I", "Create the first tier of magical sparring construct.", "Alchemy", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_fishing_lure"] = new /datum/MagicResearchNode("magic_fishing_lure", "Magic Fishing Lure", "Distill a lure that draws magic from water.", "Alchemy", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_circle"] = new /datum/MagicResearchNode("magic_circle", "Magic Circle", "Create a portable ritual focus that amplifies Arcane Essence gathering.", "Alchemy", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_health"] = new /datum/MagicResearchNode("elixir_health", "Elixir of Health", "Brew a temporary regeneration catalyst.", "Alchemy", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_goo_2"] = new /datum/MagicResearchNode("magic_goo_2", "Magic Goo II", "Reinforce Magic Goo with ore and denser essence.", "Alchemy", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_replenishment"] = new /datum/MagicResearchNode("elixir_replenishment", "Elixir of Replenishment", "Brew a temporary energy-recovery catalyst.", "Alchemy", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["stone_of_understanding"] = new /datum/MagicResearchNode("stone_of_understanding", "Stone of Understanding", "Enchant a stone that translates every spoken language for its bearer.", "Alchemy", 5, /obj/Arcane_Crafting)
+	magic_research_catalog["transmutation_circle"] = new /datum/MagicResearchNode("transmutation_circle", "Transmutation Circle", "Perform equivalent exchanges between resources, essence and ores.", "Alchemy", 6, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_merriment"] = new /datum/MagicResearchNode("elixir_merriment", "Elixir of Merriment", "Brew a tonic that improves roleplay XP gains.", "Alchemy", 6, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_goo_3"] = new /datum/MagicResearchNode("magic_goo_3", "Magic Goo III", "Create an advanced mythril-bound magical sparring construct.", "Alchemy", 7, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_empowerment"] = new /datum/MagicResearchNode("elixir_empowerment", "Elixir of Empowerment", "Brew a one-use restorative progression catalyst.", "Alchemy", 7, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_goo_4"] = new /datum/MagicResearchNode("magic_goo_4", "Magic Goo IV", "Create the peak auracite-bound magical sparring construct.", "Alchemy", 8, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_life"] = new /datum/MagicResearchNode("elixir_life", "Elixir of Life", "Brew a permanent life-extension draught.", "Alchemy", 8, /obj/Arcane_Crafting)
+	magic_research_catalog["philosophers_stone"] = new /datum/MagicResearchNode("philosophers_stone", "Philosopher's Stone", "Use a master transmutation circle and Heart of the Mountain to create the ultimate catalyst.", "Alchemy", 9, /obj/Arcane_Crafting)
+	magic_research_catalog["elixir_reformation"] = new /datum/MagicResearchNode("elixir_reformation", "Elixir of Reformation", "Brew a dangerous draught that resets native mutations and stat allocation.", "Alchemy", 9, /obj/Arcane_Crafting)
 
 mob/var
 	magic_experience = 0
@@ -55,7 +126,9 @@ proc/getMagicLevelForExperience(experience)
 
 mob/proc/gainMagicExperience(amount, reason, announce = FALSE)
 	if(amount <= 0) return 0
-	var/gained = amount * getMagicPotential()
+	var/gained = amount * getMagicPotential() * (1 + getMilestoneRank("arcane_memory") * 0.1)
+	if(locate(/obj/items/ArcaneFocusGauntlets) in item_list) gained *= 1.05
+	if(locate(/obj/items/ArcaneOrbOfMastery) in item_list) gained *= 1.1
 	magic_experience += gained
 	if(announce) src << "You gained [round(gained, 0.1)] Magic XP from [reason]."
 	syncMagicProgression(silent = !announce)
@@ -74,7 +147,9 @@ mob/proc/refreshMagicResearchUnlocks(announce = FALSE)
 	initializeMagicResearchCatalog()
 	for(var/node_id in magic_research_catalog)
 		var/datum/MagicResearchNode/node = magic_research_catalog[node_id]
-		if(magic_level >= node.required_level) grantMagicResearchNode(node, announce)
+		if(progression_tree_version >= 1)
+			if(hasProgressionNode("magic_[node.id]")) grantMagicResearchNode(node, announce)
+		else if(magic_level >= node.required_level) grantMagicResearchNode(node, announce)
 
 mob/proc/syncMagicProgression(silent = TRUE)
 	magic_experience = max(0, magic_experience)
@@ -87,48 +162,15 @@ mob/proc/syncMagicProgression(silent = TRUE)
 	return magic_level
 
 mob/proc/showScienceResearchTree()
-	syncTechnologyProgression(silent = TRUE)
-	var/html = "<html><head><style>body{background:#130f0b;color:#ead7ae;font-family:monospace}h1,h2{color:#ffc45f}.branch{border:1px solid #805a2c;margin:8px;padding:8px}.open{color:#8fffa0}.locked{color:#777}</style></head><body>"
-	html += "<h1>Science Tree</h1><p>Technology Level [player_tech_level]/[technology_level_thresholds.len] | XP [round(technology_experience, 0.1)] | Knowledge [round(Knowledge, 0.1)]</p>"
-	html += "<p>Knowledge remains the source attribute. Crafting, mining, and smithing advance Technology XP; levels 5+ require a selected branch.</p>"
-	var/list/branches = list("Foundation", "Engineering", "Robotics", "Genetics")
-	for(var/branch in branches)
-		html += "<div class='branch'><h2>[branch]</h2>"
-		var/found
-		for(var/obj/technology in tech_list)
-			var/technology_branch = technology.science_path ? technology.science_path : "Foundation"
-			if(technology_branch != branch) continue
-			found = TRUE
-			var/required_level = max(1, technology.science_level)
-			var/access_class = canAccessTechnology(technology) ? "open" : "locked"
-			html += "<div class='[access_class]'>L[required_level] - [html_encode(technology.name)] [canAccessTechnology(technology) ? "UNLOCKED" : "LOCKED"]</div>"
-		if(!found) html += "<div class='locked'>No registered designs.</div>"
-		html += "</div>"
-	html += "<p>Use Choose Technology Path when a specialization slot is available.</p></body></html>"
-	src << browse(html, "window=nexus_science_tree;size=860x700")
+	showProgressionTrees("Science")
 
 mob/proc/showMagicResearchTree()
-	syncMagicProgression(silent = TRUE)
-	initializeMagicResearchCatalog()
-	var/html = "<html><head><style>body{background:#100d18;color:#e7d9ff;font-family:monospace}h1,h2{color:#d99cff}.branch{border:1px solid #664080;margin:8px;padding:8px}.open{color:#9fffc8}.locked{color:#777}</style></head><body>"
-	html += "<h1>Magic Tree</h1><p>Magic Level [magic_level]/[magic_level_thresholds.len] | XP [round(magic_experience, 0.1)] | Potential x[round(getMagicPotential(), 0.05)]</p>"
-	for(var/branch in list("Divination", "Restoration", "Warding", "Conjuration", "Evocation"))
-		html += "<div class='branch'><h2>[branch]</h2>"
-		for(var/node_id in magic_research_catalog)
-			var/datum/MagicResearchNode/node = magic_research_catalog[node_id]
-			if(node.branch != branch) continue
-			var/unlocked = (node.id in magic_nodes_unlocked)
-			html += "<div class='[unlocked ? "open" : "locked"]'>L[node.required_level] - [node.name]: [node.description] [unlocked ? "UNLOCKED" : "LOCKED"]</div>"
-		html += "</div>"
-	html += "<p>Select Meditation: Magic under Stat Focus to advance this tree.</p></body></html>"
-	src << browse(html, "window=nexus_magic_tree;size=860x700")
+	showProgressionTrees("Magic")
 
 mob/verb/researchTrees()
 	set name = "Research Trees"
 	set category = "Other"
-	var/choice = input(src, "Open which progression tree?", "Research Trees") in list("Cancel", "Science", "Magic")
-	if(choice == "Science") showScienceResearchTree()
-	if(choice == "Magic") showMagicResearchTree()
+	showProgressionTrees("Science")
 
 mob/Admin4/verb/testResearchTrees(mob/character in players)
 	set name = "Test Research Trees"

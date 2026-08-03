@@ -32,6 +32,7 @@ mob/proc/syncProfessionProgression(announce = FALSE)
 
 mob/proc/gainProfessionExperience(profession, amount, reason, announce = FALSE)
 	if(amount <= 0) return 0
+	amount *= 1 + getMilestoneRank("profession_specialist") * 0.1
 	switch(profession)
 		if("Mining") mining_experience += amount
 		if("Smithing") smithing_experience += amount
@@ -45,6 +46,7 @@ mob/proc/gainProfessionExperience(profession, amount, reason, announce = FALSE)
 mob/proc/getMiningYieldMultiplier()
 	var/multiplier = 1 + (mining_level - 1) * 0.02
 	if(getMilestoneRank("mining_expert")) multiplier *= 1.5
+	multiplier *= 1 + getProgressionNodeRank("mining_efficient_extraction") * 0.1
 	return multiplier
 
 mob/proc/isMiningCave()
@@ -67,20 +69,22 @@ mob/proc/tryMineOre()
 	if(!isMiningCave()) return
 	var/find_chance = min(28, 6 + mining_level * 0.4)
 	if(getMilestoneRank("mining_expert")) find_chance *= 1.35
+	find_chance *= 1 + getMilestoneRank("ore_whisperer") * 0.15
+	find_chance *= 1 + getProgressionNodeRank("mining_ore_sense") * 0.15
 	if(!prob(find_chance)) return
 	var/ore_type = /obj/items/Ore/Copper
 	var/roll = rand(1, 1000)
-	if(mining_level >= 35 && roll <= 12 + (mining_level - 35) * 2)
+	if(mining_level >= 35 && hasMiningOreUnlock(/obj/items/Ore/HeartOfTheMountain) && roll <= 12 + (mining_level - 35) * 2)
 		ore_type = /obj/items/Ore/HeartOfTheMountain
-	else if(mining_level >= 30 && roll <= 55 + (mining_level - 30) * 3)
+	else if(mining_level >= 30 && hasMiningOreUnlock(/obj/items/Ore/Auracite) && roll <= 55 + (mining_level - 30) * 3)
 		ore_type = /obj/items/Ore/Auracite
-	else if(mining_level >= 20 && roll <= 175 + (mining_level - 20) * 5)
+	else if(mining_level >= 20 && hasMiningOreUnlock(/obj/items/Ore/Mythril) && roll <= 175 + (mining_level - 20) * 5)
 		ore_type = /obj/items/Ore/Mythril
-	else if(mining_level >= 14 && roll <= 310 + (mining_level - 14) * 6)
+	else if(mining_level >= 14 && hasMiningOreUnlock(/obj/items/Ore/Silver) && roll <= 310 + (mining_level - 14) * 6)
 		ore_type = /obj/items/Ore/Silver
-	else if(mining_level >= 7 && roll <= 520 + (mining_level - 7) * 7)
+	else if(mining_level >= 7 && hasMiningOreUnlock(/obj/items/Ore/Iron) && roll <= 520 + (mining_level - 7) * 7)
 		ore_type = /obj/items/Ore/Iron
-	else if(mining_level >= 3 && roll <= 720)
+	else if(mining_level >= 3 && hasMiningOreUnlock(/obj/items/Ore/Tin) && roll <= 720)
 		ore_type = /obj/items/Ore/Tin
 	var/obj/items/Ore/ore = addMinedOre(ore_type)
 	if(ore) src << "<font color=#d8b47c>You uncover [ore.ore_name]. You now carry [ore.stack_amount]."
@@ -268,8 +272,12 @@ obj/WorldOreDeposit
 	proc/mineDeposit(mob/miner)
 		if(!miner || !(miner in range(1, src)) || miner.KO || being_mined) return
 		miner.syncProfessionProgression()
+		miner.syncProgressionTrees(silent = TRUE)
 		if(miner.mining_level < required_mining_level)
 			miner << "Mining level [required_mining_level] is required for [src]."
+			return
+		if(!miner.hasMiningOreUnlock(ore_type))
+			miner << "Unlock [getWorldOreName(ore_type)] Prospecting in the Mining progression tree first."
 			return
 		being_mined = TRUE
 		var/turf/start_turf = miner.base_loc()

@@ -1,8 +1,8 @@
 obj/Attacks/Genki_Dama
-	name = "Omega Bomb"
+	name = "Genki Dama"
 	desc = "A massive chargeable bomb. Press it once to start charging, press it again \
-	to fire. Guide it with the directional keys. This move is extremely deadly so only use it if you want to \
-	kill someone."
+	to fire. Guide it with the directional keys. At full charge its impact and explosion make it the strongest \
+	player damage technique in the game, so only use it if you want to kill someone."
 	Cost_To_Learn = 0
 	clonable = 0
 	Teach_Timer = 2
@@ -26,7 +26,7 @@ obj/Attacks/Genki_Dama
 		sb_speed_stat_influence = 0.25
 		max_dmg_range = 3 //how big the collision box is at full charge
 		sb_initial_dmg = 4
-		sb_max_dmg = 15
+		sb_max_dmg = 18
 		sb_dmg_add = 0
 		sb_deflect_difficulty = 10
 		sb_explosion_size = 5
@@ -39,7 +39,7 @@ obj/Attacks/Genki_Dama
 
 	verb/Genki_Dama()
 		set category="Skills"
-		set name = "Omega Bomb"
+		set name = "Genki Dama"
 		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
@@ -122,7 +122,7 @@ mob/proc
 		if(!LastSpiritBombValid()) return
 		last_Genki_Dama.sb_moving = 1
 		for(var/v in 1 to max_steps)
-			var/sb_move_speed = last_Genki_Dama.sb_move_speed //sometimes step() deletes the Omega Bomb and causes an error
+			var/sb_move_speed = last_Genki_Dama.sb_move_speed //sometimes step() deletes the Genki Dama and causes an error
 			step(last_Genki_Dama, last_direction_pressed)
 			sleep(TickMult(sb_move_speed))
 			if(!LastSpiritBombValid()) break
@@ -223,7 +223,7 @@ mob/proc
 			b.transform = turn(b.transform, sb.sb_rotation)
 			sleep(world.tick_lag)
 
-		//we switch to another method of rotation because if we keep using the above after we throw the Omega Bomb we go into hyper spin because the transform is no longer growing
+		//we switch to another method of rotation because if we keep using the above after release we go into hyper spin because the transform is no longer growing
 		while(b && b.z && b.Owner == src)
 			b.transform = turn(b.transform, spin_speed)
 			sleep(world.tick_lag)
