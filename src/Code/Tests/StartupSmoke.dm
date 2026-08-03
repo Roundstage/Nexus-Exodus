@@ -1178,6 +1178,14 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		nexusSmokeAssert(technology.type in expected_technology_types, "technology was instantiated more than once: [technology.type]")
 		expected_technology_types -= technology.type
 	nexusSmokeAssert(!expected_technology_types.len, "technology catalog is missing eligible types")
+	var/mob/NexusSmokeTest/action_cycle_player = new
+	action_cycle_player.process_player_action_cycle(FALSE)
+	var/Energy/action_cycle_energy = new /Energy("Action Cycle", 20)
+	action_cycle_energy.quantity = 10
+	action_cycle_player.energies = list("Action Cycle" = action_cycle_energy)
+	action_cycle_player.process_player_action_cycle(FALSE)
+	nexusSmokeAssert(action_cycle_energy.schedule.len == 1, "consolidated player action cycle did not schedule natural energy recovery")
+	del(action_cycle_player)
 	var/obj/test/texthandling/text_test = new
 	text_test.dd_list2text_test()
 	del(text_test)
