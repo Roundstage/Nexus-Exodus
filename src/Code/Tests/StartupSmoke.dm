@@ -32,6 +32,36 @@ proc/nexusSmokeStatAllocation(list/profile)
 	return allocation
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	var/obj/reset_vars_test = new
+	reset_vars_test.alpha = 12
+	ResetVars(reset_vars_test)
+	nexusSmokeAssert(reset_vars_test.alpha == initial(reset_vars_test.alpha), "object pooling cannot reset non-mob movable state")
+	del(reset_vars_test)
+	var/obj/object_cache_test = new
+	CacheObject(object_cache_test)
+	var/obj/reused_object_cache_test = GetCachedObject(/obj, null)
+	nexusSmokeAssert(reused_object_cache_test == object_cache_test && !reused_object_cache_test.cached, "bounded generic object cache did not reuse its LIFO entry")
+	reused_object_cache_test.reallyDelete = TRUE
+	del(reused_object_cache_test)
+	var/PriorityQueue/path_queue_test = new /PriorityQueue(/pathnode/proc/cmp)
+	path_queue_test.Enqueue(new /pathnode(null, null, 4, 0))
+	path_queue_test.Enqueue(new /pathnode(null, null, 1, 0))
+	path_queue_test.Enqueue(new /pathnode(null, null, 3, 0))
+	var/pathnode/lowest_path_node = path_queue_test.Dequeue()
+	var/pathnode/middle_path_node = path_queue_test.Dequeue()
+	nexusSmokeAssert(lowest_path_node.g == 1 && middle_path_node.g == 3, "pathfinding priority queue lost min-heap ordering")
+	nexusSmokeAssert(getTargetRating(0, 1) > getTargetRating(15, 1) && getTargetRating(0, 1) > getTargetRating(0, 8), "linear target rating does not prefer aligned nearby targets")
+	var/list/null_cleanup_test = list("first", null, "last")
+	remove_nulls(null_cleanup_test)
+	nexusSmokeAssert(null_cleanup_test.len == 2 && null_cleanup_test[1] == "first" && null_cleanup_test[2] == "last", "runtime null cleanup changed surviving list order")
+	nexusSmokeAssert(getMapSavePath(1) == "data/Map1" && getMapSavePath(2) == "data/Map2", "segmented map saves do not remain under data/")
+	var/garbage_queue_size_before = garbage_collect.len
+	var/obj/garbage_queue_test = new
+	nexusSmokeAssert(queueObjectForGarbageCollection(garbage_queue_test), "a disposable object could not enter the garbage queue")
+	nexusSmokeAssert(!queueObjectForGarbageCollection(garbage_queue_test), "the garbage queue accepted a duplicate object")
+	nexusSmokeAssert(garbage_collect.len == garbage_queue_size_before + 1, "the garbage queue size is inconsistent")
+	nexusSmokeAssert(GarbageCollect(1) == 1 && garbage_collect.len == garbage_queue_size_before, "incremental garbage collection did not drain its budget")
+	garbage_queue_test = null
 	nexusSmokeAssert(text2path("/datum/NexusEmoteEditor") && text2path("/datum/NexusPlayerLogViewer"), "emote editor or player log viewer datum is missing")
 	nexusSmokeAssert(text2path("/mob/verb/ViewSelfSayWindow"), "player log viewer verb is missing")
 	nexusSmokeAssert(normalizeNexusChatChannel("COMBAT") == "combat" && normalizeNexusChatChannel("invalid") == "all", "chat channel normalization is invalid")
@@ -153,6 +183,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 			light_collision_shadow = candidate_light_shadow
 			break
 	nexusSmokeAssert(light_collision_source && light_collision_wall && light_collision_shadow, "startup map has no turf line for light-collision tests")
+	lighting_owner.SafeTeleport(light_collision_source)
+	lighting_owner.current_area = light_collision_source.loc
+	nexusSmokeAssert(lighting_owner in mob_view(0, light_collision_source), "short-range native spatial query omitted a same-turf mob")
+	lighting_owner.SafeTeleport(null)
+	lighting_owner.current_area = null
 	var/original_light_source_density = light_collision_source.density
 	var/original_light_source_opacity = light_collision_source.opacity
 	var/original_light_wall_density = light_collision_wall.density
@@ -165,6 +200,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	light_collision_wall.opacity = 1
 	light_collision_shadow.density = 0
 	light_collision_shadow.opacity = 0
+	var/list/cardinal_light_ray = traceGridRay(light_collision_source, light_collision_shadow)
+	nexusSmokeAssert(cardinal_light_ray.len == 2 && cardinal_light_ray[1] == light_collision_wall && cardinal_light_ray[2] == light_collision_shadow, "shared grid ray does not traverse a cardinal line deterministically")
+	var/pathfinder/astar/pathfinder_contract = new
+	nexusSmokeAssert(!(light_collision_wall in pathfinder_contract.neighbors(light_collision_source)), "A* neighbor generation accepted a dense blocking turf")
+	var/list/same_turf_path = pathfinder_contract.search(light_collision_source, light_collision_source)
+	nexusSmokeAssert(islist(same_turf_path) && !same_turf_path.len, "bounded A* does not return an empty path for an identical start and destination")
 	nexusSmokeAssert(nexusLightCanReach(light_collision_source, light_collision_wall), "light does not illuminate the visible face of a blocking turf")
 	nexusSmokeAssert(!nexusLightCanReach(light_collision_source, light_collision_shadow), "dense opaque turf does not cast a lighting shadow")
 	var/light_collision_key = getNexusLightOcclusionCacheKey(light_collision_source, 6)
@@ -196,7 +237,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/obj/NexusHud/ShortcutButton/Inventory") && text2path("/obj/NexusHud/ShortcutButton/Skills") && text2path("/obj/NexusHud/ShortcutButton/Sense") && text2path("/obj/NexusHud/ShortcutButton/World") && text2path("/obj/NexusHud/ShortcutButton/Chat") && text2path("/obj/NexusHud/ShortcutButton/Hotkeys") && text2path("/obj/NexusHud/ShortcutButton/Menu") && text2path("/obj/NexusHud/ShortcutButton/Admin"), "top shortcut HUD is incomplete")
 	nexusSmokeAssert(!text2path("/obj/NexusHud/ShortcutButton/Command"), "obsolete CMD shortcut is still in the navbar")
 	nexusSmokeAssert(text2path("/datum/NexusPlayerMenu") && text2path("/datum/NexusCharacterSheetWindow") && text2path("/datum/NexusInterfaceSettings"), "replacement player menu, live Character sheet, or interface settings is missing")
-	nexusSmokeAssert(nexus_live_browser_refresh_ticks == 10 && findtext(getNexusLiveBrowserScript(null, 37), "action:'heartbeat'") && findtext(getNexusLiveBrowserScript(null, 37), "window.scrollTo(0,37)"), "live browser refresh cadence, heartbeat, or scroll restoration is missing")
+	nexusSmokeAssert(nexus_live_browser_refresh_ticks == 10 && nexus_live_browser_heartbeat_milliseconds == 1000 && findtext(getNexusLiveBrowserScript(null, 37), "action:'heartbeat'") && findtext(getNexusLiveBrowserScript(null, 37), "window.scrollTo(0,37)") && findtext(getNexusLiveBrowserScript(null, nexus_live_browser_scroll_placeholder), nexus_live_browser_scroll_placeholder), "live browser refresh cadence, heartbeat, or scroll restoration is missing")
 	nexusSmokeAssert(text2path("/mob/verb/focusNexusCommand"), "Return-key CMD routing verb is missing")
 	nexusSmokeAssert(!text2path("/mob/proc/Stat_NexusSkills") && !text2path("/mob/proc/Stat_NexusOther") && !text2path("/mob/proc/Stat_NexusAdmin"), "synthetic statpanels duplicate native Skills, Other, or Admin tabs")
 	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("invalid") == "overlay", "interface layout normalization is invalid")
@@ -1178,8 +1219,22 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		nexusSmokeAssert(technology.type in expected_technology_types, "technology was instantiated more than once: [technology.type]")
 		expected_technology_types -= technology.type
 	nexusSmokeAssert(!expected_technology_types.len, "technology catalog is missing eligible types")
+	if(tech_list.len)
+		var/obj/technology_search_test = tech_list[1]
+		nexusSmokeAssert(technology_search_test in searchTechnologyCatalog(technology_search_test.name), "technology prefix index cannot find a registered recipe")
+	if(Builds.len)
+		var/obj/Build/build_search_test = Builds[1]
+		nexusSmokeAssert(build_search_test in getBuildCatalogForCategory(build_search_test.build_category), "build category index omitted a registered recipe")
+		nexusSmokeAssert(build_search_test in searchBuildCatalog(build_search_test.name, build_search_test.build_category), "build prefix index cannot find a registered recipe")
 	var/mob/NexusSmokeTest/action_cycle_player = new
+	action_cycle_player.Spd = 10
+	var/low_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
+	action_cycle_player.Spd = 10000
+	var/high_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
+	nexusSmokeAssert(high_stat_move_pixels > low_stat_move_pixels && high_stat_move_pixels <= vector_move_base_pixels_per_second * vector_move_speed_stat_maximum * world.tick_lag, "vector movement does not apply its bounded Speed-stat multiplier")
+	action_cycle_player.next_health_bar_update = 25
 	action_cycle_player.process_player_action_cycle(FALSE)
+	nexusSmokeAssert(action_cycle_player.next_health_bar_update == 25, "headless player action cycle unexpectedly mutated the client HUD throttle")
 	var/Energy/action_cycle_energy = new /Energy("Action Cycle", 20)
 	action_cycle_energy.quantity = 10
 	action_cycle_player.energies = list("Action Cycle" = action_cycle_energy)

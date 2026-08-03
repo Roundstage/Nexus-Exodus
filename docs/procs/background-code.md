@@ -91,25 +91,25 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/GetCachedObject
 - Signature: `GetCachedObject(obj_type, pos)`
 - Inputs: obj_type, pos
-- Purpose: Return Cached Object.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
+- Purpose: Pop and reinitialize the most recently cached object of a type in O(1), or allocate when the cache is empty.
+- Returns: reusable object.
+- Side effects: removes one entry from the per-type cache.
 
 #### proc/CacheObject
 - Signature: `CacheObject(obj/o)`
 - Inputs: obj/o
-- Purpose: Handle cache object.
+- Purpose: Reset and push an object into its bounded per-type cache, rejecting duplicates and deleting overflow.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: detaches the object or schedules real deletion when `object_cache_retention_limit_per_type` is reached.
 
 ### src/Code/BackgroundCode/SpecialAnnouncementsLoop.dm
 
 #### proc/SpecialAnnouncementsLoop
 - Signature: `SpecialAnnouncementsLoop()`
 - Inputs: None
-- Purpose: Handle special announcements loop.
+- Purpose: Emit configured announcements at their own minute intervals and record the actual last-announced timestamp.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: sends messages to connected clients and updates each announcement schedule.
 
 #### mob/Admin2/verb/setLoopingAnouncement
 - Signature: `mob/Admin2/verb/setLoopingAnouncement()`
@@ -907,7 +907,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/Health_bar_update_loop
 - Signature: `proc/Health_bar_update_loop()`
 - Inputs: None
-- Purpose: Handle health bar update loop.
+- Purpose: Legacy global HUD polling fallback; startup now updates HUD state through each player's consolidated action cycle.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

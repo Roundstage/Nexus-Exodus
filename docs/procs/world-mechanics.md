@@ -1596,7 +1596,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### proc/nexusLightCanReach
 - Signature: `nexusLightCanReach(turf/source_turf, turf/target_turf)`
-- Purpose: Trace a tile line from a light to a target. A blocking turf's visible face can receive light, while tiles beyond it are shadowed.
+- Purpose: Reuse the allocation-free supercover grid walk from runtime visibility. A blocking turf's visible face can receive light, while tiles beyond it are shadowed.
 
 #### proc/getNexusLightOcclusionCacheKey
 - Signature: `getNexusLightOcclusionCacheKey(turf/source_turf, size_tiles)`
@@ -1604,7 +1604,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### proc/getNexusLightOcclusionMask
 - Signature: `getNexusLightOcclusionMask(turf/source_turf, size_tiles, cache_key)`
-- Purpose: Build and cache a transparent 256px alpha mask containing only tiles reachable from the source. The mask clips the additive gradient at dense or opaque map geometry.
+- Purpose: Build and cache a transparent 256px alpha mask containing only tiles reachable from the source. A bounded FIFO eviction removes one old mask instead of clearing the entire cache at capacity.
 
 #### proc/startNexusStaticLightOcclusionUpdates
 - Signature: `startNexusStaticLightOcclusionUpdates()`

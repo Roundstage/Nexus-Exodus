@@ -184,10 +184,8 @@ mob/proc/Grabbed_by_tail()
 		sleep(10)
 
 proc/remove_nulls(list/l)
-
-	return l //because we have automatic nulls removal on a loop
-
-	for(var/v in l) if(v==null) l-=v
+	if(!islist(l)) return l
+	while(null in l) l -= null
 	return l
 
 mob/var

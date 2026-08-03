@@ -107,14 +107,14 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### datum/SkillEngine/proc/engineLoop
 - Signature: `datum/SkillEngine/proc/engineLoop()`
 - Inputs: None
-- Purpose: Run the actor tick loop.
+- Purpose: Tick active skill actors and park the worker immediately when the registry becomes empty.
 - Returns: none (implicit).
-- Side effects: ticks active actors.
+- Side effects: ticks active actors and clears `loop_running` while idle.
 
 #### datum/SkillEngine/proc/registerActor
 - Signature: `datum/SkillEngine/proc/registerActor(datum/SkillActor/actor)`
 - Inputs: datum/SkillActor/actor
-- Purpose: Register an actor with the engine.
+- Purpose: Register an actor once and wake the parked engine loop on demand.
 - Returns: none (implicit).
 - Side effects: adds to actor lists.
 
@@ -1359,9 +1359,9 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### obj/Screen_Indicator/Del
 - Signature: `Del()`
 - Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Purpose: Return the indicator to the bounded Sense cache, or delete it when the retention limit is full.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: clears target/location for cached indicators.
 
 #### obj/Screen_Indicator/proc/SenseArrowMatchAppearance
 - Signature: `SenseArrowMatchAppearance(update_overlays = 1)`
@@ -1376,6 +1376,18 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 - Purpose: Handle click.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### mob/proc/removeNexusSenseReadout
+- Signature: `removeNexusSenseReadout(mob/target)`
+- Purpose: Detach and forget one target's Sense percentage image.
+
+#### mob/proc/ensureNexusSenseReadout
+- Signature: `ensureNexusSenseReadout(mob/target)`
+- Purpose: Create a target readout only when it is not already registered.
+
+#### mob/proc/syncNexusSenseReadouts
+- Signature: `syncNexusSenseReadouts(area/a)`
+- Purpose: Incrementally reconcile readout membership instead of destroying and recreating every image.
 
 #### mob/proc/UpdateSenseArrowPositionsLoop
 - Signature: `UpdateSenseArrowPositionsLoop()`
@@ -1436,7 +1448,8 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### mob/proc/UpdateSenseArrowList
 - Signature: `UpdateSenseArrowList(area/a)`
 - Inputs: area/a
-- Purpose: Update Sense Arrow List.
+- Purpose: Reconcile Sense arrows and readouts with the current area while preserving indicators for unchanged targets.
+- Performance: membership scans run on the slower Sense refresh cadence; frequent visual refreshes only touch existing readouts.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
@@ -1457,15 +1470,15 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### area/proc/AreaUpdateSenseTargets
 - Signature: `AreaUpdateSenseTargets()`
 - Inputs: None
-- Purpose: Handle area update sense targets.
+- Purpose: Coalesce area membership changes into a revision increment consumed independently by Sense observers.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: increments `sense_target_revision`; it no longer rebuilds every player's indicators in one area-wide pass.
 
 #### proc/GetNewScreenIndicator
 - Signature: `GetNewScreenIndicator()`
 - Inputs: None
-- Purpose: Return New Screen Indicator.
-- Returns: computed value (see implementation).
+- Purpose: Reuse a reset Sense indicator when available or allocate one when the bounded cache is empty.
+- Returns: screen indicator object.
 - Side effects: none expected.
 
 ### src/Code/Combat/KiSkills/SolarFlare.dm
@@ -4166,9 +4179,9 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### atom/movable/proc/FindTarget
 - Signature: `FindTarget(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1)`
 - Inputs: dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1
-- Purpose: Handle find target.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Select the highest-rated valid target in a single linear scan without sorting all candidates.
+- Returns: the best target, or null.
+- Side effects: updates `auto_target`.
 
 #### atom/movable/proc/IsValidTarget
 - Signature: `IsValidTarget(mob/m, max_dist=10)`
@@ -4180,7 +4193,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### atom/movable/proc/FindTargets
 - Signature: `FindTargets(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=0)`
 - Inputs: dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=0
-- Purpose: Legacy angular scan retained for intentional area/random attacks such as Rock Slide, not player lock-on skills.
+- Purpose: Legacy sorted angular scan retained for callers that explicitly require every candidate; single-target actions use `FindTarget()`.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

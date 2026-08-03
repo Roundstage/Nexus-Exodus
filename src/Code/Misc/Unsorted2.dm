@@ -87,51 +87,57 @@ obj/Del()
 		if(outputDeletedObjects) Tens("[type] deleted (CACHING)")
 		CacheObject(src)
 	else
-		if(objs_can_delete)
-			if(light_obj) del(light_obj)
-			if(outputDeletedObjects) Tens("[type] deleted (DELETED)")
-			. = ..()
-		else
-			if(outputDeletedObjects) Tens("[type] deleted (VOIDED)")
-			loc = null
-			if(!deleted)
-				deleted = 1
-				garbage_collect += src
+		if(outputDeletedObjects) Tens("[type] deleted (QUEUED)")
+		queueObjectForGarbageCollection(src)
 
-var/objs_can_delete
 var/list/garbage_collect = new
+var
+	garbage_collection_batch_size = 25
+	garbage_collection_interval = 10
+	garbage_collection_total_scheduled = 0
+	garbage_collection_head = 1
 obj/var/tmp/deleted
 
-proc/GarbageCollect()
+proc/queueObjectForGarbageCollection(obj/o)
+	if(!o || o.deleted) return FALSE
+	o.loc = null
+	o.deleted = TRUE
+	garbage_collect += o
+	return TRUE
 
-	return //off to test something
+proc/compactGarbageCollectionQueue(force_compaction = FALSE)
+	if(!islist(garbage_collect)) garbage_collect = list()
+	if(garbage_collection_head > garbage_collect.len)
+		garbage_collect = list()
+		garbage_collection_head = 1
+	else if(garbage_collection_head > 1 && (force_compaction || garbage_collection_head > 200 && garbage_collection_head > garbage_collect.len / 2))
+		garbage_collect.Cut(1, garbage_collection_head)
+		garbage_collection_head = 1
+	if(force_compaction) garbage_collect = remove_nulls(garbage_collect)
 
-	objs_can_delete = 1
-	sleep(1)
-	var/objs_deleted = 0
-	var/list/otypes = new
-	for(var/obj/o in garbage_collect)
-		objs_deleted++
-		otypes += o.type
-		del(o)
-
-	if(Tens)
-		Tens("<font color=cyan><font size=3>[objs_deleted] Objects Deleted")
-		var/txt = "<html><head><title>Object Delete Test</title><body><body bgcolor=#000000><font size=3><font color=#CCCCCC>"
-		for(var/v in otypes)
-			txt += "[v]<br>"
-		txt += "</body></html>"
-		Tens << browse(txt, "window=ObjectDeleteTest;size=800x600")
-
-	garbage_collect = new/list
-	sleep(30)
-	objs_can_delete = 0
+proc/GarbageCollect(max_objects)
+	if(!islist(garbage_collect)) garbage_collect = list()
+	if(!isnum(max_objects) || max_objects <= 0) max_objects = garbage_collection_batch_size
+	max_objects = max(1, round(max_objects))
+	var/objects_scheduled = 0
+	var/entries_inspected = 0
+	while(garbage_collection_head <= garbage_collect.len && entries_inspected < max_objects)
+		var/obj/o = garbage_collect[garbage_collection_head]
+		garbage_collect[garbage_collection_head] = null
+		garbage_collection_head++
+		entries_inspected++
+		if(!o) continue
+		o.reallyDelete = TRUE
+		o.DeleteNoWait()
+		objects_scheduled++
+	compactGarbageCollectionQueue()
+	garbage_collection_total_scheduled += objects_scheduled
+	return objects_scheduled
 
 proc/GarbageCollectLoop()
 	set waitfor=0
-	var/mins = 1
 	while(1)
-		sleep(mins * 600)
+		sleep(garbage_collection_interval)
 		GarbageCollect()
 
 var/list/pending_object_delete_list=new
@@ -181,10 +187,14 @@ mob/Del()
 	else if(type==/mob/Body)
 		var/mob/Body/b=src
 		if(!b.Cooked&&NPC_Leave_Body) Body_Parts()
-		cached_bodies-=src
-		cached_bodies+=src
-		SafeTeleport(null)
-		if(grabber) grabber.ReleaseGrab()
+		if(src in cached_bodies)
+			SafeTeleport(null)
+			if(grabber) grabber.ReleaseGrab()
+		else if(cached_bodies.len < cached_body_retention_limit)
+			cached_bodies+=src
+			SafeTeleport(null)
+			if(grabber) grabber.ReleaseGrab()
+		else . = ..()
 
 	else if(type==/mob/Splitform)
 		//i dont feel like fixing splitform caching right now, it works but part of their AI keeps going for some reason so when you create one sometimes itll fly off

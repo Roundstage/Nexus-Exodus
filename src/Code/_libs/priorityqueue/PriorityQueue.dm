@@ -71,11 +71,19 @@ PriorityQueue
 			Remove(1)
 
 		Remove(i)
-			ASSERT(i <= L.len)
-			L.Swap(i,L.len)
-			L.Cut(L.len)
-			if(i < L.len)
-				_Fix(i)
+			ASSERT(i >= 1 && i <= L.len)
+			if(i == L.len)
+				L.len--
+				return
+			L[i] = L[L.len]
+			L.len--
+			var/parent = i >> 1
+			if(i > 1 && call(cmp)(L[parent], L[i]) > 0)
+				while(i > 1 && call(cmp)(L[parent], L[i]) > 0)
+					L.Swap(i, parent)
+					i = parent
+					parent = i >> 1
+			else _Fix(i)
 		_Fix(i)
 			var/child = i + i
 			var/item = L[i]

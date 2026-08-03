@@ -1183,7 +1183,7 @@ mob/proc/death_regen(set_loc=1)
 			SafeTeleport(A.loc)
 			del(A)
 		update_area()
-		player_view(src,15)<<"[src] regenerates back to life!"
+		player_view(15,src)<<"[src] regenerates back to life!"
 		if(BPpcnt>100) BPpcnt=100
 		for(var/obj/Injuries/I in injury_list) del(I)
 		Add_Injury_Overlays()
@@ -1814,12 +1814,11 @@ proc/Health_bar_update_loop()
 mob/var/tmp/next_health_bar_update=0
 
 mob/proc/Update_health_bars()
-	set waitfor=0
 	if(client && client.selected_target_marker && !selected_target) setSelectedTarget(null, FALSE)
 	else if(selected_target) getSelectedTarget(selected_target, require_view = FALSE, allow_ko = TRUE)
 	updateOverheadHealthHud()
 	if(!client || client.inactivity >= 450 || world.time < next_health_bar_update) return
-	next_health_bar_update = world.time
+	next_health_bar_update = world.time + 10
 	updateMainVitalsHud()
 
 mob/proc/Update_evade_meter()

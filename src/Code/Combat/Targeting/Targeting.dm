@@ -98,9 +98,21 @@ mob/verb/clearTarget()
 atom/movable/proc
 	//dir_angle is like which way src is facing usually
 	FindTarget(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1)
-		var/list/targets = FindTargets(dir_angle, angle_limit, max_dist, prefer_auto_target)
-		if(!targets) return
-		return targets[1]
+		dir_angle = dir_to_angle_0_360(dir_angle)
+		var/mob/best_target
+		var/best_rating = -1
+		for(var/mob/m in mob_view(max_dist, src))
+			if(m == src) continue
+			var/angle = abs(ShortestDegreesBetweenAngles(dir_angle, get_global_angle(src, m)))
+			var/dist = bounds_dist(src, m) / world.icon_size
+			if(dist > max_dist || angle > angle_limit || !IsValidTarget(m, max_dist = max_dist)) continue
+			var/rating = getTargetRating(angle, dist)
+			if(rating <= best_rating) continue
+			best_target = m
+			best_rating = rating
+		if(prefer_auto_target && best_target && auto_target && IsValidTarget(auto_target, max_dist = max_dist)) return auto_target
+		auto_target = best_target
+		return best_target
 
 	IsValidTarget(mob/m, max_dist=10)
 		if(m && z==m.z && bounds_dist(src,m)/world.icon_size <= max_dist && viewable(src,m)) return 1
@@ -120,10 +132,7 @@ atom/movable/proc
 			if(IsValidTarget(m, max_dist = max_dist))
 				if(!targets) targets = new/list
 
-				var/rating = 1 / (angle + 10) //+10 to prevent division by zero but also for distance influence reasons
-				rating /= 1 + dist * 0.075
-
-				targets[m] = rating
+				targets[m] = getTargetRating(angle, dist)
 
 		if(!targets) return
 		targets = BubbleSort(targets)
@@ -135,6 +144,10 @@ atom/movable/proc
 
 		auto_target = targets[1]
 		return targets
+
+proc/getTargetRating(angle, dist)
+	var/rating = 1 / (angle + 10) //+10 prevents division by zero and keeps distance relevant
+	return rating / (1 + dist * 0.075)
 
 proc/pixel_dir(mob/a,mob/b)
 	var/ang = get_global_angle(a,b)

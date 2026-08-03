@@ -201,6 +201,7 @@ mob/proc/Bank_Options(obj/Bank/bank)
 
 
 var/global_res_bags = 0
+var/random_resource_spawn_attempt_limit = 200
 
 obj/Resources/var/random_map_resources
 
@@ -209,13 +210,16 @@ proc/Random_resource_drops()
 	while(1)
 		if(global_res_bags < 500)
 			var/turf/t
-			while(!t)
+			var/spawn_attempts = 0
+			while(!t && spawn_attempts < random_resource_spawn_attempt_limit)
+				spawn_attempts++
 				t=locate(rand(1,world.maxx),rand(1,world.maxy),rand(1,world.maxz))
 				if(t)
 					if(t.type==/turf/Other/Blank||t.density||t.Water) t=null
 					else
 						var/area/a=locate(/area) in range(0,t)
 						if(!a.has_resources) t=null
+				if(spawn_attempts % 25 == 0) sleep(world.tick_lag)
 
 			for(var/obj/Resource_Destroyer/rd in resource_destroyers) if(rd.z&&rd.destroy_resources)
 				var/area/a=locate(/area) in range(0,rd)
@@ -366,6 +370,16 @@ obj/var/
 	science_path
 
 var/list/tech_list = new
+var/list/technology_search_index = new
+
+proc/rebuildTechnologySearchIndex()
+	technology_search_index = list()
+	for(var/obj/technology in tech_list)
+		registerCatalogSearchEntry(technology_search_index, technology, "[technology.name] [technology.type]")
+
+proc/searchTechnologyCatalog(query, list/accessible_entries, maximum_results = 100)
+	if(!islist(accessible_entries)) accessible_entries = tech_list
+	return searchCatalogIndex(technology_search_index, query, accessible_entries, maximum_results)
 
 proc/Add_Technology()
 	for(var/v in typesof(/obj))
@@ -378,6 +392,7 @@ proc/Add_Technology()
 			//else del(o)
 
 	tech_list = SortListOfObjectsAlphabetically(tech_list)
+	rebuildTechnologySearchIndex()
 
 
 proc/Can_Make_Technology(mob/P,obj/O)

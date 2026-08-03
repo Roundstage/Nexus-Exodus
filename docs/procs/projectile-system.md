@@ -909,16 +909,16 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Side effects: schedules `updateNexusProjectileGlow()`.
 
 #### proc/fill_cached_blasts
-- Signature: `proc/fill_cached_blasts()`
-- Inputs: None
-- Purpose: Handle fill cached blasts.
+- Signature: `proc/fill_cached_blasts(amount = cached_blast_refill_size)`
+- Inputs: optional refill amount.
+- Purpose: Refill the O(1) available-projectile stack in bounded batches.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: appends initialized projectiles to `cached_blasts`.
 
 #### proc/get_cached_blast
 - Signature: `proc/get_cached_blast()`
 - Inputs: None
-- Purpose: Return cached blast.
+- Purpose: Pop and reset the last available projectile in O(1), refilling the pool only when empty.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
 
@@ -942,6 +942,11 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Purpose: Initialize object state and register references.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/Blast/proc/startBlastLifecycle
+- Signature: `startBlastLifecycle()`
+- Purpose: Register and schedule the common initialization callbacks used by both newly allocated and pooled projectiles without calling `New()` manually.
+- Side effects: refreshes creation time and runtime projectile indexes.
 
 #### proc/Update_transform_size
 - Signature: `proc/Update_transform_size(new_size=1)`

@@ -12,7 +12,7 @@ mob/proc/update_area()
 		var/area/a = t.loc
 		if(a != current_area)
 
-			movement_port.areaUpdateSenseTargets(a) //tell old area we left it
+			movement_port.areaUpdateSenseTargets(current_area) //tell old area we left it
 
 			if(current_area)
 				current_area.mob_list -= src

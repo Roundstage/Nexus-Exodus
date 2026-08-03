@@ -18,7 +18,7 @@ proc
 					var/msg = l[3]
 					if(world.realtime - lastAnnounced > loopTime * 600)
 						clients << msg
-						l[1] = world.realtime
+						l[2] = world.realtime
 						anns[v] = l
 			sleep(600)
 

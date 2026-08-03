@@ -846,46 +846,63 @@ These legacy proc summaries are retained for reference. Their implementations no
 - Side effects: mutates game state and/or world resources.
 
 #### proc/blast_view
-- Signature: `proc/blast_view(dist=10,mob/center)`
-- Inputs: dist=10, mob/center
-- Purpose: Handle blast view.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/blast_view(dist=10, atom/center)`
+- Inputs: search distance and any map-backed center atom.
+- Purpose: Return active same-area projectiles, using BYOND's native spatial query for common short ranges and the area projectile index for long ranges.
+- Returns: projectile list.
+- Side effects: none.
 
 #### proc/player_range
-- Signature: `proc/player_range(range=20,mob/center)`
-- Inputs: range=20, mob/center
-- Purpose: Handle player range.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/player_range(range=20, atom/center)`
+- Inputs: search range and any map-backed center atom.
+- Purpose: Return same-area players with a hybrid native-spatial/area-index query.
+- Returns: player list.
+- Side effects: none.
 
 #### proc/player_view
-- Signature: `proc/player_view(range = 20, mob/center, seePastDenseObjs = 1)`
-- Inputs: range = 20, mob/center, seePastDenseObjs = 1
-- Purpose: Handle player view.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/player_view(range = 20, atom/center, seePastDenseObjs = 1)`
+- Inputs: search range, center atom, and dense-object visibility policy.
+- Purpose: Return visible same-area players with a hybrid native-spatial/area-index query.
+- Returns: player list.
+- Side effects: none.
 
 #### proc/mob_view
-- Signature: `proc/mob_view(range=20,mob/center, seePastDenseObjs = 1)`
-- Inputs: range=20, mob/center, seePastDenseObjs = 1
-- Purpose: Handle mob view.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/mob_view(range=20, atom/center, seePastDenseObjs = 1)`
+- Inputs: search range, center atom, and dense-object visibility policy.
+- Purpose: Return visible same-area mobs with a hybrid native-spatial/area-index query.
+- Returns: mob list.
+- Side effects: none.
 
 #### proc/npc_view
-- Signature: `proc/npc_view(range=20,mob/center, seePastDenseObjs = 1)`
-- Inputs: range=20, mob/center, seePastDenseObjs = 1
-- Purpose: Handle npc view.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/npc_view(range=20, atom/center, seePastDenseObjs = 1)`
+- Inputs: search range, center atom, and dense-object visibility policy.
+- Purpose: Return visible same-area NPCs with a hybrid native-spatial/area-index query.
+- Returns: NPC list.
+- Side effects: none.
 
 #### proc/viewable
-- Signature: `proc/viewable(mob/a, mob/b, max_dist = 5000, seePastDenseObjs = 1)`
-- Inputs: mob/a, mob/b, max_dist = 5000, seePastDenseObjs = 1
-- Purpose: Handle viewable.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/viewable(atom/a, atom/b, max_dist = 5000, seePastDenseObjs = 1)`
+- Inputs: two atoms, a maximum tile distance, and whether dense non-opaque objects can be seen through.
+- Purpose: Test line of sight using an early-exit supercover grid walk so corners and diagonal paths are handled consistently without allocating a turf list.
+- Returns: boolean visibility.
+- Side effects: none.
+
+#### proc/gridRayCanReach
+- Signature: `proc/gridRayCanReach(atom/start_atom, atom/end_atom, ray_mode = GRID_RAY_VISIBILITY, see_past_dense_objects = TRUE)`
+- Purpose: Walk every touched grid cell and stop at the first visibility or lighting blocker.
+- Returns: boolean reachability, with the target-facing blocking tile still visible.
+- Side effects: none.
+
+#### proc/nexusGridRayTileBlocks
+- Signature: `proc/nexusGridRayTileBlocks(turf/ray_turf, ray_mode, see_past_dense_objects = TRUE)`
+- Purpose: Apply the shared visibility or lighting blocker policy to one traversed turf.
+- Returns: boolean blocker state.
+
+#### proc/traceGridRay
+- Signature: `proc/traceGridRay(atom/start_atom, atom/end_atom, include_start = FALSE)`
+- Purpose: Materialize the deterministic supercover path for diagnostics and tests; runtime visibility uses `gridRayCanReach()`.
+- Returns: ordered turf list.
+- Side effects: none.
 
 #### obj/Toxic_Waste_Barrel/New
 - Signature: `New()`
@@ -1016,9 +1033,9 @@ These legacy proc summaries are retained for reference. Their implementations no
 #### proc/Remove_all_nulls
 - Signature: `proc/Remove_all_nulls()`
 - Inputs: None
-- Purpose: Remove all nulls.
+- Purpose: Periodically prune deleted references from selected runtime registries and area indexes.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: compacts runtime lists while deliberately leaving positional hotkey lists untouched.
 
 #### mob/Admin5/verb/testMobList
 - Signature: `mob/Admin5/verb/testMobList(area/a in world)`
@@ -1184,18 +1201,28 @@ These legacy proc summaries are retained for reference. Their implementations no
 - Side effects: see implementation.
 
 #### proc/GarbageCollect
-- Signature: `proc/GarbageCollect()`
-- Inputs: None
-- Purpose: Handle garbage collect.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/GarbageCollect(max_objects)`
+- Inputs: `max_objects` (optional bounded deletion budget).
+- Purpose: Drain a bounded number of voided objects from an amortized O(1) FIFO deferred-deletion queue.
+- Returns: number of objects scheduled for real deletion.
+- Side effects: advances the queue cursor, periodically compacts consumed entries, and schedules actual deletion without starving old objects.
+
+#### proc/queueObjectForGarbageCollection
+- Signature: `proc/queueObjectForGarbageCollection(obj/o)`
+- Purpose: Detach and append an object to the deferred FIFO once.
+- Returns: true when queued, false for null or duplicate objects.
+
+#### proc/compactGarbageCollectionQueue
+- Signature: `proc/compactGarbageCollectionQueue(force_compaction = FALSE)`
+- Purpose: Reclaim the consumed FIFO prefix occasionally so per-object dequeue remains O(1) amortized.
+- Side effects: resets the cursor after compaction and optionally removes null entries.
 
 #### proc/GarbageCollectLoop
 - Signature: `proc/GarbageCollectLoop()`
 - Inputs: None
-- Purpose: Handle garbage collect loop.
+- Purpose: Continuously drain deferred object deletions in bounded batches without a large one-tick purge.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: calls `GarbageCollect()` at `garbage_collection_interval`.
 
 #### proc/DeletePendingObjectsLoop
 - Signature: `proc/DeletePendingObjectsLoop()`

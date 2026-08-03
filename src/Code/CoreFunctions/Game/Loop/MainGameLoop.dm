@@ -3,6 +3,7 @@ mob/var/tmp/player_action_loop_running = FALSE
 mob/proc/process_player_action_cycle(run_background_tasks = FALSE)
 	try_applying_burn_effect()
 	try_healing_combat_ko(src)
+	Update_health_bars()
 	if(islist(energies))
 		for(var/name in energies)
 			var/Energy/energy = energies[name]

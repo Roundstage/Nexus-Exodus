@@ -110,13 +110,18 @@ datum/SkillEngine
 
 	proc/engineLoop()
 		while(loop_running)
+			if(!active_actors || !active_actors.len)
+				loop_running = 0
+				debugLog("SkillEngine loop parked: no active actors.")
+				return
 			tickActors()
 			sleep(loop_delay || world.tick_lag)
 
 	proc/registerActor(datum/SkillActor/actor)
 		if(!actor) return
-		active_actors += actor
+		if(!(actor in active_actors)) active_actors += actor
 		if(actor_registry) actor_registry.register(actor)
+		if(!loop_running) startLoop()
 
 	proc/removeActor(datum/SkillActor/actor)
 		if(!actor) return

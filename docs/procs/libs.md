@@ -1151,6 +1151,13 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### pathfinder/proc/isPassable
+- Signature: `isPassable(turf/t)`
+- Inputs: turf/t
+- Purpose: Reject dense turfs and turfs containing dense objects before neighbor insertion.
+- Returns: boolean passability.
+- Side effects: none.
+
 #### pathfinder/proc/distance
 - Signature: `distance(turf/a, turf/b)	// the distance heuristic between a and b`
 - Inputs: turf/a, turf/b
@@ -1161,18 +1168,18 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### pathfinder/proc/neighbors
 - Signature: `neighbors(turf/a)	// return a heterogenous list of neighboring objects`
 - Inputs: turf/a
-- Purpose: Handle neighbors.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Return passable adjacent turfs while preventing diagonal movement through blocked corners.
+- Returns: turf list.
+- Side effects: none.
 
 ### src/Code/_libs/pathfinder/pathfinder_astar.dm
 
 #### pathfinder/astar/search
 - Signature: `search(start, end)`
 - Inputs: start, end
-- Purpose: Handle search.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Run bounded A* with associative closed/g-score maps and stale heap-entry rejection.
+- Returns: the path excluding the starting tile, or null when unreachable/the expansion budget is exhausted.
+- Side effects: none outside temporary search structures.
 
 ### src/Code/_libs/pathfinder/pathnode.dm
 
@@ -1223,7 +1230,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### PriorityQueue/proc/Remove
 - Signature: `Remove(i)`
 - Inputs: i
-- Purpose: Handle remove.
+- Purpose: Remove an arbitrary heap index and restore ordering upward or downward as required.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

@@ -43,7 +43,6 @@ obj
 							//Give the guy in front of you a prompt to accept fusion.
 							var/ZZ = input(M,"Would you like to fuse?") in list("Yes","No")
 							if(ZZ=="Yes")
-								player_view(usr,15)
 								Fusion_Proc(usr,M,0) // Fuse the usr, M (the guy in front), make non permanent.
 
 obj
@@ -52,22 +51,22 @@ obj
 		var/pair = 1
 		desc = "Allows two people to fuse together for a short time, becoming extremely powerful. The person who offers the fusion loses control for the time limit."
 		verb
-			Throw_Potara(var/mob/M in player_view(usr,15))
+			Throw_Potara(var/mob/M in player_view(15,usr))
 				set src = usr.contents
 				set category = "Skills"
 				if(M.client)
 					switch(input("Are you sure you give them this?") in list("Yes","No"))
 						if("Yes")
 							//Give the guy in front of you a prompt to accept fusion.
-							player_view(usr,15) << "[usr] threw a Potara Earring to [M]."
+							player_view(15,usr) << "[usr] threw a Potara Earring to [M]."
 							var/ZZ = input(M,"Would you like to catch the potara?") in list("Yes","No")
 							if(ZZ=="Yes")
-								player_view(M,15) << "[M] caught it and put it on!"
+								player_view(15,M) << "[M] caught it and put it on!"
 								src.pair=0
 								src.name="Single Potara"
 								Fusion_Proc(usr,M,1) // Fuse the usr, M (the guy in front), make non permanent.
 							else
-								player_view(M,15) << "[M] didn't catch it!"
+								player_view(15,M) << "[M] didn't catch it!"
 								var/turf/yeet=locate(rand(M.x-2,M.x+2),rand(M.y-2,M.y+2),M.z)
 								if(!src.pair)
 									src.loc=yeet
@@ -254,4 +253,3 @@ mob
 						src << "You got some Potara Earrings"
 						src.contents += new/obj/Potara
 #endif
-

@@ -5185,7 +5185,7 @@ Player persistence supports three independent character slots. Character and fea
 #### mob/proc/process_player_action_cycle
 - Signature: `mob/proc/process_player_action_cycle(run_background_tasks = FALSE)`
 - Inputs: Whether the slower logging and progression work is due in this cycle.
-- Purpose: Process burn, knockout recovery, energy schedules, and optionally background player tasks in one scheduler cycle.
+- Purpose: Process burn, knockout recovery, HUD/target validation, energy schedules, and optionally background player tasks in one scheduler cycle.
 - Returns: none (implicit).
 - Side effects: Mutates player effects and progression; writes chat logs only when buffered entries exist.
 
