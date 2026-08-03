@@ -1095,9 +1095,15 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/ToggleBuildMenu
 - Signature: `ToggleBuildMenu()`
 - Inputs: None
-- Purpose: Toggle Build Menu.
+- Purpose: Open or refocus the modern `NexusBuildWindow` from the default `M` hotkey.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: closes the legacy `TabHolder`, opens the browser catalog, and restores map focus on close.
+
+#### datum/NexusBuildWindow
+- Purpose: Render the unified build catalog for Floors, Ground, Roofs, Walls, Decor, Trees, Other, Custom, and Science.
+- Navigation: category tabs, category search, 48-card pages, live resources, active-blueprint state, and direct create/edit/delete controls for owned custom decor.
+- Performance: only the active page is rendered; extracted DMI states are cached globally and transferred once per client session.
+- Placement: ordinary cards route through `selectBuildBlueprint()`, Science cards through `TryCreateScienceItem()`, and Custom cards through the existing custom-decor validation path.
 
 #### mob/proc/PopulateBuildTabs
 - Signature: `PopulateBuildTabs()`

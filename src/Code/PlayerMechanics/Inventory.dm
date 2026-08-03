@@ -1407,6 +1407,10 @@ obj/items/Hacking_Console
 	icon_state="Labtop"
 	Stealable=1
 	desc="If this is upgraded past the upgrade level of a door, it can open the door for you."
+	Cost=750000
+	science=1
+	science_level=5
+	science_path="Engineering"
 	verb/Hotbar_use()
 		set hidden=1
 		Use()
@@ -1588,12 +1592,14 @@ obj/items/Communicator
 		set hidden=1
 		Transmit()
 	verb/Transmit(msg as text) for(var/mob/P in players)
+		var/language_name = getNexusLanguageDisplayName(usr.spoken_language, usr)
+		var/rendered_message = usr.renderSpokenLanguageFor(P, msg)
 		for(var/obj/items/Scouter/S in P.item_list)
 			if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]>[usr]: [msg]"
+				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]><b>\[[html_encode(language_name)]\]</b> [usr]: [html_encode(rendered_message)]"
 		for(var/obj/items/Communicator/S in P.item_list)
 			if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]>[usr]: [msg]"
+				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]><b>\[[html_encode(language_name)]\]</b> [usr]: [html_encode(rendered_message)]"
 	verb/Frequency() Frequency=input("Choose a frequency, it can be anything. It lets you talk to \
 	others on the same frequency. Default is 1") as text
 obj/items/Stun_Chip

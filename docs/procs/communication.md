@@ -1,11 +1,21 @@
 # Communication
 
 ## Overview
-Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and combat damage summaries. Also includes spam control and simple text utilities.
+Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat damage summaries, and roleplay Progression XP awards. Also includes spam control and simple text utilities.
 
 ## Files
 - `src/Code/Communication/Communication.dm`
+- `src/Code/Communication/Languages.dm`
 - `src/Code/Communication/MediaAndDescriptions.dm`
+
+## RPT language adaptation
+
+- `syncNexusLanguages(silent)` migrates racial languages and validates the currently spoken language.
+- `renderSpokenLanguageFor(listener, raw_text, allow_learning)` calculates speaker/listener fluency, translation items, exposure gains, and the listener-specific rendered text.
+- `renderNexusLanguageText(raw_text, language_id, understanding)` deterministically replaces unknown words with language-specific syllables while preserving fully understood words.
+- `teachNexusLanguage()` provides a cooldown-limited nearby lesson from a speaker with at least 50% mastery.
+- `mob/verb/languages()` selects the spoken language, starts a lesson, or creates the Custom Language milestone reward.
+- Local Say, Whisper, and Communicator transmissions carry a visible language label and no longer leak one shared unmodified message to every listener.
 
 ## Proc Reference
 
@@ -92,6 +102,11 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Returns: truthy when the message should be blocked.
 - Side effects: increments `Spam`, updates `recent_ooc`, auto-mutes offenders.
 
+### mob/proc/awardProgressionFromCommunication(message, source, weight)
+- Purpose: Award bounded, word-based Progression XP for participating in chat and roleplay.
+- Inputs: raw message, source label, and channel weight.
+- Side effects: tracks cooldowns and a normalized message hash so rapid or repeated text cannot farm XP; emotes receive the highest cap, IC speech receives full weight, and OOC channels receive reduced weight.
+
 ### proc/Spammer(P)
 - Purpose: Quick mute check by key.
 - Returns: true if in `Mutes`.
@@ -110,7 +125,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Side effects: flips `OOCon`.
 
 ### mob/verb/GlobalSay(msg)
-- Purpose: Send OOC to all players with spam checks and name formatting.
+- Purpose: Send OOC to all players with spam checks, name formatting, and reduced-weight Progression XP.
 - Inputs: `msg` (optional; prompts if empty).
 - Side effects: calls `Spam_Check`, broadcasts formatted HTML.
 
@@ -118,12 +133,12 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Purpose: Alias for `GlobalSay`.
 
 ### mob/verb/LOOC(msg)
-- Purpose: Send local OOC (short range).
+- Purpose: Send local OOC (short range) and award reduced-weight Progression XP.
 - Inputs: `msg` (optional; prompts if empty).
 - Side effects: rate-limits with `can_say`, logs chat, triggers troll response.
 
 ### mob/verb/Whisper(msg)
-- Purpose: Emit a whisper to nearby players; only fully audible at close range.
+- Purpose: Emit a whisper to nearby players, award IC Progression XP, and keep the full text audible only at close range.
 - Inputs: `msg` (optional; prompts if empty).
 - Side effects: logs chat for listeners within 2 tiles.
 
@@ -131,12 +146,12 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, and comb
 - Purpose: Toggle whether a neko collar appends a tilde to speech.
 
 ### mob/verb/Say(msg)
-- Purpose: Standard local speech with optional neko collar suffix.
+- Purpose: Standard local speech with optional neko collar suffix and full-weight Progression XP.
 - Inputs: `msg` (optional; prompts if empty).
 - Side effects: sends HTML to `Say_Recipients`, logs chat, and displays messages of at most 50 words above the speaker.
 
 ### mob/verb/Think(msg)
-- Purpose: Send a local "thought" message formatted in italics.
+- Purpose: Send a local "thought" message formatted in italics and award IC Progression XP.
 - Inputs: `msg` (optional; prompts if empty).
 - Side effects: sends and logs to `Say_Recipients`.
 

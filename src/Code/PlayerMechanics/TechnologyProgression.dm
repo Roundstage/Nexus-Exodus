@@ -33,6 +33,7 @@ mob/proc/canAccessTechnology(obj/technology)
 	if(!istype(technology, /obj)) return FALSE
 	if(islist(GLOBAL_SCIENCE_TAB_ITEMS) && technology in GLOBAL_SCIENCE_TAB_ITEMS) return TRUE
 	if(islist(individual_science_items) && technology in individual_science_items) return TRUE
+	if(progression_tree_version >= NEXUS_PROGRESSION_VERSION) return hasProgressionReward(technology.type)
 	return canUnlockTechnology(technology)
 
 mob/proc/isTechnologyReferenceClick(obj/technology)
@@ -42,7 +43,9 @@ mob/proc/refreshTechnologyUnlocks(announce = FALSE)
 	if(!islist(individual_science_items)) individual_science_items = list()
 	if(!islist(player_tech_paths)) player_tech_paths = list()
 	for(var/obj/technology in tech_list)
-		if(!canUnlockTechnology(technology)) continue
+		if(progression_tree_version >= NEXUS_PROGRESSION_VERSION)
+			if(!hasProgressionReward(technology.type)) continue
+		else if(!canUnlockTechnology(technology)) continue
 		if(technology in individual_science_items) continue
 		individual_science_items += technology
 		if(announce) src << "Technology unlocked: [technology]."
@@ -83,17 +86,4 @@ mob/proc/syncTechnologyProgression(silent = TRUE)
 mob/verb/chooseTechnologyPath()
 	set name = "Choose Technology Path"
 	set category = "Other"
-	syncTechnologyProgression(silent = TRUE)
-	var/slots = getTechnologyPathSlots()
-	if(slots <= length(player_tech_paths))
-		src << "You have no unspent Technology Path slots."
-		return
-	var/list/choices = list("Genetics", "Engineering", "Robotics")
-	for(var/path in player_tech_paths) choices -= path
-	choices += "Cancel"
-	var/choice = input(src, "Choose a permanent Technology Path ([length(player_tech_paths)]/[slots] selected).", "Technology Path") in choices
-	if(!choice || choice == "Cancel") return
-	if(alert(src, "Specialize in [choice]? This choice is permanent.", "Technology Path", "Yes", "No") != "Yes") return
-	player_tech_paths += choice
-	refreshTechnologyUnlocks(announce = TRUE)
-	src << "You specialized in [choice]."
+	showProgressionTrees("Science")

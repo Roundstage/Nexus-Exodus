@@ -11,6 +11,8 @@ mob/proc/process_player_action_cycle(run_background_tasks = FALSE)
 
 	if(!run_background_tasks) return
 	if(islist(unwritten_chatlogs) && length(unwritten_chatlogs)) Write_chatlogs()
+	syncProgressionTrees(silent = FALSE)
+	syncNexusLanguages(silent = FALSE)
 	syncTechnologyProgression(silent = FALSE)
 	syncMagicProgression(silent = FALSE)
 	syncMilestoneProgression(silent = FALSE)

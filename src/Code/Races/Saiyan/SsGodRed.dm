@@ -166,8 +166,7 @@ mob
 	verb
 		Free_SP()
 			set category = "Yeet"
-			Experience+=5000
-			src << "You gained 5000 SP."
+			gainProgressionExperience(5000, "development tool", announce = TRUE)
 
 		Free_Resources()
 			set category="Yeet"

@@ -209,6 +209,7 @@ mob/proc/submitNexusEmote(raw_text, emote_mode = "Normal")
 	for(var/mob/recipient in Say_Recipients()) recipient.receiveNexusChatMessage(message, "ic", key)
 	if(emote_mode == "Character Development") PostDevelopmentRPWindow(message, key)
 	else PostEmoteRPWindow(message, key)
+	awardProgressionFromCommunication(raw_text, "emote", emote_mode == "Character Development" ? 1.25 : 1)
 	End_Say()
 	return TRUE
 

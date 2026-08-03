@@ -247,7 +247,7 @@ mob/verb/Forget_Skill()
 	var/obj/O=input(src,"You can forget any skill you choose. If you learned the skill yourself you will get \
 	[N*100]% of the skill points back. If you were taught you will not.") in L
 	if(!O||O=="Cancel") return
-	if(!O.Taught) Experience+=O.Cost_To_Learn*N
+	if(!O.Taught) gainProgressionExperience(O.Cost_To_Learn * N, "forgotten skill", announce = TRUE)
 	del(O)
 
 obj/var/Taught=1 //if 1, you did not self learn the skill
@@ -3001,15 +3001,15 @@ obj/Materialization
 			if("Learn new weight tier")
 				while(usr)
 					var/sp_cost=10
-					if(usr.Experience<sp_cost)
-						usr<<"You need at least [sp_cost] skill points to do this"
+					if(usr.progression_experience<sp_cost)
+						usr<<"You need at least [sp_cost] Progression XP to do this"
 						return
 					switch(alert(usr,"increase the tier of weights you can make? this will cost [sp_cost] \
-					skill points","options","Yes","No"))
+						Progression XP","options","Yes","No"))
 						if("No") return
 						if("Yes")
-							if(usr.Experience<sp_cost) return
-							usr.Experience-=sp_cost
+							if(usr.progression_experience<sp_cost) return
+							usr.progression_experience-=sp_cost
 							weight_tier+=0.5
 			if("Make Weights")
 				var/obj/items/Weights/A=new(Get_step(usr,usr.dir))

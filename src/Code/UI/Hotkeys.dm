@@ -150,8 +150,6 @@ obj/Build_Menu
 		set waitfor=0
 		set hidden=1
 		usr.ToggleBuildMenu()
-		
-		usr.PopulateBuildTab(win = "TabScience")
 
 obj/Dice_Roll
 	can_hotbar=1

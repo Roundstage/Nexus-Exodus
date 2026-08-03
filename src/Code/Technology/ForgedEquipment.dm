@@ -142,13 +142,17 @@ mob/proc/applyMasterBlacksmithQuality(obj/items/item)
 
 mob/proc/craftForgedWeapon(style_id)
 	syncProfessionProgression()
+	syncProgressionTrees(silent = TRUE)
+	if(!hasSmithingMaterialUnlock("copper"))
+		src << "Unlock Forge Apprentice in the Smithing progression tree first."
+		return
 	var/datum/ForgedMaterial/material
 	initializeForgedEquipmentCatalogs()
 	material = forged_material_catalog["copper"]
 	var/datum/ForgedWeaponStyle/style = forged_weapon_style_catalog[style_id]
 	if(!style) style = chooseForgedWeaponStyle()
 	if(!style) return
-	var/ore_cost = max(1, material.ore_cost - getMilestoneRank("master_blacksmith"))
+	var/ore_cost = max(1, material.ore_cost - getSmithingOreDiscount())
 	if(!consumeOre(material.ore_type, ore_cost))
 		src << "You need [ore_cost] Copper ore to forge a weapon."
 		return
@@ -163,12 +167,16 @@ mob/proc/craftForgedWeapon(style_id)
 
 mob/proc/craftForgedArmor(style_id)
 	syncProfessionProgression()
+	syncProgressionTrees(silent = TRUE)
+	if(!hasSmithingMaterialUnlock("copper"))
+		src << "Unlock Forge Apprentice in the Smithing progression tree first."
+		return
 	initializeForgedEquipmentCatalogs()
 	var/datum/ForgedMaterial/material = forged_material_catalog["copper"]
 	var/datum/ForgedArmorStyle/style = forged_armor_style_catalog[style_id]
 	if(!style) style = chooseForgedArmorStyle()
 	if(!style) return
-	var/ore_cost = max(1, 4 - getMilestoneRank("master_blacksmith"))
+	var/ore_cost = max(1, 4 - getSmithingOreDiscount())
 	if(!consumeOre(material.ore_type, ore_cost))
 		src << "You need [ore_cost] Copper ore to forge armor."
 		return
@@ -205,7 +213,8 @@ mob/proc/upgradeForgedEquipment(obj/items/equipment)
 	var/list/options = list()
 	for(var/datum/ForgedMaterial/material in upgrades)
 		if(smithing_level < material.required_level) continue
-		var/ore_cost = max(1, material.ore_cost - getMilestoneRank("master_blacksmith"))
+		if(!hasSmithingMaterialUnlock(material.id)) continue
+		var/ore_cost = max(1, material.ore_cost - getSmithingOreDiscount())
 		var/obj/items/Ore/ore_example = new material.ore_type
 		var/stat_summary
 		if(is_weapon)
@@ -220,7 +229,7 @@ mob/proc/upgradeForgedEquipment(obj/items/equipment)
 	var/choice = input(src, "Choose [equipment]'s new material module. The cosmetic skin will not change. Bronze branches into Iron/Mythril/Masterwork or Silver/Auracite.", "Improve Equipment") as null|anything in options
 	if(isnull(choice)) return
 	var/datum/ForgedMaterial/new_material = options[choice]
-	var/final_cost = max(1, new_material.ore_cost - getMilestoneRank("master_blacksmith"))
+	var/final_cost = max(1, new_material.ore_cost - getSmithingOreDiscount())
 	if(!consumeOre(new_material.ore_type, final_cost))
 		var/obj/items/Ore/ore_example = new new_material.ore_type
 		src << "You need [final_cost] [ore_example.ore_name] to improve [equipment]."
@@ -299,13 +308,21 @@ mob/proc/openForgeMaterialGuide(obj/Forge/forge)
 mob/proc/openSmithingMenu(obj/Forge/forge)
 	if(!forge || getdist(src, forge) > 1 || KO || rp_mode) return
 	syncProfessionProgression()
-	var/weapon_cost = max(1, 3 - getMilestoneRank("master_blacksmith"))
-	var/armor_cost = max(1, 4 - getMilestoneRank("master_blacksmith"))
+	syncProgressionTrees(silent = TRUE)
+	if(!hasSmithingMaterialUnlock("copper"))
+		src << "Unlock Forge Apprentice in the Smithing progression tree first."
+		showProgressionTrees("Smithing")
+		return
+	var/weapon_cost = max(1, 3 - getSmithingOreDiscount())
+	var/armor_cost = max(1, 4 - getSmithingOreDiscount())
 	var/html = "<html><head>[getForgeBrowserCss()]</head><body><div class='shell'><div class='header'><h1>Tenkaichi Forge</h1><p>Smithing level [smithing_level]. Equipment is modular: material determines performance, while the selected design is visual only.</p></div><div class='actions'><a class='action' href='byond://?src=\ref[forge]&forge_action=weapon'><b>FORGE WEAPON</b><span>[weapon_cost] Copper ore. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=armor'><b>FORGE ARMOR</b><span>[armor_cost] Copper ore. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=upgrade'><b>IMPROVE EQUIPMENT</b><span>Upgrade material while preserving the icon.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=pickaxe'><b>FORGE PICKAXE</b><span>[weapon_cost] Copper ore.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=guide'><b>MATERIAL GUIDE</b><span>Compare BP reinforcement, protection and weight.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=close'><b>CLOSE</b><span>Return to the game.</span></a></div><div class='panel'><h2>Quick material comparison</h2>[buildForgeMaterialGuideHtml()]</div></div></body></html>"
 	src << browse(html, "window=nexus_forge;size=1050x760;can_resize=true")
 
 mob/proc/craftTenkaichiPickaxe()
-	var/ore_cost = max(1, 3 - getMilestoneRank("master_blacksmith"))
+	if(!hasSmithingMaterialUnlock("copper"))
+		src << "Unlock Forge Apprentice in the Smithing progression tree first."
+		return FALSE
+	var/ore_cost = max(1, 3 - getSmithingOreDiscount())
 	if(!consumeOre(/obj/items/Ore/Copper, ore_cost))
 		src << "You need [ore_cost] Copper ore to forge a pickaxe."
 		return FALSE
@@ -516,6 +533,10 @@ mob/Admin3/verb/testTenkaichiSmithing(mob/character in players)
 	character.mining_experience = getProfessionExperienceForLevel(50)
 	character.smithing_experience = getProfessionExperienceForLevel(50)
 	character.syncProfessionProgression()
+	character.syncProgressionTrees(silent = TRUE)
+	for(var/node_id in progression_node_catalog)
+		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+		if(node.category in list("Mining", "Smithing")) character.progression_nodes_owned[node.id] = node.max_rank
 	for(var/ore_type in list(/obj/items/Ore/Copper, /obj/items/Ore/Tin, /obj/items/Ore/Iron, /obj/items/Ore/Silver, /obj/items/Ore/Mythril, /obj/items/Ore/Auracite, /obj/items/Ore/HeartOfTheMountain))
 		character.addMinedOre(ore_type, 40)
 	var/turf/forge_location = get_step(character, SOUTH)

@@ -241,7 +241,7 @@ obj/Attacks/Dodompa
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Final_Flash
-	name = "Final flash"
+	name = "Final Flash"
 	Cost_To_Learn=0
 	Wave=1
 	hotbar_type="Beam"

@@ -376,8 +376,8 @@ menu "menu"
 		category = "Options"
 		saved-params = "is-checked"
 	elem 
-		name = "Spend Experience Points"
-		command = "Spend-Experience-Points"
+		name = "Progression Trees"
+		command = "Progression-Trees"
 		category = "Options"
 		saved-params = "is-checked"
 	elem 
@@ -386,13 +386,13 @@ menu "menu"
 		category = "Options"
 		saved-params = "is-checked"
 	elem 
-		name = "Spend Milestone Points"
-		command = "Spend-Milestone-Points"
+		name = "Milestone Talent Tree"
+		command = "Milestones"
 		category = "Options"
 		saved-params = "is-checked"
 	elem 
-		name = "Show Milestones"
-		command = "Show-Milestones"
+		name = "Show Character Progression"
+		command = "RefreshStatus"
 		category = "Options"
 		saved-params = "is-checked"
 	elem 

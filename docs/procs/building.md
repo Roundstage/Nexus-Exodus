@@ -6,7 +6,8 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 ## Files
 - `src/Code/Building/Build.dm`
 - `src/Code/Building/Connector Wires.dm`
-- `src/Code/Building/Custom Icon Build Tab.dm`
+- `src/Code/Building/CustomIconBuildTab.dm`
+- `src/Code/UI/Tabs2017/BuildTab.dm`
 
 ## Proc Reference
 
@@ -78,8 +79,11 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 - Performance: intersects prebuilt prefix buckets instead of scanning every recipe for each query.
 
 ### obj/Build/Click()
-- Purpose: Select a build template or place it at the player location.
-- Side effects: checks combat, sets `Target`, calls `buildLay`.
+- Purpose: Route native icon clicks through `mob/proc/selectBuildBlueprint()`.
+
+### mob/proc/selectBuildBlueprint(obj/Build/build)
+- Purpose: Authoritative selection path shared by native icon clicks and the modern `M`-key build catalog.
+- Side effects: checks combat, places the first tile, sets or clears `Target`, reports resource cost, and restores map focus.
 
 ### mob/proc/turfLayCost()
 - Purpose: Calculate the resource cost per tile to build.

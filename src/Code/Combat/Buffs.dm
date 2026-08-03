@@ -123,6 +123,9 @@ obj/Buff
 		list/buff_opening //the opening transformation graphics customizable by the player
 		list/buff_attributes=new
 		preset_buff = FALSE
+		preset_vfx_icon
+		preset_vfx_color = "#ffffff"
+		preset_vfx_sound
 
 	verb/Hotbar_use()
 		set hidden=1
@@ -340,6 +343,7 @@ mob/proc
 		current_buff=O
 		if(!rebuff_timer) Rebuff_timer_countdown()
 		rebuff_timer = 2
+		playPresetBuffVfx(O, TRUE)
 		src << "<font color=cyan>You have activated [O]"
 		if(O.name == initial(O.name)) src << "<font color=cyan>But it appears you have not set it up yet. To customize a custom buff use the Buff Options \
 		command found in the Other tab"
@@ -393,6 +397,7 @@ mob/proc
 		regen/=O.buff_reg
 		recov/=O.buff_rec
 
+		playPresetBuffVfx(O, FALSE)
 		src << "<font color=[rgb(0,255,0)]>You have deactivated [O]"
 
 		current_buff=null
@@ -408,6 +413,171 @@ obj/Buff/Focus
 	buff_spd = 1.2
 	buff_reg = 1.15
 	buff_rec = 1.1
+	preset_vfx_icon = 'src/Icons/VFX/CircleWind.dmi'
+	preset_vfx_color = "#65d8ff"
+	preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Aura.ogg'
+
+obj/Effect/ProgressionBuffBurst
+	name = "combat aura"
+	mouse_opacity = 0
+	density = 0
+	Grabbable = 0
+	Savable = 0
+	plane = 10
+	layer = 100
+
+	proc/configure(effect_icon, effect_color, activating = TRUE)
+		if(effect_icon) icon = effect_icon
+		if(effect_color) color = effect_color
+		alpha = activating ? 230 : 150
+		CenterIcon(src)
+		var/matrix/start_matrix = matrix()
+		start_matrix.Scale(activating ? 0.65 : 1.15)
+		transform = start_matrix
+		var/matrix/end_matrix = matrix()
+		end_matrix.Scale(activating ? 1.55 : 0.75)
+		animate(src, transform = end_matrix, alpha = 0, time = activating ? 10 : 6, easing = CUBIC_EASING)
+		spawn(12) if(src) del(src)
+
+mob/proc/playPresetBuffVfx(obj/Buff/buff, activating = TRUE)
+	if(!buff || !buff.preset_buff) return
+	if(buff.preset_vfx_sound && activating) player_view(12, src) << sound(buff.preset_vfx_sound, volume = 35)
+	if(loc && buff.preset_vfx_icon)
+		var/obj/Effect/ProgressionBuffBurst/burst = new(base_loc())
+		burst.configure(buff.preset_vfx_icon, buff.preset_vfx_color, activating)
+	if(activating) showTenkaichiTechniqueAnnouncement("[buff]", buff.preset_vfx_color, null, 30)
+
+obj/Buff/Preset
+	editable = FALSE
+	preset_buff = TRUE
+	Reteachable = FALSE
+	Relearnable = FALSE
+	Duplicates_Allowed = FALSE
+	Cost_To_Learn = 0
+
+	MuscleForce
+		name = "Muscle Force"
+		desc = "A grounded physical style that reinforces strength and durability."
+		buff_bp = 1.1
+		buff_str = 1.2
+		buff_dur = 1.12
+		preset_vfx_icon = 'src/Icons/VFX/PressurePunch.dmi'
+		preset_vfx_color = "#ffb24f"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Strongpunch.ogg'
+
+	CombatMathematics
+		name = "Combat Mathematics"
+		desc = "Predictive calculations improve accuracy, reflex and measured movement."
+		buff_spd = 1.08
+		buff_off = 1.25
+		buff_def = 1.25
+		preset_vfx_icon = 'src/Icons/VFX/VfxElec.dmi'
+		preset_vfx_color = "#61e8ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Scouterbeeps.ogg'
+
+	KiBlade
+		name = "Ki Blade"
+		desc = "Condenses energy around close-range attacks, balancing strength, force and accuracy."
+		buff_str = 1.12
+		buff_for = 1.2
+		buff_off = 1.12
+		preset_vfx_icon = 'src/Icons/Ki/Blasts/BlastDestructoDisk.dmi'
+		preset_vfx_color = "#a7fff0"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/DestructodiscCharge.ogg'
+
+	MagicForce
+		name = "Magic Force"
+		desc = "Arcane circulation improves force, resistance and recovery."
+		buff_for = 1.25
+		buff_res = 1.15
+		buff_rec = 1.12
+		preset_vfx_icon = 'src/Icons/Effects/GivePowerEffectWhite.dmi'
+		preset_vfx_color = "#ca87ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Wisp.ogg'
+
+	OffensiveStance
+		name = "Offensive Stance"
+		desc = "A committed attacking posture that trades defense for strength and accuracy."
+		buff_str = 1.12
+		buff_off = 1.22
+		buff_def = 0.9
+		preset_vfx_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+		preset_vfx_color = "#ff6d55"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Mediumpunch.ogg'
+
+	DefensiveStance
+		name = "Defensive Stance"
+		desc = "A guarded posture that trades offense for durability and reflex."
+		buff_dur = 1.15
+		buff_off = 0.9
+		buff_def = 1.25
+		preset_vfx_icon = 'src/Icons/Ki/Shield/ShieldBlue.dmi'
+		preset_vfx_color = "#74a7ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Reflect.ogg'
+
+	BleedingEdge
+		name = "Bleeding Edge"
+		desc = "A dangerous speed style that sharpens strength and accuracy at a durability cost."
+		buff_str = 1.18
+		buff_dur = 0.9
+		buff_spd = 1.15
+		buff_off = 1.15
+		preset_vfx_icon = 'src/Icons/Effects/NewBloodSplatters/BloodSpray.dmi'
+		preset_vfx_color = "#ff304f"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact4.ogg'
+
+	BurningFist
+		name = "Burning Fist"
+		desc = "Ignites a relentless close-range rhythm that favors strength and offense."
+		buff_bp = 1.1
+		buff_str = 1.22
+		buff_off = 1.18
+		preset_vfx_icon = 'src/Icons/VFX/FlamingFists.dmi'
+		preset_vfx_color = "#ff7a31"
+		preset_vfx_sound = 'src/Sound/SoundEffects/FogoNaMao.mp3'
+
+	KiFist
+		name = "Ki Fist"
+		desc = "Channels force through unarmed strikes and reinforces their accuracy."
+		buff_str = 1.12
+		buff_for = 1.22
+		buff_off = 1.12
+		preset_vfx_icon = 'src/Icons/VFX/SaiyanPower.dmi'
+		preset_vfx_color = "#ffe75e"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Powerup.wav'
+
+	DemonicFury
+		name = "Demonic Fury"
+		desc = "A ferocious style with high power, strength and regeneration but reduced reflex."
+		buff_bp = 1.2
+		buff_str = 1.15
+		buff_def = 0.9
+		buff_reg = 1.18
+		preset_vfx_icon = 'src/Icons/Ki/Auras/BlackDemonflame.dmi'
+		preset_vfx_color = "#b04cff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/HellVoice.ogg'
+
+	AngelicGrace
+		name = "Angelic Grace"
+		desc = "A serene high-mobility style that improves speed, reflex and recovery."
+		buff_bp = 1.1
+		buff_spd = 1.2
+		buff_def = 1.2
+		buff_rec = 1.2
+		preset_vfx_icon = 'src/Icons/Effects/GivePowerEffectWhite.dmi'
+		preset_vfx_color = "#e8f6ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/WishSfx1.ogg'
+
+	Channel
+		name = "Channel"
+		desc = "Sacrifices movement to expand energy, force and recovery for sustained casting."
+		buff_ki = 1.3
+		buff_spd = 0.85
+		buff_for = 1.2
+		buff_rec = 1.2
+		preset_vfx_icon = 'src/Icons/Ki/BlastCharging/Charge1.dmi'
+		preset_vfx_color = "#70d8ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/BasicbeamCharge.ogg'
 
 obj/Buff/Ultimate
 	editable = FALSE
@@ -424,6 +594,9 @@ obj/Buff/Ultimate
 		buff_bp = 1.22
 		buff_str = 1.25
 		buff_dur = 1.15
+		preset_vfx_icon = 'src/Icons/VFX/PressurePunch.dmi'
+		preset_vfx_color = "#ffb236"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/SSJ3Powerup.ogg'
 
 	Godspeed
 		name = "Godspeed"
@@ -432,6 +605,9 @@ obj/Buff/Ultimate
 		buff_spd = 1.35
 		buff_off = 1.15
 		buff_def = 1.15
+		preset_vfx_icon = 'src/Icons/VFX/VfxElec.dmi'
+		preset_vfx_color = "#70e8ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Teleport.ogg'
 
 	FistsOfFury
 		name = "Fists of Fury"
@@ -439,6 +615,9 @@ obj/Buff/Ultimate
 		buff_bp = 1.18
 		buff_str = 1.15
 		buff_off = 1.3
+		preset_vfx_icon = 'src/Icons/VFX/FlamingFists.dmi'
+		preset_vfx_color = "#ff493c"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Strongpunch.ogg'
 
 	ArcanePower
 		name = "Arcane Power"
@@ -447,6 +626,9 @@ obj/Buff/Ultimate
 		buff_ki = 1.35
 		buff_for = 1.3
 		buff_rec = 1.15
+		preset_vfx_icon = 'src/Icons/Effects/GivePowerEffectWhite.dmi'
+		preset_vfx_color = "#c171ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Wisp.ogg'
 
 	BestialWrath
 		name = "Bestial Wrath"
@@ -454,6 +636,9 @@ obj/Buff/Ultimate
 		buff_bp = 1.28
 		buff_str = 1.2
 		buff_reg = 1.25
+		preset_vfx_icon = 'src/Icons/Ki/Auras/BlackDemonflame.dmi'
+		preset_vfx_color = "#e34537"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Roar.wav'
 
 	Bushido
 		name = "Bushido"
@@ -462,12 +647,27 @@ obj/Buff/Ultimate
 		buff_spd = 1.15
 		buff_off = 1.2
 		buff_def = 1.2
+		preset_vfx_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashArc.dmi'
+		preset_vfx_color = "#d8f3ff"
+		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg'
 
 mob/Admin4/verb/testTenkaichiBuffs(mob/character in players)
 	set name = "Test Tenkaichi Buffs"
 	set category = "Admin"
 	var/list/buff_types = list(
 		/obj/Buff/Focus,
+		/obj/Buff/Preset/MuscleForce,
+		/obj/Buff/Preset/CombatMathematics,
+		/obj/Buff/Preset/KiBlade,
+		/obj/Buff/Preset/MagicForce,
+		/obj/Buff/Preset/OffensiveStance,
+		/obj/Buff/Preset/DefensiveStance,
+		/obj/Buff/Preset/BleedingEdge,
+		/obj/Buff/Preset/BurningFist,
+		/obj/Buff/Preset/KiFist,
+		/obj/Buff/Preset/DemonicFury,
+		/obj/Buff/Preset/AngelicGrace,
+		/obj/Buff/Preset/Channel,
 		/obj/Buff/Ultimate/HighTension,
 		/obj/Buff/Ultimate/Godspeed,
 		/obj/Buff/Ultimate/FistsOfFury,
@@ -476,7 +676,7 @@ mob/Admin4/verb/testTenkaichiBuffs(mob/character in players)
 		/obj/Buff/Ultimate/Bushido)
 	for(var/buff_type in buff_types)
 		if(!(locate(buff_type) in character)) character.contents += new buff_type(character)
-	src << "[character] received Focus and every Ultimate Buff for testing."
+	src << "[character] received every imported Tenkaichi preset and Ultimate Buff for testing."
 
 mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin
 	set name = ".buff_point"

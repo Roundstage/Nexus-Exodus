@@ -311,6 +311,7 @@ mob/proc/gainAngerFromDamage(applied_damage)
 	if(anger_range <= 0) return 0
 	var/before = anger
 	var/gain_mult = 1 + getMilestoneRank("controlled_fury") * 0.15
+	if(getMilestoneRank("salt_of_the_earth")) gain_mult *= 2
 	anger += applied_damage * (anger_range / 100) * gain_mult
 	anger = Clamp(anger, 100, max_anger)
 	if(anger > before)
@@ -1060,7 +1061,7 @@ mob/proc/Peebag()
 				if(Pee.icon_state != "Hit")
 					Pee.icon_state = "Hit"
 					spawn(2) if(Pee) Pee.icon_state = ""
-			Peebag_Gains(delay = peebagDelay)
+			Peebag_Gains(delay = peebagDelay, equipment_multiplier = Pee.training_gain_multiplier, magic_equipment = Pee.magic_training_equipment)
 			return 1
 
 

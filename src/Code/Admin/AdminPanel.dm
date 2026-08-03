@@ -123,7 +123,7 @@ datum/NexusAdminPanel
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=bp_mod'><b>BP Modifier</b><span>Set the character's permanent BP growth modifier.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=energy'><b>Base Energy</b><span>Set base Energy while preserving the character's Efficiency multiplier.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=resources'><b>Resources</b><span>Add construction and technology resources.</span></a>
-		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Skill Points</b><span>Add up to 10,000 skill points at a time.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Progression XP</b><span>Add up to 10,000 spendable tree XP at a time.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=milestone_points'><b>Milestone Points</b><span>Add spendable perk points and update the lifetime total.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=technology_xp'><b>Technology XP</b><span>Advance Technology Level and refresh available unlocks.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=mining_xp'><b>Mining XP</b><span>Advance the Tenkaichi mining profession.</span></a>
@@ -136,10 +136,10 @@ datum/NexusAdminPanel
 		var/amount
 		switch(reward_type)
 			if("skill_points")
-				amount = input(owner, "How many Skill Points should [target] receive?", "Reward Player", 1) as null|num
+				amount = input(owner, "How much Progression XP should [target] receive?", "Reward Player", 1) as null|num
 				if(isnull(amount)) return
 				amount = Clamp(round(amount), 0, 10000)
-				target.Experience += amount
+				target.gainProgressionExperience(amount, "admin reward", announce = TRUE)
 			if("resources")
 				amount = input(owner, "How many Resources should [target] receive?", "Reward Player", 1000) as null|num
 				if(isnull(amount) || amount < 0) return

@@ -445,6 +445,7 @@ mob/verb
 		for(var/mob/M in players) if(M.OOCon)
 			var/ooc_message = "<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'><b>[html_encode(ooc_name)]:</b> <span style='color:white'>[html_encode(msg)]</span></span>"
 			M.receiveNexusChatMessage(ooc_message, "ooc", key)
+		awardProgressionFromCommunication(msg, "global chat", 0.25)
 
 	OOC(msg as text)
 		//set category = "Other"
@@ -471,7 +472,8 @@ mob/verb
 					m.receiveNexusChatMessage(t, "ooc", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
-		usr.End_Say()
+			awardProgressionFromCommunication(msg, "local chat", 0.35)
+			usr.End_Say()
 
 	Whisper(msg as text)
 		//set category="Other"
@@ -483,8 +485,9 @@ mob/verb
 			for(var/mob/M in Say_Recipients())
 				M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
 				if(getdist(src,M)<=2)
-					var/t="<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'>*[html_encode(name)] whispers: [html_encode(msg)]</span>"
+					var/t = formatNexusSpokenMessage(M, msg, "whispers")
 					M.receiveNexusChatMessage(t, "ic", key)
+			awardProgressionFromCommunication(msg, "whisper", 0.8)
 		usr.End_Say()
 
 	ToggleNekoCollar()
@@ -503,17 +506,18 @@ mob/verb
 			for(var/obj/items/Clothes/Neko_Collar/neko in item_list)
 				if(neko.suffix == "Equipped" && neko_collar_adds_tilde)
 					msg = "[msg]～"
-			showNexusSayText(msg)
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[html_encode(name)]: [html_encode(msg)]</span>"
+			showNexusSayText(getPublicSpokenLanguageText(msg))
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
 						if(m.stop_messages.len > 5) m.stop_messages.len = 5
 						m.stop_messages.Insert(1, key)
 						m.stop_messages[key] = world.time
+					var/t = formatNexusSpokenMessage(m, msg)
 					m.receiveNexusChatMessage(t, "ic", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
+			awardProgressionFromCommunication(msg, "say", 1)
 		usr.End_Say()
 
 	Think(msg as text|null)
@@ -534,6 +538,7 @@ mob/verb
 					m.receiveNexusChatMessage(t, "ic", key)
 					if(drone_module) m.last_drone_msg = msg
 			if(client) troll_respond(msg)
+			awardProgressionFromCommunication(msg, "thought", 0.75)
 		usr.End_Say()
 
 	SayCooldown()

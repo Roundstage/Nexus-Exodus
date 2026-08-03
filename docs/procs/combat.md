@@ -1854,7 +1854,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### mob/proc/TakeDamage
 - Signature: `mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker, attack_name)`
 - Inputs: raw damage, stun modifier, knockback metadata, optional attacker, and attack label.
-- Purpose: Apply racial/stun modifiers and Health or shield damage, then publish the actual applied damage to the combat feed when attribution is available.
+- Purpose: Apply milestone, arcane, racial, stun, and shield modifiers, then publish the actual Health damage to the combat feed when attribution is available.
 - Returns: applied Health damage, or zero when no Health was removed.
 - Side effects: records lethal-combat pressure for both fighters when the attacker uses Lethal intent, then updates anger, damage indicators, overhead vitals, and batched combat logs.
 
@@ -4377,3 +4377,16 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 - Purpose: Return whether Valid Warp Target.
 - Returns: boolean flag.
 - Side effects: none expected.
+
+### Progression preset buffs and presentation
+
+- Combat Foundation is the default combat-progression branch. Its universal curriculum moves from ki regulation/basic attacks into aerial movement, defense and approach tools, then Zanzoken, Custom Buff and Beam, with Sokidan as the guided-energy capstone. Dash Attack is foundational mobility rather than an Unarmed capstone; the strongest dedicated Unarmed attacks remain at tier five.
+- `obj/Buff/Preset` defines fixed, non-editable buffs. Combat Mathematics is module-only and Bleeding Edge is Milestone-only; neither is registered as a Combat-tree purchase.
+- Focus and the six mutually exclusive Ultimate Buffs remain compatible with the same `obj/Buff` lifecycle. All six Ultimate Buffs are tier-five Combat -> Buffs capstones reached through distinct preset-buff paths; they are no longer Milestone talents.
+- `mob/proc/ProgressionBuffBurst(buff, enabling)` supplies a colored activation/deactivation burst, floating technique label, and sound chosen by the buff preset without introducing a parallel combat state.
+- Presets use bounded combinations of the existing buff multipliers and continue through `Buff_Enable()`/`Buff_Disable()`, so drain, cooldown, hotbar, and save behavior remain authoritative.
+- RPT combat Milestones are a separate talent layer: Bleeding Edge and Thundering Blows grant toggleable weapon techniques, Fire Fist reuses the native Energy-draining stance, and Fire Lord/Smolder/This Drill modify the canonical burn and scaled-damage paths without becoming Ultimate Buffs.
+- Named waves use Combat -> Beam, while Rock Throw/Rock Slide/Rock Tomb use Combat -> Physical. Echoing Slash and Sky Break belong to Combat -> Weapon; their projectiles call `getWeaponCombatDamage()` so equipped-weapon quality and weapon Milestones affect their damage.
+- Genki Dama and Kaioken are tier-ten purchases. Genki Dama's full-charge impact plus explosion is the highest bounded player-projectile damage budget.
+- Temporary RPT magic uses the same authoritative paths: Empowered Attacks is applied in `TakeDamage()` through the resolved attacker, Empowered Defenses and Adamantine Skeleton reduce incoming damage there, and Accelerate multiplies the final `Speed_delay_mult()` result.
+- Frost Nova and Rejuvenate filter targets through Nexus combat state and nearby-player rules; projectile spells use cached Nexus blasts rather than maintaining an independent projectile loop.
