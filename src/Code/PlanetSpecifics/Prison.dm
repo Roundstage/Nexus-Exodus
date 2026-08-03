@@ -144,7 +144,7 @@ mob/Bounty_Drone
 					[deployer]."
 					if(deployer==src) t+=" This open bounty can be claimed by anyone."
 					if(deployer.client) deployer.GiveFeat("Capture Bounty")
-					player_view(bc,15) << t
+					player_view(15,bc) << t
 				Target.Imprison()
 			sleep(30)
 			player_view(15,src)<<"[src]: Self destructing..."

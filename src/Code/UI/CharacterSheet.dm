@@ -7,6 +7,7 @@ proc/nexusCharacterRow(label, value, detail = "", accent_color = "#64c9ff")
 	return "<div class='stat-row' style='border-left-color:[accent_color]'><span>[html_encode(label)]</span><b>[html_encode("[value]")]</b><small>[html_encode("[detail]")]</small></div>"
 
 client/var/tmp/datum/NexusCharacterSheetWindow/nexus_character_sheet
+var/nexus_character_signature_portrait = "nexus_character_signature.png"
 
 mob/proc/buildCharacterSkillCards()
 	var/list/skill_names = list()
@@ -132,10 +133,10 @@ datum/NexusCharacterSheetWindow
 		var/numeric_scroll = text2num("[scroll_y]")
 		if(isnum(numeric_scroll)) last_scroll_y = round(Clamp(numeric_scroll, 0, 100000))
 
-	proc/getRenderSignature()
+	proc/getRenderSignature(signature_html)
 		var/appearance_signature = "[owner.icon]|[owner.icon_state]|[owner.dir]|[owner.overlays]|[owner.underlays]|[owner.color]|[owner.alpha]|[owner.transform]"
-		var/html_signature = owner.buildCharacterSheetHtml("nexus_character_signature.png", src, 0)
-		return md5("[appearance_signature]|[html_signature]")
+		if(isnull(signature_html)) signature_html = owner.buildCharacterSheetHtml(nexus_character_signature_portrait, src, nexus_live_browser_scroll_placeholder)
+		return md5("[appearance_signature]|[signature_html]")
 
 	proc/startLiveRefresh()
 		set waitfor = FALSE
@@ -153,14 +154,17 @@ datum/NexusCharacterSheetWindow
 		if(!hasLiveOwner())
 			del(src)
 			return
-		var/render_signature = getRenderSignature()
+		var/rendered_html = owner.buildCharacterSheetHtml(nexus_character_signature_portrait, src, nexus_live_browser_scroll_placeholder)
+		var/render_signature = getRenderSignature(rendered_html)
 		if(!force_refresh && render_signature == last_render_signature) return
 		last_render_signature = render_signature
 		portrait_index++
 		var/portrait_resource = "nexus_character_[ckey(owner.key)]_[portrait_index].png"
 		var/icon/portrait_icon = icon(owner.icon, owner.icon_state, SOUTH)
 		owner << browse_rsc(portrait_icon, portrait_resource)
-		owner << browse(owner.buildCharacterSheetHtml(portrait_resource, src, last_scroll_y), "window=NexusCharacter;size=1180x760;can_resize=true;can_close=true")
+		rendered_html = replacetext(rendered_html, nexus_character_signature_portrait, portrait_resource)
+		rendered_html = replacetext(rendered_html, nexus_live_browser_scroll_placeholder, "[last_scroll_y]")
+		owner << browse(rendered_html, "window=NexusCharacter;size=1180x760;can_resize=true;can_close=true")
 		if(force_refresh) last_browser_heartbeat = world.time
 		startLiveRefresh()
 

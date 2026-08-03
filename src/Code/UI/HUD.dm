@@ -417,6 +417,7 @@ mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/overhead_health_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Energy/overhead_energy_hud
 mob/var/tmp/obj/NexusHud/OverheadHealthBar/Willpower/overhead_willpower_hud
+mob/var/tmp/nexus_last_overhead_vitals_signature
 client/var/tmp/obj/NexusHud/VitalsPanel/main_vitals_hud
 
 mob/var
@@ -519,11 +520,15 @@ mob/proc/setVitalsHudVisibility(visible)
 mob/proc/updateOverheadHealthHud()
 	if(!shouldShowOverheadHealthHud()) return
 	if(!overhead_health_hud || !overhead_energy_hud || !overhead_willpower_hud) initializeVitalsHud()
+	var/vitals_signature = "[hudPercentage(Health)]|[hudPercentage(Ki, max_ki)]|[hudPercentage(willpower, getMaxWillpower())]|[getNexusOverheadVitalsBasePixelX(src)]|[getNexusOverheadVitalsBasePixelY(src)]"
+	if(vitals_signature == nexus_last_overhead_vitals_signature) return
+	nexus_last_overhead_vitals_signature = vitals_signature
 	if(overhead_health_hud) overhead_health_hud.update(src)
 	if(overhead_energy_hud) overhead_energy_hud.update(src)
 	if(overhead_willpower_hud) overhead_willpower_hud.update(src)
 
 mob/proc/removeVitalsHud()
+	nexus_last_overhead_vitals_signature = null
 	if(overhead_health_hud)
 		vis_contents -= overhead_health_hud
 		del(overhead_health_hud)

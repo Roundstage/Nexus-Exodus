@@ -10,13 +10,27 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 
 ## Proc Reference
 
+### proc/getMapSavePath(segment = 1)
+- Purpose: Return the canonical `data/MapN` path for a validated segment number.
+
+### proc/writeMapSaveSegment(...)
+- Purpose: Write one aligned set of turf properties to a segmented map savefile.
+
+### proc/writeMapSaveManifest(segment_count)
+- Purpose: Commit the number of map segments written by the latest completed save.
+
+### proc/getMapSaveSegmentCount()
+- Purpose: Read the committed segment count, or zero for legacy saves without a manifest.
+
 ### proc/mapSave()
 - Purpose: Persist player-built turfs into segmented savefiles under `data/Map*`.
 - Side effects: writes `Types`, `Healths`, `Builders`, `Xs`, `Ys`, `Zs`, `FlyOver` lists to disk.
+- Notes: records the committed segment count in `data/MapManifest` so stale files from a previously larger save are ignored.
 
 ### proc/mapLoad()
 - Purpose: Load saved player-built turfs from `data/Map*` into the live world.
 - Side effects: instantiates turfs, rebuilds `Turfs` and `built_turfs`, removes default map decor.
+- Compatibility: honors `data/MapManifest` when present and falls back to scanning legacy segmented saves when absent.
 
 ### proc/mapLoadExternal(savefile/f)
 - Purpose: Load an external map savefile on top of the current world.
@@ -42,6 +56,26 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 ### proc/addBuilds()
 - Purpose: Populate the global `Builds` list with buildable turf/object templates.
 - Side effects: instantiates temporary objects to capture icon/name data.
+- Indexing: rebuilds category buckets and a prefix index used by searchable build interfaces.
+
+### proc/getCatalogSearchTokens(search_text)
+- Purpose: Lowercase, split, and deduplicate searchable tokens of at least two characters.
+
+### proc/registerCatalogSearchEntry(search_index, entry, search_text)
+- Purpose: Add an entry to every normalized token-prefix bucket used by build and technology search.
+
+### proc/searchCatalogIndex(search_index, query, category_entries, maximum_results = 100)
+- Purpose: Intersect query-prefix buckets, apply the optional allowed/category set, and enforce a result limit.
+
+### proc/rebuildBuildCatalogIndexes()
+- Purpose: Rebuild category and prefix indexes after the build templates are created.
+
+### proc/getBuildCatalogForCategory(build_category)
+- Purpose: Return the prebuilt recipe bucket for one build category.
+
+### proc/searchBuildCatalog(query, build_category = null, maximum_results = 100)
+- Purpose: Return build recipes matching all normalized query prefixes, optionally restricted to one category.
+- Performance: intersects prebuilt prefix buckets instead of scanning every recipe for each query.
 
 ### obj/Build/Click()
 - Purpose: Select a build template or place it at the player location.

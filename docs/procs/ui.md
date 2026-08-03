@@ -36,7 +36,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
 - `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain six player shortcuts and add World plus Admin only when the owner has an active admin level. CMD lives with chat instead of consuming a navbar slot.
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
-- `getNexusLiveBrowserScript()` supplies the owner-authenticated heartbeat and scroll-position handoff shared by live browser windows.
+- `getNexusLiveBrowserScript()` supplies the owner-authenticated one-second heartbeat and scroll-position handoff shared by live browser windows.
 - `datum/NexusPlayerMenu` provides rustic Inventory, Skills, Sense, and admin-only World surfaces. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
 - `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
 - `showNexusPlayerMenu(section)` opens the requested player-menu section from its pixel shortcut.
@@ -76,7 +76,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 ### src/Code/UI/CharacterSheet.dm
 
 - `showCharacterSheet()` opens a client-owned `datum/NexusCharacterSheetWindow`, exports the current sprite portrait, and starts its bounded live lifecycle.
-- `datum/NexusCharacterSheetWindow` detects character or appearance changes once per second, refreshes only changed pages, preserves scroll position, and stops when the browser, character, or client closes.
+- `datum/NexusCharacterSheetWindow` detects character or appearance changes once per second, hashes and sends one placeholder-backed HTML render, preserves scroll position, and stops when the browser, character, or client closes.
 - `buildCharacterSheetHtml(portrait_resource, topic_source, restore_scroll_y)` renders identity, equipment, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Milestones, Lethal pressure, and learned skills with live-window controls when a controller is supplied.
 - Admins receive a direct link from Character to the structured inspector.
 

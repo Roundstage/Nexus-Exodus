@@ -938,17 +938,17 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Side effects: see implementation.
 
 #### proc/ResetVars
-- Signature: `proc/ResetVars(mob/m)`
-- Inputs: mob/m
-- Purpose: Handle reset vars.
+- Signature: `proc/ResetVars(atom/movable/m)`
+- Inputs: atom/movable/m
+- Purpose: Restore saved variables and common appearance state for reusable mobs and objects.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: resets appearance and all saved variables except `key` to their initial values.
 
 #### proc/Get_cached_body
 - Signature: `proc/Get_cached_body()`
 - Inputs: None
-- Purpose: Return cached body.
-- Returns: computed value (see implementation).
+- Purpose: Pop and reset the most recently cached body in O(1), or allocate when the bounded pool is empty.
+- Returns: reusable body mob.
 - Side effects: none expected.
 
 #### mob/proc/Leave_Body

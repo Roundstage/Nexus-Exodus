@@ -3,14 +3,17 @@ var/list/nexus_shortcut_button_icon_cache = list()
 var/list/nexus_shortcut_bar_icon_cache = list()
 
 var/nexus_live_browser_refresh_ticks = 10
+var/nexus_live_browser_heartbeat_milliseconds = 1000
+var/nexus_live_browser_scroll_placeholder = "NEXUS_SCROLL_POSITION"
 
 proc/getNexusLiveBrowserScript(datum/handler, restore_scroll_y = 0)
-	restore_scroll_y = round(Clamp(text2num("[restore_scroll_y]"), 0, 100000))
+	if("[restore_scroll_y]" != nexus_live_browser_scroll_placeholder)
+		restore_scroll_y = round(Clamp(text2num("[restore_scroll_y]"), 0, 100000))
 	return {"<script>
 	var nexusLiveHandler='\ref[handler]';
 	function nexusLiveTopic(data){data.src=nexusLiveHandler;if(window.BYOND&&BYOND.topic){BYOND.topic(data);return;}var query='';for(var key in data){if(query)query+='&';query+=encodeURIComponent(key)+'='+encodeURIComponent(data\[key]);}window.location.href='byond://?'+query;}
 	function nexusLiveScrollY(){return Math.max(document.documentElement?document.documentElement.scrollTop:0,document.body?document.body.scrollTop:0,window.pageYOffset||0);}
-	function nexusStartLiveUpdates(){window.setTimeout(function(){window.scrollTo(0,[restore_scroll_y]);nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});window.setInterval(function(){nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});},500);},0);}
+	function nexusStartLiveUpdates(){window.setTimeout(function(){window.scrollTo(0,[restore_scroll_y]);nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});window.setInterval(function(){nexusLiveTopic({action:'heartbeat',scroll_y:nexusLiveScrollY()});},[nexus_live_browser_heartbeat_milliseconds]);},0);}
 	if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',nexusStartLiveUpdates);else nexusStartLiveUpdates();
 	</script>"}
 

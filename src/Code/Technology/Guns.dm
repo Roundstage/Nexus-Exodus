@@ -8,8 +8,10 @@ proc/Turret_loop()
 	set waitfor=0
 	while(1)
 		for(var/obj/Turret/t in Turrets)
-			for(var/mob/m in player_view(t.Range,t))
-				t.Turret_Target()
+			if(!t || !t.z || !t.Password) continue
+			var/area/turret_area = t.get_area()
+			if(turret_area && turret_area.mob_list.len) t.Turret_Target()
+			else t.Target = null
 		sleep(15)
 
 var/Gun_Power=1
@@ -32,6 +34,8 @@ obj/Turret
 	var/Turret_Refire=20
 	var/Turret_Offense=10000
 	var/Turret_Force=1000
+	var/tmp/target_scan_running = FALSE
+	var/tmp/turret_fire_loop_running = FALSE
 	takes_gradual_damage=1
 	Dead_Zone_Immune=1
 
@@ -152,8 +156,12 @@ obj/Turret
 	//this new one is just changed to (hopefully) target players in pods too instead of ignore them
 	proc/Turret_Target()
 		set waitfor=0
+		if(target_scan_running) return
+		target_scan_running = TRUE
 		sleep(1)
-		if(!Password) return
+		if(!Password)
+			target_scan_running = FALSE
+			return
 		var/list/targetable_mobs=new
 		var/area/a = get_area()
 		if(a) for(var/mob/m in a.mob_list)
@@ -161,32 +169,33 @@ obj/Turret
 			if(baseLoc && !m.KO && getdist(src,baseLoc) <= Range && viewable(baseLoc,src))
 				var/mob/targ = m
 				if(m.Ship) targ = m.Ship
-				targetable_mobs += targ
+				var/is_authorized = FALSE
 				for(var/obj/items/Door_Pass/d in m.item_list) if(d.Password==Password)
-					targetable_mobs -= targ
-					Target=null
-					return
-				if(m.drone_module && m.drone_module.Password==Password) targetable_mobs -= targ
+					is_authorized = TRUE
+					break
+				if(m.drone_module && m.drone_module.Password==Password) is_authorized = TRUE
 
 				var/list/league_ids=m.League_turret_IDs()
-				if(Password in league_ids)
-					targetable_mobs -= targ
-					Target=null
-					return
+				if(Password in league_ids) is_authorized = TRUE
+				if(is_authorized) continue
+				if(!(targ in targetable_mobs)) targetable_mobs += targ
 
-		if(!Target) Turret_Fire_Loop()
-		Target=null
-		if(targetable_mobs.len) Target=pick(targetable_mobs)
+		Target = targetable_mobs.len ? pick(targetable_mobs) : null
+		target_scan_running = FALSE
+		if(Target) Turret_Fire_Loop()
 
 	proc/Turret_Fire_Loop()
 		set waitfor=0
+		if(turret_fire_loop_running) return
+		turret_fire_loop_running = TRUE
 		sleep(1)
 		while(src && Target)
 			if(getdist(src,Target) <= Range) Turret_Fire(Target)
 			else
 				Target=null
-				return
+				break
 			sleep(Turret_Refire)
+		turret_fire_loop_running = FALSE
 
 	var/tmp/Firing
 
