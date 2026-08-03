@@ -10,7 +10,7 @@ mob/proc/process_player_action_cycle(run_background_tasks = FALSE)
 			if(energy) energy.cycle_energy()
 
 	if(!run_background_tasks) return
-	if(islist(unwritten_chatlogs) && unwritten_chatlogs.len) Write_chatlogs()
+	if(islist(unwritten_chatlogs) && length(unwritten_chatlogs)) Write_chatlogs()
 	syncTechnologyProgression(silent = FALSE)
 	syncMagicProgression(silent = FALSE)
 	syncMilestoneProgression(silent = FALSE)
