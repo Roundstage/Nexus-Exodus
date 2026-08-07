@@ -1,7 +1,5 @@
 # Nexus Exodus
 
-- I'm going to rework this entire code and make it great again.
-
 Nexus Exodus is a BYOND-based sandbox with PVP and RP features.
 
 This game has a lot of features. Transformations (such as Super Saiyan), customisation (stat builds), construction (the sandbox part comes here), and a lot of smaller things. 
