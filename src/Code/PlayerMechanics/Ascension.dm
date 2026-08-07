@@ -6,22 +6,28 @@ var
 mob/var
 	has_ss_full_power
 
-mob/proc/ssj_power()
-	var/ssj1power = ssjadd
-	//if(ssjdrain >= 300 && !is_ussj) ssj1power*=1.4 //old way of mastered ss1 boost, flawed
+mob/proc/getSsjTierOneBasePowerAdd()
+	var/ssj1_power = ssjadd
 	if(base_bp > 10000000)
-		ssj1power -= (base_bp - 10000000) * 0.67
-	if(ssj1power < 0) ssj1power = 0
+		ssj1_power -= (base_bp - 10000000) * 0.67
+	return max(ssj1_power, 0)
+
+mob/proc/getSsjFullPowerAdd(ultra_super_saiyan = FALSE)
+	var/full_power_add = 10000000
+	if(ultra_super_saiyan) full_power_add += 5000000
+	if(base_bp > 20000000)
+		full_power_add -= (base_bp - 20000000) * 0.67
+	return max(full_power_add, 0)
+
+mob/proc/ssj_power()
+	var/ssj1power = getSsjTierOneBasePowerAdd()
+	//if(ssjdrain >= 300 && !is_ussj) ssj1power*=1.4 //old way of mastered ss1 boost, flawed
 
 	//mastered ss special boost
 	var/mss1_power = 0
 	//i enabled this boost to be for ussj too so that ussj and ssfp will be completely equal when all is said and done. no more individual ussj bp boost, just this
 	if(is_ussj || (ssjdrain >= max_ss_mastery && !is_ussj && has_ss_full_power && Class != "Legendary Saiyan"))
-		mss1_power = 10000000
-		if(is_ussj) mss1_power += 5000000 //i decided ussj needs just a little more of an edge to be "equal" because of how slow they power up
-		if(base_bp > 20000000)
-			mss1_power -= (base_bp - 20000000) * 0.67
-		if(mss1_power < 0) mss1_power = 0
+		mss1_power = getSsjFullPowerAdd(is_ussj) //USSJ keeps its small compensation for its slower power-up.
 
 	var/ssj2power=ssj2add
 	if(base_bp > 100000000)
@@ -483,6 +489,9 @@ mob/proc/currentSsjFormMastered()
 	return FALSE
 
 mob/proc/Revert()
+	if(heran_transformed)
+		revertHeranTransformation()
+		return
 	SSj_Blue_Revert()
 	SSG_Revert()
 	Great_Ape_revert()

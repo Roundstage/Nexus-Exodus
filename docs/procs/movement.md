@@ -1,7 +1,7 @@
 # Movement
 
 ## Overview
-Movement input, collision, environmental traversal, and short-range warp behavior. `CanInputMove()` treats RP Mode as an absolute player movement lock. Instant Transmission now has a directional eight-tile warp path that reuses Zanzoken placement and visuals while consuming Energy rather than Stamina.
+Movement input, collision, environmental traversal, and short-range warp behavior. `CanInputMove()` treats RP Mode as an absolute player movement lock. Instant Transmission now has a directional eight-tile warp path that reuses Zanzoken placement and visuals while consuming Energy rather than Stamina. Vector players use centered 24-by-24 physical bounds inside their unchanged 32-pixel sprite, providing four pixels of wall and doorway clearance without overriding custom-sized actors. Vector input records requested and actual pixel displacement so a truthy partial `Move()` is still recognized as a collision. `tryNexusVectorMoveWithGapNudge()` probes the full requested cardinal distance before moving, then uses a stable one-pixel perpendicular correction to align characters with nearby gaps and doorways without becoming trapped by a high-speed partial step; diagonal input falls back to its unobstructed axis for wall sliding. The gap-search behavior is adapted with credit from [Woo/Tyruswoo's Gap-Nudge Movement v3.3](https://secure.byond.com/developer/Woo/GapNudgeMovement).
 
 ## Files
 - `src/Code/Application/Movement/MovementAlignment.dm`
@@ -86,7 +86,7 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 #### mob/proc/MovementBump
 - Signature: `mob/proc/MovementBump(atom/A)`
 - Inputs: atom/A
-- Purpose: Handle bump logic.
+- Purpose: Record the current collision target and apply knockback destruction checks for objects.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -112,6 +112,27 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Side effects: see implementation.
 
 ### src/Code/Application/Movement/MovementInput.dm
+
+#### mob/proc/configureNexusVectorCollisionBounds
+- Signature: `configureNexusVectorCollisionBounds()`
+- Purpose: Center the standard player collider at 24 by 24 pixels while preserving custom bounds.
+- Returns: none (implicit).
+- Side effects: updates `bound_x`, `bound_y`, `bound_width`, and `bound_height` for default-sized vector players.
+
+#### mob/proc/nexusVectorDensityCount
+- Signature: `nexusVectorDensityCount(fraction_x, fraction_y, fraction_width = 0, fraction_height = 0, offset_x = 0, offset_y = 0, extra_width = 0, extra_height = 0)`
+- Purpose: Count relevant dense atoms in an offset portion of the mob's bounds without attempting speculative movement.
+- Returns: dense atom count, or `-1` at a map edge.
+
+#### mob/proc/findNexusGapNudgeDirection
+- Signature: `findNexusGapNudgeDirection(move_direction, lookahead_pixels = 1, list/candidates)`
+- Purpose: Select and retain a bounded perpendicular direction toward the only open half of the requested path, reusing a preflight candidate list when available.
+- Returns: a cardinal nudge direction or null.
+
+#### mob/proc/tryNexusVectorMoveWithGapNudge
+- Signature: `tryNexusVectorMoveWithGapNudge(move_direction, movement_pixels)`
+- Purpose: Perform a vector step, distinguish full movement from partial collision, and resolve nearby gaps or diagonal wall slides.
+- Returns: a truthy value when either requested or corrective movement occurred.
 
 #### mob/proc/GetInputMoveDelay
 - Signature: `GetInputMoveDelay(d = NORTH, raw_mult_only)`

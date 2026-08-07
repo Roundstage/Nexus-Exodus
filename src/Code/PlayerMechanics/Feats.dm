@@ -36,7 +36,7 @@ FEAT IDEAS THAT REQUIRE EXPLANATION:
 */
 
 var
-	feats_on = 1
+	feats_on = NEXUS_DEFAULT_FEATS_ENABLED
 	list/master_feats = list(\
 		"Win Tournament" = list("boost" = 0.005, "stacks" = 0, "max stacks" = 3, "type" = "BP cap"),\
 		"Win Tournament Match" = list("boost" = 0.0033, "stacks" = 0, "max stacks" = 2, "type" = "BP cap"),\

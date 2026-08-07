@@ -88,6 +88,12 @@ atom/movable/var/tmp
 	vector_fraction_x=0
 	vector_fraction_y=0
 	vector_speed=0
+	last_vector_move_requested_x=0
+	last_vector_move_requested_y=0
+	last_vector_move_actual_x=0
+	last_vector_move_actual_y=0
+	last_vector_move_attempted=0
+	last_vector_move_complete=1
 
 atom/movable/proc/MoveByAngle(ang=0)
 	var
@@ -120,6 +126,12 @@ proc/vector_step(atom/movable/a, ang = 0, step_speed)
 	if(!a) return
 	if(!step_speed) step_speed = a.vector_speed
 	if(!step_speed) return
+	a.last_vector_move_requested_x = 0
+	a.last_vector_move_requested_y = 0
+	a.last_vector_move_actual_x = 0
+	a.last_vector_move_actual_y = 0
+	a.last_vector_move_attempted = 0
+	a.last_vector_move_complete = 1
 	var/dx = step_speed * sin(ang)
 	var/dy = step_speed * cos(ang)
 
@@ -141,7 +153,18 @@ proc/vector_step(atom/movable/a, ang = 0, step_speed)
 		a.vector_fraction_x -= xx
 		a.vector_fraction_y -= yy
 		if(xx || yy)
+			a.last_vector_move_attempted = 1
+			a.last_vector_move_requested_x += xx
+			a.last_vector_move_requested_y += yy
+			var/start_x = a.Px(0)
+			var/start_y = a.Py(0)
 			moved = a.Move(a.loc, a.dir, a.step_x + xx, a.step_y + yy)
+			var/actual_x = round(a.Px(0) - start_x)
+			var/actual_y = round(a.Py(0) - start_y)
+			a.last_vector_move_actual_x += actual_x
+			a.last_vector_move_actual_y += actual_y
+			if(actual_x != xx || actual_y != yy)
+				a.last_vector_move_complete = 0
 			if(!moved) return moved
 	return moved
 

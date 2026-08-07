@@ -209,16 +209,28 @@ obj/items/TenkaichiUpgradeKit
 			if(!weapon.master_blacksmith_quality) options += weapon
 		for(var/obj/items/Armor/Forged/armor in usr.item_list)
 			if(!armor.master_blacksmith_quality) options += armor
+		for(var/obj/items/Gloves/Forged/gloves in usr.item_list)
+			if(!gloves.master_blacksmith_quality) options += gloves
+		for(var/obj/items/Mask/Forged/mask in usr.item_list)
+			if(!mask.master_blacksmith_quality) options += mask
 		var/obj/items/choice = input(usr, "Upgrade which forged item?", name) as null|obj in options
 		if(!choice || choice.loc != usr) return
 		if(istype(choice, /obj/items/Sword/Forged))
 			var/obj/items/Sword/Forged/weapon = choice
 			weapon.master_blacksmith_quality = TRUE
 			weapon.refreshForgedWeapon()
-		else
+		else if(istype(choice, /obj/items/Armor/Forged))
 			var/obj/items/Armor/Forged/armor = choice
 			armor.master_blacksmith_quality = TRUE
 			armor.refreshForgedArmor()
+		else if(istype(choice, /obj/items/Gloves/Forged))
+			var/obj/items/Gloves/Forged/gloves = choice
+			gloves.master_blacksmith_quality = TRUE
+			gloves.refreshForgedGloves()
+		else
+			var/obj/items/Mask/Forged/mask = choice
+			mask.master_blacksmith_quality = TRUE
+			mask.refreshForgedMask()
 		player_view(10, usr) << "[usr] installs a precision upgrade in [choice]."
 		del(src)
 

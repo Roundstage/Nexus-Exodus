@@ -4,8 +4,9 @@ var/mob/max_speed_mob
 var/speedDelayMultMod = 2.3
 
 mob/proc/Speed_delay_mult(severity = 1)
-	var/scalingFactor = (Spd/150) * GLOBAL_MELEE_SPEED_OFFSET //tuning factor
-	var/ratio = 0.1 + (scalingFactor * Spd / (510 + Spd)) * 5.4
+	var/effective_speed = getMilestoneEffectiveSpeed()
+	var/scalingFactor = (effective_speed/150) * GLOBAL_MELEE_SPEED_OFFSET //tuning factor
+	var/ratio = 0.1 + (scalingFactor * effective_speed / (510 + effective_speed)) * 5.4
 
 	var/mod = 1 //1 = perfectly average
 	var/minMod = 0.25 //was 0.25

@@ -73,13 +73,14 @@ datum/NexusCharacterSelect
 			var/actions = is_occupied ? "<a class='play' href='byond://?src=\ref[src]&action=play&slot=[slot]'>ENTER WORLD</a><a class='delete' href='byond://?src=\ref[src]&action=delete&slot=[slot]'>DELETE</a>" : "<a class='create' href='byond://?src=\ref[src]&action=create&slot=[slot]'>CREATE CHARACTER</a>"
 			slot_html += "<section class='slot [slot_state]'><div class='slot-number'>[slot]</div><div class='slot-copy'><small>CHARACTER SLOT [slot]</small><h2>[html_encode(slot_info["name"])]</h2><p>[html_encode(slot_info["race"])]</p><em>[last_used_text]</em></div><div class='slot-actions'>[actions]</div></section>"
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Exodus</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:auto}.gate{min-height:100%;padding:22px;background:#17130f}.frame{max-width:920px;min-height:560px;margin:0 auto;border:4px ridge #9f7945;background:#211910;outline:3px solid #090604}.crest{text-align:center;padding:18px 12px;border-bottom:3px double #a27a43;background:#302216}.crest h1{margin:0;font-size:29px;letter-spacing:4px}.crest p{margin:6px 0 0;color:#bda477}.account{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #74552f;background:#1a140e;color:#c8ae7d}.slots{display:grid;gap:10px;padding:16px}.slot{position:relative;min-height:116px;display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:12px;padding:12px;border:3px ridge #775a34;background:#2a2016}.slot.empty{filter:saturate(.65)}.slot-number{width:64px;height:64px;padding-top:15px;border:3px double #b58b4d;background:#16110c;color:#e6c37e;text-align:center;font:bold 26px 'Courier New',monospace}.slot-copy small{color:#a88a5d;letter-spacing:2px}.slot-copy h2{margin:4px 0;padding:0;background:none!important;border:0!important;font-size:21px}.slot-copy p{margin:0 0 7px;color:#d0bb91}.slot-copy em{font-size:10px;color:#8f7958;font-style:normal}.slot-actions{display:flex;gap:7px;align-items:center}.slot-actions a{display:block;min-width:120px;padding:10px 12px;text-align:center;text-decoration:none}.play,.create{border:3px outset #b58a4b;background:#51391e;color:#f4d99b}.delete{min-width:70px!important;border:3px outset #844b3e;background:#3a211b;color:#e8a89b}.footnote{padding:10px 16px;border-top:1px solid #735530;color:#9f8965;text-align:center;font-size:10px}@media(max-width:700px){.gate{padding:6px}.slot{grid-template-columns:60px 1fr}.slot-number{width:50px;height:50px;padding-top:11px}.slot-actions{grid-column:1/3;justify-content:flex-end}.crest h1{font-size:22px}}
-		</style></head><body><main class='gate'><div class='frame'><header class='crest'><h1>NEXUS EXODUS</h1><p>Choose the soul that will cross the Nexus</p></header><div class='account'><span>ACCOUNT</span><b>[html_encode(owner.key)]</b></div><div class='slots'>[slot_html]</div><div class='footnote'>Three independent characters per account. Progress and feats are stored per slot.</div></div></main></body></html>"}
+		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:auto}.gate{min-height:100%;padding:22px;background:#17130f}.frame{max-width:920px;min-height:560px;margin:0 auto;border:4px ridge #9f7945;background:#211910;outline:3px solid #090604}.crest{text-align:center;padding:12px;border-bottom:3px double #a27a43;background:#302216}.brand-logo{display:block;width:100%;max-width:560px;max-height:190px;height:auto;margin:0 auto;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges}.crest p{margin:2px 0 5px;color:#bda477}.account{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #74552f;background:#1a140e;color:#c8ae7d}.slots{display:grid;gap:10px;padding:16px}.slot{position:relative;min-height:116px;display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:12px;padding:12px;border:3px ridge #775a34;background:#2a2016}.slot.empty{filter:saturate(.65)}.slot-number{width:64px;height:64px;padding-top:15px;border:3px double #b58b4d;background:#16110c;color:#e6c37e;text-align:center;font:bold 26px 'Courier New',monospace}.slot-copy small{color:#a88a5d;letter-spacing:2px}.slot-copy h2{margin:4px 0;padding:0;background:none!important;border:0!important;font-size:21px}.slot-copy p{margin:0 0 7px;color:#d0bb91}.slot-copy em{font-size:10px;color:#8f7958;font-style:normal}.slot-actions{display:flex;gap:7px;align-items:center}.slot-actions a{display:block;min-width:120px;padding:10px 12px;text-align:center;text-decoration:none}.play,.create{border:3px outset #b58a4b;background:#51391e;color:#f4d99b}.delete{min-width:70px!important;border:3px outset #844b3e;background:#3a211b;color:#e8a89b}.footnote{padding:10px 16px;border-top:1px solid #735530;color:#9f8965;text-align:center;font-size:10px}@media(max-width:700px){.gate{padding:6px}.slot{grid-template-columns:60px 1fr}.slot-number{width:50px;height:50px;padding-top:11px}.slot-actions{grid-column:1/3;justify-content:flex-end}.brand-logo{max-height:145px}}
+		</style></head><body><main class='gate'><div class='frame'><header class='crest'><img class='brand-logo' src='NexusExodusLogo.png' alt='Nexus Exodus'><p>Choose the soul that will cross the Nexus</p></header><div class='account'><span>ACCOUNT</span><b>[html_encode(owner.key)]</b></div><div class='slots'>[slot_html]</div><div class='footnote'>Three independent characters per account. Progress and feats are stored per slot.</div></div></main></body></html>"}
 
 	proc/show()
 		if(!owner || !owner.client || owner.playerCharacter)
 			del(src)
 			return
+		owner << browse_rsc('NexusExodusLogo.png', "NexusExodusLogo.png")
 		owner << browse(buildHtml(), "window=NexusCharacterSelect;size=960x720;can_resize=true;can_close=false")
 
 	Topic(href, list/href_list)
@@ -121,6 +122,7 @@ client
 			helpAlertShowing = 0
 			uiOrganizationMode = 0
 			uiHidden = 0
+			icon/nexus_application_icon
 			image/titleScreenImg //this client's title screen image that has been scaled to fit their resolution
 
 proc/getNexusInitialConnectViewWidth(mob/current_mob, title_view_width)
@@ -160,7 +162,7 @@ client/proc
 		set waitfor=0
 		while(!resolutionInitialized) sleep(1)
 		mob.loc = locate(445,3,2)
-		var/icon/i2 = icon('NexusExodus.dmi')
+		var/icon/i2 = icon('NexusExodusLogo.png')
 		sleep(5) //just seeing if this fixes the bug where Width()/Height() fails sometimes
 		var
 			w = i2.Width()
@@ -184,6 +186,10 @@ client/proc
 		if(!titleScreenImg) return
 		del(titleScreenImg)
 
+	applyNexusApplicationIcon()
+		if(!nexus_application_icon) nexus_application_icon = icon('Slime64.png')
+		winset(src, "mainwindow", "icon=\ref[nexus_application_icon]")
+
 client/New()
 	JSresolutionCheck()
 	clients += src
@@ -198,6 +204,7 @@ client/New()
 
 	var/newTitle = "Nexus Exodus"
 	winset(src, "mainwindow", "title=\"[newTitle]\"")
+	applyNexusApplicationIcon()
 
 	if(!mob || !mob.loc) //in theory this should work, so if you were punched and just relog back into your character, i hope, then we shouldnt do any of this stuff?
 		winset(src, "TabScience.grid1", "show-names=true")
@@ -234,10 +241,6 @@ client/New()
 			DisplayTitleScreen()
 		if(mob) mob.hideNexusLegacyInterface()
 		if(mob)
-			//var/musics = list('RoyalBlueTheme.ogg', 'UltraInstinctTheme1.ogg', 'GokuSpiritBombTheme.ogg')
-			var/musics = list('CarnivalMeme.ogg')
-			src << sound(pick(musics), volume = 20, repeat = 1)
-			
 			mob.DetectNewLoadButtonClick()
 			mob.Fullscreen_Check(skipAlert = 1)
 			mob.CodebanLoginCheck()

@@ -5,6 +5,8 @@ Projectile movement, collision, beam segments, and damage behavior.
 
 `obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
 
+`obj/Blast/setStats()` captures forged-mask BP and Ki-damage reinforcement when a Ki projectile is created. Bullet projectiles explicitly bypass both mask effects.
+
 Every Beam skill receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Explosive beams retain a per-target factor budget, while Beam Lock deliberately has no cumulative damage ceiling and keeps ticking until the stream ends or the victim escapes. Beam clashes report the pressure ratio, place a lit impact marker at the collision turf, show each owner a directional mash prompt, grant a 1.15x pressure pulse for current correct input, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break and Echoing Slash through physical Strength-versus-Endurance resolution. Explosive beam impacts calculate a power-relative knockback before immediately tearing down the stream.
 
 Configured projectile-impact art, color and audio are carried on `obj/Blast`, including cached and shrapnel projectiles. This gives physical cutting waves sword impacts without routing them through generic blast sounds, while explosive Ki techniques retain their own presentation. Named skill projectiles with a damage factor of at least 3 receive a shared RPT impact effect when they do not define specialized art; small barrage shots are intentionally excluded.
@@ -629,9 +631,9 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 #### verb/Time_Freeze
 - Signature: `verb/Time_Freeze()`
 - Inputs: None
-- Purpose: Handle time freeze.
+- Purpose: Present the Alien Time Freeze path as `Time Stop`, snapshot the caster's origin, animate an eight-tile cosmic field, and stun valid visible targets after an eight-tick windup.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: starts a 60-second Speed-scaled cooldown, briefly locks the caster in an attack action, plays licensed Shonen charge/release audio, and delegates bounded stun resolution to the domain helpers. RP Mode and Safezone casts are rejected.
 
 #### obj/Attacks/Explosion/New
 - Signature: `New()`
@@ -1144,3 +1146,8 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Purpose: Route the four missing Roleplay Tenkaichi beam families through `SkillEngine.castSkill()` and the native beam lifecycle.
 - Returns: none (implicit).
 - Side effects: starts, streams or stops Double Sunday, Photon Flash, Tyrant Lancer or Buster Cannon.
+
+### Super Ghost Kamikaze projectiles and Milestone stats
+
+- Super Ghost Kamikaze Attack reuses `get_cached_blast()`, explicit `blast_homing_target`, and `startKiProjectileWalk()` for three staggered ghosts. All three receive the same `CombatDamageBudget`, so repeated contacts cannot exceed the authored per-target volley.
+- `obj/Blast/setStats()` snapshots the owner's effective Milestone Force/Strength and Offense. Projectile hit, deflection, reflection, and stamina-drain checks compare against effective Milestone Defense, while the target's scaled Endurance/Resistance remains the guard term.

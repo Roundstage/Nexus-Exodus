@@ -61,10 +61,10 @@ proc/initializeMilestoneCatalog()
 	milestone_catalog["challengers_mark"] = new /datum/MilestoneDefinition("challengers_mark", "Challenger's Mark", "Take 15% less damage from your selected target, but 5% more from other attackers.", 6, 1, "Survival", 4, list("desperate_struggle"))
 
 	milestone_catalog["salt_of_the_earth"] = new /datum/MilestoneDefinition("salt_of_the_earth", "Salt of the Earth", "Doubles Anger gained from damage.", 3, 1, "Fire", 2, list("controlled_fury"))
-	milestone_catalog["fire_lord"] = new /datum/MilestoneDefinition("fire_lord", "Fire Lord", "Deal 1% more and take 1% less damage per burning creature within 10 tiles, up to 10%.", 3, 1, "Fire", 3, list("salt_of_the_earth"))
+	milestone_catalog["fire_lord"] = new /datum/MilestoneDefinition("fire_lord", "Fire Lord", "Fire attacks deal 5% more damage per Burn stack on the target, up to 25%.", 3, 1, "Fire", 3, list("salt_of_the_earth"))
 	milestone_catalog["smolder"] = new /datum/MilestoneDefinition("smolder", "Smolder", "Projectile hits have a 35% chance to add a burning stack, up to five active stacks.", 6, 1, "Fire", 4, list("fire_lord"))
 	milestone_catalog["roleplay_scholar"] = new /datum/MilestoneDefinition("roleplay_scholar", "Roleplay Scholar", "Gains 10% more Progression XP from qualified roleplay sessions per rank.", 2, 3, "Growth", 1)
-	milestone_catalog["patient_growth"] = new /datum/MilestoneDefinition("patient_growth", "Patient Growth", "Reduces the active-time Progression XP interval by 10% per rank.", 2, 3, "Growth", 2, list("roleplay_scholar"))
+	milestone_catalog["patient_growth"] = new /datum/MilestoneDefinition("patient_growth", "Patient Growth", "Improves the online/offline hourly Progression XP rate as though its earning interval were 10% shorter per rank.", 2, 3, "Growth", 2, list("roleplay_scholar"))
 	milestone_catalog["arcane_memory"] = new /datum/MilestoneDefinition("arcane_memory", "Arcane Memory", "Gains 10% more Magic XP per rank.", 2, 3, "Growth", 2, list("roleplay_scholar"))
 	milestone_catalog["language_savant"] = new /datum/MilestoneDefinition("language_savant", "Language Savant", "Learns languages through exposure and lessons 25% faster per rank.", 2, 3, "Culture", 1)
 	milestone_catalog["custom_language"] = new /datum/MilestoneDefinition("custom_language", "Custom Language", "Create one persistent custom language that can be taught to other characters.", 3, 1, "Culture", 3, list("language_savant"))
@@ -75,6 +75,16 @@ proc/initializeMilestoneCatalog()
 	milestone_catalog["mining_expert"] = new /datum/MilestoneDefinition("mining_expert", "Mining Expert", "Increases natural mining yield by 50% and improves ore discovery.", 3, 1, "Craft", 2, list("profession_specialist"))
 	milestone_catalog["ore_whisperer"] = new /datum/MilestoneDefinition("ore_whisperer", "Ore Whisperer", "Increases natural ore discovery chance by 15% per rank.", 2, 2, "Craft", 3, list("mining_expert"))
 	milestone_catalog["master_blacksmith"] = new /datum/MilestoneDefinition("master_blacksmith", "Master Blacksmith", "Forged equipment gains 5% quality and recipes consume one less ore.", 4, 1, "Craft", 3, list("mining_expert"))
+
+	// Build-enabling milestones are intentionally shown in the same uncategorized Milestone list.
+	milestone_catalog["versatile_training"] = new /datum/MilestoneDefinition("versatile_training", "Versatile Training", "+2% Strength, Endurance, Force, Resistance, Offense, Defense and Speed per rank.", 2, 3, "Builds", 1)
+	milestone_catalog["momentum_damage"] = new /datum/MilestoneDefinition("momentum_damage", "Momentum Damage", "Adds 25% of Speed to both physical and ki source-stat damage calculations.", 4, 1, "Builds", 2, null, "secondary_damage_stat")
+	milestone_catalog["precision_damage"] = new /datum/MilestoneDefinition("precision_damage", "Precision Damage", "Adds 25% of Offense to both physical and ki source-stat damage calculations.", 4, 1, "Builds", 2, null, "secondary_damage_stat")
+	milestone_catalog["fortified_damage"] = new /datum/MilestoneDefinition("fortified_damage", "Fortified Damage", "Adds 20% of Endurance to physical damage and 20% of Resistance to ki damage.", 4, 1, "Builds", 2, null, "secondary_damage_stat")
+	milestone_catalog["sweeping_impact"] = new /datum/MilestoneDefinition("sweeping_impact", "Sweeping Impact", "Ordinary melee hits deal 35% splash damage to up to eight enemies within three tiles of the target.", 5, 1, "Builds", 3)
+	milestone_catalog["echoing_assault"] = new /datum/MilestoneDefinition("echoing_assault", "Echoing Assault", "Ordinary melee hits have an 8% chance per rank to strike the primary target again for 60% damage.", 3, 2, "Builds", 3)
+	milestone_catalog["keen_edge"] = new /datum/MilestoneDefinition("keen_edge", "Keen Edge", "+3 percentage points of critical-hit chance per rank.", 2, 3, "Builds", 2)
+	milestone_catalog["unencumbered_combatant"] = new /datum/MilestoneDefinition("unencumbered_combatant", "Unencumbered Combatant", "+15% effective Offense and Defense while no weapon or armor is equipped.", 5, 1, "Builds", 3)
 	for(var/milestone_id in milestone_catalog)
 		var/datum/MilestoneDefinition/milestone = milestone_catalog[milestone_id]
 		milestone.prerequisites = list()
@@ -191,17 +201,69 @@ mob/proc/getMilestoneKiDamageMultiplier()
 mob/proc/getMilestoneGuardMultiplier()
 	return getMilestoneRank("this_drill_will_pierce_the_heavens") ? 0.9 : 1
 
-mob/proc/getMilestoneFireLordBonus()
-	if(!getMilestoneRank("fire_lord")) return 0
-	var/burning_creatures = 0
-	for(var/mob/nearby in range(10, src))
-		if(nearby.isBurning) burning_creatures++
-	return min(0.1, burning_creatures * 0.01)
+mob/proc/getMilestoneAllStatsMultiplier()
+	return 1 + getMilestoneRank("versatile_training") * 0.02
 
-mob/proc/getMilestoneOutgoingDamageMultiplier(mob/target)
+mob/proc/getMilestoneScaledCombatStat(stat_value)
+	return max(0, stat_value) * getMilestoneAllStatsMultiplier()
+
+mob/proc/getMilestonePhysicalDamageStat()
+	var/source_stat = Swordless_strength()
+	if(getMilestoneRank("momentum_damage")) source_stat += Spd * 0.25
+	else if(getMilestoneRank("precision_damage")) source_stat += Off * 0.25
+	else if(getMilestoneRank("fortified_damage")) source_stat += End * 0.2
+	return getMilestoneScaledCombatStat(source_stat)
+
+mob/proc/getMilestoneKiDamageStat()
+	var/source_stat = Pow
+	if(getMilestoneRank("momentum_damage")) source_stat += Spd * 0.25
+	else if(getMilestoneRank("precision_damage")) source_stat += Off * 0.25
+	else if(getMilestoneRank("fortified_damage")) source_stat += Res * 0.2
+	return getMilestoneScaledCombatStat(source_stat)
+
+mob/proc/isMilestoneUnencumbered()
+	if(!getMilestoneRank("unencumbered_combatant")) return FALSE
+	if(using_sword()) return FALSE
+	for(var/obj/items/Gun/gun in src)
+		if(gun.Equipped) return FALSE
+	if(armor_obj && armor_obj.loc == src && armor_obj.suffix) return FALSE
+	return TRUE
+
+mob/proc/getMilestoneEffectiveOffense()
+	var/effective_offense = getMilestoneScaledCombatStat(Off)
+	if(isMilestoneUnencumbered()) effective_offense *= 1.15
+	return effective_offense
+
+mob/proc/getMilestoneEffectiveDefense()
+	var/effective_defense = getMilestoneScaledCombatStat(Def)
+	if(isMilestoneUnencumbered()) effective_defense *= 1.15
+	return effective_defense
+
+mob/proc/getMilestoneEffectiveSpeed()
+	return getMilestoneScaledCombatStat(Spd)
+
+mob/proc/getMilestoneCriticalChanceBonus()
+	return getMilestoneRank("keen_edge") * 3
+
+mob/proc/getMilestoneMeleeAreaRadius()
+	return getMilestoneRank("sweeping_impact") ? 3 : 0
+
+mob/proc/getMilestoneDoubleAttackChance()
+	return getMilestoneRank("echoing_assault") * 8
+
+mob/proc/isMilestoneFireAttack(attack_name)
+	if(!attack_name) return FALSE
+	var/lower_name = lowertext("[attack_name]")
+	return findtext(lower_name, "fire") || findtext(lower_name, "flame") || findtext(lower_name, "burn")
+
+mob/proc/getMilestoneFireLordBonus(mob/target, attack_name)
+	if(!target || !getMilestoneRank("fire_lord") || !isMilestoneFireAttack(attack_name)) return 0
+	return min(0.25, max(0, target.BurnStack) * 0.05)
+
+mob/proc/getMilestoneOutgoingDamageMultiplier(mob/target, attack_name)
 	var/multiplier = 1
 	if(getMilestoneRank("desperate_struggle") && willpower < 50) multiplier *= 1.2
-	var/fire_lord_bonus = getMilestoneFireLordBonus()
+	var/fire_lord_bonus = getMilestoneFireLordBonus(target, attack_name)
 	if(fire_lord_bonus) multiplier *= 1 + fire_lord_bonus
 	if(target && getMilestoneRank("concentrated_fire"))
 		var/mob/selected_target = getSelectedTarget(require_view = FALSE)
@@ -212,8 +274,6 @@ mob/proc/getMilestoneIncomingDamageMultiplier(mob/attacker)
 	var/multiplier = 1 - getMilestoneRank("sturdy_build") * 0.03
 	if(attacker && getMilestoneRank("turtle_shell") && attacker.dir == dir)
 		multiplier *= 1 - getMilestoneRank("turtle_shell") * 0.1
-	var/fire_lord_bonus = getMilestoneFireLordBonus()
-	if(fire_lord_bonus) multiplier *= 1 - fire_lord_bonus
 	if(attacker && getMilestoneRank("challengers_mark"))
 		var/mob/selected_target = getSelectedTarget(require_view = FALSE)
 		multiplier *= selected_target == attacker ? 0.85 : 1.05
@@ -225,6 +285,26 @@ mob/proc/tryApplyMilestoneProjectileEffects(mob/target)
 	if(!target.isBurning)
 		target.isBurning = TRUE
 		target.try_applying_burn_effect()
+	return TRUE
+
+mob/proc/applyMilestoneMeleeAreaDamage(mob/primary_target, damage, attack_name)
+	var/radius = getMilestoneMeleeAreaRadius()
+	if(!primary_target || radius <= 0 || damage <= 0) return 0
+	var/hit_count = 0
+	for(var/mob/area_target in view(radius, primary_target))
+		if(hit_count >= 8) break
+		if(area_target == primary_target || !canHitTenkaichiTechniqueTarget(area_target)) continue
+		if(area_target.AOE_auto_dodge(src, primary_target.loc)) continue
+		area_target.TakeDamage(damage * 0.35, attacker = src, attack_name = "Sweeping Impact ([attack_name])")
+		hit_count++
+	return hit_count
+
+mob/proc/tryApplyMilestoneDoubleAttack(mob/primary_target, damage, attack_name)
+	if(!primary_target || damage <= 0 || !prob(getMilestoneDoubleAttackChance())) return FALSE
+	if(!canHitTenkaichiTechniqueTarget(primary_target)) return FALSE
+	var/double_attack_sound = using_sword() ? pick(nexus_sword_impact_sounds) : 'Mediumpunch.ogg'
+	Play_Melee_Sound(sound_range = 10, origin = primary_target, sound_file = double_attack_sound, sound_volume = 25)
+	primary_target.TakeDamage(damage * 0.6, attacker = src, attack_name = "Echoing Assault ([attack_name])")
 	return TRUE
 
 obj/MilestoneTechnique

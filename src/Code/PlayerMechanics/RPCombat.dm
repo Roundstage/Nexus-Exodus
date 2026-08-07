@@ -67,6 +67,14 @@ mob/proc/drainWillpower(amount, reason, announce = TRUE)
 		if(announce) src << "<font color=red>Your will is broken. You cannot rise until the lethal combat pressure fades."
 	return drained
 
+mob/proc/tryDrainTechniqueWillpower(amount, technique_name = "Technique", reserve = 1)
+	if(amount <= 0) return TRUE
+	normalizeWillpower()
+	reserve = Clamp(reserve, 0, getMaxWillpower())
+	if(willpower - amount < reserve) return FALSE
+	drainWillpower(amount, "[technique_name] strains your resolve.", announce = FALSE)
+	return TRUE
+
 mob/proc/forceWillpowerBreakKnockout()
 	ko_is_lethal = TRUE
 	ko_recovery_ready_at = max(ko_recovery_ready_at, world.time + time_to_heal_ko(src))

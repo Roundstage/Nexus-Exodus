@@ -1,5 +1,22 @@
 mob/var/tmp/God_Fist_loop
 
+mob/proc/getGodFistWillpowerDrain()
+	var/power_excess = max(0, God_Fist_mult() ** 1.6 - 1)
+	var/willpower_drain = 0.04 * power_excess
+	if(ssj == 3) willpower_drain *= 1.2
+	return min(0.14, willpower_drain)
+
+mob/proc/applyGodFistUpkeep()
+	var/willpower_drain = getGodFistWillpowerDrain()
+	if(!tryDrainTechniqueWillpower(willpower_drain, "Kaioken", reserve = 1))
+		God_FistStop()
+		src << "<font color=#ff8080>Your Willpower is too low to sustain Kaioken."
+		return FALSE
+	var/ki_drain = 0.2 * (God_Fist_mult() ** 1.6 - 1) / Eff ** 0.2 / recov ** 0.2
+	if(ssj == 3) ki_drain *= 1.2
+	Ki = max(0, Ki - max_ki / 100 * ki_drain)
+	return TRUE
+
 mob/proc/God_Fist_loop()
 	set waitfor=0
 	if(God_Fist_loop) return
@@ -14,17 +31,7 @@ mob/proc/God_Fist_loop()
 			God_Fist_boost += amount
 			if(God_Fist_boost > God_Fist_max) God_Fist_boost = God_Fist_max
 
-		var/hp_drain = 0.3 * (God_Fist_mult()**1.6 - 1) / dur_share()**0.3 / regen**0.2
-		var/ki_drain = 0.2 * (God_Fist_mult()**1.6 - 1) / Eff**0.2 / recov**0.2
-		if(ssj == 3)
-			hp_drain *= 1.4
-			ki_drain *= 1.2
-		Health -= hp_drain
-		Ki -= max_ki / 100 * ki_drain
-		if(Health <= 0)
-			God_FistStop()
-			if(!Dead) Body_Parts()
-			Death("God_Fist!")
+		if(!applyGodFistUpkeep()) break
 		Aura_Overlays()
 		sleep(10)
 
@@ -56,6 +63,7 @@ mob/proc/God_Fist_mult()
 mob/proc/God_FistStop()
 	God_Fist_level=0
 	super_God_Fist = 0
+	if(God_Fist_obj) God_Fist_obj.Using = 0
 	Aura_Overlays(remove_only=1)
 	spawn() updateTransformationGlow()
 
@@ -71,10 +79,10 @@ obj/God_Fist
 	hotbar_type="Buff"
 	can_hotbar=1
 	clonable=0
-	desc="This replaces normal power up. By hitting the power up key you will increase your level by 1. Each level gives more BP than the last but also drains health and energy. \
+	desc="This replaces normal power up. By hitting the power up key you will increase your level by 1. Each level gives more BP than the last but also drains a small amount of Willpower and energy. \
 	To use the full abilities of this you \
-	must have power control. More durability and regeneration decreases the health drain. More energy mod and recovery decreases the \
-	energy drain. But only slightly. This also reduces flash step cost by half."
+	must have power control. Kaioken automatically stops before it can break your Willpower. More energy mod and recovery decreases the \
+	energy drain, but only slightly. This also reduces flash step cost by half."
 
 	var/tmp/God_Fist_bugged=1 //remove
 

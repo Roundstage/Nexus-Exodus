@@ -350,7 +350,7 @@ obj/items/Dragon_Ball
 		if(WishPower>300) Choices+="Revive"
 		if(WishPower>1500) Choices+="Restore Planet"
 		if(WishPower>3000) Choices+="Restore Galaxy"
-		Choices.Add("Money","Skill points","Knowledge","Time chamber key","Deadzone immunity",\
+		Choices.Add("Money","Progression XP","Knowledge","Time chamber key","Deadzone immunity",\
 		"Learn soul contract","Learn God_Fist","Learn Genki Dama","Learn Majin","Learn Mystic",\
 		"Learn Kai Teleport","Learn Materialize","Learn Regenerate","Learn Giant Form","Learn Unlock Potential","Learn Makankosappo")
 		if(db_vampire_incurable) Choices+="Make vampirism curable again"
@@ -491,15 +491,15 @@ obj/items/Dragon_Ball
 					a.Alter_Res(50000000 * Resource_Multiplier)
 					player_view(15,usr)<<"[usr] wishes to give [a] money!"
 					usr.wish_count++
-				if("Skill points") if(Wishes)
+				if("Progression XP") if(Wishes)
 					if(!DBs_Gathered()) return
 					Alter_wishes()
-					var/mob/a=input(usr,"Choose who to give skill points to") in players
+					var/mob/a=input(usr,"Choose who should receive Progression XP") in players
 					if(!DBs_Gathered()) return
 					var/n=round(1*Year)
 					if(n<30) n=30
 					if(n>100) n=100
-					a.gainProgressionExperience(n, "dragon wish", announce = TRUE)
+					a.gainProgressionExperience(getScaledProgressionExperience(n), "dragon wish", announce = TRUE)
 					player_view(15,usr)<<"[usr] wishes to give [a] Progression XP!"
 					usr.wish_count++
 				if("Knowledge") if(Wishes)

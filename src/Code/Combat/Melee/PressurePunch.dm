@@ -1,3 +1,6 @@
+var/pressure_punch_cooldown_ticks = 90
+var/pressure_punch_charge_ticks = 10
+
 obj
 	PressurePunch
 		desc = "Concentrate your energy into a powerful punch that can knock back enemies."
@@ -41,31 +44,31 @@ mob
 			del(e)
 
 		PressurePunch()
-			if(world.time<last_pressurePunch+(120))
-				var/minutes_left=(last_pressurePunch+(120)-world.time)/(10*60)
-				usr<<"You can not use Pressure Punchfor another [round(minutes_left)] minutes and [round((minutes_left*60)%60)] \
+			if(world.time < last_pressurePunch + pressure_punch_cooldown_ticks)
+				var/minutes_left = (last_pressurePunch + pressure_punch_cooldown_ticks - world.time) / (10 * 60)
+				src << "You can not use Pressure Punch for another [round(minutes_left)] minutes and [round((minutes_left*60)%60)] \
 				seconds"
 				return
 			if(!CanMeleeFromOtherCauses()) return //this checks if anything OTHER than you currently doing attacks is also stopping you from being able to melee
-			if(usr.cant_blast()) return
+			if(cant_blast()) return
 			last_pressurePunch = world.time
 			player_view(15,src) << sound('PressurePunchCharge.mp3', volume = 60)
-			sleep(20)
-			var/mob/target = getSelectedTarget(max_dist = 3, dir_angle = usr.dir, angle_limit = 33)
+			sleep(pressure_punch_charge_ticks)
+			var/mob/target = getSelectedTarget(max_dist = 3, dir_angle = dir, angle_limit = 33)
 			PressurePunchFX()
 			if(target)
 				for(var/mob/M in list(target))
 					var/dmg = getPhysicalCombatDamage(M, 6)
 					var/knockback = get_melee_knockback_distance(M) * 10
-					if(M != usr)
-						usr << "You concentrate your energy into a powerful punch that knocks [M] away!"
-						M.Knockback(usr, knockback, omega_kb = 1)
-						M << "You are knocked back by [usr]!"
+					if(M != src)
+						src << "You concentrate your energy into a powerful punch that knocks [M] away!"
+						M.Knockback(src, knockback, omega_kb = 1)
+						M << "You are knocked back by [src]!"
 						var/hp_before_dmg_hits = M.Health
 						M.TakeDamage(dmg, 1.5, attacker = src, attack_name = "Pressure Punch")
 						if(dmg >= 100 + hp_before_dmg_hits) M.KO(src, allow_anger = 0)
 						else if(dmg >= hp_before_dmg_hits) M.KO(src)
 						return
 			else
-				usr << "You concentrate your energy into a powerful punch, but there is no one to hit!"
+				src << "You concentrate your energy into a powerful punch, but there is no one to hit!"
 			return

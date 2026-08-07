@@ -24,6 +24,15 @@ mob/proc/canGrabMovable(atom/movable/target)
 		if(target_mob.rp_mode) return FALSE
 	return TRUE
 
+mob/proc/getNearbyVectorPickupTargets(maximum_pixel_distance = 32)
+	var/list/nearby_targets = list()
+	for(var/atom/movable/target in range(1, src))
+		if(target == src || target.loc == src || ismob(target)) continue
+		if(!istype(target, /obj/items) && !istype(target, /obj/Module) && !istype(target, /obj/Resources)) continue
+		if(!canGrabMovable(target) || bounds_dist(src, target) > maximum_pixel_distance) continue
+		nearby_targets += target
+	return nearby_targets
+
 atom/var/Grabbable=1
 turf/Grabbable=0
 
@@ -74,9 +83,11 @@ mob/verb/Grab()
 
 		var/list/L=new
 
-		//combine all rsc bags
+		var/list/nearby_pickups = getNearbyVectorPickupTargets(world.icon_size)
+
+		//combine all resource bags inside the vector interaction radius
 		var/obj/Resources/r
-		for(var/obj/Resources/r2 in Get_step(src,dir))
+		for(var/obj/Resources/r2 in nearby_pickups)
 			if(!r) r=r2
 			else
 				r.Value+=r2.Value
@@ -87,6 +98,11 @@ mob/verb/Grab()
 		var/list/obj_list = new
 
 		for(var/atom/movable/O in Get_step(src,dir))
+			if(canGrabMovable(O) && !(O.name in L))
+				if(O.type != /obj/items/Dragon_Ball || !(O.type in obj_list))
+					L += O.name
+					obj_list += O
+		for(var/atom/movable/O in nearby_pickups)
 			if(canGrabMovable(O) && !(O.name in L))
 				if(O.type != /obj/items/Dragon_Ball || !(O.type in obj_list))
 					L += O.name
@@ -102,6 +118,10 @@ mob/verb/Grab()
 		for(var/atom/movable/A in Get_step(src,dir)) if(A.name==T && canGrabMovable(A))
 			O=A
 			break
+		if(!O)
+			for(var/atom/movable/A in nearby_pickups) if(A.name==T && canGrabMovable(A))
+				O=A
+				break
 
 		if(!O)
 			for(var/mob/m in Get_step(src,turn(dir,45))) if(canGrabMovable(m))

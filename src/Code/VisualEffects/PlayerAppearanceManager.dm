@@ -30,6 +30,8 @@ datum/PlayerAppearanceManager
 	var/list/rendered_appearances = list()
 	var/next_sequence
 	var/rebuilding
+	var/rebuild_generation
+	var/last_rebuild_reason
 
 	New(mob/new_owner)
 		owner = new_owner
@@ -95,11 +97,30 @@ datum/PlayerAppearanceManager
 		if(istype(item, /obj/items/Hover_Chair)) return TRUE
 		return FALSE
 
+	proc/appearanceMatchesEquipment(appearance_value, obj/items/item)
+		if(!item || !item.icon) return FALSE
+		if(appearance_value == item.icon) return TRUE
+		if(!appearance_value || !appearance_value:icon) return FALSE
+		if(appearance_value:icon != item.icon) return FALSE
+		if("[appearance_value:icon_state]" != "[item.icon_state]") return FALSE
+		if(appearance_value:pixel_x != item.pixel_x || appearance_value:pixel_y != item.pixel_y) return FALSE
+		return TRUE
+
 	proc/removeLegacyEquipmentAppearances()
 		if(!owner) return
+		var/list/managed_items = list()
 		for(var/obj/items/item in owner.contents)
 			if(!isManagedEquipment(item) || !item.icon) continue
-			while(owner.overlays.Find(item.icon)) owner.overlays -= item.icon
+			managed_items += item
+		if(!managed_items.len) return
+		var/list/remove_appearances = list()
+		for(var/appearance_value in owner.overlays)
+			for(var/obj/items/item in managed_items)
+				if(!appearanceMatchesEquipment(appearance_value, item)) continue
+				remove_appearances += appearance_value
+				break
+		for(var/appearance_value in remove_appearances)
+			while(owner.overlays.Find(appearance_value)) owner.overlays -= appearance_value
 
 	proc/syncEquipment()
 		clearCategory("equipment")
@@ -114,6 +135,7 @@ datum/PlayerAppearanceManager
 	proc/rebuild(reason)
 		if(rebuilding || !owner) return
 		rebuilding = TRUE
+		last_rebuild_reason = reason
 		removeRenderedAppearances()
 		syncEquipment()
 		var/list/ordered_entries = sortedEntries()
@@ -122,6 +144,7 @@ datum/PlayerAppearanceManager
 			owner.overlays += entry.rendered
 			rendered_appearances += entry.rendered
 		owner.Add_Injury_Overlays()
+		rebuild_generation++
 		rebuilding = FALSE
 
 obj/items/var

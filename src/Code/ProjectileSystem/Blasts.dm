@@ -855,6 +855,101 @@ obj/Attacks/Makosen
 		usr.StopMovement()
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
+#define ALIEN_INFINITE_VOID_RADIUS 8
+#define ALIEN_INFINITE_VOID_DURATION 70
+#define ALIEN_INFINITE_VOID_WINDUP 8
+
+obj/AlienInfiniteVoidVisual
+	name = "time stop domain"
+	icon = 'src/Icons/Effects/AlienInfiniteVoid.dmi'
+	icon_state = "void"
+	appearance_flags = PIXEL_SCALE
+	plane = 20
+	layer = 98
+	invisibility = 0
+	luminosity = 2
+	alpha = 0
+	density = 0
+	mouse_opacity = 0
+	attackable = 0
+	Savable = 0
+	Grabbable = 0
+	Nukable = 0
+	Makeable = 0
+	Givable = 0
+
+	Glow
+		name = "time stop domain glow"
+		layer = 99
+		blend_mode = BLEND_ADD
+
+proc/showAlienInfiniteVoidDomain(atom/center, duration = ALIEN_INFINITE_VOID_DURATION)
+	set waitfor = 0
+	var/turf/domain_turf = center ? center.base_loc() : null
+	if(!domain_turf) return
+	duration = max(14, round(duration))
+	var/expand_ticks = ALIEN_INFINITE_VOID_WINDUP
+	var/collapse_ticks = 10
+	var/hold_ticks = max(3, duration - expand_ticks - collapse_ticks)
+
+	var/obj/AlienInfiniteVoidVisual/domain = new(domain_turf)
+	domain.blend_mode = BLEND_DEFAULT
+	CenterIcon(domain)
+	domain.transform = matrix() * 0.05
+	domain.setNexusGlow("#5540ff", 8, 245, 'NexusLightGradient.dmi', 10, "blast")
+	animate(domain, alpha = 235, transform = matrix(), time = expand_ticks, easing = CUBIC_EASING)
+	animate(domain, alpha = 245, transform = turn(matrix() * 1.04, 8), time = hold_ticks, easing = SINE_EASING)
+	animate(domain, alpha = 0, transform = turn(matrix() * 1.18, 16), time = collapse_ticks, easing = CUBIC_EASING)
+
+	var/obj/AlienInfiniteVoidVisual/Glow/domain_glow = new(domain_turf)
+	CenterIcon(domain_glow)
+	domain_glow.transform = matrix() * 0.03
+	animate(domain_glow, alpha = 180, transform = turn(matrix(), -5), time = expand_ticks, easing = CUBIC_EASING)
+	animate(domain_glow, alpha = 115, transform = turn(matrix() * 1.1, -18), time = hold_ticks, easing = SINE_EASING)
+	animate(domain_glow, alpha = 0, transform = turn(matrix() * 1.24, -28), time = collapse_ticks, easing = CUBIC_EASING)
+
+	spawn(duration + 1)
+		if(domain)
+			domain.reallyDelete = TRUE
+			del(domain)
+		if(domain_glow)
+			domain_glow.reallyDelete = TRUE
+			del(domain_glow)
+
+mob/proc/canHitAlienInfiniteVoidTarget(mob/target)
+	if(!target || !canHitTenkaichiTechniqueTarget(target) || target.KO || !target.attackable) return FALSE
+	var/turf/user_turf = base_loc()
+	var/turf/target_turf = target.base_loc()
+	if(!user_turf || !target_turf || user_turf.z != target_turf.z) return FALSE
+	return TRUE
+
+mob/proc/getAlienInfiniteVoidStunTicks(mob/target)
+	if(!target) return 0
+	var/bp_ratio = sqrt(max(0.05, max(1, BP) / max(1, target.BP)))
+	var/control_ratio = Clamp((max(1, Pow) / max(1, target.Res)) ** 0.35, 0.5, 2)
+	var/stun_ticks = Clamp(round(60 * bp_ratio * control_ratio), 30, 120)
+	if(target.paralysis_immune) stun_ticks = max(6, round(stun_ticks * 0.25))
+	return stun_ticks
+
+mob/proc/showAlienInfiniteVoidHit()
+	overlays -= 'TimeFreeze.dmi'
+	overlays += 'TimeFreeze.dmi'
+	pulseNexusGlow("#8d7dff", 3.2, 220, 12)
+	spawn(10)
+		if(src) overlays -= 'TimeFreeze.dmi'
+
+mob/proc/applyAlienInfiniteVoidStun(turf/origin, radius = ALIEN_INFINITE_VOID_RADIUS)
+	if(!origin) return 0
+	var/targets_hit = 0
+	for(var/mob/target in mob_view(max(1, radius), origin, FALSE))
+		if(!canHitAlienInfiniteVoidTarget(target)) continue
+		var/stun_ticks = getAlienInfiniteVoidStunTicks(target)
+		if(stun_ticks <= 0) continue
+		target.ApplyStun(time = stun_ticks, no_immunity = TRUE, stun_power = 4)
+		target.showAlienInfiniteVoidHit()
+		targets_hit++
+	return targets_hit
+
 obj/Time_Freeze_Energy
 	var/TF_Timer=600
 	var/ID
@@ -877,9 +972,10 @@ mob/proc/Fill_Active_Freezes_List()
 	for(var/mob/P in players) for(var/obj/Time_Freeze_Energy/T in P) if(T.ID==key) Active_Freezes+=T
 
 obj/Attacks/Time_Freeze
-	desc="This will send paralyzing energy rings all around nearby people and they will not be able \
-	to move until it wears off. The more BP and force you have compared to your opponent's BP and resistance, the \
-	longer it will last."
+	name = "Time Stop"
+	icon = 'src/Icons/Effects/AlienInfiniteVoid.dmi'
+	icon_state = "void"
+	desc = "Expand an eight-tile cosmic domain that overwhelms every valid target inside it. Targets are stunned longer when your BP and Force overcome their BP and Resistance. Time Normalizers greatly reduce the stun."
 	teachable=0
 	hotbar_type="Ability"
 	can_hotbar=1
@@ -887,6 +983,8 @@ obj/Attacks/Time_Freeze
 	Teach_Timer=9
 	student_point_cost = 60
 	var/tmp/time_freeze_timer=0
+	var/domain_radius = ALIEN_INFINITE_VOID_RADIUS
+	var/domain_windup = ALIEN_INFINITE_VOID_WINDUP
 	repeat_macro=1
 
 	verb/Hotbar_use()
@@ -894,39 +992,43 @@ obj/Attacks/Time_Freeze
 		Time_Freeze()
 
 	verb/Time_Freeze()
+		set name = "Time Stop"
 		set category="Skills"
 		if(usr.attacking||usr.tournament_override(fighters_can=1)) return
 		if(usr.Frozen) return
 		if(usr.KO) return
+		if(usr.rp_mode)
+			usr << "Time Stop cannot be used while RP Mode is active."
+			return
+		if(usr.Safezone)
+			usr << "Time Stop cannot be used inside a Safezone."
+			return
 		if(time_freeze_timer>0)
-			usr<<"You can not use this for another [time_freeze_timer] seconds"
+			usr<<"You can not use this for another [time_freeze_timer] seconds."
 			return
-		for(var/obj/Time_Freeze_Energy/T) if(T.ID==usr.key)
-			usr<<"You can not use this until it has worn off from everyone affected by the previous time you used this"
-			return
-		usr.overlays-='TimeFreeze.dmi'
-		usr.overlays+='TimeFreeze.dmi'
-		spawn(10) usr.overlays-='TimeFreeze.dmi'
+		var/mob/user = usr
+		var/turf/domain_origin = user.base_loc()
+		if(!domain_origin) return
+		user.attacking = 3
+		user.StopMovement()
 		time_freeze_timer=ToOne(60*usr.Speed_delay_mult(severity=0.5))
 
 		spawn while(src&&time_freeze_timer>0)
 			time_freeze_timer--
 			sleep(10)
 
-		for(var/mob/A in mob_view(30,usr)) if(A!=usr&&!A.Frozen&&A.client)
-			if(getdist(usr,A)<=20) if(get_dir(usr,A) in list(usr.dir,turn(usr.dir,45),turn(usr.dir,-45)))
-				player_view(10,usr)<<sound('Reflect.ogg',volume=10)
-				A.Frozen=1
-				Missile('TimeFreeze.dmi',usr,A)
-				A.overlays-='TimeFreeze.dmi'
-				A.overlays+='TimeFreeze.dmi'
-				var/obj/Time_Freeze_Energy/T=new
-				A.contents+=T
-				usr.Active_Freezes+=T
-				T.ID=usr.key
-				T.TF_Timer=50*sqrt(usr.BP/A.BP) * Clamp((usr.Pow/A.Res)**0.35,0.4,3) / A.stun_resistance_mod
-				if(T.TF_Timer>600) T.TF_Timer=600
-				sleep(10*usr.Speed_delay_mult(severity=0.5))
+		showAlienInfiniteVoidDomain(domain_origin)
+		user.showTenkaichiTechniqueAnnouncement("TIME STOP", "#9fdcff", 'src/Sound/SoundEffects/Combat/Shonen/AbilityCharge/AbilityCharge19V6.ogg', 50)
+		user.pulseNexusGlow("#6d50ff", 5, 235, 18)
+		flick("Blast", user)
+		sleep(domain_windup)
+		if(!user || loc != user || user.KO || user.rp_mode || user.Safezone)
+			if(user) user.attacking = 0
+			return
+		player_view(15, domain_origin) << sound('src/Sound/SoundEffects/Combat/Shonen/AbilityRelease/AbilityRelease15V2.ogg', volume = 60)
+		var/targets_hit = user.applyAlienInfiniteVoidStun(domain_origin, domain_radius)
+		if(!targets_hit) user << "The domain expands, but catches no valid targets."
+		user.attacking = 0
 
 obj/Attacks/Explosion
 	var/On

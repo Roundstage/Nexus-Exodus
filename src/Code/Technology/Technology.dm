@@ -45,7 +45,7 @@ mob/proc/TryCreateScienceItem(obj/A)
 			if(O)
 				O.Cost=Item_cost(src,A)
 				O.Builder=key
-				gainTechnologyExperience(max(1, A.science_level), "crafting [A]", announce = TRUE)
+				gainTechnologyExperience(getTechnologyCraftExperience(A), "crafting [A]", announce = TRUE)
 
 				if(istype(O,/obj/Ships/Ship)&&Race=="Namekian")
 					O.icon='PuranShip.dmi'
@@ -394,6 +394,8 @@ proc/Add_Technology()
 
 	tech_list = SortListOfObjectsAlphabetically(tech_list)
 	rebuildTechnologySearchIndex()
+	if(islist(GLOBAL_SCIENCE_TAB_ITEMS))
+		GLOBAL_SCIENCE_TAB_ITEMS = getNormalizedScienceBlueprintList(GLOBAL_SCIENCE_TAB_ITEMS)
 
 
 proc/Can_Make_Technology(mob/P,obj/O)

@@ -7,6 +7,8 @@ Core world, persistence, combat-recovery, and utility functions.
 
 Player persistence supports three independent character slots. Character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; the old key-named character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
 
+NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds default all three to off. `ServerFeatureDefaults.dm` also performs a one-time migration for pre-versioned `Misc` settings, then preserves later administrator choices. Disabled NPC worlds neither load nor overwrite the persisted `data/NPCs` roster.
+
 `StatpanelTabs.dm` now refreshes supplemental stat data only in Side + Tabs mode. Skills, Other, and Admin remain BYOND's single native verb-category tabs; no synthetic statpanel with a duplicate name is generated. Items and the admin-only World data retain native atom click and context-menu behavior.
 
 ## Files
@@ -20,6 +22,7 @@ Player persistence supports three independent character slots. Character and fea
 - `src/Code/CoreFunctions/MainCreation.dm`
 - `src/Code/CoreFunctions/MainWorld.dm`
 - `src/Code/CoreFunctions/Map.dm`
+- `src/Code/CoreFunctions/ServerFeatureDefaults.dm`
 - `src/Code/CoreFunctions/MonsterAIRevamp2019.dm`
 - `src/Code/CoreFunctions/PathfindTest.dm`
 - `src/Code/CoreFunctions/PixelHelpers.dm`
@@ -2788,6 +2791,15 @@ Player persistence supports three independent character slots. Character and fea
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+### src/Code/CoreFunctions/ServerFeatureDefaults.dm
+
+#### proc/applyNexusServerFeatureDefaultsMigration
+- Signature: `proc/applyNexusServerFeatureDefaultsMigration()`
+- Inputs: None
+- Purpose: Apply the versioned opt-in defaults once to legacy or unversioned server settings.
+- Returns: `TRUE` when a migration was applied, otherwise `FALSE`.
+- Side effects: disables NPCs, Feats, and automatic Tournaments and advances the persisted defaults version.
+
 ### src/Code/CoreFunctions/MonsterAIRevamp2019.dm
 
 #### mob/proc/Activate_NPCs_Loop
@@ -2884,9 +2896,16 @@ Player persistence supports three independent character slots. Character and fea
 #### proc/disable_npcs
 - Signature: `proc/disable_npcs()`
 - Inputs: None
-- Purpose: Handle disable npcs.
+- Purpose: Disable respawns and body creation, then remove active non-Zombie NPC enemies and their bodies asynchronously.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: clears active NPC actors while leaving the saved NPC roster intact.
+
+#### proc/enable_npcs
+- Signature: `proc/enable_npcs(load_saved_npcs = FALSE)`
+- Inputs: optional flag controlling whether the saved NPC roster is loaded immediately.
+- Purpose: Re-enable NPC respawns and body creation, optionally restoring persisted NPCs for the admin toggle path.
+- Returns: none (implicit).
+- Side effects: mutates NPC runtime state and may load saved NPC actors.
 
 #### mob/New
 - Signature: `mob/New()`
@@ -3968,14 +3987,14 @@ Player persistence supports three independent character slots. Character and fea
 #### proc/saveMisc
 - Signature: `proc/saveMisc()`
 - Inputs: None
-- Purpose: Save Misc.
+- Purpose: Save server settings, including the optional-system default migration version.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
 #### proc/loadMisc
 - Signature: `proc/loadMisc()`
 - Inputs: None
-- Purpose: Load Misc.
+- Purpose: Load server settings and apply the one-time opt-in defaults migration when necessary.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
@@ -4052,14 +4071,14 @@ Player persistence supports three independent character slots. Character and fea
 #### proc/saveNpcs
 - Signature: `proc/saveNpcs()`
 - Inputs: None
-- Purpose: Save NPCs.
+- Purpose: Save NPCs only while the NPC system is enabled, preserving the last roster while disabled.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
 #### proc/loadNpcs
 - Signature: `proc/loadNpcs()`
 - Inputs: None
-- Purpose: Load NPCs.
+- Purpose: Load persisted NPCs only while the NPC system is enabled.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 

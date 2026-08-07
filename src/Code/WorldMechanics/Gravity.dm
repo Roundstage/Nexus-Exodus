@@ -61,8 +61,7 @@ mob/proc/Gravity_Update()
 	var/turf/t = loc
 	if(!t || !isturf(t)) return
 
-	if(t.gravity) Gravity=t.gravity
-	else Gravity=1
+	Gravity = max(1, t.gravity, t.arcane_gravity)
 	if(Gravity<1) Gravity=1
 	Planet_Gravity()
 

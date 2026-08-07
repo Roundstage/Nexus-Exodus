@@ -15,23 +15,23 @@ proc/calculateScaledCombatDamage(factor = 0, attacker_bp = 0, defender_bp = 0, s
 
 mob/proc/getPhysicalCombatDamage(mob/target, factor = 0)
 	if(!target) return 0
-	var/guard_stat = target.End * getMilestoneGuardMultiplier()
-	return calculateScaledCombatDamage(factor, BP, target.getForgedArmorEnduranceBP(), Swordless_strength(), guard_stat)
+	var/guard_stat = target.getMilestoneScaledCombatStat(target.End) * getMilestoneGuardMultiplier()
+	return calculateScaledCombatDamage(factor, getForgedUnarmedAttackBP(), target.getForgedArmorEnduranceBP(), getMilestonePhysicalDamageStat(), guard_stat)
 
 mob/proc/getWeaponCombatDamage(mob/target, factor = 0)
 	if(!target || factor <= 0) return 0
 	var/obj/items/Sword/weapon = using_sword()
 	if(!weapon) return getPhysicalCombatDamage(target, factor)
-	var/guard_stat = target.End * getMilestoneGuardMultiplier()
-	var/source_stat = Swordless_strength()
+	var/guard_stat = target.getMilestoneScaledCombatStat(target.End) * getMilestoneGuardMultiplier()
+	var/source_stat = getMilestonePhysicalDamageStat()
 	var/sword_modifier = Class == "Legendary Saiyan" ? 0.4 : 1
 	var/damage_multiplier = 1 + ((weapon.Damage - 1) * sword_damage_mod * sword_modifier)
 	if(weapon.is_silver)
 		if(target.Vampire || istype(target, /mob/Enemy/Zombie)) damage_multiplier *= silver_sword_damage_mult
 		else damage_multiplier *= silver_sword_damage_penalty
 	if(weapon.Style == "Energy")
-		guard_stat = target.Res * getMilestoneGuardMultiplier()
-		source_stat = (Swordless_strength() * 0.5) + (Pow * 0.5)
+		guard_stat = target.getMilestoneScaledCombatStat(target.Res) * getMilestoneGuardMultiplier()
+		source_stat = (getMilestonePhysicalDamageStat() * 0.5) + (getMilestoneKiDamageStat() * 0.5)
 		damage_multiplier *= energy_sword_damage_mod
 	var/damage = calculateScaledCombatDamage(factor, getForgedWeaponAttackBP(), target.getForgedArmorEnduranceBP(), source_stat, guard_stat)
 	damage *= damage_multiplier
@@ -40,8 +40,8 @@ mob/proc/getWeaponCombatDamage(mob/target, factor = 0)
 
 mob/proc/getKiCombatDamage(mob/target, factor = 0)
 	if(!target) return 0
-	var/guard_stat = target.Res * getMilestoneGuardMultiplier()
-	return calculateScaledCombatDamage(factor, BP, target.BP, Pow, guard_stat) * getMilestoneKiDamageMultiplier()
+	var/guard_stat = target.getMilestoneScaledCombatStat(target.Res) * getMilestoneGuardMultiplier()
+	return calculateScaledCombatDamage(factor, getForgedKiAttackBP(), target.BP, getMilestoneKiDamageStat(), guard_stat) * getMilestoneKiDamageMultiplier() * getForgedKiDamageMultiplier()
 
 mob/proc/getHybridCombatDamage(mob/target, factor = 0)
 	if(!target || factor <= 0) return 0

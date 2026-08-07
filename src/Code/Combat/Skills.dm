@@ -206,9 +206,7 @@ obj/Dash_Attack
 	Cost_To_Learn=10
 	Teach_Timer=1
 	student_point_cost = 25
-	desc="A melee finishing move where you dash in a line in front of you and anyone in that line will \
-	be attacked and take damage. You can aim it by moving side to side. It does more damage if you hit \
-	the target from behind, and more damage the further away you do it from"
+	desc="A targeted melee finisher that rushes directly through the selected opponent. Its damage increases with the distance crossed."
 	icon = 'RTDashAura.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
@@ -247,7 +245,7 @@ mob/verb/Forget_Skill()
 	var/obj/O=input(src,"You can forget any skill you choose. If you learned the skill yourself you will get \
 	[N*100]% of the skill points back. If you were taught you will not.") in L
 	if(!O||O=="Cancel") return
-	if(!O.Taught) gainProgressionExperience(O.Cost_To_Learn * N, "forgotten skill", announce = TRUE)
+	if(!O.Taught) gainProgressionExperience(getScaledProgressionExperience(O.Cost_To_Learn * N), "forgotten skill", announce = TRUE)
 	del(O)
 
 obj/var/Taught=1 //if 1, you did not self learn the skill
@@ -2032,6 +2030,9 @@ mob/proc/IncreaseGod_FistLevel()
 mob/var/tmp/obj/Ultra_Super_Saiyan/ussj_obj
 
 mob/proc/PowerUpGoNextForm()
+	if(Race == "Heran" && !heran_transformed && hasHeranTransformationReq())
+		activateHeranTransformation()
+		return
 	if(SSjAble && SSjAble <= Year && !ussj_obj) ussj_obj = locate(/obj/Ultra_Super_Saiyan) in src
 	if(!IsGod())
 		if(ssj && SSjAble && SSjAble <= Year && SSj2Able && SSj2Able <= Year && has_ssg_req() && !has_ssg) SSG()
@@ -3000,7 +3001,8 @@ obj/Materialization
 		switch(input("") in list("Make Weights","Make Sword","Make Armor","Learn new weight tier"))
 			if("Learn new weight tier")
 				while(usr)
-					var/sp_cost=10
+					usr.syncProgressionTrees(silent = TRUE)
+					var/sp_cost = getScaledProgressionExperience(10)
 					if(usr.progression_experience<sp_cost)
 						usr<<"You need at least [sp_cost] Progression XP to do this"
 						return

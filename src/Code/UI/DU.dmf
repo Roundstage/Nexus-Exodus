@@ -2303,7 +2303,6 @@ window "mainwindow"
 		saved-params = "pos;size;is-maximized"
 		title = "Nexus Exodus"
 		statusbar = false
-		icon = 'Slime64.png'
 		macro = "macro"
 		menu = "menu"
 	elem "mainvsplit"

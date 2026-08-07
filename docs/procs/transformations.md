@@ -1,19 +1,20 @@
 # Transformations
 
 ## Overview
-Primary transformation registry/controller plus Kaioken ("God Fist") drain and boost logic. A mob may have one primary transformation; Third Eye, Mystic, Fire Fist, Saiyan Power, Majin, Kaioken, and Limit Breaker remain explicit secondary/burst categories.
+Primary transformation registry/controller plus Heran and Kaioken ("God Fist") drain and boost logic. A mob may have one primary transformation; Third Eye, Mystic, Fire Fist, Saiyan Power, Majin, Kaioken, and Limit Breaker remain explicit secondary/burst categories.
 
 ## Files
 - `src/Code/Transformations/Kaioken.dm`
 - `src/Code/Transformations/TransformationSystem.dm`
+- `src/Code/Races/Heran/Heran.dm`
 
 ## Proc Reference
 
 ### proc/initializeNexusTransformationRegistry()
-- Purpose: Register stable IDs, labels, families, and stages for Saiyan, divine Saiyan, Frost, Giant, Oozaru, Alien, and Ultra Instinct primaries.
+- Purpose: Register stable IDs, labels, families, and stages for Saiyan, divine Saiyan, Frost, Heran, Giant, Oozaru, Alien, and Ultra Instinct primaries.
 
 ### mob/proc/detectPrimaryTransformation()
-- Purpose: Convert current legacy flags (`ssj`, `Form`, God forms, Giant, Oozaru, transformation buff) into one stable active ID.
+- Purpose: Convert current legacy flags (`ssj`, `Form`, God forms, Heran, Giant, Oozaru, transformation buff) into one stable active ID.
 
 ### mob/proc/preparePrimaryTransformation(transformation_id)
 - Purpose: Revert an incompatible current primary before a legacy activation proc applies the requested form.
@@ -25,17 +26,25 @@ Primary transformation registry/controller plus Kaioken ("God Fist") drain and b
 - Purpose: Remove all primary-form families while preserving separately categorized buffs.
 
 ### mob/proc/normalizePrimaryTransformation()
-- Purpose: Reconstruct canonical state on login and clean legacy saves containing simultaneous primaries.
+- Purpose: Reconstruct canonical state on login, restore active Heran transformation art/BP/upkeep, and clean legacy saves containing simultaneous primaries.
 
 ### mob/proc/updateTransformationGlow()
-- Purpose: Map the active canonical transformation to a persistent colored aura emitter with unsynchronized intensity/scale variation, and remove it on reversion. Saiyan, divine, Frost, Giant, Great Ape, Alien, and Ultra Instinct families have distinct profiles.
+- Purpose: Map the active canonical transformation to a persistent colored aura emitter with unsynchronized intensity/scale variation, and remove it on reversion. Saiyan, divine, Frost, Heran, Giant, Great Ape, Alien, and Ultra Instinct families have distinct profiles.
 
 ### mob/verb/transform and mob/verb/revertTransformation
 - Purpose: Player-facing verbs for direct form selection and full primary reversion.
 
 ### mob/proc/God_Fist_loop()
 - Purpose: Apply periodic Kaioken drains and boost growth while active.
-- Side effects: modifies `God_Fist_boost`, `Health`, `Ki`, aura overlays; can kill the mob.
+- Side effects: modifies `God_Fist_boost`, `willpower`, `Ki`, and aura overlays; stops safely before Willpower drops below 1.
+
+### mob/proc/getGodFistWillpowerDrain()
+- Purpose: Calculate the low per-second Kaioken Willpower upkeep from its active power multiplier.
+- Returns: a value capped at 0.14 Willpower per second.
+
+### mob/proc/applyGodFistUpkeep()
+- Purpose: Spend one Kaioken Willpower/Energy upkeep tick without damaging Health.
+- Returns: false after automatically stopping Kaioken when the one-point Willpower reserve cannot be preserved.
 
 ### mob/proc/God_Fist_bp()
 - Purpose: Compute extra BP contributed by Kaioken.
@@ -47,7 +56,7 @@ Primary transformation registry/controller plus Kaioken ("God Fist") drain and b
 
 ### mob/proc/God_FistStop()
 - Purpose: Disable Kaioken and clear aura overlays.
-- Side effects: resets `God_Fist_level` and `super_God_Fist`, then restores the primary transformation's glow if one remains.
+- Side effects: resets `God_Fist_level`, `super_God_Fist`, and the cached skill object's `Using` state, then restores the primary transformation's glow if one remains.
 
 ### obj/God_Fist/New()
 - Purpose: Cache the Kaioken object on the owning mob after creation.

@@ -2471,7 +2471,7 @@ obj/items/Armor
 	Cost=50000
 	Health=100
 	Stealable=0
-	science = 1
+	science = 0
 	science_level = 1
 	var
 		armor_ver=0
@@ -2520,6 +2520,10 @@ obj/items/Armor
 
 	verb/Customize()
 		set src in view(1)
+		if(istype(src, /obj/items/Armor/Forged))
+			var/obj/items/Armor/Forged/forged_armor = src
+			forged_armor.customizeForgedArmor(usr)
+			return
 		if(usr in view(1,src))
 			while(usr && usr.client)
 				if(suffix)
@@ -2737,7 +2741,7 @@ obj/items
 		Health=10000000
 		Stealable=0
 		clonable=1
-		science = 1
+		science = 0
 		science_level = 1
 		var/Damage=2
 		var/is_silver=0
@@ -2756,6 +2760,10 @@ obj/items
 		proc/Sword_Desc() desc=initial(desc)+"<br>Sharpness: [round(Damage,0.01)]x"
 		verb/Customize()
 			set src in view(1)
+			if(istype(src, /obj/items/Sword/Forged))
+				var/obj/items/Sword/Forged/forged_weapon = src
+				forged_weapon.customizeForgedWeapon(usr)
+				return
 			if(usr in view(1,src))
 				while(usr)
 					if(suffix)
@@ -3121,8 +3129,8 @@ obj/items/Shikon_Jewel
 	can_blueprint=0
 	can_scrap=0
 	Cost=1000000000
-	science = 1
-	science_level = 8
+	science = 0
+	science_level = 0
 	icon='ShikonJewel.dmi'
 	Stealable = 1
 	Health=1.#INF

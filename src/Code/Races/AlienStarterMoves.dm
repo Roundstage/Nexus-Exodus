@@ -13,12 +13,12 @@ var
 	jirenAlienPowerupMult = 0.75
 	jirenAlienKBresist = 0.8 //knockback resistance
 	jirenTakeDmgMult = 1
-	jirenAlienCanAnger = 0
+	jirenAlienCanAnger = 1
 	jirenStunResist = 1.25
 
 mob/proc/Alien_Stuff()
 	if(!client) return
-	var/Starting_SP=round(15*SP_Multiplier**0.5)
+	var/Starting_SP = getScaledProgressionExperience(round(15 * SP_Multiplier ** 0.5))
 
 	var/Starting_BP=round(Avg_Base*bp_mod)
 	if(Starting_BP<6000) Starting_BP=6000 //aliens who choose this should start with more bp than an elite Saiyan
@@ -41,12 +41,12 @@ mob/proc/Alien_Stuff()
 	"Done",\
 	"Genius (25 AP)"=25,\
 	"Alien transform (5 AP)"=5,\
-	"Time freeze (25 AP)"=25,\
+	"Time Stop (25 AP)"=25,\
 	"Limit breaker (15 AP)"=15,\
 	"Absorb (20 AP)"=20,\
 	"Precognition (25 AP)"=25,\
 	"Death regeneration (25 AP)"=25,\
-	"[Starting_SP] SP (10 AP)"=10,\
+	"[Starting_SP] Progression XP (10 AP)"=10,\
 	"Zenkai (15 AP)"=15,\
 	"2.5x BP from meditating (15 AP)"=15,\
 	"Materialize (10 AP)"=10,\
@@ -83,7 +83,7 @@ mob/proc/Alien_Stuff()
 				if("Gyren Alien (50 AP)")
 					switch(alert(src, "This attribute concentrates your power into a durable control-focused form. Your combat BP is adjusted by [jirenAlienBPMult]x and you get [1 / jirenAlienKBresist]x resistance to knockbacks. \
 					Your ability to use power up goes down [(1 - jirenAlienPowerupMult) * 100]%, \
-					and you do not get a 2nd try from anger because all your power is in your regular form already.", "Options", "Yes", "No"))
+					and anger can restore one Health bar when you are pushed to the brink.", "Options", "Yes", "No"))
 						if("No")
 							goto retry
 					jirenAlien = 1
@@ -146,8 +146,8 @@ mob/proc/Alien_Stuff()
 					var/icon/i='AuraElectric.dmi'+rgb(80,180,80)
 					b.buff_overlays+=i
 					Alien_points-=L[choice]
-				if("Time freeze (25 AP)")
-					switch(alert(src, "Time Freeze is an ability you can use to freeze everyone around you for a few seconds", "Options", "Yes", "No"))
+				if("Time Stop (25 AP)")
+					switch(alert(src, "Time Stop opens an eight-tile cosmic field that stuns every valid target caught inside for a few seconds.", "Options", "Yes", "No"))
 						if("No")
 							goto retry
 					contents+=new/obj/Attacks/Time_Freeze
@@ -216,6 +216,6 @@ mob/proc/Alien_Stuff()
 					Alien_points-=L[choice]
 			if(choice=="Elite Alien +[Commas(Starting_BP)] BP (20 AP)")
 				hbtc_bp+=Starting_BP
-			if(choice=="[Starting_SP] SP (10 AP)")
+			if(choice=="[Starting_SP] Progression XP (10 AP)")
 				gainProgressionExperience(Starting_SP, "alien starting trait", announce = FALSE)
 			L-=choice

@@ -110,7 +110,8 @@ datum/NexusAdminPanel
 	proc/showTargetCharacter()
 		if(!requireTarget()) return
 		var/portrait_resource = "nexus_admin_character_[ckey(target.key)]_[world.time].png"
-		var/icon/portrait_icon = icon(target.icon, target.icon_state, SOUTH)
+		var/icon/portrait_icon = getNexusCharacterPortraitIcon(target, SOUTH)
+		prepareNexusHudBrowserResources(owner)
 		owner << browse_rsc(portrait_icon, portrait_resource)
 		owner << browse(target.buildCharacterSheetHtml(portrait_resource), "window=NexusAdminCharacter;size=1180x760;can_resize=true")
 
@@ -123,7 +124,7 @@ datum/NexusAdminPanel
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=bp_mod'><b>BP Modifier</b><span>Set the character's permanent BP growth modifier.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=energy'><b>Base Energy</b><span>Set base Energy while preserving the character's Efficiency multiplier.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=resources'><b>Resources</b><span>Add construction and technology resources.</span></a>
-		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Progression XP</b><span>Add up to 10,000 spendable tree XP at a time.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Progression XP</b><span>Add up to 100,000 spendable tree XP at a time.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=milestone_points'><b>Milestone Points</b><span>Add spendable perk points and update the lifetime total.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=technology_xp'><b>Technology XP</b><span>Advance Technology Level and refresh available unlocks.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=mining_xp'><b>Mining XP</b><span>Advance the Tenkaichi mining profession.</span></a>
@@ -138,7 +139,7 @@ datum/NexusAdminPanel
 			if("skill_points")
 				amount = input(owner, "How much Progression XP should [target] receive?", "Reward Player", 1) as null|num
 				if(isnull(amount)) return
-				amount = Clamp(round(amount), 0, 10000)
+				amount = Clamp(round(amount), 0, 100000)
 				target.gainProgressionExperience(amount, "admin reward", announce = TRUE)
 			if("resources")
 				amount = input(owner, "How many Resources should [target] receive?", "Reward Player", 1000) as null|num
@@ -329,17 +330,18 @@ datum/NexusAdminPanel
 				var/datum/NexusAdminAction/action = nexus_admin_action_catalog[action_id]
 				if(action.category != category || owner.AdminLevel() < action.minimum_level) continue
 				if(compact && !action.quick_action) continue
-				var/card_class = action.dangerous ? "action danger" : "action"
+				var/card_class = action.dangerous ? "action hud-card danger" : "action hud-card"
 				var/search_key = lowertext("[action.name] [action.category] [action.description]")
-				action_html += "<a class='[card_class]' data-category='[action.category]' data-search='[html_encode(search_key)]' href='byond://?src=\ref[src]&action=run&id=[action.id]'><span>[html_encode(action.category)] / LV [action.minimum_level]</span><b>[html_encode(action.name)]</b><small>[html_encode(action.description)]</small></a>"
+				action_html += "<a class='[card_class]' data-category='[action.category]' data-search='[html_encode(search_key)]' href='byond://?src=\ref[src]&action=run&id=[action.id]'><span class='hud-label'>[html_encode(action.category)] / LV [action.minimum_level]</span><b>[html_encode(action.name)]</b><small>[html_encode(action.description)]</small></a>"
 		var/target_name = target && target.client ? "[target] ([target.key])" : "No player selected"
 		var/player_count = 0
 		for(var/mob/player in players) if(player.client) player_count++
 		var/title = compact ? "QUICK ADMIN" : "NEXUS ADMIN CONTROL"
 		var/window_note = compact ? "Fast player operations" : "Searchable development and server command center"
-		return {"<!doctype html><html><head><meta charset='utf-8'><title>[title]</title><style>[getNexusRpgBrowserCss()]
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>[title]</title><style>
 		*{box-sizing:border-box}html,body{margin:0;height:100%;background:#070b11;color:#edf3fa;font:13px Arial,sans-serif}.shell{min-height:100%;background:radial-gradient(circle at 80% 0,#26374b,#0b121c 48%,#06090e)}.header{position:sticky;top:0;z-index:2;padding:14px 18px;border-bottom:1px solid #455a72;background:rgba(10,16,25,.97)}.top{display:flex;align-items:center;gap:10px}.title{margin-right:auto}.title b{display:block;font-size:20px;letter-spacing:1.5px}.title span{color:#8496ad;font-size:10px;text-transform:uppercase}.badge{padding:7px 9px;border:1px solid #516a82;background:#112131;color:#bcd0df}.badge.target{border-color:#9a7146;color:#ffd19c}.close{padding:8px 10px;border:1px solid #714842;color:#ffb3a7;text-decoration:none}.search{width:100%;margin-top:11px;padding:10px;border:1px solid #4b6179;background:#0c1520;color:#fff}.filters{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.filters button{padding:5px 8px;border:1px solid #37485d;background:#0f1926;color:#9fb0c5;cursor:pointer}.filters button.active{border-color:#6ab9dd;background:#173044;color:#fff}.status{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px;border-bottom:1px solid #263547}.status div{padding:8px;border-left:3px solid #547c94;background:#0e1924}.status small{display:block;color:#75889e;text-transform:uppercase;font-size:9px}.status b{display:block;margin-top:3px}.actions{display:grid;grid-template-columns:repeat([compact ? 2 : 3],minmax(220px,1fr));gap:7px;padding:12px}.action{min-height:92px;padding:11px;border:1px solid #2d4054;background:linear-gradient(145deg,#101c29,#0b131d);color:#e4eef8;text-decoration:none}.action:hover{border-color:#71c7ec;background:#14283a}.action.danger{border-color:#70443f}.action.danger:hover{border-color:#e17a6d}.action span,.action b,.action small{display:block}.action span{color:#72bad9;font-size:9px;text-transform:uppercase}.action b{margin:7px 0 5px;font-size:14px}.action small{color:#899bb0;line-height:1.35}.empty{padding:30px;color:#76889e;text-align:center}@media(max-width:850px){.actions{grid-template-columns:repeat(2,1fr)}.status{grid-template-columns:repeat(2,1fr)}}
-		</style></head><body><div class='shell'><div class='header'><div class='top'><div class='title'><b>[title]</b><span>[window_note]</span></div><div class='badge'>ADMIN LV [owner.AdminLevel()]</div><div class='badge target'>TARGET: [html_encode(target_name)]</div><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><input id='search' class='search' placeholder='Search command, category or purpose...' oninput='applyFilters()'><div class='filters'><button class='active' data-filter='All' onclick='setCategory(this)'>All</button><button data-filter='Player' onclick='setCategory(this)'>Player</button><button data-filter='Movement' onclick='setCategory(this)'>Movement</button><button data-filter='Character' onclick='setCategory(this)'>Character</button><button data-filter='Items' onclick='setCategory(this)'>Items</button><button data-filter='Smithing' onclick='setCategory(this)'>Smithing</button><button data-filter='Development' onclick='setCategory(this)'>Development</button><button data-filter='Logs' onclick='setCategory(this)'>Logs</button><button data-filter='Server' onclick='setCategory(this)'>Server</button><button data-filter='Legacy' onclick='setCategory(this)'>Legacy</button></div></div><div class='status'><div><small>Players</small><b>[player_count] online</b></div><div><small>World year</small><b>[Year]</b></div><div><small>OOC</small><b>[OOC ? "Enabled" : "Disabled"]</b></div><div><small>Tournament</small><b>[Tournament ? "Active" : "Inactive"]</b></div></div><div class='actions'>[action_html]</div></div><script>var activeCategory='All';function setCategory(button){activeCategory=button.getAttribute('data-filter');var buttons=document.querySelectorAll('.filters button');for(var i=0;i<buttons.length;i++)buttons.item(i).className='';button.className='active';applyFilters();}function applyFilters(){var query=document.getElementById('search').value.toLowerCase();var cards=document.querySelectorAll('.action');for(var i=0;i<cards.length;i++){var card=cards.item(i);var categoryOk=activeCategory==='All'||card.getAttribute('data-category')===activeCategory;var searchOk=!query||card.getAttribute('data-search').indexOf(query)>=0;card.style.display=categoryOk&&searchOk?'block':'none';}}</script></body></html>"}
+		.action.hud-card{display:block}.action.hud-card.danger{outline-color:#7e4646!important}.header{margin:8px;padding:14px 18px}.status{padding:10px 14px}.filters .hud-tab{padding:6px 9px;cursor:pointer}
+		[getNexusHudBrowserCss("blue")]</style></head><body class='nexus-hud'><div class='shell hud-shell'><div class='header hud-frame'><div class='top'><div class='title'><b class='hud-title'>[title]</b><span class='hud-muted'>[window_note]</span></div><div class='badge hud-panel'>ADMIN LV [owner.AdminLevel()]</div><div class='badge target hud-panel'>TARGET: [html_encode(target_name)]</div><a class='close hud-button danger' href='byond://?src=\ref[src]&action=close'>CLOSE</a></div><input id='search' class='search' placeholder='Search command, category or purpose...' oninput='applyFilters()'><div class='filters'><button class='hud-tab active' data-filter='All' onclick='setCategory(this)'>All</button><button class='hud-tab' data-filter='Player' onclick='setCategory(this)'>Player</button><button class='hud-tab' data-filter='Movement' onclick='setCategory(this)'>Movement</button><button class='hud-tab' data-filter='Character' onclick='setCategory(this)'>Character</button><button class='hud-tab' data-filter='Items' onclick='setCategory(this)'>Items</button><button class='hud-tab' data-filter='Smithing' onclick='setCategory(this)'>Smithing</button><button class='hud-tab' data-filter='Development' onclick='setCategory(this)'>Development</button><button class='hud-tab' data-filter='Logs' onclick='setCategory(this)'>Logs</button><button class='hud-tab' data-filter='Server' onclick='setCategory(this)'>Server</button><button class='hud-tab' data-filter='Legacy' onclick='setCategory(this)'>Legacy</button></div></div><div class='status'><div class='hud-panel'><small class='hud-label'>Players</small><b>[player_count] online</b></div><div class='hud-panel'><small class='hud-label'>World year</small><b>[Year]</b></div><div class='hud-panel'><small class='hud-label'>OOC</small><b>[OOC ? "Enabled" : "Disabled"]</b></div><div class='hud-panel'><small class='hud-label'>Tournament</small><b>[Tournament ? "Active" : "Inactive"]</b></div></div><div class='actions'>[action_html]</div></div><script>var activeCategory='All';function setCategory(button){activeCategory=button.getAttribute('data-filter');var buttons=document.querySelectorAll('.filters button');for(var i=0;i<buttons.length;i++)buttons.item(i).className='hud-tab';button.className='hud-tab active';applyFilters();}function applyFilters(){var query=document.getElementById('search').value.toLowerCase();var cards=document.querySelectorAll('.action');for(var i=0;i<cards.length;i++){var card=cards.item(i);var categoryOk=activeCategory==='All'||card.getAttribute('data-category')===activeCategory;var searchOk=!query||card.getAttribute('data-search').indexOf(query)>=0;card.style.display=categoryOk&&searchOk?'':'none';}}</script></body></html>"}
 
 	proc/show()
 		if(!canUse())
@@ -348,6 +350,7 @@ datum/NexusAdminPanel
 			return
 		var/window_name = compact ? "NexusQuickAdmin" : "NexusAdminPanel"
 		var/window_size = compact ? "720x650" : "1120x760"
+		prepareNexusHudBrowserResources(owner)
 		owner << browse(buildHtml(), "window=[window_name];size=[window_size];can_resize=true;can_close=true")
 
 	Topic(href, list/href_list)
@@ -387,6 +390,13 @@ mob/proc/showNexusAdminPanel(compact = FALSE, mob/selected_target)
 	if(client.nexus_admin_panel) del(client.nexus_admin_panel)
 	client.nexus_admin_panel = new /datum/NexusAdminPanel(src, compact, selected_target)
 	client.nexus_admin_panel.show()
+
+mob/proc/toggleNexusAdminPanel(compact = FALSE)
+	if(!client || !IsAdmin()) return
+	if(client.nexus_admin_panel)
+		del(client.nexus_admin_panel)
+		return
+	showNexusAdminPanel(compact)
 
 mob/AdminEssentials/verb/adminPanel()
 	set name = "Admin Panel"

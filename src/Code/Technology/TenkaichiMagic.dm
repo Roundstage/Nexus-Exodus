@@ -1,9 +1,11 @@
 #define NEXUS_ARCANE_PORTAL_LIFETIME 6000
+#define NEXUS_ARCANE_DEFENSE_MULTIPLIER 1.5
 
 mob/var
 	list/arcane_permanent_effects = list()
 	tmp/arcane_attack_empowered_until = 0
 	tmp/arcane_defense_empowered_until = 0
+	tmp/arcane_defense_stat_empowered_until = 0
 	tmp/arcane_accelerated_until = 0
 	tmp/arcane_regeneration_until = 0
 	tmp/arcane_replenishment_until = 0
@@ -13,6 +15,25 @@ mob/var
 	arcane_portal_anchor_z = 0
 
 obj/var/tmp/next_arcane_use = 0
+turf/var/tmp/arcane_gravity = 0
+
+mob/proc/getArcaneDefenseStatMultiplier()
+	if(arcane_defense_stat_empowered_until > world.time) return NEXUS_ARCANE_DEFENSE_MULTIPLIER
+	return 1
+
+mob/proc/getArcaneEmpoweredEndurance()
+	return End * getArcaneDefenseStatMultiplier()
+
+mob/proc/getArcaneEmpoweredResistance()
+	return Res * getArcaneDefenseStatMultiplier()
+
+mob/proc/isArcaneAlly(mob/other)
+	if(!other) return FALSE
+	if(other == src) return TRUE
+	for(var/obj/League/owned_league in league_list)
+		for(var/obj/League/other_league in other.league_list)
+			if(owned_league.league_id == other_league.league_id) return TRUE
+	return FALSE
 
 mob/proc/hasArcanePermanentEffect(effect_id)
 	if(!islist(arcane_permanent_effects)) arcane_permanent_effects = list()
@@ -39,10 +60,12 @@ mob/proc/spendArcaneEssence(amount, spell_name, obj/spell, cooldown = 0)
 	gainMagicExperience(max(1, amount / 8), "casting [spell_name]", announce = FALSE)
 	return TRUE
 
-mob/proc/showArcaneCastVfx(color = "#b875ff", sound_volume = 35)
+mob/proc/showArcaneCastVfx(color = "#b875ff", sound_volume = 35, effect_state = "portal", sound_category = "ability_charge")
 	player_view(12, src) << "<font color=[color]>Arcane sigils flare around [src]."
-	Play_Melee_Sound(sound_range = 12, origin = src, sound_file = 'src/Sound/SoundEffects/Combat/Kiplosion.ogg', sound_volume = sound_volume)
-	Make_Shockwave(src, sw_icon_size = 64)
+	var/cast_sound = getNexusShonenSound(sound_category)
+	if(!cast_sound) cast_sound = 'src/Sound/SoundEffects/Combat/Kiplosion.ogg'
+	Play_Melee_Sound(sound_range = 12, origin = src, sound_file = cast_sound, sound_volume = sound_volume)
+	showNexusOpenCombatEffect(src, "foozle_magic_64", effect_state, 1.2, color, 235, BLEND_ADD, 10, 0.2)
 
 proc/arcaneDirectionText(direction)
 	switch(direction)
@@ -61,7 +84,8 @@ obj/ArcaneSpell
 	teachable = 0
 	hotbar_type = "Ability"
 	can_hotbar = 1
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi'
+	icon_state = "portal"
 
 obj/ArcaneSpell/Projectile
 	var
@@ -72,6 +96,10 @@ obj/ArcaneSpell/Projectile
 		projectile_speed = 48
 		projectile_distance = 48
 		projectile_stun = 0
+		cast_effect_state = "portal"
+		impact_effect_state = "explosion"
+		cast_sound_category = "ability_charge"
+		impact_sound_category = "ability_release"
 
 	proc/cast(mob/caster)
 		if(!caster || caster.cant_blast()) return FALSE
@@ -80,14 +108,20 @@ obj/ArcaneSpell/Projectile
 		projectile.setStats(caster, Percent = damage_percent, Off_Mult = 1.15, Explosion = explosion_size, explosion_percent = explosion_size ? damage_percent * 0.7 : 0)
 		projectile.from_attack = src
 		projectile.icon = icon
+		projectile.icon_state = icon_state
+		projectile.projectile_impact_icon = 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi'
+		projectile.projectile_impact_icon_state = impact_effect_state
+		projectile.projectile_impact_sound = getNexusShonenSound(impact_sound_category)
+		projectile.projectile_impact_sound_volume = 46
 		projectile.Stun = projectile_stun
 		projectile.Shockwave = explosion_size ? 1.5 : 0.5
 		projectile.dir = caster.dir
 		projectile.SafeTeleport(caster.loc)
 		projectile.step_x = caster.step_x
 		projectile.step_y = caster.step_y
+		projectile.queueNexusProjectileGlowUpdate()
 		projectile.BlastAutoTargetGo(boundWidth = 20, boundHeight = 20, vectorSpeed = projectile_speed, angleLimit = 30, dist = projectile_distance, randomAngle = 1)
-		caster.showArcaneCastVfx()
+		caster.showArcaneCastVfx(effect_state = cast_effect_state, sound_category = cast_sound_category)
 		return TRUE
 
 	verb/Hotbar_use()
@@ -97,11 +131,14 @@ obj/ArcaneSpell/Projectile
 	Fireball
 		name = "Fireball"
 		desc = "Launch a homing sphere of arcane fire that erupts on impact."
-		icon = 'src/Icons/Ki/Big/BlastFire.dmi'
+		icon_state = "fire_ball"
 		essence_cost = 18
 		cooldown = 24
 		damage_percent = 0.72
 		explosion_size = 1
+		cast_effect_state = "fire_ball"
+		impact_effect_state = "explosion"
+		impact_sound_category = "explosions"
 		verb/Fireball()
 			set category = "Skills"
 			cast(usr)
@@ -109,12 +146,14 @@ obj/ArcaneSpell/Projectile
 	FrostBolt
 		name = "Frost Bolt"
 		desc = "Launch a precise freezing bolt that briefly stuns its target."
-		icon = 'src/Icons/Ki/Blasts/BlastDualFireBlast.dmi'
+		icon_state = "water"
 		essence_cost = 15
 		cooldown = 20
 		damage_percent = 0.55
 		projectile_stun = 1
 		projectile_speed = 54
+		cast_effect_state = "water"
+		impact_effect_state = "water_geyser"
 		verb/Frost_Bolt()
 			set category = "Skills"
 			cast(usr)
@@ -122,29 +161,42 @@ obj/ArcaneSpell/Projectile
 	LightningBolt
 		name = "Lightning Bolt"
 		desc = "Condense Arcane Essence into a fast, stunning lightning strike."
-		icon = 'src/Icons/Ki/Electricity/Lightning.dmi'
+		icon_state = "wind"
 		essence_cost = 20
 		cooldown = 32
 		damage_percent = 0.68
 		projectile_stun = 1
 		projectile_speed = 64
 		projectile_distance = 36
+		cast_effect_state = "wind"
+		impact_effect_state = "wind"
+		cast_sound_category = "electric"
+		impact_sound_category = "electric"
 		verb/Lightning_Bolt()
 			set category = "Skills"
 			cast(usr)
 
 obj/ArcaneSpell/FrostNova
 	name = "Frost Nova"
-	desc = "Release a freezing pulse that damages and slows nearby enemies."
+	desc = "Release a freezing pulse that damages and stuns every valid enemy within two tiles."
+	icon_state = "water_geyser"
+
+	proc/applyNova(mob/caster)
+		if(!caster) return 0
+		var/hit_count = 0
+		for(var/mob/target in oview(2, caster))
+			if(!caster.canHitTenkaichiTechniqueTarget(target) || target.KO) continue
+			var/damage = Clamp(7 * (caster.BP / max(target.BP, 1)) ** 0.35, 2, 16)
+			if(!caster.applyTenkaichiTechniqueDamage(target, damage, name)) continue
+			target.ApplyStun(time = 20, no_immunity = TRUE, stun_power = 2)
+			showNexusOpenCombatEffect(target, "foozle_magic_64", "water_geyser", 0.75, "#8ee9ff", 225, BLEND_ADD, 12, 0.2)
+			hit_count++
+		return hit_count
 
 	proc/cast(mob/caster)
 		if(!caster || !caster.spendArcaneEssence(35, name, src, 70)) return FALSE
-		caster.showArcaneCastVfx("#8ee9ff", 45)
-		for(var/mob/target in range(2, caster))
-			if(target == caster || target.KO || !target.client) continue
-			var/damage = Clamp(7 * (caster.BP / max(target.BP, 1)) ** 0.35, 2, 16)
-			target.TakeDamage(damage, attacker = caster, attack_name = name)
-			target.ApplyStun(time = 8, stun_power = 1.5)
+		caster.showArcaneCastVfx("#8ee9ff", 45, "water_geyser", "ability_release")
+		applyNova(caster)
 		return TRUE
 
 	verb/Hotbar_use()
@@ -156,19 +208,33 @@ obj/ArcaneSpell/FrostNova
 
 obj/ArcaneSpell/EarthPrison
 	name = "Earth Prison"
-	desc = "Raise a temporary square of destructible stone around the caster."
+	desc = "Raise a five-tile-radius square of temporary, destructible earthen walls around the caster."
+	icon_state = "earth_spike"
+
+	proc/createPerimeter(mob/caster, radius = 5, lifetime = 600)
+		var/list/created_walls = list()
+		var/turf/origin = caster ? caster.base_loc() : null
+		if(!origin || radius < 1) return created_walls
+		var/minimum_x = max(1, origin.x - radius)
+		var/maximum_x = min(world.maxx, origin.x + radius)
+		var/minimum_y = max(1, origin.y - radius)
+		var/maximum_y = min(world.maxy, origin.y + radius)
+		for(var/tile_x = minimum_x, tile_x <= maximum_x, tile_x++)
+			for(var/tile_y = minimum_y, tile_y <= maximum_y, tile_y++)
+				if(tile_x != minimum_x && tile_x != maximum_x && tile_y != minimum_y && tile_y != maximum_y) continue
+				var/turf/tile = locate(tile_x, tile_y, origin.z)
+				if(!tile || tile.density || locate(/obj/ArcaneEarthBarrier) in tile) continue
+				var/obj/ArcaneEarthBarrier/barrier = new(tile)
+				barrier.Builder = caster.key ? caster.key : "[caster]"
+				barrier.Health = max(1000, caster.BP * 0.35)
+				created_walls += barrier
+				if(lifetime > 0) spawn(lifetime) if(barrier) del(barrier)
+		return created_walls
 
 	proc/cast(mob/caster)
 		if(!caster || !caster.spendArcaneEssence(45, name, src, 120)) return FALSE
-		var/radius = 4
-		for(var/turf/tile in range(radius, caster))
-			if(max(abs(tile.x - caster.x), abs(tile.y - caster.y)) != radius) continue
-			if(tile.density || locate(/obj/ArcaneEarthBarrier) in tile) continue
-			var/obj/ArcaneEarthBarrier/barrier = new(tile)
-			barrier.Builder = caster.key
-			barrier.Health = max(1000, caster.BP * 0.35)
-			spawn(600) if(barrier) del(barrier)
-		caster.showArcaneCastVfx("#d4a46f", 50)
+		createPerimeter(caster)
+		caster.showArcaneCastVfx("#d4a46f", 50, "earth_spike", "land")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -187,17 +253,23 @@ obj/ArcaneEarthBarrier
 	Grabbable = 0
 	takes_gradual_damage = 1
 
+	New()
+		. = ..()
+		var/list/available_states = icon_states(icon)
+		if(!icon_state && available_states.len && !("" in available_states)) icon_state = available_states[1]
+
 obj/ArcaneSpell/EmpoweredAttacks
 	name = "Empowered Attacks"
 	desc = "Empower nearby allies, increasing damage by 10% for 30 seconds."
+	icon_state = "fire_ball"
 
 	proc/cast(mob/caster)
 		if(!caster || !caster.spendArcaneEssence(40, name, src, 180)) return FALSE
 		for(var/mob/ally in range(5, caster))
-			if(!ally.client) continue
+			if(!caster.isArcaneAlly(ally)) continue
 			ally.arcane_attack_empowered_until = max(ally.arcane_attack_empowered_until, world.time + 300)
 			ally << "<font color=#ffba66>Your attacks have been empowered for 30 seconds."
-		caster.showArcaneCastVfx("#ff8d4a", 45)
+		caster.showArcaneCastVfx("#ff8d4a", 45, "fire_ball", "ability_ready")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -209,15 +281,16 @@ obj/ArcaneSpell/EmpoweredAttacks
 
 obj/ArcaneSpell/EmpoweredDefenses
 	name = "Empowered Defenses"
-	desc = "Ward nearby allies, reducing damage taken by 15% for 30 seconds."
+	desc = "Ward nearby allies, increasing effective Endurance and Resistance by 50% for 30 seconds."
+	icon_state = "rocks"
 
 	proc/cast(mob/caster)
 		if(!caster || !caster.spendArcaneEssence(40, name, src, 180)) return FALSE
 		for(var/mob/ally in range(5, caster))
-			if(!ally.client) continue
-			ally.arcane_defense_empowered_until = max(ally.arcane_defense_empowered_until, world.time + 300)
+			if(!caster.isArcaneAlly(ally)) continue
+			ally.arcane_defense_stat_empowered_until = max(ally.arcane_defense_stat_empowered_until, world.time + 300)
 			ally << "<font color=#89d5ff>Your defenses have been empowered for 30 seconds."
-		caster.showArcaneCastVfx("#5aa8ff", 45)
+		caster.showArcaneCastVfx("#5aa8ff", 45, "rocks", "ability_ready")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -230,6 +303,7 @@ obj/ArcaneSpell/EmpoweredDefenses
 obj/ArcaneSpell/Accelerate
 	name = "Accelerate"
 	desc = "Accelerate yourself or an adjacent ally for 30 seconds."
+	icon_state = "wind"
 
 	proc/cast(mob/caster)
 		if(!caster || !caster.spendArcaneEssence(28, name, src, 120)) return FALSE
@@ -239,7 +313,7 @@ obj/ArcaneSpell/Accelerate
 		if(!chosen) return FALSE
 		chosen.arcane_accelerated_until = max(chosen.arcane_accelerated_until, world.time + 300)
 		chosen << "<font color=#d7ffff>Time bends around you; your actions accelerate for 30 seconds."
-		caster.showArcaneCastVfx("#d7ffff", 35)
+		caster.showArcaneCastVfx("#d7ffff", 35, "wind", "ability_ready")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -252,6 +326,7 @@ obj/ArcaneSpell/Accelerate
 obj/ArcaneSpell/Rejuvenate
 	name = "Rejuvenate"
 	desc = "Restore an adjacent ally without sacrificing the caster's health."
+	icon_state = "water"
 
 	proc/cast(mob/caster)
 		if(!caster) return FALSE
@@ -267,7 +342,7 @@ obj/ArcaneSpell/Rejuvenate
 		target.applyRegenerationHealth(25, drains_willpower = FALSE)
 		target.Ki = min(target.max_ki, target.Ki + target.max_ki * 0.2)
 		target.restoreWillpower(10, "Arcane rejuvenation restores your resolve.", announce = FALSE)
-		caster.showArcaneCastVfx("#9cffb2", 35)
+		caster.showArcaneCastVfx("#9cffb2", 35, "water", "ability_ready")
 		player_view(12, caster) << "<font color=#9cffb2>[caster] rejuvenates [target]."
 		return TRUE
 
@@ -281,6 +356,7 @@ obj/ArcaneSpell/Rejuvenate
 obj/ArcaneSpell/GravityWell
 	name = "Gravity Well"
 	desc = "Create a temporary pocket of increased gravity for training."
+	icon_state = "portal"
 
 	proc/cast(mob/caster)
 		if(!caster) return FALSE
@@ -292,7 +368,7 @@ obj/ArcaneSpell/GravityWell
 		var/obj/ArcaneGravityWell/well = new(caster.base_loc())
 		well.gravity_level = gravity
 		well.activate()
-		caster.showArcaneCastVfx("#bf87ff", 50)
+		caster.showArcaneCastVfx("#bf87ff", 50, "portal", "ability_release")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -310,27 +386,35 @@ obj/ArcaneGravityWell
 	Savable = 0
 	Grabbable = 0
 	var/gravity_level = 2
+	var/tmp/list/affected_turfs = list()
+	var/tmp/active = FALSE
 
-	proc/activate()
+	proc/activate(lifetime = 6000)
+		if(active) return
+		active = TRUE
 		desc = "A [gravity_level]x magical gravity field. It expires after ten minutes."
-		pulseGravity()
-		spawn(6000) if(src) del(src)
-
-	proc/pulseGravity()
-		set waitfor = 0
-		while(src)
-			for(var/mob/target in range(2, src))
-				target.Gravity = max(target.Gravity, gravity_level)
-			sleep(10)
+		for(var/turf/tile in view(2, src))
+			affected_turfs += tile
+			tile.arcane_gravity = max(tile.arcane_gravity, gravity_level)
+			for(var/mob/target in tile) target.Gravity_Update()
+		if(lifetime > 0) spawn(lifetime) if(src) del(src)
 
 	Del()
-		for(var/mob/target in range(2, src)) target.Gravity_Update()
+		active = FALSE
+		for(var/turf/tile in affected_turfs)
+			tile.arcane_gravity = 0
+			for(var/obj/ArcaneGravityWell/other_well in world)
+				if(other_well != src && other_well.active && tile in other_well.affected_turfs)
+					tile.arcane_gravity = max(tile.arcane_gravity, other_well.gravity_level)
+			for(var/mob/target in tile) target.Gravity_Update()
+		affected_turfs = null
 		player_view(10, src) << "The Gravity Well collapses."
 		. = ..()
 
 obj/ArcaneSpell/CreatePortal
 	name = "Create Portal"
 	desc = "Bind a visited location as an anchor, then open a temporary two-way portal to it."
+	icon_state = "portal"
 
 	proc/cast(mob/caster)
 		if(!caster || caster.Final_Realm() || caster.Prisoner() || caster.Teleport_nulled()) return FALSE
@@ -373,7 +457,8 @@ obj/ArcaneSpell/CreatePortal
 
 obj/ArcaneSpell/Enchant
 	name = "Enchant"
-	desc = "Spend Arcane Essence to imbue one Tenkaichi-forged item with masterwork quality."
+	desc = "Spend Arcane Essence to permanently grant one Tenkaichi-forged item visible masterwork quality and improved combat statistics."
+	icon_state = "molten_spear"
 
 	proc/cast(mob/caster)
 		if(!caster) return FALSE
@@ -382,6 +467,10 @@ obj/ArcaneSpell/Enchant
 			if(!weapon.master_blacksmith_quality) options += weapon
 		for(var/obj/items/Armor/Forged/armor in caster.item_list)
 			if(!armor.master_blacksmith_quality) options += armor
+		for(var/obj/items/Gloves/Forged/gloves in caster.item_list)
+			if(!gloves.master_blacksmith_quality) options += gloves
+		for(var/obj/items/Mask/Forged/mask in caster.item_list)
+			if(!mask.master_blacksmith_quality) options += mask
 		if(!options.len)
 			caster << "You carry no forged item that can receive this enchantment."
 			return FALSE
@@ -392,12 +481,20 @@ obj/ArcaneSpell/Enchant
 			var/obj/items/Sword/Forged/weapon = choice
 			weapon.master_blacksmith_quality = TRUE
 			weapon.refreshForgedWeapon()
-		else
+		else if(istype(choice, /obj/items/Armor/Forged))
 			var/obj/items/Armor/Forged/armor = choice
 			armor.master_blacksmith_quality = TRUE
 			armor.refreshForgedArmor()
+		else if(istype(choice, /obj/items/Gloves/Forged))
+			var/obj/items/Gloves/Forged/gloves = choice
+			gloves.master_blacksmith_quality = TRUE
+			gloves.refreshForgedGloves()
+		else
+			var/obj/items/Mask/Forged/mask = choice
+			mask.master_blacksmith_quality = TRUE
+			mask.refreshForgedMask()
 		player_view(10, caster) << "Arcane runes settle permanently into [choice]."
-		caster.showArcaneCastVfx("#ffd166", 45)
+		caster.showArcaneCastVfx("#ffd166", 45, "molten_spear", "ability_ready")
 		return TRUE
 
 	verb/Hotbar_use()
@@ -410,7 +507,8 @@ obj/ArcaneSpell/Enchant
 obj/ArcanePortal
 	name = "Arcane Portal"
 	desc = "A temporary two-way portal."
-	icon = 'src/Icons/Effects/Portal.dmi'
+	icon = 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi'
+	icon_state = "portal"
 	density = 0
 	Savable = 0
 	Grabbable = 0
@@ -469,10 +567,8 @@ obj/items/ArcaneFocusGauntlets
 	Savable = 1
 
 obj/items/ArcaneBoxingGloves
-	name = "Boxing Gloves"
-	desc = "Padded enchanted gloves intended for controlled sparring and training."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
-	icon_state = "RoS"
+	parent_type = /obj/items/Gloves/Forged
+	forged_style_id = "boxing"
 	Cost = 0
 	Savable = 1
 
@@ -681,7 +777,7 @@ mob/ArcaneDoll
 
 obj/items/ArcaneUpgradeKit
 	name = "Upgrade Kit"
-	desc = "Apply masterwork arcane quality to one Tenkaichi-forged weapon or armor."
+	desc = "Apply masterwork arcane quality to one Tenkaichi-forged weapon, pair of gloves, mask, or armor."
 	icon = 'src/Icons/Objects/Technology/Lab.dmi'
 	icon_state = "Tool2"
 	Cost = 0
@@ -692,6 +788,8 @@ obj/items/ArcaneUpgradeKit
 		var/list/options = list()
 		for(var/obj/items/Sword/Forged/weapon in usr.item_list) options += weapon
 		for(var/obj/items/Armor/Forged/armor in usr.item_list) options += armor
+		for(var/obj/items/Gloves/Forged/gloves in usr.item_list) options += gloves
+		for(var/obj/items/Mask/Forged/mask in usr.item_list) options += mask
 		var/obj/items/choice = input(usr, "Upgrade which forged item?", name) as null|obj in options
 		if(!choice) return
 		if(istype(choice, /obj/items/Sword/Forged))
@@ -701,13 +799,27 @@ obj/items/ArcaneUpgradeKit
 				return
 			weapon.master_blacksmith_quality = TRUE
 			weapon.refreshForgedWeapon()
-		else
+		else if(istype(choice, /obj/items/Armor/Forged))
 			var/obj/items/Armor/Forged/armor = choice
 			if(armor.master_blacksmith_quality)
 				usr << "[armor] already has masterwork quality."
 				return
 			armor.master_blacksmith_quality = TRUE
 			armor.refreshForgedArmor()
+		else if(istype(choice, /obj/items/Gloves/Forged))
+			var/obj/items/Gloves/Forged/gloves = choice
+			if(gloves.master_blacksmith_quality)
+				usr << "[gloves] already has masterwork quality."
+				return
+			gloves.master_blacksmith_quality = TRUE
+			gloves.refreshForgedGloves()
+		else
+			var/obj/items/Mask/Forged/mask = choice
+			if(mask.master_blacksmith_quality)
+				usr << "[mask] already has masterwork quality."
+				return
+			mask.master_blacksmith_quality = TRUE
+			mask.refreshForgedMask()
 		player_view(10, usr) << "Arcane runes settle into [choice]."
 		del(src)
 
@@ -782,14 +894,14 @@ obj/items/ArcaneElixir
 
 	Empowerment
 		name = "Elixir of Empowerment"
-		desc = "Fully restores the drinker and grants 40 Progression XP. One effective dose per character."
+		desc = "Fully restores the drinker and grants 400 Progression XP. One effective dose per character."
 		effect_id = "elixir_empowerment"
 		applyEffect(mob/user)
 			if(!user.addArcanePermanentEffect(effect_id))
 				user << "A second Elixir of Empowerment would have no effect."
 				return FALSE
 			user.FullHeal()
-			user.gainProgressionExperience(40, name, announce = TRUE)
+			user.gainProgressionExperience(getScaledProgressionExperience(40), name, announce = TRUE)
 			return TRUE
 
 	Reformation
@@ -841,11 +953,11 @@ obj/items/ArcaneBook
 
 	Lessons
 		name = "Book of Lessons"
-		desc = "Grants 75 Progression XP from the recorded lessons of the past. One effective reading per character."
+		desc = "Grants 750 Progression XP from the recorded lessons of the past. One effective reading per character."
 		effect_id = "book_lessons"
 		applyEffect(mob/user)
 			if(!user.addArcanePermanentEffect(effect_id)) return FALSE
-			user.gainProgressionExperience(75, name, announce = TRUE)
+			user.gainProgressionExperience(getScaledProgressionExperience(75), name, announce = TRUE)
 			return TRUE
 
 	Power
@@ -869,3 +981,4 @@ obj/Turfs/Door/ArcaneDoor
 		spawn(1) if(src && !Password) Password = "arcane-[rand(1000, 9999)]"
 
 #undef NEXUS_ARCANE_PORTAL_LIFETIME
+#undef NEXUS_ARCANE_DEFENSE_MULTIPLIER

@@ -31,37 +31,14 @@ mob/var/tmp
 	koCount = 0 //how many times you were ko'd this session
 
 mob/proc/ShouldAnger(mob/target)
-	var/is_able_to_anger 	= target.can_anger()
-	var/is_going_to_anger 	= 100//prob(target.anger_chance())
-
-	var/anger_result = is_able_to_anger && is_going_to_anger
-	return anger_result
+	return target && target.canUseAngerHealthRecovery()
 
 mob/proc/TryToCauseAnger(mob/Attacker, mob/Victim)
-	if(Attacker || !ismob(Attacker) || hero == Victim.key)
-		if(ShouldAnger(Victim) && Attacker != Victim )
-			var/can_trigger_anger
-			var/is_attacker_a_player 			= Attacker.client
-			var/attacker_caused_anger_recently 	= (Attacker.ckey in anger_reasons)
-			var/has_calmed_from_anger 			= world.time > Victim.last_anger + ANGER_SYSTEM_TIME_BETWEEN_ANGERS
-			var/ko_reason 						= "Unknown reason for KO"
-
-			if(ismob(Attacker))
-				if(Attacker.ckey) ko_reason = Attacker.ckey
-				else ko_reason = "NPC caused KO"
-
-			if(is_attacker_a_player && !attacker_caused_anger_recently)
-				can_trigger_anger = TRUE
-			if(ko_reason in list("low health", "shield") && !attacker_caused_anger_recently)
-				can_trigger_anger = TRUE
-
-			if((has_calmed_from_anger || can_trigger_anger) && !Victim.has_angered_before_ko)
-				Victim.anger(reason = ko_reason)
-				Victim.recent_ko_reasons.Insert(1, ko_reason)
-				Victim.recent_ko_reasons.len = 3
-				Victim.has_angered_before_ko = TRUE
-				return TRUE
-	return FALSE
+	if(!ShouldAnger(Victim) || Attacker == Victim) return FALSE
+	var/ko_reason = "being pushed to the brink"
+	if(ismob(Attacker))
+		ko_reason = Attacker.ckey ? Attacker.ckey : "an enemy attack"
+	return Victim.triggerAngerHealthRecovery(ko_reason)
 
 mob/proc/TryToAnnounceBattlegroundsDefeat(mob/Attacker, mob/Victim)
 	if(Victim.client && Victim.AtBattlegrounds())
@@ -172,6 +149,9 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 
 	if(Victim.spam_killed)
 		Victim.FullHeal()
+		return
+
+	if(allow_anger && TryToCauseAnger(Attacker, Victim))
 		return
 
 	TryToAnnounceBattlegroundsDefeat(Attacker, Victim)

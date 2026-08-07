@@ -80,6 +80,8 @@ obj/Attacks/TenkaichiMeleeTechnique
 		splash_target_limit = 0
 		effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
 		effect_icon_state
+		cast_sound_category
+		impact_sound_category
 		cast_text_color = "#ffd166"
 		tmp/next_use = 0
 
@@ -107,12 +109,18 @@ obj/Attacks/TenkaichiMeleeTechnique
 		if(requires_weapon)
 			if(behavior == "iai_dash" || damage_multiplier < 1.25) return pick(nexus_sword_swing_light_sounds)
 			return pick(nexus_sword_swing_heavy_sounds)
-		return pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg')
+		var/open_sound = getNexusShonenSound(cast_sound_category ? cast_sound_category : "swings")
+		return open_sound ? open_sound : pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg')
 
 	proc/getImpactSound()
 		var/lower_name = lowertext(name)
 		if(requires_weapon) return pick(nexus_sword_impact_sounds)
-		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'BigCrash.ogg'
+		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'RockImpactHeavy1.ogg'
+		var/category = impact_sound_category
+		if(!category && (findtext(lower_name, "blue comet") || findtext(lower_name, "guard break"))) category = "electric"
+		if(!category) category = "melee"
+		var/open_sound = getNexusShonenSound(category)
+		if(open_sound) return open_sound
 		if(findtext(lower_name, "kick") || findtext(lower_name, "wing clip")) return 'Strongkick.ogg'
 		if(knockback_multiplier >= 3 || damage_multiplier >= 1.8) return 'Strongpunch.ogg'
 		return 'Mediumpunch.ogg'
@@ -133,6 +141,9 @@ obj/Attacks/TenkaichiMeleeTechnique
 		effect.icon = effect_icon
 		if(effect_icon_state) effect.icon_state = effect_icon_state
 		effect.density = 0
+		effect.color = null
+		effect.alpha = 255
+		effect.blend_mode = BLEND_ADD
 		effect.SafeTeleport(target.loc)
 		CenterIcon(effect)
 		var/impact_scale = Clamp(0.9 + (damage_multiplier * 0.12) + (knockback_multiplier * 0.04), 1, 1.8)
@@ -262,6 +273,7 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	if(technique.behavior == "march") return castTenkaichiMarchOfFury(technique)
 	if(technique.behavior == "delayed_barrage") return castTenkaichiDelayedBarrage(technique)
 	if(technique.behavior == "riposte") return activateTenkaichiRiposte(technique)
+	if(technique.behavior == "radial") return castTenkaichiRadialTechnique(technique)
 	if(!can_melee()) return FALSE
 	var/maximum_range = max(1, technique.dash_range)
 	var/mob/target = getTenkaichiTechniqueTarget(maximum_range)
@@ -292,6 +304,21 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	technique.playCastEffects(src)
 	setTenkaichiMeleeContext(technique, target)
 	Melee(target, from_auto_attack = 1)
+	return TRUE
+
+mob/proc/castTenkaichiRadialTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)
+	if(!technique || !can_melee()) return FALSE
+	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	technique.playCastEffects(src)
+	attacking = 1
+	Make_Shockwave(src, sw_icon_size = 128)
+	var/hit_count = 0
+	for(var/mob/target in oview(max(1, technique.splash_radius), src))
+		if(hit_count >= technique.splash_target_limit) break
+		if(!canHitTenkaichiTechniqueTarget(target)) continue
+		if(target.AOE_auto_dodge(src, loc)) continue
+		if(resolveTenkaichiTechniqueHit(target, technique, technique.splash_damage_multiplier, force_hit = TRUE)) hit_count++
+	Reset_melee()
 	return TRUE
 
 mob/proc/getTenkaichiTechniqueTarget(maximum_range = 1)
@@ -500,16 +527,17 @@ obj/Attacks/TenkaichiMeleeTechnique/Flourish
 
 obj/Attacks/TenkaichiMeleeTechnique/WindHowl
 	name = "Wind Howl"
-	desc = "Unleash a slicing shockwave that hits enemies around the wielder."
+	desc = "Unleash a true area slicing shockwave that strikes enemies within three tiles without requiring a selected target."
 	cast_text_color = "#a8f0d2"
 	requires_weapon = TRUE
 	damage_multiplier = 0.9
 	energy_cost = 30
 	cooldown_ticks = 140
+	behavior = "radial"
 	splash_mode = "radius"
-	splash_radius = 2
+	splash_radius = 3
 	splash_damage_multiplier = 0.75
-	splash_target_limit = 8
+	splash_target_limit = 12
 	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTCircleWind.dmi'
 	verb/Wind_Howl()
 		set name = "Wind Howl"
@@ -646,6 +674,9 @@ obj/Attacks/TenkaichiMeleeTechnique/Headbutt
 	stun_ticks = 4
 	energy_cost = 10
 	cooldown_ticks = 55
+	cast_text_color = "#ff9f43"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "explosion_orange"
 	verb/Headbutt()
 		set category = "Skills"
 		useTechnique(usr)
@@ -676,6 +707,9 @@ obj/Attacks/TenkaichiMeleeTechnique/AxeKick
 	knockback_multiplier = 1.4
 	energy_cost = 12
 	cooldown_ticks = 65
+	cast_text_color = "#ffd166"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "blast_orange"
 	verb/Axe_Kick()
 		set name = "Axe Kick"
 		set category = "Skills"
@@ -705,6 +739,9 @@ obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury
 	energy_cost = 34
 	cooldown_ticks = 170
 	behavior = "march"
+	cast_text_color = "#73c7ff"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "blast_blue"
 	verb/March_of_Fury()
 		set name = "March of Fury"
 		set category = "Skills"
@@ -754,7 +791,9 @@ obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches
 	energy_cost = 30
 	cooldown_ticks = 170
 	behavior = "delayed_barrage"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+	cast_text_color = "#ffbd59"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "blast_orange"
 	verb/Consecutive_Normal_Punches()
 		set name = "Consecutive Normal Punches"
 		set category = "Skills"
@@ -798,7 +837,10 @@ obj/Attacks/TenkaichiMeleeTechnique/GuardBreak
 	stun_ticks = 6
 	energy_cost = 18
 	cooldown_ticks = 105
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	cast_text_color = "#77d8ff"
+	impact_sound_category = "electric"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "explosion_blue"
 	verb/Guard_Break()
 		set name = "Guard Break"
 		set category = "Skills"
@@ -812,6 +854,9 @@ obj/Attacks/TenkaichiMeleeTechnique/WingClip
 	stun_ticks = 7
 	energy_cost = 16
 	cooldown_ticks = 90
+	cast_text_color = "#8bd6ff"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "blast_blue"
 	verb/Wing_Clip()
 		set name = "Wing Clip"
 		set category = "Skills"
@@ -843,7 +888,11 @@ obj/Attacks/TenkaichiMeleeTechnique/BlueCometSpecial
 	dash_range = 8
 	energy_cost = 34
 	cooldown_ticks = 175
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTShockwave.dmi'
+	cast_text_color = "#43b9ff"
+	cast_sound_category = "flight"
+	impact_sound_category = "electric"
+	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
+	effect_icon_state = "blast_blue"
 	verb/Blue_Comet_Special()
 		set name = "Blue Comet Special"
 		set category = "Skills"

@@ -222,10 +222,11 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 	if(!damage_attacker && last_attacker && last_attacked_time == world.time) damage_attacker = last_attacker
 	if(!attack_name && damage_attacker) attack_name = "Attack"
 	if(damage_attacker && damage_attacker != src)
-		dmg *= damage_attacker.getMilestoneOutgoingDamageMultiplier(src)
+		dmg *= damage_attacker.getMilestoneOutgoingDamageMultiplier(src, attack_name)
 		dmg *= getMilestoneIncomingDamageMultiplier(damage_attacker)
 	if(damage_attacker && damage_attacker.arcane_attack_empowered_until > world.time) dmg *= 1.1
 	if(arcane_defense_empowered_until > world.time) dmg *= 0.85
+	dmg /= getArcaneDefenseStatMultiplier()
 	if(has_adamantine_skeleton) dmg *= 0.92
 	if(damage_attacker && damage_attacker != src && damage_attacker.sparring_mode == LETHAL_COMBAT)
 		damage_attacker.enterLethalCombat()
@@ -254,19 +255,6 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 		if(damage_attacker || attack_name) queueNexusCombatDamage(damage_attacker, applied_damage, attack_name, "Health")
 		return applied_damage
 	return 0
-
-mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate
-	var/mob/m = grabber
-	if(!m || m.loc != loc) return
-	var/drain = GetSkillDrain(mod = 40 * n, is_energy = 1)
-	if(Ki < drain) return
-	var/dmg = 5 * n * AllAttacksDamageModifiers()
-	dmg *= (BP / m.BP) ** 0.5
-	dmg *= (Pow / m.Res) ** 0.5
-	m.TakeDamage(dmg, attacker = src, attack_name = "Power Grab")
-	Ki -= drain
-
-
 
 mob/var/tmp
 	power_attack_meter=0 //0 to 1 (100%)
@@ -490,7 +478,7 @@ mob/proc/find_melee_target(mob/O,from_auto_attack)
 
 proc/Defense_damage_reduction(mob/attacker,mob/defender)
 	if(!attacker||!ismob(attacker)) return 1
-	return Clamp( (attacker.Off/defender.Def)**defense_damage_reduction_exponent , defense_damage_reduction_cap , 1)
+	return Clamp((attacker.getMilestoneEffectiveOffense() / defender.getMilestoneEffectiveDefense()) ** defense_damage_reduction_exponent, defense_damage_reduction_cap, 1)
 
 var/give_power_dmg=50
 
@@ -512,7 +500,6 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		if(m.Class == "Legendary Saiyan") swordMod = 0.40
 
 		var/obj/items/Sword/s = using_sword()
-		var/swordless_str = Swordless_strength()
 
 		var/obj/items/Force_Field/FF
 		if(s && s.Style=="Energy" && count_sword && !for_strangle)
@@ -560,21 +547,21 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		if(m.is_teamer) dmg*=teamer_dmg_mult
 		if(is_teamer) dmg/=teamer_dmg_mult
 
-		var/guard_multiplier = getMilestoneGuardMultiplier()
-		var/str_mult = swordless_str / max(0.01, m.End * guard_multiplier)
+		var/source_stat = getMilestonePhysicalDamageStat()
+		var/guard_stat = m.getMilestoneScaledCombatStat(m.End) * getMilestoneGuardMultiplier()
 		if(s && count_sword)
 			dmg *= 1 + ((s.Damage - 1) * sword_damage_mod * swordMod)
 			if(s.is_silver)
 				if(m.Vampire||istype(m,/mob/Enemy/Zombie)) dmg*=silver_sword_damage_mult
 				else dmg*=silver_sword_damage_penalty
 			if(s.Style=="Energy")
-				var/resist_n = m.Res * guard_multiplier
-				if(FF) resist_n=Avg_Res()
-				str_mult=((swordless_str*0.5)+(Pow*0.5))/resist_n
+				guard_stat = m.getMilestoneScaledCombatStat(m.Res) * getMilestoneGuardMultiplier()
+				if(FF) guard_stat = m.getMilestoneScaledCombatStat(Avg_Res())
+				source_stat = (getMilestonePhysicalDamageStat() * 0.5) + (getMilestoneKiDamageStat() * 0.5)
 				dmg *= energy_sword_damage_mod
-		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : BP
+		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : getForgedUnarmedAttackBP()
 		var/defender_combat_bp = m.getForgedArmorEnduranceBP()
-		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, str_mult, 1)
+		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, source_stat, guard_stat)
 		dmg *= getMilestoneMeleeDamageMultiplier(m, !!s)
 
 		if(m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
@@ -798,7 +785,7 @@ mob/proc/get_melee_accuracy(mob/m)
 		accuracy = base_melee_accuracy * (BP/m.BP) ** bp_influence_in_acc
 		accuracy *= Speed_accuracy_mult(defender=m)
 		//DEFENSE
-		var/off_vs_def = Acc_mult(Off / m.Def)
+		var/off_vs_def = Acc_mult(getMilestoneEffectiveOffense() / m.getMilestoneEffectiveDefense())
 		//if(off_vs_def<1) off_vs_def=off_vs_def**1.5
 		accuracy *= off_vs_def
 		//var/def_vs_def=(Def/m.Def)**0.3
@@ -984,7 +971,7 @@ mob/proc/combo_teleport(mob/m)
 		dir=get_dir(src,m)
 		if(ismob(m))
 			//DEFENSE
-			var/backhit_chance=defense_auto_combo_backhit_chance*Acc_mult(Off/m.Def)
+			var/backhit_chance=defense_auto_combo_backhit_chance*Acc_mult(getMilestoneEffectiveOffense()/m.getMilestoneEffectiveDefense())
 			if(backhit_chance>defense_auto_combo_backhit_chance)
 				backhit_chance=defense_auto_combo_backhit_chance
 			if(!prob(backhit_chance)) m.dir=get_dir(m,src)
@@ -1356,7 +1343,11 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 					if(milestone_bleeding_edge_active && prob(50))
 						target.BleedDamage(dmg * 0.125, src, "Bleeding Edge")
 
-				target.TakeDamage(dmg, attacker = src, attack_name = getNexusMeleeAttackName(tenkaichi_technique))
+				var/melee_attack_name = getNexusMeleeAttackName(tenkaichi_technique)
+				target.TakeDamage(dmg, attacker = src, attack_name = melee_attack_name)
+				if(target && !tenkaichi_technique)
+					applyMilestoneMeleeAreaDamage(target, dmg, melee_attack_name)
+					tryApplyMilestoneDoubleAttack(target, dmg, melee_attack_name)
 				if(target && s && milestone_thundering_blows_active && prob(50))
 					target.TakeDamage(dmg * 0.1, attacker = src, attack_name = "Thundering Blows")
 					if(target) target.ApplyStun(time = 2, stun_power = 1.25)
@@ -1489,12 +1480,13 @@ mob/proc
 
 mob/proc/GetCriticalChance()
 
-	var/crit_chance = (1+Off) * 0.1
+	var/crit_chance = (1 + getMilestoneEffectiveOffense()) * 0.1
 	if(crit_chance < 40){
 		crit_chance *= 0.4;
 	}else if (crit_chance < 25){
 		crit_chance *= 0.3;
 	}
+	crit_chance += getMilestoneCriticalChanceBonus()
 	if (crit_chance > 100)
 		crit_chance = 100
 	return crit_chance

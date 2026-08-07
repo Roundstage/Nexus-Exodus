@@ -166,7 +166,7 @@ mob
 	verb
 		Free_SP()
 			set category = "Yeet"
-			gainProgressionExperience(5000, "development tool", announce = TRUE)
+			gainProgressionExperience(getScaledProgressionExperience(5000), "development tool", announce = TRUE)
 
 		Free_Resources()
 			set category="Yeet"

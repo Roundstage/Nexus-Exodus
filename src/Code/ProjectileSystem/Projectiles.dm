@@ -11,7 +11,7 @@ obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, hom
 	takes_gradual_damage=1
 	Fatal=P.Fatal
 	Owner=P
-	BP=P.BP
+	BP=bullet ? P.BP : P.getForgedKiAttackBP()
 
 	if(ismob(P)) wall_breaking_power = P.WallBreakPower()
 	else wall_breaking_power = BP
@@ -22,12 +22,12 @@ obj/Blast/proc/setStats(mob/P, Percent=1, Off_Mult=1, Explosion=0, bullet=0, hom
 	if(shared_budget) damage_budget = shared_budget
 	else if(max_damage_factor > 0) damage_budget = new(max_damage_factor)
 	if(!bullet)
-		Force=P.Pow
-		percent_damage*=ki_power
+		Force=P.getMilestoneKiDamageStat()
+		percent_damage*=ki_power * P.getForgedKiDamageMultiplier()
 	else
-		Force=P.Str
+		Force=P.getMilestonePhysicalDamageStat()
 		percent_damage*=melee_power
-	Offense=P.Off*Off_Mult
+	Offense=P.getMilestoneEffectiveOffense()*Off_Mult
 	off_mult = Off_Mult
 	Explosive=Explosion
 	if(ismob(P))
@@ -472,7 +472,7 @@ obj/Blast
 			var/mob/physical_owner = Owner
 			if(weapon_scaled) return physical_owner.getWeaponCombatDamage(target, factor)
 			return physical_owner.getPhysicalCombatDamage(target, factor)
-		var/guard_stat = Bullet ? target.End : target.Res
+		var/guard_stat = target.getMilestoneScaledCombatStat(Bullet ? target.End : target.Res)
 		var/damage_multiplier = 1
 		if(ismob(Owner))
 			var/mob/projectile_owner = Owner
@@ -532,12 +532,15 @@ obj/Blast
 		if(beam_impact_mode != BEAM_IMPACT_EXPLOSIVE) return 0
 		var/is_mob_impact = force_mob_impact || ismob(impact_target)
 		if(!impact_target) impact_target = src
-		Explosion_Graphics(impact_target, is_mob_impact ? 4 : 2)
+		var/impact_scale = is_mob_impact ? 1.75 : 1.25
+		showNexusOpenCombatEffect(impact_target, "pixel_simulations_64", getNexusBeamImpactState(), impact_scale, null, 255, BLEND_ADD, 10, 0.35)
+		showNexusExplosionLight(impact_target, is_mob_impact ? 4 : 2)
+		var/beam_impact_sound = getNexusShonenSound("explosions")
+		if(beam_impact_sound) player_view(12, impact_target) << sound(beam_impact_sound, volume = is_mob_impact ? 70 : 48)
 		if(is_mob_impact)
 			var/mob/impact_mob = ismob(impact_target) ? impact_target : null
 			Make_Shockwave(impact_target, 256)
 			if(impact_mob) impact_mob.ScreenShake(20, 8)
-			player_view(12, impact_target) << sound('Explosion2.wav', volume = 70)
 			var/mob/beam_owner = Owner
 			if(impact_mob && beam_owner && impact_mob != beam_owner)
 				var/knockback_direction = dir
@@ -580,7 +583,8 @@ obj/Blast
 					Debug(Tens,"mob contacted by beam")
 					m.beam_deflect_difficulty = deflect_difficulty
 					m.dir=get_dir(m,src)
-					var/deflect_chance = 1 * global_beam_deflect_mod * Beam_Delay * loop_delay * (5 / deflect_difficulty) * (m.BP/Owner.BP) * (1/(Acc_mult(Clamp(Owner.Off/m.Def,0.1,10))))
+					var/mob/beam_owner = Owner
+					var/deflect_chance = 1 * global_beam_deflect_mod * Beam_Delay * loop_delay * (5 / deflect_difficulty) * (m.BP/beam_owner.BP) * (1/(Acc_mult(Clamp(beam_owner.getMilestoneEffectiveOffense()/m.getMilestoneEffectiveDefense(),0.1,10))))
 					deflect_chance = 0 
 					if(m.beaming || m.KO) deflect_chance=0
 					if(m.BeamStruggling()) deflect_chance /= 10000 //only choice is to struggle out of the beam
@@ -1000,7 +1004,7 @@ obj/Blast
 		if(ismob(Owner)) Owner.training_period(m)
 		var
 			hit_chance = base_blast_accuracy * percent_damage ** 0.3 * (BP / m.BP) ** 0.5
-			off_vs_def = Acc_mult(Offense / m.Def)
+			off_vs_def = Acc_mult(Offense / m.getMilestoneEffectiveDefense())
 		hit_chance *= off_vs_def
 		if(m.standing_powerup) hit_chance /= standing_powerup_deflect_mult
 		if(m.fearful || m.Good_attacking_good()) hit_chance *= m.Fear_dmg_mult()
@@ -1015,7 +1019,7 @@ obj/Blast
 		hit_chance = Clamp(hit_chance, 15, 95)
 		if(dodging_mode == MANUAL_DODGE)
 			m.last_stamina_drain = world.time + 10 //prevent stam recharging and +whatever to add a lil more delay than usual
-			var/stam_drain = 1 * percent_damage * Acc_mult(Offense / m.Def) * (BP / m.BP) ** bp_exponent
+			var/stam_drain = 1 * percent_damage * Acc_mult(Offense / m.getMilestoneEffectiveDefense()) * (BP / m.BP) ** bp_exponent
 			if(m.stamina < stam_drain || !m.CanBlastDeflect()) hit_chance = 100
 			else
 				hit_chance = 0
@@ -1080,7 +1084,7 @@ obj/Blast
 			if(!deflected)
 				deflected = 1
 				blast_go_over_owner = 0
-			var/reflect_chance = 100 * (m.Def / (Offense / off_mult))
+			var/reflect_chance = 100 * (m.getMilestoneEffectiveDefense() / (Offense / off_mult))
 			if(prob(reflect_chance)) dir = turn(dir,180)
 			else dir = pick(turn(dir,45 + 180), turn(dir, -45 + 180), turn(dir, 90 + 180), turn(dir, -90 + 180))
 			if(m.client) flick("Attack",m)

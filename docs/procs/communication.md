@@ -20,7 +20,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 ## Proc Reference
 
 ### mob/proc/receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
-- Purpose: Route one message to the HudLib All feed and, when applicable, its IC, OOC, or Combat feed.
+- Purpose: Route one message to its HudLib channel. IC and OOC also appear in All, while Combat remains isolated so mechanical output does not bury roleplay.
 - Inputs: formatted message, normalized channel, optional source key, and logging toggle.
 - Side effects: refreshes the active native chat HUD and buffers the message in the player's combined and channel-specific logs.
 
@@ -37,7 +37,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 ### mob/proc/queueNexusCombatDamage(attacker, amount, attack_name = "Attack", resource_name = "Health")
 - Purpose: Aggregate repeated hits from the same attack briefly, then publish one readable combat summary to attacker and target.
 - Inputs: attacker, applied damage, attack label, and damaged resource.
-- Side effects: creates a temporary `NexusCombatLogBatch`, routes the result to Combat and All, and persists it in both participants' logs.
+- Side effects: creates a temporary `NexusCombatLogBatch`, routes the result to the isolated Combat feed, and persists it in both participants' logs.
 
 ### mob/proc/applyNexusCombatShieldDamage(amount, attacker, attack_name = "Attack")
 - Purpose: Apply Ki shield damage while preserving the same attribution and logging used by Health damage.

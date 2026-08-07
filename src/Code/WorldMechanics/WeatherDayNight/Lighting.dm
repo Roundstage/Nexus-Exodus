@@ -133,6 +133,7 @@ proc/getNexusTransformationGlowProfile(transformation_id)
 		if("frost_final") return list("color" = "#a85bff", "size" = 3, "alpha" = 165)
 		if("frost_fifth") return list("color" = "#8e63ff", "size" = 3.3, "alpha" = 185)
 		if("frost_gold") return list("color" = "#ffd35a", "size" = 3.5, "alpha" = 205)
+		if("heran_transformation") return list("color" = "#42e58f", "size" = 2.7, "alpha" = 155)
 		if("giant") return list("color" = "#ff9b55", "size" = 4.5, "alpha" = 150)
 		if("great_ape") return list("color" = "#ff8b45", "size" = 4.8, "alpha" = 155)
 		if("alien_transform") return list("color" = "#ef72ff", "size" = 3.2, "alpha" = 175)
@@ -782,7 +783,7 @@ proc
 		if(!a) return
 		for(var/obj/LightSource/l in light_sources)
 			if(!l.fade_with_day) continue
-			var/area/a2 = l.get_area()
+			var/area/a2 = l.getNexusLightArea()
 			if(a == a2) l.FadeOutLight(a.day_fade_time * 1.8)
 
 	FadeInLights(area/a)
@@ -790,7 +791,7 @@ proc
 		if(!a) return
 		for(var/obj/LightSource/l in light_sources)
 			if(!l.fade_with_day) continue
-			var/area/a2 = l.get_area()
+			var/area/a2 = l.getNexusLightArea()
 			if(a == a2) l.FadeInLight(a.night_fade_time * 1.8)
 
 atom
@@ -838,6 +839,10 @@ obj
 			. = ..()
 
 		proc
+			getNexusLightArea()
+				var/turf/origin_turf = getNexusLightOriginTurf()
+				return origin_turf ? get_area(origin_turf) : null
+
 			getRenderedAlpha()
 				return Clamp(max_alpha * 3, 0, 235)
 
@@ -868,23 +873,33 @@ obj
 
 	proc
 		RemoveLightSource()
-			if(light_obj) del(light_obj)
+			if(!light_obj) return
+			vis_contents -= light_obj
+			light_obj.light_origin = null
+			del(light_obj)
+			light_obj = null
 
 		GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor=0
 
 			//too many lights on screen can crash people. so dont add a light if too many nearby objects already have lights
+			var/turf/source_turf = getNexusLightTurf(src)
+			if(!source_turf) return
 			var/nearbyLights = 0
-			for(var/obj/ls in light_sources)
-				if(ls.z == z && get_dist(ls, src) <= 15)
+			for(var/obj/LightSource/ls in light_sources)
+				var/turf/light_turf = ls.getNexusLightOriginTurf()
+				if(light_turf && light_turf.z == source_turf.z && get_dist(light_turf, source_turf) <= 15)
 					nearbyLights++
 			if(nearbyLights >= 15) return
 
 			var/obj/LightSource/l
 			if(light_obj) l = light_obj
-			else l = new(loc)
+			else l = new
 
 			light_obj = l
+			l.loc = null
+			l.light_origin = src
+			if(!(l in vis_contents)) vis_contents += l
 			if(max_alpha) l.max_alpha = max_alpha
 			l.fade_with_day = auto_fade
 			l.light_range = size

@@ -1,23 +1,42 @@
 # Visual Effects
 
 ## Overview
-Standalone visual effects such as rock debris, Harambe event visuals, and rising rock animations.
+Standalone visual effects such as rock debris, Harambe event visuals, rising rock animations, and the Alien Time Stop domain.
 
 ## Files
 - `src/Code/VisualEffects/Big Rocks.dm`
 - `src/Code/VisualEffects/Harambe.dm`
 - `src/Code/VisualEffects/PlayerAppearanceManager.dm`
 - `src/Code/VisualEffects/rising rocks 2019.dm`
+- Time Stop domain helpers live beside the legacy Time Freeze type path in `src/Code/ProjectileSystem/Blasts.dm`, avoiding an additional Dream Maker include dependency.
 
 ## Proc Reference
 
+### proc/showAlienInfiniteVoidDomain
+- Signature: `showAlienInfiniteVoidDomain(atom/center, duration = 70)`
+- Purpose: Layer two centered copies of the original cosmic domain asset, expanding, counter-rotating, glowing, and collapsing them over a fixed map origin for seven seconds.
+- Side effects: creates two dedicated plane-20 visual actors above map lighting and permanently deletes them after the animation; it deliberately bypasses the heterogeneous generic effect cache.
+
+### mob/proc/canHitAlienInfiniteVoidTarget
+- Purpose: Accept only living, attackable targets on the caster's Z-level that also pass the shared Tenkaichi RP Mode and Safezone protections.
+
+### mob/proc/getAlienInfiniteVoidStunTicks
+- Purpose: Scale stun from caster BP/Force against target BP/Resistance, use a six-second equal-stat base before global stun modifiers, clamp it to 30–120 ticks, and apply a 75% Time Normalizer reduction with a six-tick floor.
+
+### mob/proc/applyAlienInfiniteVoidStun
+- Signature: `applyAlienInfiniteVoidStun(turf/origin, radius = 8)`
+- Purpose: Resolve the domain against visible mobs in its circular area, including NPCs and combat dummies, using the standard combat stun system rather than persistent `Frozen` state.
+
+### mob/proc/showAlienInfiniteVoidHit
+- Purpose: Mark each affected target with the legacy time-ring overlay and a short violet glow without changing its equipment appearance stack.
+
 ### datum/PlayerAppearanceManager
 - Purpose: Own player equipment overlay slots, source identity, stable priorities, and isolated rendered images.
-- Behavior: removes legacy item-icon entries, derives equipped sources, sorts by priority/category/slot, rebuilds once, and re-adds injuries above equipment.
+- Behavior: removes legacy raw item icons plus orphaned rendered equipment images by icon state and pixel offset, derives equipped sources, sorts by priority/category/slot, rebuilds once, and re-adds injuries above equipment. Signature cleanup is what makes the manager safe after a relog or a transformation temporarily stores and restores the mob overlay list.
 
 ### mob/proc/rebuildPlayerAppearance(reason)
 - Purpose: Reconstruct managed overlays after login, equipment changes, body swap, or primary transformation changes.
-- Side effects: removes prior manager-owned images and replaces them with fresh per-player images.
+- Side effects: removes both current manager-owned images and visually matching stale equipment images, then replaces them with fresh per-player images. It deliberately leaves unrelated transient combat effects intact.
 
 ### mob/verb/manageVisualLayers
 - Purpose: Let a player move an equipped visual between priority 300 (back) and 700 (front) without directly splicing `overlays`.
@@ -116,3 +135,11 @@ Standalone visual effects such as rock debris, Harambe event visuals, and rising
 
 ### atom/movable/proc/Spin(times = 1, angle = 90, duration = 10)
 - Purpose: Stepwise rotation animation, intended for stationary objects.
+
+### proc/showNexusOpenCombatEffect
+- Signature: `showNexusOpenCombatEffect(atom/target, library_name, effect_state, effect_scale = 1, effect_color, effect_alpha = 255, effect_blend_mode = BLEND_ADD, hold_ticks = 7, growth = 0.2)`
+- Purpose: Play one documented Open Combat DMI state on a centered pooled effect actor with optional tint, scale, growth and fade.
+- Side effects: allocates an effect through `GetEffect()`, animates it, then deletes/returns it through the existing effect lifecycle.
+
+### proc/getNexusBeamImpactState
+- Purpose: Select one of the approved `PixelSimulations64.dmi` explosion states for a beam impact.

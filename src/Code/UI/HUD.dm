@@ -272,6 +272,8 @@ mob/proc/getNexusActiveHudModifiers()
 	if(ssj)
 		var/form_bp_multiplier = (natural_bp * max(ssj_bp_mult, 0.01) + max(ssj_power(), 0)) / natural_bp
 		addNexusHudModifier(modifiers, "BP", form_bp_multiplier)
+	if(heran_transformed)
+		addNexusHudModifier(modifiers, "BP", 1 + getActiveHeranTransformationBPAdd() / natural_bp)
 	if(is_ssg) addNexusHudModifier(modifiers, "BP", ssjg_bp_mult)
 	if(is_ssj_blue) addNexusHudModifier(modifiers, "BP", ssj_blue_mult)
 	if(is_gold_form) addNexusHudModifier(modifiers, "BP", gold_form_mult)

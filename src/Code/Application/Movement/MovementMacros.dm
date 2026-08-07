@@ -200,7 +200,7 @@ mob/proc/move_loop()
 				dir = d
 				vector_speed = GetVectorMovePixels(d)
 				glide_size = GetVectorGlideSize(vector_speed)
-				vector_step(src, dir_to_angle_0_360(d), vector_speed)
+				tryNexusVectorMoveWithGapNudge(d, vector_speed)
 			if(movement_port.clientShiftDown(src)) dir = prevDir //strafing
 			if(prev_loc != base_loc()) last_input_move = world.time
 			UpdateNextInputMoveTime(d)

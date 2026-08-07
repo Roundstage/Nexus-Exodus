@@ -51,6 +51,9 @@ proc/getTenkaichiSpecialStyleAttackTypes()
 	return list(
 		/obj/Attacks/Buster_Barrage,
 		/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame,
+		/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze,
+		/obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave,
+		/obj/Attacks/TenkaichiAreaTechnique/Earthquake,
 		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova,
 		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak,
 		/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash)

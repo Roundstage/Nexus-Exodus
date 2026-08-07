@@ -1,7 +1,7 @@
 # World Mechanics
 
 ## Overview
-Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
+World simulation, areas, day/night, lighting, planets, tournaments, vehicles, and long-running world state. Legacy `GiveLightSource()` emitters are attached to their owning object through `vis_contents`; their origin turf, area fading, and occlusion therefore follow torches and carried or moved items, and deletion removes the attached emitter.
 
 ## Files
 - `src/Code/WorldMechanics/BPResets.dm`
@@ -1256,6 +1256,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 ### src/Code/WorldMechanics/Tournament.dm
 
+Automatic tournaments are opt-in: `Tournament_Timer` defaults to `0`, so `Tournament_Loop()` remains dormant until an administrator configures a positive interval. The explicit admin command can still start a tournament manually.
+
 #### obj/Tournament_Controls/Click
 - Signature: `Click()`
 - Inputs: None
@@ -1273,7 +1275,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/Admin2/verb/setTournamentInterval
 - Signature: `mob/Admin2/verb/setTournamentInterval()`
 - Inputs: None
-- Purpose: Set Tournament Interval.
+- Purpose: Set the automatic Tournament interval; `0` disables automatic Tournaments.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
@@ -1287,7 +1289,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### proc/Tournament_Loop
 - Signature: `proc/Tournament_Loop()`
 - Inputs: None
-- Purpose: Handle tournament loop.
+- Purpose: Start scheduled Tournaments only while the configured interval is greater than zero.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1902,3 +1904,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - `datum/PlanetaryClock/applyPhase(with_fade)` synchronizes ambient light and transitions for every linked area/player.
 - `area/proc/setPlanetaryPhase(day_phase, remaining_hours)` changes the shared clock instead of only one client or area instance.
 - Admin test verbs inspect the planetary clock, force a phase, and tune real minutes per planetary hour.
+
+### Arcane gravity fields
+
+- Turfs keep native machine/planet gravity in `gravity` and temporary spell gravity in `arcane_gravity`.
+- `Gravity_Update()` uses the greater field, so Gravity Well participates in the same damage and mastery loop as a gravity machine.
+- Each active well records its affected turfs. Expiration recomputes overlap from surviving wells and restores the underlying native gravity without overwriting a machine setting.

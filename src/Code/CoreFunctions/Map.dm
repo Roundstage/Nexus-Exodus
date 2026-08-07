@@ -362,7 +362,7 @@ obj/Turfs
 					HEARD AS '420 blaze it' BEFORE THEIR LIFELESS BODY SLIDES OUT THE BOTTOM OF THE DOOR"
 
 					spawn for(var/v in 1 to 5)
-						l<<sound('BigCrash.ogg')
+						l<<sound('Wallhit.ogg')
 						spawn(rand(7,12)) l<<sound('Squished.ogg')
 						sleep(7)
 

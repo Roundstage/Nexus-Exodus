@@ -1,5 +1,7 @@
 var/list/technology_level_thresholds = list(0, 50, 150, 350, 700, 1200, 2000, 3200)
 
+#define NEXUS_TECHNOLOGY_TARGET_CRAFTS_PER_LEVEL 12
+
 mob/var
 	technology_experience = 0
 	technology_last_knowledge = -1
@@ -14,11 +16,57 @@ proc/getTechnologyLevelForExperience(experience)
 mob/proc/getTechnologyExperienceModifier()
 	return 1 + getMilestoneRank("scientific_method") * 0.1
 
+proc/getTechnologyCraftExperienceForLevel(science_level)
+	var/reward_level = Clamp(round(science_level), 1, technology_level_thresholds.len)
+	var/level_start = technology_level_thresholds[reward_level]
+	var/level_end
+	if(reward_level < technology_level_thresholds.len)
+		level_end = technology_level_thresholds[reward_level + 1]
+	else
+		level_end = level_start + (level_start - technology_level_thresholds[reward_level - 1])
+	return max(5, round((level_end - level_start) / NEXUS_TECHNOLOGY_TARGET_CRAFTS_PER_LEVEL))
+
+proc/getTechnologyCraftExperience(obj/technology)
+	if(!technology) return 0
+	return getTechnologyCraftExperienceForLevel(max(1, technology.science_level))
+
 mob/proc/getTechnologyPathSlots()
 	if(player_tech_level >= 8) return 3
 	if(player_tech_level >= 7) return 2
 	if(player_tech_level >= 5) return 1
 	return 0
+
+proc/isRetiredScienceEquipment(obj/technology)
+	if(!technology) return FALSE
+	return technology.type in list(/obj/items/Sword, /obj/items/Armor, /obj/items/Shikon_Jewel)
+
+proc/scienceBlueprintListContainsType(list/blueprints, blueprint_type)
+	if(!islist(blueprints) || !blueprint_type) return FALSE
+	for(var/obj/blueprint in blueprints)
+		if(blueprint.type == blueprint_type) return TRUE
+	return FALSE
+
+proc/getCanonicalScienceBlueprint(blueprint_type)
+	if(!blueprint_type) return null
+	for(var/obj/technology in tech_list)
+		if(technology.type == blueprint_type) return technology
+	return null
+
+proc/getNormalizedScienceBlueprintList(list/blueprints)
+	var/list/normalized_blueprints = list()
+	if(!islist(blueprints)) return normalized_blueprints
+	var/list/seen_types = list()
+	for(var/obj/blueprint in blueprints)
+		if(blueprint.type in seen_types) continue
+		seen_types += blueprint.type
+		var/obj/canonical_blueprint = getCanonicalScienceBlueprint(blueprint.type)
+		normalized_blueprints += canonical_blueprint ? canonical_blueprint : blueprint
+	return normalized_blueprints
+
+mob/proc/normalizeIndividualScienceItems()
+	var/previous_count = islist(individual_science_items) ? length(individual_science_items) : 0
+	individual_science_items = getNormalizedScienceBlueprintList(individual_science_items)
+	return max(0, previous_count - length(individual_science_items))
 
 mob/proc/canUnlockTechnology(obj/technology)
 	if(!istype(technology, /obj) || !technology.science) return FALSE
@@ -31,8 +79,9 @@ mob/proc/canUnlockTechnology(obj/technology)
 
 mob/proc/canAccessTechnology(obj/technology)
 	if(!istype(technology, /obj)) return FALSE
-	if(islist(GLOBAL_SCIENCE_TAB_ITEMS) && technology in GLOBAL_SCIENCE_TAB_ITEMS) return TRUE
-	if(islist(individual_science_items) && technology in individual_science_items) return TRUE
+	if(isRetiredScienceEquipment(technology)) return FALSE
+	if(scienceBlueprintListContainsType(GLOBAL_SCIENCE_TAB_ITEMS, technology.type)) return TRUE
+	if(scienceBlueprintListContainsType(individual_science_items, technology.type)) return TRUE
 	if(progression_tree_version >= NEXUS_PROGRESSION_VERSION) return hasProgressionReward(technology.type)
 	return canUnlockTechnology(technology)
 
@@ -40,13 +89,13 @@ mob/proc/isTechnologyReferenceClick(obj/technology)
 	return istype(technology, /obj) && technology.referenceObject && canAccessTechnology(technology)
 
 mob/proc/refreshTechnologyUnlocks(announce = FALSE)
-	if(!islist(individual_science_items)) individual_science_items = list()
+	normalizeIndividualScienceItems()
 	if(!islist(player_tech_paths)) player_tech_paths = list()
 	for(var/obj/technology in tech_list)
 		if(progression_tree_version >= NEXUS_PROGRESSION_VERSION)
 			if(!hasProgressionReward(technology.type)) continue
 		else if(!canUnlockTechnology(technology)) continue
-		if(technology in individual_science_items) continue
+		if(scienceBlueprintListContainsType(individual_science_items, technology.type)) continue
 		individual_science_items += technology
 		if(announce) src << "Technology unlocked: [technology]."
 
@@ -59,6 +108,7 @@ mob/proc/gainTechnologyExperience(amount, reason, announce = FALSE)
 	return gained
 
 mob/proc/syncTechnologyProgression(silent = TRUE)
+	normalizeIndividualScienceItems()
 	if(!islist(player_tech_paths)) player_tech_paths = list()
 	var/old_level = player_tech_level
 	if(technology_progression_version < 1)
@@ -87,3 +137,5 @@ mob/verb/chooseTechnologyPath()
 	set name = "Choose Technology Path"
 	set category = "Other"
 	showProgressionTrees("Science")
+
+#undef NEXUS_TECHNOLOGY_TARGET_CRAFTS_PER_LEVEL

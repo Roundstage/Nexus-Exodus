@@ -16,12 +16,18 @@ proc/getNexusServerSettingDisplay(value)
 	if(length(value_text) > 42) value_text = "[copytext(value_text, 1, 40)]..."
 	return value_text
 
+proc/getNexusServerSettingNameDisplay(setting_name)
+	if(isnull(setting_name)) return "(unnamed setting)"
+	var/name_text = "[setting_name]"
+	if(!length(name_text)) return "(unnamed setting)"
+	return html_encode(name_text)
+
 datum/NexusServerPanel
 	parent_type = /datum/NexusHudWindow
 	var/tmp/category = "Progression"
 	var/tmp/search_query = ""
 	var/tmp/page = 1
-	var/tmp/page_size = 9
+	var/tmp/page_size = 8
 	var/tmp/list/visible_setting_names = list()
 
 	proc/createSettingsModel(category_name = category)
@@ -76,15 +82,19 @@ datum/NexusServerPanel
 		var/start_index = (page - 1) * page_size + 1
 		var/end_index = min(visible_setting_names.len, start_index + page_size - 1)
 		var/row_number = 0
+		addElement("VARIABLE", null, 24, 126, 390, 21, "#172330", "#405a70", "#72c6eb", "#bcd2e3", "left", 8, FALSE)
+		addElement("CURRENT VALUE", null, 414, 126, 206, 21, "#172330", "#405a70", "#72c6eb", "#bcd2e3", "left", 8, FALSE)
 		if(!visible_setting_names.len)
-			addElement("NO SETTINGS MATCH THIS FILTER", null, 24, 130, 596, 28, "#15191e", "#493f41", "#8e6262", "#bbaeb0", "center", 9, FALSE)
+			addElement("NO SETTINGS MATCH THIS FILTER", null, 24, 151, 596, 28, "#15191e", "#493f41", "#8e6262", "#bbaeb0", "center", 9, FALSE)
 		else
 			for(var/index = start_index, index <= end_index, index++)
 				row_number++
 				var/setting_name = visible_setting_names[index]
 				var/current_value = getNexusServerSettingDisplay(current_settings[setting_name])
-				var/row_label = "[setting_name]   =   [html_encode(current_value)]"
-				addElement(row_label, "setting:[index]", 24, 126 + (row_number - 1) * 28, 596, 23, row_number % 2 ? "#101923" : "#0d151e", "#304456", "#4e829d", "#e6eef5", "left", 9)
+				var/row_y = 151 + (row_number - 1) * 28
+				var/row_color = row_number % 2 ? "#101923" : "#0d151e"
+				addElement(getNexusServerSettingNameDisplay(setting_name), "setting:[index]", 24, row_y, 390, 23, row_color, "#304456", "#4e829d", "#f2f7fb", "left", 9)
+				addElement(html_encode(current_value), "setting:[index]", 414, row_y, 206, 23, row_color, "#304456", "", "#bcd2e3", "left", 9)
 
 		addElement("PREVIOUS", "previous", 24, 390, 104, 28, "#101923", "#40556b", "", page > 1 ? "#edf3fa" : "#607080", "center", 8)
 		addElement("PAGE [page] / [max_page]   -   [visible_setting_names.len] SETTINGS", null, 136, 390, 372, 28, "#0d151e", "#304456", "", "#9fb5c8", "center", 8, FALSE)

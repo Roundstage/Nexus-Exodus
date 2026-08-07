@@ -1,4 +1,8 @@
 var/list/nexus_hud_library_icon_cache = list()
+var/list/nexus_pixel_interface_icon_cache = list()
+
+client/var/tmp/list/nexus_pixel_interface_resources = list()
+client/var/tmp/list/nexus_browser_atom_icon_resources = list()
 
 proc/getNexusHudLibraryIcon(width, height, background_color = "#101923", border_color = "#40556b", accent_color = "")
 	width = max(1, round(width))
@@ -24,9 +28,261 @@ proc/getNexusHudLibraryIcon(width, height, background_color = "#101923", border_
 	nexus_hud_library_icon_cache[cache_key] = panel_icon
 	return panel_icon
 
+proc/getNexusPixelInterfaceIcon(icon_kind)
+	icon_kind = lowertext("[icon_kind]")
+	if(icon_kind in list("item", "items")) icon_kind = "inventory"
+	if(icon_kind in list("combat", "melee", "weapon")) icon_kind = "skills"
+	if(icon_kind in list("character", "profile")) icon_kind = "player"
+	if(icon_kind in list("development", "science")) icon_kind = "science"
+	if(icon_kind in list("log", "legacy")) icon_kind = "logs"
+	if(nexus_pixel_interface_icon_cache[icon_kind]) return nexus_pixel_interface_icon_cache[icon_kind]
+	var/icon/pixel_icon = icon('UserNamesBarsUi.png')
+	pixel_icon.Scale(32, 32)
+	pixel_icon.DrawBox("#0d0906", 1, 1, 32, 32)
+	pixel_icon.DrawBox("#2a2016", 3, 3, 30, 30)
+	pixel_icon.DrawBox("#9b7441", 3, 29, 30, 30)
+	pixel_icon.DrawBox("#9b7441", 3, 3, 4, 30)
+	pixel_icon.DrawBox("#120d08", 3, 3, 30, 4)
+	pixel_icon.DrawBox("#120d08", 29, 3, 30, 30)
+	pixel_icon.DrawBox("#d6aa5d", 5, 27, 6, 28)
+	pixel_icon.DrawBox("#d6aa5d", 27, 27, 28, 28)
+	var/accent = "#d6aa5d"
+	switch(icon_kind)
+		if("sense") accent = "#6fd8e8"
+		if("world") accent = "#69c98f"
+		if("resource") accent = "#efbd4d"
+		if("blast") accent = "#62cfff"
+		if("beam") accent = "#69e5ff"
+		if("ability") accent = "#bf8dff"
+		if("buff") accent = "#78d782"
+		if("training") accent = "#e7815f"
+		if("movement") accent = "#68c7ef"
+		if("magic") accent = "#c57cff"
+		if("science") accent = "#55d5c7"
+		if("mining") accent = "#cf9b65"
+		if("smithing") accent = "#ef9a55"
+		if("logs") accent = "#d9c7a2"
+		if("testing") accent = "#8ee168"
+		if("server") accent = "#72aee8"
+		if("progression") accent = "#55d89a"
+		if("milestones") accent = "#f2c451"
+		if("vitals") accent = "#f06472"
+		if("gloves") accent = "#dca66b"
+		if("armor") accent = "#8cb2ca"
+		if("mask") accent = "#d7cfb4"
+	switch(icon_kind)
+		if("inventory")
+			pixel_icon.DrawBox(accent, 9, 9, 24, 22)
+			pixel_icon.DrawBox("#3a2919", 11, 11, 22, 20)
+			pixel_icon.DrawBox(accent, 12, 22, 21, 25)
+			pixel_icon.DrawBox("#2a2016", 14, 22, 19, 24)
+			pixel_icon.DrawBox("#f4d58e", 15, 15, 18, 17)
+		if("skills")
+			for(var/blade_step = 0, blade_step < 12, blade_step++) pixel_icon.DrawBox(accent, 9 + blade_step, 8 + blade_step, 10 + blade_step, 9 + blade_step)
+			pixel_icon.DrawBox("#f4e7c4", 20, 20, 23, 23)
+			pixel_icon.DrawBox("#a86d39", 7, 8, 12, 10)
+			pixel_icon.DrawBox("#6f4428", 7, 5, 9, 9)
+		if("sense")
+			pixel_icon.DrawBox(accent, 7, 15, 25, 18)
+			pixel_icon.DrawBox(accent, 10, 12, 22, 21)
+			pixel_icon.DrawBox("#101923", 12, 14, 20, 19)
+			pixel_icon.DrawBox("#f2e3aa", 15, 15, 18, 18)
+		if("world")
+			pixel_icon.DrawBox(accent, 8, 8, 24, 24)
+			pixel_icon.DrawBox("#13251d", 10, 10, 22, 22)
+			pixel_icon.DrawBox(accent, 15, 9, 17, 23)
+			pixel_icon.DrawBox(accent, 9, 15, 23, 17)
+		if("resource")
+			pixel_icon.DrawBox(accent, 13, 7, 19, 25)
+			pixel_icon.DrawBox(accent, 10, 11, 22, 21)
+			pixel_icon.DrawBox("#fff0a3", 14, 15, 17, 21)
+		if("blast")
+			pixel_icon.DrawBox(accent, 14, 7, 18, 25)
+			pixel_icon.DrawBox(accent, 7, 14, 25, 18)
+			pixel_icon.DrawBox("#e9fbff", 12, 12, 20, 20)
+		if("beam")
+			pixel_icon.DrawBox(accent, 6, 14, 26, 18)
+			pixel_icon.DrawBox("#e9fbff", 9, 15, 23, 17)
+			pixel_icon.DrawBox(accent, 22, 11, 26, 21)
+		if("ability")
+			pixel_icon.DrawBox(accent, 13, 8, 19, 24)
+			pixel_icon.DrawBox(accent, 9, 12, 23, 20)
+			pixel_icon.DrawBox("#f0dcff", 14, 13, 18, 19)
+		if("buff")
+			pixel_icon.DrawBox(accent, 14, 8, 18, 22)
+			pixel_icon.DrawBox(accent, 10, 18, 22, 22)
+			pixel_icon.DrawBox(accent, 12, 21, 20, 25)
+		if("training")
+			pixel_icon.DrawBox(accent, 7, 14, 25, 18)
+			pixel_icon.DrawBox(accent, 6, 10, 9, 22)
+			pixel_icon.DrawBox(accent, 23, 10, 26, 22)
+		if("movement")
+			pixel_icon.DrawBox(accent, 7, 14, 23, 18)
+			pixel_icon.DrawBox(accent, 17, 9, 25, 23)
+		if("player")
+			pixel_icon.DrawBox(accent, 13, 19, 19, 25)
+			pixel_icon.DrawBox(accent, 10, 9, 22, 19)
+			pixel_icon.DrawBox("#f2d49b", 15, 21, 17, 23)
+		if("gloves")
+			pixel_icon.DrawBox(accent, 7, 9, 14, 21)
+			pixel_icon.DrawBox(accent, 18, 9, 25, 21)
+			pixel_icon.DrawBox("#f2d49b", 9, 18, 12, 23)
+			pixel_icon.DrawBox("#f2d49b", 20, 18, 23, 23)
+		if("armor")
+			pixel_icon.DrawBox(accent, 9, 9, 23, 24)
+			pixel_icon.DrawBox("#1a2730", 13, 11, 19, 21)
+			pixel_icon.DrawBox(accent, 6, 18, 10, 24)
+			pixel_icon.DrawBox(accent, 22, 18, 26, 24)
+		if("mask")
+			pixel_icon.DrawBox(accent, 9, 9, 23, 24)
+			pixel_icon.DrawBox("#19140f", 12, 17, 15, 19)
+			pixel_icon.DrawBox("#19140f", 18, 17, 21, 19)
+			pixel_icon.DrawBox("#19140f", 15, 11, 18, 14)
+		if("science")
+			pixel_icon.DrawBox(accent, 14, 7, 18, 25)
+			pixel_icon.DrawBox(accent, 8, 14, 24, 18)
+			pixel_icon.DrawBox("#e5fffb", 15, 15, 17, 17)
+			pixel_icon.DrawBox(accent, 8, 8, 11, 11)
+			pixel_icon.DrawBox(accent, 21, 21, 24, 24)
+		if("magic")
+			pixel_icon.DrawBox(accent, 14, 7, 18, 25)
+			pixel_icon.DrawBox(accent, 8, 14, 24, 18)
+			pixel_icon.DrawBox("#f4dfff", 12, 12, 20, 20)
+		if("mining")
+			for(var/pick_step = 0, pick_step < 12, pick_step++) pixel_icon.DrawBox("#b87b4a", 10 + pick_step, 7 + pick_step, 12 + pick_step, 9 + pick_step)
+			pixel_icon.DrawBox(accent, 8, 20, 24, 23)
+		if("smithing")
+			pixel_icon.DrawBox(accent, 8, 19, 21, 24)
+			pixel_icon.DrawBox("#a76637", 17, 7, 21, 21)
+			pixel_icon.DrawBox("#f0bd74", 6, 8, 25, 11)
+		if("logs")
+			pixel_icon.DrawBox(accent, 9, 7, 23, 25)
+			pixel_icon.DrawBox("#30271c", 11, 9, 21, 23)
+			for(var/log_y in list(12, 16, 20)) pixel_icon.DrawBox(accent, 13, log_y, 20, log_y + 1)
+		if("testing")
+			pixel_icon.DrawBox(accent, 14, 18, 18, 25)
+			pixel_icon.DrawBox(accent, 10, 8, 22, 18)
+			pixel_icon.DrawBox("#d8ffc7", 12, 10, 20, 14)
+		if("server")
+			pixel_icon.DrawBox(accent, 8, 8, 24, 24)
+			pixel_icon.DrawBox("#162332", 10, 10, 22, 22)
+			for(var/server_y in list(12, 17, 22)) pixel_icon.DrawBox(accent, 11, server_y, 20, server_y + 1)
+		if("progression")
+			pixel_icon.DrawBox(accent, 7, 14, 25, 18)
+			pixel_icon.DrawBox(accent, 15, 7, 18, 25)
+			pixel_icon.DrawBox("#d9ffe9", 7, 8, 10, 11)
+			pixel_icon.DrawBox("#d9ffe9", 15, 22, 18, 25)
+			pixel_icon.DrawBox("#d9ffe9", 23, 8, 26, 11)
+		if("milestones")
+			pixel_icon.DrawBox(accent, 14, 7, 18, 25)
+			pixel_icon.DrawBox(accent, 7, 14, 25, 18)
+			pixel_icon.DrawBox("#fff2ae", 11, 11, 21, 21)
+		if("vitals")
+			pixel_icon.DrawBox(accent, 8, 15, 24, 21)
+			pixel_icon.DrawBox(accent, 11, 10, 21, 23)
+			pixel_icon.DrawBox("#ffd6dc", 14, 16, 18, 19)
+		else
+			pixel_icon.DrawBox(accent, 11, 10, 21, 22)
+			pixel_icon.DrawBox("#2a2016", 14, 13, 18, 19)
+	nexus_pixel_interface_icon_cache[icon_kind] = pixel_icon
+	return pixel_icon
+
+proc/getNexusPixelInterfaceIconResource(mob/viewer, icon_kind)
+	icon_kind = lowertext("[icon_kind]")
+	var/resource_name = "nexus_pixel_[md5(icon_kind)].png"
+	if(viewer && viewer.client)
+		if(!islist(viewer.client.nexus_pixel_interface_resources)) viewer.client.nexus_pixel_interface_resources = list()
+		if(!viewer.client.nexus_pixel_interface_resources[resource_name])
+			viewer << browse_rsc(getNexusPixelInterfaceIcon(icon_kind), resource_name)
+			viewer.client.nexus_pixel_interface_resources[resource_name] = TRUE
+	return resource_name
+
+proc/getNexusBrowserAtomIconResource(mob/viewer, atom/subject)
+	if(!subject || !subject.icon) return null
+	var/icon_direction = subject.dir ? subject.dir : SOUTH
+	var/cache_key = "[subject.icon]|[subject.icon_state]|[icon_direction]|[subject.color]|[subject.alpha]"
+	var/resource_name = "nexus_atom_[md5(cache_key)].png"
+	if(viewer && viewer.client)
+		if(!islist(viewer.client.nexus_browser_atom_icon_resources)) viewer.client.nexus_browser_atom_icon_resources = list()
+		if(!viewer.client.nexus_browser_atom_icon_resources[resource_name])
+			var/icon/preview = icon(subject.icon, subject.icon_state, icon_direction)
+			if(istext(subject.color) && length(subject.color)) preview.Blend(subject.color, ICON_MULTIPLY)
+			viewer << browse_rsc(preview, resource_name)
+			viewer.client.nexus_browser_atom_icon_resources[resource_name] = TRUE
+	return resource_name
+
+proc/blendNexusCharacterPortraitLayer(icon/portrait, appearance_value, direction, blend_mode)
+	if(!portrait || !appearance_value || !appearance_value:icon) return
+	var/icon/layer_icon = icon(appearance_value:icon, appearance_value:icon_state, direction)
+	if(!layer_icon) return
+	if(istext(appearance_value:color) && length(appearance_value:color)) layer_icon.Blend(appearance_value:color, ICON_MULTIPLY)
+	if(isnum(appearance_value:alpha) && appearance_value:alpha < 255) layer_icon.ChangeOpacity(max(0, appearance_value:alpha) / 255)
+	portrait.Blend(layer_icon, blend_mode, 1 + appearance_value:pixel_x, 1 + appearance_value:pixel_y)
+
+proc/getNexusCharacterPortraitIcon(atom/subject, direction = SOUTH)
+	if(!subject || !subject.icon) return null
+	var/icon/portrait = icon(subject.icon, subject.icon_state, direction)
+	if(istext(subject.color) && length(subject.color)) portrait.Blend(subject.color, ICON_MULTIPLY)
+	if(isnum(subject.alpha) && subject.alpha < 255) portrait.ChangeOpacity(max(0, subject.alpha) / 255)
+	for(var/underlay_value in subject.underlays)
+		blendNexusCharacterPortraitLayer(portrait, underlay_value, direction, ICON_UNDERLAY)
+	for(var/overlay_value in subject.overlays)
+		blendNexusCharacterPortraitLayer(portrait, overlay_value, direction, ICON_OVERLAY)
+	return portrait
+
+proc/getNexusSkillInterfaceIconKind(hotbar_type)
+	var/type_text = lowertext("[hotbar_type]")
+	if(findtext(type_text, "beam")) return "beam"
+	if(findtext(type_text, "blast")) return "blast"
+	if(findtext(type_text, "buff")) return "buff"
+	if(findtext(type_text, "training")) return "training"
+	if(findtext(type_text, "melee")) return "skills"
+	return "ability"
+
 proc/getNexusRpgBrowserCss()
 	return {"
 	*{border-radius:0!important;box-shadow:none!important}html,body{background:#17130f!important;background-image:none!important;color:#e8d4aa!important;font-family:'Courier New',monospace!important}body:before{display:none!important}.shell,.menu-frame,.header,.toolbar,.footer,.workspace,.content,.entries,.results,.catalog,.topbar{background-color:#211a13!important;background-image:none!important}.panel,.pane,.card,.action,.action-card,.keyboard,.key,.numpad,.reward,.result,.progress-card,.milestone,.milestone-card,.skill-card,.stat-row,.meter,.portrait,.emote-card,.status>div,.mutation,.mutation-panel,.review-panel #reviewSummary,.option-card span,.trait-choice span,.race-entry span,.portrait-choice span,.hair-choice span,.clothing-choice span,.frost-form-card,.preview-shell,.frost-form-preview{background:#2b2117!important;background-image:none!important;border:2px solid #715735!important;outline:1px solid #120d08!important}.header,.menu-title,.panel h2,.pane h2,h1,h2,h3,thead,.stage-strip span.active{background:#3a2a1b!important;background-image:none!important;color:#f0d497!important;border-color:#a27c45!important;text-shadow:1px 1px #0b0805!important}.title b,.menu-title span,h1{letter-spacing:1px!important}.button,button,a.button,a.tab,.top-button,.filters button,.toolbar button,.post,.confirm,.journey-button,.preview-controls button,.wizard-nav button,.close,.back,.play,.create,.delete{background:#49351f!important;background-image:none!important;border:2px outset #9a7440!important;color:#f2d79e!important;font-family:'Courier New',monospace!important;font-weight:bold!important;text-transform:uppercase!important;text-decoration:none!important}.button:hover,button:hover,a.button:hover,a.tab:hover,.top-button:hover,.filters button:hover,.toolbar button:hover,.post:hover,.confirm:hover,.close:hover,.back:hover{background:#624825!important;color:#fff2c2!important}.button:active,button:active,a.button:active,a.tab:active,.top-button:active,.filters button:active{border-style:inset!important}.active,.tab.active,.filters button.active,.stage-strip span.active{background:#76542a!important;color:#fff3bf!important;border-color:#d4ad65!important}input,textarea,select,.editor,.search{background:#120f0c!important;color:#f3dfb6!important;border:2px inset #6e5738!important;font-family:'Courier New',monospace!important}.preview,.stage-scroll,.race-scroll,.clothing-grid{background:#18130e!important}.badge,.identity,.target,.level-strip,.mode{background:#302317!important;border:1px solid #8d6b3c!important;color:#eacb8f!important}table{border-collapse:separate!important;border-spacing:1px!important;background:#17110c!important}td,th{border:1px solid #4e3b27!important;background:#251c14!important}img{image-rendering:pixelated!important}.hint,small,.title span,.counter,.description,.footer{color:#bca47c!important}::-webkit-scrollbar{width:14px;height:14px}::-webkit-scrollbar-track{background:#17110c;border:1px solid #4b3824}::-webkit-scrollbar-thumb{background:#6b4e2d;border:2px outset #9b7441}
+	html,body{background-image:linear-gradient(90deg,rgba(214,170,93,.025) 1px,transparent 1px),linear-gradient(rgba(214,170,93,.025) 1px,transparent 1px)!important;background-size:8px 8px!important;font-family:'Fixedsys','Lucida Console','Courier New',monospace!important}.panel,.pane,.card,.action,.action-card,.progress-card,.milestone,.milestone-card,.skill-card,.stat-row,.meter,.portrait,.status>div{box-shadow:inset 2px 2px #3d2e1d,inset -2px -2px #160f0a,2px 2px 0 #0d0906!important}.button,button,a.button,a.tab,.top-button,.filters button,.toolbar button,.close,.back{font-family:'Fixedsys','Lucida Console','Courier New',monospace!important;box-shadow:2px 2px 0 #100b07!important}.button:active,button:active,a.button:active,a.tab:active,.top-button:active,.filters button:active{box-shadow:none!important}.pixel-ui-icon{width:32px;height:32px;image-rendering:pixelated;flex:0 0 32px}.pixel-ui-icon.small{width:20px;height:20px;flex-basis:20px}
+	"}
+
+proc/prepareNexusHudBrowserResources(mob/viewer)
+	if(!viewer || !viewer.client) return FALSE
+	if(viewer.client.nexus_hud_font_resources_ready) return TRUE
+	viewer << browse_rsc('src/Fonts/SilkscreenRegular.ttf', "SilkscreenRegular.ttf")
+	viewer << browse_rsc('src/Fonts/SilkscreenBold.ttf', "SilkscreenBold.ttf")
+	viewer.client.nexus_hud_font_resources_ready = TRUE
+	return TRUE
+
+proc/getNexusHudBrowserCss(theme = "bronze")
+	theme = lowertext("[theme]")
+	var/page_color = "#17130f"
+	var/panel_color = "#2b2117"
+	var/panel_alt_color = "#251c14"
+	var/outer_color = "#120d08"
+	var/border_color = "#715735"
+	var/edge_color = "#9a7440"
+	var/accent_color = "#d2aa61"
+	var/text_color = "#ead7b0"
+	var/heading_color = "#f0d497"
+	var/muted_color = "#bca47c"
+	var/button_color = "#49351f"
+	var/active_color = "#725027"
+	var/bolt_color = "#c6a15c"
+	if(theme == "blue" || theme == "admin")
+		page_color = "#05090d"
+		panel_color = "#101923"
+		panel_alt_color = "#0d151e"
+		outer_color = "#020406"
+		border_color = "#304456"
+		edge_color = "#405a70"
+		accent_color = "#72c6eb"
+		text_color = "#dce9f2"
+		heading_color = "#f2f7fb"
+		muted_color = "#9fb1c3"
+		button_color = "#101923"
+		active_color = "#193044"
+	return {"
+	@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenRegular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenBold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:block}*{box-sizing:border-box;border-radius:0!important}html,body{margin:0;min-height:100%;background:[page_color];color:[text_color];font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace}body.nexus-hud{background:[page_color];image-rendering:pixelated}.nexus-hud,.nexus-hud *{font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace!important}.nexus-hud b,.nexus-hud strong{font-weight:700!important}.nexus-hud .hud-shell{min-height:100vh;padding:8px;background:[page_color]}.nexus-hud .hud-frame,.nexus-hud .hud-card{position:relative;background:[panel_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-frame:before,.nexus-hud .hud-frame:after,.nexus-hud .hud-card:before,.nexus-hud .hud-card:after{content:'';position:absolute;z-index:3;left:4px;right:4px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-frame:before,.nexus-hud .hud-card:before{top:4px}.nexus-hud .hud-frame:after,.nexus-hud .hud-card:after{bottom:4px}.nexus-hud .hud-panel{background:[panel_alt_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 0 0 0 2px [border_color]!important}.nexus-hud .hud-title{color:[heading_color]!important;font-weight:bold;text-shadow:2px 2px #000;letter-spacing:1px}.nexus-hud .hud-muted{color:[muted_color]!important}.nexus-hud .hud-accent{color:[accent_color]!important}.nexus-hud .hud-button,.nexus-hud a.hud-button,.nexus-hud button.hud-button,.nexus-hud .hud-tab{position:relative;display:inline-block;background:[button_color]!important;border:2px solid [outer_color]!important;outline:1px solid [edge_color]!important;box-shadow:inset 0 0 0 1px [border_color],2px 2px 0 #000!important;color:[text_color]!important;font-weight:bold;text-transform:uppercase;text-decoration:none;text-align:center}.nexus-hud .hud-button:before,.nexus-hud .hud-tab:before{content:'';position:absolute;left:3px;right:3px;top:3px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-button:hover,.nexus-hud .hud-tab:hover{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important}.nexus-hud .hud-button:active,.nexus-hud .hud-tab:active{transform:translate(1px,1px);box-shadow:inset 0 0 0 2px [outer_color]!important}.nexus-hud .hud-tab.active{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important;box-shadow:inset 3px 0 [accent_color],inset 0 0 0 1px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-button.danger{background:#241718!important;outline-color:#7e4646!important;color:#ffd8d4!important;box-shadow:inset 3px 0 #e26767,2px 2px 0 #000!important}.nexus-hud .hud-sprite{display:flex;align-items:center;justify-content:center;background:[outer_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [panel_alt_color]!important;overflow:hidden;image-rendering:pixelated}.nexus-hud .hud-sprite img{object-fit:contain;image-rendering:pixelated}.nexus-hud .hud-label{color:[accent_color]!important;font-size:9px;text-transform:uppercase;letter-spacing:.4px}.nexus-hud .hud-section-title{position:relative;margin:0;background:[panel_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 4px 0 [accent_color],inset 0 0 0 2px [border_color]!important;color:[heading_color]!important;text-transform:uppercase;text-shadow:1px 1px #000}.nexus-hud input,.nexus-hud textarea,.nexus-hud select{background:[outer_color]!important;border:2px inset [edge_color]!important;color:[text_color]!important}.nexus-hud ::-webkit-scrollbar{width:14px;height:14px}.nexus-hud ::-webkit-scrollbar-track{background:[outer_color];border:1px solid [border_color]}.nexus-hud ::-webkit-scrollbar-thumb{background:[button_color];border:2px outset [edge_color]}
 	"}
 
 client/var/tmp
@@ -34,6 +290,7 @@ client/var/tmp
 	datum/NexusChatHud/nexus_chat_hud
 	datum/NexusInterfaceSettings/nexus_interface_settings
 	list/nexus_chat_history
+	nexus_hud_font_resources_ready = FALSE
 
 obj/HudWindow
 	mouse_opacity = 2
@@ -113,6 +370,9 @@ proc/normalizeNexusInterfaceLayout(layout_id)
 proc/getNexusChatMessageSeparatorHtml()
 	return "<hr class='nexus-message-separator' size='1' color='#4b3927' style='display:block;width:100%;height:0;margin:5px 0;border:0;border-top:1px dashed #4b3927'>"
 
+proc/nexusChatChannelAppearsInAll(channel)
+	return normalizeNexusChatChannel(channel) != "combat"
+
 client/proc/initializeNexusChatHistory()
 	if(!islist(nexus_chat_history)) nexus_chat_history = list()
 	for(var/channel in list("all", "combat", "ic", "ooc"))
@@ -135,9 +395,10 @@ client/proc/receiveNexusHudChatMessage(message, channel = "all")
 	if(!message) return
 	initializeNexusChatHistory()
 	channel = normalizeNexusChatChannel(channel)
-	var/list/all_entries = nexus_chat_history["all"]
-	all_entries += "<span style='color:#9b815c'>\[[uppertext(channel)]\]</span> [message]"
-	while(all_entries.len > 300) all_entries.Cut(1, 2)
+	if(nexusChatChannelAppearsInAll(channel))
+		var/list/all_entries = nexus_chat_history["all"]
+		all_entries += "<span style='color:#9b815c'>\[[uppertext(channel)]\]</span> [message]"
+		while(all_entries.len > 300) all_entries.Cut(1, 2)
 	if(channel != "all")
 		var/list/channel_entries = nexus_chat_history[channel]
 		channel_entries += message
@@ -186,18 +447,25 @@ datum/NexusChatHud
 	proc/buildLink(label, action_id, class_name = "button")
 		return "<a class='[class_name]' href='byond://?src=\ref[src]&action=[action_id]'>[html_encode(label)]</a>"
 
+	proc/buildIconLink(label, action_id, icon_kind, class_name = "hud-button")
+		var/icon_resource = getNexusPixelInterfaceIconResource(owner, icon_kind)
+		return "<a class='[class_name]' href='byond://?src=\ref[src]&action=[action_id]'><img src='[icon_resource]' alt=''>[html_encode(label)]</a>"
+
 	proc/buildHtml()
+		prepareNexusHudBrowserResources(owner)
 		var/tabs = ""
-		for(var/channel in list("all", "combat", "ic", "ooc"))
-			var/tab_class = channel == active_channel ? "tab active" : "tab"
-			tabs += buildLink(uppertext(channel), "channel&id=[channel]", tab_class)
-		var/footer = buildLink("SAY", "say")
-		footer += buildLink("OOC", "ooc")
-		footer += buildLink("EMOTE", "emote")
-		footer += buildLink("LOGS", "logs")
-		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusRpgBrowserCss()]
-		*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:10px 'Courier New',monospace}.shell{height:100vh;display:flex;flex-direction:column;padding:4px;background:#17110c}.header{display:flex;align-items:center;gap:3px;flex:0 0 24px;padding:3px 4px;border:2px solid #755a36;background:#3a2a1b}.header b{margin-right:auto;color:#f0d497;font-size:11px}.button,.tab{display:block;padding:4px 6px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.header .button{padding:2px 5px}.tabs{display:flex;gap:3px;flex:0 0 25px;min-height:25px;max-height:25px;margin-top:3px;overflow:hidden}.tab{flex:1 1 0;min-width:0;padding:4px 2px}.tab.active{background:#76542a;color:#fff3bf;border-color:#d4ad65}.messages{flex:1 1 auto;min-height:0;margin-top:3px;padding:7px;overflow-y:auto;border:2px inset #574128;background:#100d09;color:#ead7b0;font-size:10px;line-height:1.35}.footer{display:flex;gap:3px;flex:0 0 25px;min-height:25px;max-height:25px;margin-top:3px;overflow:hidden}.footer .button{flex:1 1 0;min-width:0;padding:4px 1px}.hint{flex:0 0 15px;padding-top:3px;color:#927b58;text-align:center;font-size:8px}::-webkit-scrollbar{width:12px}::-webkit-scrollbar-track{background:#17110c}::-webkit-scrollbar-thumb{background:#6b4e2d;border:2px outset #9b7441}
-		</style><script>window.onload=function(){var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><div class='shell'><div class='header'><b>CHAT / [uppertext(active_channel)]</b>[buildLink("UP", "scroll_up")][buildLink("DOWN", "scroll_down")][buildLink("HIDE", "hide")]</div><div class='tabs'>[tabs]</div><div class='messages' id='messages'>[buildMessageHtml()]</div><div class='footer'>[footer]</div><div class='hint'>CMD BAR BELOW / ENTER TO FOCUS OR RETURN TO MAP</div></div></body></html>"}
+		var/list/channel_icons = list("all" = "logs", "combat" = "skills", "ic" = "player", "ooc" = "world")
+		for(var/channel in channel_icons)
+			var/tab_class = channel == active_channel ? "hud-tab active" : "hud-tab"
+			tabs += buildIconLink(uppertext(channel), "channel&id=[channel]", channel_icons[channel], tab_class)
+		var/footer = buildIconLink("SAY", "say", "player")
+		footer += buildIconLink("OOC", "ooc", "world")
+		footer += buildIconLink("EMOTE", "emote", "ability")
+		footer += buildIconLink("LOGS", "logs", "logs")
+		var/chat_icon = getNexusPixelInterfaceIconResource(owner, "logs")
+		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusHudBrowserCss("bronze")]
+		html,body{width:100%;height:100%;overflow:hidden;font-size:10px}.chat-shell{height:100vh;display:flex;flex-direction:column;padding:6px;gap:5px}.chat-head{display:flex;align-items:center;gap:5px;flex:0 0 37px;padding:4px 7px}.chat-head .title-icon{width:24px;height:24px;image-rendering:pixelated}.chat-head .title-copy{display:flex;flex:1;min-width:0;flex-direction:column}.chat-head .hud-title{font-size:11px}.chat-head .hud-muted{font-size:7px}.chat-head .hud-button{padding:5px 7px;font-size:8px}.tabs,.footer{display:flex;gap:5px;flex:0 0 31px;min-height:31px;overflow:hidden}.tabs .hud-tab,.footer .hud-button{display:flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;gap:4px;padding:4px 2px}.tabs img,.footer img{width:18px;height:18px;image-rendering:pixelated}.messages{flex:1 1 auto;min-height:0;padding:9px;overflow-y:auto;color:#ead7b0;font-size:9px;line-height:1.45}
+		</style><script>window.onload=function(){document.body.className='nexus-hud';var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><main class='hud-shell chat-shell'><header class='hud-frame chat-head'><img class='title-icon' src='[chat_icon]' alt=''><span class='title-copy'><b class='hud-title'>CHAT / [uppertext(active_channel)]</b><small class='hud-muted'>NEXUS COMMUNICATION LINK</small></span>[buildLink("UP", "scroll_up", "hud-button")][buildLink("DOWN", "scroll_down", "hud-button")][buildLink("HIDE", "hide", "hud-button danger")]</header><nav class='tabs'>[tabs]</nav><section class='hud-panel messages' id='messages'>[buildMessageHtml()]</section><nav class='footer'>[footer]</nav></main></body></html>"}
 
 	proc/attachSidePanel()
 		if(!owner || !owner.client) return

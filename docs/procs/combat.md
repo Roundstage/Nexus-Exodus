@@ -5,6 +5,8 @@ Combat resolution, skill routing, damage, and attack-specific behavior.
 
 Guided blasts use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits. Fight to the Death now directly synchronizes `sparring_mode` and `Fatal`; there is no secondary non-lethal choice, and tournaments force Casual mode.
 
+Equipped forged masks add their material's bounded BP reinforcement to Ki attacks and multiply central Ki damage. Projectile creation captures both values for blasts, while physical bullets retain the owner's unmodified BP.
+
 Sense tracking is persistent while Sense or a compatible scanner is owned. Client-local world images render each readable character's relative power percentage below their sprite, while appearance-matched arrows keep off-screen signatures discoverable. The replacement Sense menu adds sprite icons and exposes qualitative Strength, Endurance, Speed, Force, Resistance, Offense, and Defense ratings to Sense 3.
 
 Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Its original instant warp/input cadence is preserved, with a larger centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt identifying the required key for each fighter. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
@@ -12,6 +14,8 @@ Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or 
 Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its imported Tenkaichi effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
 
 Confirmed melee critical hits use the original `showNexusCriticalImpact()` presentation: a dark impact core, three independently rotated black/crimson spark ruptures generated at runtime, a short crimson light pulse, shockwave, screen shake, floating `BLACK FLASH` title, and layered physical/energy impact audio. `Test Combat Effects > Critical - Black Flash` previews the complete presentation without dealing damage.
+
+Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack requires a selected target, advances directly at one world tick per tile with afterimages, crosses to the turf beyond the opponent, and retains its distance-scaled damage. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
@@ -388,7 +392,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 #### datum/SkillEngine/proc/castDashAttack
 - Signature: `datum/SkillEngine/proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)`
 - Inputs: mob/user, obj/Dash_Attack/skill_obj
-- Purpose: Execute Dash Attack rush behavior while granting only the skill-controlled movement loop permission to bypass the attack movement lock.
+- Purpose: Execute a selected-target Dash Attack at one world tick per tile while granting only its skill-controlled movement loop permission to bypass the attack movement lock.
 - Returns: 1 on success, else 0.
 - Side effects: moves user, applies melee damage and knockback.
 
@@ -1857,13 +1861,6 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 - Purpose: Apply milestone, arcane, racial, stun, and shield modifiers, then publish the actual Health damage to the combat feed when attribution is available.
 - Returns: applied Health damage, or zero when no Health was removed.
 - Side effects: records lethal-combat pressure for both fighters when the attacker uses Lethal intent, then updates anger, damage indicators, overhead vitals, and batched combat logs.
-
-#### mob/proc/PowerupDamageGrabber
-- Signature: `mob/proc/PowerupDamageGrabber(n = 1) //multiply by n for "damage per second" regardless of call rate`
-- Inputs: n = 1
-- Purpose: Handle powerup damage grabber.
-- Returns: none (implicit).
-- Side effects: see implementation.
 
 #### mob/proc/Fill_power_attack_meter
 - Signature: `Fill_power_attack_meter()`
@@ -4380,7 +4377,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 
 ### Progression preset buffs and presentation
 
-- Combat Foundation is the default combat-progression branch. Its universal curriculum moves from ki regulation/basic attacks into aerial movement, defense and approach tools, then Zanzoken, Custom Buff and Beam, with Sokidan as the guided-energy capstone. Dash Attack is foundational mobility rather than an Unarmed capstone; the strongest dedicated Unarmed attacks remain at tier five.
+- Combat Foundation is the default combat-progression branch. Its universal curriculum moves from ki regulation/basic attacks into meditation, radial Shockwave, aerial movement, defense and approach tools, then Zanzoken, Custom Buff and Beam, with Sokidan as the guided-energy capstone. Dash Attack is foundational mobility rather than an Unarmed capstone; the strongest dedicated Unarmed attacks remain at tier five.
 - `obj/Buff/Preset` defines fixed, non-editable buffs. Combat Mathematics is module-only and Bleeding Edge is Milestone-only; neither is registered as a Combat-tree purchase.
 - Focus and the six mutually exclusive Ultimate Buffs remain compatible with the same `obj/Buff` lifecycle. All six Ultimate Buffs are tier-five Combat -> Buffs capstones reached through distinct preset-buff paths; they are no longer Milestone talents.
 - `mob/proc/ProgressionBuffBurst(buff, enabling)` supplies a colored activation/deactivation burst, floating technique label, and sound chosen by the buff preset without introducing a parallel combat state.
@@ -4388,5 +4385,22 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 - RPT combat Milestones are a separate talent layer: Bleeding Edge and Thundering Blows grant toggleable weapon techniques, Fire Fist reuses the native Energy-draining stance, and Fire Lord/Smolder/This Drill modify the canonical burn and scaled-damage paths without becoming Ultimate Buffs.
 - Named waves use Combat -> Beam, while Rock Throw/Rock Slide/Rock Tomb use Combat -> Physical. Echoing Slash and Sky Break belong to Combat -> Weapon; their projectiles call `getWeaponCombatDamage()` so equipped-weapon quality and weapon Milestones affect their damage.
 - Genki Dama and Kaioken are tier-ten purchases. Genki Dama's full-charge impact plus explosion is the highest bounded player-projectile damage budget.
-- Temporary RPT magic uses the same authoritative paths: Empowered Attacks is applied in `TakeDamage()` through the resolved attacker, Empowered Defenses and Adamantine Skeleton reduce incoming damage there, and Accelerate multiplies the final `Speed_delay_mult()` result.
-- Frost Nova and Rejuvenate filter targets through Nexus combat state and nearby-player rules; projectile spells use cached Nexus blasts rather than maintaining an independent projectile loop.
+- Temporary RPT magic uses the same authoritative paths: Empowered Attacks is applied in `TakeDamage()` through the resolved attacker, Empowered Defenses divides incoming damage by its 1.5 effective Endurance/Resistance multiplier without mutating save-backed stats, Adamantine Skeleton retains its independent reduction, and Accelerate multiplies the final `Speed_delay_mult()` result.
+- Frost Nova filters every player or NPC target through `canHitTenkaichiTechniqueTarget()`, damages through `applyTenkaichiTechniqueDamage()`, and applies its area stun; Rejuvenate retains its adjacent-player rule. Projectile spells use cached Nexus blasts rather than maintaining an independent projectile loop.
+
+### Restored RPT area techniques
+
+- `obj/Attacks/TenkaichiAreaTechnique` derives from the native `obj/Attacks/Shockwave` while retaining its saved type paths. `useAreaTechnique(user)` owns targetless cooldown, Energy payment, AoE dodge, radial falloff, target cap and Nexus damage scaling. Super Explosive Wave is a defensive four-tile wave that destroys hostile non-beam blasts and repels enemies; Earthquake is a ground-only physical five-tile wave that pulls enemies inward through collision-valid steps.
+- `obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze/proc/useStyle(user)` requires a selected target within 20 tiles, creates three cached homing blasts, and shares one `CombatDamageBudget` equal to the complete 7.5-factor volley.
+- `mob/proc/castTenkaichiRadialTechnique()` lets Wind Howl fire without a selected primary target. It force-resolves valid enemies within three tiles after normal equipment, cost, cooldown, and AoE-dodge checks.
+- Pressure Punch uses `pressure_punch_charge_ticks = 10` and `pressure_punch_cooldown_ticks = 90`, halving its charge and reducing its old twelve-second cooldown to nine seconds.
+- Versatile Training and Unencumbered Combatant feed effective combat-stat helpers without changing saved base stats. Momentum, Precision, and Fortified Damage are mutually exclusive secondary source-stat choices. Sweeping Impact, Echoing Assault, and Keen Edge add three-tile splash, bounded double attacks, and critical chance to ordinary melee.
+- Fire Lord reads the struck target's Burn stacks and only amplifies attacks whose resolved name is fire-, flame-, or burn-based.
+
+### Open combat asset library
+
+- `getNexusOpenCombatIcon(library_name)` resolves one of the registered open-license combat DMI libraries. State names, dimensions, transformations, and provenance are documented in `docs/assets/CombatAssetLibrary.md`.
+- `getNexusShonenSound(category)` returns a random compiled Ogg resource from the requested old-school anime category. All 720 derived files are indexed, so callers do not need to duplicate resource lists.
+- `showNexusOpenCombatEffect(target, library_name, effect_state, ...)` checks the registered DMI, creates a centered pooled effect actor, plays the requested state and fades it without leaving overlays behind.
+- Raw beam impacts use randomized `PixelSimulations64.dmi` explosions and the `explosions` sound category while retaining native lighting, screen shake, stream teardown and knockback.
+- Headbutt, Axe Kick, March of Fury, Consecutive Normal Punches, Guard Break, Wing Clip and Blue Comet Special assign explicit Aim impact states. Unarmed casts and impacts draw randomized semantic sounds from `swings`, `melee`, `flight` or `electric`.

@@ -1,13 +1,28 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools. Pressing an active window icon again closes that window.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
-The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
+The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. The reduced browser is not a plain fallback: it uses `getNexusHudBrowserCss("bronze")`, Silkscreen, the same bolted frames, and the canonical pixel pictograms for its channel and composition controls. It deliberately omits redundant command-bar/focus instructional copy. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
-All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like borders, brown/bronze surfaces, monospaced text, no soft shadows or gradients, and pixelated image rendering. Character, Inventory, Sense, Skills, and admin World views use a one-second, change-aware live refresh while open and preserve browser scroll position between updates. Login and Dream Seeker reconnect both use the resizable RPG-style three-slot character selector instead of the New/Load alert. A reconnect saves and cleans up the previously attached character, transfers the client to a fresh lobby mob, and applies the oversized title view only to that lobby host; live characters retain their clamped saved view.
+The primary game browsers use `getNexusHudBrowserCss()` to reproduce the native HUD construction instead of layering a broad theme over unrelated markup. Player-facing Inventory, Skills, Sense, World, Character, Progression, Milestones, and Build surfaces use the bronze chat/action-button palette; administration uses the blue Server Panel palette. Character is an explicit snapshot with a manual Refresh control so reading it can never be interrupted by document replacement. Live menu scripts write scroll state to `sessionStorage` and restore it after intentional navigation. Login and Dream Seeker reconnect both use the silent, resizable RPG-style three-slot character selector instead of the New/Load alert. The selector and classic map title share the canonical transparent pixel-art logo. A reconnect saves and cleans up the previously attached character, transfers the client to a fresh lobby mob, and applies the oversized title view only to that lobby host; live characters retain their clamped saved view.
+
+## Visual Asset Contract
+
+These references are intentional and must not be removed, renamed, replaced with emoji/SVG art, or repurposed as generic category illustrations:
+
+- `src/Icons/Unsorted/UserNamesBarsUi.png` is the 315x125 structural canvas used by `getNexusHudLibraryIcon()`, `getNexusActionButtonIcon()`, and the shortcut builders before code scales and paints the final surface. It is a frame source, not an Inventory or Skill icon.
+- `src/Icons/UI/LethalHud.dmi` is the on-character Lethal indicator: unnamed state, 32x32 cells, four frames. It is not the top-right Lethal button background.
+- `src/Icons/UI/RPModeHud.dmi` is the on-character RP Mode indicator: unnamed state, 48x32 cells, eight frames. It is not the top-right RP Mode button background.
+- `src/Fonts/SilkscreenRegular.ttf` and `src/Fonts/SilkscreenBold.ttf` are the canonical embedded pixel fonts for native-HUD browser screens, sourced from the official Google Fonts Silkscreen family. Their SIL Open Font License is stored in `src/Fonts/SilkscreenOFL.txt`; keep all three files together.
+- `src/Icons/UI/NexusExodusLogo.png` is the canonical primary logo. Login must use this exact transparent bronze/gunmetal/cyan pixel-art resource through `browse_rsc()` and `DisplayTitleScreen()`; do not restore `NexusExodus.dmi`, the old JPEG, a text-only substitute, or a looping login theme.
+- `src/Images/Slime64.png` is a legacy resource path whose contents are now the canonical 64x64 Nexus Exodus application/window icon: a simplified bronze gateway X with a cyan central rift. The filename is retained only as an already tracked compiled-resource handle; it contains no slime or third-party artwork. `DU.dmf` deliberately contains no file-valued icon property because Dream Maker's standalone skin parser reported replacement images as missing. `client/applyNexusApplicationIcon()` assigns the compiled icon reference to `mainwindow` after client creation. Do not substitute franchise characters, mascots, or a reduced copy of the full wordmark.
+- The top-right Lethal and RP Mode buttons are 108x20 procedural surfaces from `getNexusActionButtonIcon()`: black outer frame, bronze inner edge, two gold top bolts, Fixedsys/Courier maptext, red Lethal accent, and orange RP Mode accent.
+- Native panel bolts are not separate image files. They are 2x2 `#c6a15c` pixels drawn at the corners by `getNexusHudLibraryIcon()` and reproduced by the scoped `.hud-frame`/`.hud-card` pseudo-elements in `getNexusHudBrowserCss()`.
+- Content imagery must come from the actual runtime atom through `getNexusBrowserAtomIconResource()` (`icon`, `icon_state`, direction, color, and alpha). Category pictograms must never substitute for item, technique, character, or blueprint sprites.
+- Bronze chrome (`#201810`, `#715735`, `#9a7440`, `#d2aa61`) belongs to player surfaces and chat. Blue chrome (`#080d14`, `#304456`, `#405a70`, `#72c6eb`) belongs to admin/development surfaces. Both use square corners, hard inset edges, black pixel shadows, and no gradients in structural frames.
 
 ## Files
 - `src/Code/UI/DU.dmf`
@@ -31,24 +46,29 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 ### src/Code/UI/ActionHud.dm
 
 - `getNexusActionButtonIcon()` builds the 108x20 rustic controls needed to display complete `LETHAL`, `RPMODE`, and `CHARACTER` labels without clipping.
-- `getNexusShortcutBarIcon()`, `getNexusShortcutButtonIcon()`, and `drawNexusShortcutGlyph()` build the top-left bolted strip and its license-independent pixel pictograms.
+- `getNexusShortcutBarIcon()`, `getNexusShortcutButtonIcon()`, and `drawNexusShortcutGlyph()` build the top-left bolted strip and its license-independent pixel pictograms, including distinct tree, trophy, and hammer glyphs for Progression Trees, Milestones, and Build.
 - `initializeActionHud()` creates the top-right Lethal, RP Mode, and Character buttons plus the top-left shortcut strip as client-only screen objects and hides their obsolete skin controls.
 - `hasCompleteActionHud()` and `rebuildActionHud()` validate and reconstruct the complete three-button set.
-- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain six player shortcuts and add World plus Admin only when the owner has an active admin level. CMD lives with chat instead of consuming a navbar slot.
+- `getNexusShortcutTypes()`, `hasCompleteShortcutHud()`, and `rebuildShortcutHud()` maintain nine player shortcuts, including direct Progression Trees, Milestones, and Build access, and add World plus Admin only when the owner has an active admin level. CMD lives with chat instead of consuming a navbar slot.
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
-- `getNexusLiveBrowserScript()` supplies the owner-authenticated one-second heartbeat and scroll-position handoff shared by live browser windows.
-- `datum/NexusPlayerMenu` provides rustic Inventory, Skills, Sense, and admin-only World surfaces. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
+- `getNexusLiveBrowserScript()` supplies the owner-authenticated refresh heartbeat shared by live browser windows. Scroll events publish their position immediately, restoration is retried after layout settles, and the refresh cadence remains an internal implementation detail rather than a visible status badge.
+- `getNexusHotkeyDownMacroCommand()` and `getNexusHotkeyUpMacroCommand()` quote modifier combinations, provide matching release macros, and preserve normal cardinal/diagonal movement when an arrow also owns a custom action.
+- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory, Skills, Sense, and World export the actual runtime sprite instead of substituting category artwork. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
 - `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
-- `showNexusPlayerMenu(section)` opens the requested player-menu section from its pixel shortcut.
+- `showNexusPlayerMenu(section)` opens the requested player-menu section; `toggleNexusPlayerMenu(section)` closes it when the matching Inventory, Skills, Sense, or World icon is pressed again.
 - `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
 
 ### src/Code/UI/HudLibrary.dm
 
 - `getNexusHudLibraryIcon()` creates and caches scalable bolted, square panel/button surfaces used by native HUD windows.
-- `getNexusRpgBrowserCss()` supplies the shared rustic RPG presentation layer used by the Character, creation, emote, log, hotkey, inspector, reward, item, and admin windows.
+- `getNexusBrowserAtomIconResource()` exports and caches the real runtime sprite used by an object so browser Inventory and Skills remain visually identical to their in-game counterparts.
+- `getNexusCharacterPortraitIcon()` flattens the character body, underlays, and overlays into the Character portrait, so equipped clothing and transformation layers are visible instead of exporting a naked base icon.
+- `prepareNexusHudBrowserResources(viewer)` sends both local Silkscreen font weights once per client before a native-HUD browser is opened.
+- `getNexusHudBrowserCss(theme)` provides the embedded `Nexus Silkscreen` font and scoped native-HUD components (`hud-frame`, `hud-card`, `hud-button`, `hud-tab`, `hud-panel`, and `hud-sprite`) in bronze player or blue admin palettes. It must be used through `body.nexus-hud`; it must not become an unscoped global override.
+- `getNexusRpgBrowserCss()` remains the legacy shared rustic layer for creation, emote, log, hotkey, inspector, reward, and item windows that have not moved to the scoped native-HUD components.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
-- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
+- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `buildIconLink()` binds the real shared pixel pictograms to the Side + Tabs controls, while `buildHtml()` applies the player-facing bronze asset contract instead of maintaining a second basic chat theme. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
 - `datum/NexusInterfaceSettings` switches layouts, independently enables the Skills, Other, Items, World, and Admin legacy categories, and provides nudge, exact-coordinate, and reset controls for the lower bars/Sense stack and main vitals display. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
 - `applyNexusInterfaceLayout()` and `hideNexusLegacyInterface()` reconcile the configured panes while keeping obsolete output windows detached.
@@ -59,10 +79,12 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 
 ### src/Code/UI/UIStuff.dm
 
-- `datum/NexusCharacterSelect` renders and validates three independent character slots with Create, Enter World, and confirmed Delete actions. It remains visible when creation or loading is rejected and closes only after the requested transition succeeds.
+- `datum/NexusCharacterSelect` sends and renders the canonical logo, then validates three independent character slots with Create, Enter World, and confirmed Delete actions. It remains visible when creation or loading is rejected and closes only after the requested transition succeeds.
+- `DisplayTitleScreen()` uses the same transparent primary-logo PNG for the classic map title. Initial login is intentionally silent; it must not start a repeating music channel.
 - `ShowNexusLoginPrompt()` now opens the slot selector; `NewClicked(slot)` and `LoadClicked(slot)` bind the selected slot before invoking creation or persistence.
 - `returnToNexusReconnectLobby()` saves a reattached live character, performs normal volatile combat cleanup, transfers the client to a fresh lobby mob, and deletes the stale body without running the normal Logout path twice.
 - `getNexusInitialConnectViewWidth(current_mob, title_view_width)` returns the large title-screen width only for lobby mobs; a live character receives zero so `DetermineViewSize()` restores and clamps its existing preference.
+- `applyNexusApplicationIcon()` caches the compiled Nexus application icon on the client and applies its resource reference to `mainwindow` at runtime, keeping file loading out of the DMF parser.
 - `ToggleTabs()` is retained as a hidden hotkey compatibility entry but opens Character instead of restoring the removed tab pane.
 
 ### src/Code/UI/AdminInspector.dm
@@ -76,8 +98,8 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 ### src/Code/UI/CharacterSheet.dm
 
 - `showCharacterSheet()` opens a client-owned `datum/NexusCharacterSheetWindow`, exports the current sprite portrait, and starts its bounded live lifecycle.
-- `datum/NexusCharacterSheetWindow` detects character or appearance changes once per second, hashes and sends one placeholder-backed HTML render, preserves scroll position, and stops when the browser, character, or client closes.
-- `buildCharacterSheetHtml(portrait_resource, topic_source, restore_scroll_y)` renders identity, equipment, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Milestones, Lethal pressure, and learned skills with live-window controls when a controller is supplied.
+- `datum/NexusCharacterSheetWindow` sends one placeholder-backed HTML snapshot, retains a heartbeat only for lifecycle cleanup, and never replaces the open document automatically. Refresh is an explicit player action and preserves the stored document scroll position.
+- `buildCharacterSheetHtml(portrait_resource, topic_source, restore_scroll_y)` renders identity, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Lethal pressure, owned Milestones, and learned skills as one bronze native-HUD dossier. Its portrait is a flattened copy of the current in-game appearance, including clothes, equipment, hair, and transformation overlays; learned techniques use their real runtime sprites. Unowned Milestones are omitted, and nested content scroll areas are deliberately avoided so refresh restoration has one authoritative scroll position.
 - Admins receive a direct link from Character to the structured inspector.
 
 ### src/Code/UI/DamageIndicators.dm
@@ -125,6 +147,13 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Purpose: Handle guide.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### Nexus player-menu action routing
+
+- Skill and Sense links use one `subject` reference contract, with legacy `skill` and `target` parameters accepted by the handler.
+- `NexusPlayerMenu.useOwnedSkill()` invokes zero-argument `Hotbar_use()` verbs without injecting the owner as an invalid positional argument.
+- Skill use/examination requires the object to remain directly owned; Sense targeting/examination revalidates the target's actual area and `CanSense()` state rather than depending on a possibly stale area list.
+- Dynamic inventory details are read through a variable-name indirection so examining an item without a subtype-only durability variable cannot raise an undefined-variable runtime.
 
 ### src/Code/UI/HUD.dm
 
@@ -965,6 +994,10 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 - Purpose: Stop held input and open the new editor used by F5.
 - Side effects: opens `NexusHotkeys` and suppresses gameplay key dispatch while active.
 
+#### mob/proc/toggleNexusHotkeyEditor
+- Purpose: Open the hotkey editor or close it when its active shortcut icon is pressed again.
+- Side effects: delegates to the normal show/hide lifecycle so movement macros are restored on close.
+
 ### src/Code/UI/RPWindow.dm
 
 #### proc/renderNexusEmoteMarkup
@@ -1095,7 +1128,7 @@ All Nexus browser windows share `getNexusRpgBrowserCss()`: square pixel-like bor
 #### mob/proc/ToggleBuildMenu
 - Signature: `ToggleBuildMenu()`
 - Inputs: None
-- Purpose: Open or refocus the modern `NexusBuildWindow` from the default `M` hotkey.
+- Purpose: Toggle the modern `NexusBuildWindow` from the default `M` hotkey or top Build icon.
 - Returns: none (implicit).
 - Side effects: closes the legacy `TabHolder`, opens the browser catalog, and restores map focus on close.
 

@@ -204,9 +204,9 @@ mob/proc/Find_Location()
 	if(prob(50)) Find_Location()
 
 var/NPC_Delay=1
-var/NPC_Can_Respawn=1
-var/NPC_Leave_Body=1
-var/npcs_enabled=1
+var/NPC_Can_Respawn=NEXUS_DEFAULT_NPCS_ENABLED
+var/NPC_Leave_Body=NEXUS_DEFAULT_NPCS_ENABLED
+var/npcs_enabled=NEXUS_DEFAULT_NPCS_ENABLED
 
 mob/Admin2/verb/toggleNpcs()
 	set name = "Toggle Npcs"
@@ -215,11 +215,14 @@ mob/Admin2/verb/toggleNpcs()
 	if(!npcs_enabled)
 		src<<"NPCS DISABLED"
 		disable_npcs()
-	else src<<"NPCS ENABLED"
+	else
+		src<<"NPCS ENABLED"
+		enable_npcs(load_saved_npcs = TRUE)
 
 mob/var/tmp/perma_delete
 
 proc/disable_npcs()
+	set waitfor=0
 	NPC_Can_Respawn=0
 	NPC_Leave_Body=0
 	for(var/mob/Enemy/E) if(!istype(E,/mob/Enemy/Zombie)) if(E.z)
@@ -229,7 +232,11 @@ proc/disable_npcs()
 	for(var/mob/Body/B) if(!B.displaykey) if(B.z)
 		if(prob(5)) sleep(1)
 		del(B)
+
+proc/enable_npcs(load_saved_npcs = FALSE)
+	NPC_Can_Respawn=1
 	NPC_Leave_Body=1
+	if(load_saved_npcs) spawn loadNpcs()
 
 mob/var
 	Flying

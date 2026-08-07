@@ -160,6 +160,8 @@ proc/initialize()
 	world<<"Voting loaded"
 	loadMisc()
 	world<<"Misc Loaded"
+	if(npcs_enabled) enable_npcs()
+	else disable_npcs()
 	if(world.maxz<5) Map_Loaded=1
 	spawn(25) mapLoad()
 	spawn(30) loadItems()
@@ -167,9 +169,11 @@ proc/initialize()
 	spawn(35) if(1)
 		loadBodies()
 		world<<"Bodies loaded"
-	spawn(35) if(1)
-		loadNpcs()
-		world<<"NPCs loaded"
+	spawn(35)
+		if(npcs_enabled)
+			loadNpcs()
+			world<<"NPCs loaded"
+		else world<<"NPCs disabled; saved NPC load skipped"
 	addBuilds()
 	world<<"Builds added"
 	var/smoke_soul_contract_count
@@ -202,7 +206,6 @@ proc/initialize()
 	for(var/a in typesof(/obj/Alien_Icons)) if(a!=/obj/Alien_Icons) Alien_Icons+=new a
 	for(var/a in typesof(/obj/Demon_Icons)) if(a!=/obj/Demon_Icons) Demon_Icons+=new a
 	//world<<"All files loaded."
-	spawn(100) if(!npcs_enabled) disable_npcs()
 	Monitor_Bugs()
 	villain_damage_penalty_update()
 	hide_destroyed_planets()
@@ -554,6 +557,7 @@ proc/saveMisc()
 	s["BASE_MOVE_DELAY"]<<BASE_MOVE_DELAY
 	s["custom_buffs_allowed"]<<custom_buffs_allowed
 	s["feats_on"]<<feats_on
+	s["nexus_server_feature_defaults_version"]<<nexus_server_feature_defaults_version
 	s["auto_reboot_hours"]<<auto_reboot_hours
 	s["pwipe_delete_feats"]<<pwipe_delete_feats
 	s["override_spawn"]<<override_spawn
@@ -679,7 +683,9 @@ proc/saveMisc()
 	s["GLOBAL_ACCURACY_EXPONENT"] 					<< GLOBAL_ACCURACY_EXPONENT
 proc/loadMisc()
 	loadCustomDecors()
-	if(!fexists("Misc")) return
+	if(!fexists("Misc"))
+		applyNexusServerFeatureDefaultsMigration()
+		return
 	var/savefile/s=new("Misc")
 	s["Status_Message"]>>Status_Message
 	s["PVP"]>>PVP
@@ -858,6 +864,7 @@ proc/loadMisc()
 	if("BASE_MOVE_DELAY" in s) s["BASE_MOVE_DELAY"]>>BASE_MOVE_DELAY
 	if("custom_buffs_allowed" in s) s["custom_buffs_allowed"]>>custom_buffs_allowed
 	if("feats_on" in s) s["feats_on"]>>feats_on
+	if("nexus_server_feature_defaults_version" in s) s["nexus_server_feature_defaults_version"]>>nexus_server_feature_defaults_version
 	if("auto_reboot_hours" in s) s["auto_reboot_hours"]>>auto_reboot_hours
 	if("pwipe_delete_feats" in s) s["pwipe_delete_feats"]>>pwipe_delete_feats
 	if("override_spawn" in s) s["override_spawn"]>>override_spawn
@@ -936,6 +943,7 @@ proc/loadMisc()
 	if("trainingRestoreHours" in s) s["trainingRestoreHours"] >> trainingRestoreHours
 	if("hostAllowsPacksOnRP" in s) s["hostAllowsPacksOnRP"] >> hostAllowsPacksOnRP
 	if("God_FistMod" in s) s["God_FistMod"] >> God_FistMod
+	applyNexusServerFeatureDefaultsMigration()
 
 	//offline_gains = 1 //forced on. no more option for admins to turn it off
 	//feats_on = 1 //forced on now (no. bad for rp to have forced on)
@@ -1110,6 +1118,7 @@ atom/var
 	saved_z=1
 mob/var/Savable_NPC
 proc/saveNpcs()
+	if(!npcs_enabled) return
 	var/savefile/f=new("data/NPCs")
 	var/list/l=new
 	for(var/mob/b) if(b.z&&b.Savable_NPC&&!b.client&&!b.empty_player)
@@ -1119,6 +1128,7 @@ proc/saveNpcs()
 		l+=b
 	f<<l
 proc/loadNpcs()
+	if(!npcs_enabled) return
 	if(fexists("data/NPCs"))
 		var/savefile/f=new("data/NPCs")
 		var/list/l=new

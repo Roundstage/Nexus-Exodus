@@ -83,6 +83,7 @@ proc/initializeMagicResearchCatalog()
 	magic_research_catalog["book_fortitude"] = new /datum/MagicResearchNode("book_fortitude", "Book of Fortitude", "Record a long-lasting defensive ward.", "Artifacts", 7, /obj/Arcane_Crafting)
 	magic_research_catalog["book_ages"] = new /datum/MagicResearchNode("book_ages", "Book of Ages", "Create a dangerous grimoire that trades age for talent.", "Artifacts", 8, /obj/Arcane_Crafting)
 	magic_research_catalog["book_power"] = new /datum/MagicResearchNode("book_power", "Book of Power", "Create a one-use grimoire of permanent growth.", "Artifacts", 9, /obj/Arcane_Crafting)
+	magic_research_catalog["shikon_jewel"] = new /datum/MagicResearchNode("shikon_jewel", "Shikon Jewel", "Perform a master ritual to create the ancient jewel that amplifies its bearer's power.", "Artifacts", 9, /obj/Arcane_Crafting)
 
 	// Alchemy
 	magic_research_catalog["arcane_crafting"] = new /datum/MagicResearchNode("arcane_crafting", "Arcane Crafting", "Shape Arcane Essence into persistent magical constructs.", "Alchemy", 2, /obj/Arcane_Crafting)
@@ -151,11 +152,27 @@ mob/proc/refreshMagicResearchUnlocks(announce = FALSE)
 			if(hasProgressionNode("magic_[node.id]")) grantMagicResearchNode(node, announce)
 		else if(magic_level >= node.required_level) grantMagicResearchNode(node, announce)
 
+mob/proc/migrateShikonResearch()
+	if(magic_progression_version >= 2) return FALSE
+	if(!islist(progression_nodes_owned)) progression_nodes_owned = list()
+	var/legacy_node_id = getProgressionScienceNodeIdForType(/obj/items/Shikon_Jewel)
+	var/had_legacy_research = getProgressionNodeRank(legacy_node_id) > 0 || scienceBlueprintListContainsType(individual_science_items, /obj/items/Shikon_Jewel)
+	progression_nodes_owned -= legacy_node_id
+	if(islist(individual_science_items))
+		var/list/retained_blueprints = list()
+		for(var/obj/blueprint in individual_science_items)
+			if(blueprint.type != /obj/items/Shikon_Jewel) retained_blueprints += blueprint
+		individual_science_items = retained_blueprints
+	if(had_legacy_research) progression_nodes_owned["magic_shikon_jewel"] = max(1, getProgressionNodeRank("magic_shikon_jewel"))
+	magic_progression_version = 2
+	return had_legacy_research
+
 mob/proc/syncMagicProgression(silent = TRUE)
+	migrateShikonResearch()
 	magic_experience = max(0, magic_experience)
 	var/old_level = max(1, magic_level)
 	magic_level = max(magic_level, getMagicLevelForExperience(magic_experience))
-	magic_progression_version = 1
+	magic_progression_version = 2
 	if(magic_level > old_level && !silent)
 		src << "<font color=#d99cff>Your Magic Level increased to [magic_level]."
 	refreshMagicResearchUnlocks(announce = !silent)

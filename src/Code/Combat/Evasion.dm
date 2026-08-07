@@ -90,10 +90,10 @@ mob/proc
 	Evade_meter_refill_loop()
 		set waitfor=0
 		while(src)
-			var/refill_start_time=300 * (Def / (Stat_Record*1.5))**0.4
+			var/refill_start_time=300 * (getMilestoneEffectiveDefense() / (Stat_Record*1.5))**0.4
 			refill_start_time=Clamp(refill_start_time,250,350)
 			if(evade_meter<100 && last_attacked_time + refill_start_time < world.time)
-				var/amount=15 * (Def / (Stat_Record*1.5))**0.4
+				var/amount=15 * (getMilestoneEffectiveDefense() / (Stat_Record*1.5))**0.4
 				amount=Clamp(amount,5,15)
 				evade_meter+=amount
 				evade_meter=Clamp(evade_meter,0,100)
@@ -107,14 +107,14 @@ mob/proc
 		Update_evade_meter()
 
 	Fill_evade_meter(mob/m,mult)
-		var/od=Clamp((Def / m.Off)**0.7,0.4,2.5)
+		var/od=Clamp((getMilestoneEffectiveDefense() / m.getMilestoneEffectiveOffense())**0.7,0.4,2.5)
 		var/n=7 * mult * od * (BP / m.BP)**0.4
 		evade_meter+=n
 		evade_meter=Clamp(evade_meter,0,100)
 		Update_evade_meter()
 
 	Evade_meter_requirement(mob/m, mult=1, is_melee=1)
-		var/od = Clamp((m.Off / Def)**0.9, 0.1, 1.#INF)
+		var/od = Clamp((m.getMilestoneEffectiveOffense() / getMilestoneEffectiveDefense())**0.9, 0.1, 1.#INF)
 		var/n=9 * od * mult * (m.BP / BP)**0.5
 
 		//if m is wearing a sword you lose less evasion points because sword strikes are more predictable than melee

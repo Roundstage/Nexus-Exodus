@@ -273,8 +273,7 @@ obj/Module
 
 	Time_normalizer
 		Cost=5000000
-		desc="Nullifies time freeze, allowing you to still move around while the time freeze is active on \
-		you, but slower than you would normally move. Some more downsides are that the entire time you \
+		desc="Reduces Time Stop and other time-freeze stuns by 75%. Some downsides are that the entire time you \
 		have this module installed your regeneration is decreased by 15%, energy by 10%, \
 		and force by 5%."
 		Kix=0.9

@@ -28,8 +28,171 @@ var/vector_move_base_pixels_per_second = 70
 var/vector_move_speed_stat_severity = 0.2
 var/vector_move_speed_stat_minimum = 0.7
 var/vector_move_speed_stat_maximum = 1.4
+var/vector_player_collision_size = 24
+var/vector_gap_nudge_fraction = 0.5
+var/vector_gap_nudge_pixels = 1
+
+mob/var/tmp
+	nexus_gap_nudge_direction
+	nexus_gap_nudge_input_direction
+	nexus_gap_nudge_target_offset
 
 mob/proc
+	configureNexusVectorCollisionBounds()
+		if(bound_x || bound_y || bound_width != world.icon_size || bound_height != world.icon_size) return
+		var/collision_size = Clamp(vector_player_collision_size, 1, world.icon_size)
+		var/collision_offset = round((world.icon_size - collision_size) / 2)
+		bound_x = collision_offset
+		bound_y = collision_offset
+		bound_width = collision_size
+		bound_height = collision_size
+
+	isNexusVectorNudgeBlocker(atom/obstacle)
+		if(!obstacle || obstacle == src || !obstacle.density) return FALSE
+		if(isturf(obstacle)) return !Flying
+		if(ismob(obstacle)) return TRUE
+		if(!isobj(obstacle)) return TRUE
+		if(istype(obstacle, /obj/Turfs/Door)) return FALSE
+		if(Flying || lunge_attacking || evading) return FALSE
+		return istype(obstacle, /obj/Trees) || istype(obstacle, /obj/Big_Rock) || istype(obstacle, /obj/Turfs)
+
+	nexusVectorDensityCount(fraction_x, fraction_y, fraction_width = 0, fraction_height = 0, offset_x = 0, offset_y = 0, extra_width = 0, extra_height = 0)
+		var/density_count = -1
+		for(var/atom/obstacle in obounds(src, bound_width * fraction_x + offset_x, bound_height * fraction_y + offset_y, bound_width * fraction_width + extra_width, bound_height * fraction_height + extra_height))
+			if(density_count < 0) density_count = 0
+			if(isNexusVectorNudgeBlocker(obstacle)) density_count++
+		return density_count
+
+	getNexusGapNudgeCandidates(move_direction, lookahead_pixels = 1)
+		var/list/candidates = list()
+		var/fraction = vector_gap_nudge_fraction
+		lookahead_pixels = max(1, round(lookahead_pixels))
+		switch(move_direction)
+			if(NORTH)
+				if(nexusVectorDensityCount(fraction, 1, -fraction, -1, 0, 0, 0, lookahead_pixels) == 0) candidates += EAST
+				if(nexusVectorDensityCount(0, 1, -fraction, -1, 0, 0, 0, lookahead_pixels) == 0) candidates += WEST
+			if(EAST)
+				if(nexusVectorDensityCount(1, fraction, -1, -fraction, 0, 0, lookahead_pixels, 0) == 0) candidates += NORTH
+				if(nexusVectorDensityCount(1, 0, -1, -fraction, 0, 0, lookahead_pixels, 0) == 0) candidates += SOUTH
+			if(SOUTH)
+				if(nexusVectorDensityCount(fraction, 0, -fraction, -1, 0, -lookahead_pixels, 0, lookahead_pixels) == 0) candidates += EAST
+				if(nexusVectorDensityCount(0, 0, -fraction, -1, 0, -lookahead_pixels, 0, lookahead_pixels) == 0) candidates += WEST
+			if(WEST)
+				if(nexusVectorDensityCount(0, fraction, -1, -fraction, -lookahead_pixels, 0, lookahead_pixels, 0) == 0) candidates += NORTH
+				if(nexusVectorDensityCount(0, 0, -1, -fraction, -lookahead_pixels, 0, lookahead_pixels, 0) == 0) candidates += SOUTH
+		return candidates
+
+	setNexusGapNudgeTarget(nudge_direction)
+		var/current_offset
+		var/target_offset
+		switch(nudge_direction)
+			if(EAST)
+				current_offset = step_x
+				target_offset = step_x <= 0 ? 1 : world.icon_size + 1
+			if(WEST)
+				current_offset = step_x
+				target_offset = step_x >= 0 ? -1 : -world.icon_size - 1
+			if(NORTH)
+				current_offset = step_y
+				target_offset = step_y <= 0 ? 1 : world.icon_size + 1
+			if(SOUTH)
+				current_offset = step_y
+				target_offset = step_y >= 0 ? -1 : -world.icon_size - 1
+		if(!isnum(target_offset)) return FALSE
+		var/max_nudge_distance = max(bound_width, bound_height) * vector_gap_nudge_fraction + 1
+		if(abs(target_offset - current_offset) > max_nudge_distance) return FALSE
+		nexus_gap_nudge_target_offset = target_offset
+		return TRUE
+
+	hasNexusGapNudgeTargetRemaining()
+		switch(nexus_gap_nudge_direction)
+			if(EAST) return step_x < nexus_gap_nudge_target_offset
+			if(WEST) return step_x > nexus_gap_nudge_target_offset
+			if(NORTH) return step_y < nexus_gap_nudge_target_offset
+			if(SOUTH) return step_y > nexus_gap_nudge_target_offset
+		return FALSE
+
+	clearNexusGapNudgeTarget()
+		nexus_gap_nudge_direction = null
+		nexus_gap_nudge_input_direction = null
+		nexus_gap_nudge_target_offset = null
+
+	findNexusGapNudgeDirection(move_direction, lookahead_pixels = 1, list/candidates)
+		if(!candidates) candidates = getNexusGapNudgeCandidates(move_direction, lookahead_pixels)
+		if(!candidates.len)
+			clearNexusGapNudgeTarget()
+			return
+		if(nexus_gap_nudge_input_direction == move_direction && nexus_gap_nudge_direction)
+			if((nexus_gap_nudge_direction in candidates) && hasNexusGapNudgeTargetRemaining())
+				return nexus_gap_nudge_direction
+			clearNexusGapNudgeTarget()
+			if(candidates.len > 1) return
+		else if(candidates.len > 1)
+			return
+		nexus_gap_nudge_input_direction = move_direction
+		nexus_gap_nudge_direction = candidates[1]
+		if(!setNexusGapNudgeTarget(nexus_gap_nudge_direction))
+			clearNexusGapNudgeTarget()
+			return
+		return nexus_gap_nudge_direction
+
+	nudgeNexusVectorMove(move_direction, lookahead_pixels = 1, list/candidates)
+		var/nudge_direction = findNexusGapNudgeDirection(move_direction, lookahead_pixels, candidates)
+		if(!nudge_direction) return
+		var/nudge_x = 0
+		var/nudge_y = 0
+		switch(nudge_direction)
+			if(EAST) nudge_x = vector_gap_nudge_pixels
+			if(WEST) nudge_x = -vector_gap_nudge_pixels
+			if(NORTH) nudge_y = vector_gap_nudge_pixels
+			if(SOUTH) nudge_y = -vector_gap_nudge_pixels
+		var/facing_direction = dir
+		var/moved = Move(loc, facing_direction, step_x + nudge_x, step_y + nudge_y)
+		dir = facing_direction
+		return moved
+
+	slideNexusDiagonalMove(move_direction)
+		if(!(move_direction in list(NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))) return
+		if(last_vector_move_actual_x || last_vector_move_actual_y) return
+		var/facing_direction = dir
+		var/moved
+		if(last_vector_move_requested_y)
+			moved = Move(loc, facing_direction, step_x, step_y + last_vector_move_requested_y)
+			if(moved)
+				dir = facing_direction
+				return moved
+		if(last_vector_move_requested_x)
+			moved = Move(loc, facing_direction, step_x + last_vector_move_requested_x, step_y)
+		dir = facing_direction
+		return moved
+
+	// Adapted from Woo/Tyruswoo's Gap-Nudge Movement v3.3.
+	// https://secure.byond.com/developer/Woo/GapNudgeMovement
+	tryNexusVectorMoveWithGapNudge(move_direction, movement_pixels)
+		if(client) configureNexusVectorCollisionBounds()
+		if(move_direction in list(NORTH, EAST, SOUTH, WEST))
+			var/lookahead_pixels = max(1, round(movement_pixels) + 1)
+			var/list/preflight_candidates = getNexusGapNudgeCandidates(move_direction, lookahead_pixels)
+			if(preflight_candidates.len == 1 && nudgeNexusVectorMove(move_direction, lookahead_pixels, preflight_candidates))
+				last_vector_move_requested_x = 0
+				last_vector_move_requested_y = 0
+				last_vector_move_actual_x = 0
+				last_vector_move_actual_y = 0
+				last_vector_move_attempted = 0
+				last_vector_move_complete = 0
+				return TRUE
+		var/start_z = z
+		var/moved = vector_step(src, dir_to_angle_0_360(move_direction), movement_pixels)
+		if(last_vector_move_complete || z != start_z)
+			clearNexusGapNudgeTarget()
+			return moved
+		var/resolved
+		if(move_direction in list(NORTH, EAST, SOUTH, WEST))
+			resolved = nudgeNexusVectorMove(move_direction)
+		else
+			resolved = slideNexusDiagonalMove(move_direction)
+		return resolved || moved
+
 	GetInputMoveDelay(d = NORTH, raw_mult_only)
 		var/t = BASE_MOVE_DELAY
 		if(!d) return t
@@ -86,7 +249,7 @@ mob/proc
 		if(!d) return
 		var/pixels = GetVectorMovePixels(d) * loop_mult
 		if(pixels <= 0) return
-		return vector_step(src, dir_to_angle_0_360(d), pixels)
+		return tryNexusVectorMoveWithGapNudge(d, pixels)
 
 	// helper: apply sight, injuries and stun modifiers
 	_GetInputMoveDelay_apply_basic_modifiers(t)

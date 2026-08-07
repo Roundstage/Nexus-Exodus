@@ -153,11 +153,13 @@ mob/proc/get_bp(factor_powerup=1)
 
 	else
 		var/bp = bp_mult * Body * (base_bp + hbtc_bp + unlockedBP) * ssj_bp_mult
+		bp += getHeranTransformationNaturalBPAdd() * bp_mult * Body * !!heran_transformed
 		if(anger<=100) bp*=available_potential
 		if(Vampire&&Vampire_Power) bp*=Vampire_Power
 		if(Race=="Demon") bp *= 1 + (min(CollectedSouls, 3) * 0.1)
 		if(Roid_Power) bp*=Roid_Power+1
 		bp += ssj_power() * bp_mult * Body
+		bp += getHeranTransformationStaticBPAdd() * bp_mult * Body * !!heran_transformed
 		bp += Great_Ape_power()*Body
 		bp += God_Fist_bp() * God_FistMod * Body
 		bp += Frost_Lord_Form_Addition()*Body
@@ -1396,7 +1398,7 @@ mob/proc/PowerupScreenShakeLoop(obj/Power_Control/pc)
 			for(var/mob/m2 in player_view(15,src)) if(m2.client) m2.ScreenShake(Amount = 10, Offset = offset)
 		sleep(5)
 
-mob/proc/PowerUpKnockAwayLoop(obj/Power_Control/A)
+mob/proc/PowerUpStandingLoop(obj/Power_Control/A)
 	set waitfor=0
 	while(A && A.Powerup == 1 && A.PC_Loop_Active)
 		var/delay = 1
@@ -1405,12 +1407,6 @@ mob/proc/PowerUpKnockAwayLoop(obj/Power_Control/A)
 			if(!Auto_Attack && world.time - last_attacked_mob_time > 35 && world.time - last_evade_key_press > 30 && world.time - last_block_key_press > 30 && !Giving_Power)
 				if(transing || (!charging_beam && !beaming && !attacking && stand_still_time() >= 20))
 					standing_powerup = 1
-					PowerupDamageGrabber(delay / 1)
-					//this line makes it so you cant just stand there aura knocking someone forever
-					if(BPpcnt < 100 + powerup_soft_cap() * 2)
-						for(var/mob/m in View(2, src))
-							if(isturf(m.loc) && !m.KO && !m.grabber && m != src && (!m.standing_powerup || getdist(src,m) <= 2))
-								PowerupKnockbackEffect(m)
 		if(round(world.time) % 5 == 0)
 			if(Tournament && Fighter1 != src && Fighter2 != src && (src in All_Entrants)) Stop_Powering_Up()
 		if(regenerator_obj) Stop_Powering_Up()
@@ -1432,8 +1428,7 @@ mob/proc/Power_Control_Loop(obj/Power_Control/A)
 		if(!ultra_instinct && Action!="Meditating") player_view(10,src)<<sound('Aura.ogg',volume=10)
 		sleep(41)
 
-	//powerup knockaway
-	PowerUpKnockAwayLoop(A)
+	PowerUpStandingLoop(A)
 
 	var/Stop_At_100
 	if(BPpcnt<100) Stop_At_100=1

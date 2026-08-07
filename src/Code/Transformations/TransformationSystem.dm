@@ -29,6 +29,7 @@ proc/initializeNexusTransformationRegistry()
 		list("frost_final", "Frost Lord Final Form", "frost", 3),
 		list("frost_fifth", "Cooler Fifth Form", "frost", 4),
 		list("frost_gold", "Golden Frost Lord", "frost", 5),
+		list("heran_transformation", "Heran Transformation", "heran", 1),
 		list("giant", "Giant Form", "giant", 1),
 		list("great_ape", "Great Ape", "oozaru", 1),
 		list("alien_transform", "Alien Transformation", "alien", 1),
@@ -49,6 +50,7 @@ mob/proc/detectPrimaryTransformation()
 	if(is_gold_form) return "frost_gold"
 	if(IsGreatApe()) return "great_ape"
 	if(using_giant_form) return "giant"
+	if(heran_transformed) return "heran_transformation"
 	if(ssj) return "saiyan_ssj[ssj]"
 	if(Race == "Frost Lord" && Form)
 		switch(Form)
@@ -67,6 +69,7 @@ mob/proc/countPrimaryTransformations()
 	if(is_gold_form) count++
 	if(IsGreatApe()) count++
 	if(using_giant_form) count++
+	if(heran_transformed) count++
 	if(ssj) count++
 	if(Race == "Frost Lord" && Form && !is_gold_form) count++
 	if(current_buff && current_buff.suffix && ("transformation" in current_buff.buff_attributes)) count++
@@ -85,6 +88,7 @@ mob/proc/revertPrimaryTransformations(reason = "manual")
 	if(is_gold_form) GoldFormRevert()
 	if(IsGreatApe()) Great_Ape_revert()
 	if(using_giant_form) Disable_giant_form()
+	if(heran_transformed) revertHeranTransformation(TRUE, FALSE)
 	if(current_buff && current_buff.suffix && ("transformation" in current_buff.buff_attributes)) Buff_Disable(current_buff)
 	if(Race == "Frost Lord") while(Form) icer_Revert()
 	if(ssj) Revert()
@@ -112,6 +116,7 @@ mob/proc/canRequestPrimaryTransformation(transformation_id)
 		if("frost_second", "frost_third", "frost_final") return Race == "Frost Lord"
 		if("frost_fifth") return Race == "Frost Lord" && IsCooler
 		if("frost_gold") return Race == "Frost Lord" && HasGoldFormReq()
+		if("heran_transformation") return Race == "Heran" && !!(locate(/obj/HeranTransformation) in src) && hasHeranTransformationReq()
 		if("giant") return !!(locate(/obj/Giant_Form) in src)
 	return FALSE
 
@@ -149,6 +154,7 @@ mob/proc/requestPrimaryTransformation(transformation_id)
 			var/target_stage = IsCooler ? 4 : 3
 			for(var/stage in 1 to target_stage) Frost_Lord_Forms()
 			PowerUpToGoldForm()
+		if("heran_transformation") activateHeranTransformation()
 		if("giant") Enable_giant_form(locate(/obj/Giant_Form) in src)
 	syncActivePrimaryTransformation("direct request")
 	return detectPrimaryTransformation() == transformation_id
@@ -163,6 +169,7 @@ mob/proc/availablePrimaryTransformations()
 	return result
 
 mob/proc/normalizePrimaryTransformation()
+	normalizeHeranTransformation()
 	var/detected_id = detectPrimaryTransformation()
 	if(countPrimaryTransformations() > 1)
 		var/restore_id = detected_id

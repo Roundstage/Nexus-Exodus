@@ -2,6 +2,7 @@ var/global/datum/SkillRegistry/skill_registry = new
 var/global/datum/SkillEngine/skill_engine = new
 var/global/skill_engine_debug = 1
 var/global/skill_engine_debug_interval = 50
+var/global/dash_attack_step_delay_ticks = 1
 
 proc/initializeSkillEngine()
 	if(skill_engine)
@@ -360,6 +361,7 @@ datum/SkillEngine
 		if(ispath(path, /obj/Attacks/Makosen)) return castMakosen(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Scatter_Shot)) return castScatterShot(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Attack_Barrier)) return castAttackBarrier(user, skill_obj)
+		if(ispath(path, /obj/Attacks/TenkaichiAreaTechnique)) return skill_obj:useAreaTechnique(user)
 		if(ispath(path, /obj/Attacks/Shockwave)) return castShockwave(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Explosion)) return toggleExplosion(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Genki_Dama)) return castGenkiDama(user, skill_obj)
@@ -964,8 +966,7 @@ datum/SkillEngine
 	proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)
 		if(!user) return 0
 		if(!skill_obj) skill_obj = locate(/obj/Dash_Attack) in user
-		var/turf/t = user.loc
-		if(!istype(t, /turf)) return 0
+		if(!isturf(user.loc)) return 0
 
 		if(user.dash_attacking || user.lunge_attacking || user.grabbedObject || user.in_dragon_rush) return 0
 		if(user.lastDashAttack && world.time - user.lastDashAttack < 100)
@@ -977,44 +978,59 @@ datum/SkillEngine
 			user << "You do not have enough energy"
 			return 0
 		if(user.Beam_stunned()) return 0
+		var/maximum_dash_range = 25
+		var/mob/target = user.getSelectedTarget(max_dist = maximum_dash_range)
+		if(!user.canHitTenkaichiTechniqueTarget(target))
+			user << "Select a valid target within [maximum_dash_range] tiles."
+			return 0
 
 		user.dash_attacking = 1
 		user.attack_forced_movement = 1
-		user.original_dash_dir = user.dir
+		user.original_dash_dir = get_dir(user, target)
 		user.lastDashAttack = world.time
 		if(skill_obj && skill_obj.icon) user.overlays += skill_obj.icon
-		for(var/steps in 1 to 25)
-			if(user.KB) break
-			var/dash_dir = user.original_dash_dir
-			if(user.desired_dash_dir && round(steps / 3) == steps / 3)
-				dash_dir = user.desired_dash_dir
-				user.desired_dash_dir = 0
-			if(!step(user, dash_dir)) break
-			for(var/mob/p in mob_view(1, user))
-				if(p != user)
-					var/damage_factor = min(skill_dash_attack_max_factor, \
-						skill_dash_attack_min_factor + (steps - 1) * skill_dash_attack_step_factor)
-					var/damage = user.getPhysicalCombatDamage(p, damage_factor)
-					var/acc = user.get_melee_accuracy(p) * 2
-					var/kb_distance = (user.BP / p.BP) * (user.Str / p.End) * 5
-					if(prob(acc))
-						flick("Attack", user)
-						if(p.ki_shield_on())
-							p.applyNexusCombatShieldDamage(damage * p.ShieldDamageReduction() * (p.max_ki / 100) / (p.Eff ** shield_exponent) * p.Generator_reduction(is_melee = 1), user, skill_obj.name)
-						else
-							p.TakeDamage(damage, attacker = user, attack_name = skill_obj.name)
-						if(p.Health <= 0 || p.Ki <= 0) p.KO(user)
-						if(p) p.DashAttackPart2(user, kb_distance)
-						user.Ki -= drain
-						if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
-						user.attack_forced_movement = 0
-						user.dash_attacking = 0
-						return 1
-					else
-						flick('Zanzoken.dmi', p)
-						step(p, turn(user.dir, pick(90, -90)))
+		var/starting_distance = max(1, getdist(user, target))
+		var/reached_target = FALSE
+		for(var/steps in 1 to maximum_dash_range)
+			if(user.KB || !user.canHitTenkaichiTechniqueTarget(target)) break
+			if(user.loc == target.loc)
+				reached_target = TRUE
+				break
+			var/dash_dir = get_dir(user, target)
+			var/turf/next_turf = get_step(user, dash_dir)
+			if(!next_turf || next_turf.density) break
+			user.dir = dash_dir
 			user.AfterImage(20)
-			sleep(TickMult(0.7 * user.Speed_delay_mult(severity = 0.25)))
+			user.SafeTeleport(next_turf)
+			user.step_x = 0
+			user.step_y = 0
+			user.vector_fraction_x = 0
+			user.vector_fraction_y = 0
+			if(user.loc == target.loc) reached_target = TRUE
+			sleep(world.tick_lag * dash_attack_step_delay_ticks)
+			if(reached_target) break
+		if(reached_target && user.canHitTenkaichiTechniqueTarget(target))
+			var/turf/pass_through_turf = get_step(target.loc, user.dir)
+			if(pass_through_turf && !pass_through_turf.density)
+				user.AfterImage(20)
+				user.SafeTeleport(pass_through_turf)
+				user.step_x = 0
+				user.step_y = 0
+			var/damage_factor = min(skill_dash_attack_max_factor, \
+				skill_dash_attack_min_factor + (starting_distance - 1) * skill_dash_attack_step_factor)
+			var/damage = user.getPhysicalCombatDamage(target, damage_factor)
+			var/acc = user.get_melee_accuracy(target) * 2
+			var/kb_distance = (user.BP / target.BP) * (user.Str / target.End) * 5
+			var/attack_name = skill_obj ? skill_obj.name : "Dash Attack"
+			if(prob(acc))
+				flick("Attack", user)
+				if(target.ki_shield_on())
+					target.applyNexusCombatShieldDamage(damage * target.ShieldDamageReduction() * (target.max_ki / 100) / (target.Eff ** shield_exponent) * target.Generator_reduction(is_melee = 1), user, attack_name)
+				else
+					target.TakeDamage(damage, attacker = user, attack_name = attack_name)
+				if(target && (target.Health <= 0 || target.Ki <= 0)) target.KO(user)
+				if(target) target.DashAttackPart2(user, kb_distance)
+			else flick('Zanzoken.dmi', target)
 		user.Ki -= drain
 		if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
 		user.attack_forced_movement = 0

@@ -3,7 +3,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost and no longer restores Health or Ki. Science, Magic, Mining, Smithing, and Combat use persistent trees; Milestones use an independent-pick list in the same interface.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger still grows through `gainAngerFromDamage()` as health is lost. Androids, Legendary Saiyans, and Jiren/Apex Aliens additionally receive one full Health-bar recovery when an otherwise valid KO reaches them; the recovery locks until `Calm()` clears that Anger cycle and does not restore Energy. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
@@ -43,8 +43,10 @@ Instant Transmission retains its long-range signature targeting and now also exp
 ### Roleplay combat and progression
 
 - `gainAngerFromDamage(applied_damage)` converts actual health loss into proportional Anger without healing.
+- `hasAngerHealthRecovery()`, `canUseAngerHealthRecovery()`, and `triggerAngerHealthRecovery(reason)` implement the one-per-Anger-cycle second Health bar for Android, Legendary Saiyan, and Jiren archetypes.
 - `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, displacement, and grab retention while active.
 - `forceWillpowerBreakKnockout()` converts zero Willpower into a lethal KO state before locking the character in RP Mode.
+- `tryDrainTechniqueWillpower(amount, technique_name, reserve)` lets sustained techniques spend Willpower without crossing their configured safe reserve.
 - `canGrabMovable(target)` is the shared normal/fallback/extended-grab gate and rejects RP Mode targets.
 - `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
@@ -52,9 +54,12 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, and Thundering Blows technique objects for owned RPT combat Milestones.
 - `getMilestoneMeleeDamageMultiplier()`, `getMilestoneMeleeDelayMultiplier()`, `getMilestoneOutgoingDamageMultiplier()`, and the projectile helpers adapt RPT talent effects to the canonical Nexus combat calculations.
 - `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
-- `canAccessTechnology(technology)` rejects non-object click targets before reading science metadata, preventing map and character clicks from producing runtimes.
+- `getTechnologyCraftExperienceForLevel(science_level)` derives fabrication XP from the matching threshold interval, targeting about twelve successful current-tier crafts per level instead of paying only 1–8 XP.
+- `canAccessTechnology(technology)` rejects non-object click targets and compares saved/global blueprint grants by type instead of object identity.
 - `isTechnologyReferenceClick(technology)` limits the global science click interception to catalog reference objects, allowing real swords, armor, clothes, and tools to execute their equipment clicks.
-- `refreshTechnologyUnlocks(announce)` grants science items allowed by level and selected path.
+- `getNormalizedScienceBlueprintList(blueprints)` deduplicates persisted blueprint objects by type and rebinds catalog entries to their canonical `tech_list` references.
+- `normalizeIndividualScienceItems()` repairs a character's saved Science grants after deserialization, preventing an additional recipe from appearing on each relog.
+- `refreshTechnologyUnlocks(announce)` normalizes existing grants before adding science items allowed by level and selected path.
 - The RPT Milestone port includes the profession talents plus 24 combat talents grouped into Martial Arts, Weapon, Ki, Survival, and Fire list filters.
 - `refreshCombatStatusOverlays()` keeps the imported Lethal and RP Mode character icons synchronized with the action HUD.
 
@@ -793,6 +798,27 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Returns: boolean flag.
 - Side effects: none expected.
 
+#### mob/proc/hasAngerHealthRecovery
+- Signature: `mob/proc/hasAngerHealthRecovery()`
+- Inputs: None
+- Purpose: Return whether the mob belongs to an archetype with the Anger Health-bar recovery.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/canUseAngerHealthRecovery
+- Signature: `mob/proc/canUseAngerHealthRecovery()`
+- Inputs: None
+- Purpose: Validate the archetype, current Anger-cycle lock, power-giving state, and forced Anger cooldown.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/triggerAngerHealthRecovery
+- Signature: `mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")`
+- Inputs: recovery reason.
+- Purpose: Restore one full Health bar, maximize current Anger, and lock further recovery until the character calms.
+- Returns: boolean success flag.
+- Side effects: updates Health, Anger, BP, overhead vitals, and schedules `Calm()`.
+
 #### mob/proc/anger
 - Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
 - Inputs: anger_mult=1, ssj_possible=1, reason
@@ -1241,6 +1267,8 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Side effects: see implementation.
 
 ### src/Code/PlayerMechanics/Feats.dm
+
+Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants nothing and `UpdateFeatMultipliers()` resets the derived bonuses to their neutral values. Administrators may opt in through the existing server setting.
 
 #### mob/proc/GiveAllFeats
 - Signature: `GiveAllFeats()`
@@ -4117,20 +4145,28 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - `initializeProgressionTreeCatalog()` derives Science from registered technology and Combat from an explicit combat-skill whitelist, then assigns real predecessor paths across tier frontiers. Rank, module, milestone, magic, crafting, transformation, quest, and utility objects are not registered in Combat.
 - `disperseProgressionScienceTierFive()` cost-orders each specialization's former level-five catalog and distributes it evenly through Technology Levels 5-8 before Science nodes and prerequisites are generated.
 - `syncProgressionTrees(silent)` migrates the legacy Experience balance and already-owned skills/research/profession access without charging the player.
-- `gainProgressionExperience(amount, source, announce)` is the authoritative award path for qualified roleplay sessions, passive online time, milestones, crafting, wishes, and admin grants.
+- `gainProgressionExperience(amount, source, announce)` is the authoritative award path for qualified roleplay sessions, hourly online/offline time, milestones, crafting, wishes, and admin grants. `getScaledProgressionExperience(amount)` applies the shared 10x presentation scale to authored costs and gameplay rewards.
 - `awardProgressionFromCommunication(message, source, weight)` records local IC contributions into an automatic session instead of paying per message. A session pays once after 30 minutes, six contributions, 120 words, and reciprocal activity from another account; OOC, Global, duplicate text, and solo spam do not qualify.
-- `updatePassiveProgression()` grants active, non-AFK characters one XP every 30 minutes, or two XP per hour; Patient Growth shortens the interval. `Raise_SP()` does not award the same time again while training.
-- `getProgressionTierLifetimeRequirement(tier)` gates tiers 1-10 at 0/6/18/42/72/105/150/210/270/330 lifetime XP independently from the spendable balance. `purchaseProgressionNode(node_id)` validates this lifetime gate, prerequisites, exclusive branches, maximum rank, external-only sources, and available Progression XP before granting a reward.
-- `configureProgressionFoundationPaths()` authors the shared five-tier Combat curriculum containing Power Control, Blast, Lunge, Fly, Shield, Charge, Dash Attack, Zanzoken, Custom Buff, Beam, and Sokidan.
+- `updatePassiveProgression(announce)` pays every complete elapsed real-time hour, including hours accumulated while the character is offline. The base award is 20 XP/hour on the 10x scale; Patient Growth increases the hourly amount without changing the one-hour accounting boundary. `progression_last_passive_realtime` advances only by paid complete hours, retaining fractional time for the next login.
+- `migrateProgressionExperienceScale()` converts the four persisted Progression XP totals to the 10x display scale once. `getProgressionTierLifetimeRequirement(tier)` gates tiers 1-10 at 0/60/180/420/720/1050/1500/2100/2700/3300 lifetime XP independently from the spendable balance. `purchaseProgressionNode(node_id)` validates this lifetime gate, prerequisites, exclusive branches, maximum rank, external-only sources, and available Progression XP before granting a reward.
+- `configureProgressionFoundationPaths()` authors the shared five-tier Combat curriculum containing Power Control, Blast, Lunge, Fly, Shield, Meditate Level 2, Charge, Shockwave, Dash Attack, Zanzoken, Custom Buff, Beam, and Sokidan.
 - `hasExactProgressionRewardObject(reward_type)` distinguishes an exact Custom Buff reward from preset subclasses during grants and legacy ownership migration.
-- `showProgressionTrees(category, branch)` renders horizontally tiered graphs for Science, Magic, Mining, Smithing, and Combat (Foundation, Buffs, Ki, Beam, Physical, Unarmed, Weapon). Milestones render as searchable cards without prerequisites; Combat defaults to Foundation.
-- The browser renders only the selected branch and its prerequisite ancestors. Category-wide search returns matching nodes plus their ancestry, tier jump controls move the large canvas horizontally, and client/global icon caches prevent repeated DMI conversion and `browse_rsc` transfers on every refresh.
+- `showProgressionTrees(category, branch)` renders horizontally tiered bronze native-HUD graphs for Science, Magic, Mining, Smithing, Combat (Foundation, Buffs, Ki, Beam, Physical, Unarmed, Weapon), and the owner-specific Racial curriculum. Real technique sprites are retained when available; text fallbacks avoid generated category artwork. Every node, including roots and cross-branch ancestors, remains inside its declared branch lane. Each semantic prerequisite is drawn as its own smooth Bézier curve directly between the visible 58px node frames, without shared orthogonal channels or square endpoint markers; hovering or focusing a node emphasizes only its incoming and outgoing connections. Nodes show their XP cost as a badge attached to the sprite and list every prerequisite by name; for example, Big Bang Attack visibly requires only Kienzan. `toggleProgressionTrees()` closes the matching Progression or Milestones surface when its active top icon is pressed again. Milestones render as one searchable, uncategorized list of bolted cards without branch tabs or category badges; Combat defaults to Foundation.
+- The browser renders only the selected branch and its prerequisite ancestors. Category-wide search returns matching nodes plus their ancestry. The graph viewport hides conventional scrollbars and pans horizontally or vertically by click-dragging; arrow keys and tier jump controls remain available, and the last pan position is retained per category/branch in `sessionStorage`. Client/global icon caches prevent repeated DMI conversion and `browse_rsc` transfers on every refresh.
 - Combat -> Buffs has authored Focus, physical, tactical, and arcane routes. Godspeed, High Tension, Bestial Wrath, Fists of Fury, Arcane Power, and Bushido are mutually exclusive tier-five capstones; legacy `ub_*` milestones migrate to the matching progression node.
 - `isProgressionCombatSkillType()` and `isProgressionCombatTreeExcluded()` keep the Combat catalog limited to concrete attacks and approved buffs. Cyber Charge, Cyber Laser, Overdrive, and Combat Mathematics are module-only; Fire Fist, Bleeding Edge, and Thundering Blows are Milestone-only.
 - `configureProgressionBeamPaths()` owns the named wave specialization. `configureProgressionPhysicalPaths()` owns the Strength-scaled rock attacks, while Sky Break and Echoing Slash use the Weapon branch. Kaioken and Genki Dama are tier-ten purchases.
 - Combat -> Beam uses authored routes instead of registration order: Beam advances through Masenko, Kamehameha, and Double Sunday to the tier-eight Final Flash raw-damage capstone, while Ray advances through Dodompa and Tyrant Lancer to the tier-eight Makankosappo shield-piercing capstone. Photon Flash opens a third route through Galick Gun and Buster Cannon.
 - Combat -> Unarmed is also power-authored and contains all 15 RPT techniques plus Dash Attack, Pressure Punch, Roundhouse Kick, Dropkick, Wolf Fang Fist, and Hundred Crack Fist from legacy Nexus. Its RPT routes end in March of Fury, Texas Smash, and Exploding Heart Strike; the factor-8 Dropkick/Dash Attack and minimum-factor-6 Hundred Crack Fist join the other strongest attacks at tier five.
-- The Magic tree includes nine branches and covers 41 craft formulas plus the RPT Fireball, Frost Bolt, Lightning Bolt, Frost Nova, Earth Prison, Empowered Attacks/Defenses, Accelerate, Rejuvenate, Gravity Well, Create Portal, and Enchant spell set.
+- The Magic tree includes nine branches and covers 42 craft formulas plus the RPT Fireball, Frost Bolt, Lightning Bolt, Frost Nova, Earth Prison, Empowered Attacks/Defenses, Accelerate, Rejuvenate, Gravity Well, Create Portal, and Enchant spell set. Shikon Jewel belongs to level-nine Artifacts rather than Science; `migrateShikonResearch()` preserves a character's legacy unlock while removing its stale personal Science blueprint.
 - Magic Gauntlets and Orb of Mastery multiply `gainMagicExperience()` without editing the character's base potential. Elixir of Merriment multiplies only chat/roleplay awards inside `gainProgressionExperience()`.
-- Racial, taught, quest, event, and transformation skills remain visible as external unlocks; the tree records them when acquired but never sells them for XP.
+- `getRacialProgressionTrack()` maps each playable lineage to its spawn-world rank curriculum. `initializeProgressionRacialCatalog()` derives those nodes from the existing Earth Guardian, Braal Elite, Namekian, Arconian, Ice Master, Android Master, Kaioshin, and Daimao skill packages. `required_racial_track` is checked by `getProgressionNodeLockReason()` as server-side authorization, not only as a browser filter. Kaioshin and Daimao Hakai are tier-ten, 60-XP apex nodes requiring every final package route.
+- Taught, quest, event, module, and transformation skills retain their external authoritative unlock paths; learned exact reward objects still migrate to matching Progression nodes.
 - `syncMagicProgression(silent)` and `syncTechnologyProgression(silent)` retain their level calculations, while actual post-migration unlock ownership is controlled by purchased tree nodes.
+
+### Build-enabling Milestones
+
+- `getMilestoneScaledCombatStat()`, `getMilestoneEffectiveOffense()`, `getMilestoneEffectiveDefense()`, and `getMilestoneEffectiveSpeed()` apply Versatile Training and the conditional Unencumbered Combatant bonus without mutating saved base stats. Character and stat-panel displays use these effective values while retaining raw values in Character details.
+- `getMilestonePhysicalDamageStat()` and `getMilestoneKiDamageStat()` add exactly one mutually exclusive secondary scaling choice: 25% Speed, 25% Offense, or 20% Endurance/Resistance. Damage scaling, weapon energy hybrids, blasts, accuracy, evasion, critical chance, and melee speed consume the effective helpers.
+- `applyMilestoneMeleeAreaDamage()` applies Sweeping Impact to up to eight valid enemies within three tiles of the primary target. `tryApplyMilestoneDoubleAttack()` gives Echoing Assault an 8% chance per rank to repeat an ordinary melee hit for 60% damage. Technique-specific multi-hit attacks do not trigger these ordinary-hit follow-ups.
+- `getMilestoneFireLordBonus(target, attack_name)` grants 5% fire damage per target Burn stack, capped at 25%, and never modifies non-fire or incoming damage.

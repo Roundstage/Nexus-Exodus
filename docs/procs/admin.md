@@ -21,7 +21,8 @@ Administrative commands and management flows. Administrators receive a searchabl
 ### src/Code/Admin/AdminPanel.dm
 
 - `initializeNexusAdminActions()` registers permission-aware commands by Player, Movement, Character, Items, Smithing, Development, Logs, Testing, Server, and Legacy categories.
-- `showNexusAdminPanel(compact, selected_target)` opens the full or quick searchable panel and keeps one selected player as the target for successive actions.
+- `showNexusAdminPanel(compact, selected_target)` opens the full or quick searchable panel with the blue native-HUD components used by Server Control and keeps one selected player as the target for successive actions. Commands remain text-first rather than receiving unrelated generated category artwork.
+- `toggleNexusAdminPanel(compact)` closes the active admin panel when its top shortcut is pressed again, or opens it when absent.
 - `openItemPicker(mode, search)` searches item type paths without instantiating hundreds of reference objects; protected non-givable results are rejected when selected.
 - `openRewardMenu()` and `applyReward(reward_type)` replace the legacy Reward flow with audited BP, BP Mod, Energy, Resources, Skill Points, Milestone Points, Technology XP, Mining XP, and Smithing XP controls.
 - `runLegacyCommand()` searches all verbs available to the administrator's level without removing them from CMD or their original Admin tab categories.
@@ -30,7 +31,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 ### src/Code/Admin/ServerPanel.dm
 
 - `showNexusServerPanel()` opens the level-4 Server Control Panel as native `client.screen` HUD objects.
-- `datum/NexusServerPanel/render()` provides six category tabs, current-value search, pagination, and direct editing for every setting bound by the existing administration models.
+- `datum/NexusServerPanel/render()` provides six category tabs, current-value search, pagination, and direct editing for every setting bound by the existing administration models. Each clickable row renders the variable name and current value in separate labeled columns so the edited setting is always identifiable.
 - `createSettingsModel()` uses a headless upForm model only for its complete setting bindings and validation; no legacy browser window is created.
 - Number and text settings retain their legacy conversion and validation. List settings use dedicated add/remove controls, and every mutation is written to the admin audit log.
 

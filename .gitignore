@@ -45,6 +45,7 @@ Thumbs.db
 ###########
 .vscode/tasks.json
 /data/
+./data/
 /assets/
 /icons/
 /fonts/

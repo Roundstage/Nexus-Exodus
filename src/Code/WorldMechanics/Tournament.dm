@@ -40,7 +40,7 @@ obj/Tournament_Controls
 
 
 
-var/Tournament_Timer=15
+var/Tournament_Timer=NEXUS_DEFAULT_TOURNAMENT_INTERVAL_MINUTES
 mob/Admin2/verb/setTournamentInterval()
 	set name = "Set Tournament Interval"
 	set category="Admin"

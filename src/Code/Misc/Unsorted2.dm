@@ -6,9 +6,6 @@ atom/appearance_flags = TILE_BOUND
 
 obj/Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
 	. = ..()
-	if(light_obj)
-		light_obj.loc = loc
-		if(ismob(light_obj.loc)) del(light_obj)
 
 obj/var/tmp
 	leaves_big_crater
@@ -55,7 +52,7 @@ mob/Admin5/verb/diagnoseDeletedObjects()
 obj/Del()
 	//so when a player logs out it doesnt have to do all the laggy code below for their items & skills
 	if(reallyDelete || ismob(loc) || world.time < 900)
-		if(light_obj) del(light_obj)
+		RemoveLightSource()
 		. = ..()
 		return
 
@@ -85,9 +82,11 @@ obj/Del()
 		ObjectRespawn()
 	else if(cache_for_reuse)
 		if(outputDeletedObjects) Tens("[type] deleted (CACHING)")
+		RemoveLightSource()
 		CacheObject(src)
 	else
 		if(outputDeletedObjects) Tens("[type] deleted (QUEUED)")
+		RemoveLightSource()
 		queueObjectForGarbageCollection(src)
 
 var/list/garbage_collect = new

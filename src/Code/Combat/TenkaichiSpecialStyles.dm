@@ -246,7 +246,7 @@ obj/Effect/TenkaichiFlameField
 					target.text_overlay("<center><b><font color=#ff7043>BURN</font></b></center>", xx = -16, yy = 40, timer = 8)
 					player_view(10, target) << sound('Kiplosion.ogg', volume = 28)
 				var/damage = owner.getKiCombatDamage(target, 0.45)
-				owner.applyTenkaichiTechniqueDamage(target, damage)
+				owner.applyTenkaichiTechniqueDamage(target, damage, "Wall of Flame")
 				if(target)
 					target.ApplyStun(time = 4, stun_power = 1.5)
 					target.BurnStack++
@@ -255,3 +255,200 @@ obj/Effect/TenkaichiFlameField
 						target.try_applying_burn_effect()
 			sleep(2)
 		if(src) del(src)
+
+// Restored RPT techniques live beside the other special styles so Dream Maker project saves
+// cannot orphan their type definitions by dropping a newly-added include from DU.dme.
+obj/Attacks/TenkaichiAreaTechnique
+	parent_type = /obj/Attacks/Shockwave
+	name = "Tenkaichi Area Technique"
+	desc = "A specialized targetless shockwave adapted from Roleplay Tenkaichi."
+	can_hotbar = 1
+	hotbar_type = "Blast"
+	repeat_macro = 0
+	var
+		energy_cost = 60
+		cooldown_ticks = 140
+		radius = 4
+		area_damage_factor = 5
+		knockback_distance = 2
+		pull_distance = 0
+		physical_damage = FALSE
+		ground_only = FALSE
+		intercepts_blasts = FALSE
+		blast_intercept_limit = 12
+		target_limit = 16
+		cast_text_color = "#ffd166"
+		cast_sound = 'Kiplosion.ogg'
+		cast_sound_category
+		shockwave_effect_state = "middle"
+		tmp/next_use = 0
+
+	Hotbar_use()
+		useAreaTechnique(usr)
+
+	Shockwave()
+		useAreaTechnique(usr)
+
+	proc/getAreaCastSound()
+		var/open_sound = getNexusShonenSound(cast_sound_category)
+		return open_sound ? open_sound : cast_sound
+
+	proc/interceptAreaBlasts(mob/user)
+		if(!user || !intercepts_blasts) return 0
+		var/intercepted = 0
+		for(var/obj/Blast/projectile in range(radius, user))
+			if(intercepted >= blast_intercept_limit) break
+			if(!projectile.z || projectile.Beam || projectile.Owner == user) continue
+			showNexusOpenCombatEffect(projectile, "aim_32", "blast_blue", 1.25, null, 245, BLEND_ADD, 5, 0.35)
+			projectile.Explosive = 0
+			projectile.skip_all_collisions = 1
+			intercepted++
+			del(projectile)
+		if(intercepted)
+			Play_Melee_Sound(sound_range = 12, origin = user, sound_file = getNexusShonenSound("explosions"), sound_volume = 38)
+		return intercepted
+
+	proc/useAreaTechnique(mob/user)
+		set waitfor = 0
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = physical_damage ? 0 : 1)
+		if(user.Ki < drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		user.Ki -= drain
+		next_use = world.time + cooldown_ticks
+		user.attacking = 3
+		user.showTenkaichiTechniqueAnnouncement(name, cast_text_color, getAreaCastSound(), 55)
+		flick(physical_damage ? "Attack" : "Blast", user)
+		showNexusOpenCombatEffect(user, "smoke_shockwaves_128", shockwave_effect_state, radius / 2, cast_text_color, 225, BLEND_ADD, 18, 0.25)
+		interceptAreaBlasts(user)
+		var/hit_count = 0
+		for(var/mob/target in oview(radius, user))
+			if(hit_count >= target_limit) break
+			if(!user.canHitTenkaichiTechniqueTarget(target)) continue
+			if(ground_only && target.Flying) continue
+			if(target.AOE_auto_dodge(user, user.loc)) continue
+			var/distance_falloff = max(0.55, 1 - getdist(user, target) * 0.08)
+			var/damage = physical_damage ? user.getPhysicalCombatDamage(target, area_damage_factor * distance_falloff) : user.getKiCombatDamage(target, area_damage_factor * distance_falloff)
+			if(!user.applyTenkaichiTechniqueDamage(target, damage, name)) continue
+			hit_count++
+			if(target && pull_distance > 0) target.pullTowardTenkaichiSource(user, pull_distance)
+			else if(target && knockback_distance > 0) target.Knockback(user, knockback_distance, bypass_immunity = 1)
+		user.attacking = 0
+		return TRUE
+
+mob/proc/pullTowardTenkaichiSource(mob/source, distance = 1)
+	set waitfor = 0
+	if(!source || source == src || source.z != z) return FALSE
+	var/pull_steps = max(1, round(distance))
+	for(var/step_index = 1, step_index <= pull_steps, step_index++)
+		if(!src || !source || getdist(src, source) <= 1) break
+		var/turf/old_location = loc
+		if(!step_towards(src, source, 32) || loc == old_location) break
+		sleep(world.tick_lag)
+	return TRUE
+
+obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave
+	name = "Super Explosive Wave"
+	desc = "Detonate a defensive shockwave that destroys hostile blasts and repels every valid enemy within four tiles."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTMegaBurst.dmi'
+	hotbar_type = "Defensive"
+	energy_cost = 80
+	cooldown_ticks = 140
+	radius = 4
+	area_damage_factor = 6
+	knockback_distance = 4
+	intercepts_blasts = TRUE
+	blast_intercept_limit = 24
+	cast_text_color = "#75e6ff"
+	cast_sound_category = "ability_release"
+	shockwave_effect_state = "big"
+
+	verb/Super_Explosive_Wave()
+		set name = "Super Explosive Wave"
+		set category = "Skills"
+		useAreaTechnique(usr)
+
+obj/Attacks/TenkaichiAreaTechnique/Earthquake
+	name = "Earthquake"
+	desc = "Collapse the ground inward, damaging and pulling nearby grounded enemies toward you. Flying targets are unaffected."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTShockwave.dmi'
+	energy_cost = 60
+	cooldown_ticks = 160
+	radius = 5
+	area_damage_factor = 5
+	knockback_distance = 0
+	pull_distance = 3
+	physical_damage = TRUE
+	ground_only = TRUE
+	cast_text_color = "#d6a76c"
+	cast_sound_category = "land"
+	shockwave_effect_state = "middle"
+	// Use the tracked short rumble by resource name; DU.dme already indexes its containing directory.
+	cast_sound = 'Earthquakeshort.ogg'
+
+	verb/Earthquake()
+		set category = "Skills"
+		useAreaTechnique(usr)
+
+obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze
+	name = "Super Ghost Kamikaze Attack"
+	desc = "Create three homing ghosts that pursue one selected target. Their shared damage budget prevents the volley from multiplying without limit."
+	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTHomingBlast.dmi'
+	var
+		energy_cost = 100
+		cooldown_ticks = 160
+		ghost_count = 3
+		ghost_damage_factor = 2.5
+		tmp/next_use = 0
+
+	verb/Hotbar_use()
+		set hidden = 1
+		useStyle(usr)
+
+	verb/Super_Ghost_Kamikaze_Attack()
+		set name = "Super Ghost Kamikaze Attack"
+		set category = "Skills"
+		useStyle(usr)
+
+	proc/useStyle(mob/user)
+		set waitfor = 0
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/mob/target = user.getSelectedTarget(max_dist = 20)
+		if(!user.canHitTenkaichiTechniqueTarget(target))
+			user << "Select a valid target within 20 tiles."
+			return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
+		if(user.Ki < drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		user.Ki -= drain
+		next_use = world.time + cooldown_ticks
+		user.attacking = 3
+		user.showTenkaichiTechniqueAnnouncement(name, "#f4f0b0", 'BasicbeamCharge.ogg', 42)
+		var/datum/CombatDamageBudget/shared_budget = new(ghost_damage_factor * ghost_count)
+		for(var/ghost_index = 1, ghost_index <= ghost_count, ghost_index++)
+			if(ghost_index > 1) sleep(3)
+			if(!user || !target || !user.canHitTenkaichiTechniqueTarget(target)) break
+			var/obj/Blast/ghost = get_cached_blast()
+			ghost.setStats(user, Percent = ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = shared_budget)
+			ghost.from_attack = src
+			ghost.icon = icon
+			ghost.blast_homing_target = target
+			ghost.homing_chance = 140
+			ghost.Can_Home = 1
+			ghost.Distance = 40
+			ghost.vector_speed = 32
+			ghost.Shockwave = 2
+			ghost.SafeTeleport(user.loc)
+			CenterIcon(ghost)
+			ghost.queueNexusProjectileGlowUpdate()
+			ghost.startKiProjectileWalk(get_dir(user, target))
+		if(user) user.attacking = 0
+		return TRUE

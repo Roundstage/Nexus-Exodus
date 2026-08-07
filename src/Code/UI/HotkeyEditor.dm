@@ -110,6 +110,40 @@ proc/getNexusHotkeyBase(combination)
 	if(!parts.len) return
 	return normalizeNexusHotkeyBase(parts[parts.len])
 
+proc/getNexusMovementKeysForHotkeyBase(base_key)
+	base_key = normalizeNexusHotkeyBase(base_key)
+	switch(base_key)
+		if("North") return list("north")
+		if("South") return list("south")
+		if("East") return list("east")
+		if("West") return list("west")
+		if("Northeast") return list("north", "east")
+		if("Northwest") return list("north", "west")
+		if("Southeast") return list("south", "east")
+		if("Southwest") return list("south", "west")
+	return list()
+
+proc/getNexusMovementHotkeyCommand(base_key, key_down = TRUE)
+	var/list/movement_keys = getNexusMovementKeysForHotkeyBase(base_key)
+	var/command_text = ""
+	var/verb_name = key_down ? "KeyDown" : "KeyUp"
+	for(var/movement_key in movement_keys)
+		if(length(command_text)) command_text += "\n"
+		command_text += "[verb_name] \"[movement_key]\""
+	return command_text
+
+proc/getNexusHotkeyDownMacroCommand(trigger_combination, base_key)
+	var/command_text = "nexusHotkeyDown \"[trigger_combination]\" \"[base_key]\""
+	var/movement_command = getNexusMovementHotkeyCommand(base_key, TRUE)
+	if(length(movement_command)) command_text = "[movement_command]\n[command_text]"
+	return command_text
+
+proc/getNexusHotkeyUpMacroCommand(base_key)
+	var/command_text = "nexusHotkeyUp \"[base_key]\""
+	var/movement_command = getNexusMovementHotkeyCommand(base_key, FALSE)
+	if(length(movement_command)) command_text = "[movement_command]\n[command_text]"
+	return command_text
+
 proc/getNexusUnixHotkeyName(combination)
 	var/trigger_combination = getNexusHotkeyTriggerCombination(combination)
 	if(!trigger_combination) return "unassigned"
@@ -327,7 +361,7 @@ client/proc/clearNexusHotkeyMacros()
 client/proc/syncNexusHotkeyMacros()
 	clearNexusHotkeyMacros()
 	if(!mob || !islist(mob.nexus_hotkey_bindings)) return
-	var/list/generated_up_keys = list()
+	var/list/generated_up_combinations = list()
 	var/list/generated_down_combinations = list()
 	var/macro_number = 0
 	for(var/combination in mob.nexus_hotkey_bindings)
@@ -340,14 +374,17 @@ client/proc/syncNexusHotkeyMacros()
 		if(trigger_combination in generated_down_combinations) continue
 		macro_number++
 		var/down_id = "nexus_hotkey_[macro_number]_down"
-		winset(src, down_id, list("parent" = "macro", "name" = trigger_combination, "command" = "nexusHotkeyDown [trigger_combination] [base_key]"))
+		var/down_command = getNexusHotkeyDownMacroCommand(trigger_combination, base_key)
+		winset(src, down_id, list("parent" = "macro", "name" = trigger_combination, "command" = down_command))
 		generated_nexus_hotkey_macros += down_id
 		generated_down_combinations += trigger_combination
-		if(!(base_key in nexus_static_hotkey_base_keys) && !(base_key in generated_up_keys))
+		var/up_combination = "[trigger_combination]+UP"
+		if(!(up_combination in generated_up_combinations))
 			var/up_id = "nexus_hotkey_[macro_number]_up"
-			winset(src, up_id, list("parent" = "macro", "name" = "[base_key]+UP", "command" = "nexusHotkeyUp [base_key]"))
+			var/up_command = getNexusHotkeyUpMacroCommand(base_key)
+			winset(src, up_id, list("parent" = "macro", "name" = up_combination, "command" = up_command))
 			generated_nexus_hotkey_macros += up_id
-			generated_up_keys += base_key
+			generated_up_combinations += up_combination
 
 mob/verb/nexusHotkeyDown(combination as text, base_key as text)
 	set hidden = 1
@@ -545,6 +582,13 @@ mob/proc/showNexusHotkeyEditor()
 		client:nexus_hotkey_editor = new /datum/NexusHotkeyEditor(src)
 		editor = client:nexus_hotkey_editor
 	editor.show()
+
+mob/proc/toggleNexusHotkeyEditor()
+	if(!client) return
+	if(nexus_hotkey_editor_open)
+		hideNexusHotkeyEditor()
+		return
+	showNexusHotkeyEditor()
 
 mob/proc/hideNexusHotkeyEditor()
 	if(!client) return
