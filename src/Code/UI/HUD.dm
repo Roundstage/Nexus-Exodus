@@ -71,6 +71,7 @@ mob
 
 HUD
 	parent_type = /obj
+	plane = NEXUS_FIXED_HUD_PLANE
 	charBubble
 		icon = 'CharBubble.dmi'
 		layer = OBJ_LAYER + EFFECTS_LAYER + MOB_LAYER + 1
@@ -555,10 +556,11 @@ obj/NexusHud
 	attackable = 0
 	density = 0
 	mouse_opacity = 0
-	plane = 20 // Reserved above the per-client lighting plane.
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 99
 
 	OverheadHealthBar
+		plane = NEXUS_WORLD_OVERLAY_PLANE
 		pixel_x = 0
 		var/tmp/owner_icon
 		var/row_offset = 4

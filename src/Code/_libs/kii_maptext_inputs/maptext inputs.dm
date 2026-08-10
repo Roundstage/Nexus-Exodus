@@ -6,6 +6,7 @@
 obj/input_box
 	name			= "default"
 	layer			= EFFECTS_LAYER
+	plane			= NEXUS_FIXED_HUD_PLANE
 	mouse_opacity	= 2
 	//icon 			= 'DEMO/box.dmi'
 

@@ -5,6 +5,7 @@ mob/var/tmp
 	east=0
 	west=0
 	move_looping
+	movement_loop_generation = 0
 	list/keys_down=new
 	last_direction_pressed = NORTH
 
@@ -78,10 +79,6 @@ mob/proc/HandleKeyDown(d)
 			Regeneration_Skill = 0
 			movement_port.sendMessage(src, "You stop regenerating")
 
-		//if its the classic ui then the only way to do a double tap dash is to double tap, instead of ctrl + direction like the new way
-		//var/double_tapped
-		//if(classic_ui)
-		//	if(d == last_directional_key_down && world.time - last_directional_keydown_time <= 1.2) double_tapped=1 //1.875 is exactly 3 ticks at 16 fps
 		last_directional_keydown_time = world.time
 		last_directional_key_down = d
 
@@ -153,16 +150,7 @@ mob/proc/ReleaseKey(d)
 	AlignToTile()
 
 mob/proc/move_dir()
-	if(north)
-		if(east) return NORTHEAST
-		if(west) return NORTHWEST
-		return NORTH
-	if(south)
-		if(east) return SOUTHEAST
-		if(west) return SOUTHWEST
-		return SOUTH
-	if(east) return EAST
-	if(west) return WEST
+	return XYtoDir(getMovementInputX(), getMovementInputY())
 
 
 /*mob/var/tmp/pixel_offset_loop
@@ -184,18 +172,44 @@ mob/proc/move_loop()
 	set waitfor=0
 	if(move_looping) return
 	move_looping=1
+	movement_loop_generation++
+	var/loop_generation = movement_loop_generation
 	var/using_vector = UsingVectorMovement()
+	var/last_using_inertia = usingMovementInertia()
 	var/first_step=1
 	if(!Shadow_Sparring && !using_vector) sleep(world.tick_lag)
-	while(north || south || east || west)
+	while(loop_generation == movement_loop_generation && (hasMovementInput() || (usingMovementInertia() && hasMovementMomentum())))
+		var/using_inertia = usingMovementInertia()
+		if(using_inertia != last_using_inertia)
+			resetMovementPhysics()
+			last_using_inertia = using_inertia
 		var/d = move_dir()
 		var/vector_speed
+		var/turf/prev_loc
+		var/prevDir
 
-		last_direction_pressed = d
+		if(d) last_direction_pressed = d
 
-		if(d && Allow_Move(d) && z)
-			var/turf/prev_loc = base_loc()
-			var/prevDir = dir
+		if(using_inertia)
+			var/can_move
+			if(d)
+				can_move = Allow_Move(d)
+				handleMovementPhysicsLockedInput(d)
+				if(movementPhysicsSuspended(validate_standard_movement = FALSE)) can_move = FALSE
+			else can_move = !movementPhysicsSuspended()
+			if(can_move && z)
+				prev_loc = base_loc()
+				prevDir = dir
+				if(d) dir = d
+				processMovementPhysicsFrame(d)
+				if(movement_port.clientShiftDown(src)) dir = prevDir //strafing
+				if(prev_loc != base_loc()) last_input_move = world.time
+				if(d) UpdateNextInputMoveTime(d)
+			else
+				resetMovementPhysics(clear_glide = FALSE)
+		else if(d && Allow_Move(d) && z)
+			prev_loc = base_loc()
+			prevDir = dir
 			if(UsingVectorMovement())
 				dir = d
 				vector_speed = GetVectorMovePixels(d)
@@ -204,7 +218,8 @@ mob/proc/move_loop()
 			if(movement_port.clientShiftDown(src)) dir = prevDir //strafing
 			if(prev_loc != base_loc()) last_input_move = world.time
 			UpdateNextInputMoveTime(d)
-		if(first_step && !Shadow_Sparring) sleep(world.tick_lag * 2)
+		if(using_inertia) sleep(world.tick_lag)
+		else if(first_step && !Shadow_Sparring) sleep(world.tick_lag * 2)
 		else sleep(world.tick_lag)
 
 		first_step=0
@@ -214,12 +229,16 @@ mob/proc/move_loop()
 		if(east==2) east=0
 		if(west==2) west=0
 
-	move_looping=0
+	if(!usingMovementInertia()) resetMovementPhysics()
+	if(loop_generation == movement_loop_generation) move_looping=0
 
 mob/proc/StopMovement()
+	cancelNexusSkillMotion("stop")
 	north = 0
 	south = 0
 	east = 0
 	west = 0
 	keys_down = new
+	movement_loop_generation++
 	move_looping = 0
+	resetMovementPhysics()

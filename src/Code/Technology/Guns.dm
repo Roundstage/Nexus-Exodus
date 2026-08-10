@@ -319,8 +319,13 @@ obj/items/Gun
 	var/Ammo=0
 	var/Bullet_Icon='Bullet.dmi'
 	var/tmp/Firing
+	var/nexus_customization_pending
 	Stealable=1
 	var/Equipped
+	proc/canContinueNexusGunInteraction(mob/user, atom/original_location)
+		if(!user || loc != original_location) return FALSE
+		if(original_location == user) return canUseAfterNexusTradeYield(user)
+		return src in view(1,user)
 	proc/Update_Gun_Description()
 		var/Ammo_Type="Ballistic Projectiles"
 		if(!Bullet) Ammo_Type="Energy Projectiles"
@@ -337,6 +342,10 @@ obj/items/Gun
 		desc+="Stun: [Stun]x<br>"
 		desc+="Spread: [Spread]<br>"
 		desc+="[Ammo_Type]<br>"
+	proc/finalizeNexusGunCustomization()
+		if(!nexus_customization_pending) return
+		Calibrate_Gun_Stats()
+		nexus_customization_pending=FALSE
 	New()
 		suffix="[Commas(Ammo)]"
 		Update_Gun_Description()
@@ -350,20 +359,33 @@ obj/items/Gun
 			usr.overlays+=icon
 	verb/Customize()
 		set src in view(1)
-		if(usr in view(1,src))
-			if(usr.Res()<Cost/usr.Intelligence())
-				usr<<"You need [Commas(Cost/usr.Intelligence())]$ to customize this again"
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusGunInteraction(user, original_location)) return
+			finalizeNexusGunCustomization()
+			if(user.Res()<Cost/user.Intelligence())
+				user<<"You need [Commas(Cost/user.Intelligence())]$ to customize this again"
 				return
-			while(src&&usr&&usr.client)
-				switch(input("Customize what?") in list("Cancel","Gun Icon","Gun Stats","Bullet Icon"))
+			while(src&&user&&user.client)
+				if(!canContinueNexusGunInteraction(user, original_location)) return
+				var/customize_choice = input(user,"Customize what?") in list("Cancel","Gun Icon","Gun Stats","Bullet Icon")
+				if(!canContinueNexusGunInteraction(user, original_location)) return
+				switch(customize_choice)
 					if("Cancel") return
-					if("Gun Icon") usr.Grid(Gun_Icons,src)
+					if("Gun Icon")
+						user.Grid(Gun_Icons,src)
+						if(!canContinueNexusGunInteraction(user, original_location)) return
 					if("Gun Stats")
-						if(winget(usr,"gunstats","is-visible")=="true") return
-						usr.Customize_Gun_Stats(src)
-						Calibrate_Gun_Stats()
-					if("Bullet Icon") usr.Grid(Bullet_Icons,src)
-			usr.Alter_Res(-(Cost/usr.Intelligence()))
+						if(winget(user,"gunstats","is-visible")=="true") return
+						user.Customize_Gun_Stats(src)
+						if(!canContinueNexusGunInteraction(user, original_location)) return
+						finalizeNexusGunCustomization()
+					if("Bullet Icon")
+						user.Grid(Bullet_Icons,src)
+						if(!canContinueNexusGunInteraction(user, original_location)) return
+			if(!canContinueNexusGunInteraction(user, original_location)) return
+			user.Alter_Res(-(Cost/user.Intelligence()))
 	proc/Calibrate_Gun_Stats()
 		if(Knockbacks) bp_mod*=sqrt(sqrt(Knockbacks+1))
 		if(Stun) bp_mod/=(Stun+1)**0.6
@@ -385,34 +407,38 @@ obj/items/Gun
 		Update_Gun_Description()
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			var/Max_Upgrade=usr.Knowledge*1.5*sqrt(usr.Intelligence())
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusGunInteraction(user, original_location)) return
+			var/Max_Upgrade=user.Knowledge*1.5*sqrt(user.Intelligence())
 			var/Percent=(BP/Max_Upgrade)*100
-			var/Res_Cost=Item_cost(usr,src)/100
+			var/Res_Cost=Item_cost(user,src)/100
 			if(Percent>=100)
-				usr<<"This is 100% upgraded at this time and cannot go any further."
+				user<<"This is 100% upgraded at this time and cannot go any further."
 				return
-			var/Amount=input("This is upgraded to [Commas(BP)] BP. The current maximum is \
+			var/Amount=input(user,"This is upgraded to [Commas(BP)] BP. The current maximum is \
 			[Commas(Max_Upgrade)] BP. \
 			It is at [Percent]% maximum power. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. Input \
 			the percentage of power you wish to bring this to. ([Percent]-100%)") as num
+			if(!canContinueNexusGunInteraction(user, original_location)) return
 			if(Amount>100) Amount=100
 			if(Amount<0.1)
-				usr<<"Amount must be higher than 0.1%"
+				user<<"Amount must be higher than 0.1%"
 				return
 			if(Amount<=Percent)
-				usr<<"The weapon cannot be downgraded."
+				user<<"The weapon cannot be downgraded."
 				return
 			Res_Cost*=Amount-Percent
-			if(usr.Res()<Res_Cost)
-				usr<<"You do not have enough resources to do this."
+			if(user.Res()<Res_Cost)
+				user<<"You do not have enough resources to do this."
 				return
-			usr.Alter_Res(-Res_Cost)
+			user.Alter_Res(-Res_Cost)
 			Total_Cost+=Res_Cost
 			BP=Max_Upgrade*(Amount/100)
 			if(Offense<Avg_Offense()) Offense=Avg_Offense()
 			if(Force<Avg_Force()) Force=Avg_Force()
-			player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(BP)] BP)"
+			player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]% ([Commas(BP)] BP)"
 			Update_Gun_Description()
 
 	verb/Shoot()
@@ -420,6 +446,10 @@ obj/items/Gun
 		Gun_Fire(usr)
 
 	proc/Gun_Fire(mob/P)
+		if(!P) return
+		if(ismob(P))
+			if(loc != P || !(src in P.item_list) || isNexusTradeOfferedBy(P)) return
+		if(nexus_customization_pending) finalizeNexusGunCustomization()
 		if(ismob(P)&&Ammo<=0) for(var/obj/items/Ammo/A in P.item_list)
 			A.Reload(P,src)
 			break
@@ -497,30 +527,40 @@ obj/items/Ammo
 	var/Ammo=10
 	var/tmp/Reloading
 	Can_Drop_With_Suffix=1
+	proc/canContinueNexusAmmoInteraction(mob/user, atom/original_location)
+		if(!user || loc != original_location) return FALSE
+		if(original_location == user) return canUseAfterNexusTradeYield(user)
+		return src in view(1,user)
 	New()
 		suffix="[Commas(Ammo)]"
 		. = ..()
 	verb/Upgrade()
 		set src in view(1)
-		var/Cost=5/usr.Intelligence()
-		var/Max=round(usr.Res()/Cost)
-		var/Amount=input("How much ammo do you wish to add to this ammo pack? It will cost you [Cost]$ per \
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusAmmoInteraction(user, original_location)) return
+		var/Cost=5/user.Intelligence()
+		var/Max=round(user.Res()/Cost)
+		var/Amount=input(user,"How much ammo do you wish to add to this ammo pack? It will cost you [Cost]$ per \
 		bullet. You can add up to [Max] bullets for the money you have.") as num
+		if(!canContinueNexusAmmoInteraction(user, original_location)) return
 		Amount=round(Amount)
 		if(Amount<=0) return
 		if(Amount>Max) return
 		Ammo+=Amount
 		suffix="[Commas(Ammo)]"
-		player_view(15,usr)<<"[usr] upgrades [src] with +[Amount] ammo"
+		player_view(15,user)<<"[user] upgrades [src] with +[Amount] ammo"
 		Amount*=Cost
-		usr<<"Cost: [Commas(Amount)]$"
-		usr.Alter_Res(-Amount)
+		user<<"Cost: [Commas(Amount)]$"
+		user.Alter_Res(-Amount)
 		Total_Cost+=Amount
 	Click() Reload(usr)
 	verb/Hotbar_use()
 		set hidden=1
 		Reload(usr)
 	proc/Reload(mob/M,obj/items/Gun/G)
+		var/atom/original_location = loc
+		if(!canContinueNexusAmmoInteraction(M, original_location)) return
 		for(var/obj/items/Ammo/A in M) if(A.Reloading)
 			//M<<"You are busy reloading already."
 			return
@@ -531,14 +571,19 @@ obj/items/Ammo
 				Guns+=A
 			if(!Guns) return
 			G=input(M,"Which gun to reload?") in Guns
+			if(!canContinueNexusAmmoInteraction(M, original_location)) return
+			if(!G || !(G in Guns) || G.loc != M || !(G in M.item_list) || G.isNexusTradeOfferedBy(M)) return
 		if(G)
+			if(G.loc != M || !(G in M.item_list) || G.isNexusTradeOfferedBy(M)) return
 			player_view(15,M)<<"[M] is reloading their [G]"
 			var/Reload_Delay
 			if(ismob(M)) Reload_Delay=TickMult((100*sqrt(usr.Speed_delay_mult(severity=0.6)))/G.Reload_Speed)
 			else Reload_Delay=TickMult(300/G.Reload_Speed/sqrt(M.Spd))
 			Reloading=1
-			spawn(Reload_Delay) if(src) Reloading=0
 			spawn(Reload_Delay) if(src&&G&&M)
+				Reloading=0
+				if(!canContinueNexusAmmoInteraction(M, original_location)) return
+				if(G.loc != M || !(G in M.item_list) || G.isNexusTradeOfferedBy(M)) return
 				player_view(15,M)<<"[M] is done reloading their [G]"
 				var/Needed_Amount=G.Max_Ammo-G.Ammo
 				if(Needed_Amount>Ammo) Needed_Amount=Ammo

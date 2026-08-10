@@ -2,7 +2,6 @@ var/global/datum/SkillRegistry/skill_registry = new
 var/global/datum/SkillEngine/skill_engine = new
 var/global/skill_engine_debug = 1
 var/global/skill_engine_debug_interval = 50
-var/global/dash_attack_step_delay_ticks = 1
 
 proc/initializeSkillEngine()
 	if(skill_engine)
@@ -336,6 +335,8 @@ datum/SkillEngine
 			if(user) blast.homing_chance = user.Get_blast_homing_chance(def.homing_mod)
 			if(blast.Can_Home) blast.Can_Home = 1
 			if(user) blast.blast_homing_target = user.getSelectedTarget(max_dist = 100)
+		else if(def.homing_mode == SKILL_HOMING_LAZY)
+			if(user) blast.blast_homing_target = user.getSelectedTarget(max_dist = 100)
 
 	proc/controlBlast(mob/user, obj/Blast/blast, obj/skill_obj, datum/SkillDefinition/def)
 		if(!def && skill_obj) def = getDefinitionForObj(skill_obj)
@@ -416,13 +417,20 @@ datum/SkillEngine
 		if(!skill_obj) for(var/obj/Attacks/Blast/c in user.ki_attacks) skill_obj = c
 		if(!skill_obj) return 0
 
-		skill_obj.Blast_Count = ToOne(skill_obj.Blast_Count)
+		user.migrateBasicBlastVolley(skill_obj)
+		skill_obj.Blast_Count = Clamp(round(skill_obj.Blast_Count), 1, basic_blast_max_volley_size)
 		if(user.beaming || user.Beam_stunned()) return 0
 		if(user.cant_blast()) return 0
-		if(user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)) return 0
+		var/per_projectile_drain = skill_obj.getBasicBlastProjectileDrain(user)
+		if(per_projectile_drain <= 0) return 0
+		var/available_slots = user.getAvailableBasicBlastSlots(skill_obj.Blast_Count)
+		var/affordable_projectiles = max(0, floor((user.Ki + 0.000001) / per_projectile_drain))
+		var/amount = min(skill_obj.Blast_Count, available_slots, affordable_projectiles)
+		if(amount <= 0) return 0
+
 		skill_obj.Skill_Increase(1 / skill_obj.blast_refire, user)
 		user.attacking = 3
-		var/delay = user.get_blast_refire()
+		var/delay = user.get_blast_refire(skill_obj)
 		if(!user.client) delay = 1
 		spawn(delay) if(user) user.attacking = 0
 		skill_obj.Experience += 0.05 / skill_obj.blast_refire
@@ -430,17 +438,24 @@ datum/SkillEngine
 			skill_obj.lastBlastSfx = world.time
 			player_view(10, user) << sound('Blast.wav', volume = 10)
 
-		var/amount = Clamp(ToOne(skill_obj.Blast_Count), 1, 4)
+		user.Ki = max(0, user.Ki - per_projectile_drain * amount)
 		var/datum/CombatDamageBudget/damage_budget = new(skill_blast_total_factor)
-		while(amount)
-			user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
-
+		var/lead_projectile_index = round((amount + 1) * 0.5)
+		var/mob/targ = user.getSelectedTarget(max_dist = 30, dir_angle = user.dir, angle_limit = 18)
+		var/projectiles_spawned = 0
+		for(var/projectile_index in 1 to amount)
 			var/obj/Blast/a = get_cached_blast()
-			var/percent = 0.5375 - 0.1875 * Clamp(skill_obj.blast_refire, 0.2, 1)
+			if(!a.registerBasicBlastSlot(user))
+				user.Ki += per_projectile_drain
+				del(a)
+				continue
+			projectiles_spawned++
+			var/is_lead_projectile = projectile_index == lead_projectile_index
+			var/percent = skill_obj.getBasicBlastDamageFactor()
 			var/off_mod = 1
-			if(skill_obj.Stun) percent *= 1
-			a.Stun = skill_obj.Stun
-			a.setStats(user, Percent = percent, Off_Mult = off_mod, Explosion = skill_obj.Explosive, explosion_percent = skill_obj.Explosive ? percent : 0, shared_budget = damage_budget)
+			var/lead_explosion = is_lead_projectile ? skill_obj.Explosive : 0
+			a.Stun = is_lead_projectile ? skill_obj.Stun : 0
+			a.setStats(user, Percent = percent, Off_Mult = off_mod, Explosion = lead_explosion, explosion_percent = lead_explosion ? percent : 0, shared_budget = damage_budget)
 			var
 				base_speed = 32
 				max_speed_bonus = 32 - base_speed
@@ -450,8 +465,7 @@ datum/SkillEngine
 			a.from_attack = skill_obj
 			a.icon = skill_obj.icon
 			CenterIcon(a)
-			a.Shockwave = ToOne(1.4 * skill_obj.Shockwave / skill_obj.blast_refire ** 0.4)
-			if(prob(100)) a.Explosive = skill_obj.Explosive
+			a.Shockwave = is_lead_projectile ? ToOne(1.4 * skill_obj.Shockwave / skill_obj.blast_refire ** 0.4) : 0
 			a.dir = user.dir
 			a.SafeTeleport(user.loc)
 			// Apply character's pixel offset for vectorial positioning
@@ -469,12 +483,15 @@ datum/SkillEngine
 			a.vector_speed = 44
 			a.Distance = 47
 			var/angle = dir_to_angle_0_360(a.dir)
-			var/mob/targ = user.getSelectedTarget(max_dist = 30, dir_angle = user.dir, angle_limit = 18)
 			a.blast_homing_target = targ
 			if(targ) angle = get_global_angle(a, targ)
-			angle += rand(-4, 4)
+			angle += skill_obj.getBasicBlastAngleOffset(projectile_index, amount)
+			angle += rand(-round(basic_blast_angle_jitter_degrees), round(basic_blast_angle_jitter_degrees))
+			a.dir = angle_to_dir_0_360(angle)
 			a.BlastVectorWalk(angle)
-			amount--
+		if(!projectiles_spawned)
+			user.attacking = 0
+			return 0
 		return 1
 
 	proc/castBigBang(mob/user, obj/Attacks/Big_Bang_Attack/skill_obj)
@@ -743,7 +760,6 @@ datum/SkillEngine
 				user.attack_barrier_blasts++
 				orbs_fired++
 				var/obj/Blast/a = get_cached_blast()
-				spawn(rand(600, 900)) if(a && a.z) del(a)
 				a.Shockwave = 4
 				a.blast_go_over_obstacles_if_cant_destroy = 1
 				a.blast_go_over_owner = 1
@@ -761,6 +777,10 @@ datum/SkillEngine
 				a.step_x = user.step_x
 				a.step_y = user.step_y
 				a.attack_barrier_loop()
+				var/expiration_flight_id = a.projectile_flight_id
+				var/mob/expiration_owner = user
+				spawn(rand(600, 900))
+					if(a && a.z && a.in_use && expiration_owner && a.Owner == expiration_owner && a.projectile_flight_id == expiration_flight_id) del(a)
 				sleep(TickMult(1 * user.Speed_delay_mult(severity = 0.3)))
 		skill_obj.Firing_Attack_Barrier = 0
 		user.attacking = 0
@@ -984,6 +1004,7 @@ datum/SkillEngine
 			user << "Select a valid target within [maximum_dash_range] tiles."
 			return 0
 
+		user.resetMovementPhysics(clear_glide = FALSE)
 		user.dash_attacking = 1
 		user.attack_forced_movement = 1
 		user.original_dash_dir = get_dir(user, target)
@@ -991,31 +1012,19 @@ datum/SkillEngine
 		if(skill_obj && skill_obj.icon) user.overlays += skill_obj.icon
 		var/starting_distance = max(1, getdist(user, target))
 		var/reached_target = FALSE
-		for(var/steps in 1 to maximum_dash_range)
-			if(user.KB || !user.canHitTenkaichiTechniqueTarget(target)) break
-			if(user.loc == target.loc)
-				reached_target = TRUE
-				break
-			var/dash_dir = get_dir(user, target)
-			var/turf/next_turf = get_step(user, dash_dir)
-			if(!next_turf || next_turf.density) break
-			user.dir = dash_dir
-			user.AfterImage(20)
-			user.SafeTeleport(next_turf)
-			user.step_x = 0
-			user.step_y = 0
-			user.vector_fraction_x = 0
-			user.vector_fraction_y = 0
-			if(user.loc == target.loc) reached_target = TRUE
-			sleep(world.tick_lag * dash_attack_step_delay_ticks)
-			if(reached_target) break
-		if(reached_target && user.canHitTenkaichiTechniqueTarget(target))
-			var/turf/pass_through_turf = get_step(target.loc, user.dir)
-			if(pass_through_turf && !pass_through_turf.density)
-				user.AfterImage(20)
-				user.SafeTeleport(pass_through_turf)
-				user.step_x = 0
-				user.step_y = 0
+		var/dash_delta_x = (target.bound_center_x() - user.bound_center_x()) * world.icon_size
+		var/dash_delta_y = (target.bound_center_y() - user.bound_center_y()) * world.icon_size
+		var/dash_distance_pixels = sqrt(dash_delta_x ** 2 + dash_delta_y ** 2) + world.icon_size
+		user.dir = user.original_dash_dir
+		var/datum/NexusSkillMotionResult/dash_motion_result = new
+		user.runNexusSkillVector(dash_delta_x, dash_delta_y, dash_distance_pixels, 155, 380, 440, 0.2, 0, TRUE, dash_motion_result)
+		var/contact_was_recorded = FALSE
+		var/contact_was_evaded = FALSE
+		if(dash_motion_result.valid && target && user.canHitTenkaichiTechniqueTarget(target))
+			contact_was_recorded = target in dash_motion_result.contacted_mobs
+			contact_was_evaded = target in dash_motion_result.evaded_contacts
+			reached_target = contact_was_recorded
+		if(reached_target && !contact_was_evaded && user.canHitTenkaichiTechniqueTarget(target))
 			var/damage_factor = min(skill_dash_attack_max_factor, \
 				skill_dash_attack_min_factor + (starting_distance - 1) * skill_dash_attack_step_factor)
 			var/damage = user.getPhysicalCombatDamage(target, damage_factor)
@@ -1035,6 +1044,7 @@ datum/SkillEngine
 		if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
 		user.attack_forced_movement = 0
 		user.dash_attacking = 0
+		del(dash_motion_result)
 		return 1
 
 	proc/castWolfFangFist(mob/user, obj/WolfFangFist/skill_obj)
@@ -1050,6 +1060,7 @@ datum/SkillEngine
 			user << "No target found"
 			return 0
 		user.last_WolfFangFist = world.time
+		user.resetMovementPhysics(clear_glide = FALSE)
 		user.dragon_rush_attack_active = "Wolf Fang Fist"
 
 		player_view(35, user) << sound('WolfHowl.mp3', volume = 35)
@@ -1066,17 +1077,13 @@ datum/SkillEngine
 
 		var/targ_dist = getdist(user, victim)
 		var/max_dist = targ_dist + 20
-		for(var/s in 1 to max_dist)
-			if(user.in_dragon_rush)
-				if(!flying) user.Land()
-				return 1
-			if(!victim || user.selected_target != victim) break
-			user.AfterImage(20)
-			var/success = step_towards(user, victim.base_loc(), 32)
-			if(getdist(user, victim) <= 1 && user.CheckLungeDragonRush(user, victim)) return 1
-			if(user.WolfFangFistCancelled(victim, success))
-				break
-			else sleep(world.tick_lag)
+		var/approach_succeeded = FALSE
+		if(!user.in_dragon_rush && victim && user.selected_target == victim)
+			approach_succeeded = user.runNexusSkillApproach(victim, max_dist * world.icon_size, world.icon_size, 125, 270, 330, 0.25)
+		if(user.in_dragon_rush)
+			if(!flying) user.Land()
+			return 1
+		if(!approach_succeeded || !victim || user.selected_target != victim || getdist(user, victim) > 1 || !viewable(user, victim, 35)) victim = null
 
 		if(!flying) user.Land()
 		if(user.in_dragon_rush) return 1
@@ -1085,11 +1092,13 @@ datum/SkillEngine
 		var/hitcount = 0
 		for(var/hit_number in 1 to user.numberOfHits)
 			if(!victim || user.selected_target != victim || victim.KO) break
-			while(victim && user.selected_target == victim && getdist(user, victim) > 1)
-				if(!vector_step_toward(user, victim, 32)) break
-				user.AfterImage(12)
-				sleep(world.tick_lag)
+			if(getdist(user, victim) > 1)
+				var/follow_succeeded = user.runNexusSkillApproach(victim, 4 * world.icon_size, world.icon_size, 115, 250, 310, 0.2)
+				if(!follow_succeeded) break
 			if(!victim || getdist(user, victim) > 1) break
+			if(victim.isDefensiveDashEvading())
+				player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
+				break
 
 			var/accuracy = user.get_melee_accuracy(victim)
 			if(hit_number == 1) accuracy *= 2
@@ -1155,20 +1164,14 @@ datum/SkillEngine
 
 		var/targ_dist = getdist(user, m)
 		var/max_dist = targ_dist + 8
-		for(var/s in 1 to max_dist)
-			if(user.in_dragon_rush)
-				if(!flying) user.Land()
-				user.AlterInputDisabled(-1)
-				return 1
-			if(!m || user.selected_target != m) break
-			user.AfterImage(8)
-			var/success = step_towards(user, m.base_loc(), 32)
-			if(getdist(user, m) <= 1 && user.CheckLungeDragonRush(user, m))
-				if(!flying) user.Land()
-				user.AlterInputDisabled(-1)
-				return 1
-			if(user.DropkickCancelled(m, success)) break
-			else sleep(world.tick_lag)
+		var/approach_succeeded = FALSE
+		if(!user.in_dragon_rush && m && user.selected_target == m)
+			approach_succeeded = user.runNexusSkillApproach(m, max_dist * world.icon_size, world.icon_size, 130, 290, 350, 0.2)
+		if(user.in_dragon_rush)
+			if(!flying) user.Land()
+			user.AlterInputDisabled(-1)
+			return 1
+		if(!approach_succeeded || !m || user.selected_target != m || getdist(user, m) > 1 || !viewable(user, m, 35)) m = null
 
 		if(!flying) user.Land()
 		if(user.in_dragon_rush)
@@ -1178,7 +1181,7 @@ datum/SkillEngine
 			user.AlterInputDisabled(-1)
 			return 1
 
-		var/hit = m && user.selected_target == m && prob(user.get_melee_accuracy(m) * 2)
+		var/hit = m && user.selected_target == m && !m.isDefensiveDashEvading() && prob(user.get_melee_accuracy(m) * 2)
 		if(!m || getdist(user, m) > 1) hit = 0
 		if(!hit) player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
 

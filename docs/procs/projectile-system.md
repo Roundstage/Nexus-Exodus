@@ -3,6 +3,8 @@
 ## Overview
 Projectile movement, collision, beam segments, and damage behavior.
 
+Basic Blast fires a three-projectile vector fan on a 0.75-decisecond base refire. Each projectile deals 30% of the former basic-blast factor and costs 20% of the configured per-projectile Energy drain; only the center projectile carries explosion, stun, and knockback utility. The maximum launch rate remains equal to the former four-projectile configuration. Dedicated counters cap basic blasts at 24 active projectiles per owner and 256 globally without scanning the pooled projectile list; the slot is released before deletion or caching.
+
 `obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
 
 `obj/Blast/setStats()` captures forged-mask BP and Ki-damage reinforcement when a Ki projectile is created. Bullet projectiles explicitly bypass both mask effects.
@@ -299,12 +301,12 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### obj/proc/Buster_Barrage_Move
-- Signature: `obj/proc/Buster_Barrage_Move()`
+#### obj/Blast/proc/Buster_Barrage_Move
+- Signature: `obj/Blast/proc/Buster_Barrage_Move()`
 - Inputs: None
-- Purpose: Handle buster barrage move.
+- Purpose: Accelerate and steer a Buster Barrage projectile while preserving its two-to-seventeen-tile tether around the original owner.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: owns a projectile-flight generation and safely retires an orphaned same-generation projectile.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -323,9 +325,9 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 #### obj/Blast/proc/attack_barrier_loop
 - Signature: `obj/Blast/proc/attack_barrier_loop()`
 - Inputs: None
-- Purpose: Handle attack barrier loop.
+- Purpose: Continuously steer an Attack Barrier orb toward a target, back to its owner, or through a smooth local wander vector.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: moves through vector collision, resolves overlap hits, guards pooled-projectile lifecycle reuse, and decrements the original owner's orb count exactly once.
 
 #### mob/proc/MaxAttackBarrierBlasts
 - Signature: `mob/proc/MaxAttackBarrierBlasts()`
@@ -390,6 +392,13 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/proc/migrateBasicBlastVolley
+- Signature: `migrateBasicBlastVolley(obj/Attacks/Blast/skill_obj)`
+- Inputs: the player's persistent basic Blast skill object.
+- Purpose: Promote the legacy saved default of one projectile to the current three-projectile default exactly once while preserving later player choices.
+- Returns: true when the player's configuration version was advanced.
+- Side effects: may update `Blast_Count` and the persistent migration version.
+
 #### verb/Blast_Options
 - Signature: `verb/Blast_Options()`
 - Inputs: None
@@ -400,9 +409,30 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 #### proc/Recalculate_blast_drain
 - Signature: `proc/Recalculate_blast_drain()`
 - Inputs: None
-- Purpose: Handle recalculate blast drain.
+- Purpose: Recalculate the configured per-projectile drain modifier. Refire and utility choices still scale the modifier before the rapid-blast Energy factor is applied.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: updates `Drain`.
+
+#### obj/Attacks/Blast/proc/getBasicBlastDamageFactor
+- Signature: `getBasicBlastDamageFactor()`
+- Inputs: None.
+- Purpose: Return the reduced per-projectile damage factor while preserving the configured slow-refire power curve.
+- Returns: 0.105 at refire 1 through 0.15 at refire 0.2 with default tuning.
+- Side effects: none.
+
+#### obj/Attacks/Blast/proc/getBasicBlastProjectileDrain
+- Signature: `getBasicBlastProjectileDrain(mob/user)`
+- Inputs: firing mob.
+- Purpose: Resolve the Energy cost of one rapid basic-blast projectile.
+- Returns: scaled skill drain, or 0 without a user.
+- Side effects: none.
+
+#### obj/Attacks/Blast/proc/getBasicBlastAngleOffset
+- Signature: `getBasicBlastAngleOffset(projectile_index, projectile_count)`
+- Inputs: one-based projectile index and volley size.
+- Purpose: Return a centered deterministic fan offset; Spread and Barrage widen the spacing instead of only increasing drain.
+- Returns: angle in degrees.
+- Side effects: none.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -433,10 +463,10 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Side effects: see implementation.
 
 #### mob/proc/get_blast_refire
-- Signature: `mob/proc/get_blast_refire()`
-- Inputs: None
-- Purpose: Return blast refire.
-- Returns: computed value (see implementation).
+- Signature: `mob/proc/get_blast_refire(obj/Attacks/Blast/B = blast_obj)`
+- Inputs: optional Blast skill, defaulting to the equipped basic Blast.
+- Purpose: Return the speed-scaled rapid-blast interval from its 0.75-decisecond base, clamped to at least one world tick.
+- Returns: delay in deciseconds.
 - Side effects: none expected.
 
 #### mob/proc/get_shuriken_refire
@@ -487,6 +517,13 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Purpose: Home at the projectile's vector speed and 0.5-decisecond cadence while that same target remains selected; never acquire a replacement.
 - Returns: none (asynchronous).
 - Side effects: moves and may bump the blast.
+
+#### obj/Blast/proc/BlastLazyFollow
+- Signature: `obj/Blast/proc/BlastLazyFollow(mob/target)`
+- Inputs: explicitly selected target captured at fire time.
+- Purpose: FR-style "lazy follow" guided flight. Track the target closely for `lazy_follow_lock_time` (default ~0.5s), then lock the end point and let it drift toward the enemy at `lazy_follow_drift` pixels per tick while steering toward that locked point with a heading change limited to `lazy_follow_steer_limit` degrees per tick. Fast players can dash out of the drift path; slowed players still get hit. Deletes the blast if the target leaves the z-level or the flight is stopped.
+- Returns: none (asynchronous).
+- Side effects: moves and may bump the blast. Requires `SKILL_HOMING_LAZY` on the skill definition or an explicit `blast_homing_target`.
 
 #### obj/Blast/proc/Blast_Move
 - Signature: `obj/Blast/proc/Blast_Move(obj/Attacks/Blast/b,mob/m, skip_first_delay)`
@@ -884,6 +921,24 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 
 ### src/Code/ProjectileSystem/Projectiles.dm
 
+#### mob/proc/getAvailableBasicBlastSlots
+- Signature: `getAvailableBasicBlastSlots(requested_count = basic_blast_max_volley_size)`
+- Purpose: Return the number of requested basic-blast projectiles permitted by both per-owner and global active limits.
+- Returns: integer slot count.
+- Side effects: none.
+
+#### obj/Blast/proc/registerBasicBlastSlot
+- Signature: `registerBasicBlastSlot(mob/new_owner)`
+- Purpose: Atomically reserve one owner and global slot for a newly emitted basic blast.
+- Returns: true when registered, including an idempotent repeat by the same owner.
+- Side effects: increments bounded active-projectile counters.
+
+#### obj/Blast/proc/releaseBasicBlastSlot
+- Signature: `releaseBasicBlastSlot()`
+- Purpose: Idempotently release a registered basic-blast slot, including after the owner datum has been deleted.
+- Returns: true only when a registration was released.
+- Side effects: decrements surviving owner and global counters without going below zero.
+
 #### obj/Blast/proc/getNexusCombatAttackName
 - Signature: `getNexusCombatAttackName()`
 - Purpose: Resolve a projectile's player-facing combat-log label from `from_attack`, with beam, bullet, explosive, and generic Ki fallbacks.
@@ -970,6 +1025,13 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Purpose: Handle move.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/Blast/proc/withinBlastCircle
+- Signature: `obj/Blast/proc/withinBlastCircle(atom/A)`
+- Inputs: a dense atom found by the `orange(Size, src)` broad-phase.
+- Purpose: Turn a `Size` blast's square tile hitbox into an inscribed circle by comparing pixel distance between bound centers against a radius of `Size` tiles. Used by `Move()` before `Bump()` so large spheres such as Genki Dama and Supernova hit as circles rather than squares.
+- Returns: 1 when the atom's bound center is inside the blast circle, otherwise 0.
+- Side effects: none.
 
 #### proc/CheckBlastHomingTarget
 - Signature: `proc/CheckBlastHomingTarget()`
@@ -1092,14 +1154,14 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 #### proc/BlastMobCross
 - Signature: `proc/BlastMobCross(mob/m, override_dir, override_delete)`
 - Inputs: mob/m, override_dir, override_delete
-- Purpose: Resolve accuracy/deflection, preserve explicit owner immunity, reserve direct factor and apply centralized physical or Ki damage.
+- Purpose: Resolve selective Short Dash evasion, accuracy/deflection, explicit owner immunity, direct-factor reservation, and centralized physical or Ki damage.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### obj/Blast/Bump
 - Signature: `Bump(mob/A,override_dir,override_delete)`
 - Inputs: mob/A, override_dir, override_delete
-- Purpose: Handle bump.
+- Purpose: Handle projectile collision with a mob while allowing eligible small blasts to pass an active Short Dash without stalling their flight lifecycle.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

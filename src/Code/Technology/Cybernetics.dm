@@ -587,6 +587,10 @@ mob/var
 	brain_transplant_allowed=1
 	stat_build_unlocked = 0
 
+obj/items/DNA_Container/proc/canUseCloneAfterNexusTradeYield(mob/user, mob/expected_clone)
+	if(!canUseAfterNexusTradeYield(user) || !Clone) return FALSE
+	return !expected_clone || Clone == expected_clone
+
 obj/Genetics_Computer
 	icon='Lab.dmi'
 	icon_state="Lab1"
@@ -754,30 +758,32 @@ obj/Genetics_Computer
 						usr<<"You need [Commas(Res_Cost)]$ to do this"
 						return
 					var/list/DNA=list("Cancel")
-					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.Clone) DNA+=D
+					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.canUseCloneAfterNexusTradeYield(usr)) DNA+=D
 					if(!(locate(/obj) in DNA))
 						usr<<"You can not do this because you must have a DNA container with someone's DNA in it."
 						return
 					var/obj/items/DNA_Container/D=input("Which DNA do you want to use for the BP imprint?") in DNA
-					if(!D||D=="Cancel") return
+					if(!D||D=="Cancel" || !(D in DNA) || !D.canUseCloneAfterNexusTradeYield(usr)) return
+					var/mob/dna_clone = D.Clone
 					var/list/Mobs=list("Cancel")
 					for(var/mob/P in view(1,src)) Mobs+=P
 					if(!(locate(/mob) in Mobs))
 						usr<<"You can not do this. There must be a person near the [src] that you can imprint the DNA on"
 						return
-					var/mob/P=input("Choose the body that you want to imprint [D.Clone]'s DNA on. This will overwrite \
-					their knowledge with the knowledge of [D.Clone].") in Mobs
-					if(P=="Cancel"||!P) return
+					var/mob/P=input("Choose the body that you want to imprint [dna_clone]'s DNA on. This will overwrite \
+					their knowledge with the knowledge of [dna_clone].") in Mobs
+					if(P=="Cancel"||!P || !(P in Mobs) || !(P in view(1,src)) || !D.canUseCloneAfterNexusTradeYield(usr, dna_clone)) return
 					if(P.client&&!P.KO)
 						switch(input(P,"[usr] is trying to imprint knowledge on you, accept?") in list("No","Yes"))
 							if("No")
 								usr<<"[P] has denied the knowledge imprint"
 								return
-					var/N=D.Clone.Knowledge
+					if(!D.canUseCloneAfterNexusTradeYield(usr, dna_clone) || !P || !(P in view(1,src))) return
+					var/N=dna_clone.Knowledge
 					if(P.Knowledge>N)
 						player_view(15,src)<<"The knowledge imprint on [P] was cancelled because it would actually lower their knowledge to do this"
 						return
-					player_view(15,src)<<"[usr] uses the [D] to overwrite [P]'s knowledge with the knowledge of [D.Clone]"
+					player_view(15,src)<<"[usr] uses the [D] to overwrite [P]'s knowledge with the knowledge of [dna_clone]"
 					if(usr.Res()<Res_Cost)
 						usr<<"You need [Commas(Res_Cost)]$ to do this"
 						return
@@ -790,31 +796,34 @@ obj/Genetics_Computer
 						usr<<"You need [Commas(Res_Cost)]$ to do this"
 						return
 					var/list/DNA=list("Cancel")
-					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.Clone) DNA+=D
+					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.canUseCloneAfterNexusTradeYield(usr)) DNA+=D
 					if(!(locate(/obj) in DNA))
 						usr<<"You can not do this because you must have a DNA container with someone's DNA in it."
 						return
 					var/obj/items/DNA_Container/D=input("Which DNA do you want to use for the BP imprint?") in DNA
-					if(!D||D=="Cancel") return
+					if(!D||D=="Cancel" || !(D in DNA) || !D.canUseCloneAfterNexusTradeYield(usr)) return
+					var/mob/dna_clone = D.Clone
 					var/list/Mobs=list("Cancel")
 					for(var/mob/P in view(1,src)) Mobs+=P
 					if(!(locate(/mob) in Mobs))
 						usr<<"You can not do this. There must be a person near the [src] that you can imprint the DNA on"
 						return
-					var/mob/P=input("Choose the body that you want to imprint [D.Clone]'s DNA on. This will overwrite \
-					their BP with the BP of [D.Clone].") in Mobs
-					if(P=="Cancel"||!P) return
+					var/mob/P=input("Choose the body that you want to imprint [dna_clone]'s DNA on. This will overwrite \
+					their BP with the BP of [dna_clone].") in Mobs
+					if(P=="Cancel"||!P || !(P in Mobs) || !(P in view(1,src)) || !D.canUseCloneAfterNexusTradeYield(usr, dna_clone)) return
 					if(P.client&&P!=usr)
 						switch(input(P,"[usr] is trying to imprint BP on you, accept?") in list("No","Yes"))
 							if("No")
 								usr<<"[P] has denied the BP imprint"
 								return
-					var/N=(D.Clone.base_bp/D.Clone.bp_mod)*P.bp_mod
+					if(!D.canUseCloneAfterNexusTradeYield(usr, dna_clone) || !P || !(P in view(1,src))) return
+					var/N=(dna_clone.base_bp/dna_clone.bp_mod)*P.bp_mod
 					//N=Clamp(N,1,D.Clone.base_bp)
 
 					var/real_amount=input("You can raise [P]'s bp up to [Commas(N)] but you can give them less if you \
 					choose. Input the amount you want to raise them to now. Their current base bp is \
 					[Commas(P.base_bp)].") as num
+					if(!D.canUseCloneAfterNexusTradeYield(usr, dna_clone) || !P || !(P in view(1,src))) return
 					if(real_amount<1) real_amount=1
 					if(real_amount>N) real_amount=N
 					N=real_amount
@@ -829,7 +838,7 @@ obj/Genetics_Computer
 						return
 					usr.Alter_Res(-Res_Cost)
 					P.base_bp=N
-					if(P.gravity_mastered<D.Clone.gravity_mastered) P.gravity_mastered=D.Clone.gravity_mastered
+					if(P.gravity_mastered<dna_clone.gravity_mastered) P.gravity_mastered=dna_clone.gravity_mastered
 
 				if("Stat Imprint")
 
@@ -846,12 +855,13 @@ obj/Genetics_Computer
 						return
 
 					var/list/DNA=list("Cancel")
-					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.Clone) DNA+=D
+					for(var/obj/items/DNA_Container/D in usr.item_list) if(D.canUseCloneAfterNexusTradeYield(usr)) DNA+=D
 					if(!(locate(/obj) in DNA))
 						usr<<"You can not do this because you must have a DNA container with someone's DNA in it."
 						return
 					var/obj/items/DNA_Container/D=input("Which DNA do you want to use for the stat imprint?") in DNA
-					if(!D||D=="Cancel") return
+					if(!D||D=="Cancel" || !(D in DNA) || !D.canUseCloneAfterNexusTradeYield(usr)) return
+					var/mob/dna_clone = D.Clone
 
 					var/list/Mobs=list("Cancel")
 					for(var/mob/P in view(1,src))
@@ -860,10 +870,10 @@ obj/Genetics_Computer
 					if(!(locate(/mob) in Mobs))
 						usr<<"You can not do this. There must be a person near the [src] that you can imprint the DNA on"
 						return
-					var/mob/P=input("Choose the body that you want to imprint [D.Clone]'s DNA on. This will overwrite \
-					their stats with the stats of [D.Clone]. Warning: This could lower your overall stats if you use \
+					var/mob/P=input("Choose the body that you want to imprint [dna_clone]'s DNA on. This will overwrite \
+					their stats with the stats of [dna_clone]. Warning: This could lower your overall stats if you use \
 					DNA that is weaker than you.") in Mobs
-					if(P=="Cancel"||!P) return
+					if(P=="Cancel"||!P || !(P in Mobs) || !(P in view(1,src)) || !D.canUseCloneAfterNexusTradeYield(usr, dna_clone)) return
 					if(!usr.Can_alter_drone(P)) return
 					if(P.client)
 						switch(input(P,"[usr] is trying to imprint stats on you, accept?") in list("No","Yes"))
@@ -871,38 +881,40 @@ obj/Genetics_Computer
 								usr<<"[P] has denied the stat imprint"
 								return
 
-					player_view(15,src)<<"[usr] uses the [D] to overwrite [P]'s stats with the stats of [D.Clone]"
+					if(!D.canUseCloneAfterNexusTradeYield(usr, dna_clone) || !P || !(P in view(1,src))) return
+					player_view(15,src)<<"[usr] uses the [D] to overwrite [P]'s stats with the stats of [dna_clone]"
 					if(usr.Res()<Res_Cost)
 						usr<<"You need [Commas(Res_Cost)]$ to do this"
 						return
 					usr.Alter_Res(-Res_Cost)
-					if(P.max_ki < (D.Clone.max_ki / D.Clone.Eff) * P.Eff)
-						P.max_ki=(D.Clone.max_ki/D.Clone.Eff)*P.Eff
+					if(P.max_ki < (dna_clone.max_ki / dna_clone.Eff) * P.Eff)
+						P.max_ki=(dna_clone.max_ki/dna_clone.Eff)*P.Eff
 					if(P.Ki>P.max_ki) P.Ki=P.max_ki
-					P.Str=(D.Clone.Str/D.Clone.strmod)*P.strmod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.End=(D.Clone.End/D.Clone.endmod)*P.endmod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.Pow=(D.Clone.Pow/D.Clone.formod)*P.formod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.Res=(D.Clone.Res/D.Clone.resmod)*P.resmod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.Spd=(D.Clone.Spd/D.Clone.spdmod)*P.spdmod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.Off=(D.Clone.Off/D.Clone.offmod)*P.offmod*(P.Modless_Gain/D.Clone.Modless_Gain)
-					P.Def=(D.Clone.Def/D.Clone.defmod)*P.defmod*(P.Modless_Gain/D.Clone.Modless_Gain)
+					P.Str=(dna_clone.Str/dna_clone.strmod)*P.strmod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.End=(dna_clone.End/dna_clone.endmod)*P.endmod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.Pow=(dna_clone.Pow/dna_clone.formod)*P.formod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.Res=(dna_clone.Res/dna_clone.resmod)*P.resmod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.Spd=(dna_clone.Spd/dna_clone.spdmod)*P.spdmod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.Off=(dna_clone.Off/dna_clone.offmod)*P.offmod*(P.Modless_Gain/dna_clone.Modless_Gain)
+					P.Def=(dna_clone.Def/dna_clone.defmod)*P.defmod*(P.Modless_Gain/dna_clone.Modless_Gain)
 
 				if("Make Clone")
 					var/res_cost=1000000/usr.Intelligence()**0.2
 					if(usr.Res()<res_cost) alert("You need [Commas(res_cost)] resources to do this")
 					else
 						var/list/Clonables=list("Cancel")
-						for(var/obj/items/DNA_Container/D in usr.item_list) if(D.Clone) Clonables+=D
+						for(var/obj/items/DNA_Container/D in usr.item_list) if(D.canUseCloneAfterNexusTradeYield(usr)) Clonables+=D
 						if(!(locate(/obj) in Clonables))
 							usr<<"You can not do this because you must have a DNA container with someone's DNA in it."
 							return
 						var/obj/items/DNA_Container/D=input("What DNA to use to make the clone?") in Clonables
-						if(!D||D=="Cancel") return
+						if(!D||D=="Cancel" || !(D in Clonables) || !D.canUseCloneAfterNexusTradeYield(usr)) return
+						var/mob/dna_clone = D.Clone
 						switch(alert("This will cost [Commas(res_cost)] resources. Accept?","Options","Yes","No"))
 							if("No") return
-						if(usr.Res()<res_cost) return
+						if(usr.Res()<res_cost || !D.canUseCloneAfterNexusTradeYield(usr, dna_clone)) return
 						usr.Alter_Res(-res_cost)
-						var/mob/P=D.Clone.Duplicate()
+						var/mob/P=dna_clone.Duplicate()
 						P.SafeTeleport(loc)
 						player_view(15,src)<<"[src]: Clone created using [D]"
 				if("Mind Swap")
@@ -1024,6 +1036,15 @@ obj/items/Android_Blueprint
 		set hidden=1
 		Use()
 
+	proc/canAssignSelectedDesign(mob/user, atom/design)
+		if(!canUseAfterNexusTradeYield(user)) return FALSE
+		if(!design) return TRUE
+		if(istype(design, /obj/items))
+			var/obj/items/design_item = design
+			if(design_item.loc == user)
+				return (design_item in user.item_list) && !design_item.isNexusTradeOfferedBy(user)
+		return design.loc == user || design in Get_step(user, user.dir)
+
 	verb/Use() if(src in usr)
 		if(Body&&usr.last_attacked_by_player+600>world.time)
 			usr<<"You can not do this right now because you are considered in combat from being \
@@ -1037,6 +1058,7 @@ obj/items/Android_Blueprint
 			var/mob/O=input("Choose the item that will be assigned to this blueprint, so that the item can then \
 			be mass produced using this blueprint.") in L
 			if(!O||O=="Cancel") return
+			if(!(O in L) || !canAssignSelectedDesign(usr, O)) return
 			name="[O] Blueprint"
 			if(isobj(O))
 				Save_Obj(O)

@@ -51,8 +51,8 @@ mob/proc/Age_Update()
 	if(!Dead&&Age>Lifespan()&&z!=13&&((z!=6&&Demonic)||!Demonic)) Die()
 	if(Age>Decline/2&&icon=='NamekYoung.dmi') icon='NamekAdult.dmi'
 	if(Age>=Decline&&icon=='NamekAdult.dmi') icon='NamekOld.dmi'
-	src<<"<font color=#FFFF00>It is now month [round((Year-round(Year))*10)] of year [round(Year)]"
-	src<<"<font color=#FFFF00>You are now [round(Age,0.1)] years old physically (Born [round(real_age,0.1)] years ago)"
+	src<<"<font color=#FFFF00>It is now month [round((Year-round(Year))*10)] of year [round(Year)]</font>"
+	src<<"<font color=#FFFF00>You are now [round(Age,0.1)] years old physically (Born [round(real_age,0.1)] years ago)</font>"
 	if(Age>=13&&!(locate(/obj/Mate) in src))
 		var/obj/Mate/M=new(src)
 		if(Race in list("Majin","Bio-Android","Namekian","Frost Lord","Alien","Demon")) M.Asexual=1

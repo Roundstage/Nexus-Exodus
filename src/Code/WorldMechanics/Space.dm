@@ -341,8 +341,19 @@ obj/Ships
 		usr << "You [Comms ? "enable" : "disable"] the comms."
 	verb/Mount_Weapon()
 		set src in view(1)
-		switch(input("Do you want to mount a weapon or just add ammo to the pod for reloading purposes?") in \
-		list("Mount Weapon","Add Ammo"))
+		var/mob/user = usr
+		var/atom/original_ship_location = loc
+		if(!user || !(src in view(1,user))) return
+		var/list/original_guns = list()
+		for(var/obj/items/Gun/G in user.item_list)
+			if(G.loc == user && !G.isNexusTradeOfferedBy(user)) original_guns += G
+		var/list/original_ammo = list()
+		for(var/obj/items/Ammo/A in user.item_list)
+			if(A.loc == user && !A.isNexusTradeOfferedBy(user)) original_ammo += A
+		var/list/mount_choices = list("Mount Weapon","Add Ammo")
+		var/mount_choice = input(user,"Do you want to mount a weapon or just add ammo to the pod for reloading purposes?") in mount_choices
+		if(!user || !user.client || loc != original_ship_location || !(src in view(1,user)) || !(mount_choice in mount_choices)) return
+		switch(mount_choice)
 			if("Mount Weapon")
 				var/Available_Mounts=Weapon_Mounts
 				for(var/obj/items/Gun/O in contents) Available_Mounts-=1
@@ -351,21 +362,36 @@ obj/Ships
 					return
 				while(Available_Mounts)
 					var/list/Weps=list("Cancel")
-					for(var/obj/items/Gun/G in usr.item_list) Weps+=G
-					var/obj/O=input("There are [Available_Mounts] available mounts on [src]. Choose the weapon you wish to \
+					for(var/obj/items/Gun/G in original_guns)
+						if(G.loc == user && (G in user.item_list) && !G.isNexusTradeOfferedBy(user)) Weps += G
+					var/weapon_choice=input(user,"There are [Available_Mounts] available mounts on [src]. Choose the weapon you wish to \
 					add to an available mount.") in Weps
-					if(!O||O=="Cancel") return
-					Weps-=O
+					if(!user || !user.client || loc != original_ship_location || !(src in view(1,user))) return
+					if(!weapon_choice || weapon_choice == "Cancel" || !istype(weapon_choice,/obj/items/Gun)) return
+					var/obj/items/Gun/O = weapon_choice
+					if(!(O in Weps) || !(O in original_guns) || O.loc != user || !(O in user.item_list) || O.isNexusTradeOfferedBy(user)) return
+					Available_Mounts = Weapon_Mounts
+					for(var/obj/items/Gun/G in contents) Available_Mounts -= 1
+					if(Available_Mounts <= 0)
+						user << "There are no available mounts"
+						return
+					original_guns -= O
 					O.Move(src)
-					player_view(15,usr)<<"[usr] mounted [O] (Weapon) to [src]"
-					Available_Mounts-=1
+					if(O.loc != src) return
+					player_view(15,user)<<"[user] mounted [O] (Weapon) to [src]"
+					Available_Mounts -= 1
 			if("Add Ammo")
 				var/list/Ammos=list("Cancel")
-				for(var/obj/items/Ammo/O in usr.item_list) Ammos+=O
-				var/obj/items/Ammo/O=input("Choose which ammo pack to add") in Ammos
-				if(!O||O=="Cancel") return
+				for(var/obj/items/Ammo/A in original_ammo)
+					if(A.loc == user && (A in user.item_list) && !A.isNexusTradeOfferedBy(user)) Ammos += A
+				var/ammo_choice=input(user,"Choose which ammo pack to add") in Ammos
+				if(!user || !user.client || loc != original_ship_location || !(src in view(1,user))) return
+				if(!ammo_choice || ammo_choice == "Cancel" || !istype(ammo_choice,/obj/items/Ammo)) return
+				var/obj/items/Ammo/O = ammo_choice
+				if(!(O in Ammos) || !(O in original_ammo) || O.loc != user || !(O in user.item_list) || O.isNexusTradeOfferedBy(user)) return
 				O.Move(src)
-				player_view(15,usr)<<"[usr] added [O] (Ammo) to the [src]"
+				if(O.loc != src) return
+				player_view(15,user)<<"[user] added [O] (Ammo) to the [src]"
 	verb/Upgrade()
 		set src in view(1)
 		var/list/Options=list("Cancel")
@@ -396,14 +422,27 @@ obj/Ships
 						Total_Cost+=Weapon_Mount_Cost(usr)
 						Weapon_Mounts+=1
 			if("Unmount Weapon")
-				var/list/Weps=list("Cancel")
-				for(var/obj/items/Gun/O in contents) Weps+=O
-				while(usr&&src)
-					var/obj/O=input("Choose the weapon you wish to unmount, it will go to your items.") in Weps
-					if(!O||O=="Cancel") return
-					player_view(15,usr)<<"[usr] unmounted [O] (Weapon) from [src]"
-					Weps-=O
-					O.Move(usr)
+				var/mob/user = usr
+				var/atom/original_ship_location = loc
+				if(!user || !user.client || !(src in view(1,user))) return
+				var/list/original_weps = list()
+				var/list/original_weapon_revisions = list()
+				for(var/obj/items/Gun/O in contents)
+					original_weps += O
+					original_weapon_revisions[O] = O.nexus_move_revision
+				while(user && src && original_weps.len)
+					var/list/Weps = list("Cancel")
+					for(var/obj/items/Gun/G in original_weps)
+						if(G.loc == src) Weps += G
+					var/unmount_choice = input(user,"Choose the weapon you wish to unmount, it will go to your items.") in Weps
+					if(!user || !user.client || loc != original_ship_location || !(src in view(1,user))) return
+					if(!unmount_choice || unmount_choice == "Cancel" || !istype(unmount_choice,/obj/items/Gun)) return
+					var/obj/items/Gun/O = unmount_choice
+					if(!(O in Weps) || !(O in original_weps) || O.loc != src || O.nexus_move_revision != original_weapon_revisions[O]) return
+					original_weps -= O
+					O.Move(user)
+					if(O.loc != user || !(O in user.item_list)) return
+					player_view(15,user)<<"[user] unmounted [O] (Weapon) from [src]"
 			if("Increase BP")
 				if(usr in view(1,src))
 					var/Max_Upgrade=usr.max_ship_upgrade()

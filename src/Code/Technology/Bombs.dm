@@ -120,6 +120,10 @@ obj/items/Nuke
 	var/Amount=100
 	var
 		detonated = 0
+	proc/canContinueNexusNukeInteraction(mob/user, atom/original_location)
+		if(!user || loc != original_location) return FALSE
+		if(original_location == user) return canUseAfterNexusTradeYield(user)
+		return src in view(1,user)
 	Cost=30000000
 	science = 1
 	science_level = 6
@@ -152,49 +156,57 @@ obj/items/Nuke
 			return
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			switch(alert(usr,"Upgrade power or range?","Options","Power","Range"))
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusNukeInteraction(user, original_location)) return
+			var/upgrade_choice = alert(user,"Upgrade power or range?","Options","Power","Range")
+			if(!canContinueNexusNukeInteraction(user, original_location)) return
+			switch(upgrade_choice)
 				if("Range")
-					var/res_cost=Item_cost(usr,src)/2
+					var/res_cost=Item_cost(user,src)/2
 					var/max_range=250
 					if(Range>=max_range)
-						alert(usr,"The range is maxed out already at [Range]")
+						alert(user,"The range is maxed out already at [Range]")
 						return
-					while(usr&&src&&Range<max_range)
-						switch(alert(usr,"Upgrade range to [Range+initial(Range)] for [Commas(res_cost)] resources?","Options","No","Yes"))
+					while(user&&src&&Range<max_range)
+						var/range_choice = alert(user,"Upgrade range to [Range+initial(Range)] for [Commas(res_cost)] resources?","Options","No","Yes")
+						if(!canContinueNexusNukeInteraction(user, original_location)) return
+						switch(range_choice)
 							if("No") return
 							if("Yes")
-								if(usr.Res()<res_cost)
-									usr<<"You need [Commas(res_cost)] resources to do this"
+								if(user.Res()<res_cost)
+									user<<"You need [Commas(res_cost)] resources to do this"
 									return
-								usr.Alter_Res(-res_cost)
+								user.Alter_Res(-res_cost)
 								Range+=initial(Range)
 				if("Power")
-					var/Max_Upgrade=usr.maxTurfUpgrade()*1
+					var/Max_Upgrade=user.maxTurfUpgrade()*1
 					var/Percent=(BP/Max_Upgrade)*100
-					var/Res_Cost=Item_cost(usr,src)/500
+					var/Res_Cost=Item_cost(user,src)/500
 					if(Percent>=100)
-						usr<<"This is 100% upgraded at this time and cannot go any further."
+						user<<"This is 100% upgraded at this time and cannot go any further."
 						return
-					var/Amount=input("This is upgraded to [Commas(BP)] BP. The current maximum is \
+					var/Amount=input(user,"This is upgraded to [Commas(BP)] BP. The current maximum is \
 					[Commas(Max_Upgrade)] BP. \
 					It is at [Percent]% maximum power. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. Input \
 					the percentage of power you wish to bring this to. ([Percent]-100%)") as num
+					if(!canContinueNexusNukeInteraction(user, original_location)) return
 					if(Amount>100) Amount=100
 					if(Amount<0.1)
-						usr<<"Amount must be higher than 0.1%"
+						user<<"Amount must be higher than 0.1%"
 						return
 					if(Amount<=Percent)
-						usr<<"The weapon cannot be downgraded."
+						user<<"The weapon cannot be downgraded."
 						return
 					Res_Cost*=Amount-Percent
-					if(usr.Res()<Res_Cost)
-						usr<<"You do not have enough resources to do this."
+					if(user.Res()<Res_Cost)
+						user<<"You do not have enough resources to do this."
 						return
-					usr.Alter_Res(-Res_Cost)
+					user.Alter_Res(-Res_Cost)
 					BP=Max_Upgrade*(Amount/100)
 					Force=Avg_Force()
-					player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(BP)] BP)"
+					player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]% ([Commas(BP)] BP)"
 			desc="[src]:<br>\
 			Power: [Commas(BP)]<br>\
 			Range: [Range]<br>"
@@ -222,27 +234,39 @@ obj/items/Nuke
 			del(src)
 	verb/Set()
 		set src in view(1)
-		if(Combat_Status(usr)) return
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusNukeInteraction(user, original_location)) return
+		if(Combat_Status(user)) return
 		if(Bolted)
-			usr<<"It is already armed, you cannot reprogram it"
+			user<<"It is already armed, you cannot reprogram it"
 			return
-		player_view(15,src)<<"[usr] has begun to program the bomb."
-		Password=input("Set the access code for remote detonation.") as text
+		player_view(15,src)<<"[user] has begun to program the bomb."
+		var/new_password = input(user,"Set the access code for remote detonation.") as text
+		if(!canContinueNexusNukeInteraction(user, original_location) || Bolted) return
+		Password=new_password
 	verb/Hotbar_use()
 		set hidden=1
 		Arm()
 	verb/Arm()
 		set src in oview(1)
-		if(Combat_Status(usr)) return
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusNukeInteraction(user, original_location)) return
+		if(Combat_Status(user)) return
 		if(Bolted)
-			usr<<"It is already armed"
+			user<<"It is already armed"
 			return
-		switch(input("Choose method. Only choose if you do not plan on remote detonation. Once \
-		activated, it cannot be deactivated.") in list("Cancel","Timer","Proximity"))
-			if("Timer") Timed_Detonation()
+		var/arm_choice = input(user,"Choose method. Only choose if you do not plan on remote detonation. Once \
+		activated, it cannot be deactivated.") in list("Cancel","Timer","Proximity")
+		if(!canContinueNexusNukeInteraction(user, original_location) || Bolted) return
+		switch(arm_choice)
+			if("Timer") Timed_Detonation(user, original_location)
 			if("Proximity") Proximity_Detonation()
-	proc/Timed_Detonation()
-		var/Timer=input("Set the timer, in seconds. (10 to 600)") as num
+	proc/Timed_Detonation(mob/user, atom/original_location)
+		if(!canContinueNexusNukeInteraction(user, original_location) || Bolted) return
+		var/Timer=input(user,"Set the timer, in seconds. (10 to 600)") as num
+		if(!canContinueNexusNukeInteraction(user, original_location) || Bolted) return
 		Bolted=1
 		if(Timer<10) Timer=10
 		if(Timer>600) Timer=600

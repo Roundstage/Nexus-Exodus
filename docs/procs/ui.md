@@ -53,7 +53,8 @@ These references are intentional and must not be removed, renamed, replaced with
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
 - `getNexusLiveBrowserScript()` supplies the owner-authenticated refresh heartbeat shared by live browser windows. Scroll events publish their position immediately, restoration is retried after layout settles, and the refresh cadence remains an internal implementation detail rather than a visible status badge.
 - `getNexusHotkeyDownMacroCommand()` and `getNexusHotkeyUpMacroCommand()` quote modifier combinations, provide matching release macros, and preserve normal cardinal/diagonal movement when an arrow also owns a custom action.
-- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory, Skills, Sense, and World export the actual runtime sprite instead of substituting category artwork. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate a current raw-damage preview, range, cost, cooldown, mechanics, and equipment/grab requirements without exposing Sense information above the owner's access level.
+- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory presents both carried Resources and the authoritative Arcane Essence balance as currencies; Inventory, Skills, Sense, and World export actual runtime sprites where their subjects are atoms. Items committed to an active trade offer remain visible but cannot be invoked through the Inventory action. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate an attacker-only, equal-power damage preview with zero enemy Endurance/Resistance plus range, cost, cooldown, mechanics, and equipment/grab requirements. Tenkaichi melee previews retain the canonical base melee, speed, equipped sword/style, forged BP, and Milestone path; projectile previews reserve `setStats()`-scaled direct damage and unscaled splash separately through the authored shared budget. Basic Blast derives its preview from the currently configured volley count, refire factor, and optional center-projectile splash instead of displaying the shared-budget ceiling as every configuration's damage; Super Ghost Kamikaze exposes the maximum of its three fixed direct hits through their shared budget. Buffs expose all non-neutral BP/Energy/stat/regeneration/recovery multipliers and special attributes; transformations explain their form behavior and current state, including Great Ape's concrete multipliers, activation requirements, cooldown, and controlled/uncontrolled behavior, without exposing Sense information above the owner's access level.
+- `getSkillDamageData()`, `getProjectilePreviewReservedFactor()`, `getUnresistedSkillDamage()`, and `getSkillEffectData()` keep runtime preview profiles, projectile reservation semantics, resistance-free damage math, and buff/transformation metadata separate so Examine never reads the selected opponent. Direct physical/Ki/hybrid skills, projectile `setStats()` paths, weapon projectiles, canonical melee, and raw Final Explosion BP/Force scaling remain distinct profiles.
 - `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
 - `showNexusPlayerMenu(section)` opens the requested player-menu section; `toggleNexusPlayerMenu(section)` closes it when the matching Inventory, Skills, Sense, or World icon is pressed again.
 - `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
@@ -68,10 +69,18 @@ These references are intentional and must not be removed, renamed, replaced with
 - `getNexusRpgBrowserCss()` remains the legacy shared rustic layer for creation, emote, log, hotkey, inspector, reward, and item windows that have not moved to the scoped native-HUD components.
 - `datum/NexusHudWindow` owns a client's modal screen objects, provides consistent text/button construction, validates the clicking owner, and removes every object during close or disconnect.
 - `/obj/HudWindow` forwards opaque action identifiers to its owning HUD window controller.
-- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. `buildIconLink()` binds the real shared pixel pictograms to the Side + Tabs controls, while `buildHtml()` applies the player-facing bronze asset contract instead of maintaining a second basic chat theme. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
+- `datum/NexusChatHud` renders the four-channel chat, paging, composition, personal-log actions, and hide control in either the HudLib overlay or `nexuschatwindow.chat`. Its channel and action controls are text-only; the four footer actions share the entire available width equally. Every message is rendered in its own block, and `closeNexusLegacyChatMarkup()` closes unmatched legacy formatting tags in stack order. The footer appears below messages through flex ordering but precedes untrusted legacy message fragments in source order, so malformed chat HTML cannot reparent or restyle its buttons. `buildHtml()` applies the player-facing bronze asset contract instead of maintaining a second basic chat theme. `attachSidePanel()` shares the right pane with native tabs; its deferred, generation-checked browser refresh waits until BYOND has finished reparenting the pane so the chat cannot remain blank. `attachOverlay()` returns the full width to the map.
 - `datum/NexusInterfaceSettings` switches layouts, independently enables the Skills, Other, Items, World, and Admin legacy categories, and provides nudge, exact-coordinate, and reset controls for the lower bars/Sense stack and main vitals display. `showNexusInterfaceSettings()` is reachable through Interface Layout in the classic Settings menu.
 - `client/proc/operator<<()` diverts untargeted gameplay text into the HudLib All feed while preserving non-text output and explicitly targeted controls.
 - `applyNexusInterfaceLayout()` and `hideNexusLegacyInterface()` reconcile the configured panes while keeping obsolete output windows detached.
+
+### src/Code/UI/MapZoom.dm
+
+- `getNexusMapZoomPlanes()` lists only world-space render planes; the dedicated fixed-HUD plane is intentionally excluded.
+- `getNexusMapRenderWidth()`, `getNexusMapRenderHeight()`, and `getNexusMapZoomScale()` keep live characters inside a stable maximum-sized render envelope, preserve the unrestricted title view, and convert the saved logical view width into a world-plane scale.
+- `client/initializeNexusMapZoom()`, `applyNexusMapZoom()`, and `removeNexusMapZoom()` own per-client plane masters for map-only mouse-wheel zoom. The existing lighting plane receives the same transform, while HUD objects, prompts, maptext inputs, and screen effects remain on `NEXUS_FIXED_HUD_PLANE`.
+- `nexusMouseWheelCanZoomMap()` prevents wheel events over fixed HUD atoms or non-map controls from changing the map scale.
+- `/obj/NexusMapZoomPlaneMaster` keeps world mouse input enabled, avoids applying `client.color` twice, and uses pixel sampling so transformed sprites remain crisp.
 
 ### src/Code/UI/SavePlayerSettings.dm
 
@@ -151,7 +160,7 @@ These references are intentional and must not be removed, renamed, replaced with
 ### Nexus player-menu action routing
 
 - Skill and Sense links use one `subject` reference contract, with legacy `skill` and `target` parameters accepted by the handler.
-- `NexusPlayerMenu.useOwnedSkill()` invokes zero-argument `Hotbar_use()` verbs without injecting the owner as an invalid positional argument.
+- `NexusPlayerMenu.useOwnedSkill()` delegates to `executeNexusHotkeyAction()`, preserving the same ownership, `can_hotbar`, handler, and caller semantics as keyboard activation.
 - Skill use/examination requires the object to remain directly owned; Sense targeting/examination revalidates the target's actual area and `CanSense()` state rather than depending on a possibly stale area list.
 - Dynamic inventory details are read through a variable-name indirection so examining an item without a subtype-only durability variable cannot raise an undefined-variable runtime.
 
@@ -959,7 +968,7 @@ These references are intentional and must not be removed, renamed, replaced with
 
 #### datum/NexusHotkeyAction
 - Purpose: Define non-object actions with stable IDs, labels, availability predicates, repeat policy, and execution behavior.
-- Current actions: eight Zanzoken directions, available only while the player owns `/obj/Zanzoken`.
+- Current actions: eight Zanzoken directions available only while the player owns `/obj/Zanzoken`, plus eight universal Short Dash directions categorized as defensive actions.
 
 #### mob/proc/initializeNexusHotkeys
 - Purpose: Migrate positional legacy bindings, normalize the saved keyboard profile, initialize tap state, and rebuild client-local dynamic macros.
@@ -975,6 +984,12 @@ These references are intentional and must not be removed, renamed, replaced with
 - Signature: `resolveNexusHotkeyBinding(combination)`
 - Purpose: Resolve an available registered action or owned `can_hotbar` object at execution time.
 - Returns: action datum, object, or null when unavailable.
+- Side effects: none.
+
+#### mob/proc/isNexusHotkeyObjectAvailable
+- Signature: `isNexusHotkeyObjectAvailable(obj/hotkey_object)`
+- Purpose: Revalidate object ownership, hotbar eligibility, special skill requirements, and trade-escrow state immediately before resolving or executing an object action.
+- Returns: true only when the owned object may currently be invoked; items committed to an active trade offer return false.
 - Side effects: none.
 
 #### client/proc/syncNexusHotkeyMacros

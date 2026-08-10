@@ -132,6 +132,7 @@ mob/proc
 	Evade_lunge(mob/m,dir_override,from_double_tap)
 
 		Cancel_lunge()
+		resetMovementPhysics(clear_glide = FALSE)
 
 		evading=1
 		evading_lunge=1
@@ -147,17 +148,10 @@ mob/proc
 		if(!m) d=pick(turn(dir,90),turn(dir,-90))
 		if(dir_override) d=dir_override
 
-		var/dist=8
-		for(var/v in 1 to dist)
-			if(KO || KB) break
-			else
-				var/old_loc=loc
-				AfterImage(TickMult(8),2)
-				step(src,d,32)
-				if(m) dir=get_dir(src,m)
-				else dir=start_dir
-				if(loc==old_loc || v==dist) break
-				else sleep(world.tick_lag)
+		var/evade_distance = from_double_tap ? defensive_dash_distance_pixels : 4 * world.icon_size
+		runNexusSkillLine(d, evade_distance, 125, 270, 330, 0.3, 0.2)
+		if(m) dir=get_dir(src,m)
+		else dir=start_dir
 		if(!KB)
 			if(m) dir=get_dir(src,m)
 			else if(Opponent && Opponent!=src) dir=get_dir(src,Opponent)
@@ -168,6 +162,7 @@ mob/proc
 
 	Start_evading()
 		if(evading) return
+		resetMovementPhysics(clear_glide = FALSE)
 		evading=1
 		while(last_evade_key_press + TickMult(2) > world.time && evading)
 			if(KO || KB || (attacking && attacking!=1)) break

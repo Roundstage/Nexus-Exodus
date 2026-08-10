@@ -1,5 +1,41 @@
 obj/var/can_be_renamed=1
 
+proc/getNexusSelectedTargetOwner(atom/movable/target)
+	var/atom/current = target ? target.loc : null
+	var/depth = 0
+	while(current && depth < 16)
+		if(ismob(current)) return current
+		current = current.loc
+		depth++
+	return null
+
+proc/getNexusSelectedTargetState(atom/movable/target)
+	var/list/state = list("location" = target ? target.loc : null, "move_revision" = 0)
+	if(istype(target, /obj/items))
+		var/obj/items/item = target
+		state["move_revision"] = item.nexus_move_revision
+	return state
+
+proc/canContinueNexusSelectedTargetMutation(atom/movable/target, list/original_state, mob/original_owner)
+	if(!target || !original_state || target.loc != original_state["location"]) return FALSE
+	if(getNexusSelectedTargetOwner(target) != original_owner) return FALSE
+	if(istype(target, /obj/items))
+		var/obj/items/item = target
+		if(item.nexus_move_revision != original_state["move_revision"]) return FALSE
+		if(!original_owner) return TRUE
+		if(item.loc == original_owner)
+			return (item in original_owner.item_list) && !item.isNexusTradeOfferedBy(original_owner)
+		var/atom/current = item.loc
+		var/depth = 0
+		while(current && current != original_owner && depth < 16)
+			if(istype(current, /obj/items))
+				var/obj/items/container = current
+				if(container.isNexusTradeOfferedBy(original_owner)) return FALSE
+			current = current.loc
+			depth++
+		if(current != original_owner) return FALSE
+	return TRUE
+
 mob/proc/Player_Rename_List()
 	var/list/L=new
 	for(var/obj/A in view(10,src)) if(!istype(A,/obj/items/Dragon_Ball)&&!istype(A,/obj/Spawn)&&\
@@ -16,8 +52,12 @@ obj/Colorfy/verb/Add_Color_to_Item(obj/O as obj in view(usr))
 	if(!O.can_change_icon)
 		usr<<"This object is uncolorable. Only objects that can have their icons changed can be colored"
 		return
-	if(ismob(O)) switch(input(O,"[usr] wants to colorize you, accept?") in list("No","Yes"))
-		if("No") return
+	var/list/original_location = getNexusSelectedTargetState(O)
+	var/mob/original_owner = getNexusSelectedTargetOwner(O)
+	if(ismob(O))
+		var/consent = input(O,"[usr] wants to colorize you, accept?") in list("No","Yes")
+		if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner) || consent == "No") return
+	if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 	usr.Colorize(O)
 
 mob/Admin2/verb/addColorToSomething(obj/O as obj|mob|turf in view(usr))
@@ -27,12 +67,25 @@ mob/Admin2/verb/addColorToSomething(obj/O as obj|mob|turf in view(usr))
 
 mob/proc/Colorize(obj/O)
 	if(!O.icon) return
-	switch(input(src,"") in list("Add","Subtract","Multiply"))
-		if("Multiply") if(O)
+	var/list/original_location = getNexusSelectedTargetState(O)
+	var/mob/original_owner = getNexusSelectedTargetOwner(O)
+	var/color_mode = input(src,"") in list("Add","Subtract","Multiply")
+	if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+	switch(color_mode)
+		if("Multiply")
 			var/B=input(src,"Choose a color") as color|null
-			if(B&&O) O.Multiply_Color(B)
-		if("Add") if(O) O.icon+=rgb(input(src,"Red (0-255 for all entries)") as num,input(src,"Green") as num,input(src,"Blue") as num)
-		if("Subtract") if(O) O.icon-=rgb(input(src,"Red (0-255 for all entries)") as num,input(src,"Green") as num,input(src,"Blue") as num)
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+			if(B) O.Multiply_Color(B)
+		if("Add", "Subtract")
+			var/red = input(src,"Red (0-255 for all entries)") as num
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+			var/green = input(src,"Green") as num
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+			var/blue = input(src,"Blue") as num
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+			var/color_value = rgb(red, green, blue)
+			if(color_mode == "Add") O.icon += color_value
+			else O.icon -= color_value
 
 atom/proc/Multiply_Color(B)
 	var/icon/A=new(icon)
@@ -102,7 +155,10 @@ obj/Crandal
 	verb/Change_Icon(atom/O in usr.Change_Icon_List())
 		set category="Other"
 		if(!O||O=="Cancel") return
+		var/list/original_location = getNexusSelectedTargetState(O)
+		var/mob/original_owner = getNexusSelectedTargetOwner(O)
 		var/icon/I=input("Choose an icon file") as icon
+		if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 
 		/*if(findtext("[I]",".gif"))
 			alert("gif files are not allowed until BYOND fixes the crashing bug when people upload certain gifs")
@@ -114,8 +170,10 @@ obj/Crandal
 
 		if(!I||!O||!isicon(I)) return
 		if(IconTooBig(I)) return
-		if(ismob(O)&&O:client) switch(input(O,"[usr] wants to change your icon into [I], allow?") in list("No","Yes"))
-			if("No")
+		if(ismob(O)&&O:client)
+			var/consent = input(O,"[usr] wants to change your icon into [I], allow?") in list("No","Yes")
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+			if(consent == "No")
 				usr<<"[O] denied the icon change to [I]"
 				return
 		if(ismob(O)&&O:drone_module)
@@ -125,6 +183,7 @@ obj/Crandal
 				return
 		if(istype(O,/mob/new_troll))
 			sleep(25)
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 			usr<<"[O] denied the icon change to [I]"
 			return
 		if(ismob(O))
@@ -132,9 +191,13 @@ obj/Crandal
 			if(m3.dbz_character)
 				usr << "This does not work with Wish Orbs characters"
 				return
-		if(!O) return
+		var/new_icon_state
+		if(!ismob(O))
+			new_icon_state = input("Icon State?") as text
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+		if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 		O.icon=I
-		if(!ismob(O)) O.icon_state=input("Icon State?") as text
+		if(!ismob(O)) O.icon_state=new_icon_state
 		CenterIcon(O)
 
 	verb/Rename(atom/movable/O in usr.Player_Rename_List())
@@ -143,6 +206,8 @@ obj/Crandal
 		if(!isobj(O)&&!ismob(O)) return
 		if(!O) return
 		if(usr)
+			var/list/original_location = getNexusSelectedTargetState(O)
+			var/mob/original_owner = getNexusSelectedTargetOwner(O)
 			if(ismob(O))
 				var/mob/m=O
 				if(m.dbz_character)
@@ -151,6 +216,7 @@ obj/Crandal
 
 			usr<<"Do not use this to give yourself a name that is against the rules. Or somehow blank names."
 			var/ID=input(usr,"Name?","Options",O.name) as text
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 			if(!ID) return
 			if(InvalidPlayerName(ID))
 				usr << "Invalid symbols found in name"
@@ -166,15 +232,18 @@ obj/Crandal
 				usr<<"You must use at least one valid letter or number in this name. A-Z or 0-9"
 				return
 
-			if(O!=usr&&ismob(O)&&O:client) switch(input(O,"[usr] wants to change your name to [ID], accept?") in list("No","Yes"))
-				if("No")
+			if(O!=usr&&ismob(O)&&O:client)
+				var/consent = input(O,"[usr] wants to change your name to [ID], accept?") in list("No","Yes")
+				if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
+				if(consent == "No")
 					usr<<"[O] declined the name change to [ID]"
 					return
 			if(istype(O,/mob/new_troll))
 				sleep(25)
+				if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 				usr<<"[O] declined the name change to [ID]"
 				return
-			if(!O) return
+			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 			if(findtext(ID,"://"))
 				usr<<"No links in names"
 				return

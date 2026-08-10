@@ -24,56 +24,71 @@ obj/items/Shuriken
 
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src)) while(usr)
-			var/Shrapnel_Cost=1000/usr.Intelligence()
-			var/Bounce_Cost=1000/usr.Intelligence()
-			var/Explode_Cost=1000/usr.Intelligence()
-			var/KB_Cost=1000/usr.Intelligence()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src)) while(user)
+			if(loc != original_location) return
+			if(original_location == user)
+				if(!canUseAfterNexusTradeYield(user)) return
+			else if(!(src in view(1,user))) return
+			var/Shrapnel_Cost=1000/user.Intelligence()
+			var/Bounce_Cost=1000/user.Intelligence()
+			var/Explode_Cost=1000/user.Intelligence()
+			var/KB_Cost=1000/user.Intelligence()
 			var/list/L=list("Cancel","Add Ammo")
 			if(!Shrapnel) L+="Shrapnel ([Commas(Shrapnel_Cost)]$)"
 			if(!Bounce) L+="Wall Bounce ([Commas(Bounce_Cost)]$)"
 			if(!Explosive) L+="Explosive ([Commas(Explode_Cost)]$)"
 			if(!Knockback) L+="Knockback ([Commas(KB_Cost)]$)"
-			var/C=input("Options") in L
+			var/C=input(user,"Options") in L
+			if(!user || loc != original_location) return
+			if(original_location == user)
+				if(!canUseAfterNexusTradeYield(user)) return
+			else if(!(src in view(1,user))) return
+			if(!(C in L)) return
 			if(C=="Cancel") return
 			if(C=="Add Ammo")
-				var/Cost=round(5/usr.Intelligence(),0.1)
-				var/N=input("How much ammo do you want to add? It cost you [Cost]$ per 1 ammo. You can add a max of \
-				[round(usr.Res()/Cost)] more ammo") as num
+				var/Cost=round(5/user.Intelligence(),0.1)
+				var/N=input(user,"How much ammo do you want to add? It cost you [Cost]$ per 1 ammo. You can add a max of \
+				[round(user.Res()/Cost)] more ammo") as num
+				if(!user || loc != original_location) return
+				if(original_location == user)
+					if(!canUseAfterNexusTradeYield(user)) return
+				else if(!(src in view(1,user))) return
 				if(N<0) return
-				if(N>round(usr.Res()/Cost)) N=round(usr.Res()/Cost)
+				if(N>round(user.Res()/Cost)) N=round(user.Res()/Cost)
 				Cost*=N
-				usr.Alter_Res(-Cost)
+				user.Alter_Res(-Cost)
 				Shurikens+=round(N)
-				player_view(15,usr)<<"[usr] increases the [src]'s ammo to [Shurikens] (Cost: [Commas(Cost)]$)"
+				player_view(15,user)<<"[user] increases the [src]'s ammo to [Shurikens] (Cost: [Commas(Cost)]$)"
 				suffix="[Commas(Shurikens)]"
 
 			if(C=="Shrapnel ([Commas(Shrapnel_Cost)]$)")
-				if(usr.Res()<Shrapnel_Cost) return
-				player_view(15,usr)<<"[usr] adds shrapnel attribute to [src]"
+				if(user.Res()<Shrapnel_Cost) return
+				player_view(15,user)<<"[user] adds shrapnel attribute to [src]"
 				Shrapnel=1
-				usr.Alter_Res(-Shrapnel_Cost)
-				usr << "Shrapnel attribute makes shurikens use +1 ammo per shot"
+				user.Alter_Res(-Shrapnel_Cost)
+				user << "Shrapnel attribute makes shurikens use +1 ammo per shot"
 
 			if(C=="Wall Bounce ([Commas(Bounce_Cost)]$)")
-				if(usr.Res()<Bounce_Cost) return
-				player_view(15,usr)<<"[usr] adds bounce attribute to [src]"
+				if(user.Res()<Bounce_Cost) return
+				player_view(15,user)<<"[user] adds bounce attribute to [src]"
 				Bounce=1
-				usr.Alter_Res(-Bounce_Cost)
-				usr << "Bounce attribute makes shurikens use +1 ammo per shot"
+				user.Alter_Res(-Bounce_Cost)
+				user << "Bounce attribute makes shurikens use +1 ammo per shot"
 
 			if(C=="Explosive ([Commas(Explode_Cost)]$)")
-				if(usr.Res()<Explode_Cost) return
-				player_view(15,usr)<<"[usr] adds explosion attribute to [src]"
+				if(user.Res()<Explode_Cost) return
+				player_view(15,user)<<"[user] adds explosion attribute to [src]"
 				Explosive=1
-				usr.Alter_Res(-Explode_Cost)
-				usr << "This makes shurikens do 1.5x more damage and turns the damage to AoE damage. Downside is you fire 2x slower"
+				user.Alter_Res(-Explode_Cost)
+				user << "This makes shurikens do 1.5x more damage and turns the damage to AoE damage. Downside is you fire 2x slower"
 
 			if(C=="Knockback ([Commas(KB_Cost)]$)")
-				if(usr.Res()<KB_Cost) return
-				player_view(15,usr)<<"[usr] adds knockback attribute to [src]"
+				if(user.Res()<KB_Cost) return
+				player_view(15,user)<<"[user] adds knockback attribute to [src]"
 				Knockback=1
-				usr.Alter_Res(-KB_Cost)
+				user.Alter_Res(-KB_Cost)
 
 	verb/Hotbar_use()
 		set hidden=1

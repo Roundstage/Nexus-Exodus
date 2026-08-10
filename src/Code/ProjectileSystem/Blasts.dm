@@ -86,18 +86,35 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 	overlays -= o
 	clearNexusActionGlow()
 
-obj/proc/Buster_Barrage_Move()
+obj/Blast/proc/Buster_Barrage_Move()
 	set waitfor=0
-	step(src,dir)
+	var/mob/original_owner = Owner
+	if(!original_owner || !in_use) return
+	stopProjectileFlight()
+	var/flight_id = projectile_flight_id
+	var/move_delay = 0.7
+	var/move_pixels = vector_speed
+	if(!move_pixels) move_pixels = 32
+	var/max_velocity = move_pixels / move_delay
+	var/datum/NexusVectorKinematics/flight = new(max_velocity, max_velocity * 0.35, dir, 0.35)
+	flight.steerTowardDirection(dir, 1)
+	flight.advance(src, 1, move_pixels)
 	sleep(1)
-	var/mob/m=Owner
-	while(src&&z&&Owner==m)
-		if(ismob(Owner) && getdist(src,Owner) <= 2) step_away(src,Owner)
-		else if(Owner && get_dist(src, Owner) > 17) step_towards(src, Owner)
+	while(src && z && in_use && original_owner && projectile_flight_id == flight_id && Owner == original_owner)
+		if(getdist(src,original_owner) <= 2)
+			flight.acceleration = max_velocity * 1.2
+			flight.steerTowardAtom(src, original_owner, move_delay, move_away = TRUE)
+		else if(get_dist(src, original_owner) > 17)
+			flight.acceleration = max_velocity * 1.2
+			flight.steerTowardAtom(src, original_owner, move_delay)
 		else
-			step(src,dir)
-			if(prob(50)) dir = pick(dir, turn(dir,45), turn(dir,-45))
-		sleep(TickMult(0.7))
+			flight.acceleration = max_velocity * 0.35
+			var/steering_direction = dir
+			if(prob(50)) steering_direction = pick(dir, turn(dir,45), turn(dir,-45))
+			flight.steerTowardDirection(steering_direction, move_delay)
+		flight.advance(src, move_delay, move_pixels)
+		sleep(TickMult(move_delay))
+	if(src && z && in_use && projectile_flight_id == flight_id && !original_owner && !Owner) del(src)
 
 
 
@@ -123,21 +140,36 @@ obj/Attacks/Attack_Barrier
 
 obj/Blast/proc/attack_barrier_loop()
 	set waitfor=0
+	var/mob/original_owner = Owner
+	if(!original_owner || !in_use) return
+	stopProjectileFlight()
+	var/flight_id = projectile_flight_id
 	sleep(1)
-	while(src&&z&&!deflected)
-		if(!Owner) return
-		var/mob/target = Owner.getSelectedTarget(max_dist = 3)
+	var/move_delay = 1
+	var/move_pixels = vector_speed
+	if(!move_pixels) move_pixels = 32
+	var/steering_direction = dir
+	if(!steering_direction) steering_direction = pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST)
+	var/datum/NexusVectorKinematics/flight = new(move_pixels / move_delay, move_pixels * 0.5, steering_direction, 0.2)
+	while(src && z && in_use && original_owner && !deflected && projectile_flight_id == flight_id && Owner == original_owner)
+		var/mob/target = original_owner.getSelectedTarget(max_dist = 3)
 		if(target)
-			step_towards(src,target)
-			if(target in loc) Bump(target)
-		else if(getdist(src,Owner) > 1) step_towards(src,Owner)
-		else step_rand(src)
+			flight.steerTowardAtom(src, target, move_delay)
+			flight.advance(src, move_delay, flight.distanceToAtom(src, target))
+			if(src && target && target in loc) Bump(target)
+		else if(getdist(src,original_owner) > 1)
+			flight.steerTowardAtom(src, original_owner, move_delay)
+			flight.advance(src, move_delay, flight.distanceToAtom(src, original_owner))
+		else
+			steering_direction = pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST)
+			flight.steerTowardDirection(steering_direction, move_delay)
+			flight.advance(src, move_delay, move_pixels)
 
-		if(ismob(Owner) && Owner.tournament_override(fighters_can=1,show_message=0)) break
-		else if(ismob(Owner) && (!Owner.attack_barrier_obj || !Owner.attack_barrier_obj.Firing_Attack_Barrier)) break
-		else sleep(TickMult(1))
-	if(Owner&&ismob(Owner)) Owner.attack_barrier_blasts--
-	if(z) del(src)
+		if(original_owner.tournament_override(fighters_can=1,show_message=0)) break
+		else if(!original_owner.attack_barrier_obj || !original_owner.attack_barrier_obj.Firing_Attack_Barrier) break
+		else sleep(TickMult(move_delay))
+	if(original_owner) original_owner.attack_barrier_blasts = max(0, original_owner.attack_barrier_blasts - 1)
+	if(src && z && in_use && projectile_flight_id == flight_id && (!original_owner || Owner == original_owner)) del(src)
 
 mob/var/tmp/attack_barrier_blasts=0
 mob/var/tmp/obj/Attacks/Attack_Barrier/attack_barrier_obj
@@ -406,7 +438,18 @@ atom/var
 	Savable=1
 	Builder
 obj/Health=5000
-mob/var/tmp/obj/Attacks/Blast/blast_obj
+var/basic_blast_volley_configuration_version = 1
+
+mob/var
+	basic_blast_volley_version = 0
+	tmp/obj/Attacks/Blast/blast_obj
+
+mob/proc/migrateBasicBlastVolley(obj/Attacks/Blast/skill_obj)
+	if(basic_blast_volley_version >= basic_blast_volley_configuration_version) return FALSE
+	if(skill_obj && skill_obj.Blast_Count == 1)
+		skill_obj.Blast_Count = Clamp(round(basic_blast_default_volley_size), 1, basic_blast_max_volley_size)
+	basic_blast_volley_version = basic_blast_volley_configuration_version
+	return TRUE
 
 obj/Attacks/Blast
 	Drain = 1
@@ -415,7 +458,7 @@ obj/Attacks/Blast
 	Cost_To_Learn=2
 	Experience=1
 	var/Spread=1
-	var/Blast_Count=1
+	var/Blast_Count=3
 	var/blast_refire=1
 	var/blast_velocity=1
 	icon='Asset1.dmi'
@@ -429,6 +472,7 @@ obj/Attacks/Blast
 			lastBlastSfx = 0
 
 	New()
+		Blast_Count = Clamp(round(basic_blast_default_volley_size), 1, basic_blast_max_volley_size)
 		spawn if(ismob(loc))
 			var/mob/m=loc
 			m.blast_obj=src
@@ -437,12 +481,15 @@ obj/Attacks/Blast
 
 	verb/Blast_Options()
 		set category="Other"
+		if(ismob(usr))
+			var/mob/options_user = usr
+			options_user.migrateBasicBlastVolley(src)
 		while(usr)
 			switch(input("These settings are for the 'Blast' ability") in list("Cancel","Firing Mode","Knockback","Explosiveness","Amount of blasts",\
 			"Refire","Stun"))
 				if("Cancel") return
 				if("Stun")
-					switch(alert("Stun? (Lowers damage)","Options","Yes","No"))
+					switch(alert("Stun? Only the lead blast will stun. This increases drain.","Options","Yes","No"))
 						if("No") Stun=0
 						if("Yes") Stun=1
 				if("Firing Mode")
@@ -455,7 +502,7 @@ obj/Attacks/Blast
 						if("Yes") Shockwave=1
 						if("No") Shockwave=0
 				if("Explosiveness")
-					switch(alert("Explosive? Increases damage, damage range, and drain","Options","No","Yes"))
+					switch(alert("Explosive? The lead blast will explode. This increases damage, damage range, and drain.","Options","No","Yes"))
 						if("No") Explosive=0
 						if("Yes")
 							//if(blast_refire>0.65)
@@ -464,9 +511,9 @@ obj/Attacks/Blast
 							//	blast_refire=0.65
 							Explosive=1
 				if("Amount of blasts")
-					Blast_Count=input("Amount of blasts? 1 to 4. More blasts increases drain heavily") as num
+					Blast_Count=input("Amount of blasts? 1 to [basic_blast_max_volley_size]. Each blast has reduced damage and Energy drain.") as num
 					if(Blast_Count<1) Blast_Count=1
-					if(Blast_Count>4) Blast_Count=4
+					if(Blast_Count>basic_blast_max_volley_size) Blast_Count=basic_blast_max_volley_size
 					Blast_Count=round(Blast_Count)
 				if("Refire")
 					var/max=1
@@ -483,6 +530,20 @@ obj/Attacks/Blast
 		if(Explosive) Drain += initial(Drain) * 1
 		if(Stun) Drain += initial(Drain) * 1.5
 		Drain *= 1 / blast_refire
+
+	proc/getBasicBlastDamageFactor()
+		var/refire = Clamp(blast_refire, 0.2, 1)
+		return (0.5375 - 0.1875 * refire) * basic_blast_damage_scale
+
+	proc/getBasicBlastProjectileDrain(mob/user)
+		if(!user) return 0
+		return user.GetSkillDrain(mod = Drain * basic_blast_energy_scale, is_energy = 1)
+
+	proc/getBasicBlastAngleOffset(projectile_index, projectile_count)
+		projectile_count = Clamp(round(projectile_count), 1, basic_blast_max_volley_size)
+		projectile_index = Clamp(round(projectile_index), 1, projectile_count)
+		var/firing_mode_spacing = basic_blast_angle_spacing_degrees * Clamp(round(Spread), 1, 3)
+		return (projectile_index - (projectile_count + 1) * 0.5) * firing_mode_spacing
 
 	verb/Hotbar_use()
 		set hidden=1
@@ -507,12 +568,14 @@ mob/proc/blast_fire_loop()
 		var/k=Get_hotbar_ability_key(blast_obj)
 		while(blast_obj && (k in keys_down))
 			Blast_Fire(blast_obj)
-			sleep(get_blast_refire())
+			sleep(get_blast_refire(blast_obj))
 	blast_fire_loop=0
 
-mob/proc/get_blast_refire()
-	if(!blast_obj) return 1
-	return TickMult(1 / blast_obj.blast_refire * Speed_delay_mult(severity=0.5))
+mob/proc/get_blast_refire(obj/Attacks/Blast/B = blast_obj)
+	if(!B) return world.tick_lag
+	var/refire = Clamp(B.blast_refire, 0.2, 1)
+	var/delay = basic_blast_base_refire_deciseconds / refire * Speed_delay_mult(severity = 0.5)
+	return max(world.tick_lag, TickMult(delay))
 
 mob/proc/get_shuriken_refire()
 	return TickMult(2.4 * Speed_delay_mult(severity=0.3))
@@ -582,7 +645,53 @@ obj/Blast/proc/followSelectedTarget(mob/target)
 		var/move_speed = vector_speed
 		if(!move_speed) move_speed = 32
 		vector_step_toward(src, target, move_speed)
-		if(target in loc)
+		if(target in loc && !target.isDefensiveDashEvading(src))
+			Bump(target)
+			return
+		sleep(TickMult(ki_projectile_step_delay))
+	if(src && z && !deflected && flight_id == projectile_flight_id) del(src)
+
+//FR-style "lazy follow": track the target closely for ~0.5s, then lock the end point and only
+//let it drift slowly toward the enemy while steering toward that locked point on a limited curve.
+//Fast players can dash out of the drift path; slowed players still get hit.
+obj/Blast/proc/BlastLazyFollow(mob/target)
+	set waitfor = 0
+	stopProjectileFlight()
+	var/flight_id = projectile_flight_id
+	if(!target || target.z != z)
+		if(src && z && !deflected && flight_id == projectile_flight_id) del(src)
+		return
+	lazy_follow_target = target
+	lazy_follow_end_x = bound_center_x()
+	lazy_follow_end_y = bound_center_y()
+	var/current_angle = dir_to_angle_0_360(dir)
+	if(!current_angle) current_angle = get_angle_to_point(bound_center_x(), bound_center_y(), target.bound_center_x(), target.bound_center_y())
+	var/move_speed = vector_speed
+	if(!move_speed) move_speed = 32
+	var/lock_start = world.time
+	while(src && z && !deflected && Owner && target && flight_id == projectile_flight_id && lazy_follow_target == target && target.z == z && !target.KO)
+		if(world.time - lock_start >= lazy_follow_lock_time)
+			//locked end point: drift it slowly toward the target
+			var/drift_angle = get_angle_to_point(lazy_follow_end_x, lazy_follow_end_y, target.bound_center_x(), target.bound_center_y())
+			lazy_follow_end_x += lazy_follow_drift * sin(drift_angle) / world.icon_size
+			lazy_follow_end_y += lazy_follow_drift * cos(drift_angle) / world.icon_size
+		else
+			//lock-on phase: the end point tracks the target
+			lazy_follow_end_x = target.bound_center_x()
+			lazy_follow_end_y = target.bound_center_y()
+		var/target_angle = get_angle_to_point(bound_center_x(), bound_center_y(), lazy_follow_end_x, lazy_follow_end_y)
+		var/diff = target_angle - current_angle
+		if(diff > 180) diff -= 360
+		else if(diff < -180) diff += 360
+		if(diff > lazy_follow_steer_limit) diff = lazy_follow_steer_limit
+		else if(diff < -lazy_follow_steer_limit) diff = -lazy_follow_steer_limit
+		current_angle += diff
+		current_angle = angle_clamp_0_360(current_angle)
+		dir = angle_to_dir_0_360(current_angle)
+		vector_step(src, current_angle, move_speed)
+		var/dist_x = target.bound_center_x() - bound_center_x()
+		var/dist_y = target.bound_center_y() - bound_center_y()
+		if(max(abs(dist_x), abs(dist_y)) * world.icon_size <= move_speed && !target.isDefensiveDashEvading(src))
 			Bump(target)
 			return
 		sleep(TickMult(ki_projectile_step_delay))
@@ -864,7 +973,7 @@ obj/AlienInfiniteVoidVisual
 	icon = 'src/Icons/Effects/AlienInfiniteVoid.dmi'
 	icon_state = "void"
 	appearance_flags = PIXEL_SCALE
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 98
 	invisibility = 0
 	luminosity = 2
@@ -1288,7 +1397,9 @@ obj/Attacks/Genocide
 					A.loc=usr.loc
 					A.dir=get_dir(usr,target)
 					A.blast_homing_target = target
-					A.followSelectedTarget(target)
+					var/datum/SkillDefinition/def = skill_engine ? skill_engine.getDefinitionForObj(src) : null
+					if(def && def.homing_mode == SKILL_HOMING_LAZY) A.BlastLazyFollow(target)
+					else A.followSelectedTarget(target)
 					usr.Ki-=usr.GetSkillDrain(mod = Drain, is_energy = 1)
 					projectiles_fired++
 					sleep(5)

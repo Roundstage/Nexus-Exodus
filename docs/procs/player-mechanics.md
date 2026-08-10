@@ -610,9 +610,23 @@ Instant Transmission retains its long-range signature targeting and now also exp
 #### mob/proc/DetermineViewSize
 - Signature: `DetermineViewSize(forceWidth)`
 - Inputs: forceWidth
-- Purpose: Handle determine view size.
+- Purpose: Keep `ViewX`/`ViewY` as the player's logical map zoom while using the configured maximum as a stable render envelope for live characters. Lobby/title mobs retain their direct view sizing.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: updates the live character's world-plane compositor without resizing the fixed HUD plane; may directly update `client.view` for non-player screens.
+
+#### proc/getNexusMouseZoomViewWidth
+- Signature: `getNexusMouseZoomViewWidth(current_width, wheel_delta, maximum_width)`
+- Inputs: current view width, vertical mouse-wheel delta, and the configured server maximum.
+- Purpose: Calculate one two-tile zoom step while keeping map-wheel zoom within the existing `Screen_Size()` range of 1 tile through the server maximum.
+- Returns: the bounded view width; positive wheel input zooms in and negative input zooms out.
+- Side effects: none.
+
+#### mob/proc/adjustMapZoom
+- Signature: `adjustMapZoom(wheel_delta)`
+- Inputs: vertical mouse-wheel delta.
+- Purpose: Apply bounded map zoom to a live player character and preserve the aspect ratio through `DetermineViewSize()`.
+- Returns: true when the view width changed, otherwise false.
+- Side effects: updates logical `ViewX`/`ViewY` and the world-only plane transform; persistent HUD and browser UI remain unchanged.
 
 #### mob/proc/Screen_Size
 - Signature: `mob/proc/Screen_Size()`

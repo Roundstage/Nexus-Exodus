@@ -41,6 +41,7 @@ mob/Splitform
 		Mode
 		Sim_ID
 		followDist = 3
+		tmp/obj/NexusHud/SplitformButton/nexus_screen_button
 
 	New()
 		all_splitforms-=src
@@ -56,9 +57,17 @@ mob/Splitform
 		Sim_Destroy_Loop()
 
 	Del()
+		removeNexusScreenButton()
 		. = ..()
 		Maker = null
 		Sim_ID = null
+
+	proc/removeNexusScreenButton()
+		if(!nexus_screen_button) return
+		var/obj/NexusHud/SplitformButton/old_button = nexus_screen_button
+		nexus_screen_button = null
+		if(Maker && Maker.client) Maker.client.screen -= old_button
+		del(old_button)
 
 	proc/SimDestroyedBy(mob/m)
 		if(!z) return
@@ -186,15 +195,53 @@ mob/Splitform
 				for(var/mob/P in mob_view(20,usr)) if(!P.KO) L+=P
 				var/mob/P=input("Choose Target") in L
 				if(!P||P=="Cancel") return
-				for(var/mob/Splitform/S in usr.client.screen)
+				for(var/mob/Splitform/S in usr.splitform_list)
 					S.Target=P
 					S.Mode="Attack Target"
 			if("All Attack Nearest")
 				if(usr.tournament_override()) return
-				for(var/mob/Splitform/S in usr.client.screen) S.Mode="Attack Nearest"
+				for(var/mob/Splitform/S in usr.splitform_list) S.Mode="Attack Nearest"
 			if("Follow") Mode="Follow"
-			if("All Follow") for(var/mob/Splitform/S in usr.client.screen) S.Mode="Follow"
+			if("All Follow") for(var/mob/Splitform/S in usr.splitform_list) S.Mode="Follow"
 			if("Destroy All") usr.Destroy_Splitforms()
+
+obj/NexusHud/SplitformButton
+	mouse_opacity = 2
+	plane = NEXUS_FIXED_HUD_PLANE
+	layer = 111
+	var/tmp/mob/Splitform/target_splitform
+	var/tmp/fixed_screen_location
+
+	New(mob/Splitform/new_target, button_index = 1)
+		. = ..()
+		target_splitform = new_target
+		fixed_screen_location = "[(max(1, round(button_index)) * 1.4) + 5],2"
+		if(target_splitform) target_splitform.nexus_screen_button = src
+		syncAppearance()
+		startAppearanceSync()
+
+	proc/syncAppearance()
+		if(target_splitform) appearance = target_splitform.appearance
+		plane = NEXUS_FIXED_HUD_PLANE
+		layer = 111
+		mouse_opacity = 2
+		screen_loc = fixed_screen_location
+
+	proc/startAppearanceSync()
+		set waitfor = 0
+		while(src && target_splitform)
+			syncAppearance()
+			sleep(5)
+
+	Click(location, control, params)
+		if(!target_splitform || usr != target_splitform.Maker) return
+		target_splitform.Click()
+
+	Del()
+		var/mob/Splitform/old_target = target_splitform
+		target_splitform = null
+		if(old_target && old_target.nexus_screen_button == src) old_target.nexus_screen_button = null
+		. = ..()
 
 mob/proc/Destroy_Splitforms() for(var/mob/Splitform/S in splitform_list) del(S)
 
@@ -293,9 +340,10 @@ mob/proc
 		var/copies = 0
 		for(var/mob/Splitform/B in splitform_list) copies++
 		A.name="[name] splitform [copies]"
-		//A.screen_loc = "[copies],1:0"
-		A.screen_loc = "[(copies * 1.4) + 5],2"
-		if(client) client.screen += A
+		A.screen_loc = null
+		if(client)
+			var/obj/NexusHud/SplitformButton/splitform_button = new(A, copies)
+			client.screen += splitform_button
 		A.BP = BP
 
 mob/proc/Sim_Destroy_Loop()
@@ -352,32 +400,39 @@ obj/items/Simulator
 
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			var/Max_Upgrade=usr.Knowledge*2*sqrt(usr.Intelligence())
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(original_location == user && !canUseAfterNexusTradeYield(user)) return
+			var/Max_Upgrade=user.Knowledge*2*sqrt(user.Intelligence())
 			var/Percent=(Max_BP/Max_Upgrade)*100
-			var/Res_Cost=Item_cost(usr,src)/100
+			var/Res_Cost=Item_cost(user,src)/100
 			if(Percent>=100)
-				usr<<"This [src] is 100% upgraded at this time and cannot go any further."
+				user<<"This [src] is 100% upgraded at this time and cannot go any further."
 				return
-			var/Amount=input("This [src] is at level [Level]. The current maximum is \
+			var/Amount=input(user,"This [src] is at level [Level]. The current maximum is \
 			[Max_Upgrade]. \
 			It is at [Percent]% maximum power. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. Input \
 			the percentage of power you wish to bring the [src] to. ([Percent]-100%)") as num
+			if(!user || loc != original_location) return
+			if(original_location == user)
+				if(!canUseAfterNexusTradeYield(user)) return
+			else if(!(src in view(1,user))) return
 			if(Amount>100) Amount=100
 			if(Amount<0.1)
-				usr<<"Amount must be higher than 0.1%"
+				user<<"Amount must be higher than 0.1%"
 				return
 			if(Amount<=Percent)
-				usr<<"This cannot be downgraded."
+				user<<"This cannot be downgraded."
 				return
 			Res_Cost*=Amount-Percent
-			if(usr.Res()<Res_Cost)
-				usr<<"You do not have enough resources to do this."
+			if(user.Res()<Res_Cost)
+				user<<"You do not have enough resources to do this."
 				return
-			usr.Alter_Res(-Res_Cost)
+			user.Alter_Res(-Res_Cost)
 			Max_BP=Max_Upgrade*(Amount/100)
 			suffix="[Commas(Max_BP)] BP"
-			player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(Max_BP)] BP)"
+			player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]% ([Commas(Max_BP)] BP)"
 			name="[Commas(Max_BP)] BP Simulator"
 
 	proc/Create_simulated_fighter(mob/m)

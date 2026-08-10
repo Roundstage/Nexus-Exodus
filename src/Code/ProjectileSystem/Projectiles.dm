@@ -90,6 +90,36 @@ var/list/cached_blasts=new
 var
 	cached_blast_refill_size = 50
 	cached_blast_retention_limit = 500
+	global_basic_blast_active_count = 0
+
+mob/var/tmp/basic_blast_active_count = 0
+
+mob/proc/getAvailableBasicBlastSlots(requested_count = basic_blast_max_volley_size)
+	requested_count = max(0, round(requested_count))
+	var/owner_slots = max(0, basic_blast_owner_active_limit - basic_blast_active_count)
+	var/global_slots = max(0, basic_blast_global_active_limit - global_basic_blast_active_count)
+	return min(requested_count, owner_slots, global_slots)
+
+obj/Blast/proc/registerBasicBlastSlot(mob/new_owner)
+	if(!new_owner) return FALSE
+	if(basic_blast_slot_registered) return basic_blast_slot_owner == new_owner
+	if(new_owner.getAvailableBasicBlastSlots(1) < 1) return FALSE
+	basic_blast_slot_owner = new_owner
+	basic_blast_slot_registered = TRUE
+	new_owner.basic_blast_active_count++
+	global_basic_blast_active_count++
+	return TRUE
+
+obj/Blast/proc/releaseBasicBlastSlot()
+	if(!basic_blast_slot_registered)
+		basic_blast_slot_owner = null
+		return FALSE
+	var/mob/slot_owner = basic_blast_slot_owner
+	basic_blast_slot_registered = FALSE
+	basic_blast_slot_owner = null
+	if(slot_owner) slot_owner.basic_blast_active_count = max(0, slot_owner.basic_blast_active_count - 1)
+	global_basic_blast_active_count = max(0, global_basic_blast_active_count - 1)
+	return TRUE
 
 proc/fill_cached_blasts(amount = cached_blast_refill_size)
 	amount = max(1, round(amount))
@@ -103,6 +133,7 @@ proc/get_cached_blast()
 		if(!b) continue
 		animate(b) //stop all animations
 		b.clearNexusGlow()
+		b.releaseBasicBlastSlot()
 		ResetVars(b)
 		b.in_use=1
 
@@ -114,6 +145,8 @@ proc/get_cached_blast()
 		b.startBlastLifecycle()
 
 		b.Owner=null
+		b.basic_blast_slot_owner = null
+		b.basic_blast_slot_registered = FALSE
 		b.from_attack = null
 		b.stopProjectileFlight()
 		b.gain_power_with_range=0
@@ -156,6 +189,9 @@ proc/get_cached_blast()
 		b.Explosive=0
 		b.Shockwave=0
 		b.blast_homing_target = null
+		b.lazy_follow_target = null
+		b.lazy_follow_end_x = 0
+		b.lazy_follow_end_y = 0
 		b.Piercer=0
 		b.beam_impact_mode=BEAM_IMPACT_EXPLOSIVE
 		b.Paralysis=0
@@ -184,6 +220,7 @@ proc/get_cached_blast()
 		return b
 
 obj/Blast/proc/cache_blast()
+	releaseBasicBlastSlot()
 	stopProjectileFlight()
 	clearNexusGlow()
 	loc = null
@@ -198,6 +235,7 @@ area/var/tmp/list/blast_objs=new
 
 obj/Blast/Del()
 	set waitfor=0
+	releaseBasicBlastSlot()
 	stopProjectileFlight()
 	var/area/a = get_area()
 	if(a) a.blast_objs -= src
@@ -229,6 +267,8 @@ obj/Blast
 	var/tmp/beam_loop_running
 	var/tmp/obj/from_attack //temporary debugging var
 	var/tmp/nexus_projectile_glow_serial
+	var/tmp/mob/basic_blast_slot_owner
+	var/tmp/basic_blast_slot_registered = FALSE
 
 	var
 		Is_Ki=1
@@ -362,7 +402,8 @@ obj/Blast
 
 	Move()
 		if(Size)
-			for(var/atom/A in orange(Size,src)) if(A!=src&&A.density&&!isarea(A)) Bump(A)
+			for(var/atom/A in orange(Size,src)) if(A!=src&&A.density&&!isarea(A))
+				if(withinBlastCircle(A)) Bump(A)
 		if(Spread)
 			for(var/atom/A in Get_step(src,turn(dir,90))) if(A!=src&&A.density&&!isarea(A)) Bump(A)
 			for(var/atom/A in Get_step(src,turn(dir,-90))) if(A!=src&&A.density&&!isarea(A)) Bump(A)
@@ -373,12 +414,31 @@ obj/Blast
 		steps_since_last_homing_check++
 
 		Distance--
+
 		if(!z || delete_on_next_move || Distance <= 0 || !get_step(src,dir))
 			if(z) Explode()
 			del(src)
 
+	proc/withinBlastCircle(A)
+		//broad-phase (orange()) is a tile square; this turns the hit area into a circle
+		//inscribed in that square by checking pixel distance from bound center to bound center.
+		//dynamic call because bound_center_x/y live on both /turf and /atom/movable, not /atom
+		if(!A || !Size) return 0
+		var/radius = Size * world.icon_size * 0.5
+		var/dx = (call(A, "bound_center_x")() - bound_center_x()) * world.icon_size
+		var/dy = (call(A, "bound_center_y")() - bound_center_y()) * world.icon_size
+		return dx * dx + dy * dy <= radius * radius
+
 	var/Can_Home=1 //i think this is to the old homing system and does nothing now
 	var/tmp/mob/blast_homing_target
+	var
+		tmp
+			mob/lazy_follow_target
+			lazy_follow_end_x = 0
+			lazy_follow_end_y = 0
+		lazy_follow_lock_time = 5 //deciseconds (~0.5s) the blast tracks its target before locking the end point
+		lazy_follow_drift = 4 //pixels per tick the locked end point drifts toward the target
+		lazy_follow_steer_limit = 6 //max degrees the heading may change per tick
 
 	proc/CheckBlastHomingTarget()
 		if(blast_homing_target && Owner && Owner.getSelectedTarget(blast_homing_target, max_dist = 100, require_view = FALSE) == blast_homing_target && Is_viable_homing_target(blast_homing_target)) return
@@ -624,7 +684,7 @@ obj/Blast
 					if(A.rp_mode) continue
 					if(A.ultra_instinct)
 						var/d = turn(dir,pick(135,-135))
-						step(A,d,32)
+						A.tryNexusVectorDodge(d)
 						A.Flip()
 					else
 						A.beam_deflect_difficulty = deflect_difficulty
@@ -655,9 +715,7 @@ obj/Blast
 						if(A && !A.regenerator_obj && !ignores_precognition && A.precog && A.precogs && prob(A.precog_chance) && !A.KO && (A.Flying || A.icon_state == "") && A.Ki > A.max_ki * 0.2 && !A.Disabled())
 							A.precogs--
 							//A.Ki-=A.Ki/30/A.Eff**0.4
-							var/turf/old_loc=A.loc
-							step(A,turn(dir,pick(-45,45)),32)
-							if(A.loc!=old_loc) return
+							if(A.tryNexusVectorDodge(turn(dir,pick(-45,45)))) return
 						else
 							if(beam_impact_mode != BEAM_IMPACT_EXPLOSIVE) GetSuckedIntoBeam(A)
 
@@ -966,7 +1024,7 @@ obj/Blast
 			var/d = get_dir(m,src)
 			d = turn(d, pick(45,-45))
 			if(Owner && get_dir(m,Owner) != turn(dir,180)) d = get_dir(m,Owner)
-			step(m,d,32)
+			m.tryNexusVectorDodge(d)
 			return 1
 		if(m == Owner && world.time - projectile_creation_time < 5) return 1
 		if(m == Owner && blast_go_over_owner) return 1
@@ -975,6 +1033,7 @@ obj/Blast
 			if(m.type == /mob/Splitform)
 				var/mob/sf = m
 				if(sf.Maker == Owner) return 1
+		if(m.isDefensiveDashEvading(src)) return 1
 		Damage = BP * Force * percent_damage
 		var/dmg = 0
 		var/original_dmg = Damage
@@ -1029,9 +1088,7 @@ obj/Blast
 			var/ignores_precognition = ismob(Owner) && Owner:getMilestoneRank("energy_marksmanship") && prob(30)
 			if(!m.regenerator_obj && !ignores_precognition && m.precog && m.precogs && prob(m.precog_chance) && !m.KO && (m.Flying || m.icon_state == "") && m.Ki > m.max_ki * 0.2 && !m.Disabled())
 				m.precogs--
-				var/turf/old_loc = m.loc
-				step(m, turn(dir,pick(-45,45)), 32)
-				if(m.loc != old_loc) return 1
+				if(m.tryNexusVectorDodge(turn(dir,pick(-45,45)))) return 1
 			var/factor = reserveDamageFactor(m, percent_damage)
 			dmg = getProjectileCombatDamage(m, factor)
 			if(m.fearful || m.Good_attacking_good()) dmg *= m.Fear_dmg_mult()
@@ -1105,6 +1162,7 @@ obj/Blast
 
 	Bump(mob/A,override_dir,override_delete)
 		if(ismob(A) && owner_immune && A == Owner) return
+		if(ismob(A) && A.isDefensiveDashEvading(src)) return
 		if(isobj(A))
 			if(!A) return
 			if(istype(A,/obj/Blast) && density)
@@ -1219,6 +1277,7 @@ mob/proc/Shockwave_Knockback(Amount,turf/A, bypass_immunity)
 	var/d=get_dir(A,src)
 	if(prob(20)) d=pick(turn(get_dir(A,src),45),turn(get_dir(A,src),-45))
 
+	resetMovementPhysics(clear_glide = FALSE)
 	while(Amount)
 		Amount-=1
 		KB=1

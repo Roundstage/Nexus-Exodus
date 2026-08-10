@@ -109,7 +109,7 @@ Add-Row $readme.Rows @((New-Cell "Damage basis" 6), (New-Cell "Factors are equal
 Add-Row $readme.Rows @((New-Cell "BP pipeline" 6), (New-Cell "The BP Pipeline sheet exposes the major ordering stages. The game has additional situational branches; use current Effective BP in Combatants when exact runtime BP is known." 5), (New-Cell "BackgroundCode/StatLoop.dm:95-242" 5))
 Add-Row $readme.Rows @((New-Cell "Powerup and anger" 6), (New-Cell "Current mixture is additive: anger/100 + BPpcnt/100 - 1 + Super Kaioken addition. It is not anger multiplied by powerup." 5), (New-Cell "BackgroundCode/StatLoop.dm:25-49" 5))
 Add-Row $readme.Rows @((New-Cell "Cyber BP" 6), (New-Cell "With current cyber_bp_cuts_natural_bp_by=0, any cyber BP replaces natural BP before cyber contribution is added. Overdrive multiplies cyber contribution by 1.5." 5), (New-Cell "BackgroundCode/StatLoop.dm:183-193" 5))
-Add-Row $readme.Rows @((New-Cell "Ki speed" 6), (New-Cell "Non-beam Ki projectiles use a 0.5 decisecond cadence at 60 FPS. Beam and Spirit Bomb delays remain skill-specific." 5), (New-Cell "ProjectileSystem/Blasts.dm; SkillControllers.dm" 5))
+Add-Row $readme.Rows @((New-Cell "Ki speed" 6), (New-Cell "Non-beam Ki projectiles use a 0.5 decisecond movement cadence at 60 FPS. Basic Blast fires a three-pellet fan on a 0.75-decisecond base refire with 30% damage and 20% Energy cost per pellet. Beam and Spirit Bomb delays remain skill-specific." 5), (New-Cell "ProjectileSystem/Blasts.dm; SkillControllers.dm" 5))
 Add-Row $readme.Rows @((New-Cell "Usage" 6), (New-Cell "1. Set Combatants inputs. 2. Adjust BP Pipeline and copy its result if needed. 3. Review standardized skills in Damage Calculator. 4. Use Skill Catalog for custom formulas and timing." 5), (New-Cell "This workbook" 5))
 $sheets.Add($readme) | Out-Null
 
@@ -398,7 +398,7 @@ Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 3.5
 Add-SkillRow "Rock Throw - Rapid" "/obj/RockThrow" "Learnable mode" "Physical" 1 1 0 0 16 0 "Instant target resolve" 8 "None" "No cooldown" "Combat/RockThrow.dm"
 Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Physical" 0.55 "7-15" 0 0 150 12 "1 tick between rocks" 8 "None" "Strength-scaled sequence; maximum shared factor 8.25" "Combat/RockThrow.dm"
 Add-SkillRow "Rock Tomb" "/obj/RockTomb" "Learnable" "Physical" 8 1 0 "30% mastered splash" 100 15 "Instant target resolve" 12 "None" "Mastered splash affects secondary targets only" "Combat/RockThrow.dm"
-Add-SkillRow "Blast" "/obj/Attacks/Blast" "Learnable" "Ki" "0.35-0.5" "1-4" 0 "Optional equal splash" "Dynamic" "Dynamic" "No charge" 47 "None" "Shared factor budget 4" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
+Add-SkillRow "Blast" "/obj/Attacks/Blast" "Learnable" "Ki" "0.105-0.15" 3 0 "Lead only" "20% per pellet" "Dynamic" "0.75ds base refire" 47 "None" "3-pellet fan; shared budget 0.6; lead utility; caps 24/owner and 256/global" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
 Add-SkillRow "Big Bang Attack" "/obj/Attacks/Big_Bang_Attack" "Learnable" "Ki" 22 2 0 "22 splash" 80 0 "18*SD(.4)" 60 "None" "22 direct + 22 splash; budget 44" "SkillEngine.dm"
 Add-SkillRow "Charge" "/obj/Attacks/Charge" "Learnable" "Ki" 4 2 0 "4 splash" 20 0 "7.5*SD(.6)" 47 "None" "4 direct + 4 splash" "SkillEngine.dm"
 Add-SkillRow "Cyber Charge" "/obj/Attacks/Cyber_Charge" "Module grant" "Ki" 2.5 2 0 "2.5 splash" 10 0 "5*SD(.6)" 100 "None" "2.5 direct + 2.5 splash" "SkillEngine.dm; Cybernetics.dm"

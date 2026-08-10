@@ -1,12 +1,15 @@
 # Movement
 
 ## Overview
-Movement input, collision, environmental traversal, and short-range warp behavior. `CanInputMove()` treats RP Mode as an absolute player movement lock. Instant Transmission now has a directional eight-tile warp path that reuses Zanzoken placement and visuals while consuming Energy rather than Stamina. Vector players use centered 24-by-24 physical bounds inside their unchanged 32-pixel sprite, providing four pixels of wall and doorway clearance without overriding custom-sized actors. Vector input records requested and actual pixel displacement so a truthy partial `Move()` is still recognized as a collision. `tryNexusVectorMoveWithGapNudge()` probes the full requested cardinal distance before moving, then uses a stable one-pixel perpendicular correction to align characters with nearby gaps and doorways without becoming trapped by a high-speed partial step; diagonal input falls back to its unobstructed axis for wall sliding. The gap-search behavior is adapted with credit from [Woo/Tyruswoo's Gap-Nudge Movement v3.3](https://secure.byond.com/developer/Woo/GapNudgeMovement).
+Movement input, collision, environmental traversal, accelerated skill travel, and short-range warp behavior. `CanInputMove()` treats RP Mode as an absolute player movement lock. Instant Transmission now has a directional eight-tile warp path that reuses Zanzoken placement and visuals while consuming Energy rather than Stamina. Normal client movement uses allocation-free acceleration and velocity components: normalized input adds acceleration, velocity supplies arbitrary-angle pixel displacement, collision removes only blocked components, and duration-scaled retention is applied after movement. A fixed 60 Hz physics accumulator keeps ramp and coast behavior stable if the server FPS changes. Releasing input therefore preserves a short amount of carry while a velocity-unit cutoff settles each residual component; hard locks, forced movement, teleports, login changes, and `StopMovement()` clear all carry. Physical travel direction is passed to collision without replacing the player's input-facing direction. Vector players use centered 24-by-24 physical bounds inside their unchanged 32-pixel sprite, providing four pixels of wall and doorway clearance without overriding custom-sized actors. Vector input records requested and actual pixel displacement so a truthy partial `Move()` is still recognized as a collision. `tryNexusVectorMoveWithGapNudge()` and `tryNexusInertiaMove()` probe cardinal and near-cardinal travel before moving, then use a stable one-pixel perpendicular correction to align characters with nearby gaps and doorways; deliberate diagonal displacement falls back to its unobstructed axis for wall sliding. `NexusSkillMotion` gives lunges, rushes, pass-through attacks, pulls, manual evasions, and automatic projectile dodges the same fixed-step acceleration, braking, collision telemetry, target cancellation, and ownership-safe cleanup. Short Dash uses that core for a seven-tile (224-pixel) defensive burst with near-immediate acceleration, late high-rate braking, 20% exit-velocity transfer, and a selective 1.5-decisecond dodge window. Its eight directional actions are independently remappable through the same hotkey registry as Zanzoken; there is no hardcoded Ctrl-direction trigger. Zanzoken remains the longer intentional warp. The gap-search behavior is adapted with credit from [Woo/Tyruswoo's Gap-Nudge Movement v3.3](https://secure.byond.com/developer/Woo/GapNudgeMovement).
 
 ## Files
 - `src/Code/Application/Movement/MovementAlignment.dm`
 - `src/Code/Application/Movement/MovementCollision.dm`
 - `src/Code/Application/Movement/MovementInput.dm`
+- `src/Code/Application/Movement/MovementPhysics.dm`
+- `src/Code/Application/Movement/SkillMovementPhysics.dm`
+- `src/Code/Application/Movement/DefensiveDash.dm`
 - `src/Code/Application/Movement/MovementValidation.dm`
 - `src/Code/Application/Movement/MovementEnvironment.dm`
 - `src/Code/Application/Movement/MovementMacros.dm`
@@ -22,6 +25,79 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - `src/Code/Infrastructure/Movement/MovementPortsByond.dm`
 
 ## Proc Reference
+
+### src/Code/Application/Movement/SkillMovementPhysics.dm
+
+#### datum/NexusSkillMotion/proc/executeMotion
+- Signature: `datum/NexusSkillMotion/proc/executeMotion()`
+- Purpose: Integrate an owned skill movement on the shared fixed physics step until its target or pixel goal is reached, or until collision, target, teleport, KO, or ownership state interrupts it.
+- Returns: `NEXUS_SKILL_MOTION_REACHED` only when the declared goal is reached; otherwise `NEXUS_SKILL_MOTION_INTERRUPTED`.
+- Side effects: updates pixel position, skill velocity, collision telemetry, afterimages, and contacted-mob collection.
+
+#### datum/NexusSkillMotionResult
+- Purpose: Carry generation-bound completion, physical distance, contact, and contact-time Short Dash evasion telemetry back to exactly one skill caller.
+- Side effects: prevents a superseded asynchronous motion from consuming a newer motion's global telemetry.
+
+#### mob/proc/cancelNexusSkillMotion
+- Signature: `mob/proc/cancelNexusSkillMotion(reason)`
+- Purpose: Invalidate the current skill-motion generation and clear only the movement state still owned by that generation.
+- Returns: none (implicit).
+- Side effects: clears active/internal motion ownership, skill velocity, and optional gap-nudge state.
+
+#### mob/proc/runNexusSkillMotion
+- Signature: `mob/proc/runNexusSkillMotion(atom/movable/target, movement_direction, max_distance_pixels, stop_distance_pixels = 0, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, require_selected_target = FALSE, datum/NexusSkillMotionResult/result_capture, movement_vector_x = 0, movement_vector_y = 0)`
+- Purpose: Start one ownership-safe accelerated skill movement toward a live target or along a fixed direction.
+- Returns: reached/interrupted result from the owned motion.
+- Side effects: cancels older motion, suspends normal inertia, optionally records pass-through contacts, and can transfer bounded exit velocity back to normal movement.
+
+#### mob/proc/runNexusSkillLine
+- Signature: `mob/proc/runNexusSkillLine(movement_direction, distance_pixels, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, datum/NexusSkillMotionResult/result_capture)`
+- Purpose: Run a straight accelerated skill movement for an exact pixel budget.
+- Returns: reached/interrupted result.
+
+#### mob/proc/runNexusSkillVector
+- Signature: `mob/proc/runNexusSkillVector(direction_x, direction_y, distance_pixels, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, datum/NexusSkillMotionResult/result_capture)`
+- Purpose: Run a straight accelerated motion along exact arbitrary X/Y components, allowing off-axis attacks such as Dash Attack to intersect their intended target instead of snapping to an eight-way heading.
+- Returns: reached/interrupted result.
+
+#### mob/proc/runNexusSkillApproach
+- Signature: `mob/proc/runNexusSkillApproach(atom/movable/target, maximum_distance_pixels, stop_distance_pixels = 32, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, require_selected_target = TRUE, datum/NexusSkillMotionResult/result_capture)`
+- Purpose: Accelerate toward a tracked target, brake at the requested contact distance, and normally cancel if the player's selected target changes.
+- Returns: reached/interrupted result.
+
+#### mob/proc/canStartNexusVectorDodge
+- Signature: `mob/proc/canStartNexusVectorDodge(movement_direction)`
+- Purpose: Validate a one-tile automatic projectile-dodge direction and its immediate collision destination.
+- Returns: boolean flag.
+
+#### mob/proc/runNexusVectorDodge
+- Signature: `mob/proc/runNexusVectorDodge(movement_direction)`
+- Purpose: Run the accepted automatic dodge asynchronously through the accelerated skill-motion core without blocking projectile collision resolution.
+- Returns: none (asynchronous).
+
+#### mob/proc/tryNexusVectorDodge
+- Signature: `mob/proc/tryNexusVectorDodge(movement_direction)`
+- Purpose: Validate and queue the vector dodge used by Ultra Instinct and precognition against beams and blasts.
+- Returns: true when a dodge motion was accepted.
+
+### src/Code/Application/Movement/DefensiveDash.dm
+
+#### mob/proc/canDefensiveDash
+- Signature: `mob/proc/canDefensiveDash(direction_override)`
+- Purpose: Validate direction, movement ownership, combat locks, cooldown, and Stamina for Short Dash.
+- Returns: boolean flag.
+
+#### mob/proc/isDefensiveDashEvading
+- Signature: `mob/proc/isDefensiveDashEvading(obj/Blast/projectile)`
+- Purpose: Return whether the active Short Dash may evade a direct melee hit or an eligible small, non-beam, non-explosive projectile during its short dodge window.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/tryDefensiveDash
+- Signature: `mob/proc/tryDefensiveDash(direction_override)`
+- Purpose: Commit the 3-Stamina, 0.6-second-cooldown Short Dash and run its seven-tile (224-pixel) accelerated vector burst with a sharp late brake and limited exit inertia.
+- Returns: reached/interrupted result asynchronously.
+- Side effects: spends Stamina, starts cooldown and selective dodge timing, emits afterimage/audio feedback, and transfers a bounded fraction of exit velocity.
 
 ### src/Code/Application/Movement/MovementAlignment.dm
 
@@ -155,6 +231,13 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Returns: pixels to advance during the current vector step.
 - Side effects: none expected.
 
+#### mob/proc/getVectorMaximumVelocity
+- Signature: `getVectorMaximumVelocity(d = NORTH, apply_diagonal_penalty = FALSE)`
+- Inputs: direction and whether to preserve the legacy diagonal delay.
+- Purpose: Return a true pixels-per-decisecond speed cap before tick scaling, per-frame floors, or legacy displacement caps.
+- Returns: non-negative movement velocity.
+- Side effects: none expected.
+
 #### mob/proc/GetVectorMovementStatMultiplier
 - Signature: `GetVectorMovementStatMultiplier()`
 - Inputs: None
@@ -217,6 +300,80 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Purpose: Handle health slowdown.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/Application/Movement/MovementPhysics.dm
+
+#### mob/proc/resetMovementPhysics
+- Signature: `resetMovementPhysics(clear_fraction = TRUE, clear_glide = TRUE)`
+- Purpose: Clear normal-player acceleration and velocity, optionally clearing fractional pixel carry and glide interpolation without changing `step_x` or `step_y` position.
+- Returns: none (implicit).
+- Side effects: clears inertial movement and any active gap-nudge target.
+
+#### mob/proc/accelerateMovementVelocity
+- Signature: `accelerateMovementVelocity(input_x, input_y, acceleration_delta, max_velocity)`
+- Purpose: Normalize input, add this frame's acceleration to retained velocity, and clamp the result by vector magnitude.
+- Returns: the resulting velocity magnitude.
+- Side effects: updates acceleration and velocity components.
+
+#### mob/proc/retainMovementVelocity
+- Signature: `retainMovementVelocity(retention, stop_velocity = -1)`
+- Purpose: Apply a bounded retention multiplier and independently snap sufficiently small velocity components to zero.
+- Returns: the retained velocity magnitude.
+- Side effects: updates velocity components.
+
+#### mob/proc/movementDurationRetention
+- Signature: `movementDurationRetention(retention_per_decisecond, duration_deciseconds)`
+- Purpose: Convert the configured per-decisecond retention into an exponential duration multiplier so movement decay remains stable when tick rate changes.
+- Returns: a retention multiplier between zero and one.
+- Side effects: none expected.
+
+#### mob/proc/getMovementGapDirection
+- Signature: `getMovementGapDirection(movement_x, movement_y)`
+- Purpose: Quantize velocity with a small dominant-axis tolerance so residual turn carry keeps cardinal doorway correction while intentional diagonals remain diagonal.
+- Returns: a cardinal or diagonal direction, or null for a zero vector.
+- Side effects: none expected.
+
+#### mob/proc/resolveMovementVelocityCollision
+- Signature: `resolveMovementVelocityCollision()`
+- Purpose: Compare requested and actual vector displacement, clearing only velocity components blocked by collision.
+- Returns: none (implicit).
+- Side effects: projects movement velocity along unblocked wall axes.
+
+#### mob/proc/handleMovementPhysicsLockedInput
+- Signature: `handleMovementPhysicsLockedInput(input_direction)`
+- Purpose: Preserve directional skill interactions such as beam/grab struggling, moving-charge advancement, dash steering, defensive facing, and ship/car control while character displacement is suspended.
+- Returns: none (implicit).
+- Side effects: may update skill state or facing without moving the mob.
+
+#### mob/proc/movementPhysicsHardLocked
+- Signature: `movementPhysicsHardLocked()`
+- Purpose: Detect vehicles, forced techniques, combat ownership, beam/grab states, and active bank interaction that must discard normal locomotion inertia.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/movementPhysicsSuspended
+- Signature: `movementPhysicsSuspended(ignore_client = FALSE, validate_standard_movement = TRUE)`
+- Purpose: Reject normal inertia while input is unavailable or `movementPhysicsHardLocked()` gives another system ownership of movement.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/tryNexusInertiaMove
+- Signature: `tryNexusInertiaMove(movement_x, movement_y)`
+- Purpose: Resolve arbitrary X/Y velocity through native vector stepping while preserving doorway nudges, partial-collision detection, and wall sliding.
+- Returns: boolean flag or null.
+- Side effects: moves the mob and may project blocked velocity.
+
+#### mob/proc/processMovementPhysicsFrame
+- Signature: `processMovementPhysicsFrame(input_direction)`
+- Purpose: Accumulate elapsed server time and run bounded fixed-duration normal-movement physics steps.
+- Returns: boolean flag or null.
+- Side effects: updates movement physics, position, and glide interpolation.
+
+#### mob/proc/processMovementPhysicsStep
+- Signature: `processMovementPhysicsStep(input_direction, duration_deciseconds)`
+- Purpose: Run one fixed acceleration, movement, collision, and friction step for normal client locomotion.
+- Returns: boolean flag or null.
+- Side effects: updates movement physics, position, and glide interpolation.
 
 ### src/Code/Application/Movement/MovementValidation.dm
 
@@ -313,7 +470,7 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Inputs: d
 - Purpose: Handle key down.
 - Returns: none (implicit).
-- Side effects: updates movement input state; Ctrl no longer triggers Zanzoken.
+- Side effects: updates movement input state without hardcoding Zanzoken or Short Dash to modifier-direction combinations.
 
 #### mob/proc/HotbarUseHandler
 - Signature: `mob/proc/HotbarUseHandler(d, held_key, was_key_held = FALSE)`
@@ -346,16 +503,23 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 #### mob/proc/move_dir
 - Signature: `mob/proc/move_dir()`
 - Inputs: None
-- Purpose: Handle move dir.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Resolve held cardinal keys into an eight-way direction while cancelling opposing axes.
+- Returns: a BYOND direction or null.
+- Side effects: none expected.
 
 #### mob/proc/move_loop
 - Signature: `mob/proc/move_loop()`
 - Inputs: None
-- Purpose: Handle move loop.
+- Purpose: Run fixed-cadence normal movement while input or retained velocity remains, preserving aim/strafe direction and suspending during forced movement.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: updates position, input timing, velocity, facing, and loop-generation state.
+
+#### mob/proc/StopMovement
+- Signature: `mob/proc/StopMovement()`
+- Inputs: None
+- Purpose: Cancel held input and invalidate the active movement coroutine before clearing all normal inertial state.
+- Returns: none (implicit).
+- Side effects: clears keys, acceleration, velocity, fractional carry, gap nudging, and glide interpolation.
 
 ### src/Code/Application/Movement/MovementFlow.dm
 
@@ -659,6 +823,13 @@ Movement input, collision, environmental traversal, and short-range warp behavio
 - Purpose: Handle client southeast input.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### client/MouseWheel
+- Signature: `client/MouseWheel(object, delta_x, delta_y, location, control, params)`
+- Inputs: native BYOND mouse-wheel event data.
+- Purpose: Route vertical wheel movement over bare/world content in `mapwindow.map` to the world-only zoom compositor. Targets on `NEXUS_FIXED_HUD_PLANE`, browsers, and other controls retain their normal behavior.
+- Returns: none (implicit).
+- Side effects: may update the player's bounded logical map view through `adjustMapZoom()`; it does not resize the live character's render envelope.
 
 ### src/Code/Interface/Movement/PixelMoving.dm
 

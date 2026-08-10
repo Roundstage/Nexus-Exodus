@@ -88,6 +88,26 @@ proc/angle_clamp_0_360(ang)
 	while(ang<=0) ang+=360
 	return ang
 
+//0 to 360 degrees from (x1,y1) toward (x2,y2); north = 0, matching get_global_angle
+proc/get_angle_to_point(x1,y1,x2,y2)
+	var/ang = arctanD(y2 - y1, x2 - x1)
+	ang += 360
+	if(ang > 360) ang -= 360
+	return abs(ang)
+
+proc/angle_to_dir_0_360(ang)
+	ang = round(angle_clamp_0_360(ang))
+	switch(ang)
+		if(0) return NORTH
+		if(45) return NORTHEAST
+		if(90) return EAST
+		if(135) return SOUTHEAST
+		if(180) return SOUTH
+		if(225) return SOUTHWEST
+		if(270) return WEST
+		if(315) return NORTHWEST
+	return angle_to_cardinal_dir(ang)
+
 proc/get_dir_as_text(mob/a,mob/b)
 	switch(get_dir(a,b))
 		if(NORTH) return "north"

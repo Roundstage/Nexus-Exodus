@@ -38,6 +38,7 @@ $nativeCallbacks = @{
 	'MouseExited' = $true
 	'MouseMove' = $true
 	'MouseUp' = $true
+	'MouseWheel' = $true
 	'Move' = $true
 	'New' = $true
 	'North' = $true

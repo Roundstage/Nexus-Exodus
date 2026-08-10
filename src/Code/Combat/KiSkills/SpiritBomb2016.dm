@@ -60,8 +60,10 @@ obj/Blast/Genki_Dama
 	proc
 		SpiritBombGoOffSomewhere()
 			set waitfor=0
+			var/off_speed = vector_speed
+			if(!off_speed) off_speed = 32
 			for(var/v in 1 to 100)
-				step(src,dir)
+				vector_step_dir(src, dir, off_speed)
 				sleep(TickMult(sb_move_speed))
 				if(!z) break
 			if(z)
@@ -122,8 +124,10 @@ mob/proc
 		if(!LastSpiritBombValid()) return
 		last_Genki_Dama.sb_moving = 1
 		for(var/v in 1 to max_steps)
-			var/sb_move_speed = last_Genki_Dama.sb_move_speed //sometimes step() deletes the Genki Dama and causes an error
-			step(last_Genki_Dama, last_direction_pressed)
+			var/sb_move_speed = last_Genki_Dama.sb_move_speed //sometimes the Genki Dama gets deleted and causes an error
+			var/move_speed = last_Genki_Dama.vector_speed
+			if(!move_speed) move_speed = 32
+			vector_step_dir(last_Genki_Dama, last_direction_pressed, move_speed)
 			sleep(TickMult(sb_move_speed))
 			if(!LastSpiritBombValid()) break
 			else if(getdist(src, last_Genki_Dama) > 30) break

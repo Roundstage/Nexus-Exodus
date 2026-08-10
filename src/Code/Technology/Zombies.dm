@@ -167,8 +167,10 @@ obj/items/DNA_Container
 		set hidden=1
 		Use()
 	verb/Use()
-		var/mob/A=usr
-		for(var/mob/A2 in Get_step(usr,usr.dir)) if(A2.Frozen||A2.KO||!A2.client)
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/mob/A=user
+		for(var/mob/A2 in Get_step(user,user.dir)) if(A2.Frozen||A2.KO||!A2.client)
 			A=A2
 			break
 		if(A in All_Entrants)
@@ -187,17 +189,22 @@ obj/items/DNA_Container
 			usr<<"[A] is an Android, they have no DNA"
 			return
 		if(A.Dead)
-			usr<<"[A] is dead and therefore does not have DNA"
+			user<<"[A] is dead and therefore does not have DNA"
 			return
-		if(Clone) switch(input("This already contains DNA do you really want to overwrite it?") in list("No","Yes"))
-			if("No") return
-		player_view(15,usr)<<"[usr] extracts DNA from [A]"
+		if(Clone)
+			var/overwrite_choice = input(user, "This already contains DNA do you really want to overwrite it?") in list("No","Yes")
+			if(!canUseAfterNexusTradeYield(user)) return
+			if(overwrite_choice == "No") return
+		var/target_is_valid = A == user || (A in Get_step(user, user.dir) && (A.Frozen || A.KO || !A.client))
+		if(!canUseAfterNexusTradeYield(user) || !target_is_valid || A in All_Entrants || !A.Has_DNA || A.Class == "Legendary Saiyan" || A.Race == "Majin" || A.Android || A.Dead) return
+		player_view(15,user)<<"[user] extracts DNA from [A]"
 		if(istype(A,/mob/Enemy/Zombie))
 			var/obj/O=A.Zombie_Drop()
 			if(O)
-				usr<<"You recieved [O]"
-				O.Move(usr)
+				user<<"You recieved [O]"
+				O.Move(user)
 				//del(src)
+		if(!canUseAfterNexusTradeYield(user)) return
 		name="DNA of [A.name]"
 		Clone=A.Clone()
 		//you can bug your bp super high since trolls go beyond players
@@ -523,31 +530,45 @@ obj/items/T_Heal
 
 	verb/Use()
 		if(injecting) return
-
-		var/mob/A=usr.get_inject()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/mob/A=user.get_inject()
 		if(!A) return
 
 		injecting = 1
-		if(A == usr)
+		if(A == user)
 			var/turf/t = A.loc
 			var/elapsed_time = 0
 			var/required_time = 3.2
-			usr << "<font color=cyan>Do not move for [required_time] seconds to complete the injection."
+			user << "<font color=cyan>Do not move for [required_time] seconds to complete the injection."
 			while(A && t == A.loc)
 				elapsed_time += 0.2
 				sleep(2)
+				if(!canUseAfterNexusTradeYield(user) || A != user)
+					if(src) injecting = FALSE
+					return
 				if(elapsed_time >= required_time) break
-			if(!A) return
-			if(t != A.loc) return
+			if(!A)
+				if(src) injecting = FALSE
+				return
+			if(t != A.loc)
+				if(src) injecting = FALSE
+				return
 
+		if(!canUseAfterNexusTradeYield(user) || !A || (A != user && !(A in Get_step(user, user.dir))))
+			if(src) injecting = FALSE
+			return
 		if(A.Redoing_Stats)
 			usr<<"They must finish redoing their stats first"
+			injecting = FALSE
 			return
 		if(A.Android)
 			usr<<"This has no effect on androids"
+			injecting = FALSE
 			return
 		if(A.tournament_override(fighters_can=0))
 			usr<<"These are illegal in the tournament"
+			injecting = FALSE
 			return
 
 		A.Alter_regen_mult(5)
@@ -1066,6 +1087,9 @@ obj/items/Antivirus
 
 	verb/Synthesize()
 		set src in view(1)
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		var/list/L=list("Cancel")
 		var/int_price_mod=0.4
 		//if(usr.Res()>=10000000/usr.Intelligence()**int_price_mod) L[new/obj/Bio_Field_Generator]=10000000/usr.Intelligence()**int_price_mod
@@ -1087,19 +1111,21 @@ obj/items/Antivirus
 			usr<<"You can not afford any of the options within this."
 			return
 
-		var/obj/O = input("You can synthesize and mutate this into many different uses. Choose one below. \
+		var/obj/O = input(user, "You can synthesize and mutate this into many different uses. Choose one below. \
 		NOTE: Only ones you can afford appear in this list") in L
-		if(!O||O=="Cancel"||usr.Res()<L[O]) return
-		switch(alert("[O] costs [Commas(L[O])] resources. Accept?","Options","Yes","No"))
+		if(!O || O=="Cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(O in L) || user.Res()<L[O]) return
+		var/synthesis_choice = alert(user, "[O] costs [Commas(L[O])] resources. Accept?","Options","Yes","No")
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(O in L)) return
+		switch(synthesis_choice)
 			if("No") return
-		if(usr.Res()<L[O])
-			usr<<"You no longer have the resources needed"
+		if(user.Res()<L[O])
+			user<<"You no longer have the resources needed"
 			return
-		usr.Alter_Res(-L[O])
+		user.Alter_Res(-L[O])
 		if(istype(O,/obj/items))
 			var/obj/o=new O.type
-			o.Move(usr)
-		else O.SafeTeleport(usr.loc)
+			o.Move(user)
+		else O.SafeTeleport(user.loc)
 
 mob
 	var 

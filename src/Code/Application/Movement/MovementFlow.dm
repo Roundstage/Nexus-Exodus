@@ -34,6 +34,11 @@ atom/movable/proc
 	//only this proc can teleport people because it will set the canTeleport flag first so the game knows its legit
 	//the game will not allow position changes more than 1 tile if this proc was not used to do it
 	SafeTeleport(turf/t, allowSameTick)
+		if(ismob(src))
+			var/mob/m = src
+			m.cancelNexusSkillMotion("teleport")
+			m.movement_teleport_generation++
+			m.resetMovementPhysics(clear_glide = FALSE)
 		//JUST DISABLE THE WHOLE SYSTEM IT HAS SOME BUGS I DONT FEEL LIKE FIXING LIKE WHEN PODS BLOW UP WITH YOU IN IT YOU GET SENT TO VOID FOR NO APPARENT REASON
 		oldLoc = t
 		newLoc = t

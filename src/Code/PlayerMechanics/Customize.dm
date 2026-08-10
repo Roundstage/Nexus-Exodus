@@ -283,6 +283,17 @@ var
 	max_screen_size = 39
 	max_admin_set_screen_size = 41 //check initialize instead because this is assigned dynamically based on classic_ui = 0/1
 
+#define NEXUS_MOUSE_ZOOM_MIN_VIEW_WIDTH 1
+#define NEXUS_MOUSE_ZOOM_STEP 2
+
+proc/getNexusMouseZoomViewWidth(current_width, wheel_delta, maximum_width)
+	maximum_width = max(1, round(maximum_width))
+	var/minimum_width = min(NEXUS_MOUSE_ZOOM_MIN_VIEW_WIDTH, maximum_width)
+	current_width = Clamp(round(current_width), minimum_width, maximum_width)
+	if(wheel_delta > 0) return max(minimum_width, current_width - NEXUS_MOUSE_ZOOM_STEP)
+	if(wheel_delta < 0) return min(maximum_width, current_width + NEXUS_MOUSE_ZOOM_STEP)
+	return current_width
+
 mob/proc
 	DetermineViewSize(forceWidth)
 		if(!client) return
@@ -290,9 +301,27 @@ mob/proc
 		else
 			if(!ViewX) ViewX = defaultScreenSize //set it to the view i wish to be presented to new players
 			ViewX = Clamp(ViewX, 1, max_screen_size)
-		ViewY = round(ViewX / (client.resolutionX / client.resolutionY))
-		client.view = "[ViewX]x[ViewY]"
+		ViewY = getNexusMapRenderHeight(ViewX, client.resolutionX, client.resolutionY)
+		if(playerCharacter)
+			var/render_width = getNexusMapRenderWidth(TRUE, ViewX, max_screen_size)
+			var/render_height = getNexusMapRenderHeight(render_width, client.resolutionX, client.resolutionY)
+			client.view = "[render_width]x[render_height]"
+			client.initializeNexusMapZoom()
+			client.applyNexusMapZoom(ViewX, render_width)
+		else
+			client.removeNexusMapZoom()
+			var/render_width = getNexusMapRenderWidth(FALSE, ViewX, max_screen_size)
+			client.view = "[render_width]x[ViewY]"
 		//src << "View size set to [ViewX]x[ViewY]"
+
+	adjustMapZoom(wheel_delta)
+		if(!client || !playerCharacter || !wheel_delta) return FALSE
+		var/current_width = ViewX ? ViewX : defaultScreenSize
+		var/adjusted_width = getNexusMouseZoomViewWidth(current_width, wheel_delta, max_screen_size)
+		if(adjusted_width == current_width) return FALSE
+		ViewX = adjusted_width
+		DetermineViewSize()
+		return TRUE
 
 mob/proc/Screen_Size()
 	var/ss = input(src,"Enter a map size between 1 and [max_screen_size]","Options", ViewX) as num

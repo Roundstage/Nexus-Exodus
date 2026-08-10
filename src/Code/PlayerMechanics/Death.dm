@@ -194,6 +194,8 @@ mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,f
 	if(client) icon_state="KB"
 
 	if(!KB || knock_dist < Distance) knock_dist = Distance
+	cancelNexusSkillMotion("knockback")
+	resetMovementPhysics(clear_glide = FALSE)
 	KB=1
 
 	var/mob/m=grabbedObject

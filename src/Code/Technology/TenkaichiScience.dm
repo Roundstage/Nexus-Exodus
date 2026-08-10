@@ -87,9 +87,11 @@ obj/items/GeneticSequencer
 
 	verb/Stabilize_Mutation(mob/target in view(1, usr))
 		set src in view(1)
-		if(!target) return
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!target || !canContinueNexusTradeInteraction(user, original_location) || !(target in view(1, user))) return
 		if(world.time < next_stabilization)
-			usr << "The sequencer will be ready in [round((next_stabilization - world.time) / 10)] seconds."
+			user << "The sequencer will be ready in [round((next_stabilization - world.time) / 10)] seconds."
 			return
 		target.normalizeCharacterMutations()
 		if(!target.character_mutations.len)
@@ -105,10 +107,12 @@ obj/items/GeneticSequencer
 		if(!options.len)
 			usr << "Every mutation in this profile is already fully stabilized."
 			return
-		var/choice = input(usr, "Stabilize which mutation in [target]?", name) as null|anything in options
-		if(isnull(choice) || !(choice in options)) return
+		var/choice = input(user, "Stabilize which mutation in [target]?", name) as null|anything in options
+		if(isnull(choice) || !(choice in options) || !canContinueNexusTradeInteraction(user, original_location) || !(target in view(1, user))) return
 		var/chosen_id = options[choice]
+		if(!(chosen_id in target.character_mutations) || !CHARACTER_MUTATIONS[chosen_id]) return
 		var/current_value = text2num("[target.character_mutations[chosen_id]]")
+		if(current_value >= 30 || world.time < next_stabilization) return
 		if(!target.setCharacterMutationValue(chosen_id, min(30, current_value + 1))) return
 		next_stabilization = world.time + 6000
 		player_view(10, target) << "The Genetic Sequencer stabilizes [target]'s mutation profile."
@@ -126,18 +130,21 @@ obj/items/AdamantineSkeletonTreatment
 
 	verb/Install_Skeleton()
 		set src in usr
-		if(usr.Race == "Android")
-			usr << "This organic treatment is incompatible with an Android core."
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		if(user.Race == "Android")
+			user << "This organic treatment is incompatible with an Android core."
 			return
-		if(usr.has_adamantine_skeleton)
-			usr << "Your skeleton has already received this treatment."
+		if(user.has_adamantine_skeleton)
+			user << "Your skeleton has already received this treatment."
 			return
-		if(alert(usr, "Installation permanently changes this character and causes an immediate knockout. Continue?", name, "Cancel", "Install") != "Install") return
-		usr.has_adamantine_skeleton = TRUE
-		usr.willpower = 0
-		player_view(10, usr) << "<font color=#b8d8e8>[usr]'s skeletal structure hardens with an adamantine resonance."
-		Play_Melee_Sound(sound_range = 10, origin = usr, sound_file = 'src/Sound/SoundEffects/Combat/Kiplosion.ogg', sound_volume = 45)
-		usr.KO(null)
+		if(alert(user, "Installation permanently changes this character and causes an immediate knockout. Continue?", name, "Cancel", "Install") != "Install") return
+		if(!canUseAfterNexusTradeYield(user) || user.Race == "Android" || user.has_adamantine_skeleton) return
+		user.has_adamantine_skeleton = TRUE
+		user.willpower = 0
+		player_view(10, user) << "<font color=#b8d8e8>[user]'s skeletal structure hardens with an adamantine resonance."
+		Play_Melee_Sound(sound_range = 10, origin = user, sound_file = 'src/Sound/SoundEffects/Combat/Kiplosion.ogg', sound_volume = 45)
+		user.KO(null)
 		del(src)
 
 obj/items/MutationSuppressant
@@ -153,19 +160,22 @@ obj/items/MutationSuppressant
 
 	verb/Suppress_Mutation()
 		set src in usr
-		usr.normalizeCharacterMutations()
-		if(!usr.character_mutations.len)
-			usr << "You have no awakened mutations to suppress."
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		user.normalizeCharacterMutations()
+		if(!user.character_mutations.len)
+			user << "You have no awakened mutations to suppress."
 			return
 		var/list/options = list()
-		for(var/mutation_id in usr.character_mutations)
+		for(var/mutation_id in user.character_mutations)
 			var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
-			if(mutation) options["[mutation.stat] (+[usr.character_mutations[mutation_id]]%)"] = mutation_id
-		var/choice = input(usr, "Suppress which mutation? This cannot be undone.", name) as null|anything in options
-		if(isnull(choice) || !(choice in options)) return
-		if(alert(usr, "Permanently remove [choice]?", name, "Cancel", "Suppress") != "Suppress") return
-		if(usr.setCharacterMutationValue(options[choice], 0))
-			player_view(10, usr) << "The suppressant rewrites part of [usr]'s mutation profile."
+			if(mutation) options["[mutation.stat] (+[user.character_mutations[mutation_id]]%)"] = mutation_id
+		var/choice = input(user, "Suppress which mutation? This cannot be undone.", name) as null|anything in options
+		if(isnull(choice) || !(choice in options) || !canUseAfterNexusTradeYield(user)) return
+		if(alert(user, "Permanently remove [choice]?", name, "Cancel", "Suppress") != "Suppress") return
+		if(!canUseAfterNexusTradeYield(user) || !(choice in options) || !(options[choice] in user.character_mutations)) return
+		if(user.setCharacterMutationValue(options[choice], 0))
+			player_view(10, user) << "The suppressant rewrites part of [user]'s mutation profile."
 			del(src)
 
 obj/items/TenkaichiRepairKit
@@ -181,14 +191,21 @@ obj/items/TenkaichiRepairKit
 
 	verb/Repair_Item()
 		set src in usr
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		var/list/options = list()
-		for(var/obj/items/target in view(1, usr))
+		var/list/original_locations = list()
+		for(var/obj/items/target in view(1, user))
 			if(target == src || target.suffix || !target.takes_gradual_damage) continue
-			if(target.Health < initial(target.Health)) options += target
-		var/obj/items/choice = input(usr, "Repair which damaged item?", name) as null|obj in options
-		if(!choice || !(choice in view(1, usr))) return
+			if(target.Health < initial(target.Health))
+				options += target
+				original_locations[target] = target.loc
+		var/obj/items/choice = input(user, "Repair which damaged item?", name) as null|obj in options
+		var/atom/original_choice_location = original_locations[choice]
+		if(!choice || !canUseAfterNexusTradeYield(user) || !(choice in options) || choice.loc != original_choice_location || !(choice in view(1, user)) || choice.suffix || !choice.takes_gradual_damage) return
+		if(original_choice_location == user && (!(choice in user.item_list) || choice.isNexusTradeOfferedBy(user))) return
 		choice.Health = max(choice.Health, initial(choice.Health))
-		player_view(10, usr) << "[usr] restores [choice] to its baseline integrity."
+		player_view(10, user) << "[user] restores [choice] to its baseline integrity."
 		del(src)
 
 obj/items/TenkaichiUpgradeKit
@@ -204,17 +221,19 @@ obj/items/TenkaichiUpgradeKit
 
 	verb/Upgrade_Equipment()
 		set src in usr
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		var/list/options = list()
-		for(var/obj/items/Sword/Forged/weapon in usr.item_list)
+		for(var/obj/items/Sword/Forged/weapon in user.item_list)
 			if(!weapon.master_blacksmith_quality) options += weapon
-		for(var/obj/items/Armor/Forged/armor in usr.item_list)
+		for(var/obj/items/Armor/Forged/armor in user.item_list)
 			if(!armor.master_blacksmith_quality) options += armor
-		for(var/obj/items/Gloves/Forged/gloves in usr.item_list)
+		for(var/obj/items/Gloves/Forged/gloves in user.item_list)
 			if(!gloves.master_blacksmith_quality) options += gloves
-		for(var/obj/items/Mask/Forged/mask in usr.item_list)
+		for(var/obj/items/Mask/Forged/mask in user.item_list)
 			if(!mask.master_blacksmith_quality) options += mask
-		var/obj/items/choice = input(usr, "Upgrade which forged item?", name) as null|obj in options
-		if(!choice || choice.loc != usr) return
+		var/obj/items/choice = input(user, "Upgrade which forged item?", name) as null|obj in options
+		if(!choice || !canUseAfterNexusTradeYield(user) || !(choice in options) || choice.loc != user || !(choice in user.item_list)) return
 		if(istype(choice, /obj/items/Sword/Forged))
 			var/obj/items/Sword/Forged/weapon = choice
 			weapon.master_blacksmith_quality = TRUE
@@ -231,7 +250,7 @@ obj/items/TenkaichiUpgradeKit
 			var/obj/items/Mask/Forged/mask = choice
 			mask.master_blacksmith_quality = TRUE
 			mask.refreshForgedMask()
-		player_view(10, usr) << "[usr] installs a precision upgrade in [choice]."
+		player_view(10, user) << "[user] installs a precision upgrade in [choice]."
 		del(src)
 
 obj/items/MedicalAssessment

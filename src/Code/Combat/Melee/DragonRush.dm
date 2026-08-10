@@ -57,6 +57,7 @@ mob
 			ClearDragonRushPrompt()
 
 		StartDragonRushVars()
+			resetMovementPhysics(clear_glide = FALSE)
 			in_dragon_rush = 1
 			attacking = DRAGON_RUSH
 			lunge_attacking = 0
@@ -229,7 +230,7 @@ proc
 
 obj/NexusHud/DragonRushPrompt
 	mouse_opacity = 0
-	plane = 20
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 125
 	screen_loc = "CENTER-3:8,CENTER:42"
 	maptext_x = 0

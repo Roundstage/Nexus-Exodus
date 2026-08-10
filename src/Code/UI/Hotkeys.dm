@@ -70,20 +70,39 @@ obj/Use_object
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		if(!usr || !usr.client) return
+		var/mob/user = usr
+		if(!user || !user.client) return
 		var/list/usables = new
-		if(isobj(usr.loc))
-			var/obj/o=usr.loc
+		if(isobj(user.loc))
+			var/obj/o=user.loc
 			if(text2path("[o.type]/verb/Use") in o.verbs)
 				usables+=o
-		for(var/obj/o in view(1,usr))
+		for(var/obj/o in view(1,user))
 			if(text2path("[o.type]/verb/Use") in o.verbs)
 				usables+=o
-		for(var/obj/o in usr.item_list)
+		for(var/obj/o in user.item_list)
 			if(text2path("[o.type]/verb/Use") in o.verbs)
 				usables+=o
-		var/obj/o=input("Which object do you want to use?") in usables as obj|null
+		var/list/original_locations = list()
+		var/list/original_item_revisions = list()
+		var/list/original_carried_items = list()
+		for(var/obj/candidate in usables)
+			original_locations[candidate] = candidate.loc
+			if(istype(candidate,/obj/items))
+				var/obj/items/candidate_item = candidate
+				original_item_revisions[candidate_item] = candidate_item.nexus_move_revision
+				if(candidate_item.loc == user && (candidate_item in user.item_list)) original_carried_items += candidate_item
+		var/obj/o=input(user,"Which object do you want to use?") in usables as obj|null
 		if(!o || o == "Cancel" || !isobj(o)) return
+		if(!user || !user.client || !(o in usables) || o.loc != original_locations[o]) return
+		if(!(text2path("[o.type]/verb/Use") in o.verbs)) return
+		if(istype(o,/obj/items))
+			var/obj/items/selected_item = o
+			if(selected_item.nexus_move_revision != original_item_revisions[selected_item]) return
+			if(selected_item in original_carried_items)
+				if(selected_item.loc != user || !(selected_item in user.item_list) || selected_item.isNexusTradeOfferedBy(user)) return
+			else if(!(selected_item == user.loc || selected_item in view(1,user))) return
+		else if(!(o == user.loc || o in view(1,user))) return
 		o:Use()
 
 mob/proc/Defend()
@@ -183,13 +202,14 @@ obj/Block
 		//usr.Block()
 
 obj/Evade
-	can_hotbar=0
+	name = "Short Dash"
+	can_hotbar=1
 	hotbar_type="Defensive"
-	repeat_macro=1
+	repeat_macro=0
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		//usr.Evade()
+		usr.tryDefensiveDash()
 
 obj/Play_Music
 	hotbar_type="Other"

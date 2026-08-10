@@ -21,6 +21,7 @@ client
 				maxFPSobj = new/obj
 				maxFPSobj.icon = 'Asset100FPSIcon.dmi'
 				maxFPSobj.screen_loc = "1,1"
+				maxFPSobj.plane = NEXUS_FIXED_HUD_PLANE
 				maxFPSobj.mouse_opacity = 0
 				maxFPSobj.layer = 99
 			screen += maxFPSobj

@@ -11,7 +11,7 @@ datum/MovementService
 			// Allow aiming (changing dir) for certain skills even when movement is locked
 			if(istype(attack_lock, /obj/Attacks))
 				var/obj/Attacks/A = attack_lock
-				if(A.streaming || A.charging)
+				if(A.streaming || A.charging || A.Using)
 					m.dir = D
 			return
 		if(m._allow_move_prechecks(D)) return

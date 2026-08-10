@@ -294,7 +294,7 @@ client/var/tmp
 
 obj/HudWindow
 	mouse_opacity = 2
-	plane = 20 // Reserved above the per-client lighting plane.
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 120
 	appearance_flags = RESET_ALPHA | RESET_COLOR
 	var/tmp/datum/NexusHudWindow/window
@@ -370,6 +370,40 @@ proc/normalizeNexusInterfaceLayout(layout_id)
 proc/getNexusChatMessageSeparatorHtml()
 	return "<hr class='nexus-message-separator' size='1' color='#4b3927' style='display:block;width:100%;height:0;margin:5px 0;border:0;border-top:1px dashed #4b3927'>"
 
+proc/closeNexusLegacyChatMarkup(message)
+	var/rendered_message = "[message]"
+	var/lower_message = lowertext(rendered_message)
+	var/list/contained_tags = list("a", "b", "big", "blockquote", "center", "div", "em", "font", "i", "p", "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "u")
+	var/list/open_tags = list()
+	var/search_position = 1
+	while(search_position <= length(lower_message))
+		var/tag_start = findtext(lower_message, "<", search_position)
+		if(!tag_start) break
+		var/tag_end = findtext(lower_message, ">", tag_start + 1)
+		if(!tag_end) break
+		var/name_start = tag_start + 1
+		while(name_start < tag_end && copytext(lower_message, name_start, name_start + 1) in list(" ", "\t", "\n")) name_start++
+		var/is_closing_tag = copytext(lower_message, name_start, name_start + 1) == "/"
+		if(is_closing_tag) name_start++
+		var/name_end = name_start
+		while(name_end < tag_end && findtext("abcdefghijklmnopqrstuvwxyz0123456789", copytext(lower_message, name_end, name_end + 1))) name_end++
+		var/tag_name = copytext(lower_message, name_start, name_end)
+		if(tag_name in contained_tags)
+			if(is_closing_tag)
+				for(var/open_index = open_tags.len, open_index >= 1, open_index--)
+					if(open_tags[open_index] != tag_name) continue
+					open_tags.Cut(open_index, open_index + 1)
+					break
+			else
+				open_tags += tag_name
+		search_position = tag_end + 1
+	for(var/open_index = open_tags.len, open_index >= 1, open_index--)
+		rendered_message += "</[open_tags[open_index]]>"
+	return rendered_message
+
+proc/getNexusChatEntryHtml(message)
+	return "<div class='chat-entry'>[closeNexusLegacyChatMarkup(message)]</div>"
+
 proc/nexusChatChannelAppearsInAll(channel)
 	return normalizeNexusChatChannel(channel) != "combat"
 
@@ -437,7 +471,7 @@ datum/NexusChatHud
 		var/rendered = ""
 		for(var/entry_index = start_index, entry_index <= end_index, entry_index++)
 			if(length(rendered)) rendered += getNexusChatMessageSeparatorHtml()
-			rendered += "<span>[entries[entry_index]]</span>"
+			rendered += getNexusChatEntryHtml(entries[entry_index])
 		return rendered
 
 	proc/getRightAnchoredLocation(panel_width, local_x, element_width, bottom_y)
@@ -454,18 +488,18 @@ datum/NexusChatHud
 	proc/buildHtml()
 		prepareNexusHudBrowserResources(owner)
 		var/tabs = ""
-		var/list/channel_icons = list("all" = "logs", "combat" = "skills", "ic" = "player", "ooc" = "world")
-		for(var/channel in channel_icons)
+		var/list/chat_channels = list("all", "combat", "ic", "ooc")
+		for(var/channel in chat_channels)
 			var/tab_class = channel == active_channel ? "hud-tab active" : "hud-tab"
-			tabs += buildIconLink(uppertext(channel), "channel&id=[channel]", channel_icons[channel], tab_class)
-		var/footer = buildIconLink("SAY", "say", "player")
-		footer += buildIconLink("OOC", "ooc", "world")
-		footer += buildIconLink("EMOTE", "emote", "ability")
-		footer += buildIconLink("LOGS", "logs", "logs")
-		var/chat_icon = getNexusPixelInterfaceIconResource(owner, "logs")
+			tabs += buildLink(uppertext(channel), "channel&id=[channel]", tab_class)
+		var/footer = buildLink("SAY", "say", "hud-button")
+		footer += buildLink("OOC", "ooc", "hud-button")
+		footer += buildLink("EMOTE", "emote", "hud-button")
+		footer += buildLink("LOGS", "logs", "hud-button")
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusHudBrowserCss("bronze")]
-		html,body{width:100%;height:100%;overflow:hidden;font-size:10px}.chat-shell{height:100vh;display:flex;flex-direction:column;padding:6px;gap:5px}.chat-head{display:flex;align-items:center;gap:5px;flex:0 0 37px;padding:4px 7px}.chat-head .title-icon{width:24px;height:24px;image-rendering:pixelated}.chat-head .title-copy{display:flex;flex:1;min-width:0;flex-direction:column}.chat-head .hud-title{font-size:11px}.chat-head .hud-muted{font-size:7px}.chat-head .hud-button{padding:5px 7px;font-size:8px}.tabs,.footer{display:flex;gap:5px;flex:0 0 31px;min-height:31px;overflow:hidden}.tabs .hud-tab,.footer .hud-button{display:flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;gap:4px;padding:4px 2px}.tabs img,.footer img{width:18px;height:18px;image-rendering:pixelated}.messages{flex:1 1 auto;min-height:0;padding:9px;overflow-y:auto;color:#ead7b0;font-size:9px;line-height:1.45}
-		</style><script>window.onload=function(){document.body.className='nexus-hud';var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><main class='hud-shell chat-shell'><header class='hud-frame chat-head'><img class='title-icon' src='[chat_icon]' alt=''><span class='title-copy'><b class='hud-title'>CHAT / [uppertext(active_channel)]</b><small class='hud-muted'>NEXUS COMMUNICATION LINK</small></span>[buildLink("UP", "scroll_up", "hud-button")][buildLink("DOWN", "scroll_down", "hud-button")][buildLink("HIDE", "hide", "hud-button danger")]</header><nav class='tabs'>[tabs]</nav><section class='hud-panel messages' id='messages'>[buildMessageHtml()]</section><nav class='footer'>[footer]</nav></main></body></html>"}
+		html,body{width:100%;height:100%;overflow:hidden;font-size:10px}.chat-shell{height:100vh;display:flex;flex-direction:column;padding:6px;gap:5px}.chat-head{display:flex;align-items:center;gap:5px;flex:0 0 37px;padding:4px 7px}.chat-head .title-copy{display:flex;flex:1;min-width:0;flex-direction:column}.chat-head .hud-title{font-size:11px}.chat-head .hud-muted{font-size:7px}.chat-head .hud-button{padding:5px 7px;font-size:8px}.tabs,.footer{display:flex;width:100%;gap:5px;flex:0 0 31px;min-height:31px;overflow:hidden}.tabs .hud-tab{display:flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;padding:4px 2px}.footer{order:4}.footer .hud-button{display:flex;flex:1 1 25%;width:25%;min-width:0;align-items:center;justify-content:center;padding:4px 2px}.messages{order:3;flex:1 1 auto;min-height:0;padding:9px;overflow-y:auto;color:#ead7b0;font-size:9px;line-height:1.45}
+		.chat-entry{display:block;width:100%;min-width:0;overflow-wrap:anywhere}
+		</style><script>window.onload=function(){document.body.className='nexus-hud';var panel=document.getElementById('messages');if(panel){panel.scrollTop=panel.scrollHeight;}}</script></head><body><main class='hud-shell chat-shell'><header class='hud-frame chat-head'><span class='title-copy'><b class='hud-title'>CHAT / [uppertext(active_channel)]</b><small class='hud-muted'>NEXUS COMMUNICATION LINK</small></span>[buildLink("UP", "scroll_up", "hud-button")][buildLink("DOWN", "scroll_down", "hud-button")][buildLink("HIDE", "hide", "hud-button danger")]</header><nav class='tabs'>[tabs]</nav><nav class='footer'>[footer]</nav><section class='hud-panel messages' id='messages'>[buildMessageHtml()]</section></main></body></html>"}
 
 	proc/attachSidePanel()
 		if(!owner || !owner.client) return

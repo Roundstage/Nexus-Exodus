@@ -16,6 +16,7 @@ obj/Screen_Indicator
 	Cloakable=0
 	can_blueprint=0
 	layer = 999
+	plane = NEXUS_FIXED_HUD_PLANE
 
 	//mouse_opacity = 2
 	mouse_opacity = 0 //i switched it off of 2 because clicking your char would often instead click a sense arrow and it was annoying so this was the easiest

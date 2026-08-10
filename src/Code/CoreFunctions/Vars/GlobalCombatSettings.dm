@@ -119,7 +119,16 @@ var
 
 	// Skill factors mirrored by docs/Balance/SkillDamageBalance.xlsx.
 	// Keep these values centralized so runtime tuning and startup validation cannot drift apart.
-	skill_blast_total_factor = 4
+	basic_blast_base_refire_deciseconds = 0.75
+	basic_blast_default_volley_size = 3
+	basic_blast_max_volley_size = 3
+	basic_blast_damage_scale = 0.3
+	basic_blast_energy_scale = 0.2
+	basic_blast_angle_spacing_degrees = 6
+	basic_blast_angle_jitter_degrees = 2
+	basic_blast_owner_active_limit = 24
+	basic_blast_global_active_limit = 256
+	skill_blast_total_factor = 0.6
 	skill_big_bang_damage_factor = 22
 	skill_charge_damage_factor = 4
 	skill_cyber_charge_damage_factor = 2.5

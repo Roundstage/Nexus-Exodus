@@ -20,13 +20,22 @@ obj/items/Gun
 		set hidden=1
 		Shoot()
 mob/var/tmp/obj/items/Gun/Gun //The gun being customized currently.
+mob/var/tmp/atom/nexus_gun_interaction_location
 mob/proc/Customize_Gun_Stats(obj/items/Gun/G)
+	if(!G) return
 	Gun=G
+	nexus_gun_interaction_location=G.loc
+	if(!G.canContinueNexusGunInteraction(src, nexus_gun_interaction_location))
+		Gun=null
+		nexus_gun_interaction_location=null
+		return
+	G.nexus_customization_pending=TRUE
 	G.Set_Default_Gun_Stats()
 	Gun_Window_Refresh(G)
 	winshow(src,"gunstats",1)
 	while(src&&(winget(src,"gunstats","is-visible")=="true")) sleep(1)
 	Gun=null
+	nexus_gun_interaction_location=null
 mob/proc/Gun_Window_Refresh(obj/items/Gun/G)
 	winset(src,"GunPoints","text=[G.Customization_Points]")
 	winset(src,"GunDamageVal","text=[G.bp_mod]")
@@ -73,7 +82,8 @@ mob/verb/Customize_Gun(O as text,S as text) //O=Operator (+ or -), S=Stat
 	set hidden=1
 	set name=".Customize_Gun"
 
-	if(!Gun) return //5/5/2012
+	var/obj/items/Gun/current_gun = Gun
+	if(!current_gun || !current_gun.canContinueNexusGunInteraction(src, nexus_gun_interaction_location)) return //5/5/2012
 
 	//security
 	if(!(winget(src,"gunstats","is-visible")=="true")) return
@@ -86,48 +96,54 @@ mob/verb/Customize_Gun(O as text,S as text) //O=Operator (+ or -), S=Stat
 		//return
 
 	if(S=="Type")
-		Gun.Bullet=!Gun.Bullet
-		Gun_Window_Refresh(Gun)
+		current_gun.Bullet=!current_gun.Bullet
+		Gun_Window_Refresh(current_gun)
 		return
 	var/Amount=1
 	if(O=="-")
 		Amount=-1
-		if(Gun.Customization_Points>=initial(Gun.Customization_Points)||Gun.Gun_Stat_Lowest(S)) return
-	if(O=="+") if(Gun.Customization_Points<1) return
+		if(current_gun.Customization_Points>=initial(current_gun.Customization_Points)||current_gun.Gun_Stat_Lowest(S)) return
+	if(O=="+") if(current_gun.Customization_Points<1) return
 	switch(S)
-		if("Range") Gun.Range+=Amount*1
-		if("Damage") Gun.bp_mod+=Amount*0.25
-		if("Ammo") Gun.Max_Ammo+=Amount*0.25
+		if("Range") current_gun.Range+=Amount*1
+		if("Damage") current_gun.bp_mod+=Amount*0.25
+		if("Ammo") current_gun.Max_Ammo+=Amount*0.25
 		if("Velocity")
-			if(O=="+"&&Gun.Velocity>=10) return
-			Gun.Velocity+=Amount*1
+			if(O=="+"&&current_gun.Velocity>=10) return
+			current_gun.Velocity+=Amount*1
 		if("Refire")
-			if(O=="+"&&Gun.Delay>=10) return
-			Gun.Delay+=Amount*1
-		if("Precision") Gun.Precision+=Amount*0.25
+			if(O=="+"&&current_gun.Delay>=10) return
+			current_gun.Delay+=Amount*1
+		if("Precision") current_gun.Precision+=Amount*0.25
 		if("Explosion")
-			if(O=="+"&&Gun.Explodes>=5) return
-			Gun.Explodes+=Amount
+			if(O=="+"&&current_gun.Explodes>=5) return
+			current_gun.Explodes+=Amount
 		if("Spread")
-			if(O=="+"&&Gun.Spread>=1) return
-			Gun.Spread+=Amount
-		if("Knockback") Gun.Knockbacks+=Amount
-		if("Stun") Gun.Stun+=Amount
-		if("Reload") Gun.Reload_Speed+=Amount*1
-	Gun.Customization_Points-=Amount
-	Gun_Window_Refresh(Gun)
+			if(O=="+"&&current_gun.Spread>=1) return
+			current_gun.Spread+=Amount
+		if("Knockback") current_gun.Knockbacks+=Amount
+		if("Stun") current_gun.Stun+=Amount
+		if("Reload") current_gun.Reload_Speed+=Amount*1
+	current_gun.Customization_Points-=Amount
+	Gun_Window_Refresh(current_gun)
 mob/verb/Gun_Points_Done()
 	set name=".Gun_Points_Done"
 	set hidden=1
 	if(!Gun||!Gun.Customization_Points) winshow(src,"gunstats",0)
 //GUN APPEARANCES
 obj/Gun_Icon/Click() if(usr.Gun)
-	usr.Gun.icon=icon
-	usr.Gun.icon_state=icon_state
+	var/obj/items/Gun/current_gun = usr.Gun
+	if(!current_gun.canContinueNexusGunInteraction(usr, usr.nexus_gun_interaction_location)) return
+	current_gun.icon=icon
+	current_gun.icon_state=icon_state
 obj/Bullet_Icons/Click() if(usr.Gun)
-	usr.Gun.Bullet_Icon=icon
-	var/C=input("Choose a color. Hit cancel to have default color.") as color|null
-	if(C) usr.Gun.Bullet_Icon+=C
+	var/obj/items/Gun/current_gun = usr.Gun
+	if(!current_gun.canContinueNexusGunInteraction(usr, usr.nexus_gun_interaction_location)) return
+	var/new_bullet_icon = icon
+	var/C=input(usr,"Choose a color. Hit cancel to have default color.") as color|null
+	if(usr.Gun != current_gun || !current_gun.canContinueNexusGunInteraction(usr, usr.nexus_gun_interaction_location)) return
+	current_gun.Bullet_Icon=new_bullet_icon
+	if(C) current_gun.Bullet_Icon+=C
 var/list/Gun_Icons=new
 var/list/Bullet_Icons=new
 proc/Initialize_Gun_Icons()
@@ -166,7 +182,13 @@ mob/proc/Grid(list/L, obj/items/Gun/G, update_only, show_names = 1)
 	winset(src,"Grid2.Main Grid2","cells=0") //clear the grid
 	if(!L) if(winget(src,"Grid2","is-visible")=="true") return 1
 	else
-		if(G&&istype(G,/obj/items/Gun)) Gun=G
+		if(G&&istype(G,/obj/items/Gun))
+			Gun=G
+			nexus_gun_interaction_location=G.loc
+			if(!G.canContinueNexusGunInteraction(src, nexus_gun_interaction_location))
+				Gun=null
+				nexus_gun_interaction_location=null
+				return
 		var/Cell=1
 		for(var/obj/O in L)
 			winset(src,"Grid2.Main Grid2","current-cell=[Cell]")
@@ -175,7 +197,9 @@ mob/proc/Grid(list/L, obj/items/Gun/G, update_only, show_names = 1)
 		winset(src,"Grid2.Main Grid2","cells=[Cell]")
 		winset(src,"Grid2","is-visible=true")
 		if(!update_only) while(src&&client&&(winget(src,"Grid2","is-visible")=="true")) sleep(1)
-		if(istype(G,/obj/items/Gun)) Gun=null
+		if(istype(G,/obj/items/Gun) && Gun == G)
+			Gun=null
+			nexus_gun_interaction_location=null
 		if(!update_only) winset(src,"Grid2.Main Grid2","cells=0") //clear the grid
 
 mob/verb/Hide_Main_Grid()
@@ -191,7 +215,10 @@ var/list/weights_icons=new
 mob/var/tmp/obj/weights_icon_obj
 obj/weights_icon
 	Click()
-		if(!usr.weights_icon_obj) return
-		usr.weights_icon_obj.icon=icon
+		var/obj/items/Weights/weights = usr.weights_icon_obj
+		if(!weights || !weights.canUseAfterNexusTradeYield(usr)) return
+		var/new_weights_icon = icon
 		var/RGB=input(usr,"Choose color. Hit Cancel to have default color.") as color|null
-		if(RGB) usr.weights_icon_obj.icon+=RGB
+		if(usr.weights_icon_obj != weights || !weights.canUseAfterNexusTradeYield(usr)) return
+		weights.icon=new_weights_icon
+		if(RGB) weights.icon+=RGB

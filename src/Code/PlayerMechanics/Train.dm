@@ -697,6 +697,7 @@ mob/var/last_ss_time
 obj/Shadow_Spar_Overlay
 	icon = 'White.dmi'
 	layer = 7
+	plane = NEXUS_FIXED_HUD_PLANE
 
 proc/RandomSSColor()
 	return rgb(rand(0,255),rand(0,255),rand(0,255),rand(4,8))
@@ -710,6 +711,7 @@ mob/proc/Shadow_Spar_Loop()
 	var/mob/O=new
 	O.name="Shadow Spar Guy"
 	O.icon=icon
+	O.plane = NEXUS_FIXED_HUD_PLANE
 	//if(O.icon) O.icon+=rgb(0,0,0,100)
 
 	var/obj/Shadow_Spar_Overlay/o1 = GetCachedObject(/obj/Shadow_Spar_Overlay)

@@ -1555,6 +1555,37 @@ These legacy proc summaries are retained for reference. Their implementations no
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### datum/NexusVectorKinematics
+- Signature: `new(new_max_velocity = 32, new_acceleration = 32, initial_direction, initial_speed_ratio = 0)`
+- Inputs: velocity cap, acceleration, optional initial direction, and initial fraction of maximum speed.
+- Purpose: Maintain allocation-light X/Y velocity for accelerated projectiles and other movable skill actors.
+- Side effects: stores mutable velocity state on the datum.
+
+#### datum/NexusVectorKinematics/proc/steerToward
+- Signature: `steerToward(delta_x, delta_y, duration_deciseconds = 1)`
+- Purpose: Accelerate the current velocity toward an arbitrary displacement vector without exceeding acceleration or maximum speed.
+- Returns: resulting speed magnitude.
+
+#### datum/NexusVectorKinematics/proc/steerTowardAtom
+- Signature: `steerTowardAtom(atom/movable/subject, atom/movable/target, duration_deciseconds = 1, move_away = FALSE)`
+- Purpose: Steer toward or away from another movable using pixel-center displacement.
+- Returns: resulting speed magnitude.
+
+#### datum/NexusVectorKinematics/proc/distanceToAtom
+- Signature: `distanceToAtom(atom/movable/subject, atom/movable/target)`
+- Purpose: Return Euclidean pixel-center distance between two movables.
+
+#### datum/NexusVectorKinematics/proc/steerTowardDirection
+- Signature: `steerTowardDirection(movement_direction, duration_deciseconds = 1)`
+- Purpose: Steer toward a BYOND direction while preserving continuous velocity between direction changes.
+- Returns: resulting speed magnitude.
+
+#### datum/NexusVectorKinematics/proc/advance
+- Signature: `advance(atom/movable/subject, duration_deciseconds = 1, maximum_distance = -1)`
+- Purpose: Advance a movable through `vector_step()`, limit optional travel, and remove only collision-blocked velocity components.
+- Returns: the underlying vector-movement result.
+- Side effects: moves the subject, updates collision telemetry, and clears blocked fractional carry.
+
 #### atom/movable/proc/MoveByAngle
 - Signature: `atom/movable/proc/MoveByAngle(ang=0)`
 - Inputs: ang=0
@@ -1570,11 +1601,11 @@ These legacy proc summaries are retained for reference. Their implementations no
 - Side effects: see implementation.
 
 #### proc/vector_step
-- Signature: `proc/vector_step(atom/movable/a, ang = 0, step_speed)`
-- Inputs: atom/movable/a, ang = 0, step_speed
-- Purpose: Handle vector step.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Signature: `proc/vector_step(atom/movable/a, ang = 0, step_speed, requested_x, requested_y, movement_direction)`
+- Inputs: movable atom, angle and speed, or optional explicit X/Y displacement components and physical collision direction.
+- Purpose: Move by an angle or arbitrary vector components while preserving fractional pixels, bounded substeps, requested-versus-actual collision telemetry, and a collision direction independent of visible facing.
+- Returns: the final native `Move()` result or null when no whole-pixel move was attempted.
+- Side effects: updates position, fractional carry, and vector collision telemetry.
 
 #### proc/vector_step_dir
 - Signature: `proc/vector_step_dir(atom/movable/a, d, step_speed)`

@@ -44,7 +44,7 @@ mob/proc
 		o.alpha = 0
 		o.color = rgb(255,255,255)
 		var
-			screen_pixel_size = (ViewX * world.icon_size) + 32 //extra for padding
+			screen_pixel_size = (max_screen_size * world.icon_size) + 32 //fixed render envelope plus padding
 			img_size = 32 //if you change the image file size you must change this
 			size_mod = screen_pixel_size / img_size
 		o.transform = matrix() * size_mod * 2
@@ -63,7 +63,7 @@ mob/proc
 		animate(o)
 		o.alpha = 0
 		var
-			screen_pixel_size = (ViewX * world.icon_size) + 32 //extra for padding
+			screen_pixel_size = (max_screen_size * world.icon_size) + 32 //fixed render envelope plus padding
 			img_size = 192 //if you change the image file size you must change this
 			size_mod = screen_pixel_size / img_size
 		o.transform = matrix() * size_mod * 0.35
@@ -75,6 +75,7 @@ mob/proc
 obj/GTA5_Stuff
 	Savable = 0
 	layer = 9
+	plane = NEXUS_FIXED_HUD_PLANE
 	screen_loc = "CENTER"
 	mouse_opacity = 0
 
