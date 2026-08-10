@@ -20,6 +20,7 @@ var/const/SKILL_CONTROL_CONTROLLED = "Controlled"
 var/const/SKILL_HOMING_NONE = "None"
 var/const/SKILL_HOMING_GUIDED = "Guided"
 var/const/SKILL_HOMING_AUTO = "Auto"
+var/const/SKILL_HOMING_LAZY = "Lazy"
 
 var/const/SKILL_CONTROLLER_NONE = "None"
 var/const/SKILL_CONTROLLER_GUIDED_BLAST = "GuidedBlast"

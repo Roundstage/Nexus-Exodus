@@ -16,7 +16,6 @@ var/nexus_static_light_occlusion_updates_running = FALSE
 var/nexus_light_turf_occlusion_enabled = TRUE
 
 #define NEXUS_LIGHTING_PLANE 15
-#define NEXUS_HUD_PLANE 20
 #define NEXUS_GLOW_MASK_DIAMETER 256
 #define NEXUS_GLOW_DEFAULT_OFFSET 7
 #define NEXUS_LIGHT_OCCLUSION_MINIMUM_SIZE 1.5
@@ -269,6 +268,9 @@ client
 		initializeNexusLighting()
 			if(!nexus_lighting_plane) nexus_lighting_plane = new
 			if(!(nexus_lighting_plane in screen)) screen += nexus_lighting_plane
+			if(mob && mob.playerCharacter)
+				initializeNexusMapZoom()
+				applyNexusMapZoom(mob.ViewX, max_screen_size)
 			syncNexusLighting()
 
 		removeNexusLighting()

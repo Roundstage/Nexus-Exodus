@@ -33,6 +33,7 @@ mob/proc/Hell_Immune()
 	else if(Race in list("Demon")) return 1
 obj/Image
 	layer=10
+	plane=NEXUS_FIXED_HUD_PLANE
 	Savable=0
 
 mob/proc/Scary_Effects() while(1)
@@ -50,7 +51,9 @@ mob/proc/Random_Scary_Image() if(client)
 	client.screen+=I
 	spawn(rand(30,50)) if(src&&client) del(I)
 	while(I&&src&&client)
-		if(I in client.screen) I.screen_loc="[rand(1,ViewX-5)],[rand(1,ViewY-5)]"
+		if(I in client.screen)
+			var/render_height = getNexusMapRenderHeight(max_screen_size, client.resolutionX, client.resolutionY)
+			I.screen_loc="[rand(1,max(1,max_screen_size-5))],[rand(1,max(1,render_height-5))]"
 		sleep(1)
 mob/proc/Freddy_Kreuger_Image()
 	src<<sound(0)
@@ -64,7 +67,9 @@ mob/proc/Freddy_Kreuger_Image()
 	client.screen+=I
 	spawn(rand(30,50)) if(src&&client) del(I)
 	while(I&&src&&client)
-		if(I in client.screen) I.screen_loc="[rand(1,ViewX-5)],[rand(1,ViewY-5)]"
+		if(I in client.screen)
+			var/render_height = getNexusMapRenderHeight(max_screen_size, client.resolutionX, client.resolutionY)
+			I.screen_loc="[rand(1,max(1,max_screen_size-5))],[rand(1,max(1,render_height-5))]"
 		sleep(1)
 	src<<sound(0)
 

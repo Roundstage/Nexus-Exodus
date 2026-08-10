@@ -208,7 +208,6 @@ mob/Del()
 		splitform_cache+=src*/
 		if(Maker && ismob(Maker))
 			Maker.splitform_list -= src
-			if(Maker.client) Maker.client.screen-=src
 		. = ..()
 
 	else

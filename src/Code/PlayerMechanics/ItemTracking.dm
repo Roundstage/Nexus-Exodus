@@ -1,4 +1,5 @@
 mob/var/tmp/list/item_list=new
+obj/items/var/tmp/nexus_move_revision
 
 obj/items/New()
 	spawn if(ismob(loc))
@@ -7,6 +8,7 @@ obj/items/New()
 		M.Restore_hotbar_from_IDs()
 
 obj/items/Move()
+	var/atom/original_location = loc
 	if(ismob(loc))
 		var/mob/m=loc
 		m.item_list-=src
@@ -15,6 +17,7 @@ obj/items/Move()
 		m.Restore_hotbar_from_IDs()
 		if(m) m.ShikonAura()
 	. = ..()
+	if(. && loc != original_location) nexus_move_revision++
 	if(ismob(loc))
 		var/mob/m=loc
 		m.item_list+=src

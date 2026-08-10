@@ -339,7 +339,7 @@ mob/proc/craftForgedMask(style_id)
 	return mask
 
 mob/proc/upgradeForgedEquipment(obj/items/equipment)
-	if(!equipment || equipment.loc != src) return
+	if(!equipment || !equipment.canUseAfterNexusTradeYield(src)) return
 	if(equipment.suffix)
 		src << "Remove [equipment] before improving it."
 		return
@@ -390,8 +390,9 @@ mob/proc/upgradeForgedEquipment(obj/items/equipment)
 		src << "Your Smithing level is too low for [equipment]'s next material upgrade."
 		return
 	var/choice = input(src, "Choose [equipment]'s new material module. The cosmetic skin will not change. Bronze branches into Iron/Mythril/Masterwork or Silver/Auracite.", "Improve Equipment") as null|anything in options
-	if(isnull(choice)) return
+	if(isnull(choice) || !(choice in options) || !equipment.canUseAfterNexusTradeYield(src)) return
 	var/datum/ForgedMaterial/new_material = options[choice]
+	if(!new_material || !(new_material in upgrades)) return
 	var/final_cost = max(1, new_material.ore_cost - getSmithingOreDiscount())
 	if(!consumeOre(new_material.ore_type, final_cost))
 		var/obj/items/Ore/ore_example = new new_material.ore_type
@@ -607,12 +608,12 @@ obj/items/Sword/Forged
 		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Attack BP reinforcement: +[round(forged_attack_bp_bonus * 100)]%<br>Damage type: [Style]<br>[material.description]"
 
 	proc/customizeForgedWeapon(mob/user)
-		if(!user || loc != user) return
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(suffix)
 			user << "You can not customize a weapon that is being worn."
 			return
 		var/datum/ForgedWeaponStyle/style = user.chooseForgedWeaponStyle("Customize Weapon")
-		if(!style) return
+		if(!style || !canUseAfterNexusTradeYield(user)) return
 		forged_style_id = style.id
 		refreshForgedWeapon()
 
@@ -692,12 +693,12 @@ obj/items/Armor/Forged
 		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Endurance BP reinforcement: +[round(forged_defense_bp_bonus * 100)]%<br>Weight: [round(heaviness, 0.01)]x<br>[material.description]"
 
 	proc/customizeForgedArmor(mob/user)
-		if(!user || loc != user) return
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(suffix)
 			user << "You can not customize armor that is being worn."
 			return
 		var/datum/ForgedArmorStyle/style = user.chooseForgedArmorStyle("Customize Armor")
-		if(!style) return
+		if(!style || !canUseAfterNexusTradeYield(user)) return
 		forged_style_id = style.id
 		refreshForgedArmor()
 
@@ -810,11 +811,13 @@ obj/items/Gloves/Forged
 
 	verb/Customize()
 		set src in usr
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(suffix)
-			usr << "You can not customize gloves that are being worn."
+			user << "You can not customize gloves that are being worn."
 			return
-		var/datum/ForgedGloveStyle/style = usr.chooseForgedGloveStyle("Customize Gloves")
-		if(!style) return
+		var/datum/ForgedGloveStyle/style = user.chooseForgedGloveStyle("Customize Gloves")
+		if(!style || !canUseAfterNexusTradeYield(user)) return
 		forged_style_id = style.id
 		refreshForgedGloves()
 
@@ -935,11 +938,13 @@ obj/items/Mask/Forged
 
 	verb/Customize()
 		set src in usr
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(suffix)
-			usr << "You can not customize a mask that is being worn."
+			user << "You can not customize a mask that is being worn."
 			return
-		var/datum/ForgedMaskStyle/style = usr.chooseForgedMaskStyle("Customize Mask")
-		if(!style) return
+		var/datum/ForgedMaskStyle/style = user.chooseForgedMaskStyle("Customize Mask")
+		if(!style || !canUseAfterNexusTradeYield(user)) return
 		forged_style_id = style.id
 		refreshForgedMask()
 

@@ -296,24 +296,38 @@ obj/items/Scrapper
 		Use()
 
 	verb/Use()
-		for(var/obj/o in Get_step(usr,usr.dir)) if(o.Builder && o.can_scrap) if(o.Cost || o.Total_Cost)
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		for(var/obj/o in Get_step(user,user.dir)) if(o.Builder && o.can_scrap) if(o.Cost || o.Total_Cost)
 			if(o.cached || o.deleted) continue
 			if(o.current_scrapper) return
-			player_view(15,usr)<<"[usr] begins scrapping the [o]..."
+			player_view(15,user)<<"[user] begins scrapping the [o]..."
 			o.current_scrapper=src
+			var/atom/original_target_location = o.loc
+			var/obj/items/target_item
+			var/target_move_revision = 0
+			if(istype(o, /obj/items))
+				target_item = o
+				target_move_revision = target_item.nexus_move_revision
 			var/res = o.Scrap_value()
 			if(res >= 300000 || istype(o,/obj/Turret))
-				var/timer=ToOne(50*usr.Speed_delay_mult(severity=0.5))
+				var/timer=ToOne(50*user.Speed_delay_mult(severity=0.5))
 				if(istype(o,/obj/Ships/Ship)) timer*=8
 				for(var/v in 1 to timer)
-					if(!o||getdist(o,usr)>1)
-						usr<<"Scrapping cancelled"
+					if(!o || o.loc != original_target_location || (target_item && target_item.nexus_move_revision != target_move_revision) || getdist(o,user)>1 || !canUseAfterNexusTradeYield(user) || o.current_scrapper != src)
+						if(o && o.current_scrapper == src) o.current_scrapper = null
+						user<<"Scrapping cancelled"
 						return
 					sleep(1)
-			if(!o) return
-			if(o.current_scrapper!=src) return
-			usr.Alter_Res(res)
-			player_view(15,usr)<<"[usr] scraps the [o] and recieves [Commas(res)] resources"
+					if(!canUseAfterNexusTradeYield(user) || !o || o.loc != original_target_location || (target_item && target_item.nexus_move_revision != target_move_revision) || getdist(o,user)>1 || o.current_scrapper != src)
+						if(o && o.current_scrapper == src) o.current_scrapper = null
+						return
+			if(!o || o.loc != original_target_location || (target_item && target_item.nexus_move_revision != target_move_revision) || getdist(o,user)>1 || !canUseAfterNexusTradeYield(user) || o.current_scrapper!=src)
+				if(o && o.current_scrapper == src) o.current_scrapper = null
+				return
+			o.current_scrapper = null
+			user.Alter_Res(res)
+			player_view(15,user)<<"[user] scraps the [o] and recieves [Commas(res)] resources"
 			if(istype(o,/obj/Drill))
 				var/obj/Drill/d = o
 				d.drill_drop_res_on_delete = 0
@@ -538,25 +552,28 @@ obj/items/Call_bounty_drone
 		set hidden=1
 		Use()
 	verb/Use()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(world.realtime<next_call)
-			usr<<"You must wait a minute before you can use this again"
+			user<<"You must wait a minute before you can use this again"
 			return
-		var/turf/t=Get_step(usr,usr.dir)
+		var/turf/t=Get_step(user,user.dir)
 		if(!t||t.density)
 			usr<<"Invalid signal location"
 			return
 		var/list/mobs=list("Cancel")
-		for(var/mob/m in player_view(15,usr)) if(m.Has_Bounty() && m.KO) mobs += m
+		for(var/mob/m in player_view(15,user)) if(m.Has_Bounty() && m.KO) mobs += m
 		if(mobs.len==1)
 			usr<<"There are no knocked out wanted persons nearby to call a bounty drone on"
 			return
-		var/mob/m=input("Who is the drone here for?") in mobs
-		if(!m||m=="Cancel") return
+		var/mob/m=input(user, "Who is the drone here for?") in mobs
+		if(!m || m=="Cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(m in mobs) || !m.Has_Bounty() || !m.KO || !(m in player_view(15,user))) return
 		next_call=world.realtime+600
-		player_view(15,usr)<<"[usr] signals for a bounty drone"
+		player_view(15,user)<<"[user] signals for a bounty drone"
 		sleep(30)
-		if(!m) return
-		Deploy_Drone(m,null,t,usr)
+		if(!m || !canContinueNexusTradeInteraction(user, original_location) || !m.Has_Bounty() || !m.KO || !(m in player_view(15,user)) || !t || t.density) return
+		Deploy_Drone(m,null,t,user)
 
 
 var/list/ki_field_generators=new
@@ -612,17 +629,22 @@ obj/items/Radar
 			suffix=null
 			usr.radar_obj=null
 	verb/Set()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(Detects)
-			switch(alert("Are you sure you want to reset detection to another object type?","","No","Yes"))
+			var/reset_choice = alert(user, "Are you sure you want to reset detection to another object type?","","No","Yes")
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			switch(reset_choice)
 				if("No") return
-		for(var/obj/O in Get_step(usr,usr.dir))
+		for(var/obj/O in Get_step(user,user.dir))
 			Detects=O.type
 
 			//so setting a radar to detect pods will also detect ships
 			if(istype(O,/obj/Ships))
 				Detects=/obj/Ships
 
-			usr<<"[src] set to detect [initial(O.name)] objects"
+			user<<"[src] set to detect [initial(O.name)] objects"
 			return
 		usr<<"No object found. Face an object you want the Radar to detect and hit Set. It will then detect all \
 		objects of that type."
@@ -647,15 +669,19 @@ obj/items/Door_Hacker
 
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			var/Max_Upgrade = 0.98 * usr.maxTurfUpgrade()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			var/Max_Upgrade = 0.98 * user.maxTurfUpgrade()
 			var/Percent=(BP/Max_Upgrade)*100
 			var/Res_Cost=Item_cost(usr,src)/500
 			if(Percent>=100)
 				usr<<"This is 100% upgraded at this time and cannot go any further."
 				return
-			var/Amount=input("[src] is at [Percent]% of its max upgrade. Each 1% upgrade cost [Commas(Res_Cost)]$. \
+			var/Amount=input(user, "[src] is at [Percent]% of its max upgrade. Each 1% upgrade cost [Commas(Res_Cost)]$. \
 			([Percent]-100%)") as num
+			if(!canContinueNexusTradeInteraction(user, original_location) || !(user in view(1,src))) return
 			if(Amount>100) Amount=100
 			if(Amount<0.1)
 				usr<<"Amount must be higher than 0.1%"
@@ -664,12 +690,12 @@ obj/items/Door_Hacker
 				usr<<"This cannot be downgraded."
 				return
 			Res_Cost*=Amount-Percent
-			if(usr.Res()<Res_Cost)
-				usr<<"You do not have enough resources to do this."
+			if(user.Res()<Res_Cost)
+				user<<"You do not have enough resources to do this."
 				return
-			usr.Alter_Res(-Res_Cost)
+			user.Alter_Res(-Res_Cost)
 			BP=Max_Upgrade*(Amount/100)
-			player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]%"
+			player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]%"
 			desc="Level [Commas(BP)]"
 			suffix=Commas(BP)
 
@@ -679,6 +705,7 @@ mob/proc/sword_mult()
 	return n
 
 obj/items/Devil_Mat
+	var/tmp/disabled_cleanup_pending = TRUE
 	Stealable=1
 	clonable = 0
 	desc="Meditating on this mat will actually DECREASE the stat you are focused on. This can be useful if \
@@ -713,7 +740,9 @@ obj/items/Devil_Mat
 		overlays-=I
 		overlays+=I
 
-		spawn(5) del(src) //DISABLED DEVIL MATS
+		spawn(5)
+			if(src) disabled_cleanup_pending = FALSE
+			del(src) //DISABLED DEVIL MATS
 
 		. = ..()
 
@@ -1112,22 +1141,27 @@ obj/items/Pod_Race_Computer
 		for(var/obj/O in Racer_List) Racers+=1
 	verb/Set()
 		set src in view(1,usr)
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		var/list/Options=list("Cancel")
-		if(Builder!=usr.key) Options+="Become Administrator"
+		if(Builder!=user.key) Options+="Become Administrator"
 		else
 			Options+="Start Race"
 			Options+="Set Max Racers"
 			Options+="Bolt/Unbolt"
 			Options+="Declare Winner"
-		switch(input("Options") in Options)
+		var/selected_option = input(user, "Options") in Options
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(selected_option in Options)) return
+		switch(selected_option)
 			if("Cancel") return
 			if("Declare Winner")
 				usr<<"After someone wins a race you have to declare them as the winner, it cannot be detected \
 				automatically. Once this is done all bets will automatically be given out to the appropriate betters."
 				Options=list("Cancel")
 				for(var/obj/OO in Racer_List) Options+=OO
-				var/obj/OO=input("Choose the winner") in Options
-				if(OO=="Cancel") return
+				var/obj/OO=input(user, "Choose the winner") in Options
+				if(OO=="Cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(OO in Options) || !(OO in Racer_List)) return
 				else
 					player_view(15,src)<<"<font size=4><font color=yellow>[OO] has been declared winner of the race!"
 					var/Losing_Bet_Total=0
@@ -1149,7 +1183,7 @@ obj/items/Pod_Race_Computer
 						for(var/O in Bets[M]) if(isnum(O)) Amount=O
 						var/Percentage=Winning_Bet_Total/Amount
 						var/Winnings=round(Winning_Bet_Total*Percentage)
-						usr.Alter_Res(Winnings)
+						user.Alter_Res(Winnings)
 						M<<"<font color=yellow>You won [Commas(Winnings)]$ from your bet on [OO]!"
 						Bets-=M
 				Racer_List=new/list
@@ -1159,25 +1193,30 @@ obj/items/Pod_Race_Computer
 				if(Bolted) usr<<"The [src] is now bolted"
 				else usr<<"The [src] is now unbolted"
 			if("Become Administrator")
-				switch(alert("Setting yourself as administrator of this computer gives you the ability to decide \
-				when races start and things like that, it will cost you [Commas(1000000/usr.Intelligence())]$ to \
-				set yourself as administrator. Accept cost?","Options","No","Yes"))
+				var/administrator_choice = alert(user, "Setting yourself as administrator of this computer gives you the ability to decide \
+				when races start and things like that, it will cost you [Commas(1000000/user.Intelligence())]$ to \
+				set yourself as administrator. Accept cost?","Options","No","Yes")
+				if(!canContinueNexusTradeInteraction(user, original_location) || Builder == user.key) return
+				switch(administrator_choice)
 					if("No") return
 					if("Yes")
-						if(usr.Res()<10000/usr.Intelligence())
-							usr<<"You do not have enough money"
+						if(user.Res()<10000/user.Intelligence())
+							user<<"You do not have enough money"
 							return
-						usr.Alter_Res(-(10000/usr.Intelligence()))
-						player_view(15,src)<<"[usr] has set themselves as administrator of [src]"
-						Builder=usr.key
+						user.Alter_Res(-(10000/user.Intelligence()))
+						player_view(15,src)<<"[user] has set themselves as administrator of [src]"
+						Builder=user.key
 			if("Start Race")
 				player_view(15,src)<<"<font size=4><font color=yellow>The race is starting in 10 seconds! GET READY! This is \
 				the only warning!"
 				sleep(100)
+				if(!canContinueNexusTradeInteraction(user, original_location)) return
 				player_view(15,src)<<"<font size=4><font color=red>THE RACE HAS STARTED! GO!"
 				for(var/obj/O in Racer_List) O.Can_Move=1
 			if("Set Max Racers")
-				Max_Racers=input("Current max is [Max_Racers]") as num
+				var/new_max_racers = input(user, "Current max is [Max_Racers]") as num
+				if(!canContinueNexusTradeInteraction(user, original_location)) return
+				Max_Racers = new_max_racers
 				if(Max_Racers<2)
 					usr<<"It cannot be less than 2"
 					return
@@ -1186,36 +1225,42 @@ obj/items/Pod_Race_Computer
 		set hidden=1
 		Click()
 	Click() if((usr in view(1,src))||(usr.Ship in view(1,src)))
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		Count_Racers()
 		var/list/Options=list("Cancel")
 		if(Racers<Max_Racers)
-			if(usr.Ship in view(1,src))
+			if(user.Ship in view(1,src))
 				Options+="Register to Race"
 				Options+="Withdraw from Race"
 			else usr<<"To register for a race, you must be in your ship and next to this computer, then click \
 			the computer"
 		Options+="Place Bet"
-		switch(input("Options") in Options)
+		var/selected_option = input(user, "Options") in Options
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(selected_option in Options)) return
+		switch(selected_option)
 			if("Cancel") return
 			if("Place Bet")
 				Options=list("Cancel")
 				for(var/obj/O in Racer_List) Options+=O
-				var/obj/O=input("Choose which racer to place a bet on") in Options
-				if(O=="Cancel") return
+				var/obj/O=input(user, "Choose which racer to place a bet on") in Options
+				if(O=="Cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(O in Options) || !(O in Racer_List)) return
 				else
-					var/Bet=input("Place your bet on [O]") as num
+					var/Bet=input(user, "Place your bet on [O]") as num
+					if(!canContinueNexusTradeInteraction(user, original_location) || !(O in Racer_List)) return
 					if(Bet<=0)
 						usr<<"Bet too low"
 						return
-					if(Bet>usr.Res())
+					if(Bet>user.Res())
 						usr<<"You do not have that much money"
 						return
 					if(!O)
 						usr<<"[O] no longer exists"
 						return
 					Bet=round(Bet)
-					player_view(15,src)<<"<font color=yellow>[usr] has placed a bet of [Commas(Bet)]$ on [O]"
-					Bets.Add(usr=list(Bet,O))
+					player_view(15,src)<<"<font color=yellow>[user] has placed a bet of [Commas(Bet)]$ on [O]"
+					Bets.Add(user=list(Bet,O))
 			if("Register to Race")
 				Count_Racers()
 				if(Racers>Max_Racers)
@@ -1255,6 +1300,9 @@ obj/items/Nav_System
 		set hidden=1
 		Autopilot()
 	verb/Autopilot()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(!Autopilot) usr<<"[src] does not have autopilot"
 		else
 			if(!usr.Ship)
@@ -1266,43 +1314,46 @@ obj/items/Nav_System
 			var/list/L=list("Cancel")
 			if(Destination) L+="Cancel Destination"
 			for(var/obj/Planets/P) if(P.z==usr.Ship.z&&P.Nav_Level<=Upgrade_Level) L+=P
-			var/obj/O=input("Choose an option") in L
-			if(!O||O=="Cancel") return
+			var/obj/O=input(user, "Choose an option") in L
+			if(!O || O=="Cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(O in L)) return
 			if(O=="Cancel Destination")
 				Destination=null
 				return
 			Destination=O
-			spawn while(src&&(Destination||step_tos<max_step_tos))
+			spawn while(src && canContinueNexusTradeInteraction(user, original_location) && (Destination || step_tos < max_step_tos))
 				step_tos++
 				if(step_tos>max_step_tos) step_tos=max_step_tos
 				sleep(30)
 			var/step_normally=1
-			while(usr&&usr.Ship&&O&&O.z==usr.Ship.z&&O==Destination)
-				var/turf/t=usr.Ship.loc
-				if(step_normally) step_towards(usr.Ship,O)
-				if(t&&isturf(t)&&usr.Ship&&usr.Ship.loc==t)
-					usr.Ship.g_step_to(Destination)
+			while(user&&user.Ship&&O&&O.z==user.Ship.z&&O==Destination&&canContinueNexusTradeInteraction(user, original_location))
+				var/turf/t=user.Ship.loc
+				if(step_normally) step_towards(user.Ship,O)
+				if(t&&isturf(t)&&user.Ship&&user.Ship.loc==t)
+					user.Ship.g_step_to(Destination)
 					step_tos--
-					if(!step_tos||getdist(usr.Ship,Destination)<=1) step_normally=1
+					if(!step_tos||getdist(user.Ship,Destination)<=1) step_normally=1
 					else step_normally=0
 				sleep(1)
 			Destination=null
 	verb/Upgrade()
 		set src in view(1)
-		if(!usr.Intelligence()) return
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location) || !user.Intelligence()) return
 		if(Upgrade_Level>=Max_Upgrade)
 			alert("This is upgraded to the maximum already")
 			return
-		var/cost_mod=1/usr.Intelligence()
+		var/cost_mod=1/user.Intelligence()
 		var/max_cost=(Max_Upgrade-Upgrade_Level)*cost_mod
-		var/money=input("How many resources do you want to put in this? [Commas(max_cost)]$ more \
+		var/money=input(user, "How many resources do you want to put in this? [Commas(max_cost)]$ more \
 		unlocks all planets") as num
-		if(money>usr.Res()) money=usr.Res()
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(user in view(1,src))) return
+		if(money>user.Res()) money=user.Res()
 		if(money<=0) return
 		if(money>max_cost) money=max_cost
 		Upgrade_Level+=money/cost_mod
-		usr.Alter_Res(-money)
-		player_view(15,usr)<<"[usr] puts [Commas(money)]$ into the [src]"
+		user.Alter_Res(-money)
+		player_view(15,user)<<"[user] puts [Commas(money)]$ into the [src]"
 		if(!Autopilot&&Upgrade_Level>=Max_Upgrade*0.7)
 			Autopilot=1
 			player_view(15,usr)<<"The [src] now has autopilot"
@@ -1319,17 +1370,20 @@ obj/items/Resource_Vaccuum
 		set hidden=1
 		Click()
 	Click() if(src in usr)
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(Vaccuuming) return
 		Vaccuuming=1
 		spawn(100) Vaccuuming=0
-		for(var/obj/Resources/R in view(15,usr))
-			spawn while(R&&!(R in usr)&&R.loc)
+		for(var/obj/Resources/R in view(15,user))
+			spawn while(R && !(R in user) && R.loc && canUseAfterNexusTradeYield(user))
 				var/Old_Loc=R.loc
-				step_towards(R,usr)
+				step_towards(R,user)
 				if(R)
 					if(R.loc==Old_Loc) break
-					if(R in view(1,usr))
-						usr.Alter_Res(R.Value)
+					if(R in view(1,user))
+						if(!canUseAfterNexusTradeYield(user)) return
+						user.Alter_Res(R.Value)
 						R.Value = 0
 						del(R)
 				sleep(2)
@@ -1351,10 +1405,14 @@ obj/items/Door_Pass
 		set hidden=1
 		Click()
 	Click()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(Password)
-			usr<<"It has already been programmed and cannot be reprogrammed."
+			user<<"It has already been programmed and cannot be reprogrammed."
 			return
-		Password=input("Enter a password for the doors to check if it is correct") as text
+		var/new_password = input(user, "Enter a password for the doors to check if it is correct") as text
+		if(!canUseAfterNexusTradeYield(user) || Password) return
+		Password = new_password
 
 mob/proc/Clone_Tank() if(client) for(var/obj/items/Cloning_Tank/T in cloning_tanks) if(T.z&&T.Password==key&&Dead)
 	player_view(15,src)<<"[src] has been revived by their [T]"
@@ -1444,21 +1502,25 @@ obj/items/Force_Field
 		Upgrade()
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			var/Max_Upgrade=usr.Knowledge*1*usr.Intelligence()**0.2
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			var/Max_Upgrade=user.Knowledge*1*user.Intelligence()**0.2
 			var/Percent=(Level/Max_Upgrade)*100
-			var/Res_Cost=Item_cost(usr,src)/100
-			if(usr.last_attacked_by_player+900>world.time)
-				usr<<"You can not upgrade this right now because you are considered in combat from being \
+			var/Res_Cost=Item_cost(user,src)/100
+			if(user.last_attacked_by_player+900>world.time)
+				user<<"You can not upgrade this right now because you are considered in combat from being \
 				recently attacked."
 				return
 			if(Percent>=100)
 				usr<<"This is 100% upgraded at this time and cannot go any further."
 				return
-			var/Amount=input("This [src] is at level [Level]. The current maximum is \
+			var/Amount=input(user, "This [src] is at level [Level]. The current maximum is \
 			[Max_Upgrade]. \
 			It is at [Percent]% maximum power. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. Input \
 			the percentage of power you wish to bring the [src] to. ([Percent]-100%)") as num
+			if(!canContinueNexusTradeInteraction(user, original_location) || !(user in view(1,src))) return
 			if(Amount>100) Amount=100
 			if(Amount<0.1)
 				usr<<"Amount must be higher than 0.1%"
@@ -1467,12 +1529,12 @@ obj/items/Force_Field
 				usr<<"The weapon cannot be downgraded."
 				return
 			Res_Cost*=Amount-Percent
-			if(usr.Res()<Res_Cost)
-				usr<<"You do not have enough resources to do this."
+			if(user.Res()<Res_Cost)
+				user<<"You do not have enough resources to do this."
 				return
-			usr.Alter_Res(-Res_Cost)
+			user.Alter_Res(-Res_Cost)
 			Level=Max_Upgrade*(Amount/100)
-			player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(Level)] BP)"
+			player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]% ([Commas(Level)] BP)"
 			Force_Field_Desc()
 mob/proc/Force_Field(Icon='ForceField.dmi',C=rgb(100,200,250,120),State="")
 	set waitfor=0
@@ -1493,15 +1555,25 @@ obj/items/Detonator
 	science_level = 5
 	science_path = "Engineering"
 	desc="This can be used to activate the detonation sequence on bombs or missiles from afar."
-	verb/Set() Password=input("Set a password to activate bombs of matching passwords.") as text
+	verb/Set()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/new_password = input(user, "Set a password to activate bombs of matching passwords.") as text
+		if(!canUseAfterNexusTradeYield(user)) return
+		Password = new_password
 	verb/Hotbar_use()
 		set hidden=1
 		Use()
 	verb/Use()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(!Password) Set()
-		switch(input("Confirm detonation command:") in list("Yes","No"))
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/detonation_choice = input(user, "Confirm detonation command:") in list("Yes","No")
+		if(!canUseAfterNexusTradeYield(user)) return
+		switch(detonation_choice)
 			if("Yes")
-				player_view(15,usr)<<"[usr] activates their remote detonator"
+				player_view(15,user)<<"[user] activates their remote detonator"
 				var/list/Bombs=new
 				for(var/obj/items/Nuke/A) if(A.loc) Bombs+=A
 				for(var/obj/B in Bombs)
@@ -1534,13 +1606,18 @@ obj/items/Cloak_Controls
 		set hidden=1
 		Use()
 	verb/Use()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		var/list/L=list("Cancel")
 		if(Password)
 			if(Active) L+="Uncloak all objects"
 			else L+="Cloak all objects"
 		L+="Set cloak frequency"
 		L+="Uninstall cloak from object"
-		switch(input("[src] options") in L)
+		var/cloak_choice = input(user, "[src] options") in L
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(cloak_choice in L)) return
+		switch(cloak_choice)
 			if("Cloak all objects")
 				Active=1
 				player_view(15,usr)<<"[usr] activates all their cloak chips"
@@ -1550,8 +1627,9 @@ obj/items/Cloak_Controls
 				player_view(15,usr)<<"[usr] deactivates all their cloak chips"
 				for(var/obj/O) for(var/obj/items/Cloak/C in O) if(C.Password==Password) O.invisibility=0
 			if("Set cloak frequency")
-				Password=input("Set the frequency for the cloak controls, it will control all cloak chips sharing this \
-				frequency") as text
+				var/new_password=input(user, "Set the frequency for the cloak controls, it will control all cloak chips sharing this frequency") as text
+				if(!canContinueNexusTradeInteraction(user, original_location)) return
+				Password = new_password
 			if("Uninstall cloak from object")
 				for(var/obj/O in Get_step(usr,usr.dir)) for(var/obj/items/Cloak/C in O)
 					player_view(15,usr)<<"[usr] removes the cloaking system from [O]"
@@ -1571,11 +1649,19 @@ obj/items/Cloak
 	verb/Hotbar_use()
 		set hidden=1
 		Use()
-	verb/Set() Password=input("Set the password for this cloak") as text
+	verb/Set()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/new_password = input(user, "Set the password for this cloak") as text
+		if(!canUseAfterNexusTradeYield(user)) return
+		Password = new_password
 	verb/Use()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		if(!Password) Set()
-		for(var/obj/A in Get_step(usr,usr.dir)) if(A.Cloakable)
-			player_view(15,usr)<<"[usr] installs a cloaking system onto the [A]"
+		if(!canUseAfterNexusTradeYield(user)) return
+		for(var/obj/A in Get_step(user,user.dir)) if(A.Cloakable)
+			player_view(15,user)<<"[user] installs a cloaking system onto the [A]"
 			Move(A)
 obj/items/Communicator
 	Cost=1000
@@ -1600,8 +1686,12 @@ obj/items/Communicator
 		for(var/obj/items/Communicator/S in P.item_list)
 			if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
 				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]><b>\[[html_encode(language_name)]\]</b> [usr]: [html_encode(rendered_message)]"
-	verb/Frequency() Frequency=input("Choose a frequency, it can be anything. It lets you talk to \
-	others on the same frequency. Default is 1") as text
+	verb/Frequency()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/new_frequency = input(user, "Choose a frequency, it can be anything. It lets you talk to others on the same frequency. Default is 1") as text
+		if(!canUseAfterNexusTradeYield(user)) return
+		Frequency = new_frequency
 obj/items/Stun_Chip
 	Cost=1000000
 	science = 1
@@ -1621,20 +1711,26 @@ obj/items/Stun_Chip
 		Use()
 
 	verb/Use(mob/A in view(1,usr))
-		if(usr.tournament_override(fighters_can=0))
-			usr<<"You can not stun chip people in a tournament"
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		if(user.tournament_override(fighters_can=0))
+			user<<"You can not stun chip people in a tournament"
 			return
 
-		if(A && (A == usr || A.KO || A.Frozen))
-			player_view(15,usr)<<"[usr] installs a stun chip in [A]"
+		if(A && (A == user || A.KO || A.Frozen))
+			var/access_code = input(user, "Input a remote access code to activate the chip") as text
+			if(!canUseAfterNexusTradeYield(user) || !A || !(A in view(1, user)) || !(A == user || A.KO || A.Frozen)) return
+			player_view(15,user)<<"[user] installs a stun chip in [A]"
 			var/obj/Stun_Chip/B=new
-			B.Password=input("Input a remote access code to activate the chip") as text
+			B.Password = access_code
 			A.contents+=B
 			del(src)
 
 	verb/Remove(mob/A in view(1,usr))
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user) || !A || !(A in view(1, user))) return
 		for(var/obj/Stun_Chip/B in A)
-			player_view(15,usr)<<"[usr] removes a Stun Chip from [A]"
+			player_view(15,user)<<"[user] removes a Stun Chip from [A]"
 			del(B)
 		del(src)
 var/list/stun_chips=new
@@ -1659,20 +1755,29 @@ obj/items/Stun_Controls
 	on people within range."
 	Stealable=1
 	var/tmp/cant_stun=0
-	verb/Set() Password=input("Input a remote access code for activating nearby stun chips") as text
+	verb/Set()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/new_password = input(user, "Input a remote access code for activating nearby stun chips") as text
+		if(!canUseAfterNexusTradeYield(user)) return
+		Password = new_password
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in view(1,src))
-			var/Max_Upgrade=usr.Knowledge*2*usr.Intelligence()**0.25
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in view(1,src))
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			var/Max_Upgrade=user.Knowledge*2*user.Intelligence()**0.25
 			var/Percent=(BP/Max_Upgrade)*100
 			var/Res_Cost=Item_cost(usr,src)/500
 			if(Percent>=100)
 				usr<<"This is 100% upgraded at this time and cannot go any further."
 				return
-			var/Amount=input("This is upgraded to [Commas(BP)] BP. The current maximum is \
+			var/Amount=input(user, "This is upgraded to [Commas(BP)] BP. The current maximum is \
 			[Commas(Max_Upgrade)] BP. \
 			It is at [Percent]% maximum power. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. Input \
 			the percentage of power you wish to bring this to. ([Percent]-100%)") as num
+			if(!canContinueNexusTradeInteraction(user, original_location) || !(user in view(1,src))) return
 			if(Amount>100) Amount=100
 			if(Amount<0.1)
 				usr<<"Amount must be higher than 0.1%"
@@ -1681,10 +1786,10 @@ obj/items/Stun_Controls
 				usr<<"The weapon cannot be downgraded."
 				return
 			Res_Cost*=Amount-Percent
-			if(usr.Res()<Res_Cost)
+			if(user.Res()<Res_Cost)
 				usr<<"You do not have enough resources to do this."
 				return
-			usr.Alter_Res(-Res_Cost)
+			user.Alter_Res(-Res_Cost)
 			BP=Max_Upgrade*(Amount/100)
 			player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(BP)] BP)"
 	verb/Hotbar_use()
@@ -1760,11 +1865,16 @@ obj/items/Transporter_Pad
 
 	verb/Set()
 		set src in view(1)
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(!Password)
-			Password=input("Set the indentification code, you can only transport to \
-			other pads using the same code") as text
-			name=input("Name the transporter pad, preferably name it after the location it will take you \
-			to") as text
+			var/new_password=input(user, "Set the indentification code, you can only transport to other pads using the same code") as text
+			if(!canContinueNexusTradeInteraction(user, original_location) || Password) return
+			var/new_name=input(user, "Name the transporter pad, preferably name it after the location it will take you to") as text
+			if(!canContinueNexusTradeInteraction(user, original_location) || Password) return
+			Password = new_password
+			name = new_name
 			if(!name) name=initial(name)
 		else usr<<"It is already initialized"
 
@@ -1788,6 +1898,9 @@ obj/items/Transporter_Watch
 		Password=null
 
 	proc/Transport()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(usr.Teleport_nulled(Password))
 			usr<<"The telewatch will not work because there is a teleport nullifier somewhere disrupting it"
 			return
@@ -1826,9 +1939,9 @@ obj/items/Transporter_Watch
 			if(t.z == Z_LEVEL_HBTC && usr.z != Z_LEVEL_HBTC) l-=t //hbtc
 		var/mob/m
 		if(l.len==2) m=l[2]
-		else m=input("Select a teleport location. You can teleport to telepads or teleport to someone who \
+		else m=input(user, "Select a teleport location. You can teleport to telepads or teleport to someone who \
 			has a telewatch on them with a matching code") in l
-		if(!m||m=="cancel") return
+		if(!m || m=="cancel" || !canContinueNexusTradeInteraction(user, original_location) || !(m in l)) return
 		if(m && ismob(m) && m.KO)
 			usr << "You can not teleport to knocked out people"
 			return
@@ -1858,6 +1971,9 @@ obj/items/Transporter_Watch
 				break
 
 			sleep(TickMult(1))
+			if(!canContinueNexusTradeInteraction(user, original_location))
+				user.overlays-='SBombGivePower.dmi'
+				return
 		usr.overlays-='SBombGivePower.dmi'
 		usr.overlays-='SBombGivePower.dmi'
 		if(ismob(usr.loc)) return
@@ -1879,8 +1995,11 @@ obj/items/Transporter_Watch
 	verb/Use() if(!usr.KO) Transport()
 
 	verb/Set_frequency()
-		Password=input("set the frequency. this will allow you to teleport to other telepads and \
-		telewatches that use the same frequency") as text|null
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/new_password=input(user, "set the frequency. this will allow you to teleport to other telepads and telewatches that use the same frequency") as text|null
+		if(!canUseAfterNexusTradeYield(user)) return
+		Password = new_password
 
 obj/var/Injection
 mob/var/Intelligence_Booster
@@ -2106,15 +2225,19 @@ obj/items/Moon
 
 	verb/Upgrade()
 		set src in view(1)
-		var/obj/Resources/A = usr.GetResourceObject()
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
+		var/obj/Resources/A = user.GetResourceObject()
 		if(!A) return
 		var/list/Choices=new
-		var/Res_Cost=10000000/usr.Intelligence()**0.4
+		var/Res_Cost=10000000/user.Intelligence()**0.4
 		if(A.Value>=Res_Cost&&!Emitter) Choices.Add("Turn into Emitter ([Res_Cost])")
 		if(!Choices.len)
 			usr<<"You do not have enough resources"
 			return
-		var/Choice=input("Change what?") in Choices
+		var/Choice=input(user, "Change what?") in Choices
+		if(!canContinueNexusTradeInteraction(user, original_location) || !(Choice in Choices) || user.GetResourceObject() != A) return
 		if(Choice=="Turn into Emitter ([Res_Cost])")
 			if(A.Value<Res_Cost) return
 			A.Value-=Res_Cost
@@ -2129,9 +2252,13 @@ obj/items/PDA
 	icon='PDA.dmi'
 	desc="This can be used to store information, even youtube videos."
 	Stealable=1
+	var/tmp/initial_reference_check_pending = TRUE
 
 	New()
-		spawn(5) if(src) del(src)
+		spawn(5)
+			if(src)
+				initial_reference_check_pending = FALSE
+				if(!referenceObject) del(src)
 
 	verb/Hotbar_use()
 		set hidden=1
@@ -2249,29 +2376,36 @@ obj/items
 			usr.Clothes_Equip(src)
 			if(suffix) usr.weights_obj=src
 		verb/Choose_Weights_Icon()
+			var/mob/user = usr
+			var/atom/original_location = loc
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
 			var/old_suffix=suffix
-			if(suffix) usr.Clothes_Equip(src)
-			usr.weights_icon_obj=src
-			usr.Grid(weights_icons)
-			if(usr && old_suffix)
-				for(var/obj/items/Weights/A in usr.item_list) if(A.suffix) usr.Clothes_Equip(A)
-				usr.Clothes_Equip(src)
+			if(suffix) user.Clothes_Equip(src)
+			user.weights_icon_obj=src
+			user.Grid(weights_icons)
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			if(user && old_suffix)
+				for(var/obj/items/Weights/A in user.item_list) if(A.suffix) user.Clothes_Equip(A)
+				user.Clothes_Equip(src)
 		verb/Upgrade()
-			var/cost_per_kilo=round(1000/(usr.Intelligence()**0.5))
-			var/n=input("how much do you want these weights to weigh? 1 kilo cost [cost_per_kilo]$. these weights \
+			var/mob/user = usr
+			if(!canUseAfterNexusTradeYield(user)) return
+			var/cost_per_kilo=round(1000/(user.Intelligence()**0.5))
+			var/n=input(user, "how much do you want these weights to weigh? 1 kilo cost [cost_per_kilo]$. these weights \
 			weigh [Commas(weight)] kilos. you are able to lift [Commas(usr.max_weight())] kilos. making these weigh \
 			beyond your max lift will have no effect when you wear them, it will be as if they are at your max.") as num
+			if(!canUseAfterNexusTradeYield(user)) return
 			if(n<1||n<weight)
 				usr<<"you can not make the weights weigh less than they already do"
 				return
 			var/res_cost=(n*cost_per_kilo)-(weight*cost_per_kilo)
 			if(res_cost<0) res_cost=0
-			if(usr.Res()<res_cost)
+			if(user.Res()<res_cost)
 				usr<<"you need at least [Commas(res_cost)]$ to do this"
 				return
 			player_view(15,usr)<<"[usr] upgrades the [src] from [Commas(weight)] to [Commas(n)] kilos in weight"
 			weight=round(n)
-			usr.Alter_Res(-res_cost)
+			user.Alter_Res(-res_cost)
 			Cost=(weight*cost_per_kilo)+initial(Cost)
 			weight_name()
 	Regenerator
@@ -2309,10 +2443,13 @@ obj/items
 			Upgrade()
 		verb/Upgrade()
 			set src in view(1)
-			var/Cost1=3000000/usr.Intelligence()**0.3 //injuries
-			var/Cost2=500000/usr.Intelligence() //energy
-			var/Cost3=1000000/usr.Intelligence()**0.6 //double effectiveness
-			var/Cost4=1000000/usr.Intelligence()**0.6
+			var/mob/user = usr
+			var/atom/original_location = loc
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
+			var/Cost1=3000000/user.Intelligence()**0.3 //injuries
+			var/Cost2=500000/user.Intelligence() //energy
+			var/Cost3=1000000/user.Intelligence()**0.6 //double effectiveness
+			var/Cost4=1000000/user.Intelligence()**0.6
 			var/list/L=list("Cancel")
 			if(!Heals_Injuries) L+="Heal Injuries ([Commas(Cost1)]$)"
 			if(!Recovers_Energy) L+="Recover Energy ([Commas(Cost2)]$)"
@@ -2321,8 +2458,9 @@ obj/items
 			if(L.len<=1)
 				usr<<"This regenerator has all upgrades already"
 				return
-			while(usr)
-				var/C=input("Which upgrade do you want to add?") in L
+			while(user && canContinueNexusTradeInteraction(user, original_location))
+				var/C=input(user, "Which upgrade do you want to add?") in L
+				if(!canContinueNexusTradeInteraction(user, original_location) || !(C in L)) return
 				if(C=="Cancel") return
 				if(C=="Cures radiation ([Commas(Cost4)]$)")
 					if(usr.Res()<=Cost4) return
@@ -2520,41 +2658,43 @@ obj/items/Armor
 
 	verb/Customize()
 		set src in view(1)
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(!canContinueNexusTradeInteraction(user, original_location)) return
 		if(istype(src, /obj/items/Armor/Forged))
 			var/obj/items/Armor/Forged/forged_armor = src
-			forged_armor.customizeForgedArmor(usr)
+			forged_armor.customizeForgedArmor(user)
 			return
-		if(usr in view(1,src))
-			while(usr && usr.client)
+		if(user in view(1,src))
+			while(user && user.client && canContinueNexusTradeInteraction(user, original_location))
 				if(suffix)
 					usr<<"You can not customize armor that is being worn"
 					return
-				switch(input(usr,"Here you can make changes to your armor") in list("Cancel","Choose Icon","Protection","Heaviness"))
+				var/customize_choice = input(user,"Here you can make changes to your armor") in list("Cancel","Choose Icon","Protection","Heaviness")
+				if(!canContinueNexusTradeInteraction(user, original_location)) return
+				switch(customize_choice)
 					if("Cancel") return
 					if("Choose Icon")
 						if(!Armor_Icons) Armor_Icons()
 						Choosing_Icon=1
-						usr.Grid(Armor_Icons)
-						while(usr&&(winget(usr,"Grid1","is-visible")=="true")) sleep(1)
+						user.Grid(Armor_Icons)
+						while(user && canContinueNexusTradeInteraction(user, original_location) && (winget(user,"Grid1","is-visible")=="true")) sleep(1)
 						Choosing_Icon=0
+						if(!canContinueNexusTradeInteraction(user, original_location)) return
 					if("Protection")
-						var/N=input("Enter the protection level of this armor. It must be between 1 and 2. The higher the \
+						var/N=input(user, "Enter the protection level of this armor. It must be between 1 and 2. The higher the \
 						number the more durability and resistance the armor will provide, but the more it will limit \
 						your flexibility, causing your accuracy and dodging to decrease.") as num
-						if(suffix)
-							usr<<"You can not customize this while wearing it"
-							return
+						if(!canContinueNexusTradeInteraction(user, original_location) || suffix) return
 						if(N<1) N=1
 						if(N>2) N=2
 						Armor=N
 						Armor_Desc()
 					if("Heaviness")
-						var/n=input(usr,"Enter how heavy this armor is between 1 and 2. 1 is very light and will not decrease \
+						var/n=input(user,"Enter how heavy this armor is between 1 and 2. 1 is very light and will not decrease \
 						your speed at all. 2 is the heaviest and will decrease speed by a lot. The heavier it is the more \
 						protection it will provide.","Options",heaviness) as num
-						if(suffix)
-							usr<<"You can not customize this while wearing it"
-							return
+						if(!canContinueNexusTradeInteraction(user, original_location) || suffix) return
 						n=Clamp(n,1,2)
 						heaviness=n
 var/list/Armor_Icons //this is actually list of objects
@@ -2572,7 +2712,9 @@ proc/Armor_Icons()
 		O.icon=V
 		Armor_Icons+=O
 
-obj/Armor_Icon/Click() for(var/obj/items/Armor/A in view(1)) if(A.Choosing_Icon) A.icon=icon
+obj/Armor_Icon/Click()
+	for(var/obj/items/Armor/A in view(1, usr))
+		if(A.Choosing_Icon && A.canUseAfterNexusTradeYield(usr)) A.icon=icon
 
 obj/var/Money
 
@@ -2660,30 +2802,37 @@ obj/items
 			Transmit()
 		verb/Upgrade()
 			set src in view(1)
-			if(usr in view(1,src))
+			var/mob/user = usr
+			var/atom/original_location = loc
+			if(user in view(1,src))
+				if(!canContinueNexusTradeInteraction(user, original_location)) return
 				var/list/upgrade_list=list("Cancel","Max scan")
 				if(!android_detection) upgrade_list+="Detect androids"
 				if(upgrade_list.len<=2) upgrade_list-="Cancel"
-				switch(input("Choose from available upgrades") in upgrade_list)
+				var/upgrade_choice = input(user, "Choose from available upgrades") in upgrade_list
+				if(!canContinueNexusTradeInteraction(user, original_location) || !(upgrade_choice in upgrade_list)) return
+				switch(upgrade_choice)
 					if("Cancel") return
 					if("Detect androids")
-						var/cost=150000/usr.Intelligence()**0.5
-						if(usr.Res()<cost) alert("You need [Commas(cost)]$ to do this")
+						var/cost=150000/user.Intelligence()**0.5
+						if(user.Res()<cost) alert(user, "You need [Commas(cost)]$ to do this")
 						else
-							usr.Alter_Res(-cost)
+							if(!canContinueNexusTradeInteraction(user, original_location)) return
+							user.Alter_Res(-cost)
 							android_detection=1
 							player_view(15,usr)<<"[usr] gives the scouter android detection"
 					if("Max scan")
-						var/Max_Upgrade=usr.Knowledge * 5 * usr.Intelligence()**0.35
+						var/Max_Upgrade=user.Knowledge * 5 * user.Intelligence()**0.35
 						var/Percent=(Scan/Max_Upgrade)*100
 						var/Res_Cost=Item_cost(usr,src)/100
 						if(Percent>=100)
 							usr<<"This [src] is 100% upgraded at this time and cannot go any further."
 							return
-						var/Amount=input("This [src] scans up to [Commas(Scan)] BP. The current maximum is \
+						var/Amount=input(user, "This [src] scans up to [Commas(Scan)] BP. The current maximum is \
 						[Commas(Max_Upgrade)] BP. \
 						It is at [Percent]% maximum upgrade. Each 1% upgrade cost [Commas(Res_Cost)]$. The maximum is 100%. \
 						Input the percentage you wish to upgrade the [src] to. ([Percent]-100%)") as num
+						if(!canContinueNexusTradeInteraction(user, original_location)) return
 						if(Amount>100) Amount=100
 						if(Amount<0.1)
 							usr<<"Amount must be higher than 0.1%"
@@ -2692,10 +2841,10 @@ obj/items
 							usr<<"This cannot be downgraded."
 							return
 						Res_Cost*=Amount-Percent
-						if(usr.Res()<Res_Cost)
+						if(user.Res()<Res_Cost)
 							usr<<"You do not have enough resources to do this."
 							return
-						usr.Alter_Res(-Res_Cost)
+						user.Alter_Res(-Res_Cost)
 						Scan=Max_Upgrade*(Amount/100)
 						player_view(15,usr)<<"[usr] upgraded [src] from [Percent]% to [Amount]% ([Commas(Scan)] BP)"
 						desc="Scan: [Commas(Scan)] BP<br>Range: [Range]"
@@ -2707,8 +2856,12 @@ obj/items
 				for(var/obj/items/Communicator/S in P.item_list)
 					if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
 						P<<"<font color=#FFFFFF>(Scouter)<font color=[usr.TextColor]>[usr]: [msg]"
-			Frequency() Frequency=input("Choose a frequency, it can be anything. It lets you talk to \
-			others on the same frequency. Default is 1") as text
+			Frequency()
+				var/mob/user = usr
+				if(!canUseAfterNexusTradeYield(user)) return
+				var/new_frequency = input(user, "Choose a frequency, it can be anything. It lets you talk to others on the same frequency. Default is 1") as text
+				if(!canUseAfterNexusTradeYield(user)) return
+				Frequency = new_frequency
 var/list/Sword_Icons
 proc/Sword_Icons()
 	if(!Sword_Icons) Sword_Icons=new/list
@@ -2719,7 +2872,9 @@ proc/Sword_Icons()
 		var/obj/Sword_Icon/O=new
 		O.icon=V
 		Sword_Icons+=O
-obj/Sword_Icon/Click() for(var/obj/items/Sword/A in view(1)) if(A.Choosing_Icon) A.icon=icon
+obj/Sword_Icon/Click()
+	for(var/obj/items/Sword/A in view(1, usr))
+		if(A.Choosing_Icon && A.canUseAfterNexusTradeYield(usr)) A.icon=icon
 obj/items
 	Sword
 		clonable = 1
@@ -2760,12 +2915,15 @@ obj/items
 		proc/Sword_Desc() desc=initial(desc)+"<br>Sharpness: [round(Damage,0.01)]x"
 		verb/Customize()
 			set src in view(1)
+			var/mob/user = usr
+			var/atom/original_location = loc
+			if(!canContinueNexusTradeInteraction(user, original_location)) return
 			if(istype(src, /obj/items/Sword/Forged))
 				var/obj/items/Sword/Forged/forged_weapon = src
-				forged_weapon.customizeForgedWeapon(usr)
+				forged_weapon.customizeForgedWeapon(user)
 				return
-			if(usr in view(1,src))
-				while(usr)
+			if(user in view(1,src))
+				while(user && canContinueNexusTradeInteraction(user, original_location))
 					if(suffix)
 						usr<<"You can not customize a sword that is being worn"
 						return
@@ -2774,46 +2932,55 @@ obj/items
 
 					var/list/l = list("Cancel","Choose Icon","Change Sharpness Level","Set Damage Style","Set Silver Blade")
 					if(is_silver) l -= "Set Silver Blade"
-					switch(input(usr) in l)
+					var/customize_choice = input(user) in l
+					if(!canContinueNexusTradeInteraction(user, original_location) || !(customize_choice in l)) return
+					switch(customize_choice)
 						if("Cancel") return
 						if("Set Silver Blade")
 							var/resCost = 10000000 / usr.Intelligence() ** 0.5
 							if(usr.Res() < resCost)
-								alert("You need [Commas(resCost)] resources to do this")
+								alert(user, "You need [Commas(resCost)] resources to do this")
+								if(!canContinueNexusTradeInteraction(user, original_location)) return
 								goto start
 							/*switch(alert("Is this blade made of silver? If yes, the blade will be slightly dull \
 							(-[(1-silver_sword_damage_penalty)*100]% damage), but do [silver_sword_damage_mult]x \
 							damage against undead (vampires, zombies)","Options","No","Yes"))*/
-							switch(alert("A silver blade will do [silver_sword_damage_mult]x more damage against vampires and zombies. But it cost [Commas(resCost)] \
-							resources.", "Options", "Yes", "No"))
+							var/silver_choice = alert(user, "A silver blade will do [silver_sword_damage_mult]x more damage against vampires and zombies. But it cost [Commas(resCost)] resources.", "Options", "Yes", "No")
+							if(!canContinueNexusTradeInteraction(user, original_location)) return
+							switch(silver_choice)
 								if("Yes")
 									if(usr.Res() < resCost)
-										alert("You need [Commas(resCost)] resources to do this")
+										alert(user, "You need [Commas(resCost)] resources to do this")
+										if(!canContinueNexusTradeInteraction(user, original_location)) return
 										goto start
 									is_silver=1
 									usr.Alter_Res(-resCost)
 									Cost += resCost //for scrapping
 								if("No") is_silver=0
 						if("Set Damage Style")
-							switch(input("Physical damage is the normal melee damage type, it does damage based on the \
+							var/damage_style_choice = input(user, "Physical damage is the normal melee damage type, it does damage based on the \
 							opponent's durability and your strength. Energy damage does damage on the opponent's \
 							resistance, but only does roughly [energy_sword_damage_mod]% the total damage that physical damage would. \
 							50% of the energy damage comes from your strength, the other 50% comes from your force. \
 							Setting it to energy damage is a \
 							tactical thing, if you know your opponent has really low resistance you can make use of that.") \
-							in list("Physical Damage","Energy Damage"))
+							in list("Physical Damage","Energy Damage")
+							if(!canContinueNexusTradeInteraction(user, original_location)) return
+							switch(damage_style_choice)
 								if("Physical Damage") Style="Physical"
 								if("Energy Damage") Style="Energy"
 						if("Choose Icon")
 							if(!Sword_Icons) Sword_Icons()
 							Choosing_Icon=1
-							usr.Grid(Sword_Icons)
-							while(usr&&(winget(usr,"Grid1","is-visible")=="true")) sleep(1)
+							user.Grid(Sword_Icons)
+							while(user && canContinueNexusTradeInteraction(user, original_location) && (winget(user,"Grid1","is-visible")=="true")) sleep(1)
 							Choosing_Icon=0
+							if(!canContinueNexusTradeInteraction(user, original_location)) return
 						if("Change Sharpness Level")
-							var/N=input("Change the sharpness of this sword. The higher the number the more damage it will \
+							var/N=input(user, "Change the sharpness of this sword. The higher the number the more damage it will \
 							do but it will make it easier for your opponent to dodge it. Entering 1 will mean it has no effect \
 							and is just for looks. You can enter a number between 1 and 2. Current is [Damage]") as num
+							if(!canContinueNexusTradeInteraction(user, original_location)) return
 							if(suffix)
 								usr<<"You can not customize this while wearing it"
 								goto start
@@ -2939,8 +3106,9 @@ mob/var
 
 var/list/senzus=new
 
-mob/proc/EatSensu(mob/user, obj/o)
+mob/proc/EatSensu(mob/user, obj/items/o)
 	set waitfor=0
+	if(!user || !o || !o.canUseAfterNexusTradeYield(user)) return
 
 	if(InCore())
 		user << "The sensu disintegrates from the intense heat"
@@ -2957,6 +3125,8 @@ mob/proc/EatSensu(mob/user, obj/o)
 		if(user.loc != user_old_loc) return
 		if(attacking) return
 		sleep(5)
+		if(!o || !o.canUseAfterNexusTradeYield(user)) return
+	if(!o || !o.canUseAfterNexusTradeYield(user)) return
 	if(src == user) 
 		player_view(15,src) << "[src] eats a sensu bean."
 	else 
@@ -2965,8 +3135,8 @@ mob/proc/EatSensu(mob/user, obj/o)
 	Diarea = 0
 	for(var/obj/Injuries/i in injury_list) del(i)
 
-	usr.last_sensu_use = world.time
-	if(usr.last_sensu_use < world.time - KO_SYSTEM_SENSU_COOLDOWN)
+	user.last_sensu_use = world.time
+	if(user.last_sensu_use < world.time - KO_SYSTEM_SENSU_COOLDOWN)
 		var/increase_reason = "[user]'s body can't endure the healing power of the sensu bean!"
 		user.increase_combat_ko(increase_reason, victim = user)
 	else
@@ -3004,6 +3174,8 @@ obj/items/Senzu
 		Use()
 
 	verb/Use()
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		var/mob/M=locate(/mob) in Get_step(usr,usr.dir)
 		if(!M) M=usr
 		if(usr.tournament_override(fighters_can=0))
@@ -3041,10 +3213,13 @@ obj/items/Senzu
 		del(src)
 
 	verb/Throw(mob/M in oview(usr))
-		player_view(15,usr)<<"[usr] throws a [src] to [M]"
-		Missile(icon,usr,M)
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user) || !M || !(M in oview(user))) return
+		player_view(15,user)<<"[user] throws a [src] to [M]"
+		Missile(icon,user,M)
 		sleep(3)
-		player_view(15,usr)<<"[M] catches the [src]"
+		if(!canUseAfterNexusTradeYield(user) || !M || !(M in oview(user))) return
+		player_view(15,user)<<"[M] catches the [src]"
 		Move(M)
 
 	var/senzu_max_per_turf=10

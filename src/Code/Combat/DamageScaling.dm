@@ -18,24 +18,44 @@ mob/proc/getPhysicalCombatDamage(mob/target, factor = 0)
 	var/guard_stat = target.getMilestoneScaledCombatStat(target.End) * getMilestoneGuardMultiplier()
 	return calculateScaledCombatDamage(factor, getForgedUnarmedAttackBP(), target.getForgedArmorEnduranceBP(), getMilestonePhysicalDamageStat(), guard_stat)
 
+mob/proc/getUnresistedPhysicalCombatDamage(factor = 0)
+	return calculateScaledCombatDamage(factor, getForgedUnarmedAttackBP(), max(BP, 0.01), getMilestonePhysicalDamageStat(), 0)
+
+mob/proc/getWeaponCombatSourceStat(obj/items/Sword/weapon)
+	if(weapon && weapon.Style == "Energy") return (getMilestonePhysicalDamageStat() * 0.5) + (getMilestoneKiDamageStat() * 0.5)
+	return getMilestonePhysicalDamageStat()
+
+mob/proc/getSwordCombatDamageMultiplier(obj/items/Sword/weapon, mob/target, sword_modifier = 1)
+	if(!weapon) return 1
+	var/damage_multiplier = 1 + ((weapon.Damage - 1) * sword_damage_mod * sword_modifier)
+	if(weapon.is_silver)
+		if(target && (target.Vampire || istype(target, /mob/Enemy/Zombie))) damage_multiplier *= silver_sword_damage_mult
+		else damage_multiplier *= silver_sword_damage_penalty
+	if(weapon.Style == "Energy") damage_multiplier *= energy_sword_damage_mod
+	return damage_multiplier
+
 mob/proc/getWeaponCombatDamage(mob/target, factor = 0)
 	if(!target || factor <= 0) return 0
 	var/obj/items/Sword/weapon = using_sword()
 	if(!weapon) return getPhysicalCombatDamage(target, factor)
 	var/guard_stat = target.getMilestoneScaledCombatStat(target.End) * getMilestoneGuardMultiplier()
-	var/source_stat = getMilestonePhysicalDamageStat()
+	var/source_stat = getWeaponCombatSourceStat(weapon)
 	var/sword_modifier = Class == "Legendary Saiyan" ? 0.4 : 1
-	var/damage_multiplier = 1 + ((weapon.Damage - 1) * sword_damage_mod * sword_modifier)
-	if(weapon.is_silver)
-		if(target.Vampire || istype(target, /mob/Enemy/Zombie)) damage_multiplier *= silver_sword_damage_mult
-		else damage_multiplier *= silver_sword_damage_penalty
 	if(weapon.Style == "Energy")
 		guard_stat = target.getMilestoneScaledCombatStat(target.Res) * getMilestoneGuardMultiplier()
-		source_stat = (getMilestonePhysicalDamageStat() * 0.5) + (getMilestoneKiDamageStat() * 0.5)
-		damage_multiplier *= energy_sword_damage_mod
 	var/damage = calculateScaledCombatDamage(factor, getForgedWeaponAttackBP(), target.getForgedArmorEnduranceBP(), source_stat, guard_stat)
-	damage *= damage_multiplier
+	damage *= getSwordCombatDamageMultiplier(weapon, target, sword_modifier)
 	damage *= getMilestoneMeleeDamageMultiplier(target, TRUE)
+	return damage
+
+mob/proc/getUnresistedWeaponCombatDamage(factor = 0)
+	if(factor <= 0) return 0
+	var/obj/items/Sword/weapon = using_sword()
+	if(!weapon) return getUnresistedPhysicalCombatDamage(factor)
+	var/sword_modifier = Class == "Legendary Saiyan" ? 0.4 : 1
+	var/damage = calculateScaledCombatDamage(factor, getForgedWeaponAttackBP(), max(BP, 0.01), getWeaponCombatSourceStat(weapon), 0)
+	damage *= getSwordCombatDamageMultiplier(weapon, null, sword_modifier)
+	damage *= getMilestoneMeleeDamageMultiplier(null, TRUE)
 	return damage
 
 mob/proc/getKiCombatDamage(mob/target, factor = 0)
@@ -43,11 +63,21 @@ mob/proc/getKiCombatDamage(mob/target, factor = 0)
 	var/guard_stat = target.getMilestoneScaledCombatStat(target.Res) * getMilestoneGuardMultiplier()
 	return calculateScaledCombatDamage(factor, getForgedKiAttackBP(), target.BP, getMilestoneKiDamageStat(), guard_stat) * getMilestoneKiDamageMultiplier() * getForgedKiDamageMultiplier()
 
+mob/proc/getUnresistedKiCombatDamage(factor = 0)
+	return calculateScaledCombatDamage(factor, getForgedKiAttackBP(), max(BP, 0.01), getMilestoneKiDamageStat(), 0) * getMilestoneKiDamageMultiplier() * getForgedKiDamageMultiplier()
+
+mob/proc/getUnresistedKiProjectileCombatDamage(factor = 0)
+	return calculateScaledCombatDamage(factor, getForgedKiAttackBP(), max(BP, 0.01), getMilestoneKiDamageStat(), 0) * getMilestoneKiDamageMultiplier()
+
 mob/proc/getHybridCombatDamage(mob/target, factor = 0)
 	if(!target || factor <= 0) return 0
 	var/physical_damage = getPhysicalCombatDamage(target, factor * 0.5)
 	var/ki_damage = getKiCombatDamage(target, factor * 0.5)
 	return physical_damage + ki_damage
+
+mob/proc/getUnresistedHybridCombatDamage(factor = 0)
+	if(factor <= 0) return 0
+	return getUnresistedPhysicalCombatDamage(factor * 0.5) + getUnresistedKiCombatDamage(factor * 0.5)
 
 datum/CombatDamageBudget
 	var/max_factor_per_target = 0

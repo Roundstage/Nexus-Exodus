@@ -33,7 +33,7 @@ obj/Effect/TenkaichiTechniqueText
 	Grabbable = 0
 	maptext_width = 192
 	maptext_height = 32
-	plane = 20 // Technique names remain above screen darkness.
+	plane = NEXUS_WORLD_OVERLAY_PLANE // Technique names remain above screen darkness and follow map zoom.
 	layer = 99
 
 mob/proc/showTenkaichiTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
@@ -218,8 +218,9 @@ mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage, attack_name = "Tenkai
 		else if(Fatal) target.Death(src)
 	return TRUE
 
-mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE)
+mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE, defensive_evasion_resolved = FALSE)
 	if(!canHitTenkaichiTechniqueTarget(target) || !technique) return FALSE
+	if(!force_hit && !defensive_evasion_resolved && target.isDefensiveDashEvading()) return FALSE
 	var/accuracy = Clamp(get_melee_accuracy(target) + technique.accuracy_bonus, 0, 100)
 	if(!force_hit && target.CanMeleeDodge(src) && target.evade_meter > 0 && !prob(accuracy))
 		target.MeleeAutoDodge(src)
@@ -292,10 +293,9 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 		src << "You do not have enough energy to use [technique]."
 		return FALSE
 	if(getdist(src, target) > 1)
-		for(var/step_index = 1, step_index <= maximum_range && target && getdist(src, target) > 1, step_index++)
-			AfterImage(5)
-			if(!step_towards(src, target)) break
-			sleep(world.tick_lag)
+		AlterInputDisabled(1)
+		runNexusSkillApproach(target, maximum_range * world.icon_size, world.icon_size, 115, 240, 300, 0.35)
+		AlterInputDisabled(-1)
 	if(!target || getdist(src, target) > 1)
 		src << "[technique] could not reach the selected target."
 		return FALSE
@@ -339,20 +339,21 @@ mob/proc/castTenkaichiIaiSlash(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	var/dash_direction = get_dir(src, selected)
-	var/list/hit_targets = list()
+	AlterInputDisabled(1)
 	attacking = 1
 	dir = dash_direction
 	animate(src, alpha = 155, time = 2)
-	for(var/step_index = 1, step_index <= technique.dash_range, step_index++)
-		var/turf/next_turf = get_step(src, dash_direction)
-		if(!next_turf || next_turf.density) break
-		for(var/mob/candidate in next_turf)
-			if(canHitTenkaichiTechniqueTarget(candidate) && !(candidate in hit_targets)) hit_targets += candidate
-		AfterImage(5)
-		SafeTeleport(next_turf)
-		sleep(world.tick_lag)
-	for(var/mob/hit_target in hit_targets)
-		resolveTenkaichiTechniqueHit(hit_target, technique)
+	var/datum/NexusSkillMotionResult/iai_motion_result = new
+	var/iai_distance_pixels = technique.dash_range * world.icon_size
+	if(dash_direction in list(NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)) iai_distance_pixels *= sqrt(2)
+	runNexusSkillLine(dash_direction, iai_distance_pixels, 145, 360, 420, 0.25, 0, TRUE, iai_motion_result)
+	AlterInputDisabled(-1)
+	if(iai_motion_result.valid)
+		for(var/mob/hit_target in iai_motion_result.contacted_mobs)
+			if(!canHitTenkaichiTechniqueTarget(hit_target)) continue
+			if(hit_target in iai_motion_result.evaded_contacts) continue
+			resolveTenkaichiTechniqueHit(hit_target, technique, defensive_evasion_resolved = TRUE)
+	del(iai_motion_result)
 	animate(src, alpha = 255, time = 2)
 	Reset_melee()
 	return TRUE
@@ -365,17 +366,17 @@ mob/proc/castTenkaichiMarchOfFury(obj/Attacks/TenkaichiMeleeTechnique/technique)
 		return FALSE
 	if(!payTenkaichiTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
+	AlterInputDisabled(1)
 	attacking = 1
 	for(var/hit_index = 1, hit_index <= 4, hit_index++)
 		if(!target || !canHitTenkaichiTechniqueTarget(target)) break
-		for(var/pursuit_step = 1, pursuit_step <= 2 && getdist(src, target) > 1, pursuit_step++)
-			AfterImage(5)
-			if(!step_towards(src, target)) break
-			sleep(world.tick_lag)
+		if(getdist(src, target) > 1)
+			runNexusSkillApproach(target, 2 * world.icon_size, world.icon_size, 105, 220, 280, 0.3)
 		if(getdist(src, target) <= 1)
 			dir = get_dir(src, target)
 			resolveTenkaichiTechniqueHit(target, technique, 0.45)
 		sleep(4)
+	AlterInputDisabled(-1)
 	Reset_melee()
 	return TRUE
 
@@ -448,10 +449,10 @@ mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/te
 	if(!technique || !target) return
 	sleep(5)
 	if(!canHitTenkaichiTechniqueTarget(target) || target.blocking) return
-	for(var/step_index = 1, step_index <= 6 && getdist(src, target) > 1, step_index++)
-		AfterImage(5)
-		if(!step_towards(src, target)) break
-		sleep(world.tick_lag)
+	AlterInputDisabled(1)
+	if(getdist(src, target) > 1)
+		runNexusSkillApproach(target, 6 * world.icon_size, world.icon_size, 120, 260, 320, 0.3, FALSE)
+	AlterInputDisabled(-1)
 	if(target && getdist(src, target) <= 1)
 		resolveTenkaichiTechniqueHit(target, technique, 0.8)
 

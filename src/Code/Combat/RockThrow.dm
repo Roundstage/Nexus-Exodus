@@ -76,9 +76,10 @@ obj
 
 obj/Effect/RockSkillProjectile
 	name = "hurled rock"
-	density = 0
+	density = 1
 	mouse_opacity = 0
 	Grabbable = 0
+	var/tmp/mob/intended_target
 
 obj/Effect/RockSkillDebris
 	name = "rock debris"
@@ -113,22 +114,39 @@ mob/proc/showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_s
 	var/obj/Effect/RockSkillProjectile/rock = new
 	rock.icon = visual_icon
 	if(visual_state) rock.icon_state = visual_state
-	rock.SafeTeleport(loc)
+	rock.loc = loc
+	rock.step_x = step_x
+	rock.step_y = step_y
+	rock.intended_target = target
 	rock.dir = get_dir(src, target)
 	CenterIcon(rock)
 	rock.setNexusGlow("#d69a5a", 1.8 + visual_scale, 165)
 	if(visual_scale != 1) rock.transform = matrix() * visual_scale
 	var/maximum_steps = max(1, getdist(src, target) + 4)
+	var/move_delay = 1
+	var/move_pixels = 32
+	var/datum/NexusVectorKinematics/flight = new(move_pixels / move_delay, move_pixels * 0.5, rock.dir, 0.25)
+	var/reached_target = FALSE
+	var/stalled_steps = 0
 	for(var/flight_step = 1, flight_step <= maximum_steps && rock && target, flight_step++)
-		if(getdist(rock, target) <= 0) break
-		var/turf/next_turf = get_step_towards(rock, target)
-		if(!next_turf) break
-		rock.SafeTeleport(next_turf)
+		if(target.z != rock.z) break
+		if(flight.distanceToAtom(rock, target) <= 1)
+			reached_target = TRUE
+			break
+		var/target_distance = flight.distanceToAtom(rock, target)
+		flight.steerTowardAtom(rock, target, move_delay)
+		var/moved = flight.advance(rock, move_delay, target_distance)
+		if(rock && rock.last_vector_move_attempted && !moved) stalled_steps++
+		else stalled_steps = 0
+		if(rock && target && flight.distanceToAtom(rock, target) <= 1)
+			reached_target = TRUE
+			break
+		if(stalled_steps >= 3) break
 		if(!(flight_step % 2))
 			var/obj/Effect/RockSkillDebris/trail = new(rock.loc)
 			trail.scatter(trail = TRUE)
-		sleep(1)
-	var/turf/impact_turf = target ? target.loc : rock.loc
+		sleep(TickMult(move_delay))
+	var/turf/impact_turf = reached_target && target ? target.loc : null
 	if(rock)
 		rock.clearNexusGlow()
 		del(rock)
@@ -163,7 +181,8 @@ mob/proc/showRockSkillImpact(mob/target, heavy = FALSE)
 
 mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, visual_scale)
+	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockThrow.dmi', null, visual_scale)
+	if(!impact_turf) return
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.5, attacker = src, attack_name = "Rock Throw")
@@ -171,7 +190,8 @@ mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
 
 mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 	set waitfor = 0
-	showRockSkillProjectile(target, 'RTRockThrow.dmi', null, 0.9)
+	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockThrow.dmi', null, 0.9)
+	if(!impact_turf) return
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.2, attacker = src, attack_name = "Rock Slide")
@@ -180,6 +200,7 @@ mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
 	set waitfor = 0
 	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockTomb.dmi', null, 1.25)
+	if(!impact_turf) return
 	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
 	showRockSkillImpact(target, heavy = TRUE)
 	var/health_before_damage = target.Health

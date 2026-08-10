@@ -64,6 +64,7 @@ var/list/players=new
 
 //any if(!loc) means it only runs if they are just entering a mob, instead of switching mobs. it stops it from running when theyre only switching mobs
 mob/Login() if(client)
+	StopMovement()
 	setSelectedTarget(null, FALSE)
 	client.Ban_Check()
 
@@ -127,6 +128,7 @@ mob/var
 	logout_time=0 //realtime
 
 mob/Logout(body_swap_user)
+	StopMovement()
 	if(nexus_reconnect_handoff)
 		players -= src
 		return

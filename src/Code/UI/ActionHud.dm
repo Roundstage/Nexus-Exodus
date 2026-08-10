@@ -282,7 +282,7 @@ mob/proc/removeActionHud()
 
 obj/NexusHud/ShortcutBarBackground
 	mouse_opacity = 0
-	plane = 20
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 108
 	screen_loc = "LEFT:8,TOP:-8"
 
@@ -362,7 +362,7 @@ obj/NexusHud/ActionButton
 
 obj/NexusHud/ShortcutButton
 	mouse_opacity = 2
-	plane = 20
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 110
 	var/tmp/mob/owner
 	var/action_id
@@ -530,9 +530,8 @@ datum/NexusPlayerMenu
 		return CanSense(owner, target)
 
 	proc/useOwnedSkill(obj/skill)
-		if(!isOwnedSkill(skill) || !hascall(skill, "Hotbar_use")) return FALSE
-		call(skill, "Hotbar_use")()
-		return TRUE
+		if(!isOwnedSkill(skill)) return FALSE
+		return owner.executeNexusHotkeyAction(skill)
 
 	proc/getNumericObjectVar(datum/subject, variable_name)
 		if(!subject || !variable_name) return null
@@ -541,6 +540,119 @@ datum/NexusPlayerMenu
 		var/value = subject.vars[dynamic_name]
 		if(!isnum(value)) return null
 		return value
+
+	proc/formatSkillMultiplier(multiplier)
+		if(!nexusIsFiniteNumber(multiplier)) return "Unknown"
+		if(multiplier == 1) return "No change (1x)"
+		var/percent_change = round((multiplier - 1) * 100, 0.1)
+		var/prefix = percent_change > 0 ? "+" : ""
+		return "[prefix][percent_change]% ([round(multiplier, 0.01)]x)"
+
+	proc/formatSkillDescriptionHtml(description_text)
+		var/formatted = html_encode(description_text ? "[description_text]" : "No description available.")
+		formatted = replacetext(formatted, "&lt;br&gt;", "<br>")
+		formatted = replacetext(formatted, "&lt;br/&gt;", "<br>")
+		formatted = replacetext(formatted, "&lt;br /&gt;", "<br>")
+		return formatted
+
+	proc/getSkillEffectData(obj/skill)
+		var/list/data = list("heading" = null, "summary" = null, "state" = null, "stat_changes" = null, "attributes" = null, "upkeep" = null)
+		if(!skill) return data
+		if(istype(skill, /obj/Buff))
+			var/obj/Buff/buff = skill
+			var/list/multipliers = list(
+				"Battle Power" = buff.buff_bp,
+				"Energy capacity" = buff.buff_ki,
+				"Strength" = buff.buff_str,
+				"Endurance" = buff.buff_dur,
+				"Speed" = buff.buff_spd,
+				"Force" = buff.buff_for,
+				"Resistance" = buff.buff_res,
+				"Offense" = buff.buff_off,
+				"Defense" = buff.buff_def,
+				"Regeneration" = buff.buff_reg,
+				"Recovery" = buff.buff_rec)
+			var/list/changes = list()
+			for(var/stat_name in multipliers)
+				var/multiplier = multipliers[stat_name]
+				if(nexusIsFiniteNumber(multiplier) && multiplier != 1) changes += "[stat_name] [formatSkillMultiplier(multiplier)]"
+			var/is_transformation = islist(buff.buff_attributes) && ("transformation" in buff.buff_attributes)
+			data["heading"] = is_transformation ? "TRANSFORMATION EFFECT" : "BUFF EFFECT"
+			data["summary"] = is_transformation ? "Adds static Battle Power based on the server average, clamped from 25% to 400% of natural Battle Power. It drains Energy, counts as a primary transformation, and replaces another active primary form." : "Toggles the listed multipliers on this character."
+			data["state"] = buff.suffix ? "ACTIVE" : "INACTIVE"
+			data["stat_changes"] = changes.len ? jointext(changes, "; ") : "No direct stat multipliers"
+			if(islist(buff.buff_attributes) && buff.buff_attributes.len) data["attributes"] = jointext(buff.buff_attributes, ", ")
+			var/list/upkeep_parts = list()
+			if(buff.buff_bp > 1) upkeep_parts += "Battle Power multiplier continuously drains Energy"
+			if(is_transformation) upkeep_parts += "Transformation Battle Power has separate Energy upkeep"
+			if(upkeep_parts.len) data["upkeep"] = jointext(upkeep_parts, "; ")
+			return data
+		if(skill.hotbar_type == "Buff")
+			data["heading"] = "BUFF EFFECT"
+			data["summary"] = skill.desc ? "[skill.desc]" : "This skill applies a temporary or toggleable combat effect."
+			data["state"] = "Use to toggle or activate; current availability is checked when used"
+			return data
+		if(skill.hotbar_type != "Transformation") return data
+		data["heading"] = "TRANSFORMATION EFFECT"
+		data["summary"] = skill.desc ? "[skill.desc]" : "This skill changes the character into another form."
+		data["state"] = owner.detectPrimaryTransformation() ? "Active primary form: [owner.detectPrimaryTransformation()]" : "No primary transformation active"
+		if(istype(skill, /obj/Giant_Form))
+			if(owner.Race == "Makyo") data["summary"] = "Enlarges a Makyo and adds 30 percentage points to the Battle Power multiplier."
+			else data["summary"] = "Doubles visual size, adds 20 percentage points to the Battle Power multiplier, raises Strength, Endurance, and Resistance by 25%, and lowers Speed, Offense, and Defense by 25%."
+			data["state"] = owner.using_giant_form ? "ACTIVE" : "INACTIVE"
+		else if(istype(skill, /obj/Ultra_Super_Saiyan))
+			var/obj/Ultra_Super_Saiyan/ultra_skill = skill
+			data["summary"] = "When enabled, powering beyond Super Saiyan with [Commas(ussj_bp_req)] available BP can enter Ultra Super Saiyan: [round(1 + ussj_bp, 0.01)]x BP, [ussj_ki]x Energy, [ussj_str]x Strength, [ussj_dur]x Endurance, [ussj_spd]x Speed, and [ussj_res]x Resistance."
+			data["state"] = "Trigger [ultra_skill.using_ussj ? "ENABLED" : "DISABLED"] / Form [owner.is_ussj ? "ACTIVE" : "INACTIVE"]"
+		else if(istype(skill, /obj/HeranTransformation))
+			data["summary"] = "Adds the same Battle Power as the standard Super Saiyan form without exceeding that equivalent. Current potential gain: [Commas(round(owner.getHeranTransformationEquivalentBPAdd()))] BP. Mastery removes its Energy upkeep."
+			data["state"] = owner.heran_transformed ? "ACTIVE" : "INACTIVE"
+		else if(istype(skill, /obj/Great_Ape))
+			var/obj/Great_Ape/ape_skill = skill
+			data["summary"] = "Toggles the full-moon trigger; it does not transform immediately. Great Ape adds 2.5 points to the Battle Power multiplier, raises Strength, Endurance, and Resistance to 1.3x, and lowers Speed and Defense to 0.1x."
+			data["state"] = "[owner.IsGreatApe() ? "FORM ACTIVE" : "FORM INACTIVE"] / [ape_skill.Setting ? "MOON TRIGGER ENABLED" : "MOON TRIGGER DISABLED"] / [owner.Great_Ape_control ? "CONTROLLED" : "UNCONTROLLED"]"
+			data["stat_changes"] = "Battle Power multiplier +2.5 points; Strength +30% (1.3x); Endurance +30% (1.3x); Resistance +30% (1.3x); Speed -90% (0.1x); Defense -90% (0.1x)"
+			data["attributes"] = "Requires a full moon and enabled trigger, a tail, no cybernetic BP or modules, no active Super Saiyan form, and a living non-God character; 3-minute cooldown after reverting"
+			data["upkeep"] = owner.Great_Ape_control ? "Controlled form avoids berserk behavior and can last up to 150 minutes" : "Uncontrolled form stops training, automatically seeks or attacks nearby characters, and reverts after 45 seconds"
+		return data
+
+	proc/getProjectilePreviewReservedFactor(list/damage_data, direct_multiplier = 1)
+		if(!owner || !islist(damage_data)) return 0
+		var/direct_factor = damage_data["projectile_direct_factor"]
+		if(!nexusIsFiniteNumber(direct_factor))
+			var/fallback_factor = damage_data["factor"]
+			return nexusIsFiniteNumber(fallback_factor) ? max(0, fallback_factor * direct_multiplier) : 0
+		var/explosion_factor = damage_data["projectile_explosion_factor"]
+		if(!nexusIsFiniteNumber(explosion_factor)) explosion_factor = 0
+		var/budget_factor = damage_data["projectile_budget_factor"]
+		if(!nexusIsFiniteNumber(budget_factor)) budget_factor = 0
+		var/direct_request = max(0, direct_factor * direct_multiplier)
+		explosion_factor = max(0, explosion_factor)
+		if(budget_factor <= 0) return direct_request + explosion_factor
+		var/datum/CombatDamageBudget/preview_budget = new(budget_factor)
+		var/reserved_factor = preview_budget.reserveFactor(owner, direct_request)
+		reserved_factor += preview_budget.reserveFactor(owner, explosion_factor)
+		del(preview_budget)
+		return reserved_factor
+
+	proc/getUnresistedSkillDamage(obj/skill, list/damage_data)
+		if(!owner || !skill || !islist(damage_data)) return null
+		var/factor = damage_data["factor"]
+		if(!nexusIsFiniteNumber(factor) || factor <= 0) return null
+		var/preview_profile = damage_data["preview_profile"]
+		if(preview_profile == "tenkaichi_melee") return owner.getUnresistedMeleeDamage() * factor
+		if(preview_profile == "weapon_projectile" || preview_profile == "ki_projectile")
+			var/direct_multiplier = ki_power * owner.getForgedKiDamageMultiplier()
+			var/projectile_factor = getProjectilePreviewReservedFactor(damage_data, direct_multiplier)
+			if(preview_profile == "weapon_projectile") return owner.getUnresistedWeaponCombatDamage(projectile_factor)
+			return owner.getUnresistedKiProjectileCombatDamage(projectile_factor)
+		if(preview_profile == "raw_ki")
+			return calculateScaledCombatDamage(factor, owner.BP, max(owner.BP, 0.01), owner.Pow, 0)
+		var/model = damage_data["model"]
+		if(model == "Physical") return owner.getUnresistedPhysicalCombatDamage(factor)
+		if(model == "Ki") return owner.getUnresistedKiCombatDamage(factor)
+		if(model == "Hybrid") return owner.getUnresistedHybridCombatDamage(factor)
+		return null
 
 	proc/hasLiveOwner()
 		return owner && owner.client && owner.playerCharacter && owner.client.nexus_player_menu == src
@@ -592,7 +704,7 @@ datum/NexusPlayerMenu
 
 	proc/getSectionSubtitle(menu_section)
 		switch(menu_section)
-			if("inventory") return "Carried gear and resources"
+			if("inventory") return "Carried gear and currencies"
 			if("skills") return "Techniques ready for action"
 			if("sense") return "Energy signatures in the current area"
 			if("world") return "World and connected character overview"
@@ -606,11 +718,12 @@ datum/NexusPlayerMenu
 		return navigation
 
 	proc/getSkillDamageData(obj/skill)
-		var/list/data = list("factor" = 0, "model" = "Dynamic / utility", "range" = "See mechanics", "mechanics" = "Behavior is described by the technique.", "requirements" = "Owned and available on the skill bar.")
+		var/list/data = list("factor" = 0, "model" = "Dynamic / utility", "preview_profile" = "direct", "range" = "See mechanics", "mechanics" = "Behavior is described by the technique.", "requirements" = "Owned and available on the skill bar.")
 		if(istype(skill, /obj/Attacks/TenkaichiMeleeTechnique))
 			var/obj/Attacks/TenkaichiMeleeTechnique/technique = skill
 			data["factor"] = technique.damage_multiplier * (1 + technique.extra_hits * technique.extra_hit_multiplier)
 			data["model"] = "Physical"
+			data["preview_profile"] = "tenkaichi_melee"
 			data["range"] = technique.dash_range > 1 ? "Up to [technique.dash_range] tiles" : "Adjacent target"
 			var/list/effects = list("[technique.extra_hits + 1] hit(s)", "[technique.knockback_multiplier]x knockback")
 			if(technique.stun_ticks) effects += "[round(technique.stun_ticks / 10, 0.1)]s stun"
@@ -628,20 +741,52 @@ datum/NexusPlayerMenu
 			data["cost"] = "[technique.energy_cost] stamina-drain units"
 			data["cooldown"] = "[round(technique.cooldown_ticks / 10, 0.1)] seconds"
 			return data
+		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/WallOfFlame))
+			var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/flame_wall = skill
+			data["factor"] = 0.45 * 6
+			data["model"] = "Ki"
+			data["range"] = "Five-tile wall in front of the user"
+			data["mechanics"] = "Persists for [round(flame_wall.field_duration / 10, 0.1)] seconds. A target can take up to six 0.45-factor pulses; each pulse briefly stuns and adds a Burn stack."
+			data["cost"] = "[flame_wall.energy_cost] energy-drain units"
+			data["cooldown"] = "[round(flame_wall.cooldown_ticks / 10, 0.1)] seconds"
+			return data
 		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile))
 			var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/projectile_skill = skill
 			data["factor"] = projectile_skill.projectile_damage_factor * (projectile_skill.explosion_size ? 2 : 1)
 			data["model"] = projectile_skill.strength_scaled ? "Physical" : "Ki"
+			data["preview_profile"] = projectile_skill.weapon_projectile ? "weapon_projectile" : "ki_projectile"
+			data["projectile_direct_factor"] = projectile_skill.projectile_damage_factor
+			data["projectile_explosion_factor"] = projectile_skill.explosion_size ? projectile_skill.projectile_damage_factor : 0
+			data["projectile_budget_factor"] = data["factor"]
 			data["range"] = projectile_skill.explosion_size ? "40 tiles / [projectile_skill.explosion_size]-tile explosion" : "40 tiles / direct impact"
 			data["mechanics"] = projectile_skill.explosion_size ? "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then deals direct and splash damage within a shared maximum budget." : "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then launches a cutting projectile with [projectile_skill.projectile_shockwave]-tile knockback."
 			data["requirements"] = projectile_skill.requires_weapon ? (owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING") : "No weapon requirement"
 			data["cost"] = "[projectile_skill.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(projectile_skill.cooldown_ticks / 10, 0.1)] seconds"
 			return data
+		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze))
+			var/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze/ghost_skill = skill
+			var/ghost_total_factor = max(0, ghost_skill.ghost_count * ghost_skill.ghost_damage_factor)
+			data["factor"] = ghost_total_factor
+			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = ghost_total_factor
+			data["projectile_explosion_factor"] = 0
+			data["projectile_budget_factor"] = ghost_total_factor
+			data["range"] = "Selected target within 20 tiles"
+			data["mechanics"] = "Maximum if all [ghost_skill.ghost_count] homing ghosts hit one target; their [ghost_skill.ghost_damage_factor]x direct hits share one damage budget."
+			data["requirements"] = "A valid selected target within 20 tiles"
+			data["cost"] = "[ghost_skill.energy_cost] energy-drain units"
+			data["cooldown"] = "[round(ghost_skill.cooldown_ticks / 10, 0.1)] seconds"
+			return data
 		if(skill.hotbar_type == "Beam" && istype(skill, /obj/Attacks))
 			var/obj/Attacks/beam_skill = skill
 			data["factor"] = beam_skill.damage_factor
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = beam_skill.damage_factor
+			data["projectile_explosion_factor"] = 0
+			data["projectile_budget_factor"] = owner.beam_impact_mode == BEAM_IMPACT_EXPLOSIVE ? beam_skill.damage_factor : 0
 			data["range"] = "[beam_skill.Range] tiles"
 			data["mechanics"] = "Sustained beam; can enter a beam clash. Its impact mode and distance modifiers can change the final result."
 			data["requirements"] = "Enough energy; cannot fire while grabbed, disabled or in RP Mode"
@@ -651,35 +796,63 @@ datum/NexusPlayerMenu
 		if(istype(skill, /obj/Attacks/Big_Bang_Attack))
 			data["factor"] = skill_big_bang_damage_factor * 2
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_big_bang_damage_factor
+			data["projectile_explosion_factor"] = skill_big_bang_damage_factor
+			data["projectile_budget_factor"] = data["factor"]
 			data["range"] = "Projectile / 4-tile explosion"
 			data["mechanics"] = "Charged direct hit plus explosion, capped by one shared damage budget."
 		else if(istype(skill, /obj/Attacks/Charge))
 			data["factor"] = skill_charge_damage_factor * 2
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_charge_damage_factor
+			data["projectile_explosion_factor"] = skill_charge_damage_factor
+			data["projectile_budget_factor"] = data["factor"]
 			data["range"] = "Projectile / 2-tile explosion"
 			data["mechanics"] = "Charged direct hit plus explosion."
 		else if(istype(skill, /obj/Attacks/Cyber_Charge))
 			data["factor"] = skill_cyber_charge_damage_factor * 2
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_cyber_charge_damage_factor
+			data["projectile_explosion_factor"] = skill_cyber_charge_damage_factor
+			data["projectile_budget_factor"] = data["factor"]
 			data["range"] = "Projectile / 1-tile explosion"
 		else if(istype(skill, /obj/Attacks/Makosen))
 			data["factor"] = skill_makosen_total_factor
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_makosen_total_factor
+			data["projectile_explosion_factor"] = 0
+			data["projectile_budget_factor"] = skill_makosen_total_factor
 			data["range"] = "Short-range barrage"
 			data["mechanics"] = "Many small shots share one per-target damage budget."
 		else if(istype(skill, /obj/Attacks/Scatter_Shot))
 			data["factor"] = skill_scatter_shot_total_factor
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_scatter_shot_total_factor
+			data["projectile_explosion_factor"] = skill_scatter_shot_total_factor
+			data["projectile_budget_factor"] = skill_scatter_shot_total_factor
 			data["range"] = "Selected target / homing barrage"
 			data["mechanics"] = "Surrounds the selected target with homing shots that share one damage budget."
 		else if(istype(skill, /obj/Attacks/Sokidan))
 			data["factor"] = skill_sokidan_total_factor
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_sokidan_damage_factor
+			data["projectile_explosion_factor"] = skill_sokidan_damage_factor
+			data["projectile_budget_factor"] = skill_sokidan_total_factor
 			data["range"] = "Guided projectile"
 			data["mechanics"] = "Player-guided homing projectile with impact and splash damage."
 		else if(istype(skill, /obj/Attacks/Kienzan))
 			data["factor"] = skill_kienzan_damage_factor
 			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_kienzan_damage_factor
+			data["projectile_explosion_factor"] = 0
+			data["projectile_budget_factor"] = 0
 			data["range"] = "Guided piercing projectile"
 			data["mechanics"] = "Can hit multiple targets and loses half of its remaining damage after each pierce."
 		else if(istype(skill, /obj/RockThrow))
@@ -720,11 +893,79 @@ datum/NexusPlayerMenu
 			data["factor"] = 6
 			data["model"] = "Physical"
 			data["range"] = "Adjacent area strike"
-		else if(istype(skill, /obj/Attacks/Blast))
-			data["factor"] = skill_blast_total_factor
+		else if(istype(skill, /obj/Attacks/TenkaichiAreaTechnique))
+			var/obj/Attacks/TenkaichiAreaTechnique/area_skill = skill
+			data["factor"] = area_skill.area_damage_factor
+			data["model"] = area_skill.physical_damage ? "Physical" : "Ki"
+			data["range"] = "Up to [area_skill.radius] tiles around the user"
+			data["mechanics"] = "Preview is the maximum center-range hit; damage falls with distance. Can affect up to [area_skill.target_limit] targets."
+			data["cost"] = "[area_skill.energy_cost] [area_skill.physical_damage ? "stamina" : "energy"]-drain units"
+			data["cooldown"] = "[round(area_skill.cooldown_ticks / 10, 0.1)] seconds"
+		else if(istype(skill, /obj/Attacks/Attack_Barrier))
+			data["factor"] = skill_attack_barrier_damage_factor
 			data["model"] = "Ki"
-			data["range"] = "Rapid projectile"
-			data["mechanics"] = "Repeated basic blasts; preview is the per-projectile damage budget."
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = skill_attack_barrier_damage_factor
+			data["projectile_explosion_factor"] = 0
+			data["projectile_budget_factor"] = 0
+			data["range"] = "Orbiting projectile / contact"
+			data["mechanics"] = "Preview is for one orbiting blast; the barrier can launch multiple independently damaging blasts."
+		else if(istype(skill, /obj/Attacks/Shockwave))
+			data["factor"] = skill_shockwave_damage_factor
+			data["model"] = "Hybrid"
+			data["range"] = "7-tile area around the user"
+			data["mechanics"] = "Hybrid Strength/Force shockwave damage plus distance-scaled knockback."
+		else if(istype(skill, /obj/Attacks/Explosion))
+			data["factor"] = skill_explosion_damage_factor
+			data["model"] = "Ki"
+			data["range"] = "Clicked ground within 20 tiles / learned blast radius"
+			data["mechanics"] = "Toggles an aimed ground explosion; preview is the damage to one target in its area."
+		else if(istype(skill, /obj/Attacks/Kikoho))
+			data["factor"] = 7
+			data["model"] = "Ki"
+			data["range"] = "Target in front"
+			data["mechanics"] = "High-impact Ki strike that also accumulates self-damage."
+		else if(istype(skill, /obj/Attacks/Genki_Dama))
+			var/obj/Attacks/Genki_Dama/spirit_bomb = skill
+			data["factor"] = spirit_bomb.sb_max_dmg * (spirit_bomb.sb_explosion_size ? 2 : 1)
+			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = spirit_bomb.sb_max_dmg
+			data["projectile_explosion_factor"] = spirit_bomb.sb_explosion_size ? spirit_bomb.sb_max_dmg : 0
+			data["projectile_budget_factor"] = data["factor"]
+			data["range"] = "Guided charged projectile / [spirit_bomb.sb_explosion_size]-tile explosion"
+			data["mechanics"] = "Preview is the full-charge direct-plus-explosion maximum; releasing early deals less damage."
+			data["cost"] = "[spirit_bomb.Genki_Dama_drain] Energy to begin charging"
+			data["cooldown"] = "[spirit_bomb.self_cooldown] seconds"
+		else if(istype(skill, /obj/Final_Explosion))
+			data["factor"] = 25
+			data["model"] = "Ki"
+			data["preview_profile"] = "raw_ki"
+			data["range"] = "Expanding self-centered area"
+			data["mechanics"] = "Preview is the maximum nine-second charge. The blast strikes in five stacks, damages the user, and expands with charge time."
+		else if(istype(skill, /obj/Attacks/Blast))
+			var/obj/Attacks/Blast/basic_blast = skill
+			var/projectile_count = Clamp(round(basic_blast.Blast_Count), 1, basic_blast_max_volley_size)
+			var/per_projectile_factor = max(0, basic_blast.getBasicBlastDamageFactor())
+			var/direct_factor = per_projectile_factor * projectile_count
+			var/explosion_factor = basic_blast.Explosive ? per_projectile_factor : 0
+			data["factor"] = min(skill_blast_total_factor, direct_factor + explosion_factor)
+			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = direct_factor
+			data["projectile_explosion_factor"] = explosion_factor
+			data["projectile_budget_factor"] = skill_blast_total_factor
+			data["range"] = "[projectile_count]-projectile rapid volley"
+			data["mechanics"] = "Current [projectile_count]-shot volley at [round(per_projectile_factor, 0.001)]x per direct hit[explosion_factor ? ", plus one same-factor center-projectile splash" : ""]; all hits share a [skill_blast_total_factor]x per-target budget."
+		if(!data["factor"])
+			var/generic_factor = getNumericObjectVar(skill, "damage_factor")
+			if(!nexusIsFiniteNumber(generic_factor) || generic_factor <= 0) generic_factor = getNumericObjectVar(skill, "area_damage_factor")
+			if(!nexusIsFiniteNumber(generic_factor) || generic_factor <= 0) generic_factor = getNumericObjectVar(skill, "projectile_damage_factor")
+			if(nexusIsFiniteNumber(generic_factor) && generic_factor > 0)
+				data["factor"] = generic_factor
+				var/physical_flag = getNumericObjectVar(skill, "physical_damage")
+				data["model"] = skill.hotbar_type == "Melee" || physical_flag ? "Physical" : "Ki"
+				data["mechanics"] = "Runtime damage factor exposed by this skill; conditional hits or splash may change its total."
 		if(skill.hotbar_type in list("Melee", "Blast", "Beam", "Ability")) data["requirements"] = "Cannot attack while grabbed, KO, disabled or in RP Mode; some techniques also need a selected target"
 		if("Drain" in skill.vars && isnum(skill.vars["Drain"]))
 			var/skill_drain = skill.vars["Drain"]
@@ -757,24 +998,26 @@ datum/NexusPlayerMenu
 
 	proc/showSkillExamine(obj/skill)
 		var/list/data = getSkillDamageData(skill)
-		var/mob/preview_target = ismob(owner.Target) && owner.Target != owner ? owner.Target : owner
 		var/factor = data["factor"]
-		var/raw_damage
-		if(isnum(factor) && factor > 0)
-			switch(data["model"])
-				if("Physical") raw_damage = owner.getPhysicalCombatDamage(preview_target, factor)
-				if("Ki") raw_damage = owner.getKiCombatDamage(preview_target, factor)
-				else raw_damage = owner.getHybridCombatDamage(preview_target, factor)
-		var/preview_label = preview_target == owner ? "SELF-STAT BASELINE" : "RAW VS [preview_target]"
-		var/preview_value = isnum(raw_damage) ? "[round(raw_damage, 0.01)] Health ([factor]x factor)" : "No fixed raw-damage formula"
-		var/details = buildDetailRow(preview_label, preview_value)
+		var/raw_damage = getUnresistedSkillDamage(skill, data)
+		var/preview_value = nexusIsFiniteNumber(raw_damage) ? "About [round(raw_damage, 0.01)] Health ([factor]x skill factor)" : "No fixed raw-damage formula"
+		var/details = buildDetailRow("UNRESISTED EQUAL-POWER DAMAGE", preview_value)
 		details += buildDetailRow("DAMAGE MODEL", data["model"])
 		details += buildDetailRow("RANGE", data["range"])
 		details += buildDetailRow("COST", data["cost"] ? data["cost"] : "Dynamic / see description")
 		details += buildDetailRow("COOLDOWN", data["cooldown"] ? data["cooldown"] : "No dedicated fixed cooldown documented")
 		details += buildDetailRow("REQUIREMENTS", data["requirements"])
+		var/list/effect_data = getSkillEffectData(skill)
+		if(effect_data["state"]) details += buildDetailRow("CURRENT STATE", effect_data["state"])
+		if(effect_data["stat_changes"]) details += buildDetailRow("STAT CHANGES", effect_data["stat_changes"])
+		if(effect_data["attributes"]) details += buildDetailRow("SPECIAL ATTRIBUTES", effect_data["attributes"])
+		if(effect_data["upkeep"]) details += buildDetailRow("UPKEEP", effect_data["upkeep"])
 		var/description_text = skill.desc ? "[skill.desc]" : "No description available."
-		var/body = "<div class='description'>[html_encode(description_text)]</div><div class='details'>[details]</div><div class='notice'><b>MECHANICS</b><br>[html_encode(data["mechanics"])]<br><br>Raw damage is calculated from your current stats before block, critical hits, shields, positioning and other situational modifiers.</div>"
+		var/effect_html = ""
+		if(effect_data["summary"]) effect_html = "<div class='notice'><b>[html_encode(effect_data["heading"])]</b><br>[formatSkillDescriptionHtml(effect_data["summary"])]</div>"
+		var/damage_notice = nexusIsFiniteNumber(raw_damage) ? "The damage preview uses only your current offensive stats and gear against an equal-BP baseline with zero Endurance and Resistance. It never reads your selected target. Actual damage changes with enemy BP, defenses, armor, blocking, shields, critical hits, positioning, and conditional hits." : "This utility, buff, or transformation has no single fixed damage value. Its concrete effects are listed above and below."
+		var/use_link = hascall(skill, "Hotbar_use") && owner.isNexusHotkeyObjectAvailable(skill) ? "<a class='hud-button' href='byond://?src=\ref[src]&action=use_skill&subject=\ref[skill]'>USE SKILL</a>" : ""
+		var/body = "<div class='description'>[formatSkillDescriptionHtml(description_text)]</div><div class='details'>[details]</div>[effect_html]<div class='notice'><b>MECHANICS</b><br>[html_encode(data["mechanics"])]<br><br>[html_encode(damage_notice)]</div><div class='notice'>[use_link]</div>"
 		showExamineWindow("[skill]", "[skill.hotbar_type] / MASTERY [round(skill.Mastery, 0.1)]%", buildIcon(skill, "[skill]"), body)
 
 	proc/showSenseExamine(mob/target)
@@ -810,6 +1053,7 @@ datum/NexusPlayerMenu
 		if(resources)
 			resources.Update_value()
 			html += "<div class='card hud-card resource with-icon'>[buildIcon(resources, "Resources")]<div class='card-copy'><span class='hud-label'>RESOURCE</span><b>[Commas(resources.Value)] resources</b><small>Crafting and technology currency carried by this character.</small></div></div>"
+		html += "<div class='card hud-card resource'><div class='card-copy'><span class='hud-label'>ARCANE CURRENCY</span><b>[Value(round(owner.arcane_essence, 0.1))] Arcane Essence</b><small>Magical currency available for rituals, crafting, and secure player trades.</small></div></div>"
 		var/item_count = 0
 		for(var/obj/items/item in owner.item_list)
 			item_count++
@@ -829,8 +1073,8 @@ datum/NexusPlayerMenu
 			skill_count++
 			var/mastery_text = nexusIsFiniteNumber(skill.Mastery) ? "Mastery [round(skill.Mastery, 0.1)]%" : "Learned"
 			var/skill_examine_url = "byond://?src=\ref[src]&action=examine_skill&subject=\ref[skill]"
-			var/use_link = hascall(skill, "Hotbar_use") ? "<a class='hud-button' href='byond://?src=\ref[src]&action=use_skill&subject=\ref[skill]'>USE</a>" : ""
-			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[skill_examine_url]')\" oncontextmenu=\"window.location.href='[skill_examine_url]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span class='hud-label'>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>Damage, range and usage details available.</small></div><div class='card-actions'>[use_link]<a class='hud-button' href='[skill_examine_url]'>EXAMINE</a></div></div>"
+			var/use_link = hascall(skill, "Hotbar_use") && owner.isNexusHotkeyObjectAvailable(skill) ? "<a class='hud-button' href='byond://?src=\ref[src]&action=use_skill&subject=\ref[skill]'>USE</a>" : ""
+			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[skill_examine_url]')\" oncontextmenu=\"window.location.href='[skill_examine_url]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span class='hud-label'>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>Damage or effect, range, and usage details available.</small></div><div class='card-actions'>[use_link]<a class='hud-button' href='[skill_examine_url]'>EXAMINE</a></div></div>"
 		if(!skill_count) html += "<div class='empty'>No techniques are registered on this character.</div>"
 		return html
 
@@ -920,7 +1164,7 @@ datum/NexusPlayerMenu
 			if("section") section = normalizeSection(href_list["id"])
 			if("use_item")
 				var/obj/items/item = locate(href_list["item"])
-				if(item && item in owner.item_list) item.Click()
+				if(item && item in owner.item_list && !item.isNexusTradeOfferedBy(owner)) item.Click()
 			if("use_skill")
 				var/obj/skill = locate(href_list["subject"] ? href_list["subject"] : href_list["skill"])
 				useOwnedSkill(skill)

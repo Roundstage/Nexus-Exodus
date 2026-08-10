@@ -589,9 +589,15 @@ obj/items/ArcaneSatchel
 	Savable = 1
 	var/capacity = 20
 
+	proc/canStoreItem(mob/user, obj/items/item)
+		return user && loc == user && item && item != src && item.loc == user
+
+	proc/canRetrieveItem(mob/user, obj/items/item)
+		return user && loc == user && item && item.loc == src
+
 	verb/Store(obj/items/item in usr)
 		set src in usr
-		if(item == src) return
+		if(!canStoreItem(usr, item)) return
 		var/item_count = 0
 		for(var/obj/items/stored in src) item_count++
 		if(item_count >= capacity)
@@ -608,7 +614,8 @@ obj/items/ArcaneSatchel
 			usr << "[src] is empty."
 			return
 		var/obj/items/choice = input(usr, "Retrieve which item?", name) as null|obj in options
-		if(choice) choice.Move(usr)
+		if(!canRetrieveItem(usr, choice)) return
+		choice.Move(usr)
 
 	CookingBag
 		name = "Cooking Bag"
@@ -637,36 +644,100 @@ obj/items/MagicVault
 	Savable = 1
 	density = 1
 	var/stored_essence = 0
+	var/tmp/nexus_trade_prompt_pending
+	var/tmp/mob/nexus_trade_prompt_user
+	var/tmp/atom/nexus_trade_prompt_location
+	var/tmp/nexus_trade_prompt_revision
+	var/tmp/nexus_trade_location_revision
+
+	Move()
+		nexus_trade_location_revision++
+		. = ..()
+
+	proc/canAccessVault(mob/user)
+		if(!user) return FALSE
+		if(loc == user) return (src in user.item_list) && !isNexusTradeOfferedBy(user)
+		return src in oview(1, user)
+
+	proc/beginNexusVaultInteraction(mob/user, atom/original_location, original_revision)
+		if(nexus_trade_prompt_pending || loc != original_location || nexus_trade_location_revision != original_revision || !canAccessVault(user)) return FALSE
+		nexus_trade_prompt_pending = TRUE
+		nexus_trade_prompt_user = user
+		nexus_trade_prompt_location = original_location
+		nexus_trade_prompt_revision = original_revision
+		return TRUE
+
+	proc/canContinueNexusVaultInteraction(mob/user, atom/original_location, original_revision)
+		if(!nexus_trade_prompt_pending || nexus_trade_prompt_user != user) return FALSE
+		if(nexus_trade_prompt_location != original_location || nexus_trade_prompt_revision != original_revision) return FALSE
+		if(loc != original_location || nexus_trade_location_revision != original_revision) return FALSE
+		return canAccessVault(user)
+
+	proc/endNexusVaultInteraction(mob/user)
+		if(nexus_trade_prompt_user && user != nexus_trade_prompt_user) return
+		nexus_trade_prompt_pending = FALSE
+		nexus_trade_prompt_user = null
+		nexus_trade_prompt_location = null
+		nexus_trade_prompt_revision = 0
 
 	verb/Set_Password()
 		set src in oview(1)
 		if(Password)
 			usr << "The password has already been set."
 			return
-		Password = input(usr, "Set this vault's password.", name) as text
+		var/mob/user = usr
+		var/atom/original_location = loc
+		var/original_revision = nexus_trade_location_revision
+		if(!beginNexusVaultInteraction(user, original_location, original_revision)) return
+		var/new_password = input(user, "Set this vault's password.", name) as text
+		if(!canContinueNexusVaultInteraction(user, original_location, original_revision) || Password)
+			endNexusVaultInteraction(user)
+			return
+		Password = new_password
+		endNexusVaultInteraction(user)
 
-	proc/checkPassword(mob/user)
-		if(!Password) return TRUE
+	proc/checkPassword(mob/user, atom/original_location, original_revision)
+		if(!Password) return canContinueNexusVaultInteraction(user, original_location, original_revision)
 		var/attempt = input(user, "Enter the vault password.", name) as text
-		return attempt == Password
+		return canContinueNexusVaultInteraction(user, original_location, original_revision) && attempt == Password
 
 	verb/Deposit()
 		set src in oview(1)
-		if(!checkPassword(usr)) return
-		var/amount = input(usr, "Deposit how much Arcane Essence?", name, 0) as num
-		amount = Clamp(round(amount, 0.1), 0, usr.arcane_essence)
-		usr.arcane_essence -= amount
+		var/mob/user = usr
+		var/atom/original_location = loc
+		var/original_revision = nexus_trade_location_revision
+		if(!beginNexusVaultInteraction(user, original_location, original_revision)) return
+		if(!checkPassword(user, original_location, original_revision))
+			endNexusVaultInteraction(user)
+			return
+		var/amount = input(user, "Deposit how much Arcane Essence?", name, 0) as num
+		if(!canContinueNexusVaultInteraction(user, original_location, original_revision))
+			endNexusVaultInteraction(user)
+			return
+		amount = Clamp(round(amount, 0.1), 0, user.arcane_essence)
+		user.arcane_essence -= amount
 		stored_essence += amount
-		usr << "The vault now contains [round(stored_essence, 0.1)] Arcane Essence."
+		user << "The vault now contains [round(stored_essence, 0.1)] Arcane Essence."
+		endNexusVaultInteraction(user)
 
 	verb/Withdraw()
 		set src in oview(1)
-		if(!checkPassword(usr)) return
-		var/amount = input(usr, "Withdraw how much Arcane Essence?", name, 0) as num
+		var/mob/user = usr
+		var/atom/original_location = loc
+		var/original_revision = nexus_trade_location_revision
+		if(!beginNexusVaultInteraction(user, original_location, original_revision)) return
+		if(!checkPassword(user, original_location, original_revision))
+			endNexusVaultInteraction(user)
+			return
+		var/amount = input(user, "Withdraw how much Arcane Essence?", name, 0) as num
+		if(!canContinueNexusVaultInteraction(user, original_location, original_revision))
+			endNexusVaultInteraction(user)
+			return
 		amount = Clamp(round(amount, 0.1), 0, stored_essence)
 		stored_essence -= amount
-		usr.arcane_essence += amount
-		usr << "The vault now contains [round(stored_essence, 0.1)] Arcane Essence."
+		user.arcane_essence += amount
+		user << "The vault now contains [round(stored_essence, 0.1)] Arcane Essence."
+		endNexusVaultInteraction(user)
 
 obj/items/ArcaneLocator
 	name = "Locator"
@@ -752,11 +823,15 @@ obj/items/EnchantedDoll
 
 	verb/Awaken()
 		set src in usr
-		var/mob/ArcaneDoll/doll = new(usr.base_loc())
-		doll.owner = usr
-		doll.name = input(usr, "Name the enchanted doll.", name, "Arcane Doll") as text
-		doll.BP = max(1, usr.BP * 0.2)
-		player_view(10, usr) << "[usr] awakens [doll] from an enchanted shell."
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/doll_name = input(user, "Name the enchanted doll.", name, "Arcane Doll") as text
+		if(!canUseAfterNexusTradeYield(user)) return
+		var/mob/ArcaneDoll/doll = new(user.base_loc())
+		doll.owner = user
+		doll.name = doll_name
+		doll.BP = max(1, user.BP * 0.2)
+		player_view(10, user) << "[user] awakens [doll] from an enchanted shell."
 		del(src)
 
 mob/ArcaneDoll
@@ -785,42 +860,44 @@ obj/items/ArcaneUpgradeKit
 
 	verb/Upgrade()
 		set src in usr
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
 		var/list/options = list()
-		for(var/obj/items/Sword/Forged/weapon in usr.item_list) options += weapon
-		for(var/obj/items/Armor/Forged/armor in usr.item_list) options += armor
-		for(var/obj/items/Gloves/Forged/gloves in usr.item_list) options += gloves
-		for(var/obj/items/Mask/Forged/mask in usr.item_list) options += mask
-		var/obj/items/choice = input(usr, "Upgrade which forged item?", name) as null|obj in options
-		if(!choice) return
+		for(var/obj/items/Sword/Forged/weapon in user.item_list) options += weapon
+		for(var/obj/items/Armor/Forged/armor in user.item_list) options += armor
+		for(var/obj/items/Gloves/Forged/gloves in user.item_list) options += gloves
+		for(var/obj/items/Mask/Forged/mask in user.item_list) options += mask
+		var/obj/items/choice = input(user, "Upgrade which forged item?", name) as null|obj in options
+		if(!choice || !canUseAfterNexusTradeYield(user) || !(choice in options) || choice.loc != user || !(choice in user.item_list)) return
 		if(istype(choice, /obj/items/Sword/Forged))
 			var/obj/items/Sword/Forged/weapon = choice
 			if(weapon.master_blacksmith_quality)
-				usr << "[weapon] already has masterwork quality."
+				user << "[weapon] already has masterwork quality."
 				return
 			weapon.master_blacksmith_quality = TRUE
 			weapon.refreshForgedWeapon()
 		else if(istype(choice, /obj/items/Armor/Forged))
 			var/obj/items/Armor/Forged/armor = choice
 			if(armor.master_blacksmith_quality)
-				usr << "[armor] already has masterwork quality."
+				user << "[armor] already has masterwork quality."
 				return
 			armor.master_blacksmith_quality = TRUE
 			armor.refreshForgedArmor()
 		else if(istype(choice, /obj/items/Gloves/Forged))
 			var/obj/items/Gloves/Forged/gloves = choice
 			if(gloves.master_blacksmith_quality)
-				usr << "[gloves] already has masterwork quality."
+				user << "[gloves] already has masterwork quality."
 				return
 			gloves.master_blacksmith_quality = TRUE
 			gloves.refreshForgedGloves()
 		else
 			var/obj/items/Mask/Forged/mask = choice
 			if(mask.master_blacksmith_quality)
-				usr << "[mask] already has masterwork quality."
+				user << "[mask] already has masterwork quality."
 				return
 			mask.master_blacksmith_quality = TRUE
 			mask.refreshForgedMask()
-		player_view(10, usr) << "Arcane runes settle into [choice]."
+		player_view(10, user) << "Arcane runes settle into [choice]."
 		del(src)
 
 obj/items/CrystalBall
@@ -838,7 +915,7 @@ obj/items/CrystalBall
 		var/list/options = list()
 		for(var/mob/player in players) if(player.client && player.z == user.z && !player.invisibility) options += player
 		var/mob/target = input(user, "Scry whom in this realm?", name) as null|mob in options
-		if(!target) return
+		if(!target || !canUseAfterNexusTradeYield(user) || !(target in options) || !target.client || target.z != user.z || target.invisibility) return
 		user.client.eye = target
 		user << "Your sight enters the crystal ball for ten seconds."
 		spawn(100) if(user && user.client && user.client.eye == target) user.client.eye = user
@@ -854,7 +931,9 @@ obj/items/ArcaneElixir
 
 	verb/Drink()
 		set src in usr
-		if(applyEffect(usr)) del(src)
+		var/mob/user = usr
+		if(!canUseAfterNexusTradeYield(user)) return
+		if(applyEffect(user) && canUseAfterNexusTradeYield(user)) del(src)
 
 	Health
 		name = "Elixir of Health"
@@ -913,6 +992,7 @@ obj/items/ArcaneElixir
 				user << "A second Elixir of Reformation would have no effect."
 				return FALSE
 			if(alert(user, "This clears every mutation and begins the stat-redo process. Continue?", name, "Cancel", "Reform") != "Reform") return FALSE
+			if(!canUseAfterNexusTradeYield(user) || user.hasArcanePermanentEffect(effect_id)) return FALSE
 			user.addArcanePermanentEffect(effect_id)
 			user.clearCharacterMutations()
 			spawn(1) if(user) user.Redo_Stats(user)

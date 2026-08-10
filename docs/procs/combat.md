@@ -3,6 +3,8 @@
 ## Overview
 Combat resolution, skill routing, damage, and attack-specific behavior.
 
+Basic Blast now resolves each cast as an affordable, capacity-bounded vector volley. The engine clamps the volley to three projectiles, charges only for projectiles that can be spawned, shares a 0.6 per-target damage budget, aims the fan around one selected target, and assigns explosion, stun, and shockwave effects only to the center projectile. This prevents negative Energy and bounds active projectile work while providing denser evasive pressure. Skill Examine aggregates the configured projectile count at the current refire damage factor, adds one splash factor only when the center projectile is explosive, and applies the same shared cap; it therefore reports the current volley rather than an unconditional 0.6 factor. Super Ghost Kamikaze's preview likewise aggregates its three 2.5-factor direct hits through the runtime shared budget instead of falling back to an unknown-damage label.
+
 Guided blasts use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits. Fight to the Death now directly synchronizes `sparring_mode` and `Fatal`; there is no secondary non-lethal choice, and tournaments force Casual mode.
 
 Equipped forged masks add their material's bounded BP reinforcement to Ki attacks and multiply central Ki damage. Projectile creation captures both values for blasts, while physical bullets retain the owner's unmodified BP.
@@ -15,7 +17,7 @@ Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact
 
 Confirmed melee critical hits use the original `showNexusCriticalImpact()` presentation: a dark impact core, three independently rotated black/crimson spark ruptures generated at runtime, a short crimson light pulse, shockwave, screen shake, floating `BLACK FLASH` title, and layered physical/energy impact audio. `Test Combat Effects > Critical - Black Flash` previews the complete presentation without dealing damage.
 
-Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack requires a selected target, advances directly at one world tick per tile with afterimages, crosses to the turf beyond the opponent, and retains its distance-scaled damage. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
+Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Tenkaichi approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
@@ -308,9 +310,9 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### datum/SkillEngine/proc/castBlast
 - Signature: `datum/SkillEngine/proc/castBlast(mob/user, obj/Attacks/Blast/skill_obj)`
 - Inputs: mob/user, obj/Attacks/Blast/skill_obj
-- Purpose: Fire basic blast patterns using engine logic and attach a cached, colored light source to each projectile.
+- Purpose: Fire an affordable, slot-limited vector fan of up to three reduced-damage basic blasts and attach a cached, compact colored light source to each projectile.
 - Returns: 1 on success, else 0.
-- Side effects: drains Ki, spawns luminous blasts, updates refire.
+- Side effects: drains exact per-projectile Ki, reserves active-projectile slots, spawns luminous blasts, and updates refire.
 
 #### datum/SkillEngine/proc/castBigBang
 - Signature: `datum/SkillEngine/proc/castBigBang(mob/user, obj/Attacks/Big_Bang_Attack/skill_obj)`
@@ -392,21 +394,21 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### datum/SkillEngine/proc/castDashAttack
 - Signature: `datum/SkillEngine/proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)`
 - Inputs: mob/user, obj/Dash_Attack/skill_obj
-- Purpose: Execute a selected-target Dash Attack at one world tick per tile while granting only its skill-controlled movement loop permission to bypass the attack movement lock.
+- Purpose: Execute a selected-target accelerated vector Dash Attack that passes through the opponent while granting only its owned skill-motion steps permission to bypass the attack movement lock.
 - Returns: 1 on success, else 0.
 - Side effects: moves user, applies melee damage and knockback.
 
 #### datum/SkillEngine/proc/castWolfFangFist
 - Signature: `datum/SkillEngine/proc/castWolfFangFist(mob/user, obj/WolfFangFist/skill_obj)`
 - Inputs: mob/user, obj/WolfFangFist/skill_obj
-- Purpose: Execute five advancing strikes, each dealing 0.8x melee damage and three-tile knockback.
+- Purpose: Execute five strikes with ownership-safe accelerated approaches, each dealing 0.8x melee damage and three-tile knockback.
 - Returns: 1 on success, else 0.
 - Side effects: advances after each landed hit, applies multi-hit melee damage, knockback, and VFX.
 
 #### datum/SkillEngine/proc/castDropkick
 - Signature: `datum/SkillEngine/proc/castDropkick(mob/user, obj/Dropkick/skill_obj)`
 - Inputs: mob/user, obj/Dropkick/skill_obj
-- Purpose: Execute Dropkick lunge attack.
+- Purpose: Execute Dropkick after an accelerated, selected-target vector approach.
 - Returns: 1 on success, else 0.
 - Side effects: applies heavy melee damage and stun.
 
@@ -461,8 +463,8 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: none (implicit).
 - Side effects: steps blast movement and may delete it.
 
-#### datum/SkillController/GuidedBlast/proc/getControlDirection
-- Signature: `datum/SkillController/GuidedBlast/proc/getControlDirection(mob/user)`
+#### datum/SkillController/proc/getControlDirection
+- Signature: `datum/SkillController/proc/getControlDirection(mob/user)`
 - Inputs: controlling mob.
 - Purpose: Resolve one valid eight-way direction shared by collision prediction and movement, with facing as fallback.
 - Returns: BYOND direction constant.
@@ -1769,6 +1771,41 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: percentage damage.
 - Side effects: none.
 
+#### mob/proc/getUnresistedPhysicalCombatDamage
+- Signature: `mob/proc/getUnresistedPhysicalCombatDamage(factor = 0)`
+- Inputs: parity factor.
+- Purpose: Use the physical runtime offense path against an equal-BP baseline with zero guard, without reading a target.
+- Returns: preview percentage damage.
+- Side effects: none.
+
+#### mob/proc/getWeaponCombatSourceStat
+- Signature: `mob/proc/getWeaponCombatSourceStat(obj/items/Sword/weapon)`
+- Inputs: equipped weapon or null.
+- Purpose: Share the physical-versus-hybrid source-stat choice between live weapon damage and target-independent previews.
+- Returns: effective offensive stat.
+- Side effects: none.
+
+#### mob/proc/getSwordCombatDamageMultiplier
+- Signature: `mob/proc/getSwordCombatDamageMultiplier(obj/items/Sword/weapon, mob/target, sword_modifier = 1)`
+- Inputs: weapon, optional target, and contextual sword modifier.
+- Purpose: Share sword sharpness, Energy style, and silver modifiers. A targetless preview uses the normal non-undead silver penalty.
+- Returns: combined sword damage multiplier.
+- Side effects: none.
+
+#### mob/proc/getWeaponCombatDamage
+- Signature: `mob/proc/getWeaponCombatDamage(mob/target, factor = 0)`
+- Inputs: target and parity factor.
+- Purpose: Scale an equipped weapon through forged BP, sword sharpness/style/silver behavior, and weapon Milestones; fall back to physical damage while unarmed.
+- Returns: percentage damage.
+- Side effects: none.
+
+#### mob/proc/getUnresistedWeaponCombatDamage
+- Signature: `mob/proc/getUnresistedWeaponCombatDamage(factor = 0)`
+- Inputs: parity factor.
+- Purpose: Run the same attacker-side weapon profile against an equal-BP, zero-guard baseline while excluding target vulnerabilities and positioning.
+- Returns: preview percentage damage.
+- Side effects: none.
+
 #### mob/proc/getKiCombatDamage
 - Signature: `mob/proc/getKiCombatDamage(mob/target, factor = 0)`
 - Inputs: target and parity factor.
@@ -1776,11 +1813,32 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: percentage damage.
 - Side effects: none.
 
+#### mob/proc/getUnresistedKiCombatDamage
+- Signature: `mob/proc/getUnresistedKiCombatDamage(factor = 0)`
+- Inputs: parity factor.
+- Purpose: Preview direct Ki helpers with forged Ki BP/damage and Milestones against equal BP and zero Resistance.
+- Returns: preview percentage damage.
+- Side effects: none.
+
+#### mob/proc/getUnresistedKiProjectileCombatDamage
+- Signature: `mob/proc/getUnresistedKiProjectileCombatDamage(factor = 0)`
+- Inputs: the factor already reserved after projectile `setStats()` scaling and shared-budget enforcement.
+- Purpose: Mirror `Blast.getProjectileCombatDamage()` without reapplying the forged-Ki damage multiplier already present in the projectile factor.
+- Returns: preview percentage damage.
+- Side effects: none.
+
 #### mob/proc/getHybridCombatDamage
 - Signature: `mob/proc/getHybridCombatDamage(mob/target, factor = 0)`
 - Inputs: target and total parity factor.
 - Purpose: Split a factor evenly between physical and Ki scaling.
 - Returns: combined percentage damage.
+- Side effects: none.
+
+#### mob/proc/getUnresistedHybridCombatDamage
+- Signature: `mob/proc/getUnresistedHybridCombatDamage(factor = 0)`
+- Inputs: total parity factor.
+- Purpose: Split an equal-BP, zero-guard preview evenly between targetless physical and Ki helpers.
+- Returns: combined preview percentage damage.
 - Side effects: none.
 
 #### datum/CombatDamageBudget/proc/reserveFactor
@@ -1942,9 +2000,9 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### mob/proc/Lunge_toward
 - Signature: `mob/proc/Lunge_toward(mob/m)`
 - Inputs: mob/m
-- Purpose: Handle lunge toward.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Accelerate toward the selected lunge target with fixed-step vector collision and braking at melee range.
+- Returns: true only when the target approach reaches its declared contact goal.
+- Side effects: owns a skill motion, records pixel distance, and preserves Dragon Rush collision handling.
 
 #### mob/proc/Lunge_step_delay
 - Signature: `mob/proc/Lunge_step_delay()`
@@ -2010,11 +2068,18 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Side effects: see implementation.
 
 #### mob/proc/get_melee_damage
-- Signature: `mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1)`
-- Inputs: mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1
-- Purpose: Return centralized Strength-versus-Endurance melee damage with explicit factors (`2.5` basic and `5` Lunge), bounded speed normalization, and capped rear/critical bonuses.
+- Signature: `mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1, unresisted_equal_power = FALSE)`
+- Inputs: target/context flags; `unresisted_equal_power` runs the same attacker-side formula against equal BP and zero guard.
+- Purpose: Return centralized Strength-versus-Endurance melee damage with explicit factors (`2.5` basic and `5` Lunge), bounded speed normalization, weapon/style/Milestone scaling, and contextual target modifiers. Neutral preview mode omits target-only revenge, status, positioning, saga, armor, and defense effects.
 - Returns: computed value (see implementation).
 - Side effects: none expected.
+
+#### mob/proc/getUnresistedMeleeDamage
+- Signature: `mob/proc/getUnresistedMeleeDamage(count_sword = 1, for_strangle = FALSE, sword_modifier = 1)`
+- Inputs: melee context flags.
+- Purpose: Expose the canonical equal-BP, zero-guard melee mode for Skill Examine without constructing or reading an enemy.
+- Returns: target-independent melee preview damage.
+- Side effects: none.
 
 #### mob/verb/ToggleBreakingThings
 - Signature: `mob/verb/ToggleBreakingThings()`
@@ -2693,9 +2758,9 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### mob/proc/showRockSkillProjectile
 - Signature: `showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_scale)`
 - Inputs: target and visual configuration.
-- Purpose: Move a nondense visible rock actor from caster to target.
-- Returns: impact turf.
-- Side effects: creates and deletes a temporary visual actor and emits a restrained fragment trail.
+- Purpose: Accelerate a visible rock actor toward the target with continuous vector steering, solid-world collision, and explicit overlap permission only for its intended target.
+- Returns: the reached impact turf, or null if the visual is blocked, loses its target, or exhausts its travel budget.
+- Side effects: creates and deletes a temporary visual actor and emits a restrained fragment trail; callers apply damage only after a real impact.
 
 ### src/Code/Combat/Skills.dm
 
@@ -3947,6 +4012,13 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/Splitform/removeNexusScreenButton
+- Signature: `removeNexusScreenButton()`
+- Inputs: None.
+- Purpose: Remove the fixed-plane HUD proxy associated with this world-space splitform.
+- Returns: none (implicit).
+- Side effects: removes and deletes the proxy from its maker's client screen.
+
 #### proc/SimDestroyedBy
 - Signature: `proc/SimDestroyedBy(mob/m)`
 - Inputs: mob/m
@@ -4009,6 +4081,9 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Purpose: Handle click.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/NexusHud/SplitformButton
+- Purpose: Present a fixed-size clickable splitform control without adding the world mob itself to `client.screen`; forwards authorized clicks to the referenced splitform and clears the reference during deletion.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`

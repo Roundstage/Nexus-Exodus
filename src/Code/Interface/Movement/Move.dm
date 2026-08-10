@@ -1,5 +1,7 @@
 mob/Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
-	if(!KB && IsAttackMovementLocked() && !attack_forced_movement) return 0 //Robust movement lock
+	var/authorized_skill_motion = skill_motion_internal_move && skill_motion_internal_move == active_skill_motion
+	if(!KB && IsAttackMovementLocked() && !attack_forced_movement && !authorized_skill_motion) return 0 //Robust movement lock
+	var/preserved_facing_direction = movement_preserved_facing_direction
 	//return ..()
 
 	/*
@@ -124,8 +126,10 @@ mob/Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
 		//Dir = XYtoDir(step_x, step_y) //not sure if necessary
 	//----------
 
-	if(!client || KB || lunge_attacking || evading) . = ..()
+	if(preserved_facing_direction && Dir) dir = Dir
+	if(authorized_skill_motion || !client || KB || lunge_attacking || evading) . = ..()
 	else if(Can_Move()) . = ..()
+	if(preserved_facing_direction) dir = preserved_facing_direction
 
 	if(client) PlayerPostMove(old_loc)
 	else NPCPostMove(old_loc)

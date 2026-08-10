@@ -49,10 +49,11 @@ Thumbs.db
 /assets/
 /icons/
 /fonts/
-/Admin/
-/Misc/
-/Votes/
-/GAIN/
+/Admin
+/CustomDecors
+/GAIN
+/Misc
+/Votes
 /Year
 
 # Local Codex analysis and generated previews #

@@ -344,11 +344,10 @@ mob/proc/pullTowardTenkaichiSource(mob/source, distance = 1)
 	set waitfor = 0
 	if(!source || source == src || source.z != z) return FALSE
 	var/pull_steps = max(1, round(distance))
-	for(var/step_index = 1, step_index <= pull_steps, step_index++)
-		if(!src || !source || getdist(src, source) <= 1) break
-		var/turf/old_location = loc
-		if(!step_towards(src, source, 32) || loc == old_location) break
-		sleep(world.tick_lag)
+	AlterInputDisabled(1)
+	if(src && source && getdist(src, source) > 1)
+		runNexusSkillApproach(source, pull_steps * world.icon_size, world.icon_size, 90, 180, 240, 0, FALSE)
+	AlterInputDisabled(-1)
 	return TRUE
 
 obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave

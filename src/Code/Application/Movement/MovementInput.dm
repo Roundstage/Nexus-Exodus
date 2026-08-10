@@ -147,22 +147,55 @@ mob/proc
 			if(NORTH) nudge_y = vector_gap_nudge_pixels
 			if(SOUTH) nudge_y = -vector_gap_nudge_pixels
 		var/facing_direction = dir
-		var/moved = Move(loc, facing_direction, step_x + nudge_x, step_y + nudge_y)
+		var/previous_preserved_facing = movement_preserved_facing_direction
+		movement_preserved_facing_direction = facing_direction
+		var/moved = Move(loc, nudge_direction, step_x + nudge_x, step_y + nudge_y)
+		movement_preserved_facing_direction = previous_preserved_facing
 		dir = facing_direction
 		return moved
 
 	slideNexusDiagonalMove(move_direction)
 		if(!(move_direction in list(NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))) return
-		if(last_vector_move_actual_x || last_vector_move_actual_y) return
 		var/facing_direction = dir
+		var/previous_preserved_facing = movement_preserved_facing_direction
+		movement_preserved_facing_direction = facing_direction
+		var/teleport_generation = movement_teleport_generation
 		var/moved
-		if(last_vector_move_requested_y)
-			moved = Move(loc, facing_direction, step_x, step_y + last_vector_move_requested_y)
-			if(moved)
+		var/start_x
+		var/start_y
+		var/remaining_y = last_vector_move_requested_y - last_vector_move_actual_y
+		if(remaining_y)
+			start_x = Px(0)
+			start_y = Py(0)
+			var/y_direction = remaining_y > 0 ? NORTH : SOUTH
+			moved = Move(loc, y_direction, step_x, step_y + remaining_y)
+			last_vector_move_actual_x += round(Px(0) - start_x)
+			last_vector_move_actual_y += round(Py(0) - start_y)
+			if(movement_teleport_generation != teleport_generation)
+				movement_preserved_facing_direction = previous_preserved_facing
 				dir = facing_direction
 				return moved
-		if(last_vector_move_requested_x)
-			moved = Move(loc, facing_direction, step_x + last_vector_move_requested_x, step_y)
+			if(Px(0) != start_x || Py(0) != start_y)
+				movement_preserved_facing_direction = previous_preserved_facing
+				dir = facing_direction
+				return TRUE
+		var/remaining_x = last_vector_move_requested_x - last_vector_move_actual_x
+		if(remaining_x)
+			start_x = Px(0)
+			start_y = Py(0)
+			var/x_direction = remaining_x > 0 ? EAST : WEST
+			moved = Move(loc, x_direction, step_x + remaining_x, step_y)
+			last_vector_move_actual_x += round(Px(0) - start_x)
+			last_vector_move_actual_y += round(Py(0) - start_y)
+			if(movement_teleport_generation != teleport_generation)
+				movement_preserved_facing_direction = previous_preserved_facing
+				dir = facing_direction
+				return moved
+			if(Px(0) != start_x || Py(0) != start_y)
+				movement_preserved_facing_direction = previous_preserved_facing
+				dir = facing_direction
+				return TRUE
+		movement_preserved_facing_direction = previous_preserved_facing
 		dir = facing_direction
 		return moved
 
@@ -218,12 +251,17 @@ mob/proc
 		var/speed_multiplier = speedDelayMultMod / speed_delay
 		return Clamp(speed_multiplier, vector_move_speed_stat_minimum, vector_move_speed_stat_maximum)
 
-	GetVectorMovePixels(d = NORTH)
+	getVectorMaximumVelocity(d = NORTH, apply_diagonal_penalty = FALSE)
 		if(!d) d = NORTH
 		var/speed = vector_move_base_pixels_per_second * GetVectorMovementStatMultiplier()
-		var/delay_mult = GetInputMoveDelay(d, raw_mult_only = 1)
+		var/delay_mult = _GetInputMoveDelay_apply_basic_modifiers(BASE_MOVE_DELAY)
+		if(apply_diagonal_penalty && isMovementDiagonal(d)) delay_mult = _GetInputMoveDelay_diagonal_mult(delay_mult)
 		if(delay_mult) speed /= delay_mult
-		speed *= world.tick_lag
+		return max(0, speed)
+
+	GetVectorMovePixels(d = NORTH)
+		if(!d) d = NORTH
+		var/speed = getVectorMaximumVelocity(d, apply_diagonal_penalty = TRUE) * world.tick_lag
 		if(speed < 1) speed = 1
 		if(vector_move_min_sleep_mult)
 			var/max_pixels_for_loop = 32 / vector_move_min_sleep_mult
@@ -284,6 +322,7 @@ mob/proc
 	AlterInputDisabled(n = 1)
 		input_disabled += n
 		if(input_disabled < 0) input_disabled = 0
+		if(input_disabled) resetMovementPhysics(clear_glide = FALSE)
 
 
 

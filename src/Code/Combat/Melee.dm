@@ -57,7 +57,7 @@ obj/Effect/NexusCriticalCore
 	mouse_opacity = 0
 	Grabbable = 0
 	Savable = 0
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 98
 
 obj/Effect/NexusCriticalSpark
@@ -66,7 +66,7 @@ obj/Effect/NexusCriticalSpark
 	mouse_opacity = 0
 	Grabbable = 0
 	Savable = 0
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 99
 
 obj/Effect/NexusCriticalText
@@ -77,7 +77,7 @@ obj/Effect/NexusCriticalText
 	Savable = 0
 	maptext_width = 192
 	maptext_height = 32
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 100
 
 mob/proc/showNexusCriticalImpact(atom/impact_target)
@@ -360,6 +360,7 @@ mob/proc/Lunge_refire()
 	return n
 
 mob/proc/Lunge_toward(mob/m)
+	resetMovementPhysics(clear_glide = FALSE)
 	lunge_attacking=1
 	lunge_target=m
 	attacking=1
@@ -378,40 +379,25 @@ mob/proc/Lunge_toward(mob/m)
 	var/mob/target_loc=m
 	var/lunge_distance=Get_lunge_distance()
 	var/was_flying=Flying
-	var/start_dir=dir
 	Fly()
-
-	for(var/v in 1 to lunge_distance)
-		if(KB || KO || !lunge_attacking || selected_target != m || !target_loc || loc==target_loc || loc==target_loc.loc || Mob_in_front() || !viewable(src,lunge_target)) break
-		else
-			var/dir_holder = dir
-			dir = start_dir
-			if(target_loc == m && !isturf(m) && (lunge_evaded || get_abs_angle(src,m) > 55))
-				target_loc = m.base_loc()
-			dir = dir_holder
-			var/old_loc = loc
-
-			var/velocity_boost_chance = 100 + (150 * (Spd / Max_Speed)**0.5) //base of 100 for the first guaranteed move, the rest is boost
-			while(velocity_boost_chance > 0)
-				if(prob(velocity_boost_chance) && get_dist(src,target_loc) > 1)
-					AfterImage(40, 4)
-					step_towards(src,target_loc,32)
-				velocity_boost_chance -= 100
-
-			flick('Zanzoken.dmi',src)
-			distance_lunged++
-			if(loc == old_loc || get_dist(src,target_loc) <= 1) break
-			else sleep(world.tick_lag)
+	var/speed_ratio = Clamp(Spd / max(1, Max_Speed), 0, 1)
+	var/lunge_velocity = 95 + 35 * sqrt(speed_ratio)
+	var/approach_succeeded = FALSE
+	if(!KB && !KO && lunge_attacking && selected_target == m && target_loc && viewable(src, lunge_target))
+		approach_succeeded = runNexusSkillApproach(m, lunge_distance * world.icon_size, world.icon_size, lunge_velocity, lunge_velocity * 2.2, lunge_velocity * 2.8, 0.35)
+	if(!approach_succeeded && !in_dragon_rush) lunge_evaded = 1
+	distance_lunged = max(0, round(last_skill_motion_pixels / world.icon_size))
 
 	pre_lunge=0
 	post_lunge=1
 	if(!was_flying) Land()
 	icon_state=Get_idle_state()
 	flick("Attack",src)
-	dir=get_dir(src,target_loc)
+	if(target_loc) dir=get_dir(src,target_loc)
 
 	//spawn(Get_melee_delay(mult=1.5)) Cancel_lunge()
 	spawn(world.tick_lag) Cancel_lunge() //so we can move immediately after the lunge is done instead of being stuck in place
+	return approach_succeeded
 
 mob/proc/Lunge_step_delay()
 	return TickMult(world.tick_lag * 0.84)
@@ -484,7 +470,7 @@ var/give_power_dmg=50
 
 var/new_combat = 0 //do not use new combat system
 
-mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1)
+mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot = 1, swordMod = 1, unresisted_equal_power = FALSE)
 
 	if(is_saitama) return 1.#INF
 	if(m && ismob(m) && m.is_saitama)
@@ -492,17 +478,18 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		else return 25
 
 	var/dmg=0
-	if(ismob(m))
+	var/has_target = ismob(m)
+	if(has_target || unresisted_equal_power)
 
 		//if(m.Class == "Legendary Saiyan") count_sword = 0 //LSSJs have forced 0 defense and 2x swords tear them apart but now no matter what they
 		//only take normal punch damage from any sword
 		//nevermind instead of sword immunity they just get partial immunity
-		if(m.Class == "Legendary Saiyan") swordMod = 0.40
+		if(has_target && m.Class == "Legendary Saiyan") swordMod = 0.40
 
 		var/obj/items/Sword/s = using_sword()
 
 		var/obj/items/Force_Field/FF
-		if(s && s.Style=="Energy" && count_sword && !for_strangle)
+		if(has_target && s && s.Style=="Energy" && count_sword && !for_strangle)
 			for(FF in m.item_list) if(FF.Level>0) break
 
 		dmg = base_melee_damage
@@ -516,59 +503,55 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		//if(m.power_attacking) dmg/=2.7 //to compensate for all the free hits your going to get while theyre charging up their power attack which is far lower dps
 		dmg *= melee_power
 
-		dmg *= AllAttacksDamageModifiers(m)
+		dmg *= AllAttacksDamageModifiers(has_target ? m : null)
 
-		if(m.KO) dmg*=2.5
+		if(has_target && m.KO) dmg*=2.5
 		dmg *= GetSpeedDamageDecrease()
-		if(m.regenerator_obj) dmg *= regenerator_damage_mod
+		if(has_target && m.regenerator_obj) dmg *= regenerator_damage_mod
 
 		//drone teamer debuff system
-		var/drone_count=0
-		if(drone_module)
-			var/list/other_drones=Get_Drones(null,drone_module.Password)
-			for(var/mob/d in other_drones) if(d!=src && d.drone_attack_loop && z==d.z && d.Target==m && getdist(src,d)<=15)
-				if(!drone_count) dmg/=2.5
-				else dmg/=1.1
-				drone_count++
-				if(drone_count>=10) break
-		else if(m.drone_module)
-			var/list/other_drones=Get_Drones(null,m.drone_module.Password)
-			for(var/mob/d in other_drones) if(d!=m && d.drone_attack_loop && m.z==d.z && d.Target==src && getdist(src,d)<=15)
-				if(!drone_count) dmg*=2.5
-				else dmg*=1.1
-				drone_count++
-				if(drone_count>=10) break
+		if(has_target)
+			var/drone_count=0
+			if(drone_module)
+				var/list/other_drones=Get_Drones(null,drone_module.Password)
+				for(var/mob/d in other_drones) if(d!=src && d.drone_attack_loop && z==d.z && d.Target==m && getdist(src,d)<=15)
+					if(!drone_count) dmg/=2.5
+					else dmg/=1.1
+					drone_count++
+					if(drone_count>=10) break
+			else if(m.drone_module)
+				var/list/other_drones=Get_Drones(null,m.drone_module.Password)
+				for(var/mob/d in other_drones) if(d!=m && d.drone_attack_loop && m.z==d.z && d.Target==src && getdist(src,d)<=15)
+					if(!drone_count) dmg*=2.5
+					else dmg*=1.1
+					drone_count++
+					if(drone_count>=10) break
 
 
-		if(m.Giving_Power) dmg*=give_power_dmg
+		if(has_target && m.Giving_Power) dmg*=give_power_dmg
 
-		if(m.fearful||m.Good_attacking_good()) dmg*=m.Fear_dmg_mult()
+		if(has_target && (m.fearful||m.Good_attacking_good())) dmg*=m.Fear_dmg_mult()
 		if(is_kiting) dmg*=kiting_penalty
-		if(m.is_teamer) dmg*=teamer_dmg_mult
+		if(has_target && m.is_teamer) dmg*=teamer_dmg_mult
 		if(is_teamer) dmg/=teamer_dmg_mult
 
-		var/source_stat = getMilestonePhysicalDamageStat()
-		var/guard_stat = m.getMilestoneScaledCombatStat(m.End) * getMilestoneGuardMultiplier()
+		var/source_stat = getWeaponCombatSourceStat(s && count_sword ? s : null)
+		var/guard_stat = has_target ? m.getMilestoneScaledCombatStat(m.End) * getMilestoneGuardMultiplier() : 0
 		if(s && count_sword)
-			dmg *= 1 + ((s.Damage - 1) * sword_damage_mod * swordMod)
-			if(s.is_silver)
-				if(m.Vampire||istype(m,/mob/Enemy/Zombie)) dmg*=silver_sword_damage_mult
-				else dmg*=silver_sword_damage_penalty
+			dmg *= getSwordCombatDamageMultiplier(s, has_target ? m : null, swordMod)
 			if(s.Style=="Energy")
-				guard_stat = m.getMilestoneScaledCombatStat(m.Res) * getMilestoneGuardMultiplier()
-				if(FF) guard_stat = m.getMilestoneScaledCombatStat(Avg_Res())
-				source_stat = (getMilestonePhysicalDamageStat() * 0.5) + (getMilestoneKiDamageStat() * 0.5)
-				dmg *= energy_sword_damage_mod
+				if(has_target) guard_stat = m.getMilestoneScaledCombatStat(m.Res) * getMilestoneGuardMultiplier()
+				if(has_target && FF) guard_stat = m.getMilestoneScaledCombatStat(Avg_Res())
 		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : getForgedUnarmedAttackBP()
-		var/defender_combat_bp = m.getForgedArmorEnduranceBP()
+		var/defender_combat_bp = has_target ? m.getForgedArmorEnduranceBP() : max(BP, 0.01)
 		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, source_stat, guard_stat)
-		dmg *= getMilestoneMeleeDamageMultiplier(m, !!s)
+		dmg *= getMilestoneMeleeDamageMultiplier(has_target ? m : null, !!s)
 
-		if(m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
+		if(has_target && m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
 		if(alignment=="Evil"&&alignment_on) dmg*=villain_damage_penalty
-		dmg*=sagas_bonus(src,m)
+		if(has_target) dmg*=sagas_bonus(src,m)
 
-		if(FF)
+		if(has_target && FF)
 			var/ff_dmg=BP*dmg*0.001
 			m.Apply_force_field_damage(FF,ff_dmg)
 			return 0
@@ -588,6 +571,9 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 	if(isFireFist)
 		dmg*=1.2;
 	return dmg
+
+mob/proc/getUnresistedMeleeDamage(count_sword = 1, for_strangle = FALSE, sword_modifier = 1)
+	return get_melee_damage(null, count_sword = count_sword, for_strangle = for_strangle, swordMod = sword_modifier, unresisted_equal_power = TRUE)
 
 var/can_things_be_broken = 1
 
@@ -1121,7 +1107,11 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		if(target)
 			if(!can_melee()) return //because the can_melee call above will let you continue with a power attack but if you made it to this block
 			//then you are actually lunging so ignore the previous can_melee args
-			Lunge_toward(target)
+			var/lunge_reached = Lunge_toward(target)
+			if(!lunge_reached && !in_dragon_rush)
+				Cancel_lunge()
+				Reset_melee()
+				return
 			if(!target || selected_target != target)
 				Cancel_lunge()
 				Reset_melee()
@@ -1164,12 +1154,14 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	if(!target || getdist(src,target)>1)
 		Reset_melee()
 		return
+	var/defensive_dash_evaded = FALSE
 	if(ismob(target))
 		var/mob/melee_target = target
 		if(melee_target.rp_mode)
 			Reset_melee()
 			return
-		if(melee_target.tryTenkaichiRiposte(src))
+		defensive_dash_evaded = melee_target.isDefensiveDashEvading()
+		if(!defensive_dash_evaded && melee_target.tryTenkaichiRiposte(src))
 			Reset_melee()
 			return
 
@@ -1218,7 +1210,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		knockback=0
 	last_melee_attack = world.time
 
-	if(ismob(target) && target.blocking && !(tenkaichi_technique && tenkaichi_technique.breaks_guard))
+	if(!defensive_dash_evaded && ismob(target) && target.blocking && !(tenkaichi_technique && tenkaichi_technique.breaks_guard))
 		target.dir=get_dir(target,src)
 		knockback=0
 		var/evasion_gain=1
@@ -1258,6 +1250,10 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				Reset_melee()
 			//^ its like this because power attacking can be done any time during normal melee even if melee is not reset so this can
 			//often create double reset loop letting them attack 2x faster than they should be. idk if this fixes it tho
+
+	if(defensive_dash_evaded)
+		PunchGraphics()
+		return
 
 	if(target&&ismob(target)) target.setOpponent(src)
 	PunchGraphics()

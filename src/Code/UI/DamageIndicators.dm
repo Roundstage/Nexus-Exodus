@@ -30,7 +30,7 @@ obj/DamageIndicator
 	attackable = 0
 	density = 0
 	mouse_opacity = 0
-	plane = 20 // Combat feedback must remain readable at night.
+	plane = NEXUS_WORLD_OVERLAY_PLANE // Combat feedback remains readable at night and follows map zoom.
 	layer = 99
 	maptext_width = 64
 	maptext_height = 24

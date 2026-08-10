@@ -108,26 +108,33 @@ obj/items/Gravity
 		Upgrade()
 	verb/Upgrade()
 		set src in view(1)
-		if(usr in range(1,src))
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(user in range(1,src))
+			if(original_location == user && !canUseAfterNexusTradeYield(user)) return
 			if(upgrading) return
-			if(!usr.Intelligence()) return
-			var/cost_per_grav=Grav_Cost*(500/max_gravity)/usr.Intelligence()**0.25
-			var/max_upgrade=round(max_gravity*usr.Intelligence()**0.21)-Max
+			if(!user.Intelligence()) return
+			var/cost_per_grav=Grav_Cost*(500/max_gravity)/user.Intelligence()**0.25
+			var/max_upgrade=round(max_gravity*user.Intelligence()**0.21)-Max
 			if(max_upgrade<=0)
-				usr<<"This machine can not be upgraded any further"
+				user<<"This machine can not be upgraded any further"
 				return
-			upgrading=usr
-			var/n=input(usr,"How much money do you want to put into this? Each [Commas(cost_per_grav)]$ is \
+			upgrading=user
+			var/n=input(user,"How much money do you want to put into this? Each [Commas(cost_per_grav)]$ is \
 			+1 gravity. This machine maxes out with [Commas(max_upgrade*cost_per_grav)] more resources") as num
 			upgrading=null
+			if(!user || loc != original_location) return
+			if(original_location == user)
+				if(!canUseAfterNexusTradeYield(user)) return
+			else if(!(src in range(1,user))) return
 			if(max_upgrade<=0) return
-			if(n>usr.Res()) n=usr.Res()
+			if(n>user.Res()) n=user.Res()
 			if(n<=0) return
 			if(n>max_upgrade*cost_per_grav) n=max_upgrade*cost_per_grav
 			Max+=n/cost_per_grav
-			usr.Alter_Res(-n)
+			user.Alter_Res(-n)
 			Total_Cost+=n
-			player_view(15,usr)<<"[usr] upgrades the [src] with [Commas(n)]$. The max gravity increases by \
+			player_view(15,user)<<"[user] upgrades the [src] with [Commas(n)]$. The max gravity increases by \
 			[n/cost_per_grav]x. The max gravity is now [Max]x"
 			name="[round(Max,0.1)]x Gravity"
 			return
@@ -137,11 +144,18 @@ obj/items/Gravity
 			G.overlays.Remove(I,'GravityField.dmi',I)
 			G.gravity=0
 	Click() if(usr in range(1,src))
-		var/Grav=input("You can set the gravity multiplier by using this panel. Be aware that the level of gravity affects everyone in the room. Maxgrav is [Max]x") as num
+		var/mob/user = usr
+		var/atom/original_location = loc
+		if(original_location == user && !canUseAfterNexusTradeYield(user)) return
+		var/Grav=input(user,"You can set the gravity multiplier by using this panel. Be aware that the level of gravity affects everyone in the room. Maxgrav is [Max]x") as num
+		if(!user || loc != original_location) return
+		if(original_location == user)
+			if(!canUseAfterNexusTradeYield(user)) return
+		else if(!(src in range(1,user))) return
 		if(Grav>Max) Grav=Max
 		if(Grav<0) Grav=0
-		if(!Grav) player_view(15,src)<<"<center>[usr] sets the Gravity multiplier set to normal."
-		else player_view(15,src)<<"<center>[usr] sets the Gravity multiplier set to [Grav]x"
+		if(!Grav) player_view(15,src)<<"<center>[user] sets the Gravity multiplier set to normal."
+		else player_view(15,src)<<"<center>[user] sets the Gravity multiplier set to [Grav]x"
 		var/image/I=image(icon='GravityField.dmi',layer=MOB_LAYER+5)
 		for(var/turf/G in view(Range,src))
 			G.overlays.Remove(I,'GravityField.dmi',I)

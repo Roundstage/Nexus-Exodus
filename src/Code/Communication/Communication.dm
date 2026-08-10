@@ -275,7 +275,7 @@ obj/Effect/NexusTypingIndicator
 	density = 0
 	Grabbable = 0
 	Savable = 0
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 121
 
 mob/proc/Say_Spark()
@@ -317,7 +317,7 @@ obj/Effect/NexusSayText
 	mouse_opacity = 0
 	density = 0
 	Grabbable = 0
-	plane = 20
+	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 120
 	maptext_width = 256
 	maptext_height = 128

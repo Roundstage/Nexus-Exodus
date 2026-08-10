@@ -70,6 +70,13 @@ mob/proc/UpdateStepSpeed()
 		glide_size = GetVectorGlideSize(32)
 		return
 
+	if(usingMovementInertia())
+		stepSizeLabel = movement_last_frame_pixels
+		if(movement_last_frame_pixels > 0)
+			glide_size = GetVectorGlideSize(movement_last_frame_pixels)
+		else glide_size = 0
+		return
+
 	var/speed = GetVectorMovePixels(move_dir())
 	stepSizeLabel = speed
 	if(UsingVectorMovement())

@@ -183,9 +183,9 @@ mob/verb/manageVisualLayers()
 	var/selection = input(src, "Choose an equipped overlay to move. Lower values render behind higher values.", "Visual layers") in choices
 	if(selection == "Cancel") return
 	var/obj/items/item = items_by_label[selection]
-	if(!item || item.loc != src) return
+	if(!item || item.loc != src || item.suffix != "Equipped" || item.isNexusTradeOfferedBy(src)) return
 	var/new_priority = input(src, "Priority from [APPEARANCE_PRIORITY_BACK] (back) to [APPEARANCE_PRIORITY_FRONT] (front).", "[item]", item.appearance_priority) as num|null
-	if(isnull(new_priority)) return
+	if(isnull(new_priority) || item.loc != src || item.suffix != "Equipped" || item.isNexusTradeOfferedBy(src)) return
 	setEquipmentAppearancePriority(item, new_priority)
 
 mob/verb/viewVisualLayers()

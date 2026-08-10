@@ -84,7 +84,7 @@ mob/proc/clearBeamClashPrompt()
 
 obj/NexusHud/BeamClashPrompt
 	mouse_opacity = 0
-	plane = 20
+	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 125
 	screen_loc = "CENTER-3:0,CENTER:102"
 	maptext_x = 0

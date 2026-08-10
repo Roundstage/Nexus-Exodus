@@ -11,6 +11,7 @@ var/list/clients = new
 
 client/Del()
 	clients -= src
+	removeNexusMapZoom()
 	removeNexusLighting()
 	if(nexus_character_select)
 		del(nexus_character_select)
@@ -155,6 +156,7 @@ client/proc/returnToNexusReconnectLobby()
 	var/mob/login_mob = new /mob
 	mob = login_mob
 	if(reconnected_character && reconnected_character != mob) del(reconnected_character)
+	if(mob) mob.DetermineViewSize(forceWidth = startViewX)
 	return mob == login_mob
 
 client/proc

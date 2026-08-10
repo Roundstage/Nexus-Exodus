@@ -68,14 +68,12 @@ mob
 			o.icon = 'SolarFlare.dmi'
 			o.alpha = 0
 			o.layer = 20
+			o.plane = NEXUS_FIXED_HUD_PLANE
 			CenterIcon(o)
 			//o.pixel_x *= sizeMod
 			//o.pixel_y *= sizeMod
 			o.transform *= sizeMod
-			var
-				screenX = (ViewX - 1) / 2
-				screenY = screenX / (16 / 9)
-			o.screen_loc = "[screenX],[screenY]"
+			o.screen_loc = "CENTER"
 			client.screen += o
 			animate(o, alpha = 255, time = 20, flags = ANIMATION_PARALLEL)
 			var/timeMod = (regen / 1.6) ** 0.5

@@ -2,9 +2,92 @@ mob/NexusSmokeTest
 	New()
 		return
 
+mob/NexusSmokeTest/TradeHotbarProbe
+	var/trade_restore_calls
+
+	Restore_hotbar_from_IDs()
+		if(skip_restore_hotbar) return
+		trade_restore_calls++
+
+datum/NexusTradeSmokeSession
+	parent_type = /datum/NexusTradeSession
+
+	getSessionError(require_joined = TRUE)
+		return null
+
+obj/items/NexusTradeFailMove
+	var/fail_next_move
+
+	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		if(fail_next_move)
+			fail_next_move = FALSE
+			return FALSE
+		return ..()
+
 mob/NexusSmokeTest/VectorMovement
 	MobCross(mob/A)
 		return
+
+mob/NexusSmokeTest/InertialMovement
+	getMovementMaximumVelocity(d = NORTH)
+		return 30
+
+mob/NexusSmokeTest/MovementAccumulator
+	var/physics_step_count = 0
+	var/physics_duration_total = 0
+
+	processMovementPhysicsStep(input_direction, duration_deciseconds)
+		physics_step_count++
+		physics_duration_total += duration_deciseconds
+
+mob/NexusSmokeTest/ForcedMovementProbe
+	var/observe_next_move = FALSE
+	var/observe_next_safe_teleport = FALSE
+	var/observed_forced_move = FALSE
+	var/observed_forced_teleport = FALSE
+	var/forced_move_had_inertia = FALSE
+	var/forced_teleport_had_inertia = FALSE
+
+	Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		if(observe_next_move)
+			observe_next_move = FALSE
+			observed_forced_move = TRUE
+			forced_move_had_inertia = movementVelocityMagnitude() || movement_acceleration_x || movement_acceleration_y || vector_fraction_x || vector_fraction_y
+		return ..()
+
+	SafeTeleport(turf/t, allowSameTick)
+		if(observe_next_safe_teleport)
+			observe_next_safe_teleport = FALSE
+			observed_forced_teleport = TRUE
+			forced_teleport_had_inertia = movementVelocityMagnitude() || movement_acceleration_x || movement_acceleration_y || vector_fraction_x || vector_fraction_y
+		return ..()
+
+mob/NexusSmokeTest/InertialTeleport
+	var/turf/nexus_smoke_teleport_destination
+
+	getMovementMaximumVelocity(d = NORTH)
+		return 10
+
+	Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		if(nexus_smoke_teleport_destination)
+			var/turf/destination = nexus_smoke_teleport_destination
+			nexus_smoke_teleport_destination = null
+			SafeTeleport(destination)
+			return TRUE
+		return ..()
+
+mob/NexusSmokeTest/InertialFacing
+	var/observed_facing_direction
+	var/observed_physical_direction
+	var/observed_post_move_direction
+
+	Move(turf/NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		observed_facing_direction = dir
+		observed_physical_direction = Dir
+		return ..()
+
+	NPCPostMove(old_loc)
+		observed_post_move_direction = dir
 
 turf/NexusSmokeVectorBlocker
 	density = 1
@@ -18,6 +101,7 @@ turf/NexusSmokeTest
 obj/NexusSmokeSkillAction
 	Skill = 1
 	hotbar_type = "Ability"
+	can_hotbar = 1
 	var/use_count = 0
 
 	verb/Hotbar_use()
@@ -81,12 +165,364 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(garbage_collect.len == garbage_queue_size_before + 1, "the garbage queue size is inconsistent")
 	nexusSmokeAssert(GarbageCollect(1) == 1 && garbage_collect.len == garbage_queue_size_before, "incremental garbage collection did not drain its budget")
 	garbage_queue_test = null
+	nexusSmokeAssert(text2path("/datum/NexusTradeSession") && text2path("/mob/verb/secureTrade"), "secure player trading types are missing")
+	var/mob/NexusSmokeTest/trade_owner = new
+	var/mob/NexusSmokeTest/trade_partner = new
+	var/obj/items/trade_stack_item = new(trade_owner)
+	if(!(trade_stack_item in trade_owner.item_list)) trade_owner.item_list += trade_stack_item
+	trade_stack_item.name = "Stacked Trade Item"
+	trade_stack_item.Givable = TRUE
+	trade_stack_item.Can_Drop_With_Suffix = TRUE
+	trade_stack_item.suffix = "12"
+	var/datum/NexusTradeSmokeSession/trade_contract = new(trade_owner, trade_partner, FALSE)
+	trade_contract.invitation_accepted = TRUE
+	trade_contract.phase = "offer"
+	var/trade_item_verb_count = trade_stack_item.verbs.len
+	nexusSmokeAssert(trade_contract.addItem(trade_owner, trade_stack_item), "secure trade could not add a valid item through its normal offer path")
+	nexusSmokeAssert(trade_stack_item.isNexusTradeOfferedBy(trade_owner) && !trade_stack_item.canUseAfterNexusTradeYield(trade_owner) && !trade_owner.isNexusHotkeyObjectAvailable(trade_stack_item) && trade_stack_item.nexus_trade_suspended_verbs && trade_stack_item.verbs.len < trade_item_verb_count, "an actively offered item remains usable through its verbs, yielding helper, or hotkey dispatch")
+	nexusSmokeAssert(trade_contract.removeItem(trade_owner, trade_stack_item), "secure trade could not remove an offered item")
+	nexusSmokeAssert(!trade_stack_item.isNexusTradeOfferedBy(trade_owner) && trade_stack_item.canUseAfterNexusTradeYield(trade_owner) && !trade_stack_item.nexus_trade_suspended_verbs && trade_stack_item.verbs.len == trade_item_verb_count, "removing an item from a trade does not restore ordinary item use and verbs")
+	nexusSmokeAssert(!trade_contract.getItemError(trade_stack_item, trade_owner), "secure trading rejects a transferable stack-count suffix")
+	trade_stack_item.suffix = "Equipped"
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_stack_item, trade_owner), "secure trading accepts an equipped item")
+	trade_stack_item.suffix = null
+	var/obj/items/Armor/trade_common_armor = new(trade_owner)
+	var/obj/items/Sword/trade_common_sword = new(trade_owner)
+	var/obj/items/Gun/trade_common_gun = new(trade_owner)
+	var/obj/items/Ammo/trade_common_ammo = new(trade_owner)
+	var/obj/items/Shuriken/trade_common_shuriken = new(trade_owner)
+	var/obj/items/Sword/Forged/trade_common_forged_weapon = new(trade_owner)
+	var/obj/items/Simulator/trade_common_simulator = new(trade_owner)
+	var/obj/items/Gravity/trade_common_gravity = new(trade_owner)
+	var/obj/items/Stun_Controls/trade_common_stun_controls = new(trade_owner)
+	var/list/common_trade_items = list(trade_common_armor, trade_common_sword, trade_common_gun, trade_common_ammo, trade_common_shuriken, trade_common_forged_weapon, trade_common_simulator, trade_common_gravity, trade_common_stun_controls)
+	for(var/obj/items/common_trade_item in common_trade_items)
+		if(!(common_trade_item in trade_owner.item_list)) trade_owner.item_list += common_trade_item
+		var/common_item_error = trade_contract.getItemError(common_trade_item, trade_owner)
+		nexusSmokeAssert(!common_item_error, "secure trading rejects guarded ordinary equipment [common_trade_item.type]: [common_item_error]")
+	trade_common_gun.Firing = TRUE
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_common_gun, trade_owner), "secure trading accepts a gun during its asynchronous refire cycle")
+	trade_common_gun.Firing = FALSE
+	trade_common_gun.nexus_customization_pending = TRUE
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_common_gun, trade_owner), "secure trading accepts an incompletely calibrated gun")
+	trade_common_gun.nexus_customization_pending = FALSE
+	trade_common_ammo.Reloading = TRUE
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_common_ammo, trade_owner), "secure trading accepts ammunition during an asynchronous reload")
+	trade_common_ammo.Reloading = FALSE
+	trade_common_gravity.upgrading = trade_owner
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_common_gravity, trade_owner), "secure trading accepts a gravity generator while its upgrade prompt is active")
+	trade_common_gravity.upgrading = null
+	trade_common_stun_controls.cant_stun = 1
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_common_stun_controls, trade_owner), "secure trading accepts stun controls while their asynchronous cooldown is active")
+	trade_common_stun_controls.cant_stun = 0
+	var/obj/items/Robotics_Tools/trade_legacy_robotics_tools = new(trade_owner)
+	if(!(trade_legacy_robotics_tools in trade_owner.item_list)) trade_owner.item_list += trade_legacy_robotics_tools
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_legacy_robotics_tools, trade_owner), "secure trading accepts the intentionally deferred Robotics Tools interaction state machine")
+	var/stack_fingerprint = getNexusTradeItemFingerprint(trade_stack_item)
+	trade_stack_item.name = "Mutated Trade Item"
+	nexusSmokeAssert(stack_fingerprint != getNexusTradeItemFingerprint(trade_stack_item), "trade item state seals ignore visible item mutations")
+	trade_stack_item.name = 1
+	var/number_name_fingerprint = getNexusTradeScalarFingerprint(trade_stack_item)
+	trade_stack_item.name = "1"
+	nexusSmokeAssert(number_name_fingerprint != getNexusTradeScalarFingerprint(trade_stack_item), "trade scalar seals collide between numeric and text values")
+	trade_stack_item.name = "Line one\nLine two"
+	var/newline_name_fingerprint = getNexusTradeScalarFingerprint(trade_stack_item)
+	trade_stack_item.name = "Line one"
+	nexusSmokeAssert(newline_name_fingerprint != getNexusTradeScalarFingerprint(trade_stack_item), "trade scalar seals do not safely distinguish embedded newlines")
+	trade_stack_item.name = "Mutated Trade Item"
+	var/obj/items/Pod_Race_Computer/trade_race_computer = new(trade_owner)
+	if(!(trade_race_computer in trade_owner.item_list)) trade_owner.item_list += trade_race_computer
+	trade_race_computer.Racer_List = list("smoke_racer")
+	trade_race_computer.Bets = list("smoke_bet" = 25)
+	var/race_computer_disclosure = getNexusTradeItemDisclosure(trade_race_computer)
+	nexusSmokeAssert(findtext(race_computer_disclosure, "Racer_List") && findtext(race_computer_disclosure, "smoke_racer") && findtext(race_computer_disclosure, "Bets") && findtext(race_computer_disclosure, "smoke_bet"), "ordinary stateful item saved lists are absent from secure trade review")
+	nexusSmokeAssert(!trade_contract.getItemError(trade_race_computer, trade_owner), "a guarded ordinary stateful item is rejected by secure saved-list inspection")
+	var/race_computer_fingerprint = getNexusTradeItemFingerprint(trade_race_computer)
+	trade_race_computer.Bets["smoke_bet"] = 26
+	nexusSmokeAssert(race_computer_fingerprint != getNexusTradeItemFingerprint(trade_race_computer), "ordinary offered-item saved-list mutations do not invalidate the secure trade seal")
+	trade_race_computer.Bets["smoke_bet"] = 25
+	var/obj/items/DNA_Container/trade_dna_container = new(trade_owner)
+	if(!(trade_dna_container in trade_owner.item_list)) trade_owner.item_list += trade_dna_container
+	var/mob/NexusSmokeTest/trade_dna_clone = new
+	trade_dna_clone.name = "Stored Smoke Clone"
+	trade_dna_clone.Str = 4321
+	trade_dna_clone.milestones_owned = list("dna_edge" = 2)
+	var/obj/Attacks/Genki_Dama/Death_Ball/trade_dna_component = new(trade_dna_clone)
+	trade_dna_component.Cost = 17
+	trade_dna_container.Clone = trade_dna_clone
+	nexusSmokeAssert(trade_dna_container.canUseCloneAfterNexusTradeYield(trade_owner, trade_dna_clone), "an owned DNA Container clone payload fails its guarded-use contract")
+	nexusSmokeAssert(trade_contract.addItem(trade_owner, trade_dna_container) && !trade_dna_container.canUseCloneAfterNexusTradeYield(trade_owner, trade_dna_clone), "an offered DNA Container remains usable as a delayed genetics payload")
+	nexusSmokeAssert(trade_contract.removeItem(trade_owner, trade_dna_container), "DNA Container guard smoke could not restore the item from its offer")
+	trade_dna_container.Move(trade_partner)
+	nexusSmokeAssert(!trade_dna_container.canUseCloneAfterNexusTradeYield(trade_owner, trade_dna_clone) && trade_dna_container.canUseCloneAfterNexusTradeYield(trade_partner, trade_dna_clone), "a stale genetics prompt can still read a DNA Container after ownership transfers")
+	trade_dna_container.Move(trade_owner)
+	var/dna_disclosure = getNexusTradeItemDisclosure(trade_dna_container)
+	nexusSmokeAssert(findtext(dna_disclosure, "Clone") && findtext(dna_disclosure, "/mob/NexusSmokeTest") && findtext(dna_disclosure, "Str</b>: 4321") && findtext(dna_disclosure, "dna_edge") && findtext(dna_disclosure, "/obj/Attacks/Genki_Dama/Death_Ball"), "filled DNA container review omits its saved Clone scalar/list/component payload")
+	nexusSmokeAssert(!trade_contract.getItemError(trade_dna_container, trade_owner), "a representative filled DNA container is rejected by secure saved-reference inspection")
+	var/dna_clone_scalar_fingerprint = getNexusTradeItemFingerprint(trade_dna_container)
+	trade_dna_clone.Str = 4322
+	nexusSmokeAssert(dna_clone_scalar_fingerprint != getNexusTradeItemFingerprint(trade_dna_container), "DNA Clone scalar mutation does not invalidate the secure trade seal")
+	trade_dna_clone.Str = 4321
+	var/dna_clone_list_fingerprint = getNexusTradeItemFingerprint(trade_dna_container)
+	trade_dna_clone.milestones_owned["dna_edge"] = 3
+	nexusSmokeAssert(dna_clone_list_fingerprint != getNexusTradeItemFingerprint(trade_dna_container), "DNA Clone saved-list mutation does not invalidate the secure trade seal")
+	trade_dna_clone.milestones_owned["dna_edge"] = 2
+	var/dna_clone_component_fingerprint = getNexusTradeItemFingerprint(trade_dna_container)
+	trade_dna_component.Cost = 18
+	nexusSmokeAssert(dna_clone_component_fingerprint != getNexusTradeItemFingerprint(trade_dna_container), "DNA Clone component mutation does not invalidate the secure trade seal")
+	trade_dna_component.Cost = 17
+	var/dna_clone_replacement_fingerprint = getNexusTradeItemFingerprint(trade_dna_container)
+	var/mob/NexusSmokeTest/trade_replacement_clone = new
+	trade_replacement_clone.name = "Stored Smoke Clone"
+	trade_replacement_clone.Str = 4321
+	trade_replacement_clone.milestones_owned = list("dna_edge" = 2)
+	new /obj/Attacks/Genki_Dama/Death_Ball(trade_replacement_clone)
+	trade_dna_container.Clone = trade_replacement_clone
+	nexusSmokeAssert(dna_clone_replacement_fingerprint != getNexusTradeItemFingerprint(trade_dna_container), "replacing a DNA Container Clone payload does not invalidate the secure trade seal")
+	trade_dna_container.Clone = trade_dna_clone
+	var/obj/items/ArcaneSatchel/trade_satchel = new(trade_owner)
+	if(!(trade_satchel in trade_owner.item_list)) trade_owner.item_list += trade_satchel
+	var/obj/items/MagicVault/trade_nested_vault = new(trade_satchel)
+	trade_nested_vault.name = "Nested Smoke Vault"
+	trade_nested_vault.stored_essence = 9.4
+	trade_nested_vault.Password = "<nested&code>"
+	var/obj/items/Pod_Race_Computer/trade_nested_race_computer = new(trade_satchel)
+	trade_nested_race_computer.Racer_List = list("nested_racer")
+	trade_nested_race_computer.Bets = list("nested_bet" = 10)
+	var/satchel_disclosure = getNexusTradeItemDisclosure(trade_satchel)
+	nexusSmokeAssert(findtext(satchel_disclosure, "CONTAINER CONTENTS (2 OBJECTS)") && findtext(satchel_disclosure, "Nested Smoke Vault") && findtext(satchel_disclosure, "/obj/items/MagicVault") && findtext(satchel_disclosure, "stored_essence</b>: 9.4") && findtext(satchel_disclosure, "nested_racer") && findtext(satchel_disclosure, "nested_bet") && !findtext(satchel_disclosure, "<nested&code>"), "secure trade review omits or fails to encode nested container scalar/list state")
+	var/satchel_fingerprint = getNexusTradeItemFingerprint(trade_satchel)
+	trade_nested_race_computer.Bets["nested_bet"] = 11
+	nexusSmokeAssert(satchel_fingerprint != getNexusTradeItemFingerprint(trade_satchel), "nested saved-list mutation does not invalidate the secure container trade seal")
+	trade_nested_race_computer.Bets["nested_bet"] = 10
+	trade_nested_vault.Move(trade_owner)
+	nexusSmokeAssert(satchel_fingerprint != getNexusTradeItemFingerprint(trade_satchel), "removing a nested container item does not invalidate the secure trade seal")
+	trade_nested_vault.Move(trade_satchel)
+	trade_satchel.Move(trade_partner)
+	nexusSmokeAssert(!trade_satchel.canRetrieveItem(trade_owner, trade_nested_vault) && trade_satchel.canRetrieveItem(trade_partner, trade_nested_vault), "a stale satchel retrieval can still remove contents after ownership transfers")
+	trade_satchel.Move(trade_owner)
+	var/obj/items/trade_nested_restricted_item = new(trade_satchel)
+	trade_nested_restricted_item.Givable = FALSE
+	var/nested_bound_error = trade_contract.getItemError(trade_satchel, trade_owner)
+	nexusSmokeAssert(findtext(nested_bound_error, "bound"), "a container can bypass secure trade restrictions for a nested Givable=0 item")
+	trade_nested_restricted_item.Givable = TRUE
+	trade_nested_restricted_item.suffix = "Active"
+	trade_nested_restricted_item.Can_Drop_With_Suffix = FALSE
+	var/nested_status_error = trade_contract.getItemError(trade_satchel, trade_owner)
+	nexusSmokeAssert(findtext(nested_status_error, "current status is active"), "a container can bypass secure trade restrictions for a nested active-status item")
+	del(trade_nested_restricted_item)
+	var/obj/items/Force_Field/trade_nested_force_field = new(trade_satchel)
+	var/nested_force_field_error = trade_contract.getItemError(trade_satchel, trade_owner)
+	nexusSmokeAssert(findtext(nested_force_field_error, "Force fields"), "a container can bypass the direct secure-trade restriction on Force Fields")
+	del(trade_nested_force_field)
+	var/obj/items/ArcaneSatchel/trade_deep_satchel = new(trade_owner)
+	if(!(trade_deep_satchel in trade_owner.item_list)) trade_owner.item_list += trade_deep_satchel
+	var/obj/deep_container = trade_deep_satchel
+	for(var/depth_index = 1, depth_index <= 9, depth_index++)
+		deep_container = new /obj/items/ArcaneSatchel(deep_container)
+	var/deep_container_error = trade_contract.getItemError(trade_deep_satchel, trade_owner)
+	nexusSmokeAssert(findtext(deep_container_error, "depth limit"), "secure trade accepts container contents beyond its bounded traversal depth")
+	var/obj/items/MagicVault/trade_magic_vault = new(trade_owner)
+	if(!(trade_magic_vault in trade_owner.item_list)) trade_owner.item_list += trade_magic_vault
+	var/atom/trade_vault_original_location = trade_magic_vault.loc
+	var/trade_vault_original_revision = trade_magic_vault.nexus_trade_location_revision
+	nexusSmokeAssert(trade_magic_vault.beginNexusVaultInteraction(trade_owner, trade_vault_original_location, trade_vault_original_revision) && trade_magic_vault.canContinueNexusVaultInteraction(trade_owner, trade_vault_original_location, trade_vault_original_revision), "a carried Magic Vault cannot establish a guarded prompt interaction")
+	nexusSmokeAssert(!!trade_contract.getItemError(trade_magic_vault, trade_owner), "secure trading accepts a Magic Vault while a password or balance prompt is active")
+	trade_magic_vault.Move(trade_partner)
+	nexusSmokeAssert(!trade_magic_vault.canContinueNexusVaultInteraction(trade_owner, trade_vault_original_location, trade_vault_original_revision), "a Magic Vault prompt remains valid after the vault changes ownership")
+	trade_magic_vault.endNexusVaultInteraction(trade_owner)
+	trade_magic_vault.Move(trade_owner)
+	nexusSmokeAssert(!trade_magic_vault.nexus_trade_prompt_pending && !trade_contract.getItemError(trade_magic_vault, trade_owner), "ending a stale Magic Vault prompt does not restore ordinary secure-trade eligibility")
+	trade_magic_vault.stored_essence = 12.3
+	trade_magic_vault.Password = "<vault&code>"
+	var/magic_vault_disclosure = getNexusTradeItemDisclosure(trade_magic_vault)
+	nexusSmokeAssert(findtext(magic_vault_disclosure, "MAGIC VAULT VALUE") && findtext(magic_vault_disclosure, "Stored Arcane Essence: 12.3") && findtext(magic_vault_disclosure, "Access code:") && findtext(magic_vault_disclosure, "stored_essence</b>: 12.3") && !findtext(magic_vault_disclosure, "<vault&code>"), "secure trade review omits or fails to encode a Magic Vault's stored value and access code")
+	var/obj/items/Android_Blueprint/trade_blueprint = new(trade_owner)
+	if(!(trade_blueprint in trade_owner.item_list)) trade_owner.item_list += trade_blueprint
+	trade_blueprint.Move(trade_partner)
+	nexusSmokeAssert(!trade_blueprint.canAssignSelectedDesign(trade_owner) && trade_blueprint.canAssignSelectedDesign(trade_partner), "a stale Android blueprint design prompt can still mutate the blueprint after ownership transfers")
+	trade_blueprint.Move(trade_owner)
+	var/blank_blueprint_disclosure = getNexusTradeItemDisclosure(trade_blueprint)
+	nexusSmokeAssert(findtext(blank_blueprint_disclosure, "Blank / no stored design") && findtext(blank_blueprint_disclosure, "/obj/items/Android_Blueprint"), "trade review does not disclose a blank Android blueprint's exact identity")
+	var/mob/NexusSmokeTest/trade_android_design = new
+	trade_android_design.name = "Smoke Android Design"
+	trade_android_design.Race = "Android"
+	trade_android_design.Class = "Balanced"
+	trade_android_design.normalize_energy_types()
+	var/Energy/trade_android_energy = trade_android_design.energies["Mental Energy"]
+	nexusSmokeAssert(trade_android_energy && trade_android_energy.seal, "normalized Android trade fixture has no persisted Energy/Seal state")
+	trade_android_energy.seal.seal_reason = "<energy&seal>"
+	var/EnergySchedule/trade_android_schedule = new("increase", 2, 3, "<schedule&reason>")
+	trade_android_energy.schedule += trade_android_schedule
+	trade_android_design.Str = 1234
+	trade_android_design.strmod = 1.23
+	trade_android_design.End = 2345
+	trade_android_design.endmod = 1.34
+	trade_android_design.Spd = 3456
+	trade_android_design.spdmod = 1.45
+	trade_android_design.Pow = 4567
+	trade_android_design.formod = 1.56
+	trade_android_design.Res = 5678
+	trade_android_design.resmod = 1.67
+	trade_android_design.Off = 6789
+	trade_android_design.offmod = 1.78
+	trade_android_design.Def = 7890
+	trade_android_design.defmod = 1.89
+	trade_android_design.Decline = 321
+	trade_android_design.milestones_owned = list("keen_edge" = 2)
+	trade_android_design.character_mutations = list("reactive_guard" = 7)
+	trade_android_design.Ranks = list(/obj/Attacks/Blast = 1)
+	var/obj/Module/Generator/trade_generator_module = new(trade_android_design)
+	trade_generator_module.suffix = "Installed"
+	var/obj/Module/Drone_AI/trade_drone_module = new(trade_android_design)
+	trade_drone_module.suffix = "Installed"
+	trade_drone_module.Password = "<seller&code>"
+	var/obj/Module/Combat_Mathematics/trade_combat_mathematics_module = new(trade_android_design)
+	trade_combat_mathematics_module.suffix = "Installed"
+	var/obj/Buff/Preset/CombatMathematics/trade_module_buff
+	for(var/obj/Buff/Preset/CombatMathematics/module_buff in trade_combat_mathematics_module.Abilities)
+		trade_module_buff = module_buff
+		break
+	nexusSmokeAssert(trade_module_buff, "Combat Mathematics trade fixture has no replicated module ability")
+	trade_module_buff.buff_attributes = list("transformation")
+	var/obj/Attacks/Genki_Dama/Death_Ball/trade_stored_death_ball = new(trade_android_design)
+	trade_blueprint.Body = trade_android_design
+	var/filled_blueprint_disclosure = getNexusTradeItemDisclosure(trade_blueprint)
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "Replicated combat core") && findtext(filled_blueprint_disclosure, "STR 1234 (1.23x)") && findtext(filled_blueprint_disclosure, "/obj/Module/Generator") && findtext(filled_blueprint_disclosure, "Energy 2.5x") && findtext(filled_blueprint_disclosure, "Regeneration 0.5x"), "trade review omits replicated Android combat stats or module effects")
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "FULL REPLICATED SCALAR CONFIGURATION") && findtext(filled_blueprint_disclosure, "Decline</b>: 321"), "trade review omits a saved Android design field outside the curated combat summary")
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "FULL SAVED LIST CONFIGURATION") && findtext(filled_blueprint_disclosure, "milestones_owned") && findtext(filled_blueprint_disclosure, "keen_edge") && findtext(filled_blueprint_disclosure, "character_mutations") && findtext(filled_blueprint_disclosure, "reactive_guard") && findtext(filled_blueprint_disclosure, "Ranks") && findtext(filled_blueprint_disclosure, "/obj/Attacks/Blast"), "trade review omits saved Android milestone, mutation, or path-keyed list configuration")
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "/Energy") && findtext(filled_blueprint_disclosure, "/Seal") && findtext(filled_blueprint_disclosure, "/EnergySchedule") && findtext(filled_blueprint_disclosure, "quantity</b>: 100") && !findtext(filled_blueprint_disclosure, "<energy&seal>") && !findtext(filled_blueprint_disclosure, "<schedule&reason>"), "trade review omits or fails to encode normalized Android Energy, Seal, or schedule datum state")
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "REPLICATED MODULE ABILITIES") && findtext(filled_blueprint_disclosure, "/obj/Buff/Preset/CombatMathematics") && findtext(filled_blueprint_disclosure, "buff_attributes") && findtext(filled_blueprint_disclosure, "transformation"), "trade review omits saved list configuration from a replicated module ability")
+	nexusSmokeAssert(findtext(filled_blueprint_disclosure, "/obj/Module/Drone_AI") && findtext(filled_blueprint_disclosure, "Access code / frequency:") && findtext(filled_blueprint_disclosure, "seller may still know this code") && !findtext(filled_blueprint_disclosure, "<seller&code>"), "trade review omits or fails to HTML-encode an Android module access code warning")
+	nexusSmokeAssert(trade_stored_death_ball.clonable && !trade_stored_death_ball.Cost && findtext(filled_blueprint_disclosure, "REPLICATED DIRECT COMPONENTS / ABILITIES") && findtext(filled_blueprint_disclosure, "/obj/Attacks/Genki_Dama/Death_Ball") && findtext(filled_blueprint_disclosure, "Replicated with this design"), "trade review hides a zero-cost clonable skill stored in an Android blueprint")
+	nexusSmokeAssert(!trade_contract.getItemError(trade_blueprint, trade_owner), "a representative filled Android blueprint is rejected by secure saved-list inspection")
+	var/blueprint_list_fingerprint = getNexusTradeItemFingerprint(trade_blueprint)
+	trade_android_design.milestones_owned["keen_edge"] = 3
+	nexusSmokeAssert(blueprint_list_fingerprint != getNexusTradeItemFingerprint(trade_blueprint), "trade seals ignore saved Android milestone-list mutations")
+	trade_android_design.milestones_owned["keen_edge"] = 2
+	var/blueprint_path_key_fingerprint = getNexusTradeItemFingerprint(trade_blueprint)
+	trade_android_design.Ranks[/obj/Attacks/Blast] = 2
+	nexusSmokeAssert(blueprint_path_key_fingerprint != getNexusTradeItemFingerprint(trade_blueprint), "trade seals ignore path-keyed saved-list association mutations")
+	trade_android_design.Ranks[/obj/Attacks/Blast] = 1
+	var/blueprint_ability_list_fingerprint = getNexusTradeItemFingerprint(trade_blueprint)
+	trade_module_buff.buff_attributes += "giant"
+	nexusSmokeAssert(blueprint_ability_list_fingerprint != getNexusTradeItemFingerprint(trade_blueprint), "trade seals ignore replicated module-ability saved-list mutations")
+	trade_module_buff.buff_attributes -= "giant"
+	var/blueprint_energy_fingerprint = getNexusTradeItemFingerprint(trade_blueprint)
+	trade_android_energy.seal.duration = 17
+	nexusSmokeAssert(blueprint_energy_fingerprint != getNexusTradeItemFingerprint(trade_blueprint), "trade seals ignore a normalized Android's nested Energy/Seal datum mutation")
+	trade_android_energy.seal.duration = 0
+	var/blueprint_fingerprint = getNexusTradeItemFingerprint(trade_blueprint)
+	trade_android_design.Class = "Changed Design"
+	nexusSmokeAssert(blueprint_fingerprint != getNexusTradeItemFingerprint(trade_blueprint), "trade seals ignore Android blueprint design mutations")
+	var/obj/items/Android_Blueprint/trade_object_blueprint = new(trade_owner)
+	if(!(trade_object_blueprint in trade_owner.item_list)) trade_owner.item_list += trade_object_blueprint
+	var/obj/items/Gun/trade_gun_design = new
+	trade_gun_design.name = "Configured Smoke Gun"
+	trade_gun_design.Cost = 5000
+	trade_gun_design.Total_Cost = 900
+	trade_gun_design.bp_mod = 3.25
+	trade_gun_design.Max_Ammo = 42
+	trade_gun_design.Range = 17
+	trade_gun_design.Deviation = 73
+	trade_gun_design.Password = "gun-access"
+	trade_object_blueprint.Body = trade_gun_design
+	var/object_blueprint_disclosure = getNexusTradeItemDisclosure(trade_object_blueprint)
+	nexusSmokeAssert(findtext(object_blueprint_disclosure, "Replicated object configuration") && findtext(object_blueprint_disclosure, "/obj/items/Gun") && findtext(object_blueprint_disclosure, "Damage scale: 3.25") && findtext(object_blueprint_disclosure, "Maximum ammo: 42") && findtext(object_blueprint_disclosure, "Range: 17") && findtext(object_blueprint_disclosure, "Access code / frequency: gun-access"), "trade review omits consequential replicated object-blueprint configuration")
+	nexusSmokeAssert(findtext(object_blueprint_disclosure, "FULL REPLICATED SCALAR CONFIGURATION") && findtext(object_blueprint_disclosure, "Deviation</b>: 73"), "trade review's full object configuration omits a saved scalar field outside the concise summary")
+	nexusSmokeAssert(!trade_contract.getItemError(trade_object_blueprint, trade_owner), "a representative configured object blueprint is rejected by secure saved-list inspection")
+	trade_contract.invitation_accepted = TRUE
+	trade_contract.phase = "offer"
+	trade_contract.accepted_a = TRUE
+	trade_contract.accepted_b = TRUE
+	trade_contract.final_a = TRUE
+	trade_contract.final_b = TRUE
+	var/trade_revision = trade_contract.revision
+	trade_contract.resetConfirmations("smoke mutation")
+	nexusSmokeAssert(trade_contract.revision == trade_revision + 1 && !trade_contract.accepted_a && !trade_contract.accepted_b && !trade_contract.final_a && !trade_contract.final_b && trade_contract.phase == "offer", "trade offer mutation does not clear both confirmation stages")
+	trade_owner.arcane_essence = 10
+	trade_contract.setCurrencyOffer(trade_owner, "essence", 3.14)
+	nexusSmokeAssertNear(trade_contract.essence_a, 3.1, 0.001, "trade Arcane Essence offers are not normalized to one decimal place")
+	var/obj/items/trade_partner_item = new(trade_partner)
+	if(!(trade_partner_item in trade_partner.item_list)) trade_partner.item_list += trade_partner_item
+	trade_partner_item.name = "Partner Trade Item"
+	trade_partner_item.Givable = TRUE
+	var/obj/Resources/trade_owner_resources = new(trade_owner)
+	var/obj/Resources/trade_partner_resources = new(trade_partner)
+	trade_owner.resource_obj = trade_owner_resources
+	trade_partner.resource_obj = trade_partner_resources
+	trade_owner_resources.Value = 100
+	trade_partner_resources.Value = 40
+	trade_owner.arcane_essence = 10
+	trade_partner.arcane_essence = 5
+	trade_contract.offer_a = list(trade_stack_item)
+	trade_contract.offer_b = list(trade_partner_item)
+	trade_contract.resources_a = 25
+	trade_contract.resources_b = 10
+	trade_contract.essence_a = 4
+	trade_contract.essence_b = 1.5
+	trade_contract.phase = "confirm"
+	trade_contract.confirmation_revision = trade_contract.revision
+	trade_contract.confirmation_fingerprint = trade_contract.getOfferFingerprint()
+	trade_contract.final_a = TRUE
+	trade_contract.final_b = TRUE
+	trade_owner.skip_restore_hotbar = TRUE
+	trade_partner.skip_restore_hotbar = FALSE
+	var/trade_commit_result = trade_contract.commitTrade()
+	var/trade_commit_error = trade_contract ? trade_contract.last_error : "none"
+	nexusSmokeAssert(trade_stack_item.loc == trade_partner && (trade_stack_item in trade_partner.item_list) && trade_partner_item.loc == trade_owner && (trade_partner_item in trade_owner.item_list), "atomic trade commit did not swap both offered items through ownership tracking (result [trade_commit_result], error [trade_commit_error], locations [trade_stack_item.loc] / [trade_partner_item.loc])")
+	nexusSmokeAssert(trade_owner_resources.Value == 85 && trade_partner_resources.Value == 55, "atomic trade commit produced incorrect Resource balances")
+	nexusSmokeAssert(trade_owner.arcane_essence == 7.5 && trade_partner.arcane_essence == 7.5, "atomic trade commit produced incorrect Arcane Essence balances")
+	nexusSmokeAssert(trade_owner.skip_restore_hotbar && !trade_partner.skip_restore_hotbar, "atomic trade commit did not restore the traders' hotbar batching guards")
+	nexusSmokeAssert(!trade_owner.nexus_trade_session && !trade_partner.nexus_trade_session, "completed trade left an active session attached to a trader")
+	del(trade_owner)
+	del(trade_partner)
+	del(trade_android_design)
+	del(trade_gun_design)
+	var/mob/NexusSmokeTest/TradeHotbarProbe/trade_rollback_owner = new
+	var/mob/NexusSmokeTest/TradeHotbarProbe/trade_rollback_partner = new
+	var/obj/items/trade_rollback_item = new(trade_rollback_owner)
+	var/obj/items/NexusTradeFailMove/trade_failed_item = new(trade_rollback_owner)
+	if(!(trade_rollback_item in trade_rollback_owner.item_list)) trade_rollback_owner.item_list += trade_rollback_item
+	if(!(trade_failed_item in trade_rollback_owner.item_list)) trade_rollback_owner.item_list += trade_failed_item
+	trade_failed_item.fail_next_move = TRUE
+	var/obj/Resources/trade_rollback_owner_resources = new(trade_rollback_owner)
+	var/obj/Resources/trade_rollback_partner_resources = new(trade_rollback_partner)
+	trade_rollback_owner.resource_obj = trade_rollback_owner_resources
+	trade_rollback_partner.resource_obj = trade_rollback_partner_resources
+	trade_rollback_owner_resources.Value = 70
+	trade_rollback_partner_resources.Value = 20
+	trade_rollback_owner.arcane_essence = 6
+	trade_rollback_partner.arcane_essence = 1
+	var/datum/NexusTradeSmokeSession/trade_rollback_contract = new(trade_rollback_owner, trade_rollback_partner, FALSE)
+	trade_rollback_contract.invitation_accepted = TRUE
+	trade_rollback_contract.offer_a = list(trade_rollback_item, trade_failed_item)
+	trade_rollback_contract.resources_a = 30
+	trade_rollback_contract.essence_a = 2
+	trade_rollback_contract.phase = "confirm"
+	trade_rollback_contract.confirmation_revision = trade_rollback_contract.revision
+	trade_rollback_contract.confirmation_fingerprint = trade_rollback_contract.getOfferFingerprint()
+	trade_rollback_contract.final_a = TRUE
+	trade_rollback_contract.final_b = TRUE
+	trade_rollback_owner.skip_restore_hotbar = FALSE
+	trade_rollback_partner.skip_restore_hotbar = FALSE
+	trade_rollback_contract.commitTrade()
+	nexusSmokeAssert(trade_rollback_item.loc == trade_rollback_owner && (trade_rollback_item in trade_rollback_owner.item_list) && trade_failed_item.loc == trade_rollback_owner && (trade_failed_item in trade_rollback_owner.item_list), "failed atomic trade did not roll transferred items back to their original owner")
+	nexusSmokeAssert(trade_rollback_owner_resources.Value == 70 && trade_rollback_partner_resources.Value == 20 && trade_rollback_owner.arcane_essence == 6 && trade_rollback_partner.arcane_essence == 1, "failed atomic trade changed a currency balance")
+	nexusSmokeAssert(!trade_rollback_owner.skip_restore_hotbar && !trade_rollback_partner.skip_restore_hotbar && trade_rollback_owner.trade_restore_calls == 1 && trade_rollback_partner.trade_restore_calls == 1, "failed atomic trade did not restore batching guards and refresh both hotbars")
+	nexusSmokeAssert(trade_rollback_owner.nexus_trade_session == trade_rollback_contract && trade_rollback_partner.nexus_trade_session == trade_rollback_contract && trade_rollback_contract.phase == "offer" && !trade_rollback_contract.accepted_a && !trade_rollback_contract.accepted_b, "failed atomic trade did not return both traders to offer review")
+	del(trade_rollback_contract)
+	del(trade_rollback_owner)
+	del(trade_rollback_partner)
 	nexusSmokeAssert(text2path("/datum/NexusEmoteEditor") && text2path("/datum/NexusPlayerLogViewer"), "emote editor or player log viewer datum is missing")
 	nexusSmokeAssert(text2path("/mob/verb/ViewSelfSayWindow"), "player log viewer verb is missing")
 	nexusSmokeAssert(normalizeNexusChatChannel("COMBAT") == "combat" && normalizeNexusChatChannel("invalid") == "all", "chat channel normalization is invalid")
 	nexusSmokeAssert(!nexusChatChannelAppearsInAll("combat") && nexusChatChannelAppearsInAll("ic") && nexusChatChannelAppearsInAll("ooc"), "Combat messages still leak into the All roleplay feed")
 	var/chat_separator_html = getNexusChatMessageSeparatorHtml()
 	nexusSmokeAssert(findtext(chat_separator_html, "<hr") && findtext(chat_separator_html, "width:100%") && !findtext(chat_separator_html, "----------"), "chat messages do not use a full-width horizontal separator")
+	var/legacy_chat_markup_html = closeNexusLegacyChatMarkup("<font color=#FFFF00><b>Legacy system notice")
+	var/legacy_chat_entry_html = getNexusChatEntryHtml("<font color=#FFFF00><b>Legacy system notice")
+	nexusSmokeAssert(legacy_chat_markup_html == "<font color=#FFFF00><b>Legacy system notice</b></font>" && closeNexusLegacyChatMarkup("<font color=#FFFF00><b>Balanced</b></font>") == "<font color=#FFFF00><b>Balanced</b></font>" && legacy_chat_entry_html == "<div class='chat-entry'><font color=#FFFF00><b>Legacy system notice</b></font></div>", "legacy chat formatting markup can leak beyond its entry into later HUD controls")
 	nexusSmokeAssert(text2path("/datum/NexusChatHud") && text2path("/obj/HudWindow"), "HudLib chat types are missing")
 	nexusSmokeAssert(text2path("/datum/NexusCharacterSelect"), "three-slot character selector is missing")
 	nexusSmokeAssert(NEXUS_CHARACTER_SLOT_LIMIT == 3, "character slot limit is not three")
@@ -100,6 +536,21 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!reconnect_character_test.isNexusReconnectCharacter() && getNexusInitialConnectViewWidth(reconnect_character_test, 61) == 61, "a lobby mob no longer receives the title-screen view")
 	del(reconnect_character_test)
 	del(reconnect_location_test)
+	nexusSmokeAssert(getNexusMouseZoomViewWidth(37, 1, 39) == 35, "mouse-wheel up does not zoom the map in by one bounded step")
+	nexusSmokeAssert(getNexusMouseZoomViewWidth(37, -1, 39) == 39, "mouse-wheel down does not zoom the map out by one bounded step")
+	nexusSmokeAssert(getNexusMouseZoomViewWidth(1, 1, 39) == 1 && getNexusMouseZoomViewWidth(39, -1, 39) == 39, "mouse-wheel zoom exceeds the Screen_Size view-width bounds")
+	nexusSmokeAssert(getNexusMouseZoomViewWidth(10, 1, 39) == 8 && getNexusMouseZoomViewWidth(10, -1, 39) == 12, "mouse-wheel zoom changes direction inside the legacy Screen_Size range")
+	var/list/map_zoom_planes = getNexusMapZoomPlanes()
+	var/obj/NexusMapZoomPlaneMaster/map_zoom_master = new
+	var/obj/fixed_zoom_target = new
+	fixed_zoom_target.plane = NEXUS_FIXED_HUD_PLANE
+	nexusSmokeAssert(getNexusMapRenderWidth(TRUE, 13, 39) == 39 && getNexusMapRenderWidth(FALSE, 61, 39) == 61, "live map zoom changes client.view or constrains the title screen")
+	nexusSmokeAssert(getNexusMapZoomScale(39, 39) == 1 && getNexusMapZoomScale(13, 39) == 3 && getNexusMapRenderHeight(39, 1920, 1080) == 22, "map-only zoom does not preserve its fixed render envelope or aspect ratio")
+	nexusSmokeAssert((0 in map_zoom_planes) && (NEXUS_WORLD_OVERLAY_PLANE in map_zoom_planes) && !(NEXUS_FIXED_HUD_PLANE in map_zoom_planes), "map-only zoom includes the fixed HUD plane or omits world planes")
+	nexusSmokeAssert((map_zoom_master.appearance_flags & PLANE_MASTER) && (map_zoom_master.appearance_flags & PIXEL_SCALE) && (map_zoom_master.appearance_flags & NO_CLIENT_COLOR) && map_zoom_master.mouse_opacity == 1 && map_zoom_master.screen_loc == "1,1", "map-only zoom plane master breaks rendering, color, or world mouse input")
+	nexusSmokeAssert(nexusMouseWheelCanZoomMap("mapwindow.map", map_zoom_master) && !nexusMouseWheelCanZoomMap("mapwindow.map", fixed_zoom_target) && !nexusMouseWheelCanZoomMap("nexuschatwindow.chat", map_zoom_master), "mouse wheel zoom captures fixed HUD or browser controls")
+	del(map_zoom_master)
+	del(fixed_zoom_target)
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1) == "data/Save/smokekey-slot1.sav", "slot-one save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 3) == "data/Save/smokekey-slot3.sav", "slot-three save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 4) == getNexusCharacterSavePathForKey("Smoke Key", 3), "character slot clamping is invalid")
@@ -306,10 +757,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/NexusHud/ShortcutButton/Milestones/milestones_button = new
 	var/obj/NexusHud/ShortcutButton/Build/build_button = new
 	var/obj/NexusHud/ShortcutButton/Menu/menu_button = new
-	nexusSmokeAssert(lethal_button.plane == 20, "action HUD is not isolated above the lighting plane")
-	nexusSmokeAssert(inventory_button.plane == 20 && inventory_button.action_id == "inventory", "shortcut HUD is not isolated or addressable")
+	var/obj/NexusHud/SplitformButton/splitform_button = new
+	nexusSmokeAssert(lethal_button.plane == NEXUS_FIXED_HUD_PLANE, "action HUD is not isolated from map-only zoom")
+	nexusSmokeAssert(inventory_button.plane == NEXUS_FIXED_HUD_PLANE && inventory_button.action_id == "inventory", "shortcut HUD is not isolated or addressable")
 	nexusSmokeAssert(progression_button.action_id == "progression" && milestones_button.action_id == "milestones" && build_button.action_id == "build", "progression, milestone, or build shortcut is not addressable")
 	nexusSmokeAssert(menu_button.action_id == "menu", "Escape-menu shortcut is not addressable")
+	nexusSmokeAssert(splitform_button.plane == NEXUS_FIXED_HUD_PLANE, "splitform controls still share the zoomed world atom")
 	nexusSmokeAssert(lethal_button.screen_loc == "RIGHT:-8,TOP:-8" && rp_mode_button.screen_loc == "RIGHT:-8,TOP:-32" && character_button.screen_loc == "RIGHT:-8,TOP:-56", "action HUD buttons are not pixel-anchored in the upper-right corner")
 	nexusSmokeAssert(!lethal_button.loc && !rp_mode_button.loc && !character_button.loc, "action HUD buttons leaked into an atom's contents")
 	del(lethal_button)
@@ -320,6 +773,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(milestones_button)
 	del(build_button)
 	del(menu_button)
+	del(splitform_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks") && text2path("/mob/Admin3/verb/testTenkaichiCombatEffects"), "Tenkaichi attack or audiovisual testing verb is missing")
 	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 13 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
@@ -401,14 +855,160 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/mob/NexusSmokeTest/skill_examine_owner = new
 	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/menu_skill_contract = new(skill_examine_owner)
 	var/obj/NexusSmokeSkillAction/menu_action_contract = new(skill_examine_owner)
+	var/obj/Buff/Preset/MuscleForce/menu_buff_contract = new(skill_examine_owner)
+	var/obj/Giant_Form/menu_transformation_contract = new(skill_examine_owner)
+	var/obj/Great_Ape/menu_great_ape_contract = new(skill_examine_owner)
 	var/obj/items/Gloves/Forged/Science/menu_item_contract = new(skill_examine_owner)
+	skill_examine_owner.arcane_essence = 12.5
 	if(!islist(skill_examine_owner.item_list)) skill_examine_owner.item_list = list()
 	if(!(menu_item_contract in skill_examine_owner.item_list)) skill_examine_owner.item_list += menu_item_contract
 	var/datum/NexusPlayerMenu/skill_examine_contract = new(skill_examine_owner, "skills")
 	var/rendered_skill_contract = skill_examine_contract.buildSkills()
 	var/rendered_inventory_contract = skill_examine_contract.buildInventory()
 	nexusSmokeAssert(isNexusTechniqueObject(menu_skill_contract) && !isNexusTechniqueObject(menu_item_contract) && findtext(rendered_skill_contract, "[menu_skill_contract]") && !findtext(rendered_skill_contract, "[menu_item_contract]") && findtext(rendered_inventory_contract, "[menu_item_contract]"), "player Skills does not isolate true Skill objects from inventory items")
-	nexusSmokeAssert(skill_examine_contract.useOwnedSkill(menu_action_contract) && menu_action_contract.use_count == 1, "Skills USE did not invoke a zero-argument Hotbar_use verb")
+	nexusSmokeAssert(findtext(rendered_inventory_contract, "12.5 Arcane Essence"), "player Inventory does not show the authoritative Arcane Essence balance")
+	nexusSmokeAssert(findtext(rendered_skill_contract, "action=use_skill") && findtext(rendered_skill_contract, "action=examine_skill"), "Skills cards omit their USE or EXAMINE action")
+	nexusSmokeAssert(skill_examine_contract.useOwnedSkill(menu_action_contract) && menu_action_contract.use_count == 1, "Skills USE did not route through canonical hotkey execution")
+	var/list/menu_buff_effect_contract = skill_examine_contract.getSkillEffectData(menu_buff_contract)
+	nexusSmokeAssert(menu_buff_effect_contract["heading"] == "BUFF EFFECT" && findtext(menu_buff_effect_contract["stat_changes"], "Strength +20%") && findtext(menu_buff_effect_contract["stat_changes"], "Endurance +12%"), "skill examination omits concrete custom/preset buff multipliers")
+	menu_buff_contract.buff_attributes += "transformation"
+	menu_buff_effect_contract = skill_examine_contract.getSkillEffectData(menu_buff_contract)
+	var/list/menu_transformation_effect_contract = skill_examine_contract.getSkillEffectData(menu_transformation_contract)
+	var/list/menu_great_ape_effect_contract = skill_examine_contract.getSkillEffectData(menu_great_ape_contract)
+	nexusSmokeAssert(menu_buff_effect_contract["heading"] == "TRANSFORMATION EFFECT" && findtext(menu_buff_effect_contract["summary"], "primary transformation") && findtext(menu_transformation_effect_contract["summary"], "25%"), "skill examination omits transformation-attribute or form behavior")
+	nexusSmokeAssert(findtext(menu_great_ape_effect_contract["stat_changes"], "Battle Power multiplier +2.5") && findtext(menu_great_ape_effect_contract["stat_changes"], "Speed -90%") && findtext(menu_great_ape_effect_contract["attributes"], "tail") && findtext(menu_great_ape_effect_contract["attributes"], "3-minute cooldown") && findtext(menu_great_ape_effect_contract["upkeep"], "automatically seeks"), "Great Ape examination omits its concrete multipliers, activation requirements, cooldown, or uncontrolled behavior")
+	skill_examine_owner.BP = 100
+	skill_examine_owner.Pow = 120
+	skill_examine_owner.Spd = 100
+	skill_examine_owner.Class = "Human"
+	skill_examine_owner.alignment = "Good"
+	skill_examine_owner.milestones_owned = list("weapon_training" = 2, "swordsman" = 1, "ki_manipulation" = 2, "versatile_training" = 1)
+	var/obj/items/Sword/menu_damage_weapon = new(skill_examine_owner)
+	menu_damage_weapon.Damage = 1.6
+	menu_damage_weapon.Style = "Energy"
+	menu_damage_weapon.is_silver = TRUE
+	menu_damage_weapon.suffix = "Equipped"
+	skill_examine_owner.equipped_sword = menu_damage_weapon
+	skill_examine_owner.Str = 100 * menu_damage_weapon.Damage
+	var/list/menu_damage_contract = skill_examine_contract.getSkillDamageData(menu_skill_contract)
+	var/menu_raw_damage_contract = skill_examine_contract.getUnresistedSkillDamage(menu_skill_contract, menu_damage_contract)
+	nexusSmokeAssert(menu_damage_contract["preview_profile"] == "tenkaichi_melee" && nexusIsFiniteNumber(menu_raw_damage_contract) && menu_raw_damage_contract > menu_damage_contract["factor"], "skill examination did not calculate a complete Tenkaichi melee damage preview")
+	var/mob/NexusSmokeTest/menu_neutral_target = new
+	menu_neutral_target.BP = skill_examine_owner.BP
+	menu_neutral_target.End = 0
+	menu_neutral_target.Res = 0
+	menu_neutral_target.Class = "Human"
+	menu_neutral_target.alignment = "Good"
+	skill_examine_owner.dir = EAST
+	menu_neutral_target.dir = NORTH
+	var/menu_runtime_melee_damage = skill_examine_owner.get_melee_damage(menu_neutral_target) * menu_damage_contract["factor"]
+	nexusSmokeAssertNear(menu_raw_damage_contract, menu_runtime_melee_damage, 0.0001, "Tenkaichi preview diverges from a neutral runtime melee hit")
+	nexusSmokeAssertNear(skill_examine_owner.getUnresistedPhysicalCombatDamage(3), skill_examine_owner.getPhysicalCombatDamage(menu_neutral_target, 3), 0.0001, "neutral physical preview diverges from runtime combat damage")
+	nexusSmokeAssertNear(skill_examine_owner.getUnresistedKiCombatDamage(3), skill_examine_owner.getKiCombatDamage(menu_neutral_target, 3), 0.0001, "neutral Ki preview diverges from runtime combat damage")
+	nexusSmokeAssertNear(skill_examine_owner.getUnresistedHybridCombatDamage(3), skill_examine_owner.getHybridCombatDamage(menu_neutral_target, 3), 0.0001, "neutral hybrid preview diverges from runtime combat damage")
+	nexusSmokeAssertNear(skill_examine_owner.getUnresistedWeaponCombatDamage(3), skill_examine_owner.getWeaponCombatDamage(menu_neutral_target, 3), 0.0001, "neutral weapon preview omits runtime sword, style, silver, forged-BP, or milestone modifiers")
+	var/original_ki_power = ki_power
+	ki_power = 1.25
+	var/list/sky_break_preview_data = skill_examine_contract.getSkillDamageData(tenkaichi_sky_break)
+	var/sky_break_preview_damage = skill_examine_contract.getUnresistedSkillDamage(tenkaichi_sky_break, sky_break_preview_data)
+	var/obj/Blast/sky_break_runtime_projectile = new
+	sky_break_runtime_projectile.setStats(skill_examine_owner, Percent = tenkaichi_sky_break.projectile_damage_factor, Off_Mult = 1.2, Explosion = tenkaichi_sky_break.explosion_size, explosion_percent = tenkaichi_sky_break.projectile_damage_factor, max_damage_factor = sky_break_preview_data["factor"])
+	sky_break_runtime_projectile.strength_scaled = TRUE
+	sky_break_runtime_projectile.weapon_scaled = TRUE
+	var/sky_break_direct_factor = sky_break_runtime_projectile.reserveDamageFactor(menu_neutral_target, sky_break_runtime_projectile.percent_damage)
+	var/sky_break_explosion_factor = sky_break_runtime_projectile.reserveDamageFactor(menu_neutral_target, sky_break_runtime_projectile.explosion_damage_factor)
+	var/sky_break_runtime_damage = sky_break_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, sky_break_direct_factor)
+	sky_break_runtime_damage += sky_break_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, sky_break_explosion_factor)
+	nexusSmokeAssert(sky_break_preview_data["preview_profile"] == "weapon_projectile", "strength-scaled ChargedProjectile did not select its weapon runtime preview")
+	nexusSmokeAssert(sky_break_direct_factor > tenkaichi_sky_break.projectile_damage_factor && sky_break_explosion_factor < tenkaichi_sky_break.projectile_damage_factor && sky_break_direct_factor + sky_break_explosion_factor == sky_break_preview_data["projectile_budget_factor"], "weapon ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
+	nexusSmokeAssertNear(sky_break_preview_damage, sky_break_runtime_damage, 0.0001, "weapon ChargedProjectile preview diverges from its neutral direct-plus-explosion runtime damage")
+	del(sky_break_runtime_projectile)
+	var/list/dragon_nova_preview_data = skill_examine_contract.getSkillDamageData(tenkaichi_dragon_nova)
+	var/dragon_nova_preview_damage = skill_examine_contract.getUnresistedSkillDamage(tenkaichi_dragon_nova, dragon_nova_preview_data)
+	var/obj/Blast/dragon_nova_runtime_projectile = new
+	dragon_nova_runtime_projectile.setStats(skill_examine_owner, Percent = tenkaichi_dragon_nova.projectile_damage_factor, Off_Mult = 1, Explosion = tenkaichi_dragon_nova.explosion_size, explosion_percent = tenkaichi_dragon_nova.projectile_damage_factor, max_damage_factor = dragon_nova_preview_data["factor"])
+	var/dragon_nova_direct_factor = dragon_nova_runtime_projectile.reserveDamageFactor(menu_neutral_target, dragon_nova_runtime_projectile.percent_damage)
+	var/dragon_nova_explosion_factor = dragon_nova_runtime_projectile.reserveDamageFactor(menu_neutral_target, dragon_nova_runtime_projectile.explosion_damage_factor)
+	var/dragon_nova_runtime_damage = dragon_nova_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, dragon_nova_direct_factor)
+	dragon_nova_runtime_damage += dragon_nova_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, dragon_nova_explosion_factor)
+	nexusSmokeAssert(dragon_nova_preview_data["preview_profile"] == "ki_projectile" && dragon_nova_direct_factor > tenkaichi_dragon_nova.projectile_damage_factor && dragon_nova_explosion_factor < tenkaichi_dragon_nova.projectile_damage_factor && dragon_nova_direct_factor + dragon_nova_explosion_factor == dragon_nova_preview_data["projectile_budget_factor"], "Ki ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
+	nexusSmokeAssertNear(dragon_nova_preview_damage, dragon_nova_runtime_damage, 0.0001, "Ki ChargedProjectile preview diverges from its neutral direct-plus-explosion runtime damage")
+	del(dragon_nova_runtime_projectile)
+	var/obj/Attacks/Attack_Barrier/menu_projectile_contract = new(skill_examine_owner)
+	var/obj/Attacks/Kikoho/menu_direct_ki_contract = new(skill_examine_owner)
+	var/obj/Final_Explosion/menu_raw_ki_contract = new(skill_examine_owner)
+	var/list/menu_projectile_damage_data = skill_examine_contract.getSkillDamageData(menu_projectile_contract)
+	var/list/menu_direct_ki_damage_data = skill_examine_contract.getSkillDamageData(menu_direct_ki_contract)
+	var/list/menu_raw_ki_damage_data = skill_examine_contract.getSkillDamageData(menu_raw_ki_contract)
+	var/obj/Blast/menu_runtime_ki_projectile = new
+	menu_runtime_ki_projectile.setStats(skill_examine_owner, Percent = menu_projectile_damage_data["projectile_direct_factor"], Off_Mult = 1, Explosion = 0)
+	var/menu_runtime_ki_projectile_damage = menu_runtime_ki_projectile.getProjectileCombatDamage(menu_neutral_target, menu_runtime_ki_projectile.percent_damage)
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(menu_projectile_contract, menu_projectile_damage_data), menu_runtime_ki_projectile_damage, 0.0001, "ordinary projectile preview omits setStats Ki-power or forged-Ki scaling")
+	del(menu_runtime_ki_projectile)
+	var/obj/Attacks/Blast/menu_basic_blast_contract = new(skill_examine_owner)
+	menu_basic_blast_contract.Blast_Count = basic_blast_max_volley_size
+	menu_basic_blast_contract.blast_refire = 1
+	menu_basic_blast_contract.Explosive = 0
+	var/list/menu_basic_blast_damage_data = skill_examine_contract.getSkillDamageData(menu_basic_blast_contract)
+	var/menu_basic_blast_per_shot = menu_basic_blast_contract.getBasicBlastDamageFactor()
+	var/datum/CombatDamageBudget/menu_basic_blast_budget = new(menu_basic_blast_damage_data["projectile_budget_factor"])
+	var/obj/Blast/menu_basic_blast_runtime = new
+	menu_basic_blast_runtime.setStats(skill_examine_owner, Percent = menu_basic_blast_per_shot, Off_Mult = 1, Explosion = 0, shared_budget = menu_basic_blast_budget)
+	var/menu_basic_blast_runtime_factor = 0
+	for(var/basic_blast_index = 1, basic_blast_index <= menu_basic_blast_contract.Blast_Count, basic_blast_index++)
+		menu_basic_blast_runtime_factor += menu_basic_blast_runtime.reserveDamageFactor(menu_neutral_target, menu_basic_blast_runtime.percent_damage)
+	var/menu_basic_blast_runtime_damage = menu_basic_blast_runtime.getProjectileCombatDamage(menu_neutral_target, menu_basic_blast_runtime_factor)
+	nexusSmokeAssertNear(menu_basic_blast_damage_data["projectile_direct_factor"], menu_basic_blast_per_shot * menu_basic_blast_contract.Blast_Count, 0.0001, "basic Blast preview does not aggregate its current volley size and refire factor")
+	nexusSmokeAssert(menu_basic_blast_damage_data["factor"] < skill_blast_total_factor && !menu_basic_blast_damage_data["projectile_explosion_factor"], "nonexplosive basic Blast preview incorrectly reports the shared budget ceiling or a splash hit")
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(menu_basic_blast_contract, menu_basic_blast_damage_data), menu_basic_blast_runtime_damage, 0.0001, "nonexplosive basic Blast preview diverges from its current runtime volley")
+	menu_basic_blast_runtime.damage_budget = null
+	del(menu_basic_blast_budget)
+	del(menu_basic_blast_runtime)
+	menu_basic_blast_contract.blast_refire = 0.2
+	menu_basic_blast_contract.Explosive = 1
+	var/list/menu_explosive_blast_damage_data = skill_examine_contract.getSkillDamageData(menu_basic_blast_contract)
+	menu_basic_blast_per_shot = menu_basic_blast_contract.getBasicBlastDamageFactor()
+	var/datum/CombatDamageBudget/menu_explosive_blast_budget = new(menu_explosive_blast_damage_data["projectile_budget_factor"])
+	var/obj/Blast/menu_explosive_blast_runtime = new
+	menu_explosive_blast_runtime.setStats(skill_examine_owner, Percent = menu_basic_blast_per_shot, Off_Mult = 1, Explosion = 1, explosion_percent = menu_basic_blast_per_shot, shared_budget = menu_explosive_blast_budget)
+	var/menu_explosive_blast_runtime_factor = 0
+	for(var/explosive_blast_index = 1, explosive_blast_index <= menu_basic_blast_contract.Blast_Count, explosive_blast_index++)
+		menu_explosive_blast_runtime_factor += menu_explosive_blast_runtime.reserveDamageFactor(menu_neutral_target, menu_explosive_blast_runtime.percent_damage)
+	menu_explosive_blast_runtime_factor += menu_explosive_blast_runtime.reserveDamageFactor(menu_neutral_target, menu_explosive_blast_runtime.explosion_damage_factor)
+	var/menu_explosive_blast_runtime_damage = menu_explosive_blast_runtime.getProjectileCombatDamage(menu_neutral_target, menu_explosive_blast_runtime_factor)
+	nexusSmokeAssertNear(menu_explosive_blast_damage_data["projectile_explosion_factor"], menu_basic_blast_per_shot, 0.0001, "explosive basic Blast preview lost its one center-projectile splash")
+	nexusSmokeAssertNear(menu_explosive_blast_runtime_factor, skill_blast_total_factor, 0.0001, "explosive basic Blast runtime reservations escaped the shared budget cap")
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(menu_basic_blast_contract, menu_explosive_blast_damage_data), menu_explosive_blast_runtime_damage, 0.0001, "explosive basic Blast preview diverges from its current runtime volley")
+	menu_explosive_blast_runtime.damage_budget = null
+	del(menu_explosive_blast_budget)
+	del(menu_explosive_blast_runtime)
+	var/list/menu_ghost_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_ghosts)
+	var/datum/CombatDamageBudget/menu_ghost_budget = new(menu_ghost_damage_data["projectile_budget_factor"])
+	var/obj/Blast/menu_ghost_runtime = new
+	menu_ghost_runtime.setStats(skill_examine_owner, Percent = tenkaichi_ghosts.ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = menu_ghost_budget)
+	var/menu_ghost_runtime_factor = 0
+	for(var/ghost_index = 1, ghost_index <= tenkaichi_ghosts.ghost_count, ghost_index++)
+		menu_ghost_runtime_factor += menu_ghost_runtime.reserveDamageFactor(menu_neutral_target, menu_ghost_runtime.percent_damage)
+	var/menu_ghost_runtime_damage = menu_ghost_runtime.getProjectileCombatDamage(menu_neutral_target, menu_ghost_runtime_factor)
+	nexusSmokeAssert(menu_ghost_damage_data["preview_profile"] == "ki_projectile" && menu_ghost_damage_data["factor"] == tenkaichi_ghosts.ghost_count * tenkaichi_ghosts.ghost_damage_factor, "Super Ghost Kamikaze preview does not expose its fixed shared projectile budget")
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(tenkaichi_ghosts, menu_ghost_damage_data), menu_ghost_runtime_damage, 0.0001, "Super Ghost Kamikaze preview diverges from three neutral runtime hits sharing one budget")
+	menu_ghost_runtime.damage_budget = null
+	del(menu_ghost_budget)
+	del(menu_ghost_runtime)
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(menu_direct_ki_contract, menu_direct_ki_damage_data), skill_examine_owner.getUnresistedKiCombatDamage(menu_direct_ki_damage_data["factor"]), 0.0001, "direct Ki preview incorrectly inherited projectile setStats scaling")
+	ki_power = original_ki_power
+	var/menu_raw_ki_damage = skill_examine_contract.getUnresistedSkillDamage(menu_raw_ki_contract, menu_raw_ki_damage_data)
+	var/menu_expected_raw_ki_damage = calculateScaledCombatDamage(menu_raw_ki_damage_data["factor"], skill_examine_owner.BP, skill_examine_owner.BP, skill_examine_owner.Pow, 0)
+	nexusSmokeAssert(menu_raw_ki_damage_data["preview_profile"] == "raw_ki", "Final Explosion did not select its raw BP/Force preview profile")
+	nexusSmokeAssertNear(menu_raw_ki_damage, menu_expected_raw_ki_damage, 0.0001, "Final Explosion preview incorrectly inherited forged or milestone Ki helpers")
+	var/mob/NexusSmokeTest/menu_resistant_target = new
+	menu_resistant_target.BP = 1000000000
+	menu_resistant_target.End = 1000000000
+	menu_resistant_target.Res = 1000000000
+	skill_examine_owner.Target = menu_resistant_target
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(menu_skill_contract, menu_damage_contract), menu_raw_damage_contract, 0.0001, "skill examination damage depends on selected-target BP or resistance")
+	del(menu_resistant_target)
+	del(menu_neutral_target)
 	skill_examine_owner.loc = locate(1, 1, 1)
 	var/mob/NexusSmokeTest/sense_examine_target = new(skill_examine_owner.loc)
 	nexusSmokeAssert(skill_examine_contract.canInspectSenseTarget(sense_examine_target), "Sense EXAMINE rejected a readable character in the same area")
@@ -467,7 +1067,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	dash_movement_test.attack_forced_movement = TRUE
 	nexusSmokeAssert(step(dash_movement_test, EAST) && dash_movement_test.loc == attack_movement_destination, "Dash Attack cannot move while its attack lock is active")
 	del(dash_movement_test)
-	var/mob/NexusSmokeTest/targeted_dash_user = new
+	var/mob/NexusSmokeTest/ForcedMovementProbe/targeted_dash_user = new
 	var/mob/NexusSmokeTest/targeted_dash_target = new
 	targeted_dash_user.SafeTeleport(attack_movement_origin)
 	targeted_dash_target.SafeTeleport(attack_movement_destination)
@@ -476,6 +1076,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	targeted_dash_user.Off = 100000
 	targeted_dash_user.max_ki = 3000
 	targeted_dash_user.Ki = 3000
+	targeted_dash_user.movement_velocity_x = 4
+	targeted_dash_user.movement_acceleration_y = 2
+	targeted_dash_user.vector_fraction_x = 0.4
+	targeted_dash_user.vector_fraction_y = -0.4
+	targeted_dash_user.observe_next_move = TRUE
 	targeted_dash_target.BP = 1000000
 	targeted_dash_target.End = 1000000
 	targeted_dash_target.Def = 1
@@ -483,7 +1088,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	targeted_dash_target.Ki = 1000
 	targeted_dash_user.setSelectedTarget(targeted_dash_target, FALSE)
 	var/obj/Dash_Attack/targeted_dash_skill = new(targeted_dash_user)
-	nexusSmokeAssert(skill_engine.castDashAttack(targeted_dash_user, targeted_dash_skill) && targeted_dash_user.loc == attack_movement_pass_through, "Dash Attack did not rush through its selected opponent")
+	var/targeted_dash_start_x = targeted_dash_user.Px(0)
+	nexusSmokeAssert(skill_engine.castDashAttack(targeted_dash_user, targeted_dash_skill) && targeted_dash_user.last_skill_motion_pixels > world.icon_size && targeted_dash_user.last_skill_motion_pixels <= world.icon_size * 2 + 1 && (targeted_dash_target in targeted_dash_user.last_skill_motion_contacts), "Dash Attack did not accelerate through its selected opponent")
+	nexusSmokeAssert(targeted_dash_user.observed_forced_move && targeted_dash_user.Px(0) > targeted_dash_start_x + world.icon_size && !targeted_dash_user.movementVelocityMagnitude() && !targeted_dash_user.active_skill_motion, "Dash Attack did not use an isolated vector motion or left movement inertia active")
 	del(targeted_dash_skill)
 	del(targeted_dash_target)
 	del(targeted_dash_user)
@@ -508,19 +1115,287 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(vector_resource_test in vector_pickup_targets, "vector pickup radius still requires exact tile alignment")
 	del(vector_resource_test)
 	del(vector_pickup_test)
+	var/mob/NexusSmokeTest/movement_physics_test = new
+	nexusSmokeAssert((vector_movement_inertia_enabled == 0 || vector_movement_inertia_enabled == 1) && vector_movement_acceleration_per_decisecond > 0 && vector_movement_velocity_retention_per_decisecond >= 0 && vector_movement_velocity_retention_per_decisecond < 1 && vector_movement_stop_velocity > 0 && vector_movement_physics_step_deciseconds > 0 && vector_movement_cardinal_gap_ratio >= 0 && vector_movement_cardinal_gap_ratio < 1, "vector movement inertia tuning is invalid")
+	nexusSmokeAssert(skill_motion_default_acceleration > 0 && skill_motion_default_deceleration > 0 && skill_motion_default_max_velocity > 0 && skill_motion_stop_velocity > 0 && skill_motion_stall_frames >= 1, "skill-motion acceleration tuning is invalid")
+	var/mob/NexusSmokeTest/skill_acceleration_test = new
+	var/datum/NexusSkillMotion/skill_acceleration_motion = new(skill_acceleration_test, null, EAST, 100, 0, 80, 160, 200, 0, 0, FALSE)
+	skill_acceleration_test.active_skill_motion = skill_acceleration_motion
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16, 0.0001, "skill motion did not ramp its first acceleration step")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 0, 0.0001, "cardinal skill acceleration leaked into its perpendicular axis")
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 32, 0.0001, "skill motion did not retain and build velocity")
+	skill_acceleration_test.skill_movement_velocity_x = 0
+	skill_acceleration_test.skill_movement_velocity_y = 0
+	skill_acceleration_motion.movement_direction = NORTHEAST
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its horizontal magnitude")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its vertical magnitude")
+	skill_acceleration_test.skill_movement_velocity_x = 0
+	skill_acceleration_test.skill_movement_velocity_y = 0
+	var/datum/NexusSkillMotion/arbitrary_vector_motion = new(skill_acceleration_test, null, 0, 100, 0, 100, 100, 200, 0, 0, FALSE, FALSE, 3, 4)
+	skill_acceleration_test.active_skill_motion = arbitrary_vector_motion
+	arbitrary_vector_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 6, 0.0001, "arbitrary-angle skill acceleration snapped its horizontal component to an eight-way direction")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 8, 0.0001, "arbitrary-angle skill acceleration snapped its vertical component to an eight-way direction")
+	skill_acceleration_test.skill_motion_generation++
+	var/datum/NexusSkillMotion/fresh_skill_motion = new(skill_acceleration_test, null, NORTH, 100, 0, 80, 160, 200, 0, 0, FALSE)
+	skill_acceleration_test.active_skill_motion = fresh_skill_motion
+	nexusSmokeAssert(!skill_acceleration_test.ownsNexusSkillMotion(skill_acceleration_motion) && skill_acceleration_test.ownsNexusSkillMotion(fresh_skill_motion), "a stale skill motion can still own or clear a newer motion")
+	skill_acceleration_test.cancelNexusSkillMotion("smoke")
+	del(skill_acceleration_motion)
+	del(arbitrary_vector_motion)
+	del(fresh_skill_motion)
+	del(skill_acceleration_test)
+	var/mob/NexusSmokeTest/skill_budget_test = new(attack_movement_origin)
+	var/mob/NexusSmokeTest/skill_budget_target = new(attack_movement_pass_through)
+	skill_budget_test.setSelectedTarget(skill_budget_target, FALSE)
+	var/datum/NexusSkillMotion/tracking_budget_motion = new(skill_budget_test, skill_budget_target, EAST, 10, 0, 80, 160, 200, 0, 0, FALSE, TRUE)
+	skill_budget_test.active_skill_motion = tracking_budget_motion
+	tracking_budget_motion.moved_pixels = 10
+	tracking_budget_motion.budget_pixels = 10
+	nexusSmokeAssert(!tracking_budget_motion.goalReached() && tracking_budget_motion.travelBudgetExhausted(), "a tracking skill reports success after only exhausting its travel budget")
+	skill_budget_test.cancelNexusSkillMotion("smoke")
+	del(tracking_budget_motion)
+	del(skill_budget_target)
+	del(skill_budget_test)
+	var/mob/NexusSmokeTest/skill_metric_subject = new(attack_movement_origin)
+	var/mob/NexusSmokeTest/skill_metric_cardinal_target = new(attack_movement_origin)
+	var/mob/NexusSmokeTest/skill_metric_diagonal_target = new(attack_movement_origin)
+	skill_metric_cardinal_target.step_x = 4 * world.icon_size
+	skill_metric_diagonal_target.step_x = 4 * world.icon_size
+	skill_metric_diagonal_target.step_y = 4 * world.icon_size
+	var/datum/NexusSkillMotion/cardinal_metric_motion = new(skill_metric_subject, skill_metric_cardinal_target, EAST, 4 * world.icon_size, world.icon_size, 80, 160, 200, 0, 0, FALSE)
+	var/datum/NexusSkillMotion/diagonal_metric_motion = new(skill_metric_subject, skill_metric_diagonal_target, NORTHEAST, 4 * world.icon_size, world.icon_size, 80, 160, 200, 0, 0, FALSE)
+	nexusSmokeAssertNear(cardinal_metric_motion.remainingPixels(), 3 * world.icon_size, 0.0001, "cardinal tracking motion has the wrong physical distance to melee range")
+	nexusSmokeAssertNear(diagonal_metric_motion.remainingPixels(), 3 * world.icon_size * sqrt(2), 0.0001, "diagonal tracking motion consumes a shorter tile budget than cardinal travel")
+	del(cardinal_metric_motion)
+	del(diagonal_metric_motion)
+	del(skill_metric_diagonal_target)
+	del(skill_metric_cardinal_target)
+	del(skill_metric_subject)
+	var/mob/NexusSmokeTest/skill_line_test = new(attack_movement_origin)
+	var/skill_line_start_x = skill_line_test.Px(0)
+	var/datum/NexusSkillMotionResult/skill_line_result = new
+	nexusSmokeAssert(skill_line_test.runNexusSkillLine(EAST, 48, 80, 160, 200, 0, 0, FALSE, skill_line_result) && !skill_line_test.active_skill_motion, "a straight skill motion did not finish or release ownership")
+	nexusSmokeAssert(skill_line_result.valid && skill_line_result.reached && skill_line_result.generation > 0 && !skill_line_result.contacted_mobs.len, "owned skill motion did not return generation-bound telemetry")
+	nexusSmokeAssertNear(skill_line_test.Px(0) - skill_line_start_x, 48, 1, "straight skill motion did not respect its pixel distance")
+	nexusSmokeAssertNear(skill_line_test.last_skill_motion_pixels, 48, 1, "skill motion distance telemetry diverged from actual travel")
+	nexusSmokeAssert(!skill_line_test.skillMotionVelocityMagnitude() && !skill_line_test.movementVelocityMagnitude(), "finished skill motion leaked velocity into normal movement")
+	var/datum/NexusSkillMotion/stop_motion_test = new(skill_line_test, null, EAST, 80, 0, 80, 160, 200, 0, 0, FALSE)
+	skill_line_test.active_skill_motion = stop_motion_test
+	skill_line_test.skill_movement_velocity_x = 20
+	skill_line_test.StopMovement()
+	nexusSmokeAssert(!skill_line_test.active_skill_motion && !skill_line_test.skillMotionVelocityMagnitude(), "StopMovement did not cancel an owned skill motion")
+	del(stop_motion_test)
+	del(skill_line_result)
+	del(skill_line_test)
+	nexusSmokeAssert(skill_auto_dodge_distance_pixels == world.icon_size && skill_auto_dodge_max_velocity > 0 && skill_auto_dodge_acceleration > 0 && skill_auto_dodge_deceleration > 0, "automatic projectile-dodge vector tuning is invalid")
+	var/mob/NexusSmokeTest/automatic_vector_dodge_test = new(attack_movement_origin)
+	var/automatic_vector_dodge_start_x = automatic_vector_dodge_test.Px(0)
+	nexusSmokeAssert(automatic_vector_dodge_test.tryNexusVectorDodge(EAST), "an unobstructed automatic projectile dodge could not start")
+	sleep(TickMult(1))
+	nexusSmokeAssertNear(automatic_vector_dodge_test.Px(0) - automatic_vector_dodge_start_x, skill_auto_dodge_distance_pixels, 1, "automatic projectile dodge did not complete its accelerated vector distance")
+	nexusSmokeAssert(!automatic_vector_dodge_test.active_skill_motion && !automatic_vector_dodge_test.skillMotionVelocityMagnitude(), "automatic projectile dodge leaked skill-motion ownership or velocity")
+	del(automatic_vector_dodge_test)
+	nexusSmokeAssert(defensive_dash_distance_pixels == world.icon_size * 7 && defensive_dash_cooldown_deciseconds == 6 && defensive_dash_stamina_cost == 3 && defensive_dash_max_velocity == 360 && defensive_dash_acceleration == 1440 && defensive_dash_deceleration == 2400 && defensive_dash_evasion_window_deciseconds == 1.5 && defensive_dash_velocity_transfer == 0.2 && defensive_dash_afterimage_interval == 0.25, "short-dash distance, timing, cost, or acceleration tuning drifted")
+	var/obj/Evade/short_dash_action = new
+	nexusSmokeAssert(short_dash_action.can_hotbar && short_dash_action.name == "Short Dash" && !short_dash_action.repeat_macro, "short dash is not exposed as a non-repeating defensive hotbar action")
+	del(short_dash_action)
+	var/mob/NexusSmokeTest/defensive_dash_test = new(attack_movement_origin)
+	var/datum/NexusSkillMotion/defensive_dash_motion = new(defensive_dash_test, null, EAST, defensive_dash_distance_pixels, 0, defensive_dash_max_velocity, defensive_dash_acceleration, defensive_dash_deceleration, 0, 0, FALSE)
+	defensive_dash_motion.updateDesiredVelocity(vector_movement_physics_step_deciseconds)
+	nexusSmokeAssertNear(defensive_dash_test.skill_movement_velocity_x, 240, 0.001, "short dash does not deliver its intended first-frame acceleration burst")
+	defensive_dash_motion.updateDesiredVelocity(vector_movement_physics_step_deciseconds)
+	nexusSmokeAssertNear(defensive_dash_test.skill_movement_velocity_x, defensive_dash_max_velocity, 0.001, "short dash does not reach its velocity cap on the second physics step")
+	defensive_dash_motion.moved_pixels = defensive_dash_distance_pixels - 20
+	defensive_dash_motion.budget_pixels = defensive_dash_distance_pixels - 20
+	defensive_dash_test.skill_movement_velocity_x = defensive_dash_max_velocity
+	defensive_dash_motion.updateDesiredVelocity(vector_movement_physics_step_deciseconds)
+	nexusSmokeAssertNear(defensive_dash_test.skill_movement_velocity_x, sqrt(2 * defensive_dash_deceleration * 20), 0.001, "short dash did not apply its high-rate late braking profile")
+	defensive_dash_motion.moved_pixels = 0
+	defensive_dash_motion.budget_pixels = 0
+	defensive_dash_test.skill_movement_velocity_x = 0
+	defensive_dash_test.active_skill_motion = defensive_dash_motion
+	defensive_dash_test.defensive_dashing = TRUE
+	defensive_dash_test.defensive_dash_evasion_until = world.time + 10
+	defensive_dash_motion.moved_pixels = 1
+	var/obj/Blast/defensive_dash_projectile = new
+	nexusSmokeAssert(defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "an active moving short dash cannot evade an eligible direct blast")
+	defensive_dash_projectile.Explosive = 1
+	nexusSmokeAssert(!defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "short dash incorrectly evades explosive blasts")
+	defensive_dash_projectile.Explosive = 0
+	defensive_dash_projectile.Beam = 1
+	nexusSmokeAssert(!defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "short dash incorrectly evades beam segments")
+	defensive_dash_projectile.Beam = 0
+	defensive_dash_projectile.Size = 2
+	nexusSmokeAssert(!defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "short dash incorrectly evades large area projectiles")
+	defensive_dash_projectile.Size = 0
+	defensive_dash_motion.moved_pixels = 0
+	nexusSmokeAssert(!defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "a dash blocked before moving still received its evasion window")
+	defensive_dash_test.skill_motion_internal_move = defensive_dash_motion
+	nexusSmokeAssert(defensive_dash_test.isDefensiveDashEvading(defensive_dash_projectile), "the first requested short-dash displacement has no direct-hit evasion")
+	defensive_dash_test.skill_motion_internal_move = null
+	defensive_dash_motion.moved_pixels = 1
+	var/mob/NexusSmokeTest/skill_contact_recorder = new
+	skill_contact_recorder.SafeTeleport(defensive_dash_test.loc)
+	skill_contact_recorder.step_x = defensive_dash_test.step_x
+	skill_contact_recorder.step_y = defensive_dash_test.step_y
+	var/datum/NexusSkillMotion/skill_contact_motion = new(skill_contact_recorder, null, EAST, world.icon_size, 0, 80, 160, 200, 0, 0, TRUE)
+	skill_contact_recorder.active_skill_motion = skill_contact_motion
+	nexusSmokeAssert(skill_contact_motion.pass_mobs && defensive_dash_test.loc == skill_contact_recorder.loc && bounds_dist(skill_contact_recorder, defensive_dash_test) <= 0, "short-dash contact snapshot test actors do not physically overlap")
+	nexusSmokeAssert(defensive_dash_test.isDefensiveDashEvading(), "short-dash contact snapshot expired before contact collection")
+	skill_contact_motion.collectContacts()
+	nexusSmokeAssert(defensive_dash_test in skill_contact_motion.contacted_mobs, "skill motion did not record an overlapping pass-through contact")
+	nexusSmokeAssert(defensive_dash_test in skill_contact_motion.evaded_contacts, "skill motion did not snapshot short-dash evasion at contact time")
+	defensive_dash_test.defensive_dashing = FALSE
+	nexusSmokeAssert(defensive_dash_test in skill_contact_motion.evaded_contacts, "recorded skill contact changed retroactively after the dash ended")
+	defensive_dash_test.defensive_dashing = TRUE
+	skill_contact_recorder.cancelNexusSkillMotion("smoke")
+	del(skill_contact_motion)
+	del(skill_contact_recorder)
+	var/mob/NexusSmokeTest/defensive_dash_attacker = new(attack_movement_destination)
+	var/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash/defensive_dash_technique = new
+	nexusSmokeAssert(!defensive_dash_attacker.resolveTenkaichiTechniqueHit(defensive_dash_test, defensive_dash_technique), "short dash did not evade a direct Tenkaichi melee technique")
+	nexusSmokeAssert(defensive_dash_attacker.resolveTenkaichiTechniqueHit(defensive_dash_test, defensive_dash_technique, force_hit = TRUE), "short dash incorrectly evaded a forced area/grapple technique")
+	del(defensive_dash_technique)
+	del(defensive_dash_attacker)
+	defensive_dash_test.cancelNexusSkillMotion("smoke")
+	defensive_dash_test.defensive_dashing = FALSE
+	del(defensive_dash_projectile)
+	del(defensive_dash_motion)
+	del(defensive_dash_test)
+	movement_physics_test.east = 1
+	movement_physics_test.west = 1
+	nexusSmokeAssert(!movement_physics_test.move_dir(), "opposing horizontal movement inputs do not cancel")
+	movement_physics_test.north = 1
+	nexusSmokeAssert(movement_physics_test.move_dir() == NORTH, "a cancelled horizontal axis overrides valid vertical movement input")
+	movement_physics_test.south = 1
+	nexusSmokeAssert(!movement_physics_test.move_dir(), "opposing movement inputs do not cancel on both axes")
+	movement_physics_test.north = 0
+	movement_physics_test.south = 0
+	movement_physics_test.east = 0
+	movement_physics_test.west = 0
+	movement_physics_test.accelerateMovementVelocity(1, 0, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 2, 0.0001, "movement acceleration was not added before the first displacement")
+	movement_physics_test.retainMovementVelocity(0.5, 0.001)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 1, 0.0001, "movement friction was not applied after the first displacement")
+	movement_physics_test.accelerateMovementVelocity(1, 0, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 3, 0.0001, "held movement input does not build retained velocity")
+	movement_physics_test.retainMovementVelocity(0.5, 0.001)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 1.5, 0.0001, "held movement velocity retention is invalid")
+	movement_physics_test.resetMovementPhysics()
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.accelerateMovementVelocity(0, 1, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 3, 0.0001, "a ninety-degree turn discarded prior horizontal velocity")
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_y, 2, 0.0001, "a ninety-degree turn did not add vertical acceleration")
+	movement_physics_test.retainMovementVelocity(0.5, 0.001)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 1.5, 0.0001, "turn friction discarded horizontal carry")
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_y, 1, 0.0001, "turn friction discarded vertical carry")
+	movement_physics_test.resetMovementPhysics()
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.accelerateMovementVelocity(-1, 0, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 1, 0.0001, "reversal input replaced rather than opposed prior velocity")
+	movement_physics_test.retainMovementVelocity(0.5, 0.001)
+	movement_physics_test.accelerateMovementVelocity(-1, 0, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, -1.5, 0.0001, "reversal input did not cancel retained velocity before crossing into the new direction")
+	movement_physics_test.resetMovementPhysics()
+	movement_physics_test.accelerateMovementVelocity(1, 1, 2, 10)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, sqrt(2), 0.0001, "diagonal acceleration changed its horizontal direction or magnitude")
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_y, sqrt(2), 0.0001, "diagonal acceleration changed its vertical direction or magnitude")
+	movement_physics_test.movement_velocity_x = 4
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.clampMovementVelocity(5)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 5 / sqrt(2), 0.0001, "movement velocity clamp changed its horizontal direction")
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_y, 5 / sqrt(2), 0.0001, "movement velocity clamp changed its vertical direction")
+	movement_physics_test.movement_velocity_x = 4
+	movement_physics_test.movement_velocity_y = 0
+	movement_physics_test.accelerateMovementVelocity(1, 0, 2, 5)
+	nexusSmokeAssertNear(movement_physics_test.movement_velocity_x, 5, 0.0001, "movement acceleration exceeded the vector speed cap")
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.last_vector_move_attempted = TRUE
+	movement_physics_test.last_vector_move_requested_x = 3
+	movement_physics_test.last_vector_move_requested_y = 4
+	movement_physics_test.last_vector_move_actual_x = 0
+	movement_physics_test.last_vector_move_actual_y = 4
+	movement_physics_test.resolveMovementVelocityCollision()
+	nexusSmokeAssert(!movement_physics_test.movement_velocity_x && movement_physics_test.movement_velocity_y == 4, "wall collision did not remove only the blocked velocity component")
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.last_vector_move_attempted = TRUE
+	movement_physics_test.last_vector_move_requested_x = 3
+	movement_physics_test.last_vector_move_requested_y = 4
+	movement_physics_test.vector_fraction_x = 0.4
+	movement_physics_test.last_vector_move_actual_x = 1
+	movement_physics_test.last_vector_move_actual_y = 4
+	movement_physics_test.resolveMovementVelocityCollision()
+	nexusSmokeAssert(!movement_physics_test.movement_velocity_x && !movement_physics_test.vector_fraction_x && movement_physics_test.movement_velocity_y == 4, "partial wall contact retained blocked-axis velocity or fractional carry")
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.last_vector_move_attempted = FALSE
+	movement_physics_test.last_vector_move_requested_x = 0
+	movement_physics_test.last_vector_move_requested_y = 0
+	movement_physics_test.last_vector_move_actual_x = 0
+	movement_physics_test.last_vector_move_actual_y = 0
+	movement_physics_test.resolveMovementVelocityCollision()
+	nexusSmokeAssert(movement_physics_test.movement_velocity_x == 3 && movement_physics_test.movement_velocity_y == 4, "fractional-only movement was misread as a collision")
+	nexusSmokeAssertNear(movement_physics_test.movementDurationRetention(0.25, 0.5), 0.5, 0.0001, "movement retention is not exponential over decisecond durations")
+	nexusSmokeAssertNear(movement_physics_test.movementDurationRetention(0.25, 0.5) ** 2, movement_physics_test.movementDurationRetention(0.25, 1), 0.0001, "movement retention changes with frame subdivision")
+	movement_physics_test.movement_velocity_x = 0.001
+	movement_physics_test.movement_velocity_y = 0
+	movement_physics_test.movement_acceleration_x = 1
+	movement_physics_test.vector_fraction_x = 0.4
+	movement_physics_test.nexus_gap_nudge_direction = NORTH
+	movement_physics_test.nexus_gap_nudge_input_direction = EAST
+	movement_physics_test.nexus_gap_nudge_target_offset = 3
+	movement_physics_test.glide_size = 4
+	movement_physics_test.applyMovementFrameFriction()
+	nexusSmokeAssert(!movement_physics_test.movement_velocity_x && !movement_physics_test.movement_acceleration_x && !movement_physics_test.vector_fraction_x && !movement_physics_test.nexus_gap_nudge_direction && !movement_physics_test.nexus_gap_nudge_input_direction && !movement_physics_test.nexus_gap_nudge_target_offset && !movement_physics_test.glide_size, "movement friction did not settle and clear subpixel inertial state")
+	movement_physics_test.movement_acceleration_x = 1
+	movement_physics_test.movement_acceleration_y = 2
+	movement_physics_test.movement_velocity_x = 3
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.movement_last_frame_pixels = 5
+	movement_physics_test.movement_physics_time_accumulator = 0.12
+	movement_physics_test.vector_fraction_x = 0.49
+	movement_physics_test.vector_fraction_y = -0.49
+	movement_physics_test.nexus_gap_nudge_direction = NORTH
+	movement_physics_test.nexus_gap_nudge_input_direction = EAST
+	movement_physics_test.nexus_gap_nudge_target_offset = 3
+	movement_physics_test.glide_size = 6
+	movement_physics_test.step_x = 5
+	movement_physics_test.step_y = 7
+	movement_physics_test.resetMovementPhysics()
+	nexusSmokeAssert(!movement_physics_test.movement_acceleration_x && !movement_physics_test.movement_acceleration_y && !movement_physics_test.movement_velocity_x && !movement_physics_test.movement_velocity_y && !movement_physics_test.movement_last_frame_pixels && !movement_physics_test.movement_physics_time_accumulator && !movement_physics_test.vector_fraction_x && !movement_physics_test.vector_fraction_y && !movement_physics_test.nexus_gap_nudge_direction && !movement_physics_test.nexus_gap_nudge_input_direction && !movement_physics_test.nexus_gap_nudge_target_offset && !movement_physics_test.glide_size, "movement physics reset left inertial state behind")
+	nexusSmokeAssert(movement_physics_test.step_x == 5 && movement_physics_test.step_y == 7, "movement physics reset changed pixel position")
+	movement_physics_test.north = 1
+	movement_physics_test.keys_down = list("north")
+	movement_physics_test.move_looping = 1
+	movement_physics_test.movement_velocity_y = 3
+	movement_physics_test.vector_fraction_y = 0.4
+	var/stop_movement_generation = movement_physics_test.movement_loop_generation
+	movement_physics_test.StopMovement()
+	nexusSmokeAssert(!movement_physics_test.north && !movement_physics_test.keys_down.len && !movement_physics_test.move_looping && movement_physics_test.movement_loop_generation > stop_movement_generation && !movement_physics_test.movement_velocity_y && !movement_physics_test.vector_fraction_y, "StopMovement did not invalidate the old loop and perform a hard inertial reset")
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(), "headless movement physics did not reject a mob without a client")
 	var/turf/vector_gap_origin
+	var/turf/vector_gap_west
 	var/turf/vector_gap_east
 	var/turf/vector_gap_second_east
 	var/turf/vector_gap_north
+	var/turf/vector_gap_northwest
 	var/turf/vector_gap_northeast
 	var/turf/vector_gap_second_northeast
 	for(var/turf/candidate_gap_origin in world)
+		var/turf/candidate_gap_west = get_step(candidate_gap_origin, WEST)
 		var/turf/candidate_gap_east = get_step(candidate_gap_origin, EAST)
 		var/turf/candidate_gap_second_east = candidate_gap_east ? get_step(candidate_gap_east, EAST) : null
 		var/turf/candidate_gap_north = get_step(candidate_gap_origin, NORTH)
+		var/turf/candidate_gap_northwest = candidate_gap_west ? get_step(candidate_gap_west, NORTH) : null
 		var/turf/candidate_gap_northeast = candidate_gap_east ? get_step(candidate_gap_east, NORTH) : null
 		var/turf/candidate_gap_second_northeast = candidate_gap_second_east ? get_step(candidate_gap_second_east, NORTH) : null
-		var/list/candidate_gap_turfs = list(candidate_gap_origin, candidate_gap_east, candidate_gap_second_east, candidate_gap_north, candidate_gap_northeast, candidate_gap_second_northeast)
+		var/list/candidate_gap_turfs = list(candidate_gap_origin, candidate_gap_west, candidate_gap_east, candidate_gap_second_east, candidate_gap_north, candidate_gap_northwest, candidate_gap_northeast, candidate_gap_second_northeast)
 		var/gap_region_blocked = FALSE
 		for(var/turf/candidate_gap_turf in candidate_gap_turfs)
 			if(!candidate_gap_turf || candidate_gap_turf.density)
@@ -533,14 +1408,228 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 			if(gap_region_blocked) break
 		if(!gap_region_blocked)
 			vector_gap_origin = candidate_gap_origin
+			vector_gap_west = candidate_gap_west
 			vector_gap_east = candidate_gap_east
 			vector_gap_second_east = candidate_gap_second_east
 			vector_gap_north = candidate_gap_north
+			vector_gap_northwest = candidate_gap_northwest
 			vector_gap_northeast = candidate_gap_northeast
 			vector_gap_second_northeast = candidate_gap_second_northeast
 			break
-	nexusSmokeAssert(vector_gap_origin && vector_gap_east && vector_gap_second_east && vector_gap_north && vector_gap_northeast && vector_gap_second_northeast, "startup map has no open region for vector collision tests")
+	nexusSmokeAssert(vector_gap_origin && vector_gap_west && vector_gap_east && vector_gap_second_east && vector_gap_north && vector_gap_northwest && vector_gap_northeast && vector_gap_second_northeast, "startup map has no open region for vector collision tests")
+	var/mob/NexusSmokeTest/ForcedMovementProbe/knockback_movement_test = new(vector_gap_origin)
+	var/mob/NexusSmokeTest/knockback_movement_source = new(vector_gap_west)
+	knockback_movement_test.max_ki = 1000000
+	knockback_movement_test.Ki = 1000000
+	knockback_movement_test.Flying = TRUE
+	knockback_movement_test.movement_velocity_x = 4
+	knockback_movement_test.movement_acceleration_y = 2
+	knockback_movement_test.vector_fraction_x = 0.4
+	knockback_movement_test.vector_fraction_y = -0.4
+	knockback_movement_test.observe_next_move = TRUE
+	knockback_movement_test.Knockback(knockback_movement_source, Distance = 1, dirt_trail = FALSE, override_dir = EAST, bypass_immunity = TRUE)
+	nexusSmokeAssert(knockback_movement_test.observed_forced_move && !knockback_movement_test.forced_move_had_inertia, "knockback carried normal movement inertia into its first forced displacement")
+	del(knockback_movement_source)
+	del(knockback_movement_test)
+	movement_physics_test.SafeTeleport(vector_gap_origin)
+	movement_physics_test.move = 1
+	movement_physics_test.input_disabled = 0
+	movement_physics_test.KO = 0
+	movement_physics_test.KB = 0
+	movement_physics_test.lunge_attacking = 0
+	movement_physics_test.evading = 0
+	movement_physics_test.dash_attacking = 0
+	movement_physics_test.attack_forced_movement = 0
+	movement_physics_test.in_dragon_rush = 0
+	movement_physics_test.dragon_rush_attack_active = null
+	movement_physics_test.strangling = 0
+	movement_physics_test.cant_move_due_to_hakai = 0
+	movement_physics_test.shockwaving = 0
+	movement_physics_test.Giving_Power = 0
+	movement_physics_test.moving_charge = 0
+	movement_physics_test.blocking = 0
+	movement_physics_test.power_attacking = 0
+	movement_physics_test.Regeneration_Skill = 0
+	movement_physics_test.Shadow_Sparring = 0
+	movement_physics_test.last_hit_by_beam = -999
+	movement_physics_test.beam_struggling = -999
+	nexusSmokeAssert(!movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "normal headless movement state is incorrectly suspended")
+	movement_physics_test.KO = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "knockout does not suspend normal movement physics")
+	movement_physics_test.KO = 0
+	movement_physics_test.KB = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "knockback does not suspend normal movement physics")
+	movement_physics_test.KB = 0
+	movement_physics_test.lunge_attacking = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "lunge movement does not suspend normal movement physics")
+	movement_physics_test.lunge_attacking = 0
+	movement_physics_test.evading = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "evasion movement does not suspend normal movement physics")
+	movement_physics_test.evading = 0
+	movement_physics_test.dash_attacking = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "dash movement does not suspend normal movement physics")
+	movement_physics_test.dash_attacking = 0
+	movement_physics_test.attack_forced_movement = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "attack-forced movement does not suspend normal movement physics")
+	movement_physics_test.attack_forced_movement = 0
+	movement_physics_test.in_dragon_rush = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "Dragon Rush does not suspend normal movement physics")
+	movement_physics_test.in_dragon_rush = 0
+	movement_physics_test.dragon_rush_attack_active = "Wolf Fang Fist"
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "Wolf Fang Fist forced steps do not suspend normal movement physics")
+	movement_physics_test.dragon_rush_attack_active = null
+	var/obj/Ships/movement_physics_ship = new
+	movement_physics_test.Ship = movement_physics_ship
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "ship control does not suspend character movement physics")
+	movement_physics_test.Ship = null
+	del(movement_physics_ship)
+	var/obj/Drivable_Car/movement_physics_car = new
+	movement_physics_test.car = movement_physics_car
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "car control does not suspend character movement physics")
+	movement_physics_test.car = null
+	del(movement_physics_car)
+	var/mob/NexusSmokeTest/movement_physics_grabber = new
+	movement_physics_test.grabber = movement_physics_grabber
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "being grabbed does not suspend retained movement")
+	movement_physics_test.grabber = null
+	del(movement_physics_grabber)
+	var/obj/Great_Ape/movement_physics_ape = new
+	movement_physics_ape.suffix = "active"
+	movement_physics_test.Great_Ape_obj = movement_physics_ape
+	movement_physics_test.Great_Ape_control = 0
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "an uncontrolled Great Ape does not suspend normal movement physics")
+	movement_physics_test.Great_Ape_obj = null
+	del(movement_physics_ape)
+	movement_physics_test.beam_struggling = world.time
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "beam struggling does not suspend retained movement")
+	movement_physics_test.beam_struggling = -999
+	movement_physics_test.last_hit_by_beam = world.time
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "beam stun does not suspend retained movement")
+	movement_physics_test.last_hit_by_beam = -999
+	movement_physics_test.last_bank_bump = max(1, world.time)
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "the bank interaction cooldown does not suspend retained movement")
+	movement_physics_test.last_bank_bump = 0
+	movement_physics_test.active_prompts += "bank"
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "an open bank prompt does not suspend retained movement")
+	movement_physics_test.active_prompts -= "bank"
+	movement_physics_test.move = 0
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "the standard movement lock does not suspend normal movement physics")
+	movement_physics_test.move = 1
+	movement_physics_test.input_disabled = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "input locking does not suspend normal movement physics")
+	movement_physics_test.input_disabled = 0
+	movement_physics_test.strangling = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "strangling does not suspend retained movement")
+	movement_physics_test.strangling = 0
+	movement_physics_test.cant_move_due_to_hakai = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "Hakai immobilization does not suspend retained movement")
+	movement_physics_test.cant_move_due_to_hakai = 0
+	movement_physics_test.shockwaving = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "shockwave casting does not suspend retained movement")
+	movement_physics_test.shockwaving = 0
+	movement_physics_test.Giving_Power = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "power transfer does not suspend retained movement")
+	movement_physics_test.Giving_Power = 0
+	movement_physics_test.moving_charge = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "moving charge does not suspend retained movement")
+	movement_physics_test.dir = NORTH
+	movement_physics_test.handleMovementPhysicsLockedInput(EAST)
+	nexusSmokeAssert(movement_physics_test.dir == EAST && movement_physics_test.moving_charge == 1, "movement input did not turn an active moving charge before advancing it")
+	movement_physics_test.handleMovementPhysicsLockedInput(EAST)
+	nexusSmokeAssert(movement_physics_test.moving_charge == 2, "repeated movement input did not advance an aligned moving charge")
+	nexusSmokeAssert(!movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "an aligned moving charge did not restore its legacy movement window")
+	movement_physics_test.moving_charge = 0
+	movement_physics_test.blocking = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "blocking does not suspend retained movement")
+	movement_physics_test.dir = NORTH
+	movement_physics_test.handleMovementPhysicsLockedInput(WEST)
+	nexusSmokeAssert(movement_physics_test.dir == WEST, "blocked movement input no longer updates defensive facing")
+	movement_physics_test.blocking = 0
+	movement_physics_test.power_attacking = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "power attack charging does not suspend retained movement")
+	movement_physics_test.power_attacking = 0
+	movement_physics_test.Regeneration_Skill = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "active regeneration does not suspend retained movement")
+	movement_physics_test.Regeneration_Skill = 0
+	movement_physics_test.Shadow_Sparring = 1
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "Shadow Sparring does not suspend retained movement")
+	movement_physics_test.Shadow_Sparring = 0
+	var/obj/movement_physics_container = new(vector_gap_origin)
+	movement_physics_test.loc = movement_physics_container
+	nexusSmokeAssert(movement_physics_test.movementPhysicsSuspended(ignore_client = TRUE), "non-turf containment does not suspend normal movement physics")
+	movement_physics_test.SafeTeleport(vector_gap_origin)
+	del(movement_physics_container)
+	nexusSmokeAssertNear(movement_physics_test.getMovementMaximumVelocity(NORTH), movement_physics_test.getMovementMaximumVelocity(NORTHEAST), 0.0001, "normalized diagonal movement has a lower maximum velocity than cardinal movement")
+	nexusSmokeAssert(movement_physics_test.getMovementGapDirection(7, 0.1) == EAST && movement_physics_test.getMovementGapDirection(7, 7) == NORTHEAST, "inertial gap probing does not distinguish near-cardinal carry from deliberate diagonal travel")
+	var/mob/NexusSmokeTest/MovementAccumulator/movement_accumulator_test = new(vector_gap_origin)
+	var/queued_physics_remainder = vector_movement_physics_step_deciseconds * 0.5
+	movement_accumulator_test.movement_physics_time_accumulator = vector_movement_physics_step_deciseconds * 3 + queued_physics_remainder - max(0, world.tick_lag)
+	movement_accumulator_test.processMovementPhysicsFrame(EAST)
+	nexusSmokeAssert(movement_accumulator_test.physics_step_count == 3, "the fixed movement accumulator did not process every queued physics substep")
+	nexusSmokeAssertNear(movement_accumulator_test.physics_duration_total, vector_movement_physics_step_deciseconds * 3, 0.0001, "fixed movement substeps used inconsistent durations")
+	nexusSmokeAssertNear(movement_accumulator_test.movement_physics_time_accumulator, queued_physics_remainder, 0.0001, "the fixed movement accumulator discarded its fractional remainder")
+	del(movement_accumulator_test)
+	movement_physics_test.movement_velocity_x = 4
+	movement_physics_test.movement_acceleration_x = 2
+	movement_physics_test.vector_fraction_x = 0.4
+	movement_physics_test.step_x = 5
+	movement_physics_test.step_y = -3
+	var/datum/NexusSkillMotion/teleport_motion_test = new(movement_physics_test, null, EAST, 80, 0, 80, 160, 200, 0, 0, FALSE)
+	movement_physics_test.active_skill_motion = teleport_motion_test
+	movement_physics_test.skill_movement_velocity_x = 20
+	var/teleport_generation = movement_physics_test.movement_teleport_generation
+	movement_physics_test.SafeTeleport(vector_gap_north)
+	nexusSmokeAssert(movement_physics_test.loc == vector_gap_north && movement_physics_test.movement_teleport_generation > teleport_generation && !movement_physics_test.movement_velocity_x && !movement_physics_test.movement_acceleration_x && !movement_physics_test.vector_fraction_x && !movement_physics_test.active_skill_motion && !movement_physics_test.skillMotionVelocityMagnitude(), "SafeTeleport carried normal or skill movement inertia into its destination")
+	nexusSmokeAssert(movement_physics_test.step_x == 5 && movement_physics_test.step_y == -3, "SafeTeleport reset the destination pixel offsets")
+	del(teleport_motion_test)
+	movement_physics_test.movement_velocity_y = 4
+	movement_physics_test.vector_fraction_y = 0.4
+	movement_physics_test.AlterInputDisabled(1)
+	nexusSmokeAssert(!movement_physics_test.movement_velocity_y && !movement_physics_test.vector_fraction_y, "input locking did not clear normal movement inertia")
+	movement_physics_test.AlterInputDisabled(-1)
+	movement_physics_test.loc = null
+	del(movement_physics_test)
+	var/mob/NexusSmokeTest/InertialMovement/inertial_frame_test = new(vector_gap_origin)
+	inertial_frame_test.east = 1
+	var/inertial_frame_start_x = inertial_frame_test.Px(0)
+	var/inertial_frame_acceleration = min(30, 30 * vector_movement_acceleration_per_decisecond * vector_movement_physics_step_deciseconds)
+	var/inertial_frame_requested_x = inertial_frame_acceleration * vector_movement_physics_step_deciseconds
+	var/inertial_frame_retention = inertial_frame_test.movementDurationRetention(vector_movement_velocity_retention_per_decisecond, vector_movement_physics_step_deciseconds)
+	nexusSmokeAssert(inertial_frame_acceleration > vector_movement_stop_velocity, "movement inertia tuning cannot produce a testable first frame")
+	inertial_frame_test.movement_physics_time_accumulator = vector_movement_physics_step_deciseconds - world.tick_lag
+	inertial_frame_test.processMovementPhysicsFrame(EAST)
+	nexusSmokeAssert(inertial_frame_test.Px(0) - inertial_frame_start_x == round(inertial_frame_requested_x), "the production movement frame did not displace using pre-friction velocity")
+	nexusSmokeAssertNear(inertial_frame_test.movement_velocity_x, inertial_frame_acceleration * inertial_frame_retention, 0.0001, "the production movement frame did not retain velocity after displacement")
+	nexusSmokeAssert(inertial_frame_test.movement_last_frame_pixels == abs(inertial_frame_test.Px(0) - inertial_frame_start_x), "the production movement frame did not report actual displacement")
+	inertial_frame_test.east = 0
+	var/inertial_coast_start_x = inertial_frame_test.Px(0)
+	var/inertial_coast_velocity = inertial_frame_test.movement_velocity_x
+	var/inertial_coast_expected_x = round(inertial_frame_test.vector_fraction_x + inertial_coast_velocity * vector_movement_physics_step_deciseconds)
+	inertial_frame_test.movement_physics_time_accumulator = vector_movement_physics_step_deciseconds - world.tick_lag
+	inertial_frame_test.processMovementPhysicsFrame(0)
+	nexusSmokeAssert(inertial_frame_test.Px(0) - inertial_coast_start_x == inertial_coast_expected_x && inertial_frame_test.movement_acceleration_x == 0, "releasing movement input did not coast on retained velocity without new acceleration")
+	nexusSmokeAssertNear(inertial_frame_test.movement_velocity_x, inertial_coast_velocity * inertial_frame_retention, 0.0001, "release coasting did not apply exactly one additional frame of retention")
+	inertial_frame_test.loc = null
+	del(inertial_frame_test)
+	var/mob/NexusSmokeTest/InertialTeleport/inertial_teleport_test = new(vector_gap_origin)
+	inertial_teleport_test.nexus_smoke_teleport_destination = vector_gap_north
+	inertial_teleport_test.movement_velocity_x = 6
+	inertial_teleport_test.vector_fraction_x = 0.9
+	var/inertial_teleport_generation = inertial_teleport_test.movement_teleport_generation
+	inertial_teleport_test.movement_physics_time_accumulator = vector_movement_physics_step_deciseconds - world.tick_lag
+	inertial_teleport_test.processMovementPhysicsFrame(0)
+	nexusSmokeAssert(inertial_teleport_test.loc == vector_gap_north && inertial_teleport_test.movement_teleport_generation > inertial_teleport_generation && !inertial_teleport_test.movement_velocity_x && !inertial_teleport_test.movement_last_frame_pixels, "same-map teleport during an inertial Move was processed as collision displacement (loc [inertial_teleport_test.loc], expected [vector_gap_north], generation [inertial_teleport_test.movement_teleport_generation]/[inertial_teleport_generation], velocity [inertial_teleport_test.movement_velocity_x], frame [inertial_teleport_test.movement_last_frame_pixels])")
+	inertial_teleport_test.loc = null
+	del(inertial_teleport_test)
+	var/mob/NexusSmokeTest/InertialFacing/inertial_facing_test = new(vector_gap_origin)
+	inertial_facing_test.dir = WEST
+	inertial_facing_test.tryNexusInertiaMove(3, 0)
+	nexusSmokeAssert(inertial_facing_test.observed_facing_direction == WEST && inertial_facing_test.observed_physical_direction == EAST && inertial_facing_test.observed_post_move_direction == WEST && inertial_facing_test.dir == WEST, "inertial collision direction leaked into gameplay-facing movement state or post-move callbacks")
+	inertial_facing_test.loc = null
+	del(inertial_facing_test)
 	var/mob/NexusSmokeTest/VectorMovement/vector_collision_test = new(vector_gap_origin)
+	vector_collision_test.max_ki = 1000000
+	vector_collision_test.Ki = 1000000
 	vector_collision_test.dir = EAST
 	vector_collision_test.step_x = 28
 	vector_collision_test.step_y = 0
@@ -561,6 +1650,17 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vector_collision_test.vector_fraction_y = 0
 	var/doorway_edge_turf_type = vector_gap_northeast.type
 	vector_gap_northeast = new /turf/NexusSmokeVectorBlocker(vector_gap_northeast)
+	vector_collision_test.dir = WEST
+	var/inertial_doorway_start_x = vector_collision_test.Px(0)
+	var/inertial_doorway_start_y = vector_collision_test.Py(0)
+	var/inertial_doorway_nudge_result = vector_collision_test.tryNexusInertiaMove(7, 0.1)
+	nexusSmokeAssert(inertial_doorway_nudge_result && !vector_collision_test.last_vector_move_attempted && vector_collision_test.Px(0) == inertial_doorway_start_x && vector_collision_test.Py(0) == inertial_doorway_start_y - 1 && vector_collision_test.nexus_gap_nudge_direction == SOUTH && vector_collision_test.dir == WEST, "inertial doorway correction followed facing/input intent or changed visible facing")
+	vector_collision_test.SafeTeleport(vector_gap_origin)
+	vector_collision_test.dir = EAST
+	vector_collision_test.step_x = 0
+	vector_collision_test.step_y = 8
+	vector_collision_test.vector_fraction_x = 0
+	vector_collision_test.vector_fraction_y = 0
 	var/doorway_start_x = vector_collision_test.Px(0)
 	var/doorway_start_y = vector_collision_test.Py(0)
 	var/doorway_nudge_result = vector_collision_test.tryNexusVectorMoveWithGapNudge(EAST, 7)
@@ -580,6 +1680,44 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vector_collision_test.vector_fraction_y = 0
 	var/solid_vector_turf_type = vector_gap_east.type
 	vector_gap_east = new /turf/NexusSmokeVectorBlocker(vector_gap_east)
+	vector_collision_test.dir = NORTHEAST
+	vector_collision_test.movement_velocity_x = 7
+	vector_collision_test.movement_velocity_y = 7
+	vector_collision_test.vector_fraction_x = 0.4
+	var/inertial_wall_start_x = vector_collision_test.Px(0)
+	var/inertial_wall_start_y = vector_collision_test.Py(0)
+	var/inertial_wall_slide_result = vector_collision_test.tryNexusInertiaMove(7, 7)
+	var/inertial_wall_delta_x = vector_collision_test.Px(0) - inertial_wall_start_x
+	var/inertial_wall_delta_y = vector_collision_test.Py(0) - inertial_wall_start_y
+	nexusSmokeAssert(inertial_wall_slide_result && inertial_wall_delta_x > 0 && inertial_wall_delta_x < 7 && inertial_wall_delta_y == 7 && !vector_collision_test.movement_velocity_x && vector_collision_test.movement_velocity_y == 7 && !vector_collision_test.vector_fraction_x, "partial inertial wall contact did not complete the open tangent and clear the blocked-axis carry (result [inertial_wall_slide_result], delta [inertial_wall_delta_x],[inertial_wall_delta_y], velocity [vector_collision_test.movement_velocity_x],[vector_collision_test.movement_velocity_y], requested [vector_collision_test.last_vector_move_requested_x],[vector_collision_test.last_vector_move_requested_y], actual [vector_collision_test.last_vector_move_actual_x],[vector_collision_test.last_vector_move_actual_y])")
+	var/inertial_wall_follow_x = vector_collision_test.Px(0)
+	var/inertial_wall_follow_y = vector_collision_test.Py(0)
+	sleep(world.tick_lag)
+	var/inertial_wall_follow_result = vector_collision_test.tryNexusInertiaMove(0, 7)
+	nexusSmokeAssert(inertial_wall_follow_result && (vector_collision_test.Py(0) > inertial_wall_follow_y || vector_collision_test.Px(0) < inertial_wall_follow_x) && vector_collision_test.movement_velocity_y == 7, "retained wall-tangent velocity neither advanced nor corrected away from the wall on the next frame (result [inertial_wall_follow_result], position [vector_collision_test.Px(0)],[vector_collision_test.Py(0)], start [inertial_wall_follow_x],[inertial_wall_follow_y], nudge [vector_collision_test.nexus_gap_nudge_direction])")
+	vector_collision_test.SafeTeleport(vector_gap_origin)
+	vector_collision_test.dir = NORTHEAST
+	vector_collision_test.step_x = 0
+	vector_collision_test.step_y = 0
+	vector_collision_test.vector_fraction_x = 0.4
+	vector_collision_test.vector_fraction_y = 0.4
+	vector_collision_test.movement_velocity_x = 7
+	vector_collision_test.movement_velocity_y = 7
+	var/corner_north_turf_type = vector_gap_north.type
+	vector_gap_north = new /turf/NexusSmokeVectorBlocker(vector_gap_north)
+	var/inertial_corner_start_x = vector_collision_test.Px(0)
+	var/inertial_corner_start_y = vector_collision_test.Py(0)
+	var/inertial_corner_result = vector_collision_test.tryNexusInertiaMove(7, 7)
+	var/inertial_corner_delta_x = vector_collision_test.Px(0) - inertial_corner_start_x
+	var/inertial_corner_delta_y = vector_collision_test.Py(0) - inertial_corner_start_y
+	nexusSmokeAssert(inertial_corner_result && inertial_corner_delta_x > 0 && inertial_corner_delta_x < 7 && inertial_corner_delta_y > 0 && inertial_corner_delta_y < 7 && !vector_collision_test.movement_velocity_x && !vector_collision_test.movement_velocity_y && !vector_collision_test.vector_fraction_x && !vector_collision_test.vector_fraction_y, "an inertial L-corner retained blocked velocity or fractional pressure (result [inertial_corner_result], delta [inertial_corner_delta_x],[inertial_corner_delta_y], velocity [vector_collision_test.movement_velocity_x],[vector_collision_test.movement_velocity_y])")
+	vector_gap_north = new corner_north_turf_type(vector_gap_north)
+	vector_collision_test.SafeTeleport(vector_gap_origin)
+	vector_collision_test.dir = EAST
+	vector_collision_test.step_x = 0
+	vector_collision_test.step_y = 0
+	vector_collision_test.vector_fraction_x = 0
+	vector_collision_test.vector_fraction_y = 0
 	var/solid_wall_start_x = vector_collision_test.Px(0)
 	var/solid_wall_start_y = vector_collision_test.Py(0)
 	var/solid_wall_contact_result = vector_collision_test.tryNexusVectorMoveWithGapNudge(EAST, 7)
@@ -592,6 +1730,15 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(diagonal_slide_result && vector_collision_test.Px(0) == solid_wall_start_x && vector_collision_test.Py(0) > solid_wall_start_y, "diagonal vector movement does not slide along a wall (result [diagonal_slide_result], position [vector_collision_test.Px(0)],[vector_collision_test.Py(0)], start [solid_wall_start_x],[solid_wall_start_y], step [vector_collision_test.step_x],[vector_collision_test.step_y], requested [vector_collision_test.last_vector_move_requested_x],[vector_collision_test.last_vector_move_requested_y], actual [vector_collision_test.last_vector_move_actual_x],[vector_collision_test.last_vector_move_actual_y])")
 	vector_gap_east = new solid_vector_turf_type(vector_gap_east)
 	del(vector_collision_test)
+	var/mob/NexusSmokeTest/rock_wall_caster = new(vector_gap_origin)
+	var/mob/NexusSmokeTest/rock_wall_target = new(vector_gap_second_east)
+	var/rock_wall_turf_type = vector_gap_east.type
+	vector_gap_east = new /turf/NexusSmokeVectorBlocker(vector_gap_east)
+	var/turf/blocked_rock_impact = rock_wall_caster.showRockSkillProjectile(rock_wall_target, 'RTRockThrow.dmi', null, 1)
+	nexusSmokeAssert(!blocked_rock_impact, "a vector rock projectile crossed a dense wall and reported a remote impact")
+	vector_gap_east = new rock_wall_turf_type(vector_gap_east)
+	del(rock_wall_target)
+	del(rock_wall_caster)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")
@@ -603,7 +1750,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	vitals_owner.max_willpower = 100
 	var/obj/NexusHud/VitalsPanel/vitals_panel = new
 	vitals_panel.initialize(vitals_owner)
-	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8", "main vitals HUD is not fully inside the lower-left corner")
+	var/obj/NexusHud/OverheadHealthBar/overhead_zoom_bar = new
+	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8" && vitals_panel.plane == NEXUS_FIXED_HUD_PLANE, "main vitals HUD is not fixed inside the lower-left corner")
+	nexusSmokeAssert(overhead_zoom_bar.plane == NEXUS_WORLD_OVERLAY_PLANE, "world-space overhead vitals no longer follow map-only zoom")
+	del(overhead_zoom_bar)
 	vitals_panel.setScreenPosition(92, 62)
 	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:92,BOTTOM:62" && vitals_owner.nexus_main_vitals_x == 92 && vitals_owner.nexus_main_vitals_y == 62, "main vitals HUD drag positioning is not retained by its owner")
 	var/datum/NexusInterfaceSettings/interface_settings_contract = new(vitals_owner)
@@ -614,7 +1764,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/datum/NexusChatHud/chat_hud_contract = new(chat_contract_owner)
 	var/chat_panel_html = chat_hud_contract.buildHtml()
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() == 36 && findtext(chat_panel_html, "action=channel&id=all") && !findtext(chat_panel_html, "CMD BAR BELOW") && !findtext(chat_panel_html, "ENTER TO FOCUS OR RETURN TO MAP"), "side chat panel is missing paging/channels or retained the obsolete CMD hint")
-	nexusSmokeAssert(findtext(chat_panel_html, ".footer{display:flex") && findtext(chat_panel_html, ".tabs .hud-tab,.footer .hud-button{display:flex;flex:1 1 0") && findtext(chat_panel_html, "body.className='nexus-hud'") && findtext(chat_panel_html, "nexus_pixel_"), "side chat actions or bronze pixel-icon contract are incomplete")
+	var/chat_footer_source_position = findtext(chat_panel_html, "<nav class='footer'>")
+	var/chat_messages_source_position = findtext(chat_panel_html, "<section class='hud-panel messages'")
+	nexusSmokeAssert(findtext(chat_panel_html, ".footer{order:4}") && findtext(chat_panel_html, ".footer .hud-button{display:flex;flex:1 1 25%;width:25%") && findtext(chat_panel_html, ".messages{order:3;") && findtext(chat_panel_html, ".chat-entry{display:block;width:100%") && chat_footer_source_position && chat_messages_source_position && chat_footer_source_position < chat_messages_source_position && findtext(chat_panel_html, "body.className='nexus-hud'") && !findtext(chat_panel_html, "<img"), "side chat controls are not isolated from message markup or evenly distributed")
 	chat_contract_owner.nexus_interface_layout = "overlay"
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() >= 4, "overlay chat visible message calculation is invalid")
 	del(chat_hud_contract)
@@ -732,7 +1884,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/AlienInfiniteVoidVisual/infinite_void_visual = new
 	nexusSmokeAssert(infinite_void_icon.Width() == 512 && infinite_void_icon.Height() == 512 && ("void" in infinite_void_states), "Time Stop domain is not a renderable 512x512 DMI with its required void state")
 	nexusSmokeAssert(infinite_void_skill.name == "Time Stop" && infinite_void_skill.domain_radius == 8 && infinite_void_skill.domain_windup == 8, "Alien Time Freeze did not retain the Time Stop identity or area contract")
-	nexusSmokeAssert(infinite_void_visual.icon_state == "void" && infinite_void_visual.plane == 20 && infinite_void_visual.layer == 98 && infinite_void_visual.appearance_flags == PIXEL_SCALE, "Time Stop has no dedicated above-lighting visual actor")
+	nexusSmokeAssert(infinite_void_visual.icon_state == "void" && infinite_void_visual.plane == NEXUS_WORLD_OVERLAY_PLANE && infinite_void_visual.layer == 98 && infinite_void_visual.appearance_flags == PIXEL_SCALE, "Time Stop has no dedicated above-lighting visual actor")
 	nexusSmokeAssert(normal_void_stun == 60 && normalized_void_stun == max(6, round(normal_void_stun * 0.25)), "Time Stop stun scaling or Time Normalizer mitigation is invalid")
 	infinite_void_target.paralysis_immune = 0
 	nexusSmokeAssert(infinite_void_user.canHitAlienInfiniteVoidTarget(infinite_void_target), "Time Stop rejected a valid same-area target")
@@ -772,10 +1924,30 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(wolf_fang_hit_damage_mult == 1 && wolf_fang_knockback_distance == 3, "Wolf Fang Fist combo tuning is invalid")
 	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.25, "Hundred Crack Fist remains an execution instead of a damage combo")
 	nexusSmokeAssert(base_melee_damage == 2.5 && combat_damage_bp_exponent == 1 && combat_damage_stat_exponent == 0.85, "central combat damage constants are invalid")
-	nexusSmokeAssert(skill_blast_total_factor == 4 && skill_big_bang_damage_factor == 22 && skill_charge_damage_factor == 4 && skill_cyber_charge_damage_factor == 2.5, "core projectile factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_blast_total_factor == 0.6 && skill_big_bang_damage_factor == 22 && skill_charge_damage_factor == 4 && skill_cyber_charge_damage_factor == 2.5, "core projectile factors diverged from the balance workbook")
+	nexusSmokeAssert(basic_blast_base_refire_deciseconds == 0.75 && basic_blast_default_volley_size == 3 && basic_blast_max_volley_size == 3 && basic_blast_damage_scale == 0.3 && basic_blast_energy_scale == 0.2 && basic_blast_angle_spacing_degrees == 6 && basic_blast_angle_jitter_degrees == 2 && basic_blast_owner_active_limit == 24 && basic_blast_global_active_limit == 256 && basic_blast_volley_configuration_version == 1, "rapid basic-blast volley tuning is invalid")
+	nexusSmokeAssertNear(basic_blast_default_volley_size / basic_blast_base_refire_deciseconds, 4, 0.0001, "rapid basic blasts exceed the former maximum launch rate")
+	nexusSmokeAssertNear(basic_blast_default_volley_size * basic_blast_energy_scale / basic_blast_base_refire_deciseconds, 0.8, 0.0001, "rapid basic blasts do not preserve the intended lower sustained Energy cost")
+	var/obj/Attacks/Blast/basic_blast_math_test = new
+	basic_blast_math_test.blast_refire = 1
+	basic_blast_math_test.Spread = 1
+	nexusSmokeAssertNear(basic_blast_math_test.getBasicBlastDamageFactor(), 0.105, 0.0001, "fast basic-blast pellet damage is not reduced by seventy percent")
+	nexusSmokeAssert(basic_blast_math_test.getBasicBlastAngleOffset(1, 3) == -6 && basic_blast_math_test.getBasicBlastAngleOffset(2, 3) == 0 && basic_blast_math_test.getBasicBlastAngleOffset(3, 3) == 6, "basic-blast volley is not centered around its aim angle")
+	basic_blast_math_test.blast_refire = 0.2
+	nexusSmokeAssertNear(basic_blast_math_test.getBasicBlastDamageFactor(), 0.15, 0.0001, "slow basic-blast pellet damage lost its configured power curve")
+	del(basic_blast_math_test)
+	var/mob/NexusSmokeTest/basic_blast_migration_owner = new
+	var/obj/Attacks/Blast/basic_blast_migration_skill = new(basic_blast_migration_owner)
+	basic_blast_migration_owner.basic_blast_volley_version = 0
+	basic_blast_migration_skill.Blast_Count = 1
+	nexusSmokeAssert(basic_blast_migration_owner.migrateBasicBlastVolley(basic_blast_migration_skill) && basic_blast_migration_skill.Blast_Count == 3 && basic_blast_migration_owner.basic_blast_volley_version == basic_blast_volley_configuration_version, "legacy single-shot Blast defaults did not migrate to the rapid volley")
+	basic_blast_migration_skill.Blast_Count = 1
+	nexusSmokeAssert(!basic_blast_migration_owner.migrateBasicBlastVolley(basic_blast_migration_skill) && basic_blast_migration_skill.Blast_Count == 1, "basic-blast volley migration overwrote a post-migration player choice")
+	del(basic_blast_migration_skill)
+	del(basic_blast_migration_owner)
 	nexusSmokeAssert(skill_makosen_damage_factor == 0.4 && skill_makosen_total_factor == 8 && skill_scatter_shot_damage_factor == 0.3 && skill_scatter_shot_total_factor == 18, "barrage factors diverged from the balance workbook")
 	nexusSmokeAssert(skill_attack_barrier_damage_factor == 0.2 && skill_shockwave_damage_factor == 0.5 && skill_explosion_damage_factor == 3, "AoE factors diverged from the balance workbook")
-	nexusSmokeAssert(skill_dash_attack_min_factor == 2 && skill_dash_attack_max_factor == 8 && skill_dash_attack_step_factor == 0.25 && dash_attack_step_delay_ticks == 1, "Dash Attack factor curve or one-tick travel cadence diverged from the balance contract")
+	nexusSmokeAssert(skill_dash_attack_min_factor == 2 && skill_dash_attack_max_factor == 8 && skill_dash_attack_step_factor == 0.25, "Dash Attack factor curve diverged from the balance contract")
 	nexusSmokeAssert(!text2path("/mob/proc/PowerupDamageGrabber"), "ordinary Power Control aura can still damage a nearby grabber")
 	nexusSmokeAssert(skill_dropkick_opening_factor == 5 && skill_dropkick_finisher_factor == 3 && skill_sokidan_damage_factor == 3.5 && skill_sokidan_total_factor == 7 && skill_kienzan_damage_factor == 6, "special skill factors diverged from the balance workbook")
 	nexusSmokeAssert(beam_skill_cooldown_ticks == 30 && beam_clash_winner_damage_mult == 1.35 && beam_clash_input_mult == 1.15, "beam cooldown or clash damage tuning is invalid")
@@ -799,6 +1971,140 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	projectile_owner.Off = 100
 	projectile_owner.Spd = 100
 	projectile_owner.BPpcnt = 100
+	var/mob/NexusSmokeTest/basic_blast_owner = new(attack_movement_origin)
+	basic_blast_owner.BP = 100
+	basic_blast_owner.Pow = 100
+	basic_blast_owner.Off = 100
+	basic_blast_owner.Spd = 100
+	basic_blast_owner.BPpcnt = 100
+	basic_blast_owner.max_ki = 100000
+	basic_blast_owner.Ki = 100000
+	basic_blast_owner.dir = EAST
+	var/obj/Attacks/Blast/basic_blast_skill = new(basic_blast_owner)
+	basic_blast_skill.Blast_Count = 3
+	basic_blast_skill.blast_refire = 1
+	basic_blast_skill.Explosive = 1
+	basic_blast_skill.Stun = 1
+	basic_blast_skill.Shockwave = 1
+	basic_blast_skill.Recalculate_blast_drain()
+	var/basic_blast_drain = basic_blast_skill.getBasicBlastProjectileDrain(basic_blast_owner)
+	var/basic_blast_ki_before = basic_blast_owner.Ki
+	var/basic_blast_global_before = global_basic_blast_active_count
+	nexusSmokeAssert(skill_engine.castBlast(basic_blast_owner, basic_blast_skill), "an affordable rapid basic-blast volley could not fire")
+	var/list/basic_blast_volley = list()
+	for(var/obj/Blast/basic_projectile in all_blast_objs)
+		if(basic_projectile.in_use && basic_projectile.basic_blast_slot_owner == basic_blast_owner && basic_projectile.from_attack == basic_blast_skill) basic_blast_volley += basic_projectile
+	nexusSmokeAssert(basic_blast_volley.len == 3 && basic_blast_owner.basic_blast_active_count == 3 && global_basic_blast_active_count == basic_blast_global_before + 3, "basic-blast volley did not reserve exactly three bounded projectile slots")
+	nexusSmokeAssertNear(basic_blast_ki_before - basic_blast_owner.Ki, basic_blast_drain * 3, 0.01, "basic-blast volley did not charge exact per-projectile Energy")
+	var/basic_blast_utility_projectiles = 0
+	var/datum/CombatDamageBudget/basic_blast_shared_budget
+	for(var/obj/Blast/basic_projectile in basic_blast_volley)
+		nexusSmokeAssertNear(basic_projectile.percent_damage, 0.105, 0.0001, "rapid basic blast spawned with its former per-projectile damage")
+		if(!basic_blast_shared_budget) basic_blast_shared_budget = basic_projectile.damage_budget
+		nexusSmokeAssert(basic_projectile.damage_budget == basic_blast_shared_budget && basic_projectile.damage_budget.max_factor_per_target == 0.6, "basic-blast volley did not share its per-target damage budget")
+		if(basic_projectile.Explosive || basic_projectile.Stun || basic_projectile.Shockwave) basic_blast_utility_projectiles++
+	nexusSmokeAssert(basic_blast_utility_projectiles == 1, "explosion, stun, or knockback utility was duplicated across every blast pellet")
+	for(var/obj/Blast/basic_projectile in basic_blast_volley) del(basic_projectile)
+	nexusSmokeAssert(!basic_blast_owner.basic_blast_active_count && global_basic_blast_active_count == basic_blast_global_before, "basic-blast cache cleanup leaked active projectile slots")
+	var/obj/Blast/reused_basic_blast = get_cached_blast()
+	nexusSmokeAssert(!reused_basic_blast.basic_blast_slot_owner, "a pooled blast retained its prior basic-blast owner slot")
+	del(reused_basic_blast)
+	var/mob/NexusSmokeTest/basic_blast_other_owner = new
+	var/obj/Blast/basic_blast_slot_test = get_cached_blast()
+	var/basic_blast_slot_global_before = global_basic_blast_active_count
+	nexusSmokeAssert(basic_blast_slot_test.registerBasicBlastSlot(basic_blast_owner) && basic_blast_slot_test.registerBasicBlastSlot(basic_blast_owner), "basic-blast slot registration is not idempotent for its owner")
+	nexusSmokeAssert(basic_blast_owner.basic_blast_active_count == 1 && global_basic_blast_active_count == basic_blast_slot_global_before + 1, "idempotent slot registration incremented counters more than once")
+	nexusSmokeAssert(!basic_blast_slot_test.registerBasicBlastSlot(basic_blast_other_owner) && !basic_blast_other_owner.basic_blast_active_count, "an active basic-blast slot changed owners")
+	nexusSmokeAssert(basic_blast_slot_test.releaseBasicBlastSlot() && !basic_blast_slot_test.releaseBasicBlastSlot() && !basic_blast_owner.basic_blast_active_count && global_basic_blast_active_count == basic_blast_slot_global_before, "basic-blast slot release is not idempotent")
+	del(basic_blast_slot_test)
+	del(basic_blast_other_owner)
+	var/mob/NexusSmokeTest/deleted_basic_blast_owner = new
+	var/obj/Blast/deleted_owner_slot_test = get_cached_blast()
+	var/deleted_owner_global_before = global_basic_blast_active_count
+	nexusSmokeAssert(deleted_owner_slot_test.registerBasicBlastSlot(deleted_basic_blast_owner), "basic-blast slot could not register for owner-deletion cleanup")
+	del(deleted_basic_blast_owner)
+	nexusSmokeAssert(!deleted_owner_slot_test.basic_blast_slot_owner && deleted_owner_slot_test.basic_blast_slot_registered, "deleted blast owner erased the independent slot-registration sentinel")
+	nexusSmokeAssert(deleted_owner_slot_test.releaseBasicBlastSlot() && global_basic_blast_active_count == deleted_owner_global_before && !deleted_owner_slot_test.releaseBasicBlastSlot(), "deleted blast owner leaked or double-released the global projectile slot")
+	del(deleted_owner_slot_test)
+	del(basic_blast_skill)
+	del(basic_blast_owner)
+	var/mob/NexusSmokeTest/low_ki_blast_owner = new(attack_movement_origin)
+	low_ki_blast_owner.BP = 100
+	low_ki_blast_owner.Pow = 100
+	low_ki_blast_owner.Off = 100
+	low_ki_blast_owner.Spd = 100
+	low_ki_blast_owner.BPpcnt = 100
+	low_ki_blast_owner.max_ki = 100000
+	low_ki_blast_owner.dir = EAST
+	var/obj/Attacks/Blast/low_ki_blast_skill = new(low_ki_blast_owner)
+	low_ki_blast_skill.Blast_Count = 3
+	low_ki_blast_skill.blast_refire = 1
+	low_ki_blast_skill.Recalculate_blast_drain()
+	var/low_ki_projectile_drain = low_ki_blast_skill.getBasicBlastProjectileDrain(low_ki_blast_owner)
+	low_ki_blast_owner.Ki = low_ki_projectile_drain * 2.5
+	nexusSmokeAssert(skill_engine.castBlast(low_ki_blast_owner, low_ki_blast_skill), "an affordable partial basic-blast volley could not fire")
+	var/list/low_ki_blast_volley = list()
+	for(var/obj/Blast/basic_projectile in all_blast_objs)
+		if(basic_projectile.in_use && basic_projectile.basic_blast_slot_owner == low_ki_blast_owner && basic_projectile.from_attack == low_ki_blast_skill) low_ki_blast_volley += basic_projectile
+	nexusSmokeAssert(low_ki_blast_volley.len == 2 && low_ki_blast_owner.Ki >= 0, "basic-blast affordability rounded up or allowed negative Energy")
+	nexusSmokeAssertNear(low_ki_blast_owner.Ki, low_ki_projectile_drain * 0.5, 0.01, "partial basic-blast volley charged for a projectile it could not afford")
+	for(var/obj/Blast/basic_projectile in low_ki_blast_volley) del(basic_projectile)
+	del(low_ki_blast_skill)
+	del(low_ki_blast_owner)
+	var/mob/NexusSmokeTest/capped_blast_owner = new(attack_movement_origin)
+	capped_blast_owner.BP = 100
+	capped_blast_owner.Pow = 100
+	capped_blast_owner.Off = 100
+	capped_blast_owner.Spd = 100
+	capped_blast_owner.BPpcnt = 100
+	capped_blast_owner.max_ki = 100000
+	capped_blast_owner.Ki = 100000
+	capped_blast_owner.dir = EAST
+	var/obj/Attacks/Blast/capped_blast_skill = new(capped_blast_owner)
+	capped_blast_skill.Blast_Count = 3
+	capped_blast_skill.blast_refire = 1
+	capped_blast_skill.Recalculate_blast_drain()
+	var/capped_blast_drain = capped_blast_skill.getBasicBlastProjectileDrain(capped_blast_owner)
+	var/capped_blast_ki_before = capped_blast_owner.Ki
+	capped_blast_owner.basic_blast_active_count = basic_blast_owner_active_limit
+	nexusSmokeAssert(!skill_engine.castBlast(capped_blast_owner, capped_blast_skill) && capped_blast_owner.Ki == capped_blast_ki_before && !capped_blast_owner.attacking, "a full owner projectile cap still charged or entered attack state")
+	capped_blast_owner.basic_blast_active_count = basic_blast_owner_active_limit - 1
+	nexusSmokeAssert(skill_engine.castBlast(capped_blast_owner, capped_blast_skill), "one free basic-blast slot could not fire a partial volley")
+	var/list/capped_blast_volley = list()
+	for(var/obj/Blast/basic_projectile in all_blast_objs)
+		if(basic_projectile.in_use && basic_projectile.basic_blast_slot_owner == capped_blast_owner && basic_projectile.from_attack == capped_blast_skill) capped_blast_volley += basic_projectile
+	nexusSmokeAssert(capped_blast_volley.len == 1 && capped_blast_owner.basic_blast_active_count == basic_blast_owner_active_limit, "owner cap did not clamp the volley to its one free slot")
+	nexusSmokeAssertNear(capped_blast_ki_before - capped_blast_owner.Ki, capped_blast_drain, 0.01, "owner-capped volley charged for blocked projectiles")
+	for(var/obj/Blast/basic_projectile in capped_blast_volley) del(basic_projectile)
+	capped_blast_owner.basic_blast_active_count = 0
+	del(capped_blast_skill)
+	del(capped_blast_owner)
+	var/mob/NexusSmokeTest/barrier_lifecycle_owner = new(attack_movement_origin)
+	var/mob/NexusSmokeTest/barrier_lifecycle_new_owner = new(attack_movement_destination)
+	var/obj/Attacks/Attack_Barrier/barrier_lifecycle_skill = new(barrier_lifecycle_owner)
+	barrier_lifecycle_skill.Firing_Attack_Barrier = TRUE
+	barrier_lifecycle_owner.attack_barrier_obj = barrier_lifecycle_skill
+	barrier_lifecycle_owner.attack_barrier_blasts = 1
+	var/obj/Blast/barrier_lifecycle_blast = get_cached_blast()
+	barrier_lifecycle_blast.Owner = barrier_lifecycle_owner
+	barrier_lifecycle_blast.loc = attack_movement_origin
+	barrier_lifecycle_blast.dir = EAST
+	barrier_lifecycle_blast.attack_barrier_loop()
+	barrier_lifecycle_blast.cache_blast()
+	var/obj/Blast/barrier_reused_blast = get_cached_blast()
+	nexusSmokeAssert(barrier_reused_blast == barrier_lifecycle_blast, "attack-barrier lifecycle test did not reacquire the pooled projectile")
+	barrier_reused_blast.Owner = barrier_lifecycle_new_owner
+	barrier_reused_blast.loc = attack_movement_origin
+	var/barrier_reused_x = barrier_reused_blast.Px(0)
+	var/barrier_reused_y = barrier_reused_blast.Py(0)
+	sleep(TickMult(2))
+	nexusSmokeAssert(!barrier_lifecycle_owner.attack_barrier_blasts && !barrier_lifecycle_new_owner.attack_barrier_blasts, "stale attack-barrier cleanup decremented the wrong owner's counter")
+	nexusSmokeAssert(barrier_reused_blast.in_use && barrier_reused_blast.Owner == barrier_lifecycle_new_owner && barrier_reused_blast.Px(0) == barrier_reused_x && barrier_reused_blast.Py(0) == barrier_reused_y, "stale attack-barrier loop moved or deleted a reused projectile")
+	barrier_reused_blast.Owner = null
+	del(barrier_reused_blast)
+	del(barrier_lifecycle_skill)
+	del(barrier_lifecycle_new_owner)
+	del(barrier_lifecycle_owner)
 	var/obj/Blast/big_bang_projectile = new
 	big_bang_projectile.setStats(projectile_owner, Percent = 22, Explosion = 4, explosion_percent = 22, max_damage_factor = 44)
 	nexusSmokeAssert(big_bang_projectile.percent_damage == 22 && big_bang_projectile.explosion_damage_factor == 22 && big_bang_projectile.damage_budget.max_factor_per_target == 44, "Big Bang direct/splash budget is invalid")
@@ -841,11 +2147,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/datum/SkillDefinition/sokidan_definition = skill_engine.getDefinitionForObj(sokidan_skill)
 	nexusSmokeAssert(sokidan_definition && sokidan_definition.control_delay == ki_projectile_step_delay, "Sokidan does not use the normalized Ki projectile cadence")
 	var/datum/SkillController/GuidedBlast/guided_controller = skill_controller_registry.get(SKILL_CONTROLLER_GUIDED_BLAST)
+	var/datum/SkillController/GuidedBomb/guided_bomb_controller = skill_controller_registry.get(SKILL_CONTROLLER_GUIDED_BOMB)
 	projectile_owner.dir = NORTH
 	projectile_owner.last_direction_pressed = EAST
 	nexusSmokeAssert(guided_controller && guided_controller.getControlDirection(projectile_owner) == EAST, "guided blasts are not checking and moving toward the same direction")
 	projectile_owner.last_direction_pressed = 0
-	nexusSmokeAssert(guided_controller.getControlDirection(projectile_owner) == NORTH, "guided blasts have no facing-direction fallback")
+	nexusSmokeAssert(guided_controller.getControlDirection(projectile_owner) == NORTH && guided_bomb_controller && guided_bomb_controller.getControlDirection(projectile_owner) == NORTH, "guided blasts or bombs have no facing-direction fallback")
 	var/obj/Blast/kienzan_projectile = new
 	kienzan_projectile.slice_attack = 1
 	kienzan_projectile.Piercer = 1
@@ -1569,12 +2876,15 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(warp_start, "directional Zanzoken smoke test turf is missing")
 	warp_player.loc = warp_start
 	initializeNexusHotkeyActionRegistry()
-	nexusSmokeAssert(nexus_hotkey_action_registry.len == 8, "Zanzoken hotkey action registry is incomplete")
+	nexusSmokeAssert(nexus_hotkey_action_registry.len == 16, "directional Zanzoken or Short Dash hotkey action registry is incomplete")
 	var/datum/NexusHotkeyAction/zanzoken_action = getNexusHotkeyAction("zanzoken_north")
+	var/datum/NexusHotkeyAction/short_dash_directional_action = getNexusHotkeyAction("short_dash_north")
 	nexusSmokeAssert(!warp_player.hasZanzokenSkill() && !zanzoken_action.isAvailable(warp_player), "Zanzoken action is available without its skill")
+	nexusSmokeAssert(short_dash_directional_action && short_dash_directional_action.isAvailable(warp_player) && short_dash_directional_action.hotbar_type == "Defensive", "directional Short Dash is not a universal defensive hotkey action")
 	var/datum/NexusHotkeyEditor/empty_hotkey_editor = new(warp_player)
 	var/empty_hotkey_html = warp_player.buildNexusHotkeyEditorHtml(empty_hotkey_editor)
 	nexusSmokeAssert(!findtext(empty_hotkey_html, "Zanzoken: North"), "hotkey editor lists Zanzoken without its skill")
+	nexusSmokeAssert(findtext(empty_hotkey_html, "Short Dash: North") && findtext(empty_hotkey_html, "Short Dash: Northwest"), "hotkey editor does not expose all directional Short Dash actions")
 	nexusSmokeAssert(findtext(empty_hotkey_html, "XKB keyboard layout") && findtext(empty_hotkey_html, "us(dvorak)") && findtext(empty_hotkey_html, "double tap"), "hotkey editor is missing XKB layouts or double-tap controls")
 	nexusSmokeAssert(findtext(empty_hotkey_html, "class='navigation'") && findtext(empty_hotkey_html, "&uarr;") && findtext(empty_hotkey_html, "page_up") && findtext(empty_hotkey_html, "min-width:1380px"), "hotkey editor is missing its full-size navigation and arrow-key block")
 	var/obj/Zanzoken/zanzoken_skill = new(warp_player)
@@ -1583,7 +2893,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	for(var/zanzoken_verb in zanzoken_verbs)
 		nexusSmokeAssert(zanzoken_verb in zanzoken_skill.verbs, "owned Zanzoken is missing a directional verb")
 	warp_player.nexus_hotkey_bindings["CTRL+Numpad7"] = list("kind" = "action", "action id" = "zanzoken_north")
+	warp_player.nexus_hotkey_bindings["ALT+Numpad9"] = list("kind" = "action", "action id" = "short_dash_north")
 	nexusSmokeAssert(warp_player.resolveNexusHotkeyBinding("CTRL+Numpad7") == zanzoken_action, "Zanzoken directional action could not be bound")
+	nexusSmokeAssert(warp_player.resolveNexusHotkeyBinding("ALT+Numpad9") == short_dash_directional_action, "Short Dash directional action could not be rebound independently of movement keys")
 	nexusSmokeAssert(canonicalNexusHotkey("Numpad7", TRUE, TRUE, TRUE) == "CTRL+SHIFT+ALT+Numpad7", "modifier or numpad hotkey canonicalization is invalid")
 	nexusSmokeAssert(canonicalNexusHotkey("Space", tap_count = 2) == "DOUBLE:Space" && getNexusHotkeyBase("DOUBLE:CTRL+Space") == "Space", "double-tap hotkey canonicalization is invalid")
 	nexusSmokeAssert(canonicalNexusHotkey("North") == "North" && getNexusUnixHotkeyName("North") == "up", "arrow keys are not valid Unix/XKB hotkeys")
@@ -1614,6 +2926,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(warp_player.getNexusHotkeyBindingIdForPress("Space", TRUE, 104) == "Space", "held-key repetition incorrectly triggered a double-tap action")
 	del(zanzoken_skill)
 	nexusSmokeAssert(!warp_player.hasZanzokenSkill() && !warp_player.resolveNexusHotkeyBinding("CTRL+Numpad7"), "Zanzoken binding remained active after losing the skill")
+	nexusSmokeAssert(warp_player.resolveNexusHotkeyBinding("ALT+Numpad9") == short_dash_directional_action, "Short Dash binding incorrectly depends on Zanzoken ownership")
 	del(manual_attack_action)
 	del(double_tap_lunge_action)
 	del(empty_hotkey_editor)
@@ -2134,7 +3447,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 			if(technology.science && technology.science_level == 1) forged_science_replacements += technology.type
 			if(technology.type == /obj/items/Gloves/Forged/Science) normal_gloves_reference = technology
 		expected_technology_types -= technology.type
-	nexusSmokeAssert(!expected_technology_types.len, "technology catalog is missing eligible types")
+	nexusSmokeAssert(!expected_technology_types.len, "technology catalog is missing eligible types: [expected_technology_types.Join(", ")]")
 	nexusSmokeAssert(legacy_sword_recipe_disabled && legacy_armor_recipe_disabled, "legacy DU Sword or Armor is still enabled in Science")
 	nexusSmokeAssert(forged_science_replacements.len == 4, "Science did not replace legacy equipment with Normal Sword, Hammer, Gloves and Mask")
 	nexusSmokeAssert(shikon_science_reference && !shikon_science_reference.science && isRetiredScienceEquipment(shikon_science_reference) && !progression_node_catalog[getProgressionScienceNodeIdForType(/obj/items/Shikon_Jewel)], "Shikon Jewel remains available through Science")

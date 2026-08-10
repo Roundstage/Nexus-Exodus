@@ -6,8 +6,12 @@ atom/movable/proc/MovementCrossDecision(atom/movable/a)
 
 	if(ismob(src))
 		var/mob/src_m = src
+		if(istype(a, /obj/Effect/RockSkillProjectile))
+			var/obj/Effect/RockSkillProjectile/rock = a
+			if(rock.intended_target == src_m) return 1
 		if(ismob(a))
 			var/mob/m = a
+			if(m.skill_motion_internal_move && m.skill_motion_internal_move == m.active_skill_motion && m.active_skill_motion.pass_mobs) return 1
 			//this is so npcs can never overlap a player because its wonky looking and makes fighting them hard
 			//maybe it should only be limited to mob/Enemy but idk right now
 			if(!m.client) return 0

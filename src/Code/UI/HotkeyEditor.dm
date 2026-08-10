@@ -188,6 +188,21 @@ datum/NexusHotkeyAction
 			user.directionalZanzoken(warp_direction)
 			return 1
 
+	DefensiveDash
+		var/dash_direction
+
+		New(new_id, new_name, new_direction)
+			. = ..()
+			action_id = new_id
+			display_name = new_name
+			hotbar_type = "Defensive"
+			dash_direction = new_direction
+
+		execute(mob/user)
+			if(!user) return 0
+			user.tryDefensiveDash(dash_direction)
+			return 1
+
 var/list/nexus_hotkey_action_registry
 
 proc/initializeNexusHotkeyActionRegistry()
@@ -210,6 +225,22 @@ proc/initializeNexusHotkeyActionRegistry()
 	nexus_hotkey_action_registry[action.action_id] = action
 	action = new /datum/NexusHotkeyAction/Zanzoken("zanzoken_northwest", "Zanzoken: Northwest", NORTHWEST)
 	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_north", "Short Dash: North", NORTH)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_northeast", "Short Dash: Northeast", NORTHEAST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_east", "Short Dash: East", EAST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_southeast", "Short Dash: Southeast", SOUTHEAST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_south", "Short Dash: South", SOUTH)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_southwest", "Short Dash: Southwest", SOUTHWEST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_west", "Short Dash: West", WEST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_northwest", "Short Dash: Northwest", NORTHWEST)
+	nexus_hotkey_action_registry[action.action_id] = action
 
 proc/getNexusHotkeyAction(action_id)
 	initializeNexusHotkeyActionRegistry()
@@ -231,6 +262,9 @@ client/var/tmp
 
 mob/proc/isNexusHotkeyObjectAvailable(obj/hotkey_object)
 	if(!hotkey_object || hotkey_object.loc != src || !hotkey_object.can_hotbar) return 0
+	if(istype(hotkey_object, /obj/items))
+		var/obj/items/item = hotkey_object
+		if(item.isNexusTradeOfferedBy(src)) return 0
 	if(istype(hotkey_object, /obj/Flash_Step) && !hasZanzokenSkill()) return 0
 	return 1
 
