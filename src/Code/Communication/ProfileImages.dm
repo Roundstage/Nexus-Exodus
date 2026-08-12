@@ -52,6 +52,7 @@ proc/normalizeNexusProfileArtFormat(value)
 	var/format = lowertext("[value]")
 	if(format == "png") return "png"
 	if(format == "jpg" || format == "jpeg") return "jpg"
+	if(format == "webp") return "webp"
 	if(format == "webm") return "webm"
 	return ""
 
@@ -61,6 +62,7 @@ proc/getNexusProfileArtUploadFormat(value)
 	if(length(lower_name) > 4 && copytext(lower_name, length(lower_name) - 3) == ".png") return "png"
 	if(length(lower_name) > 4 && copytext(lower_name, length(lower_name) - 3) == ".jpg") return "jpg"
 	if(length(lower_name) > 5 && copytext(lower_name, length(lower_name) - 4) == ".jpeg") return "jpg"
+	if(length(lower_name) > 5 && copytext(lower_name, length(lower_name) - 4) == ".webp") return "webp"
 	if(length(lower_name) > 5 && copytext(lower_name, length(lower_name) - 4) == ".webm") return "webm"
 	return ""
 
@@ -76,23 +78,37 @@ proc/getNexusProfileArtRawByte(raw_data, byte_index)
 	if(istext(raw_data)) return text2ascii(raw_data, byte_index)
 	return null
 
+proc/nexusProfileArtRawMatchesAsciiAt(raw_data, needle, start_position)
+	if(!istext(needle) || !length(needle) || start_position < 1) return FALSE
+	if(start_position + length(needle) - 1 > getNexusProfileArtRawLength(raw_data)) return FALSE
+	for(var/needle_index = 1, needle_index <= length(needle), needle_index++)
+		if(getNexusProfileArtRawByte(raw_data, start_position + needle_index - 1) != text2ascii(needle, needle_index)) return FALSE
+	return TRUE
+
 proc/nexusProfileArtRawContainsAscii(raw_data, needle, maximum_position)
 	if(!istext(needle) || !length(needle)) return FALSE
 	var/raw_length = min(getNexusProfileArtRawLength(raw_data), maximum_position)
 	var/needle_length = length(needle)
 	for(var/raw_index = 1, raw_index <= raw_length - needle_length + 1, raw_index++)
-		var/matches = TRUE
-		for(var/needle_index = 1, needle_index <= needle_length, needle_index++)
-			if(getNexusProfileArtRawByte(raw_data, raw_index + needle_index - 1) != text2ascii(needle, needle_index))
-				matches = FALSE
-				break
-		if(matches) return TRUE
+		if(nexusProfileArtRawMatchesAsciiAt(raw_data, needle, raw_index)) return TRUE
 	return FALSE
+
+proc/getNexusProfileArtLittleEndian(raw_data, start_position, byte_count)
+	if(byte_count < 1 || byte_count > 4 || start_position < 1 || start_position + byte_count - 1 > getNexusProfileArtRawLength(raw_data)) return null
+	var/value = 0
+	var/multiplier = 1
+	for(var/byte_index = 0, byte_index < byte_count, byte_index++)
+		var/current_byte = getNexusProfileArtRawByte(raw_data, start_position + byte_index)
+		if(!nexusIsFiniteNumber(current_byte) || current_byte < 0 || current_byte > 255) return null
+		value += current_byte * multiplier
+		multiplier *= 256
+	return value
 
 proc/getNexusProfileArtSignatureFormatFromRaw(raw_data)
 	var/raw_length = getNexusProfileArtRawLength(raw_data)
 	if(raw_length >= 8 && getNexusProfileArtRawByte(raw_data, 1) == 137 && getNexusProfileArtRawByte(raw_data, 2) == 80 && getNexusProfileArtRawByte(raw_data, 3) == 78 && getNexusProfileArtRawByte(raw_data, 4) == 71 && getNexusProfileArtRawByte(raw_data, 5) == 13 && getNexusProfileArtRawByte(raw_data, 6) == 10 && getNexusProfileArtRawByte(raw_data, 7) == 26 && getNexusProfileArtRawByte(raw_data, 8) == 10) return "png"
 	if(raw_length >= 3 && getNexusProfileArtRawByte(raw_data, 1) == 255 && getNexusProfileArtRawByte(raw_data, 2) == 216 && getNexusProfileArtRawByte(raw_data, 3) == 255) return "jpg"
+	if(raw_length >= 12 && nexusProfileArtRawMatchesAsciiAt(raw_data, "RIFF", 1) && nexusProfileArtRawMatchesAsciiAt(raw_data, "WEBP", 9)) return "webp"
 	if(raw_length >= 4 && getNexusProfileArtRawByte(raw_data, 1) == 26 && getNexusProfileArtRawByte(raw_data, 2) == 69 && getNexusProfileArtRawByte(raw_data, 3) == 223 && getNexusProfileArtRawByte(raw_data, 4) == 163 && nexusProfileArtRawContainsAscii(raw_data, "webm", min(raw_length, 4096))) return "webm"
 	return ""
 
@@ -107,10 +123,55 @@ proc/getNexusProfileArtSignatureFormat(file_value)
 	if(length(signature_format)) return signature_format
 	// BYOND may decline to expose binary resources through file2text. The strict
 	// extension allowlist plus the transient native image decode remains the
-	// fallback for still images in that runtime. WEBM remains fail-closed because
-	// Dream Daemon cannot perform the native icon decode used below.
+	// fallback for PNG/JPEG in that runtime. WEBP and WEBM remain fail-closed
+	// because Dream Daemon cannot perform the native icon decode used below.
 	var/fallback_format = getNexusProfileArtUploadFormat("[file_value]")
-	return fallback_format == "webm" ? "" : fallback_format
+	if(fallback_format in list("webp", "webm")) return ""
+	return fallback_format
+
+proc/getNexusWebpDimensionsFromRaw(raw_data)
+	if(getNexusProfileArtSignatureFormatFromRaw(raw_data) != "webp") return null
+	var/raw_length = getNexusProfileArtRawLength(raw_data)
+	var/riff_size = getNexusProfileArtLittleEndian(raw_data, 5, 4)
+	if(!nexusIsFiniteNumber(riff_size) || riff_size < 4 || riff_size + 8 > raw_length) return null
+	var/scan_limit = min(raw_length, riff_size + 8, 1024 * 1024)
+	var/chunk_position = 13
+	while(chunk_position + 7 <= scan_limit)
+		var/chunk_size = getNexusProfileArtLittleEndian(raw_data, chunk_position + 4, 4)
+		if(!nexusIsFiniteNumber(chunk_size) || chunk_size < 0) return null
+		var/payload_position = chunk_position + 8
+		var/payload_end = payload_position + chunk_size - 1
+		if(nexusProfileArtRawMatchesAsciiAt(raw_data, "VP8X", chunk_position) && chunk_size >= 10)
+			if(payload_position + 9 > scan_limit) return null
+			var/extended_width = getNexusProfileArtLittleEndian(raw_data, payload_position + 4, 3)
+			var/extended_height = getNexusProfileArtLittleEndian(raw_data, payload_position + 7, 3)
+			if(nexusIsFiniteNumber(extended_width) && nexusIsFiniteNumber(extended_height)) return list("width" = extended_width + 1, "height" = extended_height + 1)
+		if(nexusProfileArtRawMatchesAsciiAt(raw_data, "VP8L", chunk_position) && chunk_size >= 5 && getNexusProfileArtRawByte(raw_data, payload_position) == 47)
+			if(payload_position + 4 > scan_limit) return null
+			var/lossless_byte_0 = getNexusProfileArtRawByte(raw_data, payload_position + 1)
+			var/lossless_byte_1 = getNexusProfileArtRawByte(raw_data, payload_position + 2)
+			var/lossless_byte_2 = getNexusProfileArtRawByte(raw_data, payload_position + 3)
+			var/lossless_byte_3 = getNexusProfileArtRawByte(raw_data, payload_position + 4)
+			var/lossless_width = 1 + lossless_byte_0 + ((lossless_byte_1 & 63) << 8)
+			var/lossless_height = 1 + ((lossless_byte_1 & 192) >> 6) + (lossless_byte_2 << 2) + ((lossless_byte_3 & 15) << 10)
+			return list("width" = lossless_width, "height" = lossless_height)
+		if(nexusProfileArtRawMatchesAsciiAt(raw_data, "VP8 ", chunk_position) && chunk_size >= 10 && getNexusProfileArtRawByte(raw_data, payload_position + 3) == 157 && getNexusProfileArtRawByte(raw_data, payload_position + 4) == 1 && getNexusProfileArtRawByte(raw_data, payload_position + 5) == 42)
+			if(payload_position + 9 > scan_limit) return null
+			var/lossy_width = getNexusProfileArtLittleEndian(raw_data, payload_position + 6, 2) & 16383
+			var/lossy_height = getNexusProfileArtLittleEndian(raw_data, payload_position + 8, 2) & 16383
+			if(lossy_width && lossy_height) return list("width" = lossy_width, "height" = lossy_height)
+		if(payload_end > scan_limit) return null
+		chunk_position = payload_position + chunk_size + (chunk_size & 1)
+	return null
+
+proc/getNexusWebpDimensions(file_value)
+	if(!isfile(file_value)) return null
+	var/raw_data
+	try
+		raw_data = file2text(file_value)
+	catch(var/exception/read_error)
+		if(read_error) raw_data = null
+	return getNexusWebpDimensionsFromRaw(raw_data)
 
 proc/getNexusWebmUnsignedAt(raw_data, element_position, scan_limit)
 	var/size_position = element_position + 1
@@ -261,7 +322,7 @@ proc/isNexusProfileArtTemporaryFileName(value)
 	if(!istext(value) || length(value) < 1 || length(value) > 180) return FALSE
 	var/lower_name = lowertext(value)
 	if(copytext(lower_name, 1, 9) != ".upload-") return FALSE
-	return getNexusProfileArtUploadFormat(lower_name) in list("png", "jpg", "webm")
+	return getNexusProfileArtUploadFormat(lower_name) in list("png", "jpg", "webp", "webm")
 
 proc/reconcileNexusProfileArtStoredBytes(prune_orphans = TRUE)
 	nexus_profile_art_storage_saturated = FALSE
@@ -540,7 +601,7 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 	if(!owner || !owner.client || !owner.canPersistNexusPlayerProfileArt() || !isfile(uploaded_file)) return result
 	var/upload_format = getNexusProfileArtUploadFormat(original_name)
 	if(!length(upload_format))
-		result["error"] = "Only PNG, JPEG, and WEBM files are accepted."
+		result["error"] = "Only PNG, JPEG, WEBP, and WEBM files are accepted."
 		return result
 	if(length(uploaded_file) < nexus_profile_art_min_file_bytes || length(uploaded_file) > nexus_profile_art_max_file_bytes)
 		result["error"] = "The uploaded image no longer matches the permitted size."
@@ -575,7 +636,7 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 	var/signature_format = getNexusProfileArtSignatureFormat(file(temp_path))
 	if(signature_format != upload_format)
 		cleanupNexusProfileArtUntrackedFile(temp_path)
-		result["error"] = "The file contents do not match the selected PNG, JPEG, or WEBM extension."
+		result["error"] = "The file contents do not match the selected PNG, JPEG, WEBP, or WEBM extension."
 		return result
 	var/image_width
 	var/image_height
@@ -584,6 +645,11 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 		if(islist(webm_dimensions))
 			image_width = webm_dimensions["width"]
 			image_height = webm_dimensions["height"]
+	else if(upload_format == "webp")
+		var/list/webp_dimensions = getNexusWebpDimensions(file(temp_path))
+		if(islist(webp_dimensions))
+			image_width = webp_dimensions["width"]
+			image_height = webp_dimensions["height"]
 	else
 		if(nexus_profile_art_decode_active)
 			cleanupNexusProfileArtUntrackedFile(temp_path)
@@ -651,7 +717,7 @@ proc/copyNexusPlayerProfileImageForKeys(source_key, source_slot, destination_key
 	if(!isNexusProfileArtHash(expected_hash)) return FALSE
 	var/source_format = ""
 	var/source_path = ""
-	for(var/format in list("png", "jpg", "webm"))
+	for(var/format in list("png", "jpg", "webp", "webm"))
 		var/candidate_path = getNexusPlayerProfileImagePathForKey(source_key, source_slot, expected_hash, format)
 		if(candidate_path && fexists(candidate_path) && sha1(file(candidate_path)) == expected_hash && getNexusProfileArtSignatureFormat(file(candidate_path)) == format)
 			source_format = format
@@ -720,7 +786,7 @@ datum/NexusPlayerDescriptionEditor/proc/uploadProfileArt()
 	upload_client.nexus_profile_art_upload_accepted_window = null
 	upload_client.nexus_profile_art_upload_filename = ""
 	upload_client.nexus_profile_art_upload_size = 0
-	var/uploaded_file = input(owner, "Choose a PNG, JPEG, or WEBM between 1 KiB and 8 MiB, up to 4K (3840x2160 landscape or 2160x3840 portrait). The exact uploaded bytes are published to profile viewers.", "Upload Profile Art") as file|null
+	var/uploaded_file = input(owner, "Choose a PNG, JPEG, WEBP, or WEBM between 1 KiB and 8 MiB, up to 4K (3840x2160 landscape or 2160x3840 portrait). The exact uploaded bytes are published to profile viewers.", "Upload Profile Art") as file|null
 	var/upload_was_accepted = upload_client && upload_client.nexus_profile_art_upload_state == "accepted" && upload_client.nexus_profile_art_upload_accepted_ticket == ticket && upload_client.nexus_profile_art_upload_accepted_window == src
 	var/original_name = upload_was_accepted ? upload_client.nexus_profile_art_upload_filename : ""
 	var/authorized_size = upload_was_accepted ? upload_client.nexus_profile_art_upload_size : 0
@@ -971,7 +1037,7 @@ client/proc/handleNexusProfileArtAllowUpload(filename, filelength)
 	if(!length(ticket) || world.time > nexus_profile_art_upload_expires || !upload_window || upload_window != nexus_description_editor || upload_window.pending_upload_ticket != ticket || upload_window.render_generation != nexus_profile_art_upload_generation || !mob || !mob.canPersistNexusPlayerProfileArt() || ckey(mob.key) != account_key || mob.active_character_slot != slot)
 		return rejectNexusProfileArtUpload("The profile-image upload session expired.")
 	if(!isNexusProfileArtUploadName(filename))
-		return rejectNexusProfileArtUpload("Only files ending exactly in .png, .jpg, .jpeg, or .webm are accepted for profile art.")
+		return rejectNexusProfileArtUpload("Only files ending exactly in .png, .jpg, .jpeg, .webp, or .webm are accepted for profile art.")
 	var/next_upload_time = nexus_profile_art_account_next_upload_time[account_key]
 	if(nexusIsFiniteNumber(next_upload_time) && world.time < next_upload_time)
 		return rejectNexusProfileArtUpload("Wait [round((next_upload_time - world.time) / 10, 0.1)] seconds before uploading profile art again.")
