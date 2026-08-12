@@ -1033,6 +1033,13 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Returns: 1 when the atom's bound center is inside the blast circle, otherwise 0.
 - Side effects: none.
 
+#### obj/Blast/proc/getBlastCollisionRadiusPixels
+- Signature: `obj/Blast/proc/getBlastCollisionRadiusPixels()`
+- Inputs: None.
+- Purpose: Convert the blast's authored `Size` radius from tiles to pixels for circular collision checks.
+- Returns: non-negative collision radius in pixels.
+- Side effects: none.
+
 #### proc/CheckBlastHomingTarget
 - Signature: `proc/CheckBlastHomingTarget()`
 - Inputs: None

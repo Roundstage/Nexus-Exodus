@@ -424,10 +424,13 @@ obj/Blast
 		//inscribed in that square by checking pixel distance from bound center to bound center.
 		//dynamic call because bound_center_x/y live on both /turf and /atom/movable, not /atom
 		if(!A || !Size) return 0
-		var/radius = Size * world.icon_size * 0.5
+		var/radius = getBlastCollisionRadiusPixels()
 		var/dx = (call(A, "bound_center_x")() - bound_center_x()) * world.icon_size
 		var/dy = (call(A, "bound_center_y")() - bound_center_y()) * world.icon_size
 		return dx * dx + dy * dy <= radius * radius
+
+	proc/getBlastCollisionRadiusPixels()
+		return max(0, Size) * world.icon_size
 
 	var/Can_Home=1 //i think this is to the old homing system and does nothing now
 	var/tmp/mob/blast_homing_target

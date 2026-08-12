@@ -53,6 +53,7 @@ mob/var
 
 obj/Blast/Genki_Dama
 	blast_caches = 0
+	in_use = TRUE
 	var
 		tmp
 			sb_move_speed = 1.5

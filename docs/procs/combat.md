@@ -1580,7 +1580,7 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### obj/Blast/Genki_Dama/proc/SpiritBombGoOffSomewhere
 - Signature: `SpiritBombGoOffSomewhere()`
 - Inputs: None
-- Purpose: Handle spirit bomb go off somewhere.
+- Purpose: Continue an active Genki Dama projectile along its final heading after guided control ends. Genki Dama projectiles are initialized as active because they are created directly rather than obtained from the blast cache.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

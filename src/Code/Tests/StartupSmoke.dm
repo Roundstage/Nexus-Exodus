@@ -2318,15 +2318,20 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Genki_Dama/omega_bomb_balance = new
 	var/obj/Attacks/Genki_Dama/Death_Ball/death_ball_balance = new
 	var/obj/Attacks/Genki_Dama/Supernova/supernova_balance = new
+	var/obj/Blast/Genki_Dama/genki_projectile_lifecycle = new
+	genki_projectile_lifecycle.Size = 4
 	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 4 && omega_bomb_balance.sb_max_dmg == 18, "Genki Dama charge curve diverged from its tier-ten damage budget")
 	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 2.5 && death_ball_balance.sb_max_dmg == 10, "Death Ball charge curve diverged from the balance workbook")
 	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 2 && supernova_balance.sb_max_dmg == 5, "Supernova charge curve diverged from the balance workbook")
+	nexusSmokeAssert(genki_projectile_lifecycle.in_use, "new Genki Dama projectiles are inactive and cannot enter guided movement")
+	nexusSmokeAssert(genki_projectile_lifecycle.getBlastCollisionRadiusPixels() == 4 * world.icon_size, "large blast collision radius no longer matches its authored Size in tiles")
 	del(big_bang_projectile)
 	del(final_flash_skill)
 	del(noob_ray_skill)
 	del(omega_bomb_balance)
 	del(death_ball_balance)
 	del(supernova_balance)
+	del(genki_projectile_lifecycle)
 	nexusSmokeAssert(ki_projectile_step_delay == 0.5, "Ki projectile cadence is not normalized for 60 FPS")
 	var/obj/Attacks/Sokidan/sokidan_skill = new
 	var/datum/SkillDefinition/sokidan_definition = skill_engine.getDefinitionForObj(sokidan_skill)
