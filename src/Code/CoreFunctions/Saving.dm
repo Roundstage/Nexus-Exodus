@@ -4,17 +4,35 @@ var/const/NEXUS_CHARACTER_SLOT_LIMIT = 3
 proc/clampNexusCharacterSlot(slot)
 	return Clamp(round(text2num("[slot]")), 1, NEXUS_CHARACTER_SLOT_LIMIT)
 
-proc/getNexusCharacterSavePathForKey(character_key, slot = 1)
-	if(!character_key) return null
-	return "data/Save/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+proc/getNexusCharacterSaveRoot(environment = nexus_runtime_environment)
+	return normalizeNexusRuntimeEnvironment(environment) == "playtest" ? "data/Playtest/Save" : "data/Save"
 
-proc/getNexusFeatSavePathForKey(character_key, slot = 1)
-	if(!character_key) return null
-	return "data/Feats/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+proc/getNexusFeatSaveRoot(environment = nexus_runtime_environment)
+	return normalizeNexusRuntimeEnvironment(environment) == "playtest" ? "data/Playtest/Feats" : "data/Feats"
 
-proc/getNexusCharacterMigrationPathForKey(character_key)
+proc/getNexusCharacterSavePathForKey(character_key, slot = 1, environment = nexus_runtime_environment)
 	if(!character_key) return null
-	return "data/Save/[ckey(character_key)]-slots.migrated.sav"
+	return "[getNexusCharacterSaveRoot(environment)]/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+
+proc/getNexusFeatSavePathForKey(character_key, slot = 1, environment = nexus_runtime_environment)
+	if(!character_key) return null
+	return "[getNexusFeatSaveRoot(environment)]/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
+
+proc/getNexusCharacterMigrationPathForKey(character_key, environment = nexus_runtime_environment)
+	if(!character_key) return null
+	return "[getNexusCharacterSaveRoot(environment)]/[ckey(character_key)]-slots.migrated.sav"
+
+proc/isNexusSaveEnvironmentCompatible(saved_environment, environment = nexus_runtime_environment)
+	var/expected_environment = normalizeNexusRuntimeEnvironment(environment)
+	if(isnull(saved_environment) || !length("[saved_environment]")) return expected_environment == "live"
+	return lowertext("[saved_environment]") == expected_environment
+
+proc/isNexusCharacterSavePathEnvironmentCompatible(save_path, environment = nexus_runtime_environment)
+	if(!save_path || !fexists(save_path)) return FALSE
+	var/savefile/environment_save = new(save_path)
+	var/saved_environment
+	environment_save["NexusRuntimeEnvironment"] >> saved_environment
+	return isNexusSaveEnvironmentCompatible(saved_environment, environment)
 
 mob/var/tmp/active_character_slot = 1
 
@@ -29,12 +47,12 @@ mob/proc/ensureNexusCharacterSlots()
 	active_character_slot = clampNexusCharacterSlot(active_character_slot)
 	var/has_slotted_character = FALSE
 	for(var/slot = 1, slot <= NEXUS_CHARACTER_SLOT_LIMIT, slot++)
-		if(fexists(getNexusCharacterSavePath(slot)))
+		if(isNexusCharacterSavePathEnvironmentCompatible(getNexusCharacterSavePath(slot)))
 			has_slotted_character = TRUE
 			break
 	var/legacy_save_path = "data/Save/[key]"
 	var/migration_marker_path = getNexusCharacterMigrationPathForKey(key)
-	if(!has_slotted_character && !fexists(migration_marker_path) && fexists(legacy_save_path))
+	if(nexus_runtime_environment == "live" && !has_slotted_character && !fexists(migration_marker_path) && fexists(legacy_save_path))
 		var/slot_one_path = getNexusCharacterSavePath(1)
 		fcopy(legacy_save_path, slot_one_path)
 		var/savefile/migrated_save = new(slot_one_path)
@@ -53,14 +71,14 @@ mob/proc/ensureNexusCharacterSlots()
 		migration_marker["migration_complete"] << TRUE
 	var/legacy_feat_path = "data/Feats/[key]"
 	var/slot_one_feat_path = getNexusFeatSavePath(1)
-	if(fexists(getNexusCharacterSavePath(1)) && !fexists(slot_one_feat_path) && fexists(legacy_feat_path))
+	if(nexus_runtime_environment == "live" && fexists(getNexusCharacterSavePath(1)) && !fexists(slot_one_feat_path) && fexists(legacy_feat_path))
 		fcopy(legacy_feat_path, slot_one_feat_path)
 
 mob/proc/getNexusCharacterSlotInfo(slot)
 	slot = clampNexusCharacterSlot(slot)
 	var/list/slot_info = list("slot" = slot, "exists" = FALSE, "name" = "Empty Slot", "race" = "Create a new character", "last_used" = 0)
 	var/save_path = getNexusCharacterSavePath(slot)
-	if(!save_path || !fexists(save_path)) return slot_info
+	if(!isNexusCharacterSavePathEnvironmentCompatible(save_path)) return slot_info
 	var/savefile/character_save = new(save_path)
 	var/slot_name
 	var/slot_race
@@ -82,9 +100,10 @@ mob/proc/deleteNexusCharacterSlot(slot)
 	slot = clampNexusCharacterSlot(slot)
 	var/save_path = getNexusCharacterSavePath(slot)
 	var/feat_path = getNexusFeatSavePath(slot)
+	var/profile_art_deleted = deleteNexusPlayerProfileImageForKey(key, slot)
 	if(save_path && fexists(save_path)) fdel(save_path)
 	if(feat_path && fexists(feat_path)) fdel(feat_path)
-	return TRUE
+	return profile_art_deleted
 
 proc/saveAdminObjects()
 	//set background=1
@@ -115,6 +134,7 @@ mob/proc/respawn(but_not_in_ship_area)
 var/can_login=0
 
 proc/initialize()
+	configureNexusPlaytestRewards()
 	RestrictedMapLoop()
 	initializeSkillEngine()
 	AutoBPResetLoop()
@@ -176,6 +196,8 @@ proc/initialize()
 		else world<<"NPCs disabled; saved NPC load skipped"
 	addBuilds()
 	world<<"Builds added"
+	loadNexusProfileArtBudget()
+	world<<"Profile art reconciled"
 	var/smoke_soul_contract_count
 	if(world.params["nexus_smoke_tests"])
 		smoke_soul_contract_count = soul_contracts.len
@@ -376,6 +398,7 @@ mob/proc/save()
 		var/savefile/f=new(getNexusCharacterSavePath())
 		f["Last_Used"]<<world.realtime
 		Write(f)
+		f["NexusRuntimeEnvironment"] << nexus_runtime_environment
 		f["NexusSlotName"] << name
 		f["NexusSlotRace"] << Race
 		f["NexusSlotLastUsed"] << world.realtime
@@ -394,7 +417,7 @@ mob/proc/save()
 mob/proc/load() if(client)
 	ensureNexusCharacterSlots()
 	var/save_path = getNexusCharacterSavePath()
-	if(fexists(save_path) && Map_Loaded)
+	if(isNexusCharacterSavePathEnvironmentCompatible(save_path) && Map_Loaded)
 		var/savefile/f = new(save_path)
 		Read(f)
 		SafeTeleport(locate(saved_x, saved_y, saved_z))
@@ -409,7 +432,7 @@ mob/proc/load() if(client)
 mob/proc/hasSave(slot = active_character_slot)
 	if(!key) return
 	ensureNexusCharacterSlots()
-	if(fexists(getNexusCharacterSavePath(slot))) return 1
+	if(isNexusCharacterSavePathEnvironmentCompatible(getNexusCharacterSavePath(slot))) return 1
 
 var/banned_from_hosting
 

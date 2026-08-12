@@ -10,6 +10,7 @@ mob/proc/Android(interactive_options=1)
 	sp_mod=1
 	mastery_mod=5
 	Android=1
+	disableAnger()
 	bp_mod=Get_race_starting_bp_mod()
 	Decline=100
 	Decline_Rate=10

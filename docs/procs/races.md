@@ -1,7 +1,7 @@
 # Races
 
 ## Overview
-The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics.
+The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics. Android, Legendary Saiyan, and the Jiren/Apex Alien specialization initialize without Anger; all other races retain the standard Anger system.
 
 ## Files
 - `src/Code/Races/Alien/Alien.dm`
@@ -790,7 +790,7 @@ The shared dispatchers have these current signatures:
 - Purpose: Handle aura walk.
 - Returns: none (implicit).
 - Side effects: see implementation.
-### RPT race adaptation
+### integrated race adaptation
 
 - `mob/proc/Kanassan(interactive_options)` initializes the psionic Kanassan race.
 - `mob/proc/Heran(interactive_options)` initializes the combat-focused Heran race, its SSJ1-tier awakening threshold, and its racial transformation skill.
@@ -798,7 +798,7 @@ The shared dispatchers have these current signatures:
 - `mob/proc/hasHeranTransformationReq()` applies the standard Saiyan tier-one available/effective BP gate.
 - `mob/proc/getHeranTransformationEquivalentBPAdd()` converts the full standard SSJ1 result into one additive BP gain; mastered full power uses the same decaying SSJ bonus and never exceeds its Saiyan equivalent.
 - `mob/proc/getHeranTransformationNaturalBPAdd()` and `getHeranTransformationStaticBPAdd()` preserve SSJ1's exact calculation order around potential and other temporary multipliers while presenting the sum as one form gain.
-- `mob/proc/activateHeranTransformation()` and `revertHeranTransformation()` apply and remove the RPT transformation body, temporary BP, Energy upkeep, lighting, HUD, appearance rebuild, and canonical primary-form state without permanent stat changes.
+- `mob/proc/activateHeranTransformation()` and `revertHeranTransformation()` apply and remove the integrated transformation body, temporary BP, Energy upkeep, lighting, HUD, appearance rebuild, and canonical primary-form state without permanent stat changes.
 - `mob/proc/normalizeHeranTransformation()` restores skill, icon, BP cap, drain loop, and overlays on login.
 - `mob/proc/heranTransformationDrainLoop()` mirrors standard SSJ1 mastery and Energy upkeep, becoming drainless at mastery.
 - `mob/proc/canSelectAncientNamekian()` enforces the rare-lineage population/offer rule.

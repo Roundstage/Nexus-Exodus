@@ -212,6 +212,7 @@ obj/Evade
 		usr.tryDefensiveDash()
 
 obj/Play_Music
+	name="Music Library"
 	hotbar_type="Other"
 	can_hotbar=1
 	verb/Hotbar_use()

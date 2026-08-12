@@ -1,5 +1,9 @@
 mob/proc/ChangeIcerFormIcon(form = 1)
-	var/icon/i = input("Choose an icon file for Form [form]") as icon|null
+	if(!beginNexusLegacyUploadPrompt())
+		src << "Finish the active file prompt before choosing a form icon."
+		return
+	var/icon/i = input(src, "Choose an icon file for Form [form]") as icon|null
+	endNexusLegacyUploadPrompt()
 	if(!i || !isicon(i) || IconTooBig(i))
 		return
 	if(form == 1)
@@ -127,8 +131,11 @@ mob/verb/Settings()
 
 			if("Block Music")
 				block_music = 1
-				src << browse("<script>window.location='google.com';</script>", "window=InvisBrowser.invisbrowser")
-			if("Unblock Music") block_music = 0
+				stopNexusPlayerMusicForSelf(FALSE)
+				save_player_settings()
+			if("Unblock Music")
+				block_music = 0
+				save_player_settings()
 
 			if("Register for Hero Rank")
 				ToggleIgnoreHero()
@@ -214,7 +221,11 @@ mob/verb/Settings()
 				switch(alert(src,"Custom icon?","Options","Default","Custom"))
 					if("Custom")
 						var/icon/I
+						if(!beginNexusLegacyUploadPrompt())
+							src << "Finish the active file prompt before choosing clothing art."
+							return
 						I = input(src,"Choose an icon") as icon
+						endNexusLegacyUploadPrompt()
 
 						if(IconTooBig(I)) I=null
 

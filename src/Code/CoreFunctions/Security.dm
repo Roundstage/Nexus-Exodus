@@ -1,8 +1,5 @@
 world/IsBanned(key,ip,computer_id)
-	. = ..()
-	if(istype(., /list))
-		. = list()
-		.["login"] = 1
+	return ..()
 
 
 proc/hostban_protection()

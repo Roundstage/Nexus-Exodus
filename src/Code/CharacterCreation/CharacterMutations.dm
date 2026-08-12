@@ -53,6 +53,8 @@ mob/proc/rollCharacterMutations(forced_rarity)
 
 	var/list/available_mutations = list()
 	for(var/mutation_id in CHARACTER_MUTATIONS)
+		var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+		if(mutation.stat == "Anger" && !src.canPossessAnger()) continue
 		available_mutations += mutation_id
 	while(mutation_count > 0 && available_mutations.len)
 		var/mutation_id = pick(available_mutations)
@@ -65,6 +67,7 @@ mob/proc/rollCharacterMutations(forced_rarity)
 
 mob/proc/normalizeCharacterMutations()
 	if(!islist(src.character_mutations)) src.character_mutations = list()
+	if(!src.canPossessAnger()) src.disableAnger()
 	if(src.mutation_save_version < 2 && src.character_mutations.len)
 		var/list/migrated_mutations = list()
 		for(var/index in 1 to src.character_mutations.len)
@@ -106,13 +109,16 @@ mob/proc/normalizeCharacterMutations()
 	var/list/valid_mutations = list()
 	for(var/mutation_id in src.character_mutations)
 		if(valid_mutations.len >= max_count) break
-		if(!CHARACTER_MUTATIONS[mutation_id]) continue
+		var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+		if(!mutation) continue
+		if(mutation.stat == "Anger" && !src.canPossessAnger()) continue
 		var/percent = round(text2num("[src.character_mutations[mutation_id]]"))
 		if(percent <= 0) continue
 		valid_mutations[mutation_id] = Clamp(percent, 1, max_percent)
 	src.character_mutations = valid_mutations
 	if(!valid_mutations.len) src.mutation_rarity = null
 	src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	if(!src.canPossessAnger()) src.disableAnger()
 
 mob/proc/getCharacterMutationRarity()
 	if(!islist(src.character_mutations) || !src.character_mutations.len) return null
@@ -127,6 +133,7 @@ mob/proc/getCharacterMutationRarity()
 mob/proc/applyCharacterMutationRatio(mutation_id, ratio)
 	var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
 	if(!mutation || !isnum(ratio) || ratio <= 0) return FALSE
+	if(mutation.stat == "Anger" && !src.canPossessAnger()) return src.disableAnger()
 	switch(mutation.stat)
 		if("Energy")
 			src.Eff *= ratio
@@ -160,6 +167,8 @@ mob/proc/applyCharacterMutationRatio(mutation_id, ratio)
 
 mob/proc/setCharacterMutationValue(mutation_id, percent)
 	if(!CHARACTER_MUTATIONS[mutation_id]) return FALSE
+	var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
+	if(mutation.stat == "Anger" && !src.canPossessAnger()) return src.disableAnger()
 	if(!islist(src.character_mutations)) src.character_mutations = list()
 	var/old_percent = max(0, text2num("[src.character_mutations[mutation_id]]"))
 	var/new_percent = Clamp(round(text2num("[percent]")), 0, 30)
@@ -196,6 +205,9 @@ mob/proc/applyCharacterMutations()
 	for(var/mutation_id in src.character_mutations)
 		var/datum/CharacterMutation/mutation = CHARACTER_MUTATIONS[mutation_id]
 		if(!mutation) continue
+		if(mutation.stat == "Anger" && !src.canPossessAnger())
+			src.disableAnger()
+			continue
 		var/percent = Clamp(text2num("[src.character_mutations[mutation_id]]"), 1, 30)
 		var/multiplier = 1 + percent / 100
 		switch(mutation.stat)

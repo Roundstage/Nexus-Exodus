@@ -295,12 +295,35 @@ mob/verb/ViewDescription(mob/A)
 	
 	if(!A)
 		return
-	if(!A.player_desc)
-		return
-
-	var/html = "[A.player_desc]"
-
-	usr << browse(html, "window=[A];size=800x600;name=[A]")
+	if(last_nexus_profile_view && world.time - last_nexus_profile_view < 5) return
+	last_nexus_profile_view = world.time
+	var/safe_description = normalizeNexusPlayerDescription(A.player_desc)
+	prepareNexusHudBrowserResources(usr)
+	var/profile_direction = normalizeNexusPlayerProfileDirection(A.player_profile_portrait_direction)
+	var/public_portrait_id = md5("\ref[A]")
+	var/custom_art_file = A.getNexusPlayerProfileCustomArtFile(TRUE)
+	var/using_custom_art = !!custom_art_file
+	var/live_portrait_resource = "nexus_public_profile_[public_portrait_id]_[profile_direction].png"
+	var/icon/live_portrait_icon = getNexusCharacterPortraitIcon(A, profile_direction)
+	if(live_portrait_icon) usr << browse_rsc(live_portrait_icon, live_portrait_resource)
+	var/portrait_resource = live_portrait_resource
+	if(using_custom_art)
+		portrait_resource = A.getNexusPlayerProfileCustomArtResourceName("nexus_public_profile_art")
+		usr << browse_rsc(custom_art_file, portrait_resource)
+	var/portrait_html = ""
+	if(length(portrait_resource))
+		portrait_html = "<div id='profilePortraitFrame' class='portrait [using_custom_art ? "custom-art" : "sprite-art hud-sprite"]'><img src='[portrait_resource]' alt='Character portrait' onerror='nexusProfilePortraitFallback(this)'></div>"
+	var/profile_name = html_encode(getNexusPlayerProfileDisplayName(A))
+	var/actual_name = html_encode(normalizeNexusPlayerProfileLine(A.name, NEXUS_PLAYER_PROFILE_NAME_LIMIT))
+	var/account_identity = html_encode(A.key ? A.key : "NPC")
+	var/profile_title = html_encode(normalizeNexusPlayerProfileLine(A.player_profile_title, NEXUS_PLAYER_PROFILE_TITLE_LIMIT))
+	var/title_html = profile_title ? "<span class='profile-title hud-accent'>[profile_title]</span>" : ""
+	var/portrait_source = using_custom_art ? "CUSTOM ART / PLAYER-UPLOADED" : "LIVE SPRITE / [uppertext(getNexusPlayerProfileDirectionName(profile_direction))]"
+	var/description_html = safe_description ? renderNexusPlayerDescription(safe_description, A.player_profile_markup_version) : "<span class='empty hud-muted'>No public biography has been written.</span>"
+	var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>Character Profile</title><style>[getNexusHudBrowserCss("bronze")]
+	.shell{max-width:900px;margin:0 auto}.profile{min-height:560px;padding:22px}.profile-head{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:center;padding-bottom:18px;margin-bottom:20px;border-bottom:2px solid #715735}.portrait{width:260px;height:280px;padding:10px;display:flex;align-items:center;justify-content:center}.portrait img{width:auto;height:auto;max-width:236px;max-height:256px;object-fit:contain}.portrait.sprite-art img{image-rendering:pixelated}.portrait.custom-art img{image-rendering:auto}.identity{display:flex;flex-direction:column;gap:7px}.profile-title{font-size:12px}.profile-name{font-size:25px}.actual-name{margin-top:6px;font-size:9px}.portrait-source{font-size:9px}.biography-title{margin:0 0 14px;padding:9px 11px;font-size:13px}.biography{line-height:1.7;overflow-wrap:anywhere}.empty{font-style:italic}@media(max-width:650px){.profile-head{grid-template-columns:1fr}.portrait{margin:0 auto}}
+	</style></head><body class='nexus-hud'><main class='shell hud-shell'><section class='profile hud-card'><header class='profile-head'>[portrait_html]<div class='identity'><span class='hud-label'>PUBLIC CHARACTER PROFILE / SELF-AUTHORED</span>[title_html]<b class='profile-name hud-title'>[profile_name]</b><span class='actual-name hud-muted'>IN-GAME IDENTITY: [actual_name] &middot; ACCOUNT: [account_identity]</span><span id='profilePortraitSource' class='portrait-source hud-muted'>PORTRAIT: [portrait_source]</span></div></header><h2 class='biography-title hud-section-title'>BIOGRAPHY</h2><div class='biography'>[description_html]</div></section></main><script>function nexusProfilePortraitFallback(image){if(!image||image.getAttribute('data-fallback')==='1')return;image.setAttribute('data-fallback','1');image.onerror=null;image.src='[live_portrait_resource]';var frame=document.getElementById('profilePortraitFrame');if(frame)frame.className='portrait sprite-art hud-sprite';var label=document.getElementById('profilePortraitSource');if(label)label.innerHTML='PORTRAIT: LIVE SPRITE FALLBACK';}</script></body></html>"}
+	usr << browse(html, "window=NexusPlayerProfile;size=900x700;can_resize=true")
 
 mob/var/tmp
 	last_emotelog_write=0

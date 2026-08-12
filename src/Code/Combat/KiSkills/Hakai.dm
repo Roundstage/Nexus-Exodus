@@ -92,6 +92,7 @@ proc/CheckHakaiDeleteCharacter(mob/m)
 	sleep(10) //just a guess, may not be needed
 	var/save_path = getNexusCharacterSavePathForKey(key, slot)
 	var/feat_path = getNexusFeatSavePathForKey(key, slot)
+	deleteNexusPlayerProfileImageForKey(key, slot)
 	if(save_path) fdel(save_path)
 	if(feat_path) fdel(feat_path)
 

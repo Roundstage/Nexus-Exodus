@@ -265,7 +265,7 @@ proc/isProgressionCombatTreeExcluded(skill_type)
 
 proc/getProgressionUnarmedAttackTypes()
 	var/list/unarmed_types = list()
-	unarmed_types.Add(getTenkaichiUnarmedAttackTypes())
+	unarmed_types.Add(getNexusUnarmedAttackTypes())
 	unarmed_types.Add(
 		/obj/PressurePunch,
 		/obj/RoundhouseKick,
@@ -277,11 +277,11 @@ proc/getProgressionUnarmedAttackTypes()
 proc/isProgressionCombatSkillType(skill_type)
 	if(!skill_type || isProgressionCombatTreeExcluded(skill_type)) return FALSE
 	if(skill_type in getProgressionFoundationSkillTypes()) return TRUE
-	if(skill_type in getTenkaichiWeaponAttackTypes()) return TRUE
+	if(skill_type in getNexusWeaponAttackTypes()) return TRUE
 	if(skill_type in getProgressionUnarmedAttackTypes()) return TRUE
-	if(skill_type in getTenkaichiBeamAttackTypes()) return TRUE
-	if(skill_type in getTenkaichiRockAttackTypes()) return TRUE
-	if(skill_type in getTenkaichiSpecialStyleAttackTypes()) return TRUE
+	if(skill_type in getNexusBeamAttackTypes()) return TRUE
+	if(skill_type in getNexusRockAttackTypes()) return TRUE
+	if(skill_type in getNexusSpecialStyleAttackTypes()) return TRUE
 	if(skill_type in list(/obj/God_Fist, /obj/Attacks/Genki_Dama)) return TRUE
 	if(skill_type == /obj/Buff/Focus || ispath(skill_type, /obj/Buff/Preset) || ispath(skill_type, /obj/Buff/Ultimate)) return TRUE
 	if(ispath(skill_type, /obj/Attacks))
@@ -290,10 +290,10 @@ proc/isProgressionCombatSkillType(skill_type)
 
 proc/getProgressionCombatBranchForType(skill_type, skill_name, hotbar_type)
 	if(!skill_type || isProgressionCombatTreeExcluded(skill_type)) return null
-	if(skill_type in getTenkaichiWeaponAttackTypes()) return "Weapon"
+	if(skill_type in getNexusWeaponAttackTypes()) return "Weapon"
 	if(skill_type in getProgressionUnarmedAttackTypes()) return "Unarmed"
-	if(skill_type in getTenkaichiRockAttackTypes()) return "Physical"
-	if(skill_type in getTenkaichiBeamAttackTypes() || hotbar_type == "Beam") return "Beam"
+	if(skill_type in getNexusRockAttackTypes()) return "Physical"
+	if(skill_type in getNexusBeamAttackTypes() || hotbar_type == "Beam") return "Beam"
 	if(skill_type == /obj/Buff || skill_type == /obj/God_Fist || skill_type == /obj/Buff/Focus || ispath(skill_type, /obj/Buff/Preset) || ispath(skill_type, /obj/Buff/Ultimate)) return "Buffs"
 	if(ispath(skill_type, /obj/Attacks) || hotbar_type == "Blast") return "Ki"
 	var/lower_name = lowertext("[skill_name]")
@@ -429,13 +429,13 @@ proc/configureProgressionBeamPaths()
 	if(makankosappo) makankosappo.description = "A peak piercing beam that grows over distance and deals 2.3x damage to shields."
 
 proc/configureProgressionKiPaths()
-	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Explosion))
+	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Explosion))
 	if(explosive_wave) explosive_wave.description = "Release a defensive four-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
-	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))
+	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))
 	if(ghost_attack) ghost_attack.description = "Launch three homing ghosts at one selected target; the volley uses a shared damage budget."
-	var/datum/ProgressionNode/dragon_nova = configureProgressionRewardPath(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova, 7, 34, list(/obj/Attacks/Big_Bang_Attack))
+	var/datum/ProgressionNode/dragon_nova = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova, 7, 34, list(/obj/Attacks/Big_Bang_Attack))
 	if(dragon_nova) dragon_nova.description = "Master a huge charged ki sphere before attempting the ultimate gathered-energy attack."
-	var/datum/ProgressionNode/genki_dama = configureProgressionRewardPath(/obj/Attacks/Genki_Dama, 10, 60, list(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova, /obj/Attacks/Sokidan))
+	var/datum/ProgressionNode/genki_dama = configureProgressionRewardPath(/obj/Attacks/Genki_Dama, 10, 60, list(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova, /obj/Attacks/Sokidan))
 	if(genki_dama)
 		genki_dama.name = "Genki Dama"
 		genki_dama.description = "The highest raw-damage player technique: gather, grow and guide a massive sphere before releasing its full impact and explosion."
@@ -444,40 +444,40 @@ proc/configureProgressionPhysicalPaths()
 	configureProgressionRewardPath(/obj/RockThrow, 2, 7, list("combat_physical_root"))
 	configureProgressionRewardPath(/obj/RockSlide, 3, 12, list(/obj/RockThrow))
 	configureProgressionRewardPath(/obj/RockTomb, 4, 18, list(/obj/RockSlide))
-	var/datum/ProgressionNode/earthquake = configureProgressionRewardPath(/obj/Attacks/TenkaichiAreaTechnique/Earthquake, 5, 24, list(/obj/RockTomb))
+	var/datum/ProgressionNode/earthquake = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/Earthquake, 5, 24, list(/obj/RockTomb))
 	if(earthquake) earthquake.description = "Collapse a five-tile physical shockwave inward, damaging and pulling grounded enemies toward you; flying targets are unaffected."
 
 proc/configureProgressionWeaponPaths()
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash, 4, 20, list(/obj/Attacks/TenkaichiMeleeTechnique/WindHowl))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak, 5, 28, list(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash))
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/WindHowl))
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak, 5, 28, list(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash))
 
 proc/configureProgressionUnarmedPaths()
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/Headbutt, 2, 8, list("combat_unarmed_root"))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo, 2, 8, list("combat_unarmed_root"))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/WingClip, 2, 8, list("combat_unarmed_root"))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/Headbutt, 2, 8, list("combat_unarmed_root"))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/UppercutCombo, 2, 8, list("combat_unarmed_root"))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/WingClip, 2, 8, list("combat_unarmed_root"))
 
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/AxeKick, 3, 12, list(/obj/Attacks/TenkaichiMeleeTechnique/Headbutt))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow, 3, 14, list(/obj/Attacks/TenkaichiMeleeTechnique/Headbutt))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo, 3, 14, list(/obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak, 3, 14, list(/obj/Attacks/TenkaichiMeleeTechnique/WingClip))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/AxeKick, 3, 12, list(/obj/Attacks/NexusMeleeTechnique/Headbutt))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/MegatonThrow, 3, 14, list(/obj/Attacks/NexusMeleeTechnique/Headbutt))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/KickbackCombo, 3, 14, list(/obj/Attacks/NexusMeleeTechnique/UppercutCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/GuardBreak, 3, 14, list(/obj/Attacks/NexusMeleeTechnique/WingClip))
 
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/PileDriver, 4, 20, list(/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches, 4, 20, list(/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/BurningShot, 4, 18, list(/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/BlueCometSpecial, 4, 20, list(/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo))
-	configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/CriticalEdge, 4, 18, list(/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak))
-	configureProgressionRewardPath(/obj/RoundhouseKick, 4, 20, list(/obj/Attacks/TenkaichiMeleeTechnique/AxeKick))
-	configureProgressionRewardPath(/obj/WolfFangFist, 4, 22, list(/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/PileDriver, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/MegatonThrow))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BurningShot, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/CriticalEdge, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/GuardBreak))
+	configureProgressionRewardPath(/obj/RoundhouseKick, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/AxeKick))
+	configureProgressionRewardPath(/obj/WolfFangFist, 4, 22, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 
-	var/datum/ProgressionNode/texas_smash = configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash, 5, 28, list(/obj/Attacks/TenkaichiMeleeTechnique/PileDriver))
+	var/datum/ProgressionNode/texas_smash = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/TexasSmash, 5, 28, list(/obj/Attacks/NexusMeleeTechnique/PileDriver))
 	if(texas_smash) texas_smash.description = "The impact route's peak single blow, trading accuracy for devastating raw damage and knockback."
-	var/datum/ProgressionNode/march_of_fury = configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury, 5, 30, list(/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches))
+	var/datum/ProgressionNode/march_of_fury = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/MarchOfFury, 5, 30, list(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches))
 	if(march_of_fury) march_of_fury.description = "The combo route's peak pursuit technique, resolving four attacks for the highest sustained unarmed damage."
-	var/datum/ProgressionNode/exploding_heart = configureProgressionRewardPath(/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike, 5, 28, list(/obj/Attacks/TenkaichiMeleeTechnique/CriticalEdge))
+	var/datum/ProgressionNode/exploding_heart = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike, 5, 28, list(/obj/Attacks/NexusMeleeTechnique/CriticalEdge))
 	if(exploding_heart) exploding_heart.description = "The precision route's capstone strike, combining heavy direct damage with internal bleeding."
 	var/datum/ProgressionNode/pressure_punch = configureProgressionRewardPath(/obj/PressurePunch, 5, 30, list(/obj/RoundhouseKick))
 	if(pressure_punch) pressure_punch.description = "A peak impact strike with a raw physical factor of 6 and extreme knockback."
-	var/datum/ProgressionNode/dropkick = configureProgressionRewardPath(/obj/Dropkick, 5, 32, list(/obj/Attacks/TenkaichiMeleeTechnique/BurningShot))
+	var/datum/ProgressionNode/dropkick = configureProgressionRewardPath(/obj/Dropkick, 5, 32, list(/obj/Attacks/NexusMeleeTechnique/BurningShot))
 	if(dropkick) dropkick.description = "A capstone lunge that combines opening and finishing hits for a total physical factor of 8."
 	var/datum/ProgressionNode/hundred_crack_fist = configureProgressionRewardPath(/obj/Hokuto_Shinken, 5, 30, list(/obj/WolfFangFist))
 	if(hundred_crack_fist) hundred_crack_fist.description = "A capstone barrage of at least twenty-four rapid strikes, totaling a minimum physical factor of 6."
@@ -546,7 +546,7 @@ proc/initializeProgressionCombatCatalog()
 	registerProgressionSkillType(/obj/God_Fist, "Buffs", 9, 60)
 
 	var/weapon_index = 0
-	for(var/weapon_type in getTenkaichiWeaponAttackTypes())
+	for(var/weapon_type in getNexusWeaponAttackTypes())
 		weapon_index++
 		var/weapon_tier = weapon_index <= 4 ? 1 : (weapon_index <= 8 ? 2 : 3)
 		registerProgressionSkillType(weapon_type, "Weapon", weapon_tier, 4 + weapon_tier * 5)
@@ -556,17 +556,17 @@ proc/initializeProgressionCombatCatalog()
 		var/unarmed_tier = unarmed_index <= 5 ? 1 : (unarmed_index <= 10 ? 2 : 3)
 		registerProgressionSkillType(unarmed_type, "Unarmed", unarmed_tier, 4 + unarmed_tier * 5)
 	var/beam_index = 0
-	for(var/beam_type in getTenkaichiBeamAttackTypes())
+	for(var/beam_type in getNexusBeamAttackTypes())
 		beam_index++
 		var/beam_tier = beam_index <= 4 ? 1 : (beam_index <= 8 ? 2 : 3)
 		registerProgressionSkillType(beam_type, "Beam", beam_tier, 4 + beam_tier * 5)
-	for(var/rock_type in getTenkaichiRockAttackTypes())
+	for(var/rock_type in getNexusRockAttackTypes())
 		registerProgressionSkillType(rock_type, "Physical", 1, 8)
 	var/ki_index = 0
-	for(var/ki_type in getTenkaichiSpecialStyleAttackTypes())
+	for(var/ki_type in getNexusSpecialStyleAttackTypes())
 		ki_index++
 		var/ki_tier = ki_index <= 3 ? 1 : 2
-		var/ki_branch = ki_type == /obj/Attacks/TenkaichiAreaTechnique/Earthquake ? "Physical" : "Ki"
+		var/ki_branch = ki_type == /obj/Attacks/NexusAreaTechnique/Earthquake ? "Physical" : "Ki"
 		registerProgressionSkillType(ki_type, ki_branch, ki_tier, 4 + ki_tier * 5)
 	registerProgressionSkillType(/obj/Attacks/Genki_Dama, "Ki", 9, 60)
 
@@ -692,7 +692,7 @@ proc/initializeProgressionProfessionCatalog()
 		list("smithing_auracite", "Auracite Conduction", 30, "smithing_silver", 'RTAuraciteOre.dmi', 4),
 		list("smithing_masterwork", "Masterwork Alloy", 35, "smithing_mythril", 'RTMythrilOre.dmi', 5))
 	for(var/list/material_data in material_nodes)
-		var/datum/ProgressionNode/material_node = createProgressionNode(material_data[1], material_data[2], "Unlocks this material module at the Tenkaichi Forge.", "Smithing", "Materials", material_data[6], 3 + round(material_data[3] / 3), list(material_data[4]))
+		var/datum/ProgressionNode/material_node = createProgressionNode(material_data[1], material_data[2], "Unlocks this material module at the Nexus Forge.", "Smithing", "Materials", material_data[6], 3 + round(material_data[3] / 3), list(material_data[4]))
 		material_node.required_track = "Smithing"
 		material_node.required_level = material_data[3]
 		material_node.icon_file = material_data[5]

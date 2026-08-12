@@ -89,6 +89,17 @@ mob/proc/Remove_Admin()
 
 var/host_admin_given
 
+proc/parseNexusHostKeyFile(host_key_text)
+	if(!istext(host_key_text)) return
+	var/configured_ckey
+	var/list/host_key_lines = splittext(replacetext(host_key_text, ascii2text(13), ""), "\n")
+	for(var/host_key_line in host_key_lines)
+		var/candidate_ckey = ckey("[host_key_line]")
+		if(!candidate_ckey) continue
+		if(configured_ckey) return
+		configured_ckey = candidate_ckey
+	return configured_ckey
+
 mob/proc/Admin_Check()
 	set waitfor=0
 
@@ -96,9 +107,9 @@ mob/proc/Admin_Check()
 	if(!key) return
 
 	if(fexists("HostKeys.txt"))
-		var/t=file2text(file("HostKeys.txt"))
-		if(findtext(t,key))
-			if(host_admin_given && host_admin_given!=key)
+		var/configured_host_ckey = parseNexusHostKeyFile(file2text(file("HostKeys.txt")))
+		if(configured_host_ckey && ckey == configured_host_ckey)
+			if(host_admin_given && ckey(host_admin_given) != ckey)
 				src<<"Host admin has already been given out this session. Only 1 BYOND username can be in 'HostKeys.txt'. All other admins must be \
 				assigned using in-game admin commands"
 				return

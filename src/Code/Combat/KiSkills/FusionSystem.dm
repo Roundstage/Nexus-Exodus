@@ -99,6 +99,8 @@ proc
 		var/list/fused = list("[A.key]"=A,"[B.key]"=B) // Store both in a list.
 		// Undo all modules, swords, armor.
 		var/mob/newguy = B.Duplicate(1) // Duplicate B's mob and include unclonables.
+		// Duplicate() cannot carry tmp slot state; set it before the controller's Login() runs.
+		newguy.active_character_slot = clampNexusCharacterSlot(A.active_character_slot)
 		newguy.fuser_1 = A.key
 		newguy.fuser_2 = B.key
 		newguy.fused=fused
@@ -145,8 +147,10 @@ proc
 		newguy.Eff=(A.Eff+B.Eff)/2
 		newguy.max_ki*=newguy.Eff
 		// Code to give B control here.
-		A.client.mob=newguy
-		A.client.eye=newguy
+		var/client/fusion_controller = A.client
+		fusion_controller.cancelNexusUploadBrokerContexts()
+		fusion_controller.mob=newguy
+		fusion_controller.eye=newguy
 		if(!perm) spawn(10*60*30) Unfuse(newguy)
 		newguy.Old_Trans_Graphics()
 		newguy.SSj_Hair()
@@ -160,12 +164,20 @@ proc
 				if(X.key==A.fuser_1)
 					var/mob/C=A.fused["[X.key]"]
 					C.SafeTeleport(locate(A.x,A.y,A.z))
-					if(X.client.mob!=C)X.client.mob=C
+					if(X.client && X.client.mob!=C)
+						C.active_character_slot = clampNexusCharacterSlot(X.active_character_slot)
+						var/client/fusion_controller = X.client
+						fusion_controller.cancelNexusUploadBrokerContexts()
+						fusion_controller.mob=C
 					// Give them thier mob back.
 				if(X.key==A.fuser_2)
 					var/mob/C=A.fused["[X.key]"]
 					C.SafeTeleport(locate(A.x+1,A.y,A.z))
-					if(X.client.mob!=C)X.client.mob=C
+					if(X.client && X.client.mob!=C)
+						C.active_character_slot = clampNexusCharacterSlot(X.active_character_slot)
+						var/client/fusion_controller = X.client
+						fusion_controller.cancelNexusUploadBrokerContexts()
+						fusion_controller.mob=C
 					// Give them thier mob back.
 					// Remove the fused mob.
 proc

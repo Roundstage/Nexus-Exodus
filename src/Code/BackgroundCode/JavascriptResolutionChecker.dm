@@ -27,8 +27,11 @@ client/proc
 
 client/Topic(href, href_list[])
 	if(href_list["action"] == "get_resolution")
-		resolutionX = text2num(href_list["width"])
-		resolutionY = text2num(href_list["height"])
+		var/requested_width = text2num("[href_list["width"]]")
+		var/requested_height = text2num("[href_list["height"]]")
+		if(!nexusIsFiniteNumber(requested_width) || !nexusIsFiniteNumber(requested_height)) return
+		resolutionX = Clamp(round(requested_width), 320, 16384)
+		resolutionY = Clamp(round(requested_height), 320, 16384)
 		resolutionInitialized = 1
 		//clients << resolutionX
 	else . = ..()

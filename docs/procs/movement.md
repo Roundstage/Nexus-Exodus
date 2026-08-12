@@ -458,6 +458,10 @@ Movement input, collision, environmental traversal, accelerated skill travel, an
 
 ### src/Code/Application/Movement/MovementMacros.dm
 
+- `normalizeNexusMacroInputKey(key_value)` accepts only the exact movement/hotkey macro names emitted by the compiled skin and rejects empty, oversized, or differently cased inputs.
+- `acceptNexusMacroInput(key_value, event_time)` enforces a bounded event burst per player; exceeding it clears movement state and blocks the remainder of the window.
+- `sanitizeNexusHeldMacroKeys()` limits held-key state to 16 unique allowlisted entries and migrates away invalid legacy entries.
+
 #### mob/proc/Macro_direction
 - Signature: `mob/proc/Macro_direction()`
 - Inputs: None
@@ -734,14 +738,14 @@ Movement input, collision, environmental traversal, accelerated skill travel, an
 #### mob/verb/KeyDown
 - Signature: `mob/verb/KeyDown(d as text)`
 - Inputs: d as text
-- Purpose: Handle key down.
+- Purpose: Validate and rate-limit an exact compiled macro key before handling key down.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/verb/KeyUp
 - Signature: `mob/verb/KeyUp(d as text)`
 - Inputs: d as text
-- Purpose: Handle key up.
+- Purpose: Validate and rate-limit an exact compiled macro key before handling key up.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

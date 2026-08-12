@@ -11,7 +11,7 @@ Basic Blast fires a three-projectile vector fan on a 0.75-decisecond base refire
 
 Every Beam skill receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Explosive beams retain a per-target factor budget, while Beam Lock deliberately has no cumulative damage ceiling and keeps ticking until the stream ends or the victim escapes. Beam clashes report the pressure ratio, place a lit impact marker at the collision turf, show each owner a directional mash prompt, grant a 1.15x pressure pulse for current correct input, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break and Echoing Slash through physical Strength-versus-Endurance resolution. Explosive beam impacts calculate a power-relative knockback before immediately tearing down the stream.
 
-Configured projectile-impact art, color and audio are carried on `obj/Blast`, including cached and shrapnel projectiles. This gives physical cutting waves sword impacts without routing them through generic blast sounds, while explosive Ki techniques retain their own presentation. Named skill projectiles with a damage factor of at least 3 receive a shared RPT impact effect when they do not define specialized art; small barrage shots are intentionally excluded.
+Configured projectile-impact art, color and audio are carried on `obj/Blast`, including cached and shrapnel projectiles. This gives physical cutting waves sword impacts without routing them through generic blast sounds, while explosive Ki techniques retain their own presentation. Named skill projectiles with a damage factor of at least 3 receive a shared integrated impact effect when they do not define specialized art; small barrage shots are intentionally excluded.
 
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
@@ -1119,7 +1119,7 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 
 #### obj/Blast/proc/getNexusProjectileImpactIcon
 - Signature: `getNexusProjectileImpactIcon()`
-- Purpose: Prefer attack-specific impact art, otherwise select the shared RPT impact for named projectiles at or above the anti-spam damage threshold.
+- Purpose: Prefer attack-specific impact art, otherwise select the shared integrated impact for named projectiles at or above the anti-spam damage threshold.
 - Returns: icon resource or null.
 - Side effects: none.
 
@@ -1200,12 +1200,12 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/ProjectileSystem/TenkaichiBeams.dm
+### src/Code/ProjectileSystem/NexusBeams.dm
 
 #### obj/Attacks/RoleplayBeam/proc/useRoleplayBeam
 - Signature: `useRoleplayBeam(mob/user)`
 - Inputs: beam user.
-- Purpose: Route the four missing Roleplay Tenkaichi beam families through `SkillEngine.castSkill()` and the native beam lifecycle.
+- Purpose: Route the four missing Nexus beam families through `SkillEngine.castSkill()` and the native beam lifecycle.
 - Returns: none (implicit).
 - Side effects: starts, streams or stops Double Sunday, Photon Flash, Tyrant Lancer or Buster Cannon.
 

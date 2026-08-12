@@ -52,7 +52,7 @@ proc/getNexusCriticalSparkIcon()
 
 obj/Effect/NexusCriticalCore
 	name = "critical impact rupture"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 	density = 0
 	mouse_opacity = 0
 	Grabbable = 0
@@ -207,7 +207,7 @@ mob/proc/AllAttacksDamageModifiers(mob/target) //target = who you are attacking
 		n *= GetRevengeDmgMod(target)
 	return n
 
-mob/proc/getNexusMeleeAttackName(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/getNexusMeleeAttackName(obj/Attacks/NexusMeleeTechnique/technique)
 	if(technique) return "[technique]"
 	if(power_attacking) return "Power Attack"
 	if(lunge_attacking) return "Lunge Attack"
@@ -1161,7 +1161,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 			Reset_melee()
 			return
 		defensive_dash_evaded = melee_target.isDefensiveDashEvading()
-		if(!defensive_dash_evaded && melee_target.tryTenkaichiRiposte(src))
+		if(!defensive_dash_evaded && melee_target.tryNexusRiposte(src))
 			Reset_melee()
 			return
 
@@ -1190,7 +1190,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		Reset_melee()
 		return //too tired to attack
 
-	var/obj/Attacks/TenkaichiMeleeTechnique/tenkaichi_technique = consumeTenkaichiMeleeTechnique(target)
+	var/obj/Attacks/NexusMeleeTechnique/nexus_technique = consumeNexusMeleeTechnique(target)
 	var/dmg = get_melee_damage(target)
 	var/accuracy = get_melee_accuracy(target)
 	if(!dmg) accuracy=100
@@ -1198,10 +1198,10 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/obj/Shield/ki_shield
 	if(ismob(target)) ki_shield=target.get_active_shield()
 	var/knockback=get_melee_knockback_distance(target)
-	if(tenkaichi_technique)
-		dmg *= tenkaichi_technique.damage_multiplier
-		accuracy = Clamp(accuracy + tenkaichi_technique.accuracy_bonus, 0, 100)
-		knockback = ToOne(knockback * tenkaichi_technique.knockback_multiplier)
+	if(nexus_technique)
+		dmg *= nexus_technique.damage_multiplier
+		accuracy = Clamp(accuracy + nexus_technique.accuracy_bonus, 0, 100)
+		knockback = ToOne(knockback * nexus_technique.knockback_multiplier)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()
@@ -1210,7 +1210,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 		knockback=0
 	last_melee_attack = world.time
 
-	if(!defensive_dash_evaded && ismob(target) && target.blocking && !(tenkaichi_technique && tenkaichi_technique.breaks_guard))
+	if(!defensive_dash_evaded && ismob(target) && target.blocking && !(nexus_technique && nexus_technique.breaks_guard))
 		target.dir=get_dir(target,src)
 		knockback=0
 		var/evasion_gain=1
@@ -1335,19 +1335,19 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				if(s)
 					var/bleedDmg = dmg * swordBleedDmg
 					dmg -= bleedDmg
-					target.BleedDamage(bleedDmg, src, "[getNexusMeleeAttackName(tenkaichi_technique)] Bleed")
+					target.BleedDamage(bleedDmg, src, "[getNexusMeleeAttackName(nexus_technique)] Bleed")
 					if(milestone_bleeding_edge_active && prob(50))
 						target.BleedDamage(dmg * 0.125, src, "Bleeding Edge")
 
-				var/melee_attack_name = getNexusMeleeAttackName(tenkaichi_technique)
+				var/melee_attack_name = getNexusMeleeAttackName(nexus_technique)
 				target.TakeDamage(dmg, attacker = src, attack_name = melee_attack_name)
-				if(target && !tenkaichi_technique)
+				if(target && !nexus_technique)
 					applyMilestoneMeleeAreaDamage(target, dmg, melee_attack_name)
 					tryApplyMilestoneDoubleAttack(target, dmg, melee_attack_name)
 				if(target && s && milestone_thundering_blows_active && prob(50))
 					target.TakeDamage(dmg * 0.1, attacker = src, attack_name = "Thundering Blows")
 					if(target) target.ApplyStun(time = 2, stun_power = 1.25)
-				if(tenkaichi_technique && target) tenkaichi_technique.applyOnHit(src, target, dmg)
+				if(nexus_technique && target) nexus_technique.applyOnHit(src, target, dmg)
 
 				//if a Zombie or infected player hits a dead body it too becomes infected and turns into a zombie
 				InfectedPlayerHitDeadBodyItBecomesZombie(target)

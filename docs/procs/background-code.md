@@ -144,9 +144,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Anger_mult
 - Signature: `mob/proc/Anger_mult()`
 - Inputs: None
-- Purpose: Handle anger mult.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Return the current Anger power multiplier while enforcing archetype eligibility.
+- Returns: `1` for KO or Angerless archetypes; otherwise the configured current-Anger multiplier.
+- Side effects: normalizes stale Anger values for Android, Legendary Saiyan, and Jiren/Apex Alien.
 
 #### mob/proc/Powerup_mult
 - Signature: `mob/proc/Powerup_mult()`

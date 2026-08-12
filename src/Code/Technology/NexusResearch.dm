@@ -178,7 +178,7 @@ mob/proc/openArcaneWorkshop()
 obj/Arcane_Crafting
 	name = "Arcane Crafting"
 	desc = "Shape gathered Arcane Essence into magical constructs and ritual tools."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicCircle.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
 	Skill = 1
 	hotbar_type = "Ability"
 	can_hotbar = 1
@@ -200,8 +200,8 @@ obj/Peebag
 
 	Tier2
 		name = "Tier 2 Punching Bag"
-		desc = "A reinforced RPT punching bag that grants 25% more bag-training gains."
-		icon = 'src/Icons/RoleplayTenkaichi/Technology/RTPunchingBag2.dmi'
+		desc = "A reinforced integrated punching bag that grants 25% more bag-training gains."
+		icon = 'src/Icons/NexusIntegrated/Technology/RTPunchingBag2.dmi'
 		Cost = 12000
 		science = 1
 		science_level = 2
@@ -210,8 +210,8 @@ obj/Peebag
 
 	Tier3
 		name = "Tier 3 Punching Bag"
-		desc = "A calibrated RPT punching bag that grants 50% more bag-training gains."
-		icon = 'src/Icons/RoleplayTenkaichi/Technology/RTPunchingBag3.dmi'
+		desc = "A calibrated integrated punching bag that grants 50% more bag-training gains."
+		icon = 'src/Icons/NexusIntegrated/Technology/RTPunchingBag3.dmi'
 		Cost = 40000
 		science = 1
 		science_level = 3
@@ -220,8 +220,8 @@ obj/Peebag
 
 	Tier4
 		name = "Tier 4 Punching Bag"
-		desc = "A high-resistance RPT punching bag that grants 80% more bag-training gains."
-		icon = 'src/Icons/RoleplayTenkaichi/Technology/RTPunchingBag4.dmi'
+		desc = "A high-resistance integrated punching bag that grants 80% more bag-training gains."
+		icon = 'src/Icons/NexusIntegrated/Technology/RTPunchingBag4.dmi'
 		Cost = 150000
 		science = 1
 		science_level = 4
@@ -230,8 +230,8 @@ obj/Peebag
 
 	Tier5
 		name = "Tier 5 Punching Bag"
-		desc = "An Engineering-grade RPT punching bag that doubles bag-training gains."
-		icon = 'src/Icons/RoleplayTenkaichi/Technology/RTPunchingBag5.dmi'
+		desc = "An Engineering-grade integrated punching bag that doubles bag-training gains."
+		icon = 'src/Icons/NexusIntegrated/Technology/RTPunchingBag5.dmi'
 		Cost = 600000
 		science = 1
 		science_level = 6
@@ -241,8 +241,8 @@ obj/Peebag
 
 	Tier6
 		name = "Tier 6 Punching Bag"
-		desc = "The peak technological RPT punching bag, granting 150% more bag-training gains."
-		icon = 'src/Icons/RoleplayTenkaichi/Technology/RTPunchingBag6.dmi'
+		desc = "The peak technological integrated punching bag, granting 150% more bag-training gains."
+		icon = 'src/Icons/NexusIntegrated/Technology/RTPunchingBag6.dmi'
 		Cost = 2500000
 		science = 1
 		science_level = 8
@@ -253,7 +253,7 @@ obj/Peebag
 	MagicGoo
 		name = "Tier 1 Magic Goo"
 		desc = "A magical sparring construct that reinforces BP training and grants Magic XP when struck."
-		icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicGoo1.dmi'
+		icon = 'src/Icons/NexusIntegrated/Magic/RTMagicGoo1.dmi'
 		Cost = 0
 		science = 0
 		training_gain_multiplier = 1.25
@@ -262,26 +262,26 @@ obj/Peebag
 
 		Tier2
 			name = "Tier 2 Magic Goo"
-			icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicGoo2.dmi'
+			icon = 'src/Icons/NexusIntegrated/Magic/RTMagicGoo2.dmi'
 			training_gain_multiplier = 1.5
 			training_tier = 2
 
 		Tier3
 			name = "Tier 3 Magic Goo"
-			icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicGoo3.dmi'
+			icon = 'src/Icons/NexusIntegrated/Magic/RTMagicGoo3.dmi'
 			training_gain_multiplier = 1.85
 			training_tier = 3
 
 		Tier4
 			name = "Tier 4 Magic Goo"
-			icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicGoo4.dmi'
+			icon = 'src/Icons/NexusIntegrated/Magic/RTMagicGoo4.dmi'
 			training_gain_multiplier = 2.25
 			training_tier = 4
 
 obj/items/MagicCircle
 	name = "Magic Circle"
 	desc = "A portable ritual circle. Keep it in your inventory or stand within two tiles to gather 50% more Arcane Essence."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicCircle.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
 	Savable = 1
 	Grabbable = 1
 	Cost = 0
@@ -299,7 +299,7 @@ obj/items/MagicCircle
 	Transmutation
 		name = "Transmutation Circle"
 		desc = "An advanced alchemical circle. It doubles Arcane Essence gathering and can exchange resources or ores."
-		icon = 'src/Icons/RoleplayTenkaichi/Magic/RTTransmutationCircle.dmi'
+		icon = 'src/Icons/NexusIntegrated/Magic/RTTransmutationCircle.dmi'
 		circle_tier = 2
 
 		verb/Transmute()
@@ -355,7 +355,7 @@ mob/proc/performArcaneTransmutation()
 obj/items/PhilosophersStone
 	name = "Philosopher's Stone"
 	desc = "A masterwork alchemical catalyst. Carrying one grants +0.5 effective Regeneration and perfect language comprehension."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "PhiloStone"
 	Savable = 1
 	Cost = 0
@@ -364,7 +364,7 @@ obj/items/PhilosophersStone
 obj/items/StoneOfUnderstanding
 	name = "Stone of Understanding"
 	desc = "An enchanted listening stone. Carrying it makes every non-secret language fully understandable."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanEar"
 	Savable = 1
 	Cost = 0
@@ -379,8 +379,8 @@ obj/items/UniversalTranslator
 	science_path = "Engineering"
 	Savable = 1
 
-mob/Admin4/verb/testTenkaichiResearch(mob/character in players)
-	set name = "Test Tenkaichi Research"
+mob/Admin4/verb/testNexusResearch(mob/character in players)
+	set name = "Test Nexus Research"
 	set category = "Admin"
 	if(!character) return
 	initializeProgressionTreeCatalog()
@@ -408,7 +408,7 @@ mob/Admin4/verb/testTenkaichiResearch(mob/character in players)
 	new /obj/items/MagicCircle/Transmutation(character)
 	new /obj/items/UniversalTranslator(character)
 	character.syncNexusLanguages(silent = FALSE)
-	character << "Tenkaichi research test package granted: every Magic branch and formula, Goo tiers, circles, translator, ores and Arcane Essence."
-	src << "Granted the Tenkaichi research test package to [character]."
+	character << "Nexus research test package granted: every Magic branch and formula, Goo tiers, circles, translator, ores and Arcane Essence."
+	src << "Granted the Nexus research test package to [character]."
 
 #undef NEXUS_ARCANE_CIRCLE_RANGE

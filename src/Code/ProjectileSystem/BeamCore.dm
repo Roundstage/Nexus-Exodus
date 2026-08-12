@@ -127,7 +127,7 @@ obj/NexusHud/BeamClashPrompt
 		maptext = "<div style='font-family:Courier New;font-size:10px;font-weight:bold;text-align:center;color:#ffe19b;text-shadow:1px 1px #000'>BEAM CLASH<br><span style='font-size:15px'>[arrow]</span> MASH [direction_name]</div>"
 
 obj/BeamClashMarker
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 	layer = MOB_LAYER + 5
 	mouse_opacity = 0
 	Grabbable = 0

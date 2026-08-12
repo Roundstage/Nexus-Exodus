@@ -152,7 +152,7 @@ var
 	beam_clash_winner_damage_mult = 1.35
 	beam_clash_input_mult = 1.15
 
-	// Roleplay combat and Willpower settings adapted from Roleplay Tenkaichi.
+	// Roleplay combat and Willpower settings adapted from Nexus.
 	WILLPOWER_LETHAL_KO_DRAIN = 30
 	WILLPOWER_LETHAL_DURATION = 1200
 	WILLPOWER_CRITICAL_DURATION = 2400
@@ -161,6 +161,7 @@ var
 	WILLPOWER_RECOVERY_INTERVAL = 300
 	WILLPOWER_EXTERNAL_DRAIN = 10
 	MILESTONE_STARTING_POINTS = 5
+	NEXUS_MILESTONE_POINT_CAP = 22
 
 	icer_recovery = 1.1 //was 1.2, but they wanted it off, meaning icer forms no longer lower recovery with each higher transformation
 

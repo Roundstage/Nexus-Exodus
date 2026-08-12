@@ -26,6 +26,8 @@ mob/proc/awakenRandomMutation(minimum_percent = 5, maximum_percent = 12, maximum
 		return FALSE
 	var/list/available_mutations = list()
 	for(var/mutation_id in CHARACTER_MUTATIONS)
+		var/datum/CharacterMutation/candidate_mutation = CHARACTER_MUTATIONS[mutation_id]
+		if(candidate_mutation.stat == "Anger" && !canPossessAnger()) continue
 		if(!(mutation_id in character_mutations)) available_mutations += mutation_id
 	if(!available_mutations.len) return FALSE
 	var/chosen_id = pick(available_mutations)
@@ -40,7 +42,7 @@ mob/proc/awakenRandomMutation(minimum_percent = 5, maximum_percent = 12, maximum
 
 obj/items/MutagenInjector
 	name = "Mutagen Injector"
-	desc = "An RPT-derived organic mutagen. It awakens one random 5-12% mutation, up to two mutations per organic character."
+	desc = "An integrated organic mutagen. It awakens one random 5-12% mutation, up to two mutations per organic character."
 	icon = 'src/Icons/Objects/Technology/Roids.dmi'
 	Cost = 10000000
 	science = 1
@@ -119,7 +121,7 @@ obj/items/GeneticSequencer
 
 obj/items/AdamantineSkeletonTreatment
 	name = "Adamantine Skeleton Treatment"
-	desc = "A one-use RPT-derived procedure that permanently reduces incoming damage by 8%. Installation causes an immediate knockout."
+	desc = "A one-use integrated procedure that permanently reduces incoming damage by 8%. Installation causes an immediate knockout."
 	icon = 'src/Icons/Objects/Technology/Vial.dmi'
 	Cost = 25000000
 	science = 1
@@ -178,9 +180,9 @@ obj/items/MutationSuppressant
 			player_view(10, user) << "The suppressant rewrites part of [user]'s mutation profile."
 			del(src)
 
-obj/items/TenkaichiRepairKit
+obj/items/NexusRepairKit
 	name = "Repair Kit"
-	desc = "A one-use RPT repair kit that restores a damaged item's baseline structural integrity. The target must be nearby and unequipped."
+	desc = "A one-use integrated repair kit that restores a damaged item's baseline structural integrity. The target must be nearby and unequipped."
 	icon = 'src/Icons/Objects/Technology/Lab.dmi'
 	icon_state = "Tool2"
 	Cost = 800000
@@ -208,9 +210,9 @@ obj/items/TenkaichiRepairKit
 		player_view(10, user) << "[user] restores [choice] to its baseline integrity."
 		del(src)
 
-obj/items/TenkaichiUpgradeKit
+obj/items/NexusUpgradeKit
 	name = "Scientific Upgrade Kit"
-	desc = "A one-use engineering kit that applies masterwork calibration to Tenkaichi-forged equipment."
+	desc = "A one-use engineering kit that applies masterwork calibration to Nexus-forged equipment."
 	icon = 'src/Icons/Objects/Technology/Lab.dmi'
 	icon_state = "Tool2"
 	Cost = 1000000
@@ -326,7 +328,7 @@ mob/proc/getScientificHealingMultiplier()
 
 obj/items/Armor/PowerArmor
 	name = "Power Armor"
-	desc = "An adapted RPT power-armor suit with strong protection and substantial weight."
+	desc = "An adapted integrated power-armor suit with strong protection and substantial weight."
 	icon = 'src/Icons/Objects/Technology/Modules.dmi'
 	Cost = 900000000
 	science = 1
@@ -385,8 +387,8 @@ obj/items/AndroidChassis
 		next_repair = world.time + 6000
 		player_view(10, target) << "The Android chassis completes a full synthetic repair on [target]."
 
-mob/Admin4/verb/testTenkaichiScience(mob/character in players)
-	set name = "Test Tenkaichi Science"
+mob/Admin4/verb/testNexusScience(mob/character in players)
+	set name = "Test Nexus Science"
 	set category = "Admin"
 	if(!character) return
 	new /obj/items/MutagenInjector(character)
@@ -394,11 +396,11 @@ mob/Admin4/verb/testTenkaichiScience(mob/character in players)
 	new /obj/items/GeneticSequencer(character)
 	new /obj/items/AdamantineSkeletonTreatment(character)
 	new /obj/items/MutationSuppressant(character)
-	new /obj/items/TenkaichiRepairKit(character)
-	new /obj/items/TenkaichiUpgradeKit(character)
+	new /obj/items/NexusRepairKit(character)
+	new /obj/items/NexusUpgradeKit(character)
 	new /obj/items/MedicalAssessment(character)
 	new /obj/items/ProspectingToolkit(character)
 	new /obj/items/AdvancedDoorPass(character)
 	new /obj/items/AndroidUpgradeComponent(character)
-	character << "Tenkaichi science test package granted."
-	src << "Granted the Tenkaichi genetics test package to [character]."
+	character << "Nexus science test package granted."
+	src << "Granted the Nexus genetics test package to [character]."

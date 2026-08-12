@@ -761,17 +761,10 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 These legacy proc summaries are retained for reference. Their implementations now live in the Admin, Combat, Communication, CoreFunctions, PlayerMechanics, Technology, and WorldMechanics modules listed in the subsystem documentation.
 
-#### mob/verb/Stream_Music_to_Everyone_Nearby
-- Signature: `mob/verb/Stream_Music_to_Everyone_Nearby()`
-- Inputs: None
-- Purpose: Handle stream music to everyone nearby.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
 #### mob/verb/StopAllSounds
 - Signature: `mob/verb/StopAllSounds()`
 - Inputs: None
-- Purpose: Stop All Sounds.
+- Purpose: Emergency legacy control that stops all sounds. Normal player-music control uses `Stop_Player_Music()` and reserved channel 1024 instead.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
@@ -785,9 +778,9 @@ These legacy proc summaries are retained for reference. Their implementations no
 #### mob/verb/Set_Player_Description
 - Signature: `mob/verb/Set_Player_Description()`
 - Inputs: None
-- Purpose: Set Player Description.
+- Purpose: Toggle the structured Profile Builder for a self-authored name, title, live sprite or bounded raw PNG/JPEG upload, and safely formatted biography instead of accepting arbitrary HTML or remote image URLs.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: opens or closes `NexusDescriptionEditor`; actions normalize, bound, and persist profile identity, portrait source/direction, custom-art metadata, and biography fields.
 
 #### proc/View
 - Signature: `proc/View(r,c)`

@@ -1,11 +1,55 @@
+var/const/NEXUS_LEAGUE_NOTES_LIMIT = 2000
+var/const/NEXUS_LEAGUE_NAME_LIMIT = 80
+var/const/NEXUS_LEAGUE_DESCRIPTION_LIMIT = 500
+var/const/NEXUS_LEAGUE_MESSAGE_LIMIT = 1000
+
+proc/normalizeNexusLeagueInlineText(value, maximum_length)
+	var/plain_text = normalizeNexusPlayerProfileLine(value, maximum_length)
+	plain_text = replacetext(plain_text, "<", "")
+	plain_text = replacetext(plain_text, ">", "")
+	return plain_text
+
+proc/normalizeNexusLeagueDescription(value)
+	var/plain_text = copytext(normalizeNexusPlayerDescription(value), 1, NEXUS_LEAGUE_DESCRIPTION_LIMIT + 1)
+	plain_text = replacetext(plain_text, "<", "")
+	plain_text = replacetext(plain_text, ">", "")
+	return plain_text
+
+proc/normalizeNexusLeagueNotes(notes)
+	return copytext(normalizeNexusPlayerDescription(notes), 1, NEXUS_LEAGUE_NOTES_LIMIT + 1)
+
+proc/renderNexusLeagueNotes(league_name, notes)
+	var/safe_name = normalizeNexusLeagueNotes(league_name)
+	safe_name = replacetext(safe_name, "\n", " ")
+	safe_name = html_encode(copytext(safe_name, 1, 81))
+	var/safe_notes = html_encode(normalizeNexusLeagueNotes(notes))
+	safe_notes = replacetext(safe_notes, "\n", "<br>")
+	return {"<!doctype html><html><head><meta charset='utf-8'><title>[safe_name] league notes</title><style>
+	body{margin:0;padding:18px;background:#080c12;color:#d9e2ec;font:14px Arial,sans-serif;line-height:1.5;white-space:normal;overflow-wrap:anywhere}h1{margin:0 0 14px;color:#f1c982;font-size:20px}.notes{padding:14px;border:1px solid #34475b;background:#101923;min-height:120px}
+	</style></head><body><h1>[safe_name] league notes</h1><div class='notes'>[safe_notes]</div></body></html>"}
+
 mob/verb/Create_League()
 	set category="Other"
+	if(usr != src || !client || !playerCharacter) return
+	if(world.time < last_nexus_league_creation + 100) return
+	var/owned_league_count = 0
+	for(var/obj/League/owned_league in src)
+		if(owned_league.league_leader == key) owned_league_count++
+	if(owned_league_count >= 5)
+		src << "You may lead at most five leagues."
+		return
+	var/requested_name = input(src, "Name the league") as null|text
+	if(isnull(requested_name)) return
+	requested_name = normalizeNexusLeagueInlineText(requested_name, NEXUS_LEAGUE_NAME_LIMIT)
+	if(!requested_name) requested_name = "League #[rand(0,999999)]"
 	var/obj/League/L=new(src)
 	L.league_leader=key
-	L.league_id="[name] [key] #[rand(0,999999)]"
-	L.name=input(src,"Name the league") as text
-	if(!L.name||L.name=="") L.name="League #[rand(0,999999)]"
+	L.league_id="[ckey] #[world.realtime]-[rand(0,999999)]"
+	L.name=requested_name
+	last_nexus_league_creation = world.time
 	L.update_league()
+
+mob/var/tmp/last_nexus_league_creation = -100
 
 var/list/all_leagues=new
 
@@ -39,6 +83,9 @@ obj/League
 	New()
 		all_leagues+=src
 		spawn(10) if(src)
+			name = normalizeNexusLeagueInlineText(name, NEXUS_LEAGUE_NAME_LIMIT)
+			desc = normalizeNexusLeagueDescription(desc)
+			league_notes = normalizeNexusLeagueNotes(league_notes)
 			var/mob/m=loc
 			if(m&&ismob(m))
 				m<<desc
@@ -61,11 +108,8 @@ obj/League
 			can_write_notes
 			can_change_desc
 			can_harm_members
-		var/league_notes={"<html><head><title>league notes</title><body><body bgcolor="#000000"><font size=2><font color="#CCCCCC">
-
-		Put text here<p>
-
-		"}
+		var/league_notes = "Put text here."
+		tmp/last_league_chat = -10
 	proc
 		league_update_loop()
 			set waitfor=0
@@ -79,6 +123,9 @@ obj/League
 			var/mob/m=loc
 			if(!m||!ismob(m)) return
 			if(league_leader==m.key)
+				name = normalizeNexusLeagueInlineText(name, NEXUS_LEAGUE_NAME_LIMIT)
+				desc = normalizeNexusLeagueDescription(desc)
+				league_notes = normalizeNexusLeagueNotes(league_notes)
 				league_rank=7
 				leaders_name=m.name
 				for(var/mob/p in players) if(is_league_member(p))
@@ -95,9 +142,13 @@ obj/League
 			for(var/mob/m in players) if(is_league_member(m)) m<<msg
 	verb/league_chat(msg as text)
 		set category="Other"
-		msg=html_encode(msg)
+		if(!(src in usr) || !usr.client || world.time < last_league_chat + 10) return
+		last_league_chat = world.time
+		msg=html_encode(copytext(msg, 1, NEXUS_LEAGUE_MESSAGE_LIMIT + 1))
+		var/safe_league_name = html_encode(normalizeNexusLeagueInlineText(name, NEXUS_LEAGUE_NAME_LIMIT))
+		var/safe_speaker_name = html_encode(copytext("[usr]", 1, 81))
 		for(var/mob/m in players) if(is_league_member(m))
-			m<<"<font size=[m.TextSize]>([name])<font color=[usr.TextColor]>[usr]: [msg]"
+			m<<"<font size=[m.TextSize]>([safe_league_name])<font color=[usr.TextColor]>[safe_speaker_name]: [msg]"
 	Click() if(src in usr)
 		var/list/options=list("cancel","leave league","read league notes","send resources")
 		if(league_rank>=2) options+="invite someone"
@@ -163,6 +214,8 @@ obj/League
 					usr<<"You can not do this while knocked out"
 					return
 				var/n=input("how much resources do you want to send?") as num
+				if(!nexusIsFiniteNumber(n)) return
+				n = round(n)
 				if(n>usr.Res()) n=usr.Res()
 				if(n<1)
 					usr<<"You must send at least 1"
@@ -203,13 +256,19 @@ obj/League
 						m.Alter_Res(n)
 						m<<"[name]: [usr] sent you [Commas(n)] resources"
 			if("write league notes")
-				league_notes=input("make the changes you want here","options",league_notes) as message
+				league_notes = normalizeNexusLeagueNotes(league_notes)
+				var/updated_league_notes = input("make the changes you want here (maximum [NEXUS_LEAGUE_NOTES_LIMIT] characters)", "options", league_notes) as null|message
+				if(isnull(updated_league_notes)) return
+				league_notes = normalizeNexusLeagueNotes(updated_league_notes)
 				league_announce("[name] league notes updated")
 				update_league()
 			if("read league notes")
-				usr<<browse(league_notes,"window=[name]_league_notes;size=700x600")
+				league_notes = normalizeNexusLeagueNotes(league_notes)
+				usr << browse(renderNexusLeagueNotes(name, league_notes), "window=NexusLeagueNotes;size=700x600")
 			if("change login message")
-				desc=input("change the login message to whatever you want","options",desc) as text
+				var/updated_description = input("change the login message to whatever you want (maximum [NEXUS_LEAGUE_DESCRIPTION_LIMIT] characters)","options",desc) as null|text
+				if(isnull(updated_description)) return
+				desc = normalizeNexusLeagueDescription(updated_description)
 				update_league()
 			if("leave league")
 				league_announce("[usr.key] has left the [name] league")
@@ -275,6 +334,10 @@ obj/League
 				var/obj/League/L=is_league_member(m)
 				del(L)
 			if("league announce")
-				var/msg=input("what do you want to announce to the league?") as text
-				msg="<font size=2><font color=yellow>[name] announcement: [msg] ~[usr.name]"
+				var/msg=input("what do you want to announce to the league?") as null|text
+				if(isnull(msg) || !(src in usr) || league_rank < 4) return
+				msg = html_encode(copytext(msg, 1, NEXUS_LEAGUE_MESSAGE_LIMIT + 1))
+				var/safe_league_name = html_encode(normalizeNexusLeagueInlineText(name, NEXUS_LEAGUE_NAME_LIMIT))
+				var/safe_announcer_name = html_encode(copytext("[usr]", 1, 81))
+				msg="<font size=2><font color=yellow>[safe_league_name] announcement: [msg] ~[safe_announcer_name]"
 				league_announce(msg)

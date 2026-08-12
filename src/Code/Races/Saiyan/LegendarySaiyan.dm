@@ -3,6 +3,7 @@ mob/proc/Legendary_Saiyan()
 	Intelligence=0.1
 	Gravity_Mod*=3
 	Class="Legendary Saiyan"
+	disableAnger()
 
 	lssj_ver=1
 

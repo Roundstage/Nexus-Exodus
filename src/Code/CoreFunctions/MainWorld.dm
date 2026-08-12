@@ -191,6 +191,11 @@ mob/Logout(body_swap_user)
 mob/proc/Other_Load_Stuff()
 	normalize_energy_types()
 	normalizeCharacterMutations()
+	nexus_profile_force_sprite = FALSE
+	for(var/obj/Imitation/imitation_skill in contents)
+		if(imitation_skill.imitating)
+			nexus_profile_force_sprite = TRUE
+			break
 	last_ssj_revert_or_retrans = world.realtime //stop them from logging out in ss then coming back 20 minutes later and insta-mastering it even though they were logged out the whole time
 	Remove_Say_Spark()
 	var/image/A=image(icon='SaySpark.dmi',pixel_y=6)

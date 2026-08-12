@@ -214,57 +214,64 @@ proc/List_2_Text(list/L,sep)
 		if(sep) newtext+=sep;newtext+="[L[count]]"
 	return newtext
 
-mob/verb/Countdown(Seconds as num, message as text|null, final_message as text|null, isKoStuff as num|null)
+var/nexus_active_public_countdowns = 0
+
+proc/normalizeNexusCountdownSeconds(value)
+	if(!nexusIsFiniteNumber(value) || value < 1) return 0
+	return Clamp(round(value), 1, 600)
+
+proc/sanitizeNexusCountdownText(value)
+	if(!istext(value)) return
+	var/sanitized_text = trimtext(copytext(value, 1, 201))
+	if(!sanitized_text) return
+	return html_encode(sanitized_text)
+
+mob/var/tmp
+	nexus_countdown_active = FALSE
+	nexus_countdown_next_use = 0
+
+mob/proc/broadcastNexusCountdown(message)
+	if(!message) return
+	for(var/mob/player in player_view(50, src))
+		player.receiveNexusChatMessage(message, "ooc", key)
+
+mob/verb/Countdown(Seconds as num|null, message as text|null, final_message as text|null)
 	set category = "Other"
 	set desc = "Countdown from a number of seconds. You can also specify a message to display at the start and end of the countdown."
 
-	if(!isKoStuff)
-		isKoStuff = FALSE
+	if(usr != src || !client || !playerCharacter) return
+	if(nexus_countdown_active || world.time < nexus_countdown_next_use) return
+	if(nexus_active_public_countdowns >= 64)
+		src << "The server already has too many active countdowns. Try again shortly."
+		return
+	if(isnull(Seconds)) Seconds = input(src, "How many seconds should the countdown last?") as num|null
+	Seconds = normalizeNexusCountdownSeconds(Seconds)
+	if(!Seconds) return
 
-	if(!Seconds) 
-		Seconds = input("How many seconds should the countdown last?") as num
+	var/safe_actor_name = html_encode(copytext("[src]", 1, 81))
+	var/safe_start_message = sanitizeNexusCountdownText(message)
+	var/safe_final_message = sanitizeNexusCountdownText(final_message)
+	var/duration_ticks = Seconds * 10
+	var/end_time = world.time + duration_ticks
+	nexus_countdown_active = TRUE
+	nexus_active_public_countdowns++
+	broadcastNexusCountdown(safe_start_message ? safe_start_message : "[safe_actor_name] is waiting [Seconds] seconds.")
 
-	if(Seconds > 600) Seconds = 600
+	var/next_progress_time = world.time + 300
+	while(src && client && nexus_countdown_active && world.time < end_time)
+		var/remaining_ticks = end_time - world.time
+		sleep(min(50, remaining_ticks))
+		if(src && client && world.time >= next_progress_time && world.time < end_time)
+			var/elapsed_seconds = round((duration_ticks - (end_time - world.time)) / 10)
+			broadcastNexusCountdown("[safe_actor_name] has waited [elapsed_seconds] seconds out of [Seconds] seconds.")
+			next_progress_time += 300
 
-	var/t="[src] is waiting [Seconds] seconds."	
-
-	Seconds *= 10
-
-	if(message)
-		t = " [message]"
-	if(!isKoStuff)
-		for(var/mob/player in player_view(50, src))
-			player << t
-			ChatLog(t, player.key)
-
-	var/elapsed = 0
-
-	while(elapsed < Seconds)
-		if(Seconds > 300)
-			if(elapsed + 300 > Seconds)
-				elapsed += (Seconds - elapsed) + 1	
-				sleep(Seconds - elapsed)
-			else
-				elapsed += 300
-				sleep(300)
-		else 
-			sleep(Seconds)
-			break;
-		if(!isKoStuff)
-			var/elapsed_message = "[src] has waited [elapsed/10] seconds out of [Seconds/10] seconds."
-			player_view(50, src) << "[elapsed_message]"
-
-			if(client) 
-				ChatLog(elapsed_message, key)
-	if(!isKoStuff)
-		var/t2 = "[src] has finished waiting [Seconds/10] seconds."
-		
-		if(final_message)
-			t2 = "[final_message]"
-
-		player_view(50, src) << t2
-
-		if(client) ChatLog(t2,key)
+	if(src)
+		if(client && nexus_countdown_active && world.time >= end_time)
+			broadcastNexusCountdown(safe_final_message ? safe_final_message : "[safe_actor_name] has finished waiting [Seconds] seconds.")
+		nexus_countdown_active = FALSE
+		nexus_countdown_next_use = world.time + 50
+	nexus_active_public_countdowns = max(0, nexus_active_public_countdowns - 1)
 
 mob/var/tmp/obj/Effect/NexusTypingIndicator/nexus_typing_indicator
 
@@ -612,31 +619,3 @@ mob/verb/Who()
 				Who+="<br>[A.displaykey]"
 	Who+="<br>Amount: [Amount]"
 	src<<browse(Who,"window=Who;size=600x600")
-	
-mob/var/tmp/last_play_music = 0
-mob/verb/Play_Music()
-	set category="Other"
-
-	if(last_play_music + 300 > world.time)
-		src << "You can only play music every 30 seconds."
-		return
-		
-	var/list/available_musics = list(
-		"Cancel" = sound(0),
-		"Carnival Meme" = sound('CarnivalMeme.ogg',repeat=0,volume=50),
-		"Asiyah Layer" = sound('AsiyahLayer.ogg',repeat=0,volume=50),
-		"Iron Lotus" = sound('IronLotus.ogg',repeat=0,volume=50),
-		"Kiryu G Ki Ll" = sound('KiryuGKiLl.ogg',repeat=0,volume=50),
-		"Blumenkranz" = sound('Blumenkranz.ogg',repeat=0,volume=50),
-		"The Rumble of Scientific Triumph" = sound('TheRumbleOfScientificTriumph.ogg',repeat=0,volume=50),
-		"Cepheid - Gaia" = sound('CepheidGaia.ogg',repeat=0,volume=50),
-	)
-
-	var/choice = input(src, "You can play some built in music for whatever reason.") as null|anything in available_musics
-	last_play_music = world.time
-	if(choice == "Cancel") return
-	for(var/mob/player in player_view(50,src))
-		player << sound(0)
-		player << available_musics[choice]
-		player << "[src] has played [choice] for you. You can stop this by using the Stop Sounds verb."
-		player.ChatLog("[src] has played [choice] for you. You can stop this by using the Stop Sounds verb.", src.key)

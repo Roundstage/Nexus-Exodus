@@ -1026,7 +1026,7 @@ proc/showAlienInfiniteVoidDomain(atom/center, duration = ALIEN_INFINITE_VOID_DUR
 			del(domain_glow)
 
 mob/proc/canHitAlienInfiniteVoidTarget(mob/target)
-	if(!target || !canHitTenkaichiTechniqueTarget(target) || target.KO || !target.attackable) return FALSE
+	if(!target || !canHitNexusTechniqueTarget(target) || target.KO || !target.attackable) return FALSE
 	var/turf/user_turf = base_loc()
 	var/turf/target_turf = target.base_loc()
 	if(!user_turf || !target_turf || user_turf.z != target_turf.z) return FALSE
@@ -1127,7 +1127,7 @@ obj/Attacks/Time_Freeze
 			sleep(10)
 
 		showAlienInfiniteVoidDomain(domain_origin)
-		user.showTenkaichiTechniqueAnnouncement("TIME STOP", "#9fdcff", 'src/Sound/SoundEffects/Combat/Shonen/AbilityCharge/AbilityCharge19V6.ogg', 50)
+		user.showNexusTechniqueAnnouncement("TIME STOP", "#9fdcff", 'src/Sound/SoundEffects/Combat/Shonen/AbilityCharge/AbilityCharge19V6.ogg', 50)
 		user.pulseNexusGlow("#6d50ff", 5, 235, 18)
 		flick("Blast", user)
 		sleep(domain_windup)

@@ -8,7 +8,7 @@ New characters use a classic-inspired brown and gold creator with current lineag
 
 ## Build and smoke test
 
-Nexus Exodus is pinned to [BYOND 516.1685](https://www.byond.com/download/build/516/516.1685_byond.zip). Other compiler builds are rejected by `DU.dme`.
+Nexus Exodus is pinned to [BYOND 516.1686](https://www.byond.com/download/build/516/516.1686_byond.zip). Other compiler builds are rejected by `DU.dme`.
 
 Run the complete compile and startup baseline from PowerShell:
 
@@ -24,6 +24,6 @@ Use `-KeepTemp` to preserve the temporary build or `-DataMode Versioned`/`-DataM
 
 ## Manual development
 
-Install BYOND 516.1685, open `DU.dme` in Dream Maker, and select `Build > Compile`. A runnable build consists of both `DU.dmb` and `DU.rsc`.
+Install BYOND 516.1686, open `DU.dme` in Dream Maker, and select `Build > Compile`. A runnable build consists of both `DU.dmb` and `DU.rsc`.
 
 Start the compiled world in Dream Daemon or use Dream Maker's `Run` command. Do not enable `NEXUS_DEV_TOOLS` in distributed builds.

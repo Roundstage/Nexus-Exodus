@@ -1510,6 +1510,7 @@ mob/Admin4/verb/purgeOldSaves()
 		var/last_used
 		F["Last_Used"] >> last_used
 		if(last_used && last_used <= world.realtime - 864000 * 2)
+			deleteNexusPlayerProfileImageForSaveName(File)
 			fdel("data/Save/[File]")
 			if(fexists("data/Feats/[File]")) fdel("data/Feats/[File]")
 
@@ -1609,6 +1610,7 @@ proc/Delete_Save(mob/M)
 	if(choice == "No") return
 	var/save_path = getNexusCharacterSavePathForKey(Key, slot)
 	var/feat_path = getNexusFeatSavePathForKey(Key, slot)
+	deleteNexusPlayerProfileImageForKey(Key, slot)
 	if(save_path && fexists(save_path)) fdel(save_path)
 	if(feat_path && fexists(feat_path)) fdel(feat_path)
 
@@ -1880,10 +1882,25 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 	player_saving_on=0
 
 	fdel("data/Save/")
+	fdel("data/ProfileImages/")
 	fdel("DBZ Character Saves/")
 	sleep(10)
 	fdel("data/Save/")
+	fdel("data/ProfileImages/")
 	fdel("DBZ Character Saves/")
+	var/list/profile_art_survivors = flist("data/ProfileImages/")
+	if(!islist(profile_art_survivors) || !profile_art_survivors.len)
+		resetNexusProfileArtBudgetAfterWipe()
+	else
+		nexus_profile_art_budget_loaded = TRUE
+		nexus_profile_art_budget_day = getNexusProfileArtDayKey()
+		nexus_profile_art_global_daily_bytes = 0
+		nexus_profile_art_account_daily_bytes = list()
+		nexus_profile_art_account_next_upload_time = list()
+		nexus_profile_art_global_stored_bytes = reconcileNexusProfileArtStoredBytes()
+		saveNexusProfileArtBudget()
+		if(nexus_profile_art_global_stored_bytes > 0 || nexus_profile_art_cleanup_pending)
+			world.log << "PROFILE_ART_WIPE_CLEANUP_PENDING bytes=[nexus_profile_art_global_stored_bytes]"
 	for(var/mob/player in players)
 		alert(player, "WIPE ALERT", "The server is wiping. Please save any work you have in progress and prepare yourself. You will be disconnected in 30 seconds.")
 	sleep(300)
@@ -2301,6 +2318,50 @@ mob/Admin1/verb
 			var/Address = nt.fakeIP
 			var/Computer = nt.fakeCID
 			src<<"[M]([M.displaykey]). [Address]. Computer ID: [Computer]"
+proc/getNexusAdminTransferFileFingerprint(path)
+	if(!path || !fexists(path)) return null
+	var/file_bytes = length(file(path))
+	var/file_hash = sha1(file(path))
+	if(!isnum(file_bytes) || file_bytes < 1 || length(file_hash) != 40) return null
+	return list("bytes" = file_bytes, "hash" = file_hash)
+
+proc/nexusAdminTransferFileMatches(path, list/expected_fingerprint)
+	if(!path || !islist(expected_fingerprint) || !fexists(path)) return FALSE
+	return length(file(path)) == expected_fingerprint["bytes"] && sha1(file(path)) == expected_fingerprint["hash"]
+
+proc/copyNexusAdminTransferFileVerified(source_path, destination_path, list/expected_fingerprint)
+	if(!nexusAdminTransferFileMatches(source_path, expected_fingerprint) || !destination_path) return FALSE
+	if(fexists(destination_path)) fdel(destination_path)
+	if(fexists(destination_path) || !fcopy(source_path, destination_path)) return FALSE
+	return nexusAdminTransferFileMatches(destination_path, expected_fingerprint)
+
+proc/restoreNexusAdminTransferFile(destination_path, backup_path, destination_existed, list/destination_fingerprint)
+	if(destination_existed)
+		return copyNexusAdminTransferFileVerified(backup_path, destination_path, destination_fingerprint)
+	if(fexists(destination_path)) fdel(destination_path)
+	return !fexists(destination_path)
+
+proc/cleanupNexusAdminTransferFiles(list/paths)
+	var/all_deleted = TRUE
+	for(var/path in paths)
+		if(!path || !fexists(path)) continue
+		fdel(path)
+		if(fexists(path)) all_deleted = FALSE
+	return all_deleted
+
+proc/setNexusAdminTransferSaveKey(save_path, character_key)
+	if(!save_path || !fexists(save_path) || !character_key) return FALSE
+	try
+		var/savefile/transfer_save = new(save_path)
+		transfer_save["key"] << character_key
+		transfer_save = null
+		var/saved_key
+		var/savefile/verification_save = new(save_path)
+		verification_save["key"] >> saved_key
+		return "[saved_key]" == "[character_key]"
+	catch(var/exception/save_error)
+		if(save_error) return FALSE
+	return FALSE
 
 mob/Admin3/verb
 	enterCharacter(mob/M in world)
@@ -2312,18 +2373,145 @@ mob/Admin3/verb
 		Log(src,"[key] entered [M]'s character")
 		var/confirm=input("Are you sure you wish to do this? (Enter Character - [M.name]") in list("Yes","No")
 		if(confirm=="No") return
-		if(!M.client) M.key=key
+		if(!M.client)
+			var/client/destination_client = client
+			var/source_profile_art_hash = M.player_profile_art_hash
+			var/source_profile_art_format = M.player_profile_art_format
+			var/source_profile_art_key = M.displaykey
+			var/source_profile_art_slot = M.active_character_slot
+			var/destination_profile_art_key = key
+			var/destination_profile_art_slot = clampNexusCharacterSlot(active_character_slot)
+			var/profile_art_copied = !isNexusProfileArtHash(source_profile_art_hash) || copyNexusPlayerProfileImageForKeys(source_profile_art_key, source_profile_art_slot, destination_profile_art_key, destination_profile_art_slot, source_profile_art_hash)
+			// Keep the admin account's selected slot when its client enters this offline body.
+			M.active_character_slot = destination_profile_art_slot
+			if(destination_client) destination_client.cancelNexusUploadBrokerContexts()
+			M.key=destination_profile_art_key
+			var/profile_art_ready = profile_art_copied && isNexusProfileArtHash(source_profile_art_hash) && M.player_profile_art_hash == source_profile_art_hash && M.player_profile_art_format == normalizeNexusProfileArtFormat(source_profile_art_format) && M.hasNexusPlayerProfileCustomArt()
+			if(profile_art_ready)
+				M.save()
+				profile_art_ready = M.isNexusPlayerProfileArtMetadataPersisted() && M.isNexusPlayerProfileTextPersisted()
+				if(profile_art_ready)
+					if(!deleteNexusPlayerProfileImageGenerationsForKey(destination_profile_art_key, destination_profile_art_slot, M.player_profile_art_hash, M.player_profile_art_format))
+						M << "<font color=yellow>The character was entered, but obsolete profile-art files could not be removed."
+						Log(M, "[destination_profile_art_key] entered an offline character, but obsolete profile-art cleanup failed for slot [destination_profile_art_slot].")
+			if(!profile_art_ready)
+				M.clearNexusPlayerProfileArtMetadata()
+				M.save()
+				if(M.isNexusPlayerProfileArtMetadataPersisted())
+					if(!deleteNexusPlayerProfileImageForKey(destination_profile_art_key, destination_profile_art_slot))
+						M << "<font color=yellow>The character was entered without custom art, but orphaned profile-art files could not be removed."
+						Log(M, "[destination_profile_art_key] entered an offline character, but orphaned profile-art cleanup failed for slot [destination_profile_art_slot].")
 		else
 			M.save()
+			var/source_profile_art_hash = M.player_profile_art_hash
+			var/source_profile_art_format = M.player_profile_art_format
+			var/source_profile_art_slot = M.active_character_slot
+			var/source_profile_art_key = M.key
+			var/destination_profile_art_key = key
+			var/destination_profile_art_slot = clampNexusCharacterSlot(active_character_slot)
 			var/source_save_path = M.getNexusCharacterSavePath()
 			var/destination_save_path = getNexusCharacterSavePath()
 			var/source_feat_path = M.getNexusFeatSavePath()
 			var/destination_feat_path = getNexusFeatSavePath()
-			fcopy(source_save_path, destination_save_path)
-			if(fexists(source_feat_path)) fcopy(source_feat_path, destination_feat_path)
-			var/savefile/f=new(destination_save_path)
-			f["key"]<<key
-			load()
+			var/client/destination_client = client
+			var/transfer_ticket = md5("[world.realtime]|[world.time]|\ref[src]|\ref[M]|[rand(1, 1000000000)]")
+			var/staged_save_path = "data/Save/.admin-enter-[transfer_ticket].stage.sav"
+			var/staged_feat_path = "data/Feats/.admin-enter-[transfer_ticket].stage.sav"
+			var/backup_save_path = "data/Save/.admin-enter-[transfer_ticket].backup.sav"
+			var/backup_feat_path = "data/Feats/.admin-enter-[transfer_ticket].backup.sav"
+			var/list/transfer_files = list(staged_save_path, staged_feat_path, backup_save_path, backup_feat_path)
+			var/transfer_error = ""
+			if(!cleanupNexusAdminTransferFiles(transfer_files)) transfer_error = "temporary transfer files could not be prepared"
+			var/list/source_save_fingerprint
+			var/list/source_feat_fingerprint
+			var/source_feat_existed = fexists(source_feat_path)
+			if(!length(transfer_error))
+				source_save_fingerprint = getNexusAdminTransferFileFingerprint(source_save_path)
+				if(!islist(source_save_fingerprint)) transfer_error = "the source character save is missing or unreadable"
+			if(!length(transfer_error) && !copyNexusAdminTransferFileVerified(source_save_path, staged_save_path, source_save_fingerprint))
+				transfer_error = "the source character save could not be staged and verified"
+			if(!length(transfer_error) && source_feat_existed)
+				source_feat_fingerprint = getNexusAdminTransferFileFingerprint(source_feat_path)
+				if(!islist(source_feat_fingerprint) || !copyNexusAdminTransferFileVerified(source_feat_path, staged_feat_path, source_feat_fingerprint))
+					transfer_error = "the source feat save could not be staged and verified"
+			var/destination_save_existed = fexists(destination_save_path)
+			var/destination_feat_existed = fexists(destination_feat_path)
+			var/list/destination_save_fingerprint
+			var/list/destination_feat_fingerprint
+			if(!length(transfer_error) && destination_save_existed)
+				destination_save_fingerprint = getNexusAdminTransferFileFingerprint(destination_save_path)
+				if(!islist(destination_save_fingerprint) || !copyNexusAdminTransferFileVerified(destination_save_path, backup_save_path, destination_save_fingerprint))
+					transfer_error = "the destination character save could not be backed up and verified"
+			if(!length(transfer_error) && destination_feat_existed)
+				destination_feat_fingerprint = getNexusAdminTransferFileFingerprint(destination_feat_path)
+				if(!islist(destination_feat_fingerprint) || !copyNexusAdminTransferFileVerified(destination_feat_path, backup_feat_path, destination_feat_fingerprint))
+					transfer_error = "the destination feat save could not be backed up and verified"
+			if(length(transfer_error))
+				var/preparation_cleanup_succeeded = cleanupNexusAdminTransferFiles(transfer_files)
+				src << "<font color=red>Enter Character was cancelled: [transfer_error]. The destination slot was not changed."
+				Log(src, "[destination_profile_art_key] failed to enter [M]'s online character: [transfer_error].")
+				if(!preparation_cleanup_succeeded)
+					src << "<font color=yellow>Some temporary transfer files could not be removed; the failure was logged."
+					Log(src, "[destination_profile_art_key]'s failed Enter Character preparation left temporary files for ticket [transfer_ticket].")
+				return
+			if(!copyNexusAdminTransferFileVerified(staged_save_path, destination_save_path, source_save_fingerprint))
+				transfer_error = "the staged character save could not be committed and verified"
+			if(!length(transfer_error) && source_feat_existed)
+				if(!copyNexusAdminTransferFileVerified(staged_feat_path, destination_feat_path, source_feat_fingerprint))
+					transfer_error = "the staged feat save could not be committed and verified"
+			if(!length(transfer_error) && !source_feat_existed)
+				if(fexists(destination_feat_path)) fdel(destination_feat_path)
+				if(fexists(destination_feat_path)) transfer_error = "the destination's obsolete feat save could not be removed"
+			if(!length(transfer_error) && !setNexusAdminTransferSaveKey(destination_save_path, destination_profile_art_key))
+				transfer_error = "the destination character key could not be committed"
+			var/load_succeeded = FALSE
+			if(!length(transfer_error))
+				if(destination_client) destination_client.cancelNexusUploadBrokerContexts()
+				try
+					load_succeeded = load()
+				catch(var/exception/load_error)
+					if(load_error) load_succeeded = FALSE
+				if(!load_succeeded) transfer_error = "the committed character could not be loaded"
+			if(length(transfer_error))
+				var/save_restored = restoreNexusAdminTransferFile(destination_save_path, backup_save_path, destination_save_existed, destination_save_fingerprint)
+				var/feat_restored = restoreNexusAdminTransferFile(destination_feat_path, backup_feat_path, destination_feat_existed, destination_feat_fingerprint)
+				var/rollback_load_succeeded = !destination_save_existed && save_restored && feat_restored
+				if(save_restored && feat_restored && destination_save_existed)
+					rollback_load_succeeded = FALSE
+					if(destination_client) destination_client.cancelNexusUploadBrokerContexts()
+					try
+						rollback_load_succeeded = load()
+					catch(var/exception/rollback_load_error)
+						if(rollback_load_error) rollback_load_succeeded = FALSE
+				var/list/rollback_cleanup_files = list(staged_save_path, staged_feat_path)
+				if(save_restored) rollback_cleanup_files += backup_save_path
+				if(feat_restored) rollback_cleanup_files += backup_feat_path
+				var/rollback_cleanup_succeeded = cleanupNexusAdminTransferFiles(rollback_cleanup_files)
+				src << "<font color=red>Enter Character failed: [transfer_error]. [save_restored && feat_restored ? "The destination files were restored." : "At least one verified backup was retained for manual recovery."]"
+				Log(src, "[destination_profile_art_key] failed to enter [M]'s online character: [transfer_error]. Save restored: [save_restored]. Feats restored: [feat_restored]. Previous character reloaded: [rollback_load_succeeded]. Ticket: [transfer_ticket].")
+				if(!rollback_cleanup_succeeded)
+					src << "<font color=yellow>Some transfer staging files could not be removed; the failure was logged."
+					Log(src, "[destination_profile_art_key]'s failed Enter Character rollback left staging files for ticket [transfer_ticket].")
+				return
+			if(!cleanupNexusAdminTransferFiles(transfer_files))
+				src << "<font color=yellow>The character was entered, but temporary transfer files could not all be removed."
+				Log(src, "[destination_profile_art_key]'s successful Enter Character left temporary files for ticket [transfer_ticket].")
+			var/profile_art_copied = !isNexusProfileArtHash(source_profile_art_hash) || copyNexusPlayerProfileImageForKeys(source_profile_art_key, source_profile_art_slot, destination_profile_art_key, destination_profile_art_slot, source_profile_art_hash)
+			var/profile_art_ready = profile_art_copied && isNexusProfileArtHash(source_profile_art_hash) && player_profile_art_hash == source_profile_art_hash && player_profile_art_format == normalizeNexusProfileArtFormat(source_profile_art_format) && hasNexusPlayerProfileCustomArt() && isNexusPlayerProfileArtMetadataPersisted() && isNexusPlayerProfileTextPersisted()
+			if(profile_art_ready)
+				if(!deleteNexusPlayerProfileImageGenerationsForKey(destination_profile_art_key, destination_profile_art_slot, player_profile_art_hash, player_profile_art_format))
+					src << "<font color=yellow>The character was entered, but obsolete profile-art files could not be removed."
+					Log(src, "[destination_profile_art_key] entered an online character, but obsolete profile-art cleanup failed for slot [destination_profile_art_slot].")
+			else
+				clearNexusPlayerProfileArtMetadata()
+				save()
+				if(isNexusPlayerProfileArtMetadataPersisted())
+					if(!deleteNexusPlayerProfileImageForKey(destination_profile_art_key, destination_profile_art_slot))
+						src << "<font color=yellow>The character was entered without custom art, but orphaned profile-art files could not be removed."
+						Log(src, "[destination_profile_art_key] entered an online character, but orphaned profile-art cleanup failed for slot [destination_profile_art_slot].")
+				else
+					src << "<font color=yellow>The character was entered without custom art, but the cleared profile metadata could not be verified. Raw files were retained."
+					Log(src, "[destination_profile_art_key] entered an online character, but cleared profile-art metadata did not persist for slot [destination_profile_art_slot].")
 		admin_blame(src, "[key] has entered [M]'s character.")
 
 mob/proc/MassReviveAlert()
@@ -2746,30 +2934,15 @@ atom/Topic(href, hrefs[])
 			character.showCharacterSheet()
 		return
 	if(hrefs["action"] == "open_admin_inspector")
-		if(usr && usr.client && usr.IsAdmin() && Admins[usr.key] >= 3)
+		if(usr && usr.client && usr.AdminLevel() >= 3)
 			usr.showNexusAdminInspector(src)
 		return
 	if(hrefs["action"] == "edit")
-		if(!usr || !usr.client || !usr.IsAdmin()) return
-		var/mob/admin = usr
-		var/v = hrefs["var"]
-		var/original = vars[v]
-		//this is to try and prevent a teleport hack
-		if(ismob(src) && src:client && "[v]" in list("x","y","z","loc"))
-			return
-		var/class = input(usr, "[v]") as null|anything in list("Number", "Text", "File", "Empty List", "Nothing")
-
-		if(!class) return
-		switch(class)
-			if("Nothing") vars[v] = null
-			if("Text") vars[v] = input(usr, "", "", vars[v]) as text
-			if("Number") vars[v]=input(usr, "", "", vars[v]) as num
-			if("File") vars[v]=input(usr, "", "", vars[v]) as file
-			if("Empty list") vars[v] = new/list
-
-		admin.admin_blame(admin, "[admin.key] edited [v] from [original] to [vars[v]] on [src]")
-		//usr:Edit(src)
-		. = ..()
+		// Legacy hrefs are intentionally read-only: all edits now pass through the
+		// structured inspector, which revalidates the owner, privilege and variable.
+		if(usr && usr.client && usr.AdminLevel() >= 3)
+			usr.showNexusAdminInspector(src)
+		return
 
 proc/Value(A)
 	if(isnull(A)) return "Nothing"

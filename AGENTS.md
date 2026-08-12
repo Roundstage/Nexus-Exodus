@@ -7,11 +7,11 @@
 - `UI.dmf` defines the client skin. `data/` holds runtime saves and logs (avoid committing ad-hoc changes).
 
 ## Build, Test, and Development Commands
-- Full baseline: run `.\tools\Invoke-ByondSmoke.ps1` from PowerShell. It pins BYOND 516.1685, compiles, and runs clean and versioned startup tests in a temporary directory.
+- Full baseline: run `.\tools\Invoke-ByondSmoke.ps1` from PowerShell. It pins BYOND 516.1686, compiles, and runs clean and versioned startup tests in a temporary directory.
 - Headless local compile: run `.\tools\Invoke-ByondSmoke.ps1 -CompileOnly`. This never starts Dream Daemon or opens a local server.
 - Naming audit: run `.\tools\Test-NamingConventions.ps1`; add `-Detailed` for individual violations, `-PathStrict` to enforce paths, and `-Strict` once the identifier migration is complete.
 - Asset reference audit: run `.\tools\Test-AssetReferences.ps1 -Strict` to reject missing, ambiguous, or incorrectly cased first-party asset references.
-- Manual build: open `DU.dme` with BYOND 516.1685 and select `Build > Compile`.
+- Manual build: open `DU.dme` with BYOND 516.1686 and select `Build > Compile`.
 - Run locally: open the compiled `.dmb` in Dream Daemon or use Dream Maker's `Run`.
 - Release: package the matching `.dmb` and `.rsc` files plus required runtime data.
 

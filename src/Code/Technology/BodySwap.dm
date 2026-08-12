@@ -3,7 +3,9 @@ obj/items/clonable=0
 proc/Switch_Bodies(mob/A,mob/P,save_override)
 	if(!A.client) return
 	var/Key1=A.key
+	var/slot_1 = clampNexusCharacterSlot(A.active_character_slot)
 	var/Key2
+	var/slot_2 = clampNexusCharacterSlot(P.active_character_slot)
 	if(P.client) Key2=P.key
 	//switch imprisonments
 	var/A_imprisonments=A.Imprisonments
@@ -34,9 +36,18 @@ proc/Switch_Bodies(mob/A,mob/P,save_override)
 	players.Remove(A,P)
 	if(!P.client) P.Player_Loops(start_delay = 10)
 	var/mob/Temp=new
-	if(Key2) Temp.key=Key2
+	// The active slot belongs to the account/client, so prepare each recipient before moving its key.
+	if(Key2)
+		Temp.active_character_slot = slot_2
+		if(P.client) P.client.cancelNexusUploadBrokerContexts()
+		Temp.key=Key2
+	P.active_character_slot = slot_1
+	if(A.client) A.client.cancelNexusUploadBrokerContexts()
 	P.key=Key1
-	if(Key2) A.key=Key2
+	if(Key2)
+		A.active_character_slot = slot_2
+		if(Temp.client) Temp.client.cancelNexusUploadBrokerContexts()
+		A.key=Key2
 
 	if(P&&P.client)
 		P.client.show_verb_panel=1

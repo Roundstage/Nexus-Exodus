@@ -141,8 +141,8 @@ proc/getNexusTransformationGlowProfile(transformation_id)
 
 proc/getNexusAttackGlowColor(obj/Attacks/attack)
 	if(!attack) return "#59d8ff"
-	if(istype(attack, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash)) return "#b8ecff"
-	if(istype(attack, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak)) return "#8ed8ff"
+	if(istype(attack, /obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash)) return "#b8ecff"
+	if(istype(attack, /obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak)) return "#8ed8ff"
 	if(istype(attack, /obj/Attacks/Final_Flash) || istype(attack, /obj/Attacks/Masenko) || istype(attack, /obj/Attacks/Kienzan)) return "#fff176"
 	if(istype(attack, /obj/Attacks/Garlic_Gun) || istype(attack, /obj/Attacks/RoleplayBeam/TyrantLancer)) return "#b56cff"
 	if(istype(attack, /obj/Attacks/RoleplayBeam/DoubleSunday)) return "#ff4d5f"

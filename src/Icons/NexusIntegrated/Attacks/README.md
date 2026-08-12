@@ -1,0 +1,7 @@
+# Integrated attack assets
+
+These assets were supplied by the original project owner with authorization for continued use in Nexus Exodus. They are isolated from the legacy DU asset root, and their stable `RT` filename prefixes prevent ambiguous BYOND resource references.
+
+The integrated attack catalog exposes 28 physical/special techniques plus four beam families, backed by 35 supplied icons. `RTRockThrow.dmi` and `RTRockTomb.dmi` preserve the animated `bouldertest2.dmi` and `Meteor.dmi` art; they remain separate from Nexus resource-rock scenery. The admin testing catalog exposes 43 entries because it also includes compatible native attacks plus the three rock techniques. Use **Give Nexus Attacks** from the searchable Admin Panel to grant Weapon, Unarmed, Rock Techniques, Special Styles, Beams or All packages.
+
+Melee mechanics are adapted as native Nexus behaviors: grapple throws and slams require an active grab, line attacks retain their reach, advancing attacks pursue over time, and counters intercept an incoming melee strike. Every adapted melee technique maps its imported impact art to its hotbar icon and uses Nexus attack animation, floating technique text, spectator messaging, sound profiles and animated impact actors. Wall of Flame uses a bounded persistent field controller with cast and burn feedback. Generic blast reskins are kept out of the testing packages so dodge, guard, RPMode, lethal/KO handling and central damage scaling remain authoritative in Nexus.

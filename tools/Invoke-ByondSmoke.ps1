@@ -12,9 +12,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ByondVersion = '516.1685'
-$ByondUrl = 'https://www.byond.com/download/build/516/516.1685_byond.zip'
-$ByondSha256 = 'e24078f1e6d719681118d6505b2a3f263fb173c1b63465d2f68f3e0ec177126f'
+$ByondVersion = '516.1686'
+$ByondUrl = 'https://www.byond.com/download/build/516/516.1686_byond.zip'
+$ByondSha256 = '2e355847d2080f6ff83ffba2b62b66574a4939e110323669d843f8afb7b5ace3'
 
 function Repair-ProcessEnvironmentPath {
 	$environment = [Environment]::GetEnvironmentVariables([EnvironmentVariableTarget]::Process)
@@ -240,7 +240,7 @@ $archivePath = Join-Path $toolsDirectory "BYOND-$ByondVersion.zip"
 $succeeded = $false
 $previousByondSystem = $env:BYOND_SYSTEM
 $previousCompatibilityLayer = $env:__COMPAT_LAYER
-$cacheMutex = New-Object Threading.Mutex($false, 'Local\NexusExodusByond5161685')
+$cacheMutex = New-Object Threading.Mutex($false, 'Local\NexusExodusByond5161686')
 $cacheLockTaken = $false
 
 try {
