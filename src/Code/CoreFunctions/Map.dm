@@ -454,7 +454,7 @@ obj/Turfs
 		icon_state="rock"
 	LargeRock
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="rockl"
 	firewood
 		icon='Roomobj.dmi'
@@ -470,7 +470,7 @@ obj/Turfs
 		layer = 4.2
 	WaterRock
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="waterrock"
 	Throne_1
 		icon='Throne2.dmi'
@@ -533,10 +533,10 @@ obj/Turfs
 			var/image/A=image(icon='Throne2.dmi',icon_state="bronze top",pixel_y=32,layer=MOB_LAYER+1)
 			overlays+=A
 	Throne_11
-		icon='zzzz.dmi'
+		icon='Zzzz.dmi'
 		icon_state="zarchair1"
 		New()
-			var/image/A=image(icon='zzzz.dmi',icon_state="zarchair4",pixel_y=32,layer=MOB_LAYER+1)
+			var/image/A=image(icon='Zzzz.dmi',icon_state="zarchair4",pixel_y=32,layer=MOB_LAYER+1)
 			overlays+=A
 	Hell_Skull
 		density=1
@@ -544,19 +544,19 @@ obj/Turfs
 		icon_state="h7"
 	HellRock
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="hellrock1"
 	HellRock2
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="hellrock2"
 	HellRock3
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="hellrock3"
 	LargeRock2
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="terrainrock"
 	Rock1
 		icon='Turf50.dmi'
@@ -734,7 +734,7 @@ obj/Turfs
 		icon_state="plant"
 		density=1
 	Plant3
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="groundplant"
 	Plant4
 		icon='Turf2.dmi'
@@ -743,7 +743,7 @@ obj/Turfs
 		icon='Turf2.dmi'
 		icon_state="plant3"
 	Plant13
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="bush"
 	Plant14
 		icon='TurfsLegacy1.dmi'
@@ -786,12 +786,12 @@ obj/Turfs
 		icon_state="161"
 
 	HellPot
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="flamepot2"
 		density=1
 		pixel_y = -16
 		New()
-			var/image/A=image(icon = 'turfs.dmi', icon_state = "flamepot1", pixel_y = 32)
+			var/image/A=image(icon = 'Turfs.dmi', icon_state = "flamepot1", pixel_y = 32)
 			overlays=null
 			overlays.Add(A)
 			spawn if(src) Fire_Cook(300)
@@ -810,10 +810,10 @@ obj/Turfs
 		icon='Turf3.dmi'
 		icon_state="163"
 	Angel_Statue
-		icon='zzzz.dmi'
+		icon='Zzzz.dmi'
 		icon_state="statuebottom"
 		New()
-			var/image/A=image(icon='zzzz.dmi',icon_state="statuetop",layer=MOB_LAYER+1,pixel_y=32)
+			var/image/A=image(icon='Zzzz.dmi',icon_state="statuetop",layer=MOB_LAYER+1,pixel_y=32)
 			overlays+=A
 	Book
 		icon='Turf3.dmi'
@@ -830,7 +830,7 @@ obj/Turfs
 		density=1
 		layer=MOB_LAYER+1
 	Table6
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="Table"
 		density=1
 	Table5
@@ -958,7 +958,7 @@ obj/Turfs
 		icon_state="barrel"
 		density=1
 	Waterfall
-		icon='waterfall.dmi'
+		icon='Waterfall.dmi'
 		layer=MOB_LAYER+1
 
 	WaterfallGreen
@@ -966,7 +966,7 @@ obj/Turfs
 		layer=MOB_LAYER+1
 
 	chair
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="Chair"
 	box2
 		icon='TurfsLegacy5.dmi'
@@ -1138,41 +1138,41 @@ obj/Trees
 
 	Dead_Tree_1
 		New()
-			var/image/A=image(icon='turfs66.dmi',icon_state="2",pixel_x=0,pixel_y=0,layer=layer)
-			var/image/B=image(icon='turfs66.dmi',icon_state="3",pixel_x=-32,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/C=image(icon='turfs66.dmi',icon_state="42",pixel_x=0,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/D=image(icon='turfs66.dmi',icon_state="31",pixel_x=32,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/A=image(icon='Turfs66.dmi',icon_state="2",pixel_x=0,pixel_y=0,layer=layer)
+			var/image/B=image(icon='Turfs66.dmi',icon_state="3",pixel_x=-32,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/C=image(icon='Turfs66.dmi',icon_state="42",pixel_x=0,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/D=image(icon='Turfs66.dmi',icon_state="31",pixel_x=32,pixel_y=32,layer=MOB_LAYER+1)
 			overlays=null
 			overlays.Add(A,B,C,D)
 	/*Dead_Tree_2
 		New()
-			var/image/A=image(icon='turfs66.dmi',icon_state="d1",pixel_x=0,pixel_y=0,layer=layer)
-			var/image/B=image(icon='turfs66.dmi',icon_state="d2",pixel_x=-32,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/C=image(icon='turfs66.dmi',icon_state="d3",pixel_x=0,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/D=image(icon='turfs66.dmi',icon_state="d4",pixel_x=32,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/A=image(icon='Turfs66.dmi',icon_state="d1",pixel_x=0,pixel_y=0,layer=layer)
+			var/image/B=image(icon='Turfs66.dmi',icon_state="d2",pixel_x=-32,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/C=image(icon='Turfs66.dmi',icon_state="d3",pixel_x=0,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/D=image(icon='Turfs66.dmi',icon_state="d4",pixel_x=32,pixel_y=32,layer=MOB_LAYER+1)
 			overlays=null
 			overlays.Add(A,B,C,D)*/
 	Dark_Tree
 		New()
-			var/image/A=image(icon='turfs66.dmi',icon_state="treebotleft",pixel_x=-16,pixel_y=0,layer=layer)
-			var/image/B=image(icon='turfs66.dmi',icon_state="treebotright",pixel_x=16,pixel_y=0,layer=layer)
-			var/image/C=image(icon='turfs66.dmi',icon_state="treetopleft",pixel_x=-16,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/D=image(icon='turfs66.dmi',icon_state="treetopright",pixel_x=16,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/A=image(icon='Turfs66.dmi',icon_state="treebotleft",pixel_x=-16,pixel_y=0,layer=layer)
+			var/image/B=image(icon='Turfs66.dmi',icon_state="treebotright",pixel_x=16,pixel_y=0,layer=layer)
+			var/image/C=image(icon='Turfs66.dmi',icon_state="treetopleft",pixel_x=-16,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/D=image(icon='Turfs66.dmi',icon_state="treetopright",pixel_x=16,pixel_y=32,layer=MOB_LAYER+1)
 			overlays=null
 			overlays.Add(A,B,C,D)
 	Strange_Pine
 		New()
-			var/image/A=image(icon='turfs66.dmi',icon_state="treeleftbot1",pixel_x=-16,pixel_y=0,layer=layer)
-			var/image/B=image(icon='turfs66.dmi',icon_state="treerightbot1",pixel_x=16,pixel_y=0,layer=layer)
-			var/image/C=image(icon='turfs66.dmi',icon_state="treelefttop1",pixel_x=-16,pixel_y=32,layer=MOB_LAYER+1)
-			var/image/D=image(icon='turfs66.dmi',icon_state="treerighttop1",pixel_x=16,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/A=image(icon='Turfs66.dmi',icon_state="treeleftbot1",pixel_x=-16,pixel_y=0,layer=layer)
+			var/image/B=image(icon='Turfs66.dmi',icon_state="treerightbot1",pixel_x=16,pixel_y=0,layer=layer)
+			var/image/C=image(icon='Turfs66.dmi',icon_state="treelefttop1",pixel_x=-16,pixel_y=32,layer=MOB_LAYER+1)
+			var/image/D=image(icon='Turfs66.dmi',icon_state="treerighttop1",pixel_x=16,pixel_y=32,layer=MOB_LAYER+1)
 			overlays=null
 			overlays.Add(A,B,C,D)
 	Nice_Tree
-		overlays=newlist(/image{icon='turfs66.dmi' icon_state="treeleftbot2" pixel_x=-16 pixel_y=0},\
-		/image{icon='turfs66.dmi' icon_state="treerightbot2" pixel_x=16 pixel_y=0},\
-		/image{icon='turfs66.dmi' icon_state="treelefttop2" pixel_x=-16 pixel_y=32 layer=MOB_LAYER+1},\
-		/image{icon='turfs66.dmi' icon_state="treerighttop2" pixel_x=16 pixel_y=32 layer=MOB_LAYER+1})
+		overlays=newlist(/image{icon='Turfs66.dmi' icon_state="treeleftbot2" pixel_x=-16 pixel_y=0},\
+		/image{icon='Turfs66.dmi' icon_state="treerightbot2" pixel_x=16 pixel_y=0},\
+		/image{icon='Turfs66.dmi' icon_state="treelefttop2" pixel_x=-16 pixel_y=32 layer=MOB_LAYER+1},\
+		/image{icon='Turfs66.dmi' icon_state="treerighttop2" pixel_x=16 pixel_y=32 layer=MOB_LAYER+1})
 	SmallPine
 		icon='Turf58.dmi'
 		icon_state="2"
@@ -1218,32 +1218,32 @@ obj/Trees
 	Oak
 		density=1
 		New()
-			var/image/A=image(icon='turfs.dmi',icon_state="1",pixel_y=0,pixel_x=-16,layer=4)
-			var/image/B=image(icon='turfs.dmi',icon_state="2",pixel_y=0,pixel_x=16,layer=4)
-			var/image/C=image(icon='turfs.dmi',icon_state="3",pixel_y=32,pixel_x=-16,layer=4)
-			var/image/D=image(icon='turfs.dmi',icon_state="4",pixel_y=32,pixel_x=16,layer=4)
-			var/image/E=image(icon='turfs.dmi',icon_state="5",pixel_y=64,pixel_x=-16,layer=4)
-			var/image/F=image(icon='turfs.dmi',icon_state="6",pixel_y=64,pixel_x=16,layer=4)
+			var/image/A=image(icon='Turfs.dmi',icon_state="1",pixel_y=0,pixel_x=-16,layer=4)
+			var/image/B=image(icon='Turfs.dmi',icon_state="2",pixel_y=0,pixel_x=16,layer=4)
+			var/image/C=image(icon='Turfs.dmi',icon_state="3",pixel_y=32,pixel_x=-16,layer=4)
+			var/image/D=image(icon='Turfs.dmi',icon_state="4",pixel_y=32,pixel_x=16,layer=4)
+			var/image/E=image(icon='Turfs.dmi',icon_state="5",pixel_y=64,pixel_x=-16,layer=4)
+			var/image/F=image(icon='Turfs.dmi',icon_state="6",pixel_y=64,pixel_x=16,layer=4)
 			overlays=null
 			overlays.Add(A,B,C,D,E,F)
 			//. = ..()
 	RoundTree
 		density=1
 		New()
-			var/image/A=image(icon='turfs.dmi',icon_state="01",pixel_y=0,pixel_x=-16,layer=4)
-			var/image/B=image(icon='turfs.dmi',icon_state="02",pixel_y=0,pixel_x=16,layer=4)
-			var/image/C=image(icon='turfs.dmi',icon_state="03",pixel_y=32,pixel_x=-16,layer=4)
-			var/image/D=image(icon='turfs.dmi',icon_state="04",pixel_y=32,pixel_x=16,layer=4)
+			var/image/A=image(icon='Turfs.dmi',icon_state="01",pixel_y=0,pixel_x=-16,layer=4)
+			var/image/B=image(icon='Turfs.dmi',icon_state="02",pixel_y=0,pixel_x=16,layer=4)
+			var/image/C=image(icon='Turfs.dmi',icon_state="03",pixel_y=32,pixel_x=-16,layer=4)
+			var/image/D=image(icon='Turfs.dmi',icon_state="04",pixel_y=32,pixel_x=16,layer=4)
 			overlays=null
 			overlays.Add(A,B,C,D)
 			//. = ..()
 	Tree
 		density=1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="bottom"
 		New()
-			var/image/B=image(icon='turfs.dmi',icon_state="middle",pixel_y=32,pixel_x=0,layer=4)
-			var/image/C=image(icon='turfs.dmi',icon_state="top",pixel_y=64,pixel_x=0,layer=4)
+			var/image/B=image(icon='Turfs.dmi',icon_state="middle",pixel_y=32,pixel_x=0,layer=4)
+			var/image/C=image(icon='Turfs.dmi',icon_state="top",pixel_y=64,pixel_x=0,layer=4)
 			overlays=null
 			overlays.Add(B,C)
 			//. = ..()
@@ -1474,7 +1474,7 @@ turf/Other
 		. = ..()
 	Lava
 		nukable=0
-		//icon='turfs.dmi'
+		//icon='Turfs.dmi'
 		//icon_state="lava"
 		icon = 'Lava2017.dmi'
 		icon_state = "0,0"
@@ -1798,7 +1798,7 @@ turf
 			DecideTurfStateForSpecialIcons(6,6)
 
 	Ground18
-		//icon='turfs.dmi'
+		//icon='Turfs.dmi'
 		//icon_state="hellfloor"
 		icon = 'BigDirtTurf2.dmi'
 		build_category = BUILD_GROUND
@@ -1958,7 +1958,7 @@ turf
 			. = ..()
 
 	GrassSluggo
-		//icon='turfs.dmi'
+		//icon='Turfs.dmi'
 		//icon_state="ngrass"
 		icon='NamekTiles.dmi'
 		icon_state="A 1"
@@ -2130,7 +2130,7 @@ turf
 		density=1
 		build_category = BUILD_WALL
 	Wall21
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalwalla"
 		density=1
 		build_category = BUILD_WALL
@@ -2139,7 +2139,7 @@ turf
 		density=1
 		build_category = BUILD_WALL
 	Wall22
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalwallb"
 		density=1
 		build_category = BUILD_WALL
@@ -2154,7 +2154,7 @@ turf
 		density=1
 		build_category = BUILD_WALL
 	Wall13
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="wall8"
 		density=1
 		build_category = BUILD_WALL
@@ -2169,7 +2169,7 @@ turf
 		density=1
 		build_category = BUILD_WALL
 	Wall5
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile1"
 		density=1
 		build_category = BUILD_WALL
@@ -2184,7 +2184,7 @@ turf
 		density=1
 		build_category = BUILD_WALL
 	Wall1
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile5"
 		density=1
 		opacity=0
@@ -2250,7 +2250,7 @@ turf
 
 
 	Roof4
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalroofa"
 		build_category = BUILD_ROOF
 		density=1
@@ -2261,7 +2261,7 @@ turf
 			makeDenseAll(usr)
 			upgradeAll(usr,display_message=0)
 	Roof5
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalroofb"
 		density=1
 		opacity=1
@@ -2271,7 +2271,7 @@ turf
 			makeDenseAll(usr)
 			upgradeAll(usr,display_message=0)
 	Roof6
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalroofc"
 		density=1
 		opacity=1
@@ -2360,7 +2360,7 @@ turf
 			makeDenseAll(usr)
 			upgradeAll(usr,display_message=0)
 	Roof2
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="roof2"
 		build_category = BUILD_ROOF
 		density=1
@@ -2380,7 +2380,7 @@ turf
 			makeDenseAll(usr)
 			upgradeAll(usr,display_message=0)
 	RoofWhite
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="block_wall1"
 		density=1
 		opacity=1
@@ -2425,23 +2425,23 @@ turf
 
 
 	Tile38
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalfloora"
 		build_category = BUILD_FLOOR
 	Tile39
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalfloorsn"
 		build_category = BUILD_FLOOR
 	Tile40
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="gratingfloora"
 		build_category = BUILD_FLOOR
 	Tile41
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="gratingfloorb"
 		build_category = BUILD_FLOOR
 	Tile42
-		icon='metaltiles1.dmi'
+		icon='Metaltiles1.dmi'
 		icon_state="metalfloorb"
 		build_category = BUILD_FLOOR
 	Tile43
@@ -2533,11 +2533,11 @@ turf
 		icon_state="woodfloor"
 		build_category = BUILD_FLOOR
 	TileBlue
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile11"
 		build_category = BUILD_FLOOR
 	Tile26
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile9"
 		build_category = BUILD_FLOOR
 	Tile25
@@ -2553,7 +2553,7 @@ turf
 		icon_state="Wood_Floor"
 		build_category = BUILD_FLOOR
 	Tile17
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="roof4"
 		build_category = BUILD_FLOOR
 	Tile15
@@ -2565,7 +2565,7 @@ turf
 		icon_state="floor4"
 		build_category = BUILD_FLOOR
 	Tile14
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile10"
 		build_category = BUILD_FLOOR
 	Tile22
@@ -2589,7 +2589,7 @@ turf
 		icon_state="floor2"
 		build_category = BUILD_FLOOR
 	Tile20
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile4"
 		build_category = BUILD_FLOOR
 	Tile2
@@ -2601,7 +2601,7 @@ turf
 		icon_state="floor7"
 		build_category = BUILD_FLOOR
 	TileBlue2
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile12"
 		build_category = BUILD_FLOOR
 	Tile13
@@ -2609,7 +2609,7 @@ turf
 		icon_state="floor6"
 		build_category = BUILD_FLOOR
 	Tile24
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="bridgemid2"
 		edge_icon = 'EdgesBridge.dmi'
 		auto_cliff = 0
@@ -2649,10 +2649,10 @@ turf
 		icon_state="tile4"
 		build_category = BUILD_FLOOR
 	Tile36
-		icon='floor3.dmi'
+		icon='Floor3.dmi'
 		build_category = BUILD_FLOOR
 	Tile37
-		icon='woodfloor1.dmi'
+		icon='Woodfloor1.dmi'
 		build_category = BUILD_FLOOR
 	Tile_Hell1
 		icon='HellTurf.dmi'
@@ -2687,11 +2687,11 @@ turf
 		edge_icon = 'EdgesBridge.dmi'
 		build_category = BUILD_FLOOR
 	Tile27
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="tile7"
 		build_category = BUILD_FLOOR
 	Tile28
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="floor"
 		build_category = BUILD_FLOOR
 	TileGold
@@ -2872,7 +2872,7 @@ turf
 			DecideTurfStateForSpecialIcons(4,4)
 
 	Water8
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="nwater"
 		Water=1
 		wave_icon = 'Surf4.dmi'
@@ -2909,7 +2909,7 @@ turf
 			. = ..()
 
 	Water7
-		icon='turfs.dmi'
+		icon='Turfs.dmi'
 		icon_state="lava"
 		icon = 'Lava2017.dmi'
 		icon_state = "0,0"

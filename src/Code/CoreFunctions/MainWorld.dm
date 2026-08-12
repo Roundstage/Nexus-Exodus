@@ -557,7 +557,7 @@ proc/Nuke_detonate(nuke_bp=0, turf/origin, range=30, radiation=1, overlay_prob=8
 						sleep(4)
 				if(t.Water)
 					if(radiation)
-						t.icon='turfs.dmi'
+						t.icon='Turfs.dmi'
 						t.icon_state="nwater"
 				else
 					t.destroy_turf()
@@ -583,7 +583,7 @@ turf/proc/nuke_test(nuke_bp=0,turf/origin,range=80)
 
 	if(nukable)
 		if(Water)
-			icon='turfs.dmi'
+			icon='Turfs.dmi'
 			icon_state="nwater"
 		else destroy_turf()
 

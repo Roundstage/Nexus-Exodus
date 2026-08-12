@@ -429,7 +429,7 @@ obj/Orbital_Cannon
 	up ships/pods it spots on the surface. It is expensive and somewhat easily destroyed if someone \
 	in space attacks it. Right click it for settings. Nanites within the orbital cannon will gradually \
 	repair any damage taken to the cannon"
-	icon='satellite.dmi'
+	icon='Satellite.dmi'
 	Cost=10000000
 	science = 1
 	science_level = 7

@@ -565,7 +565,7 @@ obj/Buff/Preset
 		buff_str = 1.12
 		buff_for = 1.22
 		buff_off = 1.12
-		preset_vfx_icon = 'src/Icons/VFX/saiyanPower.dmi'
+		preset_vfx_icon = 'src/Icons/VFX/SaiyanPower.dmi'
 		preset_vfx_color = "#ffe75e"
 		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Powerup.wav'
 

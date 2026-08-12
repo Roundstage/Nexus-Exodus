@@ -3229,7 +3229,7 @@ obj/SaiyanPower
 			usr.Eff *= 1.5
 			usr.max_ki *= 1.5
 			usr.Ki *= 1.5
-			usr.overlays+='saiyanPower.dmi'
+			usr.overlays+='SaiyanPower.dmi'
 			usr << "You are now using the Saiyan Power"
 		else usr.SaiyanPower_Revert()
 
@@ -3241,7 +3241,7 @@ mob/proc/SaiyanPower_Revert()
 		Eff /= 1.5
 		max_ki /= 1.5
 		Ki /= 1.5
-		overlays-='saiyanPower.dmi'
+		overlays-='SaiyanPower.dmi'
 		src << "You have stopped using Saiyan Power"
 		rebuildPlayerAppearance("Saiyan Power revert")
 

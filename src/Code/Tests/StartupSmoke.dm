@@ -906,7 +906,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("invalid") == "overlay", "interface layout normalization is invalid")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
-	overhead_layout_test.icon = 'healthbar.dmi'
+	overhead_layout_test.icon = 'Healthbar.dmi'
 	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == -12 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 12 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 46, "Say text, typing, character, and lower vitals are not vertically ordered")
 	nexusSmokeAssert(getNexusTypingIndicatorPixelY(overhead_layout_test) + 32 < getNexusOverheadFeedbackPixelY(overhead_layout_test) && getNexusTypingIndicatorPixelY(overhead_layout_test) + 22 > GetHeight(overhead_layout_test.icon), "typing is not below Say text and above the character")
 	nexusSmokeAssert(getNexusOverheadPercentagePixelY(overhead_layout_test) == -25 && getNexusOverheadPercentagePixelY(overhead_layout_test) + 12 < getNexusOverheadVitalsBasePixelY(overhead_layout_test), "Sense percentage is not below the overhead vitals")

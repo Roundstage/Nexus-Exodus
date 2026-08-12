@@ -94,7 +94,7 @@ mob/proc/Store_item_check(obj/o)
 		return
 
 obj/Bank
-	icon='tech.dmi'
+	icon='Tech.dmi'
 	icon_state="compdown"
 	Dead_Zone_Immune=1
 	Grabbable=0

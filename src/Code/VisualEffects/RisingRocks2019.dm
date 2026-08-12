@@ -86,7 +86,7 @@ proc
 		//blob shadow
 		var/randomSize = rand(80,120) * 0.6
 		var/obj/shadow = GetEffect()
-		shadow.icon = 'defaultblobshadow.png'
+		shadow.icon = 'Defaultblobshadow.png'
 		CenterIcon(shadow)
 		shadow.loc = pos
 		shadow.pixel_x += abs(xOffset)

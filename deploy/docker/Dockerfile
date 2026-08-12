@@ -33,17 +33,20 @@ RUN dpkg --add-architecture i386 \
 
 COPY --from=byond /opt/byond /opt/byond
 COPY --chown=root:root DU.dmb DU.rsc /opt/nexus/
+COPY --chown=root:root entrypoint.sh /usr/local/bin/nexus-entrypoint
 
-RUN chmod 0444 /opt/nexus/DU.dmb /opt/nexus/DU.rsc
+RUN chmod 0444 /opt/nexus/DU.dmb /opt/nexus/DU.rsc \
+	&& chmod 0555 /usr/local/bin/nexus-entrypoint
 
 ENV BYOND_SYSTEM=/opt/byond \
 	LD_LIBRARY_PATH=/opt/byond/bin \
-	HOME=/srv/nexus
+	HOME=/srv/nexus \
+	NEXUS_RUNTIME_DIR=/srv/nexus/runtime
 
 USER nexus
 WORKDIR /srv/nexus
 
 EXPOSE 50000/tcp
 
-ENTRYPOINT ["/opt/byond/bin/DreamDaemon"]
-CMD ["/opt/nexus/DU.dmb", "50000", "-safe", "-home", "/srv/nexus", "-cd", "/srv/nexus", "-log", "dreamdaemon.log", "-params", "nexus_environment=playtest&nexus_playtest_rewards=1"]
+ENTRYPOINT ["/usr/local/bin/nexus-entrypoint"]
+CMD ["50000", "-safe", "-home", "/srv/nexus", "-cd", "/srv/nexus", "-params", "nexus_environment=playtest&nexus_playtest_rewards=1"]

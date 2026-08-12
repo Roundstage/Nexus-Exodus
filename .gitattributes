@@ -1,3 +1,6 @@
 # Dream Maker rewrites the environment file in-place. Keep its CRLF bytes exact
 # so it does not discard newly added source includes when the project is saved.
 DU.dme -text whitespace=-blank-at-eol
+
+# Container entrypoints must retain Unix line endings when built on Windows.
+deploy/docker/entrypoint.sh text eol=lf

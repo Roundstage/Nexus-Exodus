@@ -2,12 +2,12 @@ services:
   nexus-exodus:
     build:
       context: .
-    image: nexus-exodus:playtest-516.1686
+    image: "nexus-exodus:${NEXUS_IMAGE_TAG:-playtest-516.1686}"
     platform: linux/amd64
     restart: unless-stopped
     init: true
     ports:
-      - "50000:50000/tcp"
+      - "${NEXUS_PORT:-50000}:50000/tcp"
     volumes:
       - nexus_state:/srv/nexus
     read_only: true

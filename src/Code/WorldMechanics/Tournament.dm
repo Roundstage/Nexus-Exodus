@@ -113,7 +113,7 @@ proc/Get_Fighter_Locations(list/L)
 obj/Tournament_Chair //Put many of these all around the arena, other contestants are warped there while they wait
 	Health=1.#INF
 	Grabbable=0
-	icon='turfs.dmi'
+	icon='Turfs.dmi'
 	icon_state="Chair"
 	Dead_Zone_Immune=1
 	Savable=0
