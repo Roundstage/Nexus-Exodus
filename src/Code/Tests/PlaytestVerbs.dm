@@ -103,6 +103,7 @@ mob/proc/claimNexusPlaytestMilestones(announce = TRUE)
 
 mob/proc/applyNexusPlaytestStatCap(stat_cap)
 	if(!nexusIsFiniteNumber(stat_cap) || stat_cap <= 0 || !nexusIsFiniteNumber(Modless_Gain) || Modless_Gain <= 0) return FALSE
+	if(!nexusIsFiniteNumber(Eff) || Eff <= 0 || !nexusIsFiniteNumber(energy_cap) || energy_cap <= 0) return FALSE
 	var/list/stat_modifiers = list(strmod, endmod, spdmod, formod, resmod, offmod, defmod)
 	for(var/stat_modifier in stat_modifiers)
 		if(!nexusIsFiniteNumber(stat_modifier) || stat_modifier <= 0) return FALSE
@@ -114,6 +115,9 @@ mob/proc/applyNexusPlaytestStatCap(stat_cap)
 	Res = max(nexusIsFiniteNumber(Res) && Res >= 0 ? Res : 0, normalized_cap * resmod * Modless_Gain)
 	Off = max(nexusIsFiniteNumber(Off) && Off >= 0 ? Off : 0, normalized_cap * offmod * Modless_Gain)
 	Def = max(nexusIsFiniteNumber(Def) && Def >= 0 ? Def : 0, normalized_cap * defmod * Modless_Gain)
+	var/target_max_ki = min(energy_cap * Eff, NEXUS_PLAYTEST_ABSOLUTE_BP_CAP)
+	max_ki = max(nexusIsFiniteNumber(max_ki) && max_ki >= 0 ? max_ki : 0, target_max_ki)
+	Ki = max_ki
 	return TRUE
 
 mob/proc/capNexusPlaytestStats(announce = TRUE)
@@ -129,7 +133,7 @@ mob/proc/capNexusPlaytestStats(announce = TRUE)
 	if(!applyNexusPlaytestStatCap(stat_cap))
 		if(announce) src << "Your combat stats could not be capped because the character has invalid stat modifiers."
 		return FALSE
-	if(announce) src << "Your seven combat stats now meet the current server cap of [Commas(round(stat_cap))]."
+	if(announce) src << "Your seven combat stats now meet the current server cap of [Commas(round(stat_cap))], and Energy is capped at [Commas(round(max_ki / Eff))]."
 	return TRUE
 
 mob/proc/applyNexusPlaytestRelativeBaseBP(relative_cap, announce = TRUE)
@@ -253,7 +257,12 @@ proc/runNexusPlaytestRewardSmokeTests()
 	reward_test.Res = 1
 	reward_test.Off = 1
 	reward_test.Def = 1
+	reward_test.Eff = 1.5
+	reward_test.max_ki = 100
+	reward_test.Ki = 25
 	nexusSmokeAssert(reward_test.applyNexusPlaytestStatCap(100) && reward_test.Str == 100 && reward_test.Def == 100, "playtest stat cap did not apply the normalized server cap")
+	nexusSmokeAssertNear(reward_test.max_ki, energy_cap * reward_test.Eff, 0.001, "playtest stat cap did not apply the Efficiency-scaled Energy cap")
+	nexusSmokeAssert(reward_test.Ki == reward_test.max_ki, "playtest stat cap did not refill Energy after raising its cap")
 	reward_test.bp_mod = 2
 	nexusSmokeAssert(reward_test.applyNexusPlaytestRelativeBaseBP(100, FALSE) && reward_test.base_bp == 200, "playtest base BP matching ignored the character BP modifier")
 	reward_test.Race = "Android"

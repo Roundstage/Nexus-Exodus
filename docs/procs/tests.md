@@ -15,7 +15,7 @@ Self-service player rewards are disabled by default and fail closed in a live ru
 
 Playtest character and Feat files use the separate `data/Playtest/Save` and `data/Playtest/Feats` namespaces and carry an environment marker that prevents cross-loading. The host must still run the playtest from its own complete runtime directory: world items and server state exist outside character saves, so a live runtime directory must never be reused for a playtest. Promote no playtest persistence back to live; migrate any approved cosmetic later through an explicit allowlist.
 
-While enabled, six verbs appear in the **Playtest** category: the complete reward bundle, Resources plus Arcane Essence (the game's mana currency), Progression XP, Milestone Points, normalized combat-stat capping, and relative base-BP matching. Currency and Progression grants are fixed, versioned, saved, and claimable once per character. Milestones stop at the authoritative 22-point lifetime cap. Stat and BP operations only raise the caller to server-observed caps; BP uses the strongest relative base recorded this wipe plus the current online scan, and Androids receive equivalent cybernetic BP instead of invalid natural BP. Every verb is self-only, accepts no player-supplied value, is rate-limited, rechecks server authorization, and writes an audit record.
+While enabled, six verbs appear in the **Playtest** category: the complete reward bundle, Resources plus Arcane Essence (the game's mana currency), Progression XP, Milestone Points, normalized combat-stat and Energy capping, and relative base-BP matching. Currency and Progression grants are fixed, versioned, saved, and claimable once per character. Milestones stop at the authoritative 22-point lifetime cap. The stat operation raises all seven combat stats to the server-observed cap and base Energy to `energy_cap`, preserving the character's Efficiency multiplier and refilling current Energy. Stat and BP operations only raise permanent values; BP uses the strongest relative base recorded this wipe plus the current online scan, and Androids receive equivalent cybernetic BP instead of invalid natural BP. Every verb is self-only, accepts no player-supplied value, is rate-limited, rechecks server authorization, and writes an audit record.
 
 ## Files
 - `src/Code/Tests/PlaytestVerbs.dm`
@@ -25,7 +25,7 @@ While enabled, six verbs appear in the **Playtest** category: the complete rewar
 
 - `configureNexusPlaytestRewards()` reads the exact server-owned opt-in and synchronizes the isolated verb set.
 - `claimNexusPlaytestCurrencies()`, `claimNexusPlaytestProgression()`, and `claimNexusPlaytestMilestones()` apply bounded, persistent self-service rewards.
-- `capNexusPlaytestStats()` and `applyNexusPlaytestRelativeBaseBP()` cap combat values without accepting client-authored numbers.
+- `capNexusPlaytestStats()` caps seven combat stats plus Efficiency-scaled Energy, and `applyNexusPlaytestRelativeBaseBP()` caps BP without accepting client-authored numbers.
 - `runNexusPlaytestRewardSmokeTests()` covers fail-closed activation, one-time grants, the 22-point lifetime cap, stat normalization, and Android BP behavior.
 
 ## Proc Reference
