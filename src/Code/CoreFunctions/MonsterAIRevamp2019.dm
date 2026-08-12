@@ -349,7 +349,7 @@ mob/Enemy
 		. = ..()
 
 	Namekian_Amphibian
-		icon='NamekAmphibian.dmi'
+		icon='namekAmphibian.dmi'
 		bp_mod = 1.5
 		enemyCanFly = 0
 		New()
@@ -366,7 +366,7 @@ mob/Enemy
 			. = ..()
 
 	Namekian_Dino
-		icon='NamekDino.dmi'
+		icon='namekDino.dmi'
 		bp_mod = 3
 		enemyCanFly = 0
 		New()
@@ -383,7 +383,7 @@ mob/Enemy
 			. = ..()
 
 	Namekian_Frog
-		icon='NamekFrog.dmi'
+		icon='namekFrog.dmi'
 		bp_mod = 1
 		enemyCanFly = 0
 		New()
