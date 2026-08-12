@@ -1012,18 +1012,26 @@ datum/SkillEngine
 		if(skill_obj && skill_obj.icon) user.overlays += skill_obj.icon
 		var/starting_distance = max(1, getdist(user, target))
 		var/reached_target = FALSE
-		var/dash_delta_x = (target.bound_center_x() - user.bound_center_x()) * world.icon_size
-		var/dash_delta_y = (target.bound_center_y() - user.bound_center_y()) * world.icon_size
-		var/dash_distance_pixels = sqrt(dash_delta_x ** 2 + dash_delta_y ** 2) + world.icon_size
+		var/dash_distance_pixels = (starting_distance + 1) * world.icon_size
 		user.dir = user.original_dash_dir
 		var/datum/NexusSkillMotionResult/dash_motion_result = new
-		user.runNexusSkillVector(dash_delta_x, dash_delta_y, dash_distance_pixels, 155, 380, 440, 0.2, 0, TRUE, dash_motion_result)
+		user.runNexusSkillMotion(target, user.original_dash_dir, dash_distance_pixels, 0, 155, 380, 440, 0.2, 0, TRUE, TRUE, dash_motion_result)
 		var/contact_was_recorded = FALSE
 		var/contact_was_evaded = FALSE
 		if(dash_motion_result.valid && target && user.canHitNexusTechniqueTarget(target))
 			contact_was_recorded = target in dash_motion_result.contacted_mobs
 			contact_was_evaded = target in dash_motion_result.evaded_contacts
 			reached_target = contact_was_recorded
+		if(reached_target)
+			var/approach_pixels = dash_motion_result.moved_pixels
+			var/list/approach_contacts = dash_motion_result.contacted_mobs.Copy()
+			var/list/approach_evaded_contacts = dash_motion_result.evaded_contacts.Copy()
+			var/datum/NexusSkillMotionResult/pass_through_result = new
+			user.runNexusSkillLine(user.dir, world.icon_size, 155, 380, 440, 0.2, 0, TRUE, pass_through_result)
+			user.last_skill_motion_pixels += approach_pixels
+			user.last_skill_motion_contacts = approach_contacts
+			user.last_skill_motion_evaded_contacts = approach_evaded_contacts
+			del(pass_through_result)
 		if(reached_target && !contact_was_evaded && user.canHitNexusTechniqueTarget(target))
 			var/damage_factor = min(skill_dash_attack_max_factor, \
 				skill_dash_attack_min_factor + (starting_distance - 1) * skill_dash_attack_step_factor)

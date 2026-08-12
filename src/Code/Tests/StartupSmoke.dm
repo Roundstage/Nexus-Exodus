@@ -1363,6 +1363,19 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(targeted_dash_skill)
 	del(targeted_dash_target)
 	del(targeted_dash_user)
+	var/mob/NexusSmokeTest/energy_recovery_test = new
+	energy_recovery_test.Ki = 50
+	energy_recovery_test.max_ki = 100
+	energy_recovery_test.BPpcnt = 200
+	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "Power Up still blocks passive Energy recovery")
+	var/obj/Buff/energy_recovery_buff = new(energy_recovery_test)
+	energy_recovery_buff.suffix = "Active"
+	energy_recovery_buff.buff_bp = 1.5
+	energy_recovery_test.current_buff = energy_recovery_buff
+	energy_recovery_test.buff_transform_bp = 100
+	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "an active BP buff still blocks passive Energy recovery instead of relying on its drain")
+	del(energy_recovery_buff)
+	del(energy_recovery_test)
 	var/mob/NexusSmokeTest/technique_targeting_test = new
 	var/mob/NexusSmokeTest/technique_target = new
 	technique_targeting_test.SafeTeleport(attack_movement_origin)

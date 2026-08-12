@@ -1030,9 +1030,9 @@ mob/proc
 		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
 		//Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
 		//Has_Active_Freezes()||buffed_with_bp()||God_Fist_level||recov<=0 || SplitformCount()) return
-		if(strangling||Ki>=ki_limit||BPpcnt>100||attacking||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
+		if(strangling||Ki>=ki_limit||attacking||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
 		Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
-		Has_Active_Freezes()||buffed_with_bp()||buff_transform_bp||God_Fist_level||recov<=0 || Peebagging() || SplitformCount()) return
+		Has_Active_Freezes()||God_Fist_level||recov<=0 || Peebagging() || SplitformCount()) return
 		return 1
 
 mob/var/tmp/logout_timer_loop

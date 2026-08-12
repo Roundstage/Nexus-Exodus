@@ -486,6 +486,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/proc/Can_recover_ki
 - Signature: `Can_recover_ki(ki_limit=1.#INF)`
+- Active buffs and Power Up do not block passive Energy recovery; their independent upkeep drains continue to apply.
 - Inputs: ki_limit=1.#INF
 - Purpose: Return whether recover ki.
 - Returns: boolean flag.
