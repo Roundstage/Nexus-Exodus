@@ -771,6 +771,7 @@ mob/proc/applyNexusInterfaceLayout()
 
 mob/proc/hideNexusLegacyInterface()
 	if(!client) return
+	winset(src, "Bars", "is-visible=false")
 	if(client.nexus_chat_hud) client.nexus_chat_hud.applyLayout()
 	else
 		winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")

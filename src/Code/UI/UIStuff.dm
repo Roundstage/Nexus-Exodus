@@ -209,6 +209,8 @@ client/New()
 	JSresolutionCheck()
 	clients += src
 	. = ..()
+	// The legacy Bars window must never flash before the screen-object HUD initializes.
+	winset(src, "Bars", "is-visible=false")
 	if(mob && mob.isNexusReconnectCharacter()) returnToNexusReconnectLobby()
 	var/initial_view_width = getNexusInitialConnectViewWidth(mob, startViewX)
 	if(initial_view_width) mob.DetermineViewSize(forceWidth = initial_view_width)

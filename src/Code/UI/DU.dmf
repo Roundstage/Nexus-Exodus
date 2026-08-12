@@ -376,6 +376,7 @@ window "Bars"
 		anchor2 = none
 		background-color = #0b0f16
 		border = line
+		is-visible = false
 		saved-params = "pos;is-minimized;is-maximized"
 		titlebar = false
 		statusbar = false
