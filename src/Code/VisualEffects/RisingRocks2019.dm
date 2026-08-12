@@ -6,8 +6,12 @@ mob/var
 mob/verb
 	CustomRisingRockIcon()
 		set hidden = 1
-		var/icon/i = input("choose an icon file. put multiple icon states in it for each rock to randomly choose its icon state. the name of the \
+		if(!beginNexusLegacyUploadPrompt())
+			src << "Finish the active file prompt before choosing a rock icon."
+			return
+		var/icon/i = input(src, "choose an icon file. put multiple icon states in it for each rock to randomly choose its icon state. the name of the \
 		states do not matter") as icon|null
+		endNexusLegacyUploadPrompt()
 		if(!i) return
 		risingRockIcon = i
 

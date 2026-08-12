@@ -117,7 +117,7 @@ proc/nexusAlienOptionDefinitions()
 		"low_health_resistance" = list("name" = "Low-Health Resistance", "cost" = 10, "description" = "One-third BP loss from low Health."),
 		"giant_form" = list("name" = "Giant Form", "cost" = 15, "description" = "Grants Giant Form."),
 		"imitate" = list("name" = "Imitate", "cost" = 8, "description" = "Grants Imitation."),
-		"apex_genome" = list("name" = "Apex Genome", "cost" = 50, "description" = "Control-focused Jiren package with an Anger second wind."),
+		"apex_genome" = list("name" = "Apex Genome", "cost" = 50, "description" = "Control-focused Jiren package that can not gain Anger."),
 		"unlock_potential" = list("name" = "Unlock Potential", "cost" = 25, "description" = "Grants Unlock Potential.")
 	)
 
@@ -146,6 +146,11 @@ proc/nexusValidateAlienOptions(list/selected_options)
 		if(!definition) return FALSE
 		total_cost += definition["cost"]
 	return total_cost <= 100
+
+proc/nexusCreationCanAllocateAnger(race_name, list/alien_options)
+	if(race_name in list("Android", "Legendary Saiyan")) return FALSE
+	if(race_name == "Alien" && islist(alien_options) && alien_options["apex_genome"]) return FALSE
+	return TRUE
 
 proc/nexusCustomIconIsValid(icon/icon_file)
 	return icon_file && isicon(icon_file) && !IconTooBig(icon_file)
@@ -353,7 +358,7 @@ proc/nexusCreationStatProfile(race_name, trait_id)
 	for(var/stat_id in NEXUS_CREATION_STATS)
 		var/stat_name = NEXUS_CREATION_STATS[stat_id]
 		var/cap = 0
-		if(!(cap_preview.Android && stat_name == "Anger"))
+		if(stat_name != "Anger" || cap_preview.canPossessAnger())
 			while(cap < budget && !cap_preview.StatRaceCapped(stat_name))
 				cap_preview.raiseNexusCreationStat(stat_name)
 				cap++
@@ -481,7 +486,9 @@ mob/proc/applyNexusAlienOptions(list/selected_options)
 			if("low_health_resistance") src.bp_loss_from_low_hp /= 3
 			if("giant_form") src.contents += new /obj/Giant_Form
 			if("imitate") src.contents += new /obj/Imitation
-			if("apex_genome") src.jirenAlien = 1
+			if("apex_genome")
+				src.jirenAlien = 1
+				src.disableAnger()
 			if("unlock_potential") src.contents += new /obj/Unlock_Potential
 
 mob/proc/applyNexusAlienProfile(profile)
@@ -583,9 +590,13 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	if(!(alignment_choice in list("Good", "Evil"))) alignment_choice = "Good"
 	var/list/stat_profile = nexusCreationStatProfile(selected_race, race_trait)
 	if(!nexusValidateStatAllocation(stat_profile, stat_allocation)) return FALSE
+	if(!nexusCreationCanAllocateAnger(selected_race, alien_options) && round(text2num("[stat_allocation["anger"]]"))) return FALSE
 
 	src.character_creation_committing = TRUE
 	src.initializeNexusRaceByTrait(selected_race, race_trait)
+	if(selected_race == "Alien" && alien_options["apex_genome"])
+		src.jirenAlien = TRUE
+		src.disableAnger()
 	src.rollCharacterMutations()
 	src.bp_loss_from_low_ki = src.Get_bp_loss_from_low_ki()
 	src.bp_loss_from_low_hp = src.Get_bp_loss_from_low_hp()
@@ -704,7 +715,12 @@ upForm/NexusCharacterCreator
 		if(!player || C.mob != player || player.playerCharacter) return
 		var/action_id = "[href_list["action"]]"
 		if(action_id == "upload_body")
+			if(!player.beginNexusLegacyUploadPrompt())
+				error_message = "Finish the active file prompt before choosing a body image."
+				RefreshPage()
+				return
 			var/icon/body_upload = input(player, "Choose a DMI or image for the character body. Maximum [maxIconW]x[maxIconH] and [maxIconFileSize] MB.", "Custom Body") as icon|null
+			player.endNexusLegacyUploadPrompt()
 			if(body_upload && nexusCustomIconIsValid(body_upload))
 				custom_body_icon = body_upload
 				pending_custom_selection = "body"
@@ -716,7 +732,12 @@ upForm/NexusCharacterCreator
 			return
 		if(action_id == "upload_clothing")
 			var/clothing_index = Clamp(round(text2num("[href_list["slot"]]")), 1, nexus_starter_clothing_limit)
+			if(!player.beginNexusLegacyUploadPrompt())
+				error_message = "Finish the active file prompt before choosing clothing art."
+				RefreshPage()
+				return
 			var/icon/clothing_upload = input(player, "Choose an overlay DMI or image for clothing layer [clothing_index]. Maximum [maxIconW]x[maxIconH] and [maxIconFileSize] MB.", "Custom Clothing") as icon|null
+			player.endNexusLegacyUploadPrompt()
 			if(clothing_upload && nexusCustomIconIsValid(clothing_upload))
 				custom_clothing_icons[clothing_index] = clothing_upload
 				pending_custom_selection = "clothing_[clothing_index]"
@@ -728,7 +749,12 @@ upForm/NexusCharacterCreator
 			return
 		if(action_id == "upload_frost")
 			var/form_index = Clamp(round(text2num("[href_list["slot"]]")), 2, 5)
+			if(!player.beginNexusLegacyUploadPrompt())
+				error_message = "Finish the active file prompt before choosing Frost form art."
+				RefreshPage()
+				return
 			var/icon/frost_upload = input(player, "Choose a DMI or image for Frost Lord form [form_index]. Maximum [maxIconW]x[maxIconH] and [maxIconFileSize] MB.", "Custom Frost Form") as icon|null
+			player.endNexusLegacyUploadPrompt()
 			if(frost_upload && nexusCustomIconIsValid(frost_upload))
 				custom_frost_icons[form_index] = frost_upload
 				pending_custom_selection = "frost_[form_index]"
@@ -991,12 +1017,14 @@ upForm/NexusCharacterCreator
 			function traitChanged(){var race=checkedValue('selected_race'),trait=checkedValue('race_trait');if(race=='Android'){var panel=document.querySelector('.icon-panel\[data-race="Android"\]'),icons=panel?panel.getElementsByTagName('input'):null,wantHuman=trait=='android_infiltrator';if(icons){for(var i=0;i<icons.length;i++){var isHuman=icons\[i\].value.indexOf('android_human_')===0;if((wantHuman&&isHuman)||(!wantHuman&&!isHuman)){icons\[i\].checked=true;break;}}}}if(race=='Alien')applyAlienPreset(trait);document.getElementById('frostFifthOption').style.display=trait=='frost_cooler'?'grid':'none';resetStats();updateAppearance();updateFrostPreviews();}
 			function updateHairVisibility(){var race=checkedValue('selected_race'),icon=checkedValue('body_icon_id'),hidden='|Majin|Bio-Android|Namekian|Frost Lord|'.indexOf('|'+race+'|')>=0||(race=='Android'&&icon!='custom_body'&&icon.indexOf('android_human_')!==0);document.getElementById('hairSection').style.display=hidden?'none':'block';if(hidden){var none=document.querySelector('input\[name="hair_id"\]\[value="none"\]');if(none)none.checked=true;}}
 			function formatStat(value){var rounded=Math.round(value*100)/100;return Math.abs(rounded-Math.round(rounded))<0.001?rounded.toFixed(1):String(rounded);}
-			function updateStatDisplay(){var profile=currentProfile();if(!profile)return;for(var i=0;i<statIds.length;i++){var id=statIds\[i\],allocated=parseInt(document.getElementById('stat_'+id).value||0),base=Number(profile.base\[id\]||0),racial=Number(profile.racialPoints\[id\]||0),step=Number(profile.steps\[id\]||0);document.getElementById('base_'+id).textContent=formatStat(base);document.getElementById('racial_'+id).textContent=(racial>=0?'+':'')+formatStat(racial)+' PTS';document.getElementById('racial_'+id).style.color=racial?'#d2aa61':'#927b58';document.getElementById('final_'+id).textContent=formatStat(base+allocated*step);document.getElementById('cap_'+id).textContent='CAP '+profile.caps\[id\]+' PTS';}}
+			function apexGenomeSelected(){var option=document.querySelector('\[data-alien-option="apex_genome"\]');return checkedValue('selected_race')=='Alien'&&option&&option.checked;}
+			function effectiveStatCap(id,profile){return id=='anger'&&apexGenomeSelected()?0:profile.caps\[id\];}
+			function updateStatDisplay(){var profile=currentProfile();if(!profile)return;for(var i=0;i<statIds.length;i++){var id=statIds\[i\],allocated=parseInt(document.getElementById('stat_'+id).value||0),base=Number(profile.base\[id\]||0),racial=Number(profile.racialPoints\[id\]||0),step=Number(profile.steps\[id\]||0);document.getElementById('base_'+id).textContent=formatStat(base);document.getElementById('racial_'+id).textContent=(racial>=0?'+':'')+formatStat(racial)+' PTS';document.getElementById('racial_'+id).style.color=racial?'#d2aa61':'#927b58';document.getElementById('final_'+id).textContent=formatStat(base+allocated*step);document.getElementById('cap_'+id).textContent='CAP '+effectiveStatCap(id,profile)+' PTS';}}
 			function updatePoints(){var profile=currentProfile();if(!profile)return;var used=0;for(var i=0;i<statIds.length;i++)used+=parseInt(document.getElementById('stat_'+statIds\[i\]).value||0);document.getElementById('pointsRemaining').innerHTML=profile.budget-used;updateStatDisplay();}
 			function resetStats(){var profile=currentProfile();if(!profile)return;for(var i=0;i<statIds.length;i++)document.getElementById('stat_'+statIds\[i\]).value=0;updatePoints();}
-			function adjustStat(id,delta){var profile=currentProfile();if(!profile)return;var input=document.getElementById('stat_'+id),value=parseInt(input.value||0),remaining=parseInt(document.getElementById('pointsRemaining').innerHTML||0);if(delta>0&&remaining>0&&value<profile.caps\[id\])input.value=value+1;if(delta<0&&value>0)input.value=value-1;updatePoints();saveCreatorState();}
+			function adjustStat(id,delta){var profile=currentProfile();if(!profile)return;var input=document.getElementById('stat_'+id),value=parseInt(input.value||0),remaining=parseInt(document.getElementById('pointsRemaining').innerHTML||0);if(delta>0&&remaining>0&&value<effectiveStatCap(id,profile))input.value=value+1;if(delta<0&&value>0)input.value=value-1;updatePoints();saveCreatorState();}
 			function applyAlienPreset(trait){var wanted=alienPresets\[trait\]||\[\],nodes=document.querySelectorAll('\[data-alien-option\]');for(var i=0;i<nodes.length;i++)nodes\[i\].checked=wanted.indexOf(nodes\[i\].getAttribute('data-alien-option'))>=0;updateAlienPoints();}
-			function updateAlienPoints(){var nodes=document.querySelectorAll('\[data-alien-option\]'),used=0,ids=\[\];for(var i=0;i<nodes.length;i++){if(nodes\[i\].checked){used+=parseInt(nodes\[i\].getAttribute('data-cost')||0);ids.push(nodes\[i\].getAttribute('data-alien-option'));}}var remaining=100-used,indicator=document.getElementById('alienPointsIndicator');document.getElementById('alienPoints').textContent=remaining;if(indicator)indicator.className='hud-panel level-strip alien-points-indicator'+(remaining<0?' over-budget':'');document.getElementById('alienOptions').value=ids.join(',');}
+			function updateAlienPoints(){var nodes=document.querySelectorAll('\[data-alien-option\]'),used=0,ids=\[\];for(var i=0;i<nodes.length;i++){if(nodes\[i\].checked){used+=parseInt(nodes\[i\].getAttribute('data-cost')||0);ids.push(nodes\[i\].getAttribute('data-alien-option'));}}var remaining=100-used,indicator=document.getElementById('alienPointsIndicator'),angerInput=document.getElementById('stat_anger');if(ids.indexOf('apex_genome')>=0&&angerInput)angerInput.value=0;document.getElementById('alienPoints').textContent=remaining;if(indicator)indicator.className='hud-panel level-strip alien-points-indicator'+(remaining<0?' over-budget':'');document.getElementById('alienOptions').value=ids.join(',');updatePoints();}
 			function selectedClothing(){var nodes=document.querySelectorAll('\[data-clothing-id\]'),ids=\[\];for(var i=0;i<nodes.length;i++)if(nodes\[i\].checked)ids.push(nodes\[i\].getAttribute('data-clothing-id'));return ids;}
 			function updateClothing(changed){var grid=document.querySelector('.clothing-grid'),savedScroll=grid?grid.scrollTop:0,ids=selectedClothing();if(ids.length>[nexus_starter_clothing_limit]){var remove=changed;if(!remove){var nodes=document.querySelectorAll('\[data-clothing-id\]');for(var i=0;i<nodes.length;i++)if(nodes\[i\].checked&&nodes\[i\].getAttribute('data-clothing-id').indexOf('custom_clothing_')!==0){remove=nodes\[i\];break;}if(!remove)for(var j=0;j<nodes.length;j++)if(nodes\[j\].checked){remove=nodes\[j\];break;}}if(remove)remove.checked=false;ids=selectedClothing();}document.getElementById('clothingIds').value=ids.join(',');document.getElementById('clothingCount').textContent=ids.length+' / [nexus_starter_clothing_limit]';updatePreview();if(grid){grid.scrollTop=savedScroll;setTimeout(function(){grid.scrollTop=savedScroll;},0);}}
 			function updateAppearance(){updateHairVisibility();updatePreview();}

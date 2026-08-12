@@ -126,8 +126,14 @@ proc/IconTooBigMsg(result)
 		if(DIMENSIONS) return "The icon is bigger than [maxIconW]x[maxIconH]"
 
 obj/Crandal
-	verb/Add_Custom_Overlay_To_Self(icon/I as icon)
+	verb/Add_Custom_Overlay_To_Self()
 		set category="Other"
+		if(!usr.beginNexusLegacyUploadPrompt())
+			usr << "Finish the active file prompt before choosing an overlay icon."
+			return
+		var/icon/I = input(usr, "Choose an icon for the custom overlay") as icon|null
+		usr.endNexusLegacyUploadPrompt()
+		if(!I) return
 		if(IconTooBig(I)) return
 		var/list/States=new
 		States+="None"
@@ -157,7 +163,11 @@ obj/Crandal
 		if(!O||O=="Cancel") return
 		var/list/original_location = getNexusSelectedTargetState(O)
 		var/mob/original_owner = getNexusSelectedTargetOwner(O)
-		var/icon/I=input("Choose an icon file") as icon
+		if(!usr.beginNexusLegacyUploadPrompt())
+			usr << "Finish the active file prompt before choosing an icon."
+			return
+		var/icon/I=input(usr, "Choose an icon file") as icon|null
+		usr.endNexusLegacyUploadPrompt()
 		if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 
 		/*if(findtext("[I]",".gif"))

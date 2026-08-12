@@ -279,6 +279,7 @@ mob/proc/removeActionHud()
 		client.nexus_shortcut_bar = null
 	if(client.nexus_player_menu) del(client.nexus_player_menu)
 	if(client.nexus_character_sheet) del(client.nexus_character_sheet)
+	if(client.nexus_music_library_window) del(client.nexus_music_library_window)
 
 obj/NexusHud/ShortcutBarBackground
 	mouse_opacity = 0
@@ -640,7 +641,7 @@ datum/NexusPlayerMenu
 		var/factor = damage_data["factor"]
 		if(!nexusIsFiniteNumber(factor) || factor <= 0) return null
 		var/preview_profile = damage_data["preview_profile"]
-		if(preview_profile == "tenkaichi_melee") return owner.getUnresistedMeleeDamage() * factor
+		if(preview_profile == "nexus_melee") return owner.getUnresistedMeleeDamage() * factor
 		if(preview_profile == "weapon_projectile" || preview_profile == "ki_projectile")
 			var/direct_multiplier = ki_power * owner.getForgedKiDamageMultiplier()
 			var/projectile_factor = getProjectilePreviewReservedFactor(damage_data, direct_multiplier)
@@ -719,11 +720,11 @@ datum/NexusPlayerMenu
 
 	proc/getSkillDamageData(obj/skill)
 		var/list/data = list("factor" = 0, "model" = "Dynamic / utility", "preview_profile" = "direct", "range" = "See mechanics", "mechanics" = "Behavior is described by the technique.", "requirements" = "Owned and available on the skill bar.")
-		if(istype(skill, /obj/Attacks/TenkaichiMeleeTechnique))
-			var/obj/Attacks/TenkaichiMeleeTechnique/technique = skill
+		if(istype(skill, /obj/Attacks/NexusMeleeTechnique))
+			var/obj/Attacks/NexusMeleeTechnique/technique = skill
 			data["factor"] = technique.damage_multiplier * (1 + technique.extra_hits * technique.extra_hit_multiplier)
 			data["model"] = "Physical"
-			data["preview_profile"] = "tenkaichi_melee"
+			data["preview_profile"] = "nexus_melee"
 			data["range"] = technique.dash_range > 1 ? "Up to [technique.dash_range] tiles" : "Adjacent target"
 			var/list/effects = list("[technique.extra_hits + 1] hit(s)", "[technique.knockback_multiplier]x knockback")
 			if(technique.stun_ticks) effects += "[round(technique.stun_ticks / 10, 0.1)]s stun"
@@ -741,8 +742,8 @@ datum/NexusPlayerMenu
 			data["cost"] = "[technique.energy_cost] stamina-drain units"
 			data["cooldown"] = "[round(technique.cooldown_ticks / 10, 0.1)] seconds"
 			return data
-		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/WallOfFlame))
-			var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/flame_wall = skill
+		if(istype(skill, /obj/Attacks/NexusSpecialStyle/WallOfFlame))
+			var/obj/Attacks/NexusSpecialStyle/WallOfFlame/flame_wall = skill
 			data["factor"] = 0.45 * 6
 			data["model"] = "Ki"
 			data["range"] = "Five-tile wall in front of the user"
@@ -750,8 +751,8 @@ datum/NexusPlayerMenu
 			data["cost"] = "[flame_wall.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(flame_wall.cooldown_ticks / 10, 0.1)] seconds"
 			return data
-		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile))
-			var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/projectile_skill = skill
+		if(istype(skill, /obj/Attacks/NexusSpecialStyle/ChargedProjectile))
+			var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/projectile_skill = skill
 			data["factor"] = projectile_skill.projectile_damage_factor * (projectile_skill.explosion_size ? 2 : 1)
 			data["model"] = projectile_skill.strength_scaled ? "Physical" : "Ki"
 			data["preview_profile"] = projectile_skill.weapon_projectile ? "weapon_projectile" : "ki_projectile"
@@ -764,8 +765,8 @@ datum/NexusPlayerMenu
 			data["cost"] = "[projectile_skill.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(projectile_skill.cooldown_ticks / 10, 0.1)] seconds"
 			return data
-		if(istype(skill, /obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze))
-			var/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze/ghost_skill = skill
+		if(istype(skill, /obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze))
+			var/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze/ghost_skill = skill
 			var/ghost_total_factor = max(0, ghost_skill.ghost_count * ghost_skill.ghost_damage_factor)
 			data["factor"] = ghost_total_factor
 			data["model"] = "Ki"
@@ -893,8 +894,8 @@ datum/NexusPlayerMenu
 			data["factor"] = 6
 			data["model"] = "Physical"
 			data["range"] = "Adjacent area strike"
-		else if(istype(skill, /obj/Attacks/TenkaichiAreaTechnique))
-			var/obj/Attacks/TenkaichiAreaTechnique/area_skill = skill
+		else if(istype(skill, /obj/Attacks/NexusAreaTechnique))
+			var/obj/Attacks/NexusAreaTechnique/area_skill = skill
 			data["factor"] = area_skill.area_damage_factor
 			data["model"] = area_skill.physical_damage ? "Physical" : "Ki"
 			data["range"] = "Up to [area_skill.radius] tiles around the user"

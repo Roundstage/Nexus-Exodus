@@ -23,7 +23,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 - `initializeNexusAdminActions()` registers permission-aware commands by Player, Movement, Character, Items, Smithing, Development, Logs, Testing, Server, and Legacy categories.
 - `showNexusAdminPanel(compact, selected_target)` opens the full or quick searchable panel with the blue native-HUD components used by Server Control and keeps one selected player as the target for successive actions. Commands remain text-first rather than receiving unrelated generated category artwork.
 - `toggleNexusAdminPanel(compact)` closes the active admin panel when its top shortcut is pressed again, or opens it when absent.
-- `openItemPicker(mode, search)` searches item type paths without instantiating hundreds of reference objects; protected non-givable results are rejected when selected.
+- `openItemPicker(mode, search)` searches item type paths without instantiating hundreds of reference objects; both browsing and item creation revalidate admin level 2, accept only the exact `give` or `make` mode, and reject protected non-givable results.
 - `openRewardMenu()` and `applyReward(reward_type)` replace the legacy Reward flow with audited BP, BP Mod, Energy, Resources, Skill Points, Milestone Points, Technology XP, Mining XP, and Smithing XP controls.
 - `runLegacyCommand()` searches all verbs available to the administrator's level without removing them from CMD or their original Admin tab categories.
 - `Admin Panel`, `Quick Admin`, `Manage Player`, and `Admin Inspector` are the permanent administration launchers.
@@ -1854,32 +1854,32 @@ Administrative commands and management flows. Administrators receive a searchabl
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Admin/TenkaichiAttackTesting.dm
+### src/Code/Admin/NexusAttackTesting.dm
 
-#### mob/Admin3/verb/giveTenkaichiAttacks
-- Signature: `giveTenkaichiAttacks(mob/character in players)`
+#### mob/Admin3/verb/giveNexusAttacks
+- Signature: `giveNexusAttacks(mob/character in players)`
 - Inputs: connected target player and an interactive package selection.
-- Purpose: Grant weapon, unarmed, rock, persistent special-style, beam or complete Roleplay Tenkaichi attack packages without duplicating owned attacks. Generic blast reskins are intentionally excluded.
+- Purpose: Grant weapon, unarmed, rock, persistent special-style, beam or complete Nexus attack packages without duplicating owned attacks. Generic blast reskins are intentionally excluded.
 - Returns: none (implicit).
 - Side effects: creates skill objects in the target inventory and writes an admin audit entry.
 
-#### mob/Admin3/verb/testTenkaichiCombatEffects
-- Signature: `testTenkaichiCombatEffects()`
+#### mob/Admin3/verb/testNexusCombatEffects
+- Signature: `testNexusCombatEffects()`
 - Inputs: interactive sword, sword-wave, rock, maximum explosion-light or explosive-beam knockback profile.
 - Purpose: Preview shared audiovisual combat profiles and verify beam knockback without damaging a player.
 - Returns: none (implicit).
 - Side effects: creates only short-lived preview effects, sounds and an automatically removed combat dummy; it is also searchable in the structured Admin Panel.
 
-#### proc/grantTenkaichiAttackTypes
-- Signature: `proc/grantTenkaichiAttackTypes(mob/character, list/attack_types)`
+#### proc/grantNexusAttackTypes
+- Signature: `proc/grantNexusAttackTypes(mob/character, list/attack_types)`
 - Inputs: target character and list of attack type paths.
 - Purpose: Instantiate only missing attacks for repeatable development testing.
 - Returns: count of newly granted attacks.
 - Side effects: adds attack objects to the character.
 
-#### proc/getTenkaichiRockAttackTypes
-- Signature: `proc/getTenkaichiRockAttackTypes()`
+#### proc/getNexusRockAttackTypes
+- Signature: `proc/getNexusRockAttackTypes()`
 - Inputs: none.
-- Purpose: Return Rock Throw, Rock Slide and Rock Tomb as a dedicated Roleplay Tenkaichi audiovisual testing package.
+- Purpose: Return Rock Throw, Rock Slide and Rock Tomb as a dedicated Nexus audiovisual testing package.
 - Returns: list of three attack object type paths.
 - Side effects: none.

@@ -27,6 +27,9 @@ var/anger_bp_effect=1
 var/cyber_bp_cuts_natural_bp_by=0
 
 mob/proc/Anger_mult()
+	if(!canPossessAnger())
+		disableAnger()
+		return 1
 	if(KO) return 1 //so it has no impact on how hard it is to kill a death regenerator
 	var/n=(anger/100)**anger_bp_effect
 	return n

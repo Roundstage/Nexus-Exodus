@@ -11,12 +11,16 @@ mob/verb/KeyDown(d as text)
 	set waitfor=0
 	set hidden=1
 	set instant=1
+	d = normalizeNexusMacroInputKey(d)
+	if(!d || !acceptNexusMacroInput(d)) return
 	HandleKeyDown(d)
 
 mob/verb/KeyUp(d as text)
 	set waitfor=0
 	set hidden=1
 	set instant=1
+	d = normalizeNexusMacroInputKey(d)
+	if(!d || !acceptNexusMacroInput(d)) return
 	HandleKeyUp(d)
 
 client
@@ -28,6 +32,7 @@ client
 mob/verb
 	SetCtrlStatus(status as text)
 		set hidden = 1
+		if(status != "0" && status != "1") return
 		if(status == "0") 
 			client.ctrl_button = 0
 			is_ctrl_down = 0		// Adds to global escope because fuck adding whatever needs it to the  proc above

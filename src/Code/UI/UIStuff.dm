@@ -10,6 +10,9 @@ client
 var/list/clients = new
 
 client/Del()
+	if(mob) mob.stopNexusPlayerMusicBroadcast(FALSE)
+	cancelNexusPlayerMusicValidation()
+	stopNexusPlayerMusic()
 	clients -= src
 	removeNexusMapZoom()
 	removeNexusLighting()
@@ -19,6 +22,12 @@ client/Del()
 	if(nexus_character_sheet)
 		del(nexus_character_sheet)
 		nexus_character_sheet = null
+	if(nexus_music_library_window)
+		del(nexus_music_library_window)
+		nexus_music_library_window = null
+	if(nexus_description_editor)
+		del(nexus_description_editor)
+		nexus_description_editor = null
 	if(nexus_player_menu)
 		del(nexus_player_menu)
 		nexus_player_menu = null
@@ -123,12 +132,14 @@ client
 			helpAlertShowing = 0
 			uiOrganizationMode = 0
 			uiHidden = 0
-			icon/nexus_application_icon
 			image/titleScreenImg //this client's title screen image that has been scaled to fit their resolution
 
 proc/getNexusInitialConnectViewWidth(mob/current_mob, title_view_width)
 	if(current_mob && current_mob.playerCharacter) return 0
 	return max(1, title_view_width)
+
+proc/getNexusApplicationIconSkinValue()
+	return "'Slime64.png'"
 
 mob/var/tmp/nexus_reconnect_handoff = FALSE
 
@@ -137,6 +148,9 @@ mob/proc/isNexusReconnectCharacter()
 
 mob/proc/prepareNexusReconnectHandoff()
 	if(!isNexusReconnectCharacter() || !client) return FALSE
+	stopNexusPlayerMusicBroadcast(FALSE)
+	client.stopNexusPlayerMusic()
+	client.cancelNexusUploadBrokerContexts()
 	DeleteMajinGoo()
 	Stop_Powering_Up()
 	Destroy_Splitforms()
@@ -189,8 +203,7 @@ client/proc
 		del(titleScreenImg)
 
 	applyNexusApplicationIcon()
-		if(!nexus_application_icon) nexus_application_icon = icon('Slime64.png')
-		winset(src, "mainwindow", "icon=\ref[nexus_application_icon]")
+		winset(src, "mainwindow", "icon=[getNexusApplicationIconSkinValue()]")
 
 client/New()
 	JSresolutionCheck()
@@ -436,6 +449,8 @@ mob/proc
 			ShowNexusLoginPrompt()
 			return
 		active_character_slot = clampNexusCharacterSlot(selected_slot)
+		deleteNexusPlayerProfileImageForKey(key, active_character_slot)
+		clearNexusPlayerProfileArtMetadata()
 		var/creator_opened = ClickMakeNewCharacter()
 		if(!creator_opened && client && !client.nexus_character_select)
 			ShowNexusLoginPrompt()

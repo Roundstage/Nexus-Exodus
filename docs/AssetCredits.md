@@ -7,7 +7,7 @@
 
 ## Character transformations
 
-- `src/Icons/PlayerIcons/BaseIcons/Heran/HeranBojack.dmi` and `HeranBojackFemale.dmi` preserve the male/asexual and female `Bojack Expand` transformation sheets supplied with the Roleplay Tenkaichi source by its original developer. Nexus Exodus renames the resources for stable, space-free paths and uses them only for the adapted Heran Transformation.
+- `src/Icons/PlayerIcons/BaseIcons/Heran/HeranBojack.dmi` and `HeranBojackFemale.dmi` preserve the male/asexual and female `Bojack Expand` transformation sheets supplied by their original developer with authorization for continued use. Nexus Exodus keeps stable, space-free paths and uses them only for the integrated Heran Transformation.
 
 ## Lighting
 

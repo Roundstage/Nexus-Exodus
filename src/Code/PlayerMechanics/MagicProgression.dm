@@ -30,7 +30,7 @@ proc/initializeMagicResearchCatalog()
 
 	// Restoration
 	magic_research_catalog["mending"] = new /datum/MagicResearchNode("mending", "Mending", "Channel native energy to heal another being.", "Restoration", 2, /obj/Heal)
-	magic_research_catalog["rejuvenate"] = new /datum/MagicResearchNode("rejuvenate", "Rejuvenate", "Port the RPT restorative aura for nearby allies.", "Restoration", 4, /obj/ArcaneSpell/Rejuvenate)
+	magic_research_catalog["rejuvenate"] = new /datum/MagicResearchNode("rejuvenate", "Rejuvenate", "Port the integrated restorative aura for nearby allies.", "Restoration", 4, /obj/ArcaneSpell/Rejuvenate)
 
 	// Warding
 	magic_research_catalog["warding"] = new /datum/MagicResearchNode("warding", "Mystic Shield", "Shape energy into a sustained defensive ward.", "Warding", 2, /obj/Shield)

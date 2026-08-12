@@ -362,7 +362,7 @@ datum/SkillEngine
 		if(ispath(path, /obj/Attacks/Makosen)) return castMakosen(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Scatter_Shot)) return castScatterShot(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Attack_Barrier)) return castAttackBarrier(user, skill_obj)
-		if(ispath(path, /obj/Attacks/TenkaichiAreaTechnique)) return skill_obj:useAreaTechnique(user)
+		if(ispath(path, /obj/Attacks/NexusAreaTechnique)) return skill_obj:useAreaTechnique(user)
 		if(ispath(path, /obj/Attacks/Shockwave)) return castShockwave(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Explosion)) return toggleExplosion(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Genki_Dama)) return castGenkiDama(user, skill_obj)
@@ -1000,7 +1000,7 @@ datum/SkillEngine
 		if(user.Beam_stunned()) return 0
 		var/maximum_dash_range = 25
 		var/mob/target = user.getSelectedTarget(max_dist = maximum_dash_range)
-		if(!user.canHitTenkaichiTechniqueTarget(target))
+		if(!user.canHitNexusTechniqueTarget(target))
 			user << "Select a valid target within [maximum_dash_range] tiles."
 			return 0
 
@@ -1020,11 +1020,11 @@ datum/SkillEngine
 		user.runNexusSkillVector(dash_delta_x, dash_delta_y, dash_distance_pixels, 155, 380, 440, 0.2, 0, TRUE, dash_motion_result)
 		var/contact_was_recorded = FALSE
 		var/contact_was_evaded = FALSE
-		if(dash_motion_result.valid && target && user.canHitTenkaichiTechniqueTarget(target))
+		if(dash_motion_result.valid && target && user.canHitNexusTechniqueTarget(target))
 			contact_was_recorded = target in dash_motion_result.contacted_mobs
 			contact_was_evaded = target in dash_motion_result.evaded_contacts
 			reached_target = contact_was_recorded
-		if(reached_target && !contact_was_evaded && user.canHitTenkaichiTechniqueTarget(target))
+		if(reached_target && !contact_was_evaded && user.canHitNexusTechniqueTarget(target))
 			var/damage_factor = min(skill_dash_attack_max_factor, \
 				skill_dash_attack_min_factor + (starting_distance - 1) * skill_dash_attack_step_factor)
 			var/damage = user.getPhysicalCombatDamage(target, damage_factor)

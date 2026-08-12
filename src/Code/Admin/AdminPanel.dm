@@ -1,3 +1,5 @@
+#define NEXUS_ADMIN_ITEM_PICKER_LEVEL 2
+
 client/var/tmp/datum/NexusAdminPanel/nexus_admin_panel
 
 datum/NexusAdminAction
@@ -34,13 +36,13 @@ proc/initializeNexusAdminActions()
 	nexus_admin_action_catalog["revive"] = new /datum/NexusAdminAction("revive", "Revive", "Player", "Revive and remove KO from the selected player.", 1, TRUE, TRUE)
 	nexus_admin_action_catalog["reward"] = new /datum/NexusAdminAction("reward", "Reward Player", "Player", "Grant progression, resources or character growth through the refactored reward menu.", 2, TRUE, TRUE)
 	nexus_admin_action_catalog["inspect"] = new /datum/NexusAdminAction("inspect", "Admin Inspector", "Development", "Search and edit every runtime variable, collection and mutation.", 3, TRUE, TRUE)
-	nexus_admin_action_catalog["give_item"] = new /datum/NexusAdminAction("give_item", "Give Item", "Items", "Search the item type catalog and give one result to the selected player.", 2, TRUE, TRUE)
-	nexus_admin_action_catalog["make_object"] = new /datum/NexusAdminAction("make_object", "Create Object", "Items", "Search the object catalog and create one at your location.", 2)
+	nexus_admin_action_catalog["give_item"] = new /datum/NexusAdminAction("give_item", "Give Item", "Items", "Search the item type catalog and give one result to the selected player.", NEXUS_ADMIN_ITEM_PICKER_LEVEL, TRUE, TRUE)
+	nexus_admin_action_catalog["make_object"] = new /datum/NexusAdminAction("make_object", "Create Object", "Items", "Search the object catalog and create one at your location.", NEXUS_ADMIN_ITEM_PICKER_LEVEL)
 	nexus_admin_action_catalog["give_mutation"] = new /datum/NexusAdminAction("give_mutation", "Give Mutation", "Character", "Add or adjust a mutation on the selected player.", 3, TRUE, TRUE)
 	nexus_admin_action_catalog["roll_mutations"] = new /datum/NexusAdminAction("roll_mutations", "Roll Mutations", "Character", "Reroll the selected player's mutation package.", 3, TRUE)
-	nexus_admin_action_catalog["give_tenkaichi"] = new /datum/NexusAdminAction("give_tenkaichi", "Give Tenkaichi Equipment", "Smithing", "Give any ported material and weapon or armor design for testing.", 3, TRUE, TRUE)
-	nexus_admin_action_catalog["test_tenkaichi"] = new /datum/NexusAdminAction("test_tenkaichi", "Test Tenkaichi Smithing", "Smithing", "Grant profession levels, every ore and spawn a forge for the selected player.", 3, TRUE)
-	nexus_admin_action_catalog["give_tenkaichi_attacks"] = new /datum/NexusAdminAction("give_tenkaichi_attacks", "Give Tenkaichi Attacks", "Testing", "Give melee, weapon, special-style or beam Roleplay Tenkaichi packages for testing.", 3, TRUE, TRUE)
+	nexus_admin_action_catalog["give_nexus"] = new /datum/NexusAdminAction("give_nexus", "Give Nexus Equipment", "Smithing", "Give any ported material and weapon or armor design for testing.", 3, TRUE, TRUE)
+	nexus_admin_action_catalog["test_nexus"] = new /datum/NexusAdminAction("test_nexus", "Test Nexus Smithing", "Smithing", "Grant profession levels, every ore and spawn a forge for the selected player.", 3, TRUE)
+	nexus_admin_action_catalog["give_nexus_attacks"] = new /datum/NexusAdminAction("give_nexus_attacks", "Give Nexus Attacks", "Testing", "Give melee, weapon, special-style or beam Nexus packages for testing.", 3, TRUE, TRUE)
 	nexus_admin_action_catalog["test_combat_effects"] = new /datum/NexusAdminAction("test_combat_effects", "Test Combat Effects", "Testing", "Preview critical, sword, stone, explosion-light and explosive-beam knockback effects without dealing damage.", 3, FALSE, TRUE)
 	nexus_admin_action_catalog["player_logs"] = new /datum/NexusAdminAction("player_logs", "Player Logs", "Logs", "Open the selected player's server logs.", 2, TRUE)
 	nexus_admin_action_catalog["rp_logs"] = new /datum/NexusAdminAction("rp_logs", "Roleplay Window", "Logs", "View the selected player's roleplay history.", 1, TRUE)
@@ -70,6 +72,9 @@ proc/getNexusAdminVerbCommand(verb_path)
 	for(var/index = 1, index <= length(path_text), index++)
 		if(copytext(path_text, index, index + 1) == "/") last_separator = index
 	return copytext(path_text, last_separator + 1)
+
+proc/normalizeNexusAdminItemPickerMode(mode)
+	if(mode == "give" || mode == "make") return mode
 
 datum/NexusAdminPanel
 	var/tmp/mob/owner
@@ -127,8 +132,8 @@ datum/NexusAdminPanel
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=skill_points'><b>Progression XP</b><span>Add up to 100,000 spendable tree XP at a time.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=milestone_points'><b>Milestone Points</b><span>Add spendable perk points and update the lifetime total.</span></a>
 		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=technology_xp'><b>Technology XP</b><span>Advance Technology Level and refresh available unlocks.</span></a>
-		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=mining_xp'><b>Mining XP</b><span>Advance the Tenkaichi mining profession.</span></a>
-		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=smithing_xp'><b>Smithing XP</b><span>Advance the Tenkaichi smithing profession.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=mining_xp'><b>Mining XP</b><span>Advance the Nexus mining profession.</span></a>
+		<a class='reward' href='byond://?src=\ref[src]&action=apply_reward&type=smithing_xp'><b>Smithing XP</b><span>Advance the Nexus smithing profession.</span></a>
 		</div><div class='footer'><a class='back' href='byond://?src=\ref[src]&action=reward_back'>BACK TO PLAYER PANEL</a></div></body></html>"}
 		owner << browse(html, "window=NexusAdminReward;size=760x680;can_resize=true")
 
@@ -185,9 +190,7 @@ datum/NexusAdminPanel
 			if("milestone_points")
 				amount = input(owner, "How many Milestone Points should [target] receive?", "Reward Player", 1) as null|num
 				if(isnull(amount) || amount < 0) return
-				amount = round(amount)
-				target.milestone_points += amount
-				target.total_milestone_points += amount
+				amount = target.grantMilestonePoints(amount, "admin reward", announce = TRUE)
 			if("technology_xp")
 				amount = input(owner, "How much Technology XP should [target] receive?", "Reward Player", 50) as null|num
 				if(isnull(amount) || amount < 0) return
@@ -202,9 +205,14 @@ datum/NexusAdminPanel
 		owner << "Rewarded [target] with [amount] [reward_type]."
 
 	proc/openItemPicker(mode = "give", search = "")
+		if(!canUse(NEXUS_ADMIN_ITEM_PICKER_LEVEL)) return
+		mode = normalizeNexusAdminItemPickerMode(mode)
+		if(!mode) return
 		if(mode == "give" && !requireTarget()) return
 		item_picker_mode = mode
 		item_candidates = list()
+		if(!istext(search)) search = ""
+		search = copytext(search, 1, 129)
 		var/query = lowertext(search)
 		var/results = ""
 		var/result_count = 0
@@ -230,20 +238,23 @@ datum/NexusAdminPanel
 		owner << browse(html, "window=NexusAdminItems;size=980x720;can_resize=true")
 
 	proc/createSelectedItem(index_key)
+		if(!canUse(NEXUS_ADMIN_ITEM_PICKER_LEVEL)) return
+		var/validated_mode = normalizeNexusAdminItemPickerMode(item_picker_mode)
+		if(!validated_mode) return
 		if(!islist(item_candidates)) return
 		var/item_type = item_candidates[index_key]
 		if(!ispath(item_type, /obj/items)) return
 		var/obj/items/new_item
-		if(item_picker_mode == "give")
+		if(validated_mode == "give")
 			if(!requireTarget()) return
 			new_item = new item_type(target)
-		else
+		else if(validated_mode == "make")
 			new_item = new item_type(owner.loc)
 		if(!new_item || !new_item.Givable)
 			if(new_item) del(new_item)
 			owner << "That item type is protected and cannot be created through the panel."
 			return
-		if(item_picker_mode == "give")
+		if(validated_mode == "give")
 			owner.admin_blame(owner, "[owner.key] gave [target.key] [new_item] through the Admin Panel.")
 			owner << "Created [new_item] in [target]'s inventory."
 		else
@@ -297,10 +308,10 @@ datum/NexusAdminPanel
 				return
 			if("give_mutation") call(owner, /mob/Admin3/verb/giveMutation)(target)
 			if("roll_mutations") call(owner, /mob/Admin3/verb/rollMutations)(target)
-			if("give_tenkaichi") call(owner, /mob/Admin3/verb/giveTenkaichiEquipment)(target)
-			if("test_tenkaichi") call(owner, /mob/Admin3/verb/testTenkaichiSmithing)(target)
-			if("give_tenkaichi_attacks") call(owner, /mob/Admin3/verb/giveTenkaichiAttacks)(target)
-			if("test_combat_effects") call(owner, /mob/Admin3/verb/testTenkaichiCombatEffects)()
+			if("give_nexus") call(owner, /mob/Admin3/verb/giveNexusEquipment)(target)
+			if("test_nexus") call(owner, /mob/Admin3/verb/testNexusSmithing)(target)
+			if("give_nexus_attacks") call(owner, /mob/Admin3/verb/giveNexusAttacks)(target)
+			if("test_combat_effects") call(owner, /mob/Admin3/verb/testNexusCombatEffects)()
 			if("player_logs") call(owner, /mob/Admin2/verb/playerLogs)(target)
 			if("rp_logs") call(owner, /mob/Admin1/verb/viewRpWindow)(target)
 			if("development_logs") call(owner, /mob/Admin1/verb/viewDevelopmentRpWindow)(target)
@@ -360,9 +371,11 @@ datum/NexusAdminPanel
 				runAction(href_list["id"])
 				if(href_list["id"] == "server_settings") return
 			if("item_search")
+				if(!canUse(NEXUS_ADMIN_ITEM_PICKER_LEVEL)) return
 				openItemPicker(href_list["mode"], href_list["query"])
 				return
 			if("create_item")
+				if(!canUse(NEXUS_ADMIN_ITEM_PICKER_LEVEL)) return
 				createSelectedItem(href_list["index"])
 				openItemPicker(item_picker_mode)
 				return

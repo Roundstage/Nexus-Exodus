@@ -20,8 +20,8 @@ mob/verb/Skill_Points(type as text,skill as text)
 	if(!C) C=src
 	if(!skill || skill == "") return
 	if(!C.Redoing_Stats) return //window was brought up using .winset "skills.is-visible=true"
-	if(type=="+"&&skill=="Anger"&&C.Android)
-		alert(src,"Androids can not put points into anger because they have no anger boost")
+	if(type=="+" && skill=="Anger" && !C.canPossessAnger())
+		alert(src,"This lineage can not put points into anger because it has no anger boost")
 		return
 
 	if(type == "+" && C.StatRaceCapped(skill))
@@ -354,6 +354,7 @@ mob/proc
 		if(recov >= cap) return 1
 
 	AngerBeyondRaceCap()
+		if(!canPossessAnger()) return 1
 		var/cap = 9999
 		switch(Race)
 			if("Saiyan")
@@ -474,6 +475,7 @@ mob/proc/Raise_Recovery(Amount=1)
 
 mob/proc/Raise_Anger(Amount=1)
 	if(!C) C=src
+	if(!C.canPossessAnger()) return C.disableAnger()
 	C.max_anger+=10*Amount
 
 mob/proc/RaceBonusStatPoints()
@@ -523,6 +525,7 @@ mob/proc/Racial_Stats(mob/P,Start_Redo_Stats=1,modless_check=1,auto_allocate=0,l
 	if(Class == "Legendary Saiyan" && lssj_always_angry)
 		Eff *= lssj_ki_mult
 		max_ki *= lssj_ki_mult
+	if(!canPossessAnger()) disableAnger()
 	Rearrange_Mode_Check()
 	return TRUE
 

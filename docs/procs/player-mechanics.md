@@ -3,7 +3,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger still grows through `gainAngerFromDamage()` as health is lost. Androids, Legendary Saiyans, and Jiren/Apex Aliens additionally receive one full Health-bar recovery when an otherwise valid KO reaches them; the recovery locks until `Calm()` clears that Anger cycle and does not restore Energy. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost for eligible races. Androids, Legendary Saiyans, and Jiren/Apex Aliens do not possess or gain Anger; stale saved values are normalized to the neutral `100` baseline and never provide an Anger multiplier or KO recovery. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
@@ -43,7 +43,8 @@ Instant Transmission retains its long-range signature targeting and now also exp
 ### Roleplay combat and progression
 
 - `gainAngerFromDamage(applied_damage)` converts actual health loss into proportional Anger without healing.
-- `hasAngerHealthRecovery()`, `canUseAngerHealthRecovery()`, and `triggerAngerHealthRecovery(reason)` implement the one-per-Anger-cycle second Health bar for Android, Legendary Saiyan, and Jiren archetypes.
+- `canPossessAnger()` is the shared race gate; `disableAnger()` clears stale Anger state for Android, Legendary Saiyan, and Jiren/Apex Alien archetypes.
+- `hasAngerHealthRecovery()`, `canUseAngerHealthRecovery()`, and `triggerAngerHealthRecovery(reason)` are retained compatibility wrappers that always reject the removed Anger Health-bar recovery.
 - `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, displacement, and grab retention while active.
 - `forceWillpowerBreakKnockout()` converts zero Willpower into a lethal KO state before locking the character in RP Mode.
 - `tryDrainTechniqueWillpower(amount, technique_name, reserve)` lets sustained techniques spend Willpower without crossing their configured safe reserve.
@@ -51,8 +52,8 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
 - `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
-- `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, and Thundering Blows technique objects for owned RPT combat Milestones.
-- `getMilestoneMeleeDamageMultiplier()`, `getMilestoneMeleeDelayMultiplier()`, `getMilestoneOutgoingDamageMultiplier()`, and the projectile helpers adapt RPT talent effects to the canonical Nexus combat calculations.
+- `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, and Thundering Blows technique objects for owned integrated combat Milestones.
+- `getMilestoneMeleeDamageMultiplier()`, `getMilestoneMeleeDelayMultiplier()`, `getMilestoneOutgoingDamageMultiplier()`, and the projectile helpers adapt integrated talent effects to the canonical Nexus combat calculations.
 - `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
 - `getTechnologyCraftExperienceForLevel(science_level)` derives fabrication XP from the matching threshold interval, targeting about twelve successful current-tier crafts per level instead of paying only 1–8 XP.
 - `canAccessTechnology(technology)` rejects non-object click targets and compares saved/global blueprint grants by type instead of object identity.
@@ -60,7 +61,7 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - `getNormalizedScienceBlueprintList(blueprints)` deduplicates persisted blueprint objects by type and rebinds catalog entries to their canonical `tech_list` references.
 - `normalizeIndividualScienceItems()` repairs a character's saved Science grants after deserialization, preventing an additional recipe from appearing on each relog.
 - `refreshTechnologyUnlocks(announce)` normalizes existing grants before adding science items allowed by level and selected path.
-- The RPT Milestone port includes the profession talents plus 24 combat talents grouped into Martial Arts, Weapon, Ki, Survival, and Fire list filters.
+- The integrated Milestone port includes the profession talents plus 24 combat talents grouped into Martial Arts, Weapon, Ki, Survival, and Fire list filters.
 - `refreshCombatStatusOverlays()` keeps the imported Lethal and RP Mode character icons synchronized with the action HUD.
 
 ### src/Code/PlayerMechanics/Aging.dm
@@ -805,33 +806,47 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/proc/canPossessAnger
+- Signature: `mob/proc/canPossessAnger()`
+- Inputs: None
+- Purpose: Return whether the mob's race/archetype is allowed to possess Anger.
+- Returns: boolean flag; false for Android, Legendary Saiyan, and Jiren/Apex Alien.
+- Side effects: none expected.
+
+#### mob/proc/disableAnger
+- Signature: `mob/proc/disableAnger()`
+- Inputs: None
+- Purpose: Normalize an Angerless archetype to the neutral Anger baseline.
+- Returns: false.
+- Side effects: resets current/maximum Anger, its timestamp, KO recovery lock, and stored reasons.
+
 #### mob/proc/can_anger
 - Signature: `mob/proc/can_anger()`
 - Inputs: None
-- Purpose: Return whether anger.
+- Purpose: Return whether the mob can gain Anger in its current state.
 - Returns: boolean flag.
-- Side effects: none expected.
+- Side effects: normalizes stale Anger state when the archetype is ineligible.
 
 #### mob/proc/hasAngerHealthRecovery
 - Signature: `mob/proc/hasAngerHealthRecovery()`
 - Inputs: None
-- Purpose: Return whether the mob belongs to an archetype with the Anger Health-bar recovery.
-- Returns: boolean flag.
+- Purpose: Compatibility gate for the removed Anger Health-bar recovery.
+- Returns: always false.
 - Side effects: none expected.
 
 #### mob/proc/canUseAngerHealthRecovery
 - Signature: `mob/proc/canUseAngerHealthRecovery()`
 - Inputs: None
-- Purpose: Validate the archetype, current Anger-cycle lock, power-giving state, and forced Anger cooldown.
-- Returns: boolean flag.
+- Purpose: Compatibility gate for the removed Anger Health-bar recovery.
+- Returns: always false.
 - Side effects: none expected.
 
 #### mob/proc/triggerAngerHealthRecovery
 - Signature: `mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")`
 - Inputs: recovery reason.
-- Purpose: Restore one full Health bar, maximize current Anger, and lock further recovery until the character calms.
-- Returns: boolean success flag.
-- Side effects: updates Health, Anger, BP, overhead vitals, and schedules `Calm()`.
+- Purpose: Compatibility wrapper for the removed Anger Health-bar recovery.
+- Returns: always false.
+- Side effects: none.
 
 #### mob/proc/anger
 - Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
@@ -4171,8 +4186,8 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - `isProgressionCombatSkillType()` and `isProgressionCombatTreeExcluded()` keep the Combat catalog limited to concrete attacks and approved buffs. Cyber Charge, Cyber Laser, Overdrive, and Combat Mathematics are module-only; Fire Fist, Bleeding Edge, and Thundering Blows are Milestone-only.
 - `configureProgressionBeamPaths()` owns the named wave specialization. `configureProgressionPhysicalPaths()` owns the Strength-scaled rock attacks, while Sky Break and Echoing Slash use the Weapon branch. Kaioken and Genki Dama are tier-ten purchases.
 - Combat -> Beam uses authored routes instead of registration order: Beam advances through Masenko, Kamehameha, and Double Sunday to the tier-eight Final Flash raw-damage capstone, while Ray advances through Dodompa and Tyrant Lancer to the tier-eight Makankosappo shield-piercing capstone. Photon Flash opens a third route through Galick Gun and Buster Cannon.
-- Combat -> Unarmed is also power-authored and contains all 15 RPT techniques plus Dash Attack, Pressure Punch, Roundhouse Kick, Dropkick, Wolf Fang Fist, and Hundred Crack Fist from legacy Nexus. Its RPT routes end in March of Fury, Texas Smash, and Exploding Heart Strike; the factor-8 Dropkick/Dash Attack and minimum-factor-6 Hundred Crack Fist join the other strongest attacks at tier five.
-- The Magic tree includes nine branches and covers 42 craft formulas plus the RPT Fireball, Frost Bolt, Lightning Bolt, Frost Nova, Earth Prison, Empowered Attacks/Defenses, Accelerate, Rejuvenate, Gravity Well, Create Portal, and Enchant spell set. Shikon Jewel belongs to level-nine Artifacts rather than Science; `migrateShikonResearch()` preserves a character's legacy unlock while removing its stale personal Science blueprint.
+- Combat -> Unarmed is also power-authored and contains all 15 integrated techniques plus Dash Attack, Pressure Punch, Roundhouse Kick, Dropkick, Wolf Fang Fist, and Hundred Crack Fist from legacy Nexus. Its integrated routes end in March of Fury, Texas Smash, and Exploding Heart Strike; the factor-8 Dropkick/Dash Attack and minimum-factor-6 Hundred Crack Fist join the other strongest attacks at tier five.
+- The Magic tree includes nine branches and covers 42 craft formulas plus the integrated Fireball, Frost Bolt, Lightning Bolt, Frost Nova, Earth Prison, Empowered Attacks/Defenses, Accelerate, Rejuvenate, Gravity Well, Create Portal, and Enchant spell set. Shikon Jewel belongs to level-nine Artifacts rather than Science; `migrateShikonResearch()` preserves a character's legacy unlock while removing its stale personal Science blueprint.
 - Magic Gauntlets and Orb of Mastery multiply `gainMagicExperience()` without editing the character's base potential. Elixir of Merriment multiplies only chat/roleplay awards inside `gainProgressionExperience()`.
 - `getRacialProgressionTrack()` maps each playable lineage to its spawn-world rank curriculum. `initializeProgressionRacialCatalog()` derives those nodes from the existing Earth Guardian, Braal Elite, Namekian, Arconian, Ice Master, Android Master, Kaioshin, and Daimao skill packages. `required_racial_track` is checked by `getProgressionNodeLockReason()` as server-side authorization, not only as a browser filter. Kaioshin and Daimao Hakai are tier-ten, 60-XP apex nodes requiring every final package route.
 - Taught, quest, event, module, and transformation skills retain their external authoritative unlock paths; learned exact reward objects still migrate to matching Progression nodes.

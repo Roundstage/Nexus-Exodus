@@ -34,7 +34,7 @@ proc/initializeMilestoneCatalog()
 
 	milestone_catalog["controlled_fury"] = new /datum/MilestoneDefinition("controlled_fury", "Controlled Fury", "Builds anger 15% faster from damage per rank.", 2, 2, "Combat", 1)
 
-	// Roleplay Tenkaichi combat milestones, adapted to Nexus' authoritative combat paths.
+	// Nexus combat milestones, adapted to Nexus' authoritative combat paths.
 	milestone_catalog["unarmed_mastery"] = new /datum/MilestoneDefinition("unarmed_mastery", "Unarmed Mastery", "+2.5% unarmed melee damage per rank.", 1, 2, "Martial Arts", 1)
 	milestone_catalog["deft_hands"] = new /datum/MilestoneDefinition("deft_hands", "Deft Hands", "+2.5% flat melee accuracy per rank.", 2, 4, "Martial Arts", 2, list("unarmed_mastery"))
 	milestone_catalog["one_two_punch"] = new /datum/MilestoneDefinition("one_two_punch", "One-Two Punch", "Reduces melee attack delay by 10% per rank, to a maximum of 40%.", 2, 4, "Martial Arts", 3, list("deft_hands"))
@@ -104,6 +104,26 @@ mob/proc/getMilestoneRank(milestone_id)
 	if(!isnum(rank)) rank = 0
 	return max(0, rank)
 
+mob/proc/normalizeMilestonePointBalances()
+	var/normalized_points = nexusIsFiniteNumber(milestone_points) ? max(0, round(milestone_points)) : 0
+	var/normalized_total = nexusIsFiniteNumber(total_milestone_points) ? max(0, round(total_milestone_points)) : 0
+	normalized_total = Clamp(max(normalized_total, normalized_points), 0, NEXUS_MILESTONE_POINT_CAP)
+	milestone_points = Clamp(normalized_points, 0, normalized_total)
+	total_milestone_points = normalized_total
+
+mob/proc/grantMilestonePoints(amount, reason = "character growth", announce = FALSE)
+	normalizeMilestonePointBalances()
+	if(!nexusIsFiniteNumber(amount) || amount <= 0) return 0
+	var/available_points = max(0, NEXUS_MILESTONE_POINT_CAP - total_milestone_points)
+	var/granted = min(max(0, round(amount)), available_points)
+	if(granted <= 0)
+		if(announce) src << "You have reached the lifetime cap of [NEXUS_MILESTONE_POINT_CAP] Milestone Points."
+		return 0
+	milestone_points += granted
+	total_milestone_points += granted
+	if(announce) src << "You received [granted] Milestone Point[granted == 1 ? "" : "s"] from [reason]."
+	return granted
+
 mob/proc/getMilestoneLockReason(datum/MilestoneDefinition/milestone)
 	if(!milestone) return "Unknown milestone."
 	if(getMilestoneRank(milestone.id) >= milestone.max_rank) return null
@@ -121,22 +141,20 @@ mob/proc/syncMilestoneProgression(silent = FALSE)
 			if(findtext("[owned_id]", "ub_") == 1 && getMilestoneRank(owned_id) > 0) migrateLegacyUltimateBuffMilestone(owned_id)
 	ensureMilestoneCombatRewards()
 	if(milestone_progression_version < 1)
-		milestone_points += MILESTONE_STARTING_POINTS
-		total_milestone_points += MILESTONE_STARTING_POINTS
+		var/starting_points = grantMilestonePoints(MILESTONE_STARTING_POINTS, "starting progression", announce = FALSE)
 		milestone_last_year = floor(max(0, Year))
 		milestone_progression_version = 1
-		if(!silent) src << "You received [MILESTONE_STARTING_POINTS] starting Milestone Points."
+		if(!silent && starting_points) src << "You received [starting_points] starting Milestone Points."
 		return
 	var/current_year = floor(max(0, Year))
 	if(milestone_last_year < 0)
 		milestone_last_year = current_year
 		return
 	if(current_year <= milestone_last_year) return
-	var/earned = current_year - milestone_last_year
+	var/elapsed_years = current_year - milestone_last_year
 	milestone_last_year = current_year
-	milestone_points += earned
-	total_milestone_points += earned
-	if(!silent) src << "You earned [earned] Milestone Point[earned == 1 ? "" : "s"] through character growth."
+	var/earned = grantMilestonePoints(elapsed_years, "character growth", announce = FALSE)
+	if(!silent && earned) src << "You earned [earned] Milestone Point[earned == 1 ? "" : "s"] through character growth."
 
 mob/proc/purchaseMilestone(milestone_id)
 	initializeMilestoneCatalog()
@@ -293,7 +311,7 @@ mob/proc/applyMilestoneMeleeAreaDamage(mob/primary_target, damage, attack_name)
 	var/hit_count = 0
 	for(var/mob/area_target in view(radius, primary_target))
 		if(hit_count >= 8) break
-		if(area_target == primary_target || !canHitTenkaichiTechniqueTarget(area_target)) continue
+		if(area_target == primary_target || !canHitNexusTechniqueTarget(area_target)) continue
 		if(area_target.AOE_auto_dodge(src, primary_target.loc)) continue
 		area_target.TakeDamage(damage * 0.35, attacker = src, attack_name = "Sweeping Impact ([attack_name])")
 		hit_count++
@@ -301,7 +319,7 @@ mob/proc/applyMilestoneMeleeAreaDamage(mob/primary_target, damage, attack_name)
 
 mob/proc/tryApplyMilestoneDoubleAttack(mob/primary_target, damage, attack_name)
 	if(!primary_target || damage <= 0 || !prob(getMilestoneDoubleAttackChance())) return FALSE
-	if(!canHitTenkaichiTechniqueTarget(primary_target)) return FALSE
+	if(!canHitNexusTechniqueTarget(primary_target)) return FALSE
 	var/double_attack_sound = using_sword() ? pick(nexus_sword_impact_sounds) : 'Mediumpunch.ogg'
 	Play_Melee_Sound(sound_range = 10, origin = primary_target, sound_file = double_attack_sound, sound_volume = 25)
 	primary_target.TakeDamage(damage * 0.6, attacker = src, attack_name = "Echoing Assault ([attack_name])")
@@ -315,7 +333,7 @@ obj/MilestoneTechnique
 
 	BleedingEdge
 		name = "Bleeding Edge (Milestone)"
-		desc = "Toggle the RPT Bleeding Edge weapon stance. Weapon strikes can inflict an additional bleed, but attack 10% slower."
+		desc = "Toggle the integrated Bleeding Edge weapon stance. Weapon strikes can inflict an additional bleed, but attack 10% slower."
 
 		verb/Hotbar_use()
 			set hidden = 1
@@ -334,7 +352,7 @@ obj/MilestoneTechnique
 
 	ThunderingBlows
 		name = "Thundering Blows (Milestone)"
-		desc = "Toggle the RPT Thundering Blows weapon stance. Weapon strikes can create a damaging stagger, but attack 10% slower."
+		desc = "Toggle the integrated Thundering Blows weapon stance. Weapon strikes can create a damaging stagger, but attack 10% slower."
 
 		verb/Hotbar_use()
 			set hidden = 1

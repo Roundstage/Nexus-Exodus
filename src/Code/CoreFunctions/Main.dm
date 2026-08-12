@@ -189,6 +189,7 @@ mob/proc
 		empty_player = 0
 		Update_soul_contracts()
 		Admin_Check()
+		syncNexusPlaytestVerbs()
 		LimitTrainingMsg()
 		TrainingTimeLogin()
 		if(client) client.DeleteTitleScreen()

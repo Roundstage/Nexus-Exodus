@@ -353,7 +353,11 @@ mob/proc/Choose_Hair(force_hair)
 	switch(alert(src,"Custom icon?","Options","Default","Custom"))
 		if("Custom")
 			var/icon/I
+			if(!beginNexusLegacyUploadPrompt())
+				src << "Finish the active file prompt before choosing a hair icon."
+				return
 			I = input(src,"Choose an icon") as icon
+			endNexusLegacyUploadPrompt()
 
 			if(IconTooBig(I)) I=null
 

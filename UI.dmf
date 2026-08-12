@@ -1481,6 +1481,7 @@ window "mainwindow"
 		anchor2 = -1,-1
 		background-color = #000000
 		is-default = true
+		icon = 'Slime64.png'
 		saved-params = ""
 		statusbar = false
 		macro = "macro"

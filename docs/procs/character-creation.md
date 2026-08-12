@@ -237,7 +237,7 @@ Alien population promotion is independent of the selected AP options. After five
 | --- | --- |
 | `alien_scholar` | Sets Intelligence to 1; grants Time Stop (the Alien Time Freeze path), Materialization, and Split Form; multiplies mastery by 5 and blast homing by 1.5; enables lungs. |
 | `alien_predator` | Grants Absorb and precognition; adds 0.5 regeneration; sets `zenkai_mod` and `alien_zenkai` to 1; multiplies meditation by 2.5. |
-| `alien_anomaly` | Sets the normalized Standard-tier `jirenAlien` package (`0.95x` combat BP, `1x` incoming damage, `0.75x` powerup limit, `0.8x` knockback, `1.25x` stun resistance); grants Unlock Potential; adds 0.5 regeneration. |
+| `alien_anomaly` | Sets the normalized Standard-tier `jirenAlien` package (`0.95x` combat BP, `1x` incoming damage, `0.75x` powerup limit, `0.8x` knockback, `1.25x` stun resistance), removes Anger, grants Unlock Potential, and adds 0.5 regeneration. |
 | `alien_shifter` | Creates the non-teachable Alien transform buff; grants Giant Form, Imitation, and Materialization; divides low-ki and low-HP BP loss by 3; enables arm stretch and lungs; multiplies blast homing by 1.5 and mastery by 5. |
 
 ## Manual Stat Allocation
@@ -250,7 +250,7 @@ Every point must be allocated manually before submission. The browser prevents i
 ### Cached Profiles
 `NEXUS_CREATION_STAT_PROFILES` caches profiles globally under `"<race>|<trait>"`. On the first request for a key, `nexusCreationStatProfile()` creates a `/mob/NexusCreationPreview`, initializes the selected race and trait without interactive prompts, starts with `44 + RaceBonusStatPoints()`, and applies `ApplyRaceBuild()`. The resulting `Points` value is the profile budget.
 
-For each stat, a separate cap preview starts from the initialized race state before `ApplyRaceBuild()`, then repeatedly calls `raiseNexusCreationStat()` until `StatRaceCapped()` becomes true or the number of increments reaches the whole budget. The resulting increment count is that stat's player-allocation cap. Free lineage points are calculated by another preview after `ApplyRaceBuild()` and therefore do not consume that manual room. Android Anger is explicitly assigned a zero cap. Profiles do not include hidden internal modifiers, so those modifiers cannot change or disclose the visible budget or caps. `GenerateBody()` embeds every rendered profile's budget and eleven caps into JavaScript.
+For each stat, a separate cap preview starts from the initialized race state before `ApplyRaceBuild()`, then repeatedly calls `raiseNexusCreationStat()` until `StatRaceCapped()` becomes true or the number of increments reaches the whole budget. The resulting increment count is that stat's player-allocation cap. Free lineage points are calculated by another preview after `ApplyRaceBuild()` and therefore do not consume that manual room. Android and Legendary Saiyan Anger receive a zero profile cap. Apex Genome is a customizable Alien option rather than a fixed profile property, so the browser dynamically forces its Anger cap/allocation to zero when selected and the server independently rejects any submitted Apex Anger points. Profiles do not include hidden internal modifiers, so those modifiers cannot change or disclose the visible budget or caps. `GenerateBody()` embeds every rendered profile's budget and eleven caps into JavaScript.
 
 Current fresh-character budgets are:
 
@@ -278,7 +278,7 @@ Current fresh-character budgets are:
 One allocation point changes Energy, Strength, Endurance, Speed, Force, Resistance, Offense, or Defense by 0.1; Regeneration or Recovery by 0.2; and Anger by 10. The caps are point counts derived from the initialized pre-lineage race state, not raw final-stat values. The displayed final value combines the post-lineage race value with the player's allocation.
 
 ### Server Validation And Application
-`nexusValidateStatAllocation()` rounds the submitted numeric value for each of the eleven known IDs, rejects negative values and values above the cached cap, and requires their sum to equal the profile budget exactly. Extra fields do not become stats. After race initialization, `Racial_Stats(Start_Redo_Stats = 0, stat_allocation = stat_allocation)` reconstructs the same point budget and race build. `applyNexusStatAllocation()` independently rejects negative amounts or a total different from the mob's current `Points`, applies every increment through the appropriate `Raise_*` proc, decrements `Points`, and succeeds only at zero.
+`nexusValidateStatAllocation()` rounds the submitted numeric value for each of the eleven known IDs, rejects negative values and values above the cached cap, and requires their sum to equal the profile budget exactly. Extra fields do not become stats. `nexusCreationCanAllocateAnger()` adds the authoritative option-aware rejection for Android, Legendary Saiyan, and an Alien selection containing Apex Genome. After race initialization, `Racial_Stats(Start_Redo_Stats = 0, stat_allocation = stat_allocation)` reconstructs the same point budget and race build. `applyNexusStatAllocation()` independently rejects negative amounts or a total different from the mob's current `Points`, applies every increment through the appropriate `Raise_*` proc, decrements `Points`, and succeeds only at zero.
 
 `Max_Points` and `Minimum_Stats` are captured after the race build and before the submitted allocation. The manual branch applies the allocation first and then the hidden internal modifiers. The old `autoAllocateCharacterStats()` helper covers only eight combat stats and is not called by the Nexus creator.
 
@@ -290,7 +290,7 @@ One allocation point changes Energy, Strength, Endurance, Speed, Force, Resistan
 5. `Link()` validates `upload_body`, `upload_clothing`, and `upload_frost` through the normal icon limits and refreshes the preserved wizard, or handles `action=create`: it copies all eleven stats, parses comma-separated server IDs for Alien/clothing, builds the Frost slot list, resolves hair against the form-owned catalog, and passes only this form's custom resources plus the server-held Cooler flag to `commitNexusCharacter()`.
 6. The backend requires the client and loading state to remain valid, rechecks `can_login`, preview mode, remake restrictions, and the player cap, and requires the selected race to remain in a fresh `GetAvailableCharacterRaces()` result.
 7. The backend regenerates traits, bodies, Alien AP definitions, Frost form icons, and clothing types; it enforces Android compatibility, AP/clothing limits, required Frost slots, identity fields, and the exact stat allocation.
-8. Only after validation does it lock the commit, initialize the race, create hidden internal state, compute low-resource BP loss, run `Racial_Stats()`, and apply alignment, Alien options, appearance, starter clothing, name, and age.
+8. Only after validation does it lock the commit, initialize the race, set Apex Anger eligibility before hidden mutations roll, create hidden internal state, compute low-resource BP loss, run `Racial_Stats()`, and apply alignment, Alien options, appearance, starter clothing, name, and age.
 9. It applies race starting stats, chooses a random valid spawn, completes standard setup, loads feats, initializes Android/Majin energy, marks the player session complete before the asynchronous new/load bootstrap can close the creator, and schedules `save()` after five ticks. No hidden internal information is included in creator output or completion messages.
 10. On success the form is deleted. On failure it displays a generic name/trait/icon/attribute error and refreshes without completing the character.
 
@@ -334,7 +334,7 @@ An unforced roll uses `rand(1, 100000)` and the following exact internal distrib
 | `2..10` | Rare | 0.009% | 2 or 3, chosen by `rand(2, 3)` | 1% to 20% |
 | `1` | Anomaly | 0.001% | All 11 | 1% to 30% |
 
-Selected IDs are distinct because each pick is removed from a temporary list. `forced_rarity` is used by internal tests; any value outside the four named tiers, including `"None"`, records the current version with no entries.
+Selected IDs are distinct because each pick is removed from a temporary list. Angerless archetypes omit `volatile_potential` from the available pool, discard it during legacy normalization, and reject later attempts to assign it. Consequently, their Anomaly roll contains every eligible mutation rather than all eleven catalog entries. `forced_rarity` is used by internal tests; any value outside the four named tiers, including `"None"`, records the current version with no entries.
 
 ### Multiplicative Application
 Each saved percentage uses `multiplier = 1 + percent / 100`; percentages are multiplicative, not additive stat steps. Application clamps the read percentage to `1..30` and changes these fields:
@@ -353,7 +353,7 @@ Each saved percentage uses `multiplier = 1 + percent / 100`; percentages are mul
 | Recovery | `recov` |
 | Anger | `max_anger` |
 
-For the Nexus manual-allocation branch, `Racial_Stats()` applies these percentages after the race build and submitted allocation. This keeps the internal roll out of profile budgets, profile caps, and creator rendering. Application itself is multiplicative and is not an idempotent operation; callers must not apply it repeatedly to already-modified state.
+For the Nexus manual-allocation branch, `Racial_Stats()` applies these percentages after the race build and submitted allocation. This keeps the internal roll out of profile budgets, profile caps, and creator rendering. Anger mutation application also rechecks `canPossessAnger()` and normalizes an ineligible character to `anger = max_anger = 100`. Application itself is multiplicative and is not an idempotent operation; callers must not apply it repeatedly to already-modified state.
 
 ### Migration And Idempotence
 `rollCharacterMutations()` immediately returns when `mutation_save_version >= 2`, even when a forced rarity is supplied. A completed roll, including a no-result roll, therefore cannot be rerolled or replaced through this proc.

@@ -15,10 +15,12 @@ Description:
 */
 
 mob/proc/anger_chance(mod=1)
-	if(Race == "Android") return 0
-	else return 100
+	if(!canPossessAnger()) return 0
+	return 100
 
-mob/proc/Angry() if(anger>100) return 1
+mob/proc/Angry()
+	if(!canPossessAnger()) return disableAnger()
+	if(anger > 100) return 1
 
 mob/var/tmp/list/recent_ko_reasons=new
 

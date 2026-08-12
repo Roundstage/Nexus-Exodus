@@ -18,7 +18,7 @@ Standalone visual effects such as rock debris, Harambe event visuals, rising roc
 - Side effects: creates two dedicated plane-20 visual actors above map lighting and permanently deletes them after the animation; it deliberately bypasses the heterogeneous generic effect cache.
 
 ### mob/proc/canHitAlienInfiniteVoidTarget
-- Purpose: Accept only living, attackable targets on the caster's Z-level that also pass the shared Tenkaichi RP Mode and Safezone protections.
+- Purpose: Accept only living, attackable targets on the caster's Z-level that also pass the shared Nexus RP Mode and Safezone protections.
 
 ### mob/proc/getAlienInfiniteVoidStunTicks
 - Purpose: Scale stun from caster BP/Force against target BP/Resistance, use a six-second equal-stat base before global stun modifiers, clamp it to 30–120 ticks, and apply a 75% Time Normalizer reduction with a six-tick floor.

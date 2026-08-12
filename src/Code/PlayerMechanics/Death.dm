@@ -298,44 +298,35 @@ mob/proc/third_eye()
 	for(var/obj/Third_Eye/te in src) if(te.Using)
 		return 1
 
+mob/proc/canPossessAnger()
+	if(Android || Race == "Android") return FALSE
+	if(Class == "Legendary Saiyan") return FALSE
+	if(jirenAlien) return FALSE
+	return TRUE
+
+mob/proc/disableAnger()
+	anger = 100
+	max_anger = 100
+	last_anger = 0
+	has_angered_before_ko = FALSE
+	if(islist(anger_reasons)) anger_reasons.Cut()
+	return FALSE
+
 mob/proc/can_anger()
-	if(Android) return
-	if(lssj_always_angry && Class == "Legendary Saiyan") return
-	if(jirenAlien && !jirenAlienCanAnger) return
+	if(!canPossessAnger()) return disableAnger()
 	if(Giving_Power) return
 	if(cant_anger_until_time > world.time) return
 	if(anger < max_anger)
 		return 1
 
 mob/proc/hasAngerHealthRecovery()
-	if(Android || Race == "Android") return TRUE
-	if(Class == "Legendary Saiyan") return TRUE
-	if(jirenAlien) return TRUE
 	return FALSE
 
 mob/proc/canUseAngerHealthRecovery()
-	if(!hasAngerHealthRecovery()) return FALSE
-	if(has_angered_before_ko || Giving_Power) return FALSE
-	if(cant_anger_until_time > world.time) return FALSE
-	return TRUE
+	return FALSE
 
 mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")
-	if(!canUseAngerHealthRecovery()) return FALSE
-	reason = "[reason]"
-	player_view(15, src) << "<font color=red>[src]'s anger gives them a second wind!"
-	anger_reasons.len = 3
-	anger_reasons.Insert(1, reason)
-	anger_reasons.len = 3
-	last_anger = world.time
-	SetLastAttackedTime(last_attacker)
-	anger = max(100, max_anger)
-	Health = 100
-	has_angered_before_ko = TRUE
-	UpdateBP()
-	updateOverheadHealthHud()
-	spawn(800)
-		if(src && has_angered_before_ko) Calm()
-	return TRUE
+	return FALSE
 
 mob/proc/gainAngerFromDamage(applied_damage)
 	if(applied_damage <= 0 || !can_anger()) return 0

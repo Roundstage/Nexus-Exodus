@@ -13,11 +13,13 @@ Sense tracking is persistent while Sense or a compatible scanner is owned. Clien
 
 Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Its original instant warp/input cadence is preserved, with a larger centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt identifying the required key for each fighter. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
 
-Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its imported Tenkaichi effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
+Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its integrated effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
 
 Confirmed melee critical hits use the original `showNexusCriticalImpact()` presentation: a dark impact core, three independently rotated black/crimson spark ruptures generated at runtime, a short crimson light pulse, shockwave, screen shake, floating `BLACK FLASH` title, and layered physical/energy impact audio. `Test Combat Effects > Critical - Black Flash` previews the complete presentation without dealing damage.
 
-Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Tenkaichi approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
+Custom Buff allocation uses `normalizeNexusCustomBuffStats()` and `adjustNexusCustomBuffStat()`. The hidden skin verb accepts only eleven explicit multiplier tokens, updates discrete tenths, enforces per-stat and 27-point hard caps, and never indexes `vars[]` with client text. Invalid or legacy non-finite/out-of-range values are normalized before use.
+
+Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Nexus approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
@@ -2709,7 +2711,7 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### mob/proc/RockThrow
 - Signature: `RockThrow()`
 - Inputs: None
-- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math after the original animated Tenkaichi boulder reaches the target.
+- Purpose: Resolve powerful or rapid selected-target rock damage using Strength-based melee math after the original animated Nexus boulder reaches the target.
 - Returns: none (implicit).
 - Side effects: shows floating cast text, dust, throw and impact audio, animated impact art, damage and knockback.
 
@@ -2723,7 +2725,7 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### mob/proc/RockSlide
 - Signature: `RockSlide()`
 - Inputs: None
-- Purpose: Search the forward spread and launch up to five original animated Tenkaichi boulders with victim-relative Strength-based hits.
+- Purpose: Search the forward spread and launch up to five original animated Nexus boulders with victim-relative Strength-based hits.
 - Returns: none (implicit).
 - Side effects: shows cast text, earth audio, impact art, damage and knockback.
 
@@ -4304,88 +4306,88 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-### src/Code/Combat/TenkaichiMeleeTechniques.dm
+### src/Code/Combat/NexusMeleeTechniques.dm
 
-#### mob/proc/showTenkaichiTechniqueAnnouncement
-- Signature: `showTenkaichiTechniqueAnnouncement(technique_name, text_color, sound_file, sound_volume)`
+#### mob/proc/showNexusTechniqueAnnouncement
+- Signature: `showNexusTechniqueAnnouncement(technique_name, text_color, sound_file, sound_volume)`
 - Inputs: visible technique name, presentation color and optional sound profile.
 - Purpose: Apply Nexus-style floating cast text, spectator messaging and positional audio to an imported technique.
 - Returns: none (implicit).
 - Side effects: creates and deletes a temporary maptext actor and plays the selected sound.
 
-#### obj/Attacks/TenkaichiMeleeTechnique/proc/playCastEffects
+#### obj/Attacks/NexusMeleeTechnique/proc/playCastEffects
 - Signature: `playCastEffects(mob/user)`
 - Inputs: technique user.
 - Purpose: Dispatch the shared attack animation, floating name, message and behavior-aware CC0 weapon or legacy unarmed/grapple cast audio.
 - Returns: none (implicit).
 - Side effects: changes transient animation state and creates audiovisual feedback.
 
-#### obj/Attacks/TenkaichiMeleeTechnique/proc/showSwordSlashEffect
+#### obj/Attacks/NexusMeleeTechnique/proc/showSwordSlashEffect
 - Signature: `showSwordSlashEffect(mob/target, impact_scale = 1)`
 - Inputs: hit target and calculated impact scale.
-- Purpose: Layer the nine-frame CC0 pixel slash over the technique's original Tenkaichi effect with per-technique color and additive light.
+- Purpose: Layer the nine-frame CC0 pixel slash over the technique's original Nexus effect with per-technique color and additive light.
 - Returns: none (implicit).
 - Side effects: creates and deletes one transient animated slash actor.
 
-#### mob/proc/castTenkaichiMeleeTechnique
-- Signature: `mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)`
-- Inputs: the owned Roleplay Tenkaichi technique object.
+#### mob/proc/castNexusMeleeTechnique
+- Signature: `mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)`
+- Inputs: the owned Nexus technique object.
 - Purpose: Validate equipment, RPMode, target, range, energy and cooldown before routing ordinary strikes through native `Melee()` and dispatching line dash, pursuit, delayed barrage, grapple and counter behaviors.
 - Returns: boolean success flag.
 - Side effects: may move through targets, pursue over time, consume a grab, prepare a riposte, spend energy or establish a one-use melee modifier context.
 
-#### obj/Attacks/TenkaichiMeleeTechnique/proc/applyOnHit
+#### obj/Attacks/NexusMeleeTechnique/proc/applyOnHit
 - Signature: `applyOnHit(mob/attacker, mob/target, damage)`
 - Inputs: attacker, primary target and damage produced by the native melee calculation.
 - Purpose: Apply the adapted multi-hit, bleed, stun and front/radius effects after block and dodge resolution.
 - Returns: none (implicit).
-- Side effects: may damage secondary targets, apply crowd control, animate imported Tenkaichi effects and play technique-specific impact audio.
+- Side effects: may damage secondary targets, apply crowd control, animate integrated effects and play technique-specific impact audio.
 
-#### mob/proc/applyTenkaichiTechniqueDamage
-- Signature: `mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage)`
+#### mob/proc/applyNexusTechniqueDamage
+- Signature: `mob/proc/applyNexusTechniqueDamage(mob/target, damage)`
 - Inputs: secondary target and native damage amount.
 - Purpose: Resolve supplemental technique hits using Nexus KO, lethal, safe-zone and RPMode rules.
 - Returns: boolean success flag.
 - Side effects: changes target Health and may trigger KO or Death.
 
-#### mob/proc/resolveTenkaichiTechniqueHit
-- Signature: `mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTechnique/technique, damage_multiplier, force_hit)`
+#### mob/proc/resolveNexusTechniqueHit
+- Signature: `mob/proc/resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/technique, damage_multiplier, force_hit)`
 - Inputs: target, technique definition, optional damage multiplier and forced-hit flag.
 - Purpose: Resolve specialized melee hits through Nexus accuracy, dodge, guard, damage, KO and lethal rules.
 - Returns: boolean success flag.
 - Side effects: may damage, bleed, stun or knock back the target.
 
-#### mob/proc/tryTenkaichiRiposte
-- Signature: `mob/proc/tryTenkaichiRiposte(mob/attacker)`
+#### mob/proc/tryNexusRiposte
+- Signature: `mob/proc/tryNexusRiposte(mob/attacker)`
 - Inputs: incoming melee attacker.
 - Purpose: Consume a prepared Riposte and counter the incoming attack before its energy and damage resolution.
 - Returns: boolean indicating whether the incoming attack was intercepted.
 - Side effects: stuns and counterattacks the attacker.
 
-#### mob/proc/getTenkaichiTechniqueTarget
-- Signature: `mob/proc/getTenkaichiTechniqueTarget(maximum_range)`
+#### mob/proc/getNexusTechniqueTarget
+- Signature: `mob/proc/getNexusTechniqueTarget(maximum_range)`
 - Inputs: maximum attack range.
 - Purpose: Use the selected target when valid and fall back to the mob directly in front for adjacent combo skills.
 - Returns: valid target mob or null.
 - Side effects: none.
 
-#### mob/proc/canUseTenkaichiGrappleTechnique
-- Signature: `mob/proc/canUseTenkaichiGrappleTechnique()`
+#### mob/proc/canUseNexusGrappleTechnique
+- Signature: `mob/proc/canUseNexusGrappleTechnique()`
 - Inputs: none.
 - Purpose: Apply normal melee validation while allowing the active grab required by Pile Driver and Megaton Throw.
 - Returns: boolean availability.
 - Side effects: temporarily excludes `grabbedObject` only during synchronous validation.
 
-### src/Code/Combat/TenkaichiSpecialStyles.dm
+### src/Code/Combat/NexusSpecialStyles.dm
 
-#### obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/proc/useStyle
+#### obj/Attacks/NexusSpecialStyle/WallOfFlame/proc/useStyle
 - Signature: `useStyle(mob/user)`
 - Inputs: attack owner.
 - Purpose: Create a five-tile persistent fire wall instead of approximating the technique as a projectile fan.
 - Returns: boolean success flag.
 - Side effects: spends energy, plays fire audio and cast text, and creates fading temporary flame-field controllers.
 
-#### obj/Effect/TenkaichiFlameField/proc/processField
+#### obj/Effect/NexusFlameField/proc/processField
 - Signature: `processField()`
 - Inputs: none.
 - Purpose: Apply bounded periodic Ki damage, burn and brief stun to enemies occupying the field.
@@ -4457,17 +4459,17 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Focus and the six mutually exclusive Ultimate Buffs remain compatible with the same `obj/Buff` lifecycle. All six Ultimate Buffs are tier-five Combat -> Buffs capstones reached through distinct preset-buff paths; they are no longer Milestone talents.
 - `mob/proc/ProgressionBuffBurst(buff, enabling)` supplies a colored activation/deactivation burst, floating technique label, and sound chosen by the buff preset without introducing a parallel combat state.
 - Presets use bounded combinations of the existing buff multipliers and continue through `Buff_Enable()`/`Buff_Disable()`, so drain, cooldown, hotbar, and save behavior remain authoritative.
-- RPT combat Milestones are a separate talent layer: Bleeding Edge and Thundering Blows grant toggleable weapon techniques, Fire Fist reuses the native Energy-draining stance, and Fire Lord/Smolder/This Drill modify the canonical burn and scaled-damage paths without becoming Ultimate Buffs.
+- integrated combat Milestones are a separate talent layer: Bleeding Edge and Thundering Blows grant toggleable weapon techniques, Fire Fist reuses the native Energy-draining stance, and Fire Lord/Smolder/This Drill modify the canonical burn and scaled-damage paths without becoming Ultimate Buffs.
 - Named waves use Combat -> Beam, while Rock Throw/Rock Slide/Rock Tomb use Combat -> Physical. Echoing Slash and Sky Break belong to Combat -> Weapon; their projectiles call `getWeaponCombatDamage()` so equipped-weapon quality and weapon Milestones affect their damage.
 - Genki Dama and Kaioken are tier-ten purchases. Genki Dama's full-charge impact plus explosion is the highest bounded player-projectile damage budget.
-- Temporary RPT magic uses the same authoritative paths: Empowered Attacks is applied in `TakeDamage()` through the resolved attacker, Empowered Defenses divides incoming damage by its 1.5 effective Endurance/Resistance multiplier without mutating save-backed stats, Adamantine Skeleton retains its independent reduction, and Accelerate multiplies the final `Speed_delay_mult()` result.
-- Frost Nova filters every player or NPC target through `canHitTenkaichiTechniqueTarget()`, damages through `applyTenkaichiTechniqueDamage()`, and applies its area stun; Rejuvenate retains its adjacent-player rule. Projectile spells use cached Nexus blasts rather than maintaining an independent projectile loop.
+- Temporary integrated magic uses the same authoritative paths: Empowered Attacks is applied in `TakeDamage()` through the resolved attacker, Empowered Defenses divides incoming damage by its 1.5 effective Endurance/Resistance multiplier without mutating save-backed stats, Adamantine Skeleton retains its independent reduction, and Accelerate multiplies the final `Speed_delay_mult()` result.
+- Frost Nova filters every player or NPC target through `canHitNexusTechniqueTarget()`, damages through `applyNexusTechniqueDamage()`, and applies its area stun; Rejuvenate retains its adjacent-player rule. Projectile spells use cached Nexus blasts rather than maintaining an independent projectile loop.
 
-### Restored RPT area techniques
+### Restored integrated area techniques
 
-- `obj/Attacks/TenkaichiAreaTechnique` derives from the native `obj/Attacks/Shockwave` while retaining its saved type paths. `useAreaTechnique(user)` owns targetless cooldown, Energy payment, AoE dodge, radial falloff, target cap and Nexus damage scaling. Super Explosive Wave is a defensive four-tile wave that destroys hostile non-beam blasts and repels enemies; Earthquake is a ground-only physical five-tile wave that pulls enemies inward through collision-valid steps.
-- `obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze/proc/useStyle(user)` requires a selected target within 20 tiles, creates three cached homing blasts, and shares one `CombatDamageBudget` equal to the complete 7.5-factor volley.
-- `mob/proc/castTenkaichiRadialTechnique()` lets Wind Howl fire without a selected primary target. It force-resolves valid enemies within three tiles after normal equipment, cost, cooldown, and AoE-dodge checks.
+- `obj/Attacks/NexusAreaTechnique` derives from the native `obj/Attacks/Shockwave` while retaining its saved type paths. `useAreaTechnique(user)` owns targetless cooldown, Energy payment, AoE dodge, radial falloff, target cap and Nexus damage scaling. Super Explosive Wave is a defensive four-tile wave that destroys hostile non-beam blasts and repels enemies; Earthquake is a ground-only physical five-tile wave that pulls enemies inward through collision-valid steps.
+- `obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze/proc/useStyle(user)` requires a selected target within 20 tiles, creates three cached homing blasts, and shares one `CombatDamageBudget` equal to the complete 7.5-factor volley.
+- `mob/proc/castNexusRadialTechnique()` lets Wind Howl fire without a selected primary target. It force-resolves valid enemies within three tiles after normal equipment, cost, cooldown, and AoE-dodge checks.
 - Pressure Punch uses `pressure_punch_charge_ticks = 10` and `pressure_punch_cooldown_ticks = 90`, halving its charge and reducing its old twelve-second cooldown to nine seconds.
 - Versatile Training and Unencumbered Combatant feed effective combat-stat helpers without changing saved base stats. Momentum, Precision, and Fortified Damage are mutually exclusive secondary source-stat choices. Sweeping Impact, Echoing Assault, and Keen Edge add three-tile splash, bounded double attacks, and critical chance to ordinary melee.
 - Fire Lord reads the struck target's Burn stacks and only amplifies attacks whose resolved name is fire-, flame-, or burn-based.

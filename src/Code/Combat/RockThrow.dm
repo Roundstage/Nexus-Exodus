@@ -183,7 +183,7 @@ mob/proc/deliverRockThrowHit(mob/target, damage, knockback, visual_scale = 1)
 	set waitfor = 0
 	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockThrow.dmi', null, visual_scale)
 	if(!impact_turf) return
-	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	if(!target || !canHitNexusTechniqueTarget(target)) return
 	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.5, attacker = src, attack_name = "Rock Throw")
 	target.Knockback(src, knockback)
@@ -192,7 +192,7 @@ mob/proc/deliverRockSlideHit(mob/target, damage, knockback)
 	set waitfor = 0
 	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockThrow.dmi', null, 0.9)
 	if(!impact_turf) return
-	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	if(!target || !canHitNexusTechniqueTarget(target)) return
 	showRockSkillImpact(target)
 	target.TakeDamage(damage, 1.2, attacker = src, attack_name = "Rock Slide")
 	target.Knockback(src, knockback)
@@ -201,13 +201,13 @@ mob/proc/deliverRockTombHit(mob/target, damage, knockback, mastered)
 	set waitfor = 0
 	var/turf/impact_turf = showRockSkillProjectile(target, 'RTRockTomb.dmi', null, 1.25)
 	if(!impact_turf) return
-	if(!target || !canHitTenkaichiTechniqueTarget(target)) return
+	if(!target || !canHitNexusTechniqueTarget(target)) return
 	showRockSkillImpact(target, heavy = TRUE)
 	var/health_before_damage = target.Health
 	if(mastered)
 		RockTombFX(impact_turf)
 		for(var/mob/area_target in range(2, target))
-			if(area_target == src || area_target == target || !canHitTenkaichiTechniqueTarget(area_target)) continue
+			if(area_target == src || area_target == target || !canHitNexusTechniqueTarget(area_target)) continue
 			area_target.TakeDamage(damage * 0.3, 1, attacker = src, attack_name = "Rock Tomb Explosion")
 			area_target.Knockback(src, knockback * 0.5)
 			area_target << "You are caught in the rock explosion!"
@@ -255,7 +255,7 @@ mob
 					var/knockback = get_melee_knockback_distance(target)
 					usr << "You throw a rock at [target]!"
 					target << "[usr] throws a rock at you!"
-					showTenkaichiTechniqueAnnouncement("Rock Throw", "#d9b27c")
+					showNexusTechniqueAnnouncement("Rock Throw", "#d9b27c")
 					spawn() deliverRockThrowHit(target, dmg, knockback)
 					return
 				else
@@ -276,7 +276,7 @@ mob
 					var/knockback = get_melee_knockback_distance(target) * 0.5
 					usr << "You throw a small rock at [target]!"
 					target << "[usr] throws a small rock at you!"
-					showTenkaichiTechniqueAnnouncement("Rock Throw", "#d9b27c")
+					showNexusTechniqueAnnouncement("Rock Throw", "#d9b27c")
 					spawn() deliverRockThrowHit(target, dmg, knockback, 0.8)
 					return
 				else
@@ -308,7 +308,7 @@ mob
 			
 			flick("Blast", usr)
 			RockSlideFX()
-			showTenkaichiTechniqueAnnouncement("Rock Slide", "#c99a63")
+			showNexusTechniqueAnnouncement("Rock Slide", "#c99a63")
 			
 			var/amount = 7 + round(usr.BP / 1000000) // Base skill level based on BP
 			if(amount > 15) amount = 15
@@ -363,7 +363,7 @@ mob
 			usr.Ki = max(0, usr.Ki - 100)
 			
 			flick("Blast", usr)
-			showTenkaichiTechniqueAnnouncement("Rock Tomb", "#e0a15a", pick(nexus_rock_launch_sounds), 42)
+			showNexusTechniqueAnnouncement("Rock Tomb", "#e0a15a", pick(nexus_rock_launch_sounds), 42)
 			
 			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
 			if(target)

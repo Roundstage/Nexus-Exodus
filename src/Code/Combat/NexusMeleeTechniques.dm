@@ -1,8 +1,8 @@
 mob
-	var/tmp/obj/Attacks/TenkaichiMeleeTechnique/active_tenkaichi_melee_technique
-	var/tmp/mob/active_tenkaichi_melee_target
-	var/tmp/tenkaichi_melee_context_id = 0
-	var/tmp/active_tenkaichi_riposte_until = 0
+	var/tmp/obj/Attacks/NexusMeleeTechnique/active_nexus_melee_technique
+	var/tmp/mob/active_nexus_melee_target
+	var/tmp/nexus_melee_context_id = 0
+	var/tmp/active_nexus_riposte_until = 0
 
 var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight2.ogg')
 var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
@@ -26,7 +26,7 @@ proc/showNexusSwordSlashEffect(atom/target, effect_color = "#8ecae6", impact_sca
 	sleep(7)
 	if(slash) del(slash)
 
-obj/Effect/TenkaichiTechniqueText
+obj/Effect/NexusTechniqueText
 	name = "technique announcement"
 	density = 0
 	mouse_opacity = 0
@@ -36,10 +36,10 @@ obj/Effect/TenkaichiTechniqueText
 	plane = NEXUS_WORLD_OVERLAY_PLANE // Technique names remain above screen darkness and follow map zoom.
 	layer = 99
 
-mob/proc/showTenkaichiTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
+mob/proc/showNexusTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
 	set waitfor = 0
 	if(!technique_name || !loc) return
-	var/obj/Effect/TenkaichiTechniqueText/announcement = new(loc)
+	var/obj/Effect/NexusTechniqueText/announcement = new(loc)
 	announcement.maptext = "<center><span style='font-family:Arial;font-size:12pt;font-weight:bold;color:[text_color];text-shadow:1px 1px #000000'>[technique_name]</span></center>"
 	announcement.pixel_x = pixel_x - 80
 	announcement.pixel_y = pixel_y + (icon ? max(38, GetHeight(icon)) : 38)
@@ -50,13 +50,13 @@ mob/proc/showTenkaichiTechniqueAnnouncement(technique_name, text_color = "#ffd16
 	sleep(10)
 	if(announcement) del(announcement)
 
-obj/Attacks/TenkaichiMeleeTechnique
-	name = "Tenkaichi Melee Technique"
-	desc = "A Roleplay Tenkaichi technique adapted to the Nexus combat engine."
+obj/Attacks/NexusMeleeTechnique
+	name = "Nexus Melee Technique"
+	desc = "A Nexus technique adapted to the Nexus combat engine."
 	can_hotbar = 1
 	hotbar_type = "Melee"
 	repeat_macro = 0
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
 	var
 		requires_weapon = FALSE
 		requires_unarmed = FALSE
@@ -78,7 +78,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		splash_radius = 0
 		splash_damage_multiplier = 0
 		splash_target_limit = 0
-		effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+		effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
 		effect_icon_state
 		cast_sound_category
 		impact_sound_category
@@ -102,7 +102,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 		useTechnique(usr)
 
 	proc/useTechnique(mob/user)
-		if(user) user.castTenkaichiMeleeTechnique(src)
+		if(user) user.castNexusMeleeTechnique(src)
 
 	proc/getCastSound()
 		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'Throw.ogg'
@@ -128,7 +128,7 @@ obj/Attacks/TenkaichiMeleeTechnique
 	proc/playCastEffects(mob/user)
 		if(!user) return
 		flick("Attack", user)
-		user.showTenkaichiTechniqueAnnouncement(name, cast_text_color, getCastSound(), 28)
+		user.showNexusTechniqueAnnouncement(name, cast_text_color, getCastSound(), 28)
 		if(behavior == "iai_dash") Play_Melee_Sound(sound_range = 10, origin = user, sound_file = 'Teleport.ogg', sound_volume = 14)
 
 	proc/showSwordSlashEffect(mob/target, impact_scale = 1)
@@ -182,18 +182,18 @@ obj/Attacks/TenkaichiMeleeTechnique
 		var/secondary_count = 0
 		for(var/mob/secondary_target in getSplashTargets(attacker, target))
 			if(secondary_count >= splash_target_limit) break
-			if(!attacker.canHitTenkaichiTechniqueTarget(secondary_target)) continue
+			if(!attacker.canHitNexusTechniqueTarget(secondary_target)) continue
 			secondary_count++
 			showImpact(secondary_target)
-			attacker.applyTenkaichiTechniqueDamage(secondary_target, damage * splash_damage_multiplier, name)
+			attacker.applyNexusTechniqueDamage(secondary_target, damage * splash_damage_multiplier, name)
 			if(secondary_target && knockback_multiplier > 1) secondary_target.Knockback(attacker, max(1, round(knockback_multiplier)))
 		if(extra_hits > 0) spawn()
 			for(var/hit_index = 1, hit_index <= extra_hits, hit_index++)
 				sleep(extra_hit_delay)
 				if(!target || target.Health <= 0 || getdist(attacker, target) > 1) break
 				showImpact(target)
-				attacker.applyTenkaichiTechniqueDamage(target, damage * extra_hit_multiplier, name)
-		if(behavior == "kickback_combo") spawn() attacker.performTenkaichiKickbackFollowup(src, target)
+				attacker.applyNexusTechniqueDamage(target, damage * extra_hit_multiplier, name)
+		if(behavior == "kickback_combo") spawn() attacker.performNexusKickbackFollowup(src, target)
 
 	proc/applyLineHits(mob/attacker, mob/primary_target, damage)
 		if(!attacker || line_reach < 2) return
@@ -202,24 +202,24 @@ obj/Attacks/TenkaichiMeleeTechnique
 			line_turf = get_step(line_turf, attacker.dir)
 			if(!line_turf || line_turf.density) break
 			for(var/mob/line_target in line_turf)
-				if(line_target == primary_target || !attacker.canHitTenkaichiTechniqueTarget(line_target)) continue
+				if(line_target == primary_target || !attacker.canHitNexusTechniqueTarget(line_target)) continue
 				showImpact(line_target)
-				attacker.applyTenkaichiTechniqueDamage(line_target, damage * 0.75, name)
+				attacker.applyNexusTechniqueDamage(line_target, damage * 0.75, name)
 
-mob/proc/canHitTenkaichiTechniqueTarget(mob/target)
+mob/proc/canHitNexusTechniqueTarget(mob/target)
 	if(!target || target == src || target.rp_mode || target.Safezone) return FALSE
 	return TRUE
 
-mob/proc/applyTenkaichiTechniqueDamage(mob/target, damage, attack_name = "Tenkaichi Technique")
-	if(!canHitTenkaichiTechniqueTarget(target) || damage <= 0) return FALSE
+mob/proc/applyNexusTechniqueDamage(mob/target, damage, attack_name = "Nexus Technique")
+	if(!canHitNexusTechniqueTarget(target) || damage <= 0) return FALSE
 	target.TakeDamage(damage, attacker = src, attack_name = attack_name)
 	if(target && target.Health <= 0)
 		if(!target.KO) target.KO(src)
 		else if(Fatal) target.Death(src)
 	return TRUE
 
-mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE, defensive_evasion_resolved = FALSE)
-	if(!canHitTenkaichiTechniqueTarget(target) || !technique) return FALSE
+mob/proc/resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE, defensive_evasion_resolved = FALSE)
+	if(!canHitNexusTechniqueTarget(target) || !technique) return FALSE
 	if(!force_hit && !defensive_evasion_resolved && target.isDefensiveDashEvading()) return FALSE
 	var/accuracy = Clamp(get_melee_accuracy(target) + technique.accuracy_bonus, 0, 100)
 	if(!force_hit && target.CanMeleeDodge(src) && target.evade_meter > 0 && !prob(accuracy))
@@ -231,14 +231,14 @@ mob/proc/resolveTenkaichiTechniqueHit(mob/target, obj/Attacks/TenkaichiMeleeTech
 			return FALSE
 		damage_multiplier *= 0.23
 	var/damage = get_melee_damage(target) * technique.damage_multiplier * damage_multiplier
-	if(!applyTenkaichiTechniqueDamage(target, damage, technique.name)) return FALSE
+	if(!applyNexusTechniqueDamage(target, damage, technique.name)) return FALSE
 	technique.showImpact(target)
 	if(technique.bleed_fraction > 0) target.BleedDamage(damage * technique.bleed_fraction, src, "[technique.name] Bleed")
 	if(technique.stun_ticks > 0) target.ApplyStun(time = technique.stun_ticks, stun_power = 1.5)
 	if(technique.knockback_multiplier > 1) target.Knockback(src, max(1, round(technique.knockback_multiplier)), bypass_immunity = 1)
 	return TRUE
 
-mob/proc/payTenkaichiTechniqueCost(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/payNexusTechniqueCost(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique) return FALSE
 	var/technique_drain = GetSkillDrain(mod = technique.energy_cost, is_energy = 0)
 	if(Ki < technique_drain)
@@ -248,14 +248,14 @@ mob/proc/payTenkaichiTechniqueCost(obj/Attacks/TenkaichiMeleeTechnique/technique
 	technique.next_use = world.time + technique.cooldown_ticks
 	return TRUE
 
-mob/proc/consumeTenkaichiMeleeTechnique(mob/target)
-	if(!active_tenkaichi_melee_technique || active_tenkaichi_melee_target != target) return
-	var/obj/Attacks/TenkaichiMeleeTechnique/technique = active_tenkaichi_melee_technique
-	active_tenkaichi_melee_technique = null
-	active_tenkaichi_melee_target = null
+mob/proc/consumeNexusMeleeTechnique(mob/target)
+	if(!active_nexus_melee_technique || active_nexus_melee_target != target) return
+	var/obj/Attacks/NexusMeleeTechnique/technique = active_nexus_melee_technique
+	active_nexus_melee_technique = null
+	active_nexus_melee_target = null
 	return technique
 
-mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	set waitfor = 0
 	if(!technique || technique.loc != src || KO || rp_mode) return FALSE
 	if(world.time < technique.next_use)
@@ -269,21 +269,21 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	if(technique.requires_unarmed && weapon)
 		src << "You must unequip your weapon before using [technique]."
 		return FALSE
-	if(technique.behavior == "grapple_throw" || technique.behavior == "grapple_slam") return castTenkaichiGrappleTechnique(technique)
-	if(technique.behavior == "iai_dash") return castTenkaichiIaiSlash(technique)
-	if(technique.behavior == "march") return castTenkaichiMarchOfFury(technique)
-	if(technique.behavior == "delayed_barrage") return castTenkaichiDelayedBarrage(technique)
-	if(technique.behavior == "riposte") return activateTenkaichiRiposte(technique)
-	if(technique.behavior == "radial") return castTenkaichiRadialTechnique(technique)
+	if(technique.behavior == "grapple_throw" || technique.behavior == "grapple_slam") return castNexusGrappleTechnique(technique)
+	if(technique.behavior == "iai_dash") return castNexusIaiSlash(technique)
+	if(technique.behavior == "march") return castNexusMarchOfFury(technique)
+	if(technique.behavior == "delayed_barrage") return castNexusDelayedBarrage(technique)
+	if(technique.behavior == "riposte") return activateNexusRiposte(technique)
+	if(technique.behavior == "radial") return castNexusRadialTechnique(technique)
 	if(!can_melee()) return FALSE
 	var/maximum_range = max(1, technique.dash_range)
-	var/mob/target = getTenkaichiTechniqueTarget(maximum_range)
+	var/mob/target = getNexusTechniqueTarget(maximum_range)
 	if(!target && technique.splash_mode == "radius")
 		for(var/mob/candidate in oview(1, src))
-			if(canHitTenkaichiTechniqueTarget(candidate))
+			if(canHitNexusTechniqueTarget(candidate))
 				target = candidate
 				break
-	if(!canHitTenkaichiTechniqueTarget(target))
+	if(!canHitNexusTechniqueTarget(target))
 		var/range_label = maximum_range == 1 ? "tile" : "tiles"
 		src << "Select a valid target within [maximum_range] [range_label]."
 		return FALSE
@@ -302,41 +302,41 @@ mob/proc/castTenkaichiMeleeTechnique(obj/Attacks/TenkaichiMeleeTechnique/techniq
 	Ki -= technique_drain
 	technique.next_use = world.time + technique.cooldown_ticks
 	technique.playCastEffects(src)
-	setTenkaichiMeleeContext(technique, target)
+	setNexusMeleeContext(technique, target)
 	Melee(target, from_auto_attack = 1)
 	return TRUE
 
-mob/proc/castTenkaichiRadialTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusRadialTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
-	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	attacking = 1
 	Make_Shockwave(src, sw_icon_size = 128)
 	var/hit_count = 0
 	for(var/mob/target in oview(max(1, technique.splash_radius), src))
 		if(hit_count >= technique.splash_target_limit) break
-		if(!canHitTenkaichiTechniqueTarget(target)) continue
+		if(!canHitNexusTechniqueTarget(target)) continue
 		if(target.AOE_auto_dodge(src, loc)) continue
-		if(resolveTenkaichiTechniqueHit(target, technique, technique.splash_damage_multiplier, force_hit = TRUE)) hit_count++
+		if(resolveNexusTechniqueHit(target, technique, technique.splash_damage_multiplier, force_hit = TRUE)) hit_count++
 	Reset_melee()
 	return TRUE
 
-mob/proc/getTenkaichiTechniqueTarget(maximum_range = 1)
+mob/proc/getNexusTechniqueTarget(maximum_range = 1)
 	var/mob/target = getSelectedTarget(max_dist = maximum_range)
-	if(canHitTenkaichiTechniqueTarget(target)) return target
+	if(canHitNexusTechniqueTarget(target)) return target
 	if(maximum_range <= 1)
 		var/turf/front = get_step(src, dir)
 		if(front)
 			for(var/mob/candidate in front)
-				if(canHitTenkaichiTechniqueTarget(candidate)) return candidate
+				if(canHitNexusTechniqueTarget(candidate)) return candidate
 
-mob/proc/castTenkaichiIaiSlash(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusIaiSlash(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
 	var/mob/selected = getSelectedTarget(max_dist = technique.dash_range)
-	if(!canHitTenkaichiTechniqueTarget(selected))
+	if(!canHitNexusTechniqueTarget(selected))
 		src << "Select a valid target within [technique.dash_range] tiles."
 		return FALSE
-	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	var/dash_direction = get_dir(src, selected)
 	AlterInputDisabled(1)
@@ -350,63 +350,63 @@ mob/proc/castTenkaichiIaiSlash(obj/Attacks/TenkaichiMeleeTechnique/technique)
 	AlterInputDisabled(-1)
 	if(iai_motion_result.valid)
 		for(var/mob/hit_target in iai_motion_result.contacted_mobs)
-			if(!canHitTenkaichiTechniqueTarget(hit_target)) continue
+			if(!canHitNexusTechniqueTarget(hit_target)) continue
 			if(hit_target in iai_motion_result.evaded_contacts) continue
-			resolveTenkaichiTechniqueHit(hit_target, technique, defensive_evasion_resolved = TRUE)
+			resolveNexusTechniqueHit(hit_target, technique, defensive_evasion_resolved = TRUE)
 	del(iai_motion_result)
 	animate(src, alpha = 255, time = 2)
 	Reset_melee()
 	return TRUE
 
-mob/proc/castTenkaichiMarchOfFury(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusMarchOfFury(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
 	var/mob/target = getSelectedTarget(max_dist = technique.dash_range)
-	if(!canHitTenkaichiTechniqueTarget(target))
+	if(!canHitNexusTechniqueTarget(target))
 		src << "March of Fury requires a selected target within [technique.dash_range] tiles."
 		return FALSE
-	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	AlterInputDisabled(1)
 	attacking = 1
 	for(var/hit_index = 1, hit_index <= 4, hit_index++)
-		if(!target || !canHitTenkaichiTechniqueTarget(target)) break
+		if(!target || !canHitNexusTechniqueTarget(target)) break
 		if(getdist(src, target) > 1)
 			runNexusSkillApproach(target, 2 * world.icon_size, world.icon_size, 105, 220, 280, 0.3)
 		if(getdist(src, target) <= 1)
 			dir = get_dir(src, target)
-			resolveTenkaichiTechniqueHit(target, technique, 0.45)
+			resolveNexusTechniqueHit(target, technique, 0.45)
 		sleep(4)
 	AlterInputDisabled(-1)
 	Reset_melee()
 	return TRUE
 
-mob/proc/castTenkaichiDelayedBarrage(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusDelayedBarrage(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
-	var/mob/target = getTenkaichiTechniqueTarget(1)
-	if(!canHitTenkaichiTechniqueTarget(target))
+	var/mob/target = getNexusTechniqueTarget(1)
+	if(!canHitNexusTechniqueTarget(target))
 		src << "[technique] requires an adjacent target."
 		return FALSE
-	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	attacking = 1
 	player_view(15, src) << "[src] prepares a rapid barrage."
 	sleep(5)
 	for(var/hit_index = 1, hit_index <= 6, hit_index++)
 		if(!target || getdist(src, target) > 1) break
-		resolveTenkaichiTechniqueHit(target, technique, 0.25)
+		resolveNexusTechniqueHit(target, technique, 0.25)
 		sleep(1)
 	Reset_melee()
 	return TRUE
 
-mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/technique)
+mob/proc/castNexusGrappleTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique) return FALSE
 	if(!grabbedObject) Grab()
 	var/mob/target = grabbedObject
-	if(!target || target.grabber != src || !canHitTenkaichiTechniqueTarget(target))
+	if(!target || target.grabber != src || !canHitNexusTechniqueTarget(target))
 		src << "You must grab a valid opponent before using [technique]."
 		return FALSE
-	if(!canUseTenkaichiGrappleTechnique()) return FALSE
-	if(!payTenkaichiTechniqueCost(technique)) return FALSE
+	if(!canUseNexusGrappleTechnique()) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
 	attacking = 1
 	move = 0
@@ -417,7 +417,7 @@ mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/techn
 		sleep(4)
 		animate(target, pixel_y = 0, time = 2)
 		sleep(2)
-		resolveTenkaichiTechniqueHit(target, technique, force_hit = TRUE)
+		resolveNexusTechniqueHit(target, technique, force_hit = TRUE)
 		ReleaseGrab()
 		if(target)
 			Make_Shockwave(target, sw_icon_size = 128)
@@ -427,7 +427,7 @@ mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/techn
 		sleep(4)
 		animate(target, transform = null, pixel_y = 0, time = 2)
 		sleep(2)
-		resolveTenkaichiTechniqueHit(target, technique, force_hit = TRUE)
+		resolveNexusTechniqueHit(target, technique, force_hit = TRUE)
 		ReleaseGrab()
 		if(target)
 			Make_Shockwave(target, sw_icon_size = 128)
@@ -437,53 +437,53 @@ mob/proc/castTenkaichiGrappleTechnique(obj/Attacks/TenkaichiMeleeTechnique/techn
 	Reset_melee()
 	return TRUE
 
-mob/proc/canUseTenkaichiGrappleTechnique()
+mob/proc/canUseNexusGrappleTechnique()
 	var/mob/held_target = grabbedObject
 	grabbedObject = null
 	var/can_use = can_melee()
 	grabbedObject = held_target
 	return can_use
 
-mob/proc/performTenkaichiKickbackFollowup(obj/Attacks/TenkaichiMeleeTechnique/technique, mob/target)
+mob/proc/performNexusKickbackFollowup(obj/Attacks/NexusMeleeTechnique/technique, mob/target)
 	set waitfor = 0
 	if(!technique || !target) return
 	sleep(5)
-	if(!canHitTenkaichiTechniqueTarget(target) || target.blocking) return
+	if(!canHitNexusTechniqueTarget(target) || target.blocking) return
 	AlterInputDisabled(1)
 	if(getdist(src, target) > 1)
 		runNexusSkillApproach(target, 6 * world.icon_size, world.icon_size, 120, 260, 320, 0.3, FALSE)
 	AlterInputDisabled(-1)
 	if(target && getdist(src, target) <= 1)
-		resolveTenkaichiTechniqueHit(target, technique, 0.8)
+		resolveNexusTechniqueHit(target, technique, 0.8)
 
-mob/proc/activateTenkaichiRiposte(obj/Attacks/TenkaichiMeleeTechnique/technique)
-	if(!technique || !payTenkaichiTechniqueCost(technique)) return FALSE
+mob/proc/activateNexusRiposte(obj/Attacks/NexusMeleeTechnique/technique)
+	if(!technique || !payNexusTechniqueCost(technique)) return FALSE
 	technique.playCastEffects(src)
-	active_tenkaichi_riposte_until = world.time + 40
+	active_nexus_riposte_until = world.time + 40
 	src << "Riposte is ready for four seconds. The next incoming melee attack will be countered."
 	return TRUE
 
-mob/proc/tryTenkaichiRiposte(mob/attacker)
-	if(!attacker || world.time > active_tenkaichi_riposte_until || !using_sword()) return FALSE
-	var/obj/Attacks/TenkaichiMeleeTechnique/Riposte/riposte = locate() in src
+mob/proc/tryNexusRiposte(mob/attacker)
+	if(!attacker || world.time > active_nexus_riposte_until || !using_sword()) return FALSE
+	var/obj/Attacks/NexusMeleeTechnique/Riposte/riposte = locate() in src
 	if(!riposte) return FALSE
-	active_tenkaichi_riposte_until = 0
+	active_nexus_riposte_until = 0
 	dir = get_dir(src, attacker)
 	player_view(15, src) << "[src] ripostes [attacker]'s melee attack!"
 	attacker.ApplyStun(time = 6, stun_power = 2)
-	resolveTenkaichiTechniqueHit(attacker, riposte, force_hit = TRUE)
+	resolveNexusTechniqueHit(attacker, riposte, force_hit = TRUE)
 	return TRUE
 
-mob/proc/setTenkaichiMeleeContext(obj/Attacks/TenkaichiMeleeTechnique/technique, mob/target)
-	active_tenkaichi_melee_technique = technique
-	active_tenkaichi_melee_target = target
-	tenkaichi_melee_context_id++
-	var/context_id = tenkaichi_melee_context_id
-	spawn(2) if(tenkaichi_melee_context_id == context_id)
-		active_tenkaichi_melee_technique = null
-		active_tenkaichi_melee_target = null
+mob/proc/setNexusMeleeContext(obj/Attacks/NexusMeleeTechnique/technique, mob/target)
+	active_nexus_melee_technique = technique
+	active_nexus_melee_target = target
+	nexus_melee_context_id++
+	var/context_id = nexus_melee_context_id
+	spawn(2) if(nexus_melee_context_id == context_id)
+		active_nexus_melee_technique = null
+		active_nexus_melee_target = null
 
-obj/Attacks/TenkaichiMeleeTechnique/Slice
+obj/Attacks/NexusMeleeTechnique/Slice
 	name = "Slice"
 	desc = "A fast weapon strike with regular damage and a very short cooldown."
 	cast_text_color = "#d8f3ff"
@@ -491,12 +491,12 @@ obj/Attacks/TenkaichiMeleeTechnique/Slice
 	accuracy_bonus = 5
 	energy_cost = 4
 	cooldown_ticks = 15
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlash.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlash.dmi'
 	verb/Slice()
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/Bash
+obj/Attacks/NexusMeleeTechnique/Bash
 	name = "Bash"
 	desc = "Bash with a hammer or sword pommel, sacrificing damage to stun the target."
 	cast_text_color = "#ffd166"
@@ -506,12 +506,12 @@ obj/Attacks/TenkaichiMeleeTechnique/Bash
 	stun_ticks = 10
 	energy_cost = 10
 	cooldown_ticks = 80
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
 	verb/Bash()
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/Flourish
+obj/Attacks/NexusMeleeTechnique/Flourish
 	name = "Flourish"
 	desc = "An elaborate weapon strike that converts speed into stronger impact."
 	cast_text_color = "#8ee3f5"
@@ -521,12 +521,12 @@ obj/Attacks/TenkaichiMeleeTechnique/Flourish
 	knockback_multiplier = 1.2
 	energy_cost = 18
 	cooldown_ticks = 100
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashArc.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlashArc.dmi'
 	verb/Flourish()
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/WindHowl
+obj/Attacks/NexusMeleeTechnique/WindHowl
 	name = "Wind Howl"
 	desc = "Unleash a true area slicing shockwave that strikes enemies within three tiles without requiring a selected target."
 	cast_text_color = "#a8f0d2"
@@ -539,13 +539,13 @@ obj/Attacks/TenkaichiMeleeTechnique/WindHowl
 	splash_radius = 3
 	splash_damage_multiplier = 0.75
 	splash_target_limit = 12
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTCircleWind.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTCircleWind.dmi'
 	verb/Wind_Howl()
 		set name = "Wind Howl"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/IaiSlash
+obj/Attacks/NexusMeleeTechnique/IaiSlash
 	name = "Iai Slash"
 	desc = "Rush up to six tiles and strike through the target with a speed-amplified slash."
 	cast_text_color = "#f2fbff"
@@ -557,13 +557,13 @@ obj/Attacks/TenkaichiMeleeTechnique/IaiSlash
 	cooldown_ticks = 100
 	dash_range = 6
 	behavior = "iai_dash"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashDust.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlashDust.dmi'
 	verb/Iai_Slash()
 		set name = "Iai Slash"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/Riposte
+obj/Attacks/NexusMeleeTechnique/Riposte
 	name = "Riposte"
 	desc = "Ready your equipped weapon and counter the next incoming melee attack within four seconds."
 	cast_text_color = "#c9b8ff"
@@ -573,12 +573,12 @@ obj/Attacks/TenkaichiMeleeTechnique/Riposte
 	energy_cost = 14
 	cooldown_ticks = 100
 	behavior = "riposte"
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashArc.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlashArc.dmi'
 	verb/Riposte()
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/Cleave
+obj/Attacks/NexusMeleeTechnique/Cleave
 	name = "Cleave"
 	desc = "Sweep the three tiles in front of you with increased accuracy and damage."
 	cast_text_color = "#91d8ff"
@@ -590,12 +590,12 @@ obj/Attacks/TenkaichiMeleeTechnique/Cleave
 	splash_mode = "front"
 	splash_damage_multiplier = 0.65
 	splash_target_limit = 2
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashArc.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlashArc.dmi'
 	verb/Cleave()
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/SwordStab
+obj/Attacks/NexusMeleeTechnique/SwordStab
 	name = "Sword Stab"
 	desc = "A focused stab that pierces the adjacent target and a second target directly behind them."
 	cast_text_color = "#e1e8ed"
@@ -607,13 +607,13 @@ obj/Attacks/TenkaichiMeleeTechnique/SwordStab
 	line_reach = 2
 	energy_cost = 18
 	cooldown_ticks = 100
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTStab.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTStab.dmi'
 	verb/Sword_Stab()
 		set name = "Sword Stab"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash
+obj/Attacks/NexusMeleeTechnique/OverheadSmash
 	name = "Overhead Smash"
 	desc = "A heavy, less accurate overhead attack that crashes through three tiles in a straight line."
 	cast_text_color = "#ffc46b"
@@ -624,13 +624,13 @@ obj/Attacks/TenkaichiMeleeTechnique/OverheadSmash
 	energy_cost = 20
 	cooldown_ticks = 100
 	line_reach = 3
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 	verb/Overhead_Smash()
 		set name = "Overhead Smash"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact
+obj/Attacks/NexusMeleeTechnique/ColossalImpact
 	name = "Colossal Impact"
 	desc = "Drive your weapon down and unleash a gigantic close-range shockwave."
 	cast_text_color = "#ff9f4a"
@@ -643,13 +643,13 @@ obj/Attacks/TenkaichiMeleeTechnique/ColossalImpact
 	splash_radius = 2
 	splash_damage_multiplier = 0.65
 	splash_target_limit = 12
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTShockwave.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTShockwave.dmi'
 	verb/Colossal_Impact()
 		set name = "Colossal Impact"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/BurningSlash
+obj/Attacks/NexusMeleeTechnique/BurningSlash
 	name = "Burning Slash"
 	desc = "A three-hit weapon combo whose finishing strike tears open a bleeding wound."
 	cast_text_color = "#ff654f"
@@ -661,13 +661,13 @@ obj/Attacks/TenkaichiMeleeTechnique/BurningSlash
 	bleed_fraction = 0.1
 	energy_cost = 30
 	cooldown_ticks = 140
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTBlackSlash.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTBlackSlash.dmi'
 	verb/Burning_Slash()
 		set name = "Burning Slash"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/Headbutt
+obj/Attacks/NexusMeleeTechnique/Headbutt
 	name = "Headbutt"
 	desc = "A blunt close-range strike with a brief stagger."
 	requires_unarmed = TRUE
@@ -682,7 +682,7 @@ obj/Attacks/TenkaichiMeleeTechnique/Headbutt
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo
+obj/Attacks/NexusMeleeTechnique/UppercutCombo
 	name = "Uppercut Combo"
 	desc = "A three-hit rising combination whose final uppercut launches the target."
 	requires_unarmed = TRUE
@@ -700,7 +700,7 @@ obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/AxeKick
+obj/Attacks/NexusMeleeTechnique/AxeKick
 	name = "Axe Kick"
 	desc = "A descending kick with strong knockback."
 	requires_unarmed = TRUE
@@ -716,7 +716,7 @@ obj/Attacks/TenkaichiMeleeTechnique/AxeKick
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo
+obj/Attacks/NexusMeleeTechnique/KickbackCombo
 	name = "Kickback Combo"
 	desc = "Knock the target away, pursue them with afterimages and land a second hit unless they block."
 	requires_unarmed = TRUE
@@ -732,7 +732,7 @@ obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury
+obj/Attacks/NexusMeleeTechnique/MarchOfFury
 	name = "March of Fury"
 	desc = "Pursue the selected target through movement and deliver four separately resolved melee attacks."
 	damage_multiplier = 1
@@ -748,7 +748,7 @@ obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/PileDriver
+obj/Attacks/NexusMeleeTechnique/PileDriver
 	name = "Pile Driver"
 	desc = "Requires a grabbed opponent; invert and slam them head-first with an unavoidable impact."
 	requires_unarmed = TRUE
@@ -766,7 +766,7 @@ obj/Attacks/TenkaichiMeleeTechnique/PileDriver
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow
+obj/Attacks/NexusMeleeTechnique/MegatonThrow
 	name = "Megaton Throw"
 	desc = "Requires a grabbed opponent; leap with them, slam them down and throw them away."
 	requires_unarmed = TRUE
@@ -783,7 +783,7 @@ obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches
+obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches
 	name = "Consecutive Normal Punches"
 	desc = "Telegraph briefly, then unleash six separately resolved unarmed hits on an adjacent target."
 	requires_unarmed = TRUE
@@ -800,7 +800,7 @@ obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike
+obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike
 	name = "Exploding Heart Strike"
 	desc = "A precise unarmed strike that deals heavy damage and internal bleeding."
 	requires_unarmed = TRUE
@@ -814,7 +814,7 @@ obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/TexasSmash
+obj/Attacks/NexusMeleeTechnique/TexasSmash
 	name = "Texas Smash"
 	desc = "A slow, devastating unarmed blow with extreme knockback."
 	requires_unarmed = TRUE
@@ -823,13 +823,13 @@ obj/Attacks/TenkaichiMeleeTechnique/TexasSmash
 	knockback_multiplier = 2
 	energy_cost = 32
 	cooldown_ticks = 180
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTShockwave.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTShockwave.dmi'
 	verb/Texas_Smash()
 		set name = "Texas Smash"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/GuardBreak
+obj/Attacks/NexusMeleeTechnique/GuardBreak
 	name = "Guard Break"
 	desc = "A focused strike that bypasses an active melee guard and briefly staggers the defender."
 	damage_multiplier = 0.8
@@ -847,7 +847,7 @@ obj/Attacks/TenkaichiMeleeTechnique/GuardBreak
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/WingClip
+obj/Attacks/NexusMeleeTechnique/WingClip
 	name = "Wing Clip"
 	desc = "Attack the target's joints with high accuracy, reduced damage and a movement stagger."
 	damage_multiplier = 0.75
@@ -863,7 +863,7 @@ obj/Attacks/TenkaichiMeleeTechnique/WingClip
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/BurningShot
+obj/Attacks/NexusMeleeTechnique/BurningShot
 	name = "Burning Shot"
 	desc = "Warp into range and land a fiery three-hit unarmed combination."
 	requires_unarmed = TRUE
@@ -873,13 +873,13 @@ obj/Attacks/TenkaichiMeleeTechnique/BurningShot
 	dash_range = 6
 	energy_cost = 28
 	cooldown_ticks = 140
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTBurningShot.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTBurningShot.dmi'
 	verb/Burning_Shot()
 		set name = "Burning Shot"
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/BlueCometSpecial
+obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 	name = "Blue Comet Special"
 	desc = "A speed-focused advancing assault adapted as a long-range five-hit rush."
 	requires_unarmed = TRUE
@@ -899,14 +899,14 @@ obj/Attacks/TenkaichiMeleeTechnique/BlueCometSpecial
 		set category = "Skills"
 		useTechnique(usr)
 
-obj/Attacks/TenkaichiMeleeTechnique/CriticalEdge
+obj/Attacks/NexusMeleeTechnique/CriticalEdge
 	name = "Critical Edge"
 	desc = "Condense the original critical stance into one accurate strike at 133% damage."
 	damage_multiplier = 1.33
 	accuracy_bonus = 15
 	energy_cost = 20
 	cooldown_ticks = 120
-	effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 	verb/Critical_Edge()
 		set name = "Critical Edge"
 		set category = "Skills"

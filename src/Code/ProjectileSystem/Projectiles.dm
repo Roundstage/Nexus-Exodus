@@ -50,7 +50,7 @@ obj/Blast/proc/getNexusCombatAttackName()
 
 obj/Blast/proc/getNexusProjectileImpactIcon()
 	if(projectile_impact_icon) return projectile_impact_icon
-	if(istype(from_attack, /obj/Attacks) && percent_damage >= 3) return 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi'
+	if(istype(from_attack, /obj/Attacks) && percent_damage >= 3) return 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
 	return null
 
 obj/Blast/proc/showConfiguredProjectileImpact(atom/impact_target)

@@ -116,6 +116,142 @@ proc/nexusSmokeAssertNear(actual, expected, tolerance, message)
 	if(!isnum(actual) || abs(actual - expected) > tolerance)
 		CRASH("Nexus smoke test failed: [message] (expected [expected], received [actual])")
 
+proc/runNexusPlayerMusicSmokeTests()
+	nexusSmokeAssert(nexus_player_music_channel == 1024 && nexus_player_music_validation_channel == 1023 && nexus_player_music_range == 22 && nexus_player_music_max_duration_seconds == 300 && nexus_player_music_session_limit == 3000, "player music does not use isolated channels, its nearby range, or the five-minute cap")
+	nexusSmokeAssert(nexus_player_music_max_file_bytes == 5 * 1024 * 1024 && nexus_player_music_max_tracks == 5 && nexus_player_music_max_total_bytes == 20 * 1024 * 1024, "player music upload quotas changed unexpectedly")
+	var/global_music_budget_path = getNexusPlayerMusicGlobalBudgetPath()
+	if(!fexists(global_music_budget_path))
+		nexus_player_music_global_budget_loaded = FALSE
+		nexus_player_music_global_budget_day = ""
+		nexus_player_music_global_budget_bytes = null
+		nexus_player_music_global_stored_bytes = null
+		loadNexusPlayerMusicGlobalBudget()
+		nexusSmokeAssert(nexus_player_music_global_budget_bytes == 0 && nexus_player_music_global_stored_bytes == 0, "a clean server initializes the player-music archive as already full")
+		var/datum/NexusPlayerMusicLibrary/clean_music_quota_test = new("nexusmusicclean")
+		clean_music_quota_test.loaded = TRUE
+		clean_music_quota_test.upload_budget_day = getNexusPlayerMusicDayKey()
+		nexusSmokeAssert(!length(clean_music_quota_test.getUploadAuthorizationError(nexus_player_music_min_file_bytes)), "a clean server rejects its first valid-size music upload")
+		del(clean_music_quota_test)
+	nexusSmokeAssert(text2path("/datum/NexusPlayerMusicLibrary") && text2path("/datum/NexusMusicLibraryWindow"), "player music library data or browser controller is missing")
+	nexusSmokeAssert(text2path("/mob/verb/Play_Music") && text2path("/mob/verb/Stop_Player_Music") && !text2path("/mob/verb/Stream_Music_to_Everyone_Nearby"), "safe player music verbs are missing or the unsafe remote streamer still exists")
+	var/obj/Play_Music/music_hotbar_test = new
+	nexusSmokeAssert(music_hotbar_test.can_hotbar && music_hotbar_test.hotbar_type == "Other", "the existing Play Music hotkey no longer opens the library")
+	del(music_hotbar_test)
+	nexusSmokeAssert(isNexusPlayerMusicUploadName("action.ogg") && isNexusPlayerMusicUploadName("ACTION.OGG") && !isNexusPlayerMusicUploadName("action.ogg.exe"), "music upload extension preflight is not fail-closed")
+	nexusSmokeAssert(isNexusPlayerMusicAccountKey("smokemusic") && !isNexusPlayerMusicAccountKey("../smokemusic"), "music account paths accept traversal characters")
+	var/smoke_track_id = md5("nexus-player-music-smoke")
+	nexusSmokeAssert(isNexusPlayerMusicHex(smoke_track_id, 32) && getNexusPlayerMusicTrackPath("smokemusic", smoke_track_id) == "data/PlayerMusic/smokemusic/[smoke_track_id].ogg" && !getNexusPlayerMusicTrackPath("../smokemusic", smoke_track_id), "music track paths are not derived exclusively from safe server identifiers")
+	var/sanitized_music_title = normalizeNexusPlayerMusicTitle("  <script>Battle\nTheme</script>  ")
+	nexusSmokeAssert(sanitized_music_title == "scriptBattle Theme/script" && length(sanitized_music_title) <= nexus_player_music_title_limit, "music titles retain HTML or control characters")
+	var/list/built_in_music = getNexusBuiltInMusicCatalog()
+	nexusSmokeAssert(built_in_music.len == 7 && islist(built_in_music["iron_lotus"]) && built_in_music["iron_lotus"]["file"] == 'IronLotus.ogg', "built-in action music was not preserved in the new library")
+	var/list/valid_music_inspection = inspectNexusPlayerMusicUpload('IronLotus.ogg', "IronLotus.ogg")
+	nexusSmokeAssert(valid_music_inspection["ok"] && valid_music_inspection["bytes"] > nexus_player_music_min_file_bytes && isNexusPlayerMusicHex(valid_music_inspection["hash"], 40), "known-good OGG music fails upload preflight")
+	var/list/disguised_music_inspection = inspectNexusPlayerMusicUpload('IronLotus.ogg', "IronLotus.ogg.exe")
+	nexusSmokeAssert(!disguised_music_inspection["ok"], "a disguised non-OGG filename passes upload inspection")
+	var/sound/query_sound = sound('IronLotus.ogg', repeat = TRUE, channel = nexus_player_music_validation_channel, volume = 0)
+	query_sound.len = 300
+	var/sound/wrong_query_sound = sound('CarnivalMeme.ogg', repeat = TRUE, channel = nexus_player_music_validation_channel, volume = 0)
+	wrong_query_sound.len = 120
+	nexusSmokeAssert(getNexusPlayerMusicQueryDuration(list(wrong_query_sound, query_sound), 'IronLotus.ogg', nexus_player_music_validation_channel) == 300, "decoder telemetry accepts the wrong file or loses the expected duration")
+	query_sound.len = 0
+	nexusSmokeAssert(!getNexusPlayerMusicQueryDuration(list(query_sound), 'IronLotus.ogg', nexus_player_music_validation_channel), "zero-length decoder telemetry is accepted")
+	del(query_sound)
+	del(wrong_query_sound)
+	var/music_smoke_account = "nexusmusicsmoke"
+	var/music_smoke_directory = "data/PlayerMusic/[music_smoke_account]/"
+	if(fexists(music_smoke_directory)) fdel(music_smoke_directory)
+	var/datum/NexusPlayerMusicLibrary/music_save_test = new(music_smoke_account)
+	music_save_test.loaded = TRUE
+	music_save_test.upload_budget_day = getNexusPlayerMusicDayKey()
+	music_save_test.upload_budget_bytes = 1234
+	music_save_test.last_upload_time = max(1, world.realtime - 20)
+	music_save_test.last_play_time = max(1, world.realtime - 10)
+	music_save_test.last_validation_time = max(1, world.realtime - 5)
+	var/datum/NexusPlayerMusicTrack/music_track_test = new
+	music_track_test.id = md5("nexus-player-music-ready-smoke")
+	music_track_test.title = "Smoke Track"
+	music_track_test.byte_size = valid_music_inspection["bytes"]
+	music_track_test.content_hash = valid_music_inspection["hash"]
+	music_track_test.uploaded_at = world.realtime
+	music_save_test.tracks += music_track_test
+	var/music_smoke_track_path = music_save_test.getTrackPath(music_track_test.id)
+	nexusSmokeAssert(fcopy('IronLotus.ogg', music_smoke_track_path), "player music smoke resource could not be copied into quarantine")
+	nexusSmokeAssert(reconcileNexusPlayerMusicStoredBytes() >= music_track_test.byte_size, "player music archive reconciliation ignores a stored or orphaned OGG")
+	nexusSmokeAssert(!music_track_test.isReady(), "a newly uploaded track bypasses decoder quarantine")
+	nexusSmokeAssert(!music_save_test.markTrackValidated(music_track_test.id, music_track_test.content_hash, 0) && !music_save_test.markTrackValidated(music_track_test.id, music_track_test.content_hash, 300.1), "invalid decoder durations can mark a track ready")
+	nexusSmokeAssert(music_save_test.markTrackValidated(music_track_test.id, music_track_test.content_hash, 180) && music_track_test.isReady(), "complete decoder metadata does not mark a track ready")
+	music_track_test.validated_hash = sha1("different music")
+	nexusSmokeAssert(!music_track_test.isReady(), "a divergent validation fingerprint leaves a track ready")
+	music_track_test.validated_hash = music_track_test.content_hash
+	music_track_test.validation_version = 0
+	nexusSmokeAssert(!music_track_test.isReady(), "stale decoder policy metadata leaves a track ready")
+	music_track_test.clearValidation()
+	nexusSmokeAssert(!music_track_test.isReady() && music_save_test.isTrackMetadataValid(music_track_test), "stale decoder metadata cannot migrate back to a pending track")
+	nexusSmokeAssert(music_save_test.markTrackValidated(music_track_test.id, music_track_test.content_hash, 180), "a migrated pending track cannot be revalidated")
+	nexusSmokeAssert(music_save_test.save(), "player music metadata could not be persisted")
+	var/datum/NexusPlayerMusicLibrary/music_load_test = new(music_smoke_account)
+	music_load_test.load()
+	var/datum/NexusPlayerMusicTrack/reloaded_music_track = music_load_test.findTrack(music_track_test.id)
+	nexusSmokeAssert(music_load_test.upload_budget_bytes == 1234 && music_load_test.last_upload_time == music_save_test.last_upload_time && music_load_test.last_play_time == music_save_test.last_play_time && music_load_test.last_validation_time == music_save_test.last_validation_time, "player music account budgets or cooldowns do not survive reload")
+	nexusSmokeAssert(reloaded_music_track && reloaded_music_track.isReady() && reloaded_music_track.duration_seconds == 180 && reloaded_music_track.validated_hash == reloaded_music_track.content_hash && reloaded_music_track.validation_version == nexus_player_music_validation_version, "ready decoder metadata does not survive library reload")
+	del(music_save_test)
+	del(music_load_test)
+	if(fexists(music_smoke_track_path)) fdel(music_smoke_track_path)
+	if(fexists(music_smoke_directory)) fdel(music_smoke_directory)
+
+proc/runNexusProfileArtSmokeTests()
+	nexusSmokeAssert(nexus_profile_art_max_file_bytes == 400 * 1024 && nexus_profile_art_max_dimension == 256 && nexus_profile_art_max_pixels == 65536, "profile-art upload bounds changed unexpectedly")
+	var/profile_art_budget_path = getNexusProfileArtBudgetPath()
+	if(!fexists(profile_art_budget_path))
+		nexus_profile_art_budget_loaded = FALSE
+		nexus_profile_art_budget_day = ""
+		nexus_profile_art_global_daily_bytes = null
+		nexus_profile_art_global_stored_bytes = null
+		nexus_profile_art_account_daily_bytes = null
+		loadNexusProfileArtBudget()
+		nexusSmokeAssert(nexus_profile_art_global_daily_bytes == 0 && nexus_profile_art_global_stored_bytes == 0 && islist(nexus_profile_art_account_daily_bytes) && !length(getNexusProfileArtUploadAuthorizationError("profileartclean", 1, nexus_profile_art_min_file_bytes)), "a clean server initializes the profile-art budget as already full")
+	nexusSmokeAssert(isNexusProfileArtUploadName("portrait.png") && isNexusProfileArtUploadName("PORTRAIT.PNG") && isNexusProfileArtUploadName("portrait.jpg") && isNexusProfileArtUploadName("portrait.JPEG") && !isNexusProfileArtUploadName("portrait.png.exe") && !isNexusProfileArtUploadName("portrait.gif") && !isNexusProfileArtUploadName("portrait.dmi"), "profile-art filename preflight does not enforce the PNG/JPEG allowlist")
+	var/profile_art_fixture_hash = sha1("nexus-profile-art-generation-smoke")
+	nexusSmokeAssert(getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "png") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].png" && getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "jpeg") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].jpg" && !getNexusPlayerProfileImagePathForKey("../Smoke Key", 0, profile_art_fixture_hash, "png") && getNexusPlayerProfileImagePathFromSaveName("smokekey-slot3.sav") == "data/ProfileImages/smokekey-slot3.dmi" && !getNexusPlayerProfileImagePathFromSaveName("../smokekey-slot3.sav"), "profile-art generation paths are not derived exclusively from a validated account, slot, hash, and format")
+	var/profile_art_png_source = "data/ProfileImages/.profile-art-smoke-source.png"
+	var/profile_art_jpg_source = "data/ProfileImages/.profile-art-smoke-source.jpg"
+	fdel(profile_art_png_source)
+	fdel(profile_art_jpg_source)
+	nexusSmokeAssert(fcopy('Slime64.png', profile_art_png_source) && fcopy('Ability.jpg', profile_art_jpg_source), "known-good PNG/JPEG resources could not be staged for raw profile-art smoke coverage")
+	var/profile_art_png_hash = sha1(file(profile_art_png_source))
+	var/profile_art_jpg_hash = sha1(file(profile_art_jpg_source))
+	nexusSmokeAssert(getNexusProfileArtSignatureFormat(file(profile_art_png_source)) == "png" && getNexusProfileArtSignatureFormat(file(profile_art_jpg_source)) == "jpg" && isNexusProfileArtHash(profile_art_png_hash) && isNexusProfileArtHash(profile_art_jpg_hash), "profile-art content signatures or raw fingerprints do not recognize valid PNG/JPEG files")
+	var/icon/profile_art_png_probe = icon(file(profile_art_png_source), "", SOUTH, 1, FALSE)
+	var/icon/profile_art_jpg_probe = icon(file(profile_art_jpg_source), "", SOUTH, 1, FALSE)
+	nexusSmokeAssert(profile_art_png_probe && profile_art_jpg_probe && profile_art_png_probe.Width() <= nexus_profile_art_max_dimension && profile_art_png_probe.Height() <= nexus_profile_art_max_dimension && profile_art_jpg_probe.Width() <= nexus_profile_art_max_dimension && profile_art_jpg_probe.Height() <= nexus_profile_art_max_dimension, "known-good raw PNG/JPEG files fail the bounded transient decode probe")
+	var/profile_art_png_account = "profileartsmoke"
+	var/profile_art_jpg_account = "profileartsmokejpg"
+	var/profile_art_png_path = getNexusPlayerProfileImagePathForKey(profile_art_png_account, 1, profile_art_png_hash, "png")
+	var/profile_art_jpg_path = getNexusPlayerProfileImagePathForKey(profile_art_jpg_account, 1, profile_art_jpg_hash, "jpg")
+	deleteNexusPlayerProfileImageForKey(profile_art_png_account, 1)
+	deleteNexusPlayerProfileImageForKey(profile_art_jpg_account, 1)
+	loadNexusProfileArtBudget()
+	var/profile_art_stored_before = nexus_profile_art_global_stored_bytes
+	nexusSmokeAssert(fcopy(profile_art_png_source, profile_art_png_path) && fcopy(profile_art_jpg_source, profile_art_jpg_path), "raw profile art cannot be committed to immutable account-slot-hash generations")
+	var/profile_art_generation_bytes = length(file(profile_art_png_path)) + length(file(profile_art_jpg_path))
+	noteNexusProfileArtStoredDelta(profile_art_generation_bytes)
+	nexusSmokeAssert(sha1(file(profile_art_png_path)) == profile_art_png_hash && sha1(file(profile_art_jpg_path)) == profile_art_jpg_hash && getNexusProfileArtSignatureFormat(file(profile_art_png_path)) == "png" && getNexusProfileArtSignatureFormat(file(profile_art_jpg_path)) == "jpg", "stored profile art no longer matches the exact uploaded PNG/JPEG bytes")
+	var/profile_art_reconciled_with_generations = reconcileNexusProfileArtStoredBytes(FALSE)
+	nexusSmokeAssert(profile_art_reconciled_with_generations >= profile_art_stored_before + profile_art_generation_bytes, "raw profile-art reconciliation does not count valid PNG/JPEG generations")
+	nexus_profile_art_global_stored_bytes = profile_art_reconciled_with_generations
+	nexusSmokeAssert(deleteNexusPlayerProfileImageForKey(profile_art_png_account, 1) && deleteNexusPlayerProfileImageForKey(profile_art_jpg_account, 1) && !fexists(profile_art_png_path) && !fexists(profile_art_jpg_path), "raw profile-art slot deletion does not remove PNG/JPEG generations")
+	nexus_profile_art_global_stored_bytes = reconcileNexusProfileArtStoredBytes()
+	nexusSmokeAssert(nexus_profile_art_global_stored_bytes == profile_art_stored_before, "raw profile-art deletion does not restore the reconciled archive counter")
+	var/profile_art_orphan_path = getNexusPlayerProfileImagePathForKey("profileartorphan", 1, profile_art_png_hash, "png")
+	fdel(getNexusCharacterSavePathForKey("profileartorphan", 1))
+	nexusSmokeAssert(fcopy(profile_art_png_source, profile_art_orphan_path), "profile-art orphan cleanup fixture could not be created")
+	noteNexusProfileArtStoredDelta(length(file(profile_art_orphan_path)))
+	nexus_profile_art_global_stored_bytes = reconcileNexusProfileArtStoredBytes()
+	nexusSmokeAssert(nexus_profile_art_global_stored_bytes == profile_art_stored_before && !fexists(profile_art_orphan_path), "profile-art reconciliation does not remove a generation whose character slot no longer exists")
+	fdel(profile_art_png_source)
+	fdel(profile_art_jpg_source)
+
 proc/nexusSmokeStatAllocation(list/profile)
 	var/list/allocation = list()
 	var/list/caps = profile["caps"]
@@ -133,6 +269,43 @@ proc/nexusSmokeStatAllocation(list/profile)
 	return allocation
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
+	var/normalized_description = normalizeNexusPlayerDescription(legacy_description)
+	var/rendered_description = renderNexusPlayerDescription(legacy_description)
+	nexusSmokeAssert(normalized_description == "A quiet traveler.\nalert('x')\n<visible text>" && !findtext(normalized_description, "<script") && !findtext(normalized_description, "<b>"), "legacy player descriptions retain executable HTML")
+	nexusSmokeAssert(findtext(rendered_description, "&lt;visible text&gt;") && !findtext(rendered_description, "<script") && !findtext(rendered_description, "<b>"), "player profile rendering does not escape plain-text content")
+	var/rich_profile_description = renderNexusPlayerDescription("\[color=#66d9ef]\[b]Scholar\[/b]\[/color] and \[i]wanderer\[/i]. <img src=x onerror=alert(1)>")
+	nexusSmokeAssert(findtext(rich_profile_description, "<span style='color:#66d9ef'><b>Scholar</b></span>") && findtext(rich_profile_description, "<i>wanderer</i>") && !findtext(rich_profile_description, "<img") && !findtext(rich_profile_description, "onerror"), "player profiles lost safe roleplay markup or retained raw HTML")
+	var/legacy_bracket_description = renderNexusPlayerDescription("\[b]literal legacy brackets\[/b]", 0)
+	nexusSmokeAssert(findtext(legacy_bracket_description, "\[b]literal legacy brackets\[/b]") && !findtext(legacy_bracket_description, "<b>"), "legacy profiles interpret bracket text as rich markup before opt-in migration")
+	nexusSmokeAssert(normalizeNexusPlayerProfileLine("<b>  The\nWanderer  </b>", 12) == "The Wanderer" && normalizeNexusPlayerProfileDirection(999) == SOUTH && normalizeNexusPlayerProfileDirection(WEST) == WEST, "profile title/name bounds or portrait-direction validation regressed")
+	nexusSmokeAssert(encodeNexusHtmlAttribute("' onfocus='alert(1)") == "&#39; onfocus=&#39;alert(1)", "profile form fields do not escape single-quoted HTML attributes")
+	var/oversized_description = ""
+	for(var/description_index = 1, description_index <= NEXUS_PLAYER_DESCRIPTION_LIMIT + 100, description_index++) oversized_description += "x"
+	nexusSmokeAssert(length(normalizeNexusPlayerDescription(oversized_description)) == NEXUS_PLAYER_DESCRIPTION_LIMIT, "player descriptions do not enforce their server-side length limit")
+	var/legacy_league_notes = "<p>Mission <b>ready</b></p><br>&lt;safe&gt;<img src=x onerror=alert(1)>"
+	var/normalized_league_notes = normalizeNexusLeagueNotes(legacy_league_notes)
+	var/rendered_league_notes = renderNexusLeagueNotes("<script>Unsafe League</script>", legacy_league_notes)
+	nexusSmokeAssert(findtext(normalized_league_notes, "Mission ready") && findtext(normalized_league_notes, "<safe>") && !findtext(normalized_league_notes, "<b>") && !findtext(normalized_league_notes, "<img"), "legacy league notes were not migrated to plain text")
+	nexusSmokeAssert(findtext(rendered_league_notes, "&lt;safe&gt;") && !findtext(rendered_league_notes, "<script>") && !findtext(rendered_league_notes, "<img"), "league notes render unescaped player HTML")
+	var/oversized_league_notes = ""
+	for(var/league_note_index = 1, league_note_index <= NEXUS_LEAGUE_NOTES_LIMIT + 100, league_note_index++) oversized_league_notes += "x"
+	nexusSmokeAssert(length(normalizeNexusLeagueNotes(oversized_league_notes)) == NEXUS_LEAGUE_NOTES_LIMIT, "league notes do not enforce their server-side length limit")
+	nexusSmokeAssert(normalizeNexusLeagueInlineText("&lt;script&gt;Unsafe&lt;/script&gt;", NEXUS_LEAGUE_NAME_LIMIT) == "scriptUnsafe/script" && length(normalizeNexusLeagueDescription(oversized_league_notes)) == NEXUS_LEAGUE_DESCRIPTION_LIMIT, "league names or descriptions retain executable markup or exceed their limits")
+	nexusSmokeAssert(NEXUS_ADMIN_ITEM_PICKER_LEVEL == 2 && normalizeNexusAdminItemPickerMode("give") == "give" && normalizeNexusAdminItemPickerMode("make") == "make" && !normalizeNexusAdminItemPickerMode("spawn") && !normalizeNexusAdminItemPickerMode("GIVE"), "Admin item picker permissions or strict modes regressed")
+	nexusSmokeAssert(text2path("/datum/NexusPlayerDescriptionEditor") && getNexusApplicationIconSkinValue() == "'Slime64.png'", "the safe description editor or compiled application icon contract is missing")
+	var/mob/NexusSmokeTest/profile_builder_test = new
+	profile_builder_test.name = "Actual Identity"
+	profile_builder_test.player_profile_name = "The Azure Pilgrim"
+	profile_builder_test.player_profile_title = "Walker Between Worlds"
+	profile_builder_test.player_desc = "\[b]Safe biography\[/b]"
+	profile_builder_test.player_profile_portrait_direction = EAST
+	var/datum/NexusPlayerDescriptionEditor/profile_builder = new(profile_builder_test)
+	var/list/profile_portrait_resources = list("[SOUTH]" = "front.png", "[WEST]" = "left.png", "[EAST]" = "right.png", "[NORTH]" = "back.png")
+	var/profile_builder_html = profile_builder.buildHtml(profile_portrait_resources)
+	nexusSmokeAssert(findtext(profile_builder_html, "name='profile_name'") && findtext(profile_builder_html, "name='profile_title'") && findtext(profile_builder_html, "name='portrait_direction'") && findtext(profile_builder_html, "name='generation'") && findtext(profile_builder_html, "The Azure Pilgrim") && findtext(profile_builder_html, "right.png") && findtext(profile_builder_html, "wrap('\[b]','\[/b]')") && findtext(profile_builder_html, "UPLOAD IMAGE") && findtext(profile_builder_html, "PNG or JPEG") && findtext(profile_builder_html, "EXIF/GPS") && findtext(profile_builder_html, "profilePortraitFallback") && findtext(profile_builder_html, "setProfileAction('upload_art')") && !findtext(profile_builder_html, "<img src='http"), "the profile builder omits structured identity, raw-image upload/privacy/fallback, stale-form, portrait, or rich-text controls")
+	del(profile_builder)
+	del(profile_builder_test)
 	nexusSmokeAssert(NEXUS_DEFAULT_NPCS_ENABLED == 0 && NEXUS_DEFAULT_FEATS_ENABLED == 0 && NEXUS_DEFAULT_TOURNAMENT_INTERVAL_MINUTES == 0, "optional NPC, Feat, or automatic Tournament systems are not disabled by default")
 	nexusSmokeAssert(nexus_server_feature_defaults_version >= NEXUS_SERVER_FEATURE_DEFAULTS_VERSION, "server feature-default migration did not run")
 	var/obj/reset_vars_test = new
@@ -515,6 +688,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(trade_rollback_owner)
 	del(trade_rollback_partner)
 	nexusSmokeAssert(text2path("/datum/NexusEmoteEditor") && text2path("/datum/NexusPlayerLogViewer"), "emote editor or player log viewer datum is missing")
+	runNexusPlayerMusicSmokeTests()
+	runNexusProfileArtSmokeTests()
+	runNexusPlaytestRewardSmokeTests()
 	nexusSmokeAssert(text2path("/mob/verb/ViewSelfSayWindow"), "player log viewer verb is missing")
 	nexusSmokeAssert(normalizeNexusChatChannel("COMBAT") == "combat" && normalizeNexusChatChannel("invalid") == "all", "chat channel normalization is invalid")
 	nexusSmokeAssert(!nexusChatChannelAppearsInAll("combat") && nexusChatChannelAppearsInAll("ic") && nexusChatChannelAppearsInAll("ooc"), "Combat messages still leak into the All roleplay feed")
@@ -554,6 +730,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1) == "data/Save/smokekey-slot1.sav", "slot-one save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 3) == "data/Save/smokekey-slot3.sav", "slot-three save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 4) == getNexusCharacterSavePathForKey("Smoke Key", 3), "character slot clamping is invalid")
+	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1, "playtest") == "data/Playtest/Save/smokekey-slot1.sav" && getNexusFeatSavePathForKey("Smoke Key", 2, "playtest") == "data/Playtest/Feats/smokekey-slot2.sav", "playtest character persistence is not namespaced away from live saves")
+	nexusSmokeAssert(isNexusSaveEnvironmentCompatible(null, "live") && !isNexusSaveEnvironmentCompatible(null, "playtest") && !isNexusSaveEnvironmentCompatible("playtest", "live") && isNexusSaveEnvironmentCompatible("playtest", "playtest"), "character save environment markers permit cross-environment loading")
 	nexusSmokeAssert(findtext(getNexusRpgBrowserCss(), "border-radius:0") && findtext(getNexusRpgBrowserCss(), "Courier New"), "shared rustic browser theme is missing")
 	var/rich_emote_test = renderNexusEmoteMarkup("<script>\[color=#ff667a]\[b]Hit\[/b]\[/color]")
 	nexusSmokeAssert(findtext(rich_emote_test, "&lt;script&gt;") && findtext(rich_emote_test, "<span style='color:#ff667a'><b>Hit</b></span>"), "safe rich emote markup did not render correctly")
@@ -775,51 +953,51 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(menu_button)
 	del(splitform_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
-	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveTenkaichiAttacks") && text2path("/mob/Admin3/verb/testTenkaichiCombatEffects"), "Tenkaichi attack or audiovisual testing verb is missing")
-	nexusSmokeAssert(getTenkaichiWeaponAttackTypes().len == 13 && getTenkaichiUnarmedAttackTypes().len == 15, "Tenkaichi physical attack catalog is incomplete")
+	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveNexusAttacks") && text2path("/mob/Admin3/verb/testNexusCombatEffects"), "Nexus attack or audiovisual testing verb is missing")
+	nexusSmokeAssert(getNexusWeaponAttackTypes().len == 13 && getNexusUnarmedAttackTypes().len == 15, "Nexus physical attack catalog is incomplete")
 	nexusSmokeAssert(getProgressionUnarmedAttackTypes().len == 20, "the Unarmed progression catalog omits legacy physical attacks or still duplicates foundational Dash Attack")
-	nexusSmokeAssert(getTenkaichiBeamAttackTypes().len == 12 && getTenkaichiSpecialStyleAttackTypes().len == 8, "Tenkaichi special-style catalog is incomplete")
-	nexusSmokeAssert(getTenkaichiRockAttackTypes().len == 3, "Tenkaichi rock-technique testing catalog is incomplete")
-	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/tenkaichi_slice = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/BurningSlash/tenkaichi_combo = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash/tenkaichi_iai = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/SwordStab/tenkaichi_stab = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/MegatonThrow/tenkaichi_throw = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury/tenkaichi_march = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash/tenkaichi_texas_smash = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike/tenkaichi_exploding_heart = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/PileDriver/tenkaichi_pile_driver = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/UppercutCombo/tenkaichi_uppercut = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/KickbackCombo/tenkaichi_kickback = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/Headbutt/tenkaichi_headbutt = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/AxeKick/tenkaichi_axe_kick = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches/tenkaichi_consecutive_punches = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/GuardBreak/tenkaichi_guard_break = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/WingClip/tenkaichi_wing_clip = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/BlueCometSpecial/tenkaichi_blue_comet = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/WindHowl/tenkaichi_wind_howl = new
-	var/obj/Attacks/RoleplayBeam/BusterCannon/tenkaichi_beam = new
-	var/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze/tenkaichi_ghosts = new
-	var/obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave/tenkaichi_explosive_wave = new
-	var/obj/Attacks/TenkaichiAreaTechnique/Earthquake/tenkaichi_earthquake = new
-	nexusSmokeAssert(tenkaichi_slice.requires_weapon && tenkaichi_slice.hotbar_type == "Melee", "Tenkaichi weapon technique does not enforce equipment")
-	nexusSmokeAssert(tenkaichi_slice.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && (tenkaichi_slice.getCastSound() in nexus_sword_swing_light_sounds) && (tenkaichi_slice.getImpactSound() in nexus_sword_impact_sounds), "Tenkaichi weapon techniques are missing their animated hotbar icons or CC0 sword audio")
-	nexusSmokeAssert(tenkaichi_combo.extra_hits == 2 && tenkaichi_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
-	nexusSmokeAssert(tenkaichi_iai.behavior == "iai_dash" && tenkaichi_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
-	nexusSmokeAssert(tenkaichi_stab.line_reach == 2 && tenkaichi_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
-	nexusSmokeAssert(tenkaichi_throw.behavior == "grapple_throw" && tenkaichi_march.behavior == "march", "Tenkaichi grapple or advancing melee behavior is missing")
-	nexusSmokeAssert(tenkaichi_march.damage_multiplier * 4 * 0.45 == 1.8 && tenkaichi_texas_smash.damage_multiplier == 1.6 && tenkaichi_exploding_heart.damage_multiplier == 1.45 && tenkaichi_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
-	nexusSmokeAssert(tenkaichi_pile_driver.icon == 'RTGrappleImpact.dmi' && tenkaichi_throw.icon_state == "2", "Tenkaichi grapple techniques are missing their original effect icons")
-	nexusSmokeAssert(tenkaichi_uppercut.icon == 'RTUppercut.dmi' && tenkaichi_kickback.icon == 'RTSweepingKick.dmi', "Tenkaichi combo techniques are missing their original effect icons")
-	nexusSmokeAssert(tenkaichi_pile_driver.getImpactSound() == 'RockImpactHeavy1.ogg' && (tenkaichi_kickback.getImpactSound() in nexus_shonen_sound_bank["melee"]), "Tenkaichi grapple or kick techniques are missing their adapted impact audio")
-	nexusSmokeAssert(tenkaichi_headbutt.effect_icon_state == "explosion_orange" && tenkaichi_axe_kick.effect_icon_state == "blast_orange" && tenkaichi_march.effect_icon_state == "blast_blue" && tenkaichi_consecutive_punches.effect_icon_state == "blast_orange", "core Unarmed strikes are missing their open combat impact animations")
-	nexusSmokeAssert(tenkaichi_guard_break.effect_icon_state == "explosion_blue" && tenkaichi_wing_clip.effect_icon_state == "blast_blue" && tenkaichi_blue_comet.effect_icon_state == "blast_blue" && (tenkaichi_guard_break.getImpactSound() in nexus_shonen_sound_bank["electric"]), "control and speed Unarmed strikes are missing their distinct blue impact VFX or electric audio")
-	nexusSmokeAssert(tenkaichi_beam.hotbar_type == "Beam" && tenkaichi_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
-	nexusSmokeAssert(tenkaichi_wind_howl.behavior == "radial" && tenkaichi_wind_howl.splash_radius == 3 && tenkaichi_wind_howl.splash_target_limit == 12, "Wind Howl is not a targetless three-tile area attack")
-	nexusSmokeAssert(tenkaichi_ghosts.ghost_count == 3 && tenkaichi_ghosts.ghost_damage_factor == 2.5, "Super Ghost Kamikaze Attack lost its bounded three-projectile profile")
-	nexusSmokeAssert(istype(tenkaichi_explosive_wave, /obj/Attacks/Shockwave) && istype(tenkaichi_earthquake, /obj/Attacks/Shockwave), "the ported area techniques no longer derive from Shockwave")
-	nexusSmokeAssert(tenkaichi_explosive_wave.radius == 4 && tenkaichi_explosive_wave.hotbar_type == "Defensive" && tenkaichi_explosive_wave.intercepts_blasts && tenkaichi_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
-	nexusSmokeAssert(tenkaichi_earthquake.radius == 5 && tenkaichi_earthquake.physical_damage && tenkaichi_earthquake.ground_only && tenkaichi_earthquake.pull_distance == 3 && !tenkaichi_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
+	nexusSmokeAssert(getNexusBeamAttackTypes().len == 12 && getNexusSpecialStyleAttackTypes().len == 8, "Nexus special-style catalog is incomplete")
+	nexusSmokeAssert(getNexusRockAttackTypes().len == 3, "Nexus rock-technique testing catalog is incomplete")
+	var/obj/Attacks/NexusMeleeTechnique/Slice/nexus_slice = new
+	var/obj/Attacks/NexusMeleeTechnique/BurningSlash/nexus_combo = new
+	var/obj/Attacks/NexusMeleeTechnique/IaiSlash/nexus_iai = new
+	var/obj/Attacks/NexusMeleeTechnique/SwordStab/nexus_stab = new
+	var/obj/Attacks/NexusMeleeTechnique/MegatonThrow/nexus_throw = new
+	var/obj/Attacks/NexusMeleeTechnique/MarchOfFury/nexus_march = new
+	var/obj/Attacks/NexusMeleeTechnique/TexasSmash/nexus_texas_smash = new
+	var/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike/nexus_exploding_heart = new
+	var/obj/Attacks/NexusMeleeTechnique/PileDriver/nexus_pile_driver = new
+	var/obj/Attacks/NexusMeleeTechnique/UppercutCombo/nexus_uppercut = new
+	var/obj/Attacks/NexusMeleeTechnique/KickbackCombo/nexus_kickback = new
+	var/obj/Attacks/NexusMeleeTechnique/Headbutt/nexus_headbutt = new
+	var/obj/Attacks/NexusMeleeTechnique/AxeKick/nexus_axe_kick = new
+	var/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches/nexus_consecutive_punches = new
+	var/obj/Attacks/NexusMeleeTechnique/GuardBreak/nexus_guard_break = new
+	var/obj/Attacks/NexusMeleeTechnique/WingClip/nexus_wing_clip = new
+	var/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial/nexus_blue_comet = new
+	var/obj/Attacks/NexusMeleeTechnique/WindHowl/nexus_wind_howl = new
+	var/obj/Attacks/RoleplayBeam/BusterCannon/nexus_beam = new
+	var/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze/nexus_ghosts = new
+	var/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave/nexus_explosive_wave = new
+	var/obj/Attacks/NexusAreaTechnique/Earthquake/nexus_earthquake = new
+	nexusSmokeAssert(nexus_slice.requires_weapon && nexus_slice.hotbar_type == "Melee", "Nexus weapon technique does not enforce equipment")
+	nexusSmokeAssert(nexus_slice.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && (nexus_slice.getCastSound() in nexus_sword_swing_light_sounds) && (nexus_slice.getImpactSound() in nexus_sword_impact_sounds), "Nexus weapon techniques are missing their animated hotbar icons or CC0 sword audio")
+	nexusSmokeAssert(nexus_combo.extra_hits == 2 && nexus_combo.extra_hit_multiplier == 0.45, "Burning Slash is not a multi-hit technique")
+	nexusSmokeAssert(nexus_iai.behavior == "iai_dash" && nexus_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
+	nexusSmokeAssert(nexus_stab.line_reach == 2 && nexus_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
+	nexusSmokeAssert(nexus_throw.behavior == "grapple_throw" && nexus_march.behavior == "march", "Nexus grapple or advancing melee behavior is missing")
+	nexusSmokeAssert(nexus_march.damage_multiplier * 4 * 0.45 == 1.8 && nexus_texas_smash.damage_multiplier == 1.6 && nexus_exploding_heart.damage_multiplier == 1.45 && nexus_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
+	nexusSmokeAssert(nexus_pile_driver.icon == 'RTGrappleImpact.dmi' && nexus_throw.icon_state == "2", "Nexus grapple techniques are missing their original effect icons")
+	nexusSmokeAssert(nexus_uppercut.icon == 'RTUppercut.dmi' && nexus_kickback.icon == 'RTSweepingKick.dmi', "Nexus combo techniques are missing their original effect icons")
+	nexusSmokeAssert(nexus_pile_driver.getImpactSound() == 'RockImpactHeavy1.ogg' && (nexus_kickback.getImpactSound() in nexus_shonen_sound_bank["melee"]), "Nexus grapple or kick techniques are missing their adapted impact audio")
+	nexusSmokeAssert(nexus_headbutt.effect_icon_state == "explosion_orange" && nexus_axe_kick.effect_icon_state == "blast_orange" && nexus_march.effect_icon_state == "blast_blue" && nexus_consecutive_punches.effect_icon_state == "blast_orange", "core Unarmed strikes are missing their open combat impact animations")
+	nexusSmokeAssert(nexus_guard_break.effect_icon_state == "explosion_blue" && nexus_wing_clip.effect_icon_state == "blast_blue" && nexus_blue_comet.effect_icon_state == "blast_blue" && (nexus_guard_break.getImpactSound() in nexus_shonen_sound_bank["electric"]), "control and speed Unarmed strikes are missing their distinct blue impact VFX or electric audio")
+	nexusSmokeAssert(nexus_beam.hotbar_type == "Beam" && nexus_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
+	nexusSmokeAssert(nexus_wind_howl.behavior == "radial" && nexus_wind_howl.splash_radius == 3 && nexus_wind_howl.splash_target_limit == 12, "Wind Howl is not a targetless three-tile area attack")
+	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 2.5, "Super Ghost Kamikaze Attack lost its bounded three-projectile profile")
+	nexusSmokeAssert(istype(nexus_explosive_wave, /obj/Attacks/Shockwave) && istype(nexus_earthquake, /obj/Attacks/Shockwave), "the ported area techniques no longer derive from Shockwave")
+	nexusSmokeAssert(nexus_explosive_wave.radius == 4 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
+	nexusSmokeAssert(nexus_earthquake.radius == 5 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
 	var/mob/NexusSmokeTest/wave_owner = new
 	var/mob/NexusSmokeTest/wave_enemy = new
 	wave_owner.loc = locate(445, 3, 2)
@@ -831,29 +1009,29 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Blast/hostile_beam_segment = new(wave_enemy.loc)
 	hostile_beam_segment.Owner = wave_enemy
 	hostile_beam_segment.Beam = 1
-	nexusSmokeAssert(tenkaichi_explosive_wave.interceptAreaBlasts(wave_owner) == 1 && !hostile_wave_blast.z && friendly_wave_blast.z && hostile_beam_segment.z, "Super Explosive Wave did not isolate hostile non-beam projectiles")
+	nexusSmokeAssert(nexus_explosive_wave.interceptAreaBlasts(wave_owner) == 1 && !hostile_wave_blast.z && friendly_wave_blast.z && hostile_beam_segment.z, "Super Explosive Wave did not isolate hostile non-beam projectiles")
 	del(friendly_wave_blast)
 	del(hostile_beam_segment)
 	del(wave_enemy)
 	del(wave_owner)
 	nexusSmokeAssert(pressure_punch_cooldown_ticks == 90 && pressure_punch_charge_ticks == 10, "Pressure Punch was not accelerated")
-	var/obj/Attacks/TenkaichiSpecialStyle/WallOfFlame/tenkaichi_flame_wall = new
-	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova/tenkaichi_dragon_nova = new
-	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak/tenkaichi_sky_break = new
-	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash/tenkaichi_echoing_slash = new
-	nexusSmokeAssert(tenkaichi_guard_break.breaks_guard && tenkaichi_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
-	nexusSmokeAssert(tenkaichi_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
-	nexusSmokeAssert(tenkaichi_dragon_nova.projectile_damage_factor == 12 && tenkaichi_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its RPT balance or icon")
-	nexusSmokeAssert(tenkaichi_sky_break.strength_scaled && tenkaichi_sky_break.requires_weapon && tenkaichi_sky_break.weapon_projectile && tenkaichi_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated physical sword projectile")
-	nexusSmokeAssert(tenkaichi_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && tenkaichi_echoing_slash.weapon_projectile && tenkaichi_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
-	nexusSmokeAssert(tenkaichi_echoing_slash.icon == 'RTEchoingSlash.dmi' && tenkaichi_echoing_slash.projectile_damage_factor == 7, "Echoing Slash is missing its RPT projectile art or adapted balance")
+	var/obj/Attacks/NexusSpecialStyle/WallOfFlame/nexus_flame_wall = new
+	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova/nexus_dragon_nova = new
+	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak/nexus_sky_break = new
+	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash/nexus_echoing_slash = new
+	nexusSmokeAssert(nexus_guard_break.breaks_guard && nexus_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
+	nexusSmokeAssert(nexus_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
+	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 12 && nexus_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
+	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated physical sword projectile")
+	nexusSmokeAssert(nexus_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && nexus_echoing_slash.weapon_projectile && nexus_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
+	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 7, "Echoing Slash is missing its integrated projectile art or adapted balance")
 	var/obj/ArcaneSpell/Projectile/Fireball/arcane_fireball_vfx = new
 	var/obj/ArcaneSpell/Projectile/FrostBolt/arcane_frost_vfx = new
 	var/obj/ArcaneSpell/Projectile/LightningBolt/arcane_lightning_vfx = new
 	nexusSmokeAssert(arcane_fireball_vfx.icon == 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi' && arcane_fireball_vfx.icon_state == "fire_ball" && arcane_fireball_vfx.impact_effect_state == "explosion", "Fireball is missing its authored magic icon or impact VFX")
 	nexusSmokeAssert(arcane_frost_vfx.icon_state == "water" && arcane_frost_vfx.impact_effect_state == "water_geyser" && arcane_lightning_vfx.icon_state == "wind" && arcane_lightning_vfx.impact_sound_category == "electric", "Frost Bolt or Lightning Bolt is missing its elemental magic presentation")
 	var/mob/NexusSmokeTest/skill_examine_owner = new
-	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/menu_skill_contract = new(skill_examine_owner)
+	var/obj/Attacks/NexusMeleeTechnique/Slice/menu_skill_contract = new(skill_examine_owner)
 	var/obj/NexusSmokeSkillAction/menu_action_contract = new(skill_examine_owner)
 	var/obj/Buff/Preset/MuscleForce/menu_buff_contract = new(skill_examine_owner)
 	var/obj/Giant_Form/menu_transformation_contract = new(skill_examine_owner)
@@ -892,7 +1070,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	skill_examine_owner.Str = 100 * menu_damage_weapon.Damage
 	var/list/menu_damage_contract = skill_examine_contract.getSkillDamageData(menu_skill_contract)
 	var/menu_raw_damage_contract = skill_examine_contract.getUnresistedSkillDamage(menu_skill_contract, menu_damage_contract)
-	nexusSmokeAssert(menu_damage_contract["preview_profile"] == "tenkaichi_melee" && nexusIsFiniteNumber(menu_raw_damage_contract) && menu_raw_damage_contract > menu_damage_contract["factor"], "skill examination did not calculate a complete Tenkaichi melee damage preview")
+	nexusSmokeAssert(menu_damage_contract["preview_profile"] == "nexus_melee" && nexusIsFiniteNumber(menu_raw_damage_contract) && menu_raw_damage_contract > menu_damage_contract["factor"], "skill examination did not calculate a complete Nexus melee damage preview")
 	var/mob/NexusSmokeTest/menu_neutral_target = new
 	menu_neutral_target.BP = skill_examine_owner.BP
 	menu_neutral_target.End = 0
@@ -902,17 +1080,17 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	skill_examine_owner.dir = EAST
 	menu_neutral_target.dir = NORTH
 	var/menu_runtime_melee_damage = skill_examine_owner.get_melee_damage(menu_neutral_target) * menu_damage_contract["factor"]
-	nexusSmokeAssertNear(menu_raw_damage_contract, menu_runtime_melee_damage, 0.0001, "Tenkaichi preview diverges from a neutral runtime melee hit")
+	nexusSmokeAssertNear(menu_raw_damage_contract, menu_runtime_melee_damage, 0.0001, "Nexus preview diverges from a neutral runtime melee hit")
 	nexusSmokeAssertNear(skill_examine_owner.getUnresistedPhysicalCombatDamage(3), skill_examine_owner.getPhysicalCombatDamage(menu_neutral_target, 3), 0.0001, "neutral physical preview diverges from runtime combat damage")
 	nexusSmokeAssertNear(skill_examine_owner.getUnresistedKiCombatDamage(3), skill_examine_owner.getKiCombatDamage(menu_neutral_target, 3), 0.0001, "neutral Ki preview diverges from runtime combat damage")
 	nexusSmokeAssertNear(skill_examine_owner.getUnresistedHybridCombatDamage(3), skill_examine_owner.getHybridCombatDamage(menu_neutral_target, 3), 0.0001, "neutral hybrid preview diverges from runtime combat damage")
 	nexusSmokeAssertNear(skill_examine_owner.getUnresistedWeaponCombatDamage(3), skill_examine_owner.getWeaponCombatDamage(menu_neutral_target, 3), 0.0001, "neutral weapon preview omits runtime sword, style, silver, forged-BP, or milestone modifiers")
 	var/original_ki_power = ki_power
 	ki_power = 1.25
-	var/list/sky_break_preview_data = skill_examine_contract.getSkillDamageData(tenkaichi_sky_break)
-	var/sky_break_preview_damage = skill_examine_contract.getUnresistedSkillDamage(tenkaichi_sky_break, sky_break_preview_data)
+	var/list/sky_break_preview_data = skill_examine_contract.getSkillDamageData(nexus_sky_break)
+	var/sky_break_preview_damage = skill_examine_contract.getUnresistedSkillDamage(nexus_sky_break, sky_break_preview_data)
 	var/obj/Blast/sky_break_runtime_projectile = new
-	sky_break_runtime_projectile.setStats(skill_examine_owner, Percent = tenkaichi_sky_break.projectile_damage_factor, Off_Mult = 1.2, Explosion = tenkaichi_sky_break.explosion_size, explosion_percent = tenkaichi_sky_break.projectile_damage_factor, max_damage_factor = sky_break_preview_data["factor"])
+	sky_break_runtime_projectile.setStats(skill_examine_owner, Percent = nexus_sky_break.projectile_damage_factor, Off_Mult = 1.2, Explosion = nexus_sky_break.explosion_size, explosion_percent = nexus_sky_break.projectile_damage_factor, max_damage_factor = sky_break_preview_data["factor"])
 	sky_break_runtime_projectile.strength_scaled = TRUE
 	sky_break_runtime_projectile.weapon_scaled = TRUE
 	var/sky_break_direct_factor = sky_break_runtime_projectile.reserveDamageFactor(menu_neutral_target, sky_break_runtime_projectile.percent_damage)
@@ -920,18 +1098,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/sky_break_runtime_damage = sky_break_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, sky_break_direct_factor)
 	sky_break_runtime_damage += sky_break_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, sky_break_explosion_factor)
 	nexusSmokeAssert(sky_break_preview_data["preview_profile"] == "weapon_projectile", "strength-scaled ChargedProjectile did not select its weapon runtime preview")
-	nexusSmokeAssert(sky_break_direct_factor > tenkaichi_sky_break.projectile_damage_factor && sky_break_explosion_factor < tenkaichi_sky_break.projectile_damage_factor && sky_break_direct_factor + sky_break_explosion_factor == sky_break_preview_data["projectile_budget_factor"], "weapon ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
+	nexusSmokeAssert(sky_break_direct_factor > nexus_sky_break.projectile_damage_factor && sky_break_explosion_factor < nexus_sky_break.projectile_damage_factor && sky_break_direct_factor + sky_break_explosion_factor == sky_break_preview_data["projectile_budget_factor"], "weapon ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
 	nexusSmokeAssertNear(sky_break_preview_damage, sky_break_runtime_damage, 0.0001, "weapon ChargedProjectile preview diverges from its neutral direct-plus-explosion runtime damage")
 	del(sky_break_runtime_projectile)
-	var/list/dragon_nova_preview_data = skill_examine_contract.getSkillDamageData(tenkaichi_dragon_nova)
-	var/dragon_nova_preview_damage = skill_examine_contract.getUnresistedSkillDamage(tenkaichi_dragon_nova, dragon_nova_preview_data)
+	var/list/dragon_nova_preview_data = skill_examine_contract.getSkillDamageData(nexus_dragon_nova)
+	var/dragon_nova_preview_damage = skill_examine_contract.getUnresistedSkillDamage(nexus_dragon_nova, dragon_nova_preview_data)
 	var/obj/Blast/dragon_nova_runtime_projectile = new
-	dragon_nova_runtime_projectile.setStats(skill_examine_owner, Percent = tenkaichi_dragon_nova.projectile_damage_factor, Off_Mult = 1, Explosion = tenkaichi_dragon_nova.explosion_size, explosion_percent = tenkaichi_dragon_nova.projectile_damage_factor, max_damage_factor = dragon_nova_preview_data["factor"])
+	dragon_nova_runtime_projectile.setStats(skill_examine_owner, Percent = nexus_dragon_nova.projectile_damage_factor, Off_Mult = 1, Explosion = nexus_dragon_nova.explosion_size, explosion_percent = nexus_dragon_nova.projectile_damage_factor, max_damage_factor = dragon_nova_preview_data["factor"])
 	var/dragon_nova_direct_factor = dragon_nova_runtime_projectile.reserveDamageFactor(menu_neutral_target, dragon_nova_runtime_projectile.percent_damage)
 	var/dragon_nova_explosion_factor = dragon_nova_runtime_projectile.reserveDamageFactor(menu_neutral_target, dragon_nova_runtime_projectile.explosion_damage_factor)
 	var/dragon_nova_runtime_damage = dragon_nova_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, dragon_nova_direct_factor)
 	dragon_nova_runtime_damage += dragon_nova_runtime_projectile.getProjectileCombatDamage(menu_neutral_target, dragon_nova_explosion_factor)
-	nexusSmokeAssert(dragon_nova_preview_data["preview_profile"] == "ki_projectile" && dragon_nova_direct_factor > tenkaichi_dragon_nova.projectile_damage_factor && dragon_nova_explosion_factor < tenkaichi_dragon_nova.projectile_damage_factor && dragon_nova_direct_factor + dragon_nova_explosion_factor == dragon_nova_preview_data["projectile_budget_factor"], "Ki ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
+	nexusSmokeAssert(dragon_nova_preview_data["preview_profile"] == "ki_projectile" && dragon_nova_direct_factor > nexus_dragon_nova.projectile_damage_factor && dragon_nova_explosion_factor < nexus_dragon_nova.projectile_damage_factor && dragon_nova_direct_factor + dragon_nova_explosion_factor == dragon_nova_preview_data["projectile_budget_factor"], "Ki ChargedProjectile smoke did not exercise scaled direct and shared-budget splash reservations")
 	nexusSmokeAssertNear(dragon_nova_preview_damage, dragon_nova_runtime_damage, 0.0001, "Ki ChargedProjectile preview diverges from its neutral direct-plus-explosion runtime damage")
 	del(dragon_nova_runtime_projectile)
 	var/obj/Attacks/Attack_Barrier/menu_projectile_contract = new(skill_examine_owner)
@@ -982,16 +1160,16 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	menu_explosive_blast_runtime.damage_budget = null
 	del(menu_explosive_blast_budget)
 	del(menu_explosive_blast_runtime)
-	var/list/menu_ghost_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_ghosts)
+	var/list/menu_ghost_damage_data = skill_examine_contract.getSkillDamageData(nexus_ghosts)
 	var/datum/CombatDamageBudget/menu_ghost_budget = new(menu_ghost_damage_data["projectile_budget_factor"])
 	var/obj/Blast/menu_ghost_runtime = new
-	menu_ghost_runtime.setStats(skill_examine_owner, Percent = tenkaichi_ghosts.ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = menu_ghost_budget)
+	menu_ghost_runtime.setStats(skill_examine_owner, Percent = nexus_ghosts.ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = menu_ghost_budget)
 	var/menu_ghost_runtime_factor = 0
-	for(var/ghost_index = 1, ghost_index <= tenkaichi_ghosts.ghost_count, ghost_index++)
+	for(var/ghost_index = 1, ghost_index <= nexus_ghosts.ghost_count, ghost_index++)
 		menu_ghost_runtime_factor += menu_ghost_runtime.reserveDamageFactor(menu_neutral_target, menu_ghost_runtime.percent_damage)
 	var/menu_ghost_runtime_damage = menu_ghost_runtime.getProjectileCombatDamage(menu_neutral_target, menu_ghost_runtime_factor)
-	nexusSmokeAssert(menu_ghost_damage_data["preview_profile"] == "ki_projectile" && menu_ghost_damage_data["factor"] == tenkaichi_ghosts.ghost_count * tenkaichi_ghosts.ghost_damage_factor, "Super Ghost Kamikaze preview does not expose its fixed shared projectile budget")
-	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(tenkaichi_ghosts, menu_ghost_damage_data), menu_ghost_runtime_damage, 0.0001, "Super Ghost Kamikaze preview diverges from three neutral runtime hits sharing one budget")
+	nexusSmokeAssert(menu_ghost_damage_data["preview_profile"] == "ki_projectile" && menu_ghost_damage_data["factor"] == nexus_ghosts.ghost_count * nexus_ghosts.ghost_damage_factor, "Super Ghost Kamikaze preview does not expose its fixed shared projectile budget")
+	nexusSmokeAssertNear(skill_examine_contract.getUnresistedSkillDamage(nexus_ghosts, menu_ghost_damage_data), menu_ghost_runtime_damage, 0.0001, "Super Ghost Kamikaze preview diverges from three neutral runtime hits sharing one budget")
 	menu_ghost_runtime.damage_budget = null
 	del(menu_ghost_budget)
 	del(menu_ghost_runtime)
@@ -1019,31 +1197,31 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	skill_examine_contract.recordHeartbeat(61)
 	nexusSmokeAssert(skill_examine_contract.last_scroll_y == 61, "player menu live refresh does not retain browser scroll position")
 	nexusSmokeAssert(!skill_examine_contract.hasLiveOwner() && !skill_examine_contract.isBrowserOpen(), "a detached player menu can keep its live refresh lifecycle running")
-	var/list/dragon_nova_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_dragon_nova)
-	var/list/iai_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_iai)
-	var/list/echoing_slash_damage_data = skill_examine_contract.getSkillDamageData(tenkaichi_echoing_slash)
+	var/list/dragon_nova_damage_data = skill_examine_contract.getSkillDamageData(nexus_dragon_nova)
+	var/list/iai_damage_data = skill_examine_contract.getSkillDamageData(nexus_iai)
+	var/list/echoing_slash_damage_data = skill_examine_contract.getSkillDamageData(nexus_echoing_slash)
 	nexusSmokeAssert(dragon_nova_damage_data["factor"] == 24 && dragon_nova_damage_data["model"] == "Ki", "skill examination does not expose Dragon Nova's full direct/splash budget")
 	nexusSmokeAssert(iai_damage_data["model"] == "Physical" && findtext(iai_damage_data["requirements"], "Weapon equipped"), "skill examination omits Iai Slash damage model or weapon requirement")
 	nexusSmokeAssert(echoing_slash_damage_data["factor"] == 7 && findtext(echoing_slash_damage_data["range"], "direct impact"), "skill examination treats Echoing Slash as an explosive blast")
 	del(skill_examine_contract)
 	del(skill_examine_owner)
-	del(tenkaichi_slice)
-	del(tenkaichi_combo)
-	del(tenkaichi_iai)
-	del(tenkaichi_stab)
-	del(tenkaichi_throw)
-	del(tenkaichi_march)
-	del(tenkaichi_texas_smash)
-	del(tenkaichi_exploding_heart)
-	del(tenkaichi_pile_driver)
-	del(tenkaichi_uppercut)
-	del(tenkaichi_kickback)
-	del(tenkaichi_beam)
-	del(tenkaichi_guard_break)
-	del(tenkaichi_flame_wall)
-	del(tenkaichi_dragon_nova)
-	del(tenkaichi_sky_break)
-	del(tenkaichi_echoing_slash)
+	del(nexus_slice)
+	del(nexus_combo)
+	del(nexus_iai)
+	del(nexus_stab)
+	del(nexus_throw)
+	del(nexus_march)
+	del(nexus_texas_smash)
+	del(nexus_exploding_heart)
+	del(nexus_pile_driver)
+	del(nexus_uppercut)
+	del(nexus_kickback)
+	del(nexus_beam)
+	del(nexus_guard_break)
+	del(nexus_flame_wall)
+	del(nexus_dragon_nova)
+	del(nexus_sky_break)
+	del(nexus_echoing_slash)
 	var/turf/attack_movement_origin
 	var/turf/attack_movement_destination
 	var/turf/attack_movement_pass_through
@@ -1099,11 +1277,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	technique_targeting_test.SafeTeleport(attack_movement_origin)
 	technique_target.SafeTeleport(attack_movement_destination)
 	technique_targeting_test.dir = EAST
-	nexusSmokeAssert(technique_targeting_test.getTenkaichiTechniqueTarget(1) == technique_target, "adjacent Tenkaichi combos require manual target selection")
+	nexusSmokeAssert(technique_targeting_test.getNexusTechniqueTarget(1) == technique_target, "adjacent Nexus combos require manual target selection")
 	technique_targeting_test.grabbedObject = technique_target
 	technique_target.grabber = technique_targeting_test
 	technique_targeting_test.last_melee_attack = -1000
-	nexusSmokeAssert(technique_targeting_test.canUseTenkaichiGrappleTechnique(), "a valid grab still blocks Pile Driver and Megaton Throw")
+	nexusSmokeAssert(technique_targeting_test.canUseNexusGrappleTechnique(), "a valid grab still blocks Pile Driver and Megaton Throw")
 	nexusSmokeAssert(!technique_target.CanMeleeFromOtherCauses() && technique_target.cant_blast(), "a grabbed player can still attack instead of struggling free")
 	technique_targeting_test.ReleaseGrab()
 	del(technique_targeting_test)
@@ -1256,9 +1434,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(skill_contact_motion)
 	del(skill_contact_recorder)
 	var/mob/NexusSmokeTest/defensive_dash_attacker = new(attack_movement_destination)
-	var/obj/Attacks/TenkaichiMeleeTechnique/IaiSlash/defensive_dash_technique = new
-	nexusSmokeAssert(!defensive_dash_attacker.resolveTenkaichiTechniqueHit(defensive_dash_test, defensive_dash_technique), "short dash did not evade a direct Tenkaichi melee technique")
-	nexusSmokeAssert(defensive_dash_attacker.resolveTenkaichiTechniqueHit(defensive_dash_test, defensive_dash_technique, force_hit = TRUE), "short dash incorrectly evaded a forced area/grapple technique")
+	var/obj/Attacks/NexusMeleeTechnique/IaiSlash/defensive_dash_technique = new
+	nexusSmokeAssert(!defensive_dash_attacker.resolveNexusTechniqueHit(defensive_dash_test, defensive_dash_technique), "short dash did not evade a direct Nexus melee technique")
+	nexusSmokeAssert(defensive_dash_attacker.resolveNexusTechniqueHit(defensive_dash_test, defensive_dash_technique, force_hit = TRUE), "short dash incorrectly evaded a forced area/grapple technique")
 	del(defensive_dash_technique)
 	del(defensive_dash_attacker)
 	defensive_dash_test.cancelNexusSkillMotion("smoke")
@@ -1860,7 +2038,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Blast/named_impact_projectile = new
 	named_impact_projectile.from_attack = nonbeam_skill
 	named_impact_projectile.percent_damage = 4
-	nexusSmokeAssert(named_impact_projectile.getNexusProjectileImpactIcon() == 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpact.dmi', "named damaging projectiles without custom art receive no shared impact VFX")
+	nexusSmokeAssert(named_impact_projectile.getNexusProjectileImpactIcon() == 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi', "named damaging projectiles without custom art receive no shared impact VFX")
 	del(named_impact_projectile)
 	del(beam_impact_target)
 	del(beam_mode_player)
@@ -1905,11 +2083,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillDebris") && nexus_rock_launch_sounds.len == 2 && nexus_rock_impact_sounds.len == 3 && nexus_rock_heavy_impact_sounds.len == 2 && nexus_rock_break_sounds.len == 3, "rock attacks are missing their CC0 audio or debris profiles")
-	nexusSmokeAssert(text2path("/obj/Effect/TenkaichiTechniqueText"), "Tenkaichi techniques are missing their floating combat announcement actor")
+	nexusSmokeAssert(text2path("/obj/Effect/NexusTechniqueText"), "Nexus techniques are missing their floating combat announcement actor")
 	var/icon/critical_spark_icon = getNexusCriticalSparkIcon()
 	nexusSmokeAssert(text2path("/obj/Effect/NexusCriticalCore") && text2path("/obj/Effect/NexusCriticalSpark") && text2path("/obj/Effect/NexusCriticalText"), "critical hits are missing their Black Flash effect actors")
 	nexusSmokeAssert(critical_spark_icon && GetWidth(critical_spark_icon) == 96 && GetHeight(critical_spark_icon) == 96 && nexus_critical_impact_sounds.len == 2, "critical hits are missing their generated spark or layered audio profile")
-	var/obj/Attacks/TenkaichiMeleeTechnique/Slice/sword_slice_skill = new
+	var/obj/Attacks/NexusMeleeTechnique/Slice/sword_slice_skill = new
 	nexusSmokeAssert(sword_slice_skill.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && sword_slice_skill.icon_state == "slash" && GetWidth(sword_slice_skill.icon) == 64 && GetHeight(sword_slice_skill.icon) == 47, "weapon skills are missing the animated CC0 slash icon")
 	nexusSmokeAssert(nexus_sword_swing_light_sounds.len == 2 && nexus_sword_swing_heavy_sounds.len == 2 && nexus_sword_impact_sounds.len == 6 && (sword_slice_skill.getCastSound() in nexus_sword_swing_light_sounds) && (sword_slice_skill.getImpactSound() in nexus_sword_impact_sounds), "weapon skills are missing their CC0 swing and impact profiles")
 	del(rock_throw_skill)
@@ -2112,7 +2290,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Noob_Ray/noob_ray_skill = new
 	nexusSmokeAssert(final_flash_skill.damage_factor == 12 && noob_ray_skill.damage_factor == 52, "beam damage factors are invalid")
 	var/strongest_progression_beam_factor = 0
-	for(var/progression_beam_type in getTenkaichiBeamAttackTypes())
+	for(var/progression_beam_type in getNexusBeamAttackTypes())
 		strongest_progression_beam_factor = max(strongest_progression_beam_factor, initial(progression_beam_type:damage_factor))
 	nexusSmokeAssert(final_flash_skill.damage_factor == strongest_progression_beam_factor, "Final Flash is not the strongest raw-damage beam in Combat/Ki")
 	var/makankosappo_type = /obj/Attacks/Piercer
@@ -2177,21 +2355,22 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/mob/NexusSmokeTest/normal_anger_test = new
 	normal_anger_test.Race = "Human"
 	normal_anger_test.Health = 0
-	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0, "ordinary races received the restricted Anger Health recovery")
+	nexusSmokeAssert(normal_anger_test.canPossessAnger() && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0, "ordinary races lost Anger or received an obsolete Health recovery")
 	var/mob/NexusSmokeTest/android_anger_test = new
 	android_anger_test.Race = "Android"
 	android_anger_test.Android = TRUE
-	android_anger_test.Health = 0
-	nexusSmokeAssert(android_anger_test.TryToCauseAnger(anger_attacker, android_anger_test) && android_anger_test.Health == 100 && android_anger_test.has_angered_before_ko, "Android Anger did not restore one Health bar")
-	android_anger_test.Health = 0
-	nexusSmokeAssert(!android_anger_test.TryToCauseAnger(anger_attacker, android_anger_test) && android_anger_test.Health == 0, "Android Anger chained more than one Health recovery")
 	var/mob/NexusSmokeTest/lssj_anger_test = new
 	lssj_anger_test.Class = "Legendary Saiyan"
 	var/mob/NexusSmokeTest/jiren_anger_test = new
 	jiren_anger_test.jirenAlien = TRUE
-	nexusSmokeAssert(lssj_anger_test.hasAngerHealthRecovery() && jiren_anger_test.hasAngerHealthRecovery(), "LSSJ or Jiren is missing the Anger Health recovery trait")
-	android_anger_test.Calm()
-	nexusSmokeAssert(!android_anger_test.has_angered_before_ko, "calming down did not reset the Anger Health recovery lock")
+	var/list/angerless_archetypes = list(android_anger_test, lssj_anger_test, jiren_anger_test)
+	for(var/mob/NexusSmokeTest/angerless_test in angerless_archetypes)
+		angerless_test.Health = 0
+		angerless_test.anger = 175
+		angerless_test.max_anger = 250
+		nexusSmokeAssert(!angerless_test.canPossessAnger() && !angerless_test.can_anger(), "Android, LSSJ, or Jiren can still gain Anger")
+		nexusSmokeAssert(angerless_test.anger == 100 && angerless_test.max_anger == 100 && angerless_test.Anger_mult() == 1, "an Angerless archetype retained Anger stats or power")
+		nexusSmokeAssert(!angerless_test.TryToCauseAnger(anger_attacker, angerless_test) && angerless_test.Health == 0, "an Angerless archetype received the obsolete Anger Health recovery")
 	del(anger_attacker)
 	del(normal_anger_test)
 	del(android_anger_test)
@@ -2313,16 +2492,16 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		var/datum/MilestoneDefinition/milestone_node = milestone_catalog[milestone_id]
 		nexusSmokeAssert(!milestone_node.prerequisites.len, "Milestone still depends on a talent-tree prerequisite: [milestone_node.id]")
 	nexusSmokeAssert(progression_node_catalog.len >= 200 && progression_categories.len == 6 && milestone_catalog.len >= 49, "unified progression catalog is missing skills, talents or a primary category")
-	nexusSmokeAssert(milestone_catalog["bleeding_edge"] && milestone_catalog["burning_fists"] && milestone_catalog["fire_lord"] && milestone_catalog["this_drill_will_pierce_the_heavens"], "the signature RPT combat Milestones are missing")
+	nexusSmokeAssert(milestone_catalog["bleeding_edge"] && milestone_catalog["burning_fists"] && milestone_catalog["fire_lord"] && milestone_catalog["this_drill_will_pierce_the_heavens"], "the signature integrated combat Milestones are missing")
 	nexusSmokeAssert(milestone_catalog["versatile_training"] && milestone_catalog["sweeping_impact"] && milestone_catalog["echoing_assault"] && milestone_catalog["keen_edge"] && milestone_catalog["unencumbered_combatant"], "the build-diversifying Milestones are missing")
 	var/datum/ProgressionNode/kai_hakai_node = progression_node_catalog[getRacialProgressionNodeId("Kaioshin", /obj/Hakai)]
 	var/datum/ProgressionNode/demon_hakai_node = progression_node_catalog[getRacialProgressionNodeId("Daimao", /obj/Hakai)]
 	nexusSmokeAssert(kai_hakai_node && demon_hakai_node && kai_hakai_node.tier == 10 && demon_hakai_node.tier == 10 && kai_hakai_node.cost == 600 && demon_hakai_node.cost == 600, "Hakai is not the tier-ten apex of both Kaioshin and Daimao on the scaled XP curve")
 	nexusSmokeAssert(kai_hakai_node.prerequisites.len > 0 && demon_hakai_node.prerequisites.len > 0, "racial Hakai has no visible final-rank prerequisites")
-	var/datum/ProgressionNode/ghost_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze)]
-	var/datum/ProgressionNode/explosive_wave_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave)]
-	var/datum/ProgressionNode/earthquake_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/TenkaichiAreaTechnique/Earthquake)]
-	nexusSmokeAssert(ghost_progression_node && ghost_progression_node.branch == "Ki" && ghost_progression_node.tier == 8 && explosive_wave_progression_node && explosive_wave_progression_node.branch == "Ki" && earthquake_progression_node && earthquake_progression_node.branch == "Physical", "ported RPT techniques are missing or routed to the wrong Combat branches")
+	var/datum/ProgressionNode/ghost_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze)]
+	var/datum/ProgressionNode/explosive_wave_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave)]
+	var/datum/ProgressionNode/earthquake_progression_node = progression_node_catalog[getProgressionNodeIdForType(/obj/Attacks/NexusAreaTechnique/Earthquake)]
+	nexusSmokeAssert(ghost_progression_node && ghost_progression_node.branch == "Ki" && ghost_progression_node.tier == 8 && explosive_wave_progression_node && explosive_wave_progression_node.branch == "Ki" && earthquake_progression_node && earthquake_progression_node.branch == "Physical", "ported integrated techniques are missing or routed to the wrong Combat branches")
 	nexusSmokeAssert(progression_node_catalog["mining_prospector"]:tier == 1 && progression_node_catalog["mining_tin"]:tier == 2 && progression_node_catalog["mining_iron"]:tier == 3 && progression_node_catalog["mining_silver"]:tier == 4 && progression_node_catalog["mining_mythril"]:tier == 4 && progression_node_catalog["mining_auracite"]:tier == 5 && progression_node_catalog["mining_heart"]:tier == 5, "Prospecting nodes are not distributed across their authored tier branches")
 	nexusSmokeAssert(progression_node_catalog["smithing_apprentice"]:tier == 1 && progression_node_catalog["smithing_bronze"]:tier == 2 && progression_node_catalog["smithing_iron"]:tier == 3 && progression_node_catalog["smithing_silver"]:tier == 3 && progression_node_catalog["smithing_mythril"]:tier == 4 && progression_node_catalog["smithing_auracite"]:tier == 4 && progression_node_catalog["smithing_masterwork"]:tier == 5, "Smithing material nodes are not distributed across their authored tier branches")
 	var/list/specialized_science_counts = list()
@@ -2361,7 +2540,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/datum/ProgressionNode/makankosappo_progression_node = progression_node_catalog[makankosappo_progression_id]
 	nexusSmokeAssert(beam_progression_node.branch == "Foundation" && beam_progression_node.tier == 4 && kamehameha_progression_node.branch == "Beam" && kamehameha_progression_node.tier == 6 && final_flash_progression_node.branch == "Beam" && final_flash_progression_node.tier == 8 && (kamehameha_progression_id in final_flash_progression_node.prerequisites), "Final Flash does not rise from foundational Beam through the dedicated raw-power Beam path")
 	nexusSmokeAssert(tyrant_lancer_progression_node.branch == "Beam" && tyrant_lancer_progression_node.tier == 7 && makankosappo_progression_node.branch == "Beam" && makankosappo_progression_node.tier == 8 && (tyrant_lancer_progression_id in makankosappo_progression_node.prerequisites), "Makankosappo does not cap the dedicated shield-piercing Beam path")
-	for(var/beam_skill_type in getTenkaichiBeamAttackTypes())
+	for(var/beam_skill_type in getNexusBeamAttackTypes())
 		var/datum/ProgressionNode/dedicated_beam_node = progression_node_catalog[getProgressionNodeIdForType(beam_skill_type)]
 		var/expected_beam_branch = beam_skill_type == /obj/Attacks/Beam ? "Foundation" : "Beam"
 		nexusSmokeAssert(dedicated_beam_node && dedicated_beam_node.branch == expected_beam_branch, "beam skill is outside Foundation or the dedicated Beam tree: [beam_skill_type]")
@@ -2446,7 +2625,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!progression_scale_migration_test.migrateProgressionExperienceScale() && progression_scale_migration_test.progression_experience == 120, "Progression XP scale migration applied more than once")
 	del(progression_scale_migration_test)
 	var/obj/Attacks/Genki_Dama/genki_damage_test = new
-	var/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova/dragon_nova_damage_test = new
+	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova/dragon_nova_damage_test = new
 	nexusSmokeAssert(genki_damage_test.sb_max_dmg * 2 > dragon_nova_damage_test.projectile_damage_factor * 2, "Genki Dama does not have the largest authored player projectile damage budget")
 	del(dragon_nova_damage_test)
 	del(genki_damage_test)
@@ -2463,18 +2642,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		var/datum/ProgressionNode/combat_skill_node = progression_node_catalog[progression_node_id]
 		if(combat_skill_node.category != "Combat" || combat_skill_node.reward_kind != "skill") continue
 		nexusSmokeAssert(isProgressionCombatSkillType(combat_skill_node.reward_type) && !combat_skill_node.external_unlock, "non-combat or external-only object leaked into the purchasable Combat catalog: [combat_skill_node.reward_type]")
-	for(var/rock_skill_type in getTenkaichiRockAttackTypes())
+	for(var/rock_skill_type in getNexusRockAttackTypes())
 		var/datum/ProgressionNode/rock_progression_node = progression_node_catalog[getProgressionNodeIdForType(rock_skill_type)]
 		nexusSmokeAssert(rock_progression_node && rock_progression_node.branch == "Physical", "physical rock technique was categorized as Ki: [rock_skill_type]")
-	for(var/weapon_wave_type in list(/obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash, /obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak))
+	for(var/weapon_wave_type in list(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash, /obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak))
 		var/datum/ProgressionNode/weapon_wave_node = progression_node_catalog[getProgressionNodeIdForType(weapon_wave_type)]
 		nexusSmokeAssert(weapon_wave_node && weapon_wave_node.branch == "Weapon" && initial(weapon_wave_type:weapon_projectile), "sword wave is not a weapon-scaled Weapon-tree technique: [weapon_wave_type]")
-	var/consecutive_punches_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/ConsecutiveNormalPunches)
-	var/march_of_fury_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/MarchOfFury)
-	var/pile_driver_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/PileDriver)
-	var/texas_smash_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/TexasSmash)
-	var/critical_edge_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/CriticalEdge)
-	var/exploding_heart_progression_id = getProgressionNodeIdForType(/obj/Attacks/TenkaichiMeleeTechnique/ExplodingHeartStrike)
+	var/consecutive_punches_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches)
+	var/march_of_fury_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/MarchOfFury)
+	var/pile_driver_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/PileDriver)
+	var/texas_smash_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/TexasSmash)
+	var/critical_edge_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/CriticalEdge)
+	var/exploding_heart_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike)
 	var/datum/ProgressionNode/march_of_fury_progression_node = progression_node_catalog[march_of_fury_progression_id]
 	var/datum/ProgressionNode/texas_smash_progression_node = progression_node_catalog[texas_smash_progression_id]
 	var/datum/ProgressionNode/exploding_heart_progression_node = progression_node_catalog[exploding_heart_progression_id]
@@ -2490,18 +2669,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(dash_foundation_node.tier == 3 && dropkick_progression_node.tier == 5 && hundred_crack_progression_node.tier == 5, "Dash Attack did not move to Foundation or peak Unarmed attacks lost their capstone tiers")
 	var/datum/ProgressionNode/alchemy_circle_progression_node = progression_node_catalog["magic_transmutation_circle"]
 	nexusSmokeAssert(alchemy_circle_progression_node && !("magic_attunement" in alchemy_circle_progression_node.prerequisites), "high-tier Magic still bypasses its branch choices")
-	nexusSmokeAssert(typesof(/obj/Buff/Preset).len == 13 && typesof(/obj/Buff/Ultimate).len == 7, "ported Tenkaichi buff catalog is incomplete")
-	nexusSmokeAssert(typesof(/obj/Peebag).len >= 10, "ported Tenkaichi Punching Bag or Magic Goo tiers are incomplete")
-	nexusSmokeAssert(magic_research_catalog["magic_goo_4"] && magic_research_catalog["transmutation_circle"] && magic_research_catalog["philosophers_stone"], "Tenkaichi Alchemy research is incomplete")
+	nexusSmokeAssert(typesof(/obj/Buff/Preset).len == 13 && typesof(/obj/Buff/Ultimate).len == 7, "integrated Nexus buff catalog is incomplete")
+	nexusSmokeAssert(typesof(/obj/Peebag).len >= 10, "integrated Nexus Punching Bag or Magic Goo tiers are incomplete")
+	nexusSmokeAssert(magic_research_catalog["magic_goo_4"] && magic_research_catalog["transmutation_circle"] && magic_research_catalog["philosophers_stone"], "Nexus Alchemy research is incomplete")
 	initializeArcaneFormulaCatalog()
-	nexusSmokeAssert(arcane_formula_catalog.len == 42, "the complete Tenkaichi arcane formula catalog was not registered")
+	nexusSmokeAssert(arcane_formula_catalog.len == 42, "the complete Nexus arcane formula catalog was not registered")
 	for(var/arcane_formula_id in arcane_formula_catalog)
 		nexusSmokeAssert(magic_research_catalog[arcane_formula_id], "an arcane formula has no Magic progression node: [arcane_formula_id]")
 	var/datum/MagicResearchNode/shikon_research_node = magic_research_catalog["shikon_jewel"]
 	var/datum/ArcaneFormula/shikon_formula = arcane_formula_catalog["shikon_jewel"]
 	nexusSmokeAssert(shikon_research_node && shikon_research_node.branch == "Artifacts" && shikon_research_node.required_level == 9, "Shikon Jewel is not registered as high-tier Artifacts research")
 	nexusSmokeAssert(shikon_formula && shikon_formula.construct_type == /obj/items/Shikon_Jewel && shikon_formula.required_circle_tier == 2 && shikon_formula.essence_cost >= 500, "Shikon Jewel does not use a high-tier arcane crafting ritual")
-	nexusSmokeAssert(magic_research_catalog["fireball"] && magic_research_catalog["frost_nova"] && magic_research_catalog["earth_prison"] && magic_research_catalog["create_portal"] && magic_research_catalog["enchant"], "ported RPT spell research is incomplete")
+	nexusSmokeAssert(magic_research_catalog["fireball"] && magic_research_catalog["frost_nova"] && magic_research_catalog["earth_prison"] && magic_research_catalog["create_portal"] && magic_research_catalog["enchant"], "ported integrated spell research is incomplete")
 	var/mob/NexusSmokeTest/arcane_defense_test = new
 	arcane_defense_test.End = 12
 	arcane_defense_test.Res = 8
@@ -2578,9 +2757,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 			var/obj/Module/Combat_Mathematics/combat_mathematics_module = technology
 			for(var/obj/module_ability in combat_mathematics_module.Abilities)
 				if(module_ability.type == /obj/Buff/Preset/CombatMathematics) has_combat_mathematics_module = TRUE
-	nexusSmokeAssert(has_tier_six_bag_design && has_translator_design, "Tenkaichi training or translation technology was not registered")
-	nexusSmokeAssert(has_mutagen_design && has_sequencer_design && has_code_injector_design, "Tenkaichi Genetics or Robotics technology was not registered")
-	nexusSmokeAssert(has_power_armor_design && has_prospecting_design, "expanded Tenkaichi engineering technology was not registered")
+	nexusSmokeAssert(has_tier_six_bag_design && has_translator_design, "Nexus training or translation technology was not registered")
+	nexusSmokeAssert(has_mutagen_design && has_sequencer_design && has_code_injector_design, "Nexus Genetics or Robotics technology was not registered")
+	nexusSmokeAssert(has_power_armor_design && has_prospecting_design, "expanded Nexus engineering technology was not registered")
 	nexusSmokeAssert(has_combat_mathematics_module && has_cyber_charge_module && has_cyber_laser_module && has_overdrive_module, "module-exclusive combat abilities are missing a Robotics module")
 	var/mob/NexusSmokeTest/language_speaker = new
 	language_speaker.Race = "Saiyan"
@@ -2606,9 +2785,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(language_speaker)
 	var/mob/NexusSmokeTest/progression_test = new
 	progression_test.Experience = 25
-	new /obj/Attacks/TenkaichiMeleeTechnique/Slice(progression_test)
+	new /obj/Attacks/NexusMeleeTechnique/Slice(progression_test)
 	progression_test.syncProgressionTrees(silent = TRUE)
-	var/slice_progression_id = progression_test.getProgressionNodeIdForReward(/obj/Attacks/TenkaichiMeleeTechnique/Slice)
+	var/slice_progression_id = progression_test.getProgressionNodeIdForReward(/obj/Attacks/NexusMeleeTechnique/Slice)
 	nexusSmokeAssert(progression_test.Experience == 0 && progression_test.progression_experience == 250 && progression_test.hasProgressionNode(slice_progression_id), "legacy Skill Points or learned skills were not migrated into scaled progression")
 	progression_test.progression_experience = 4000
 	progression_test.progression_lifetime_experience = 4000
@@ -2716,11 +2895,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(ultimate_migration_test.hasProgressionNode(bushido_progression_id) && (locate(/obj/Buff/Ultimate/Bushido) in ultimate_migration_test), "legacy Ultimate Buff milestones were not migrated to Combat/Buffs capstones")
 	del(ultimate_migration_test)
 	initializeForgedEquipmentCatalogs()
-	nexusSmokeAssert(forged_material_catalog.len == 8 && forged_material_catalog["normal"] && forged_material_catalog["masterwork"] && forged_material_catalog["auracite"], "Tenkaichi material catalog is incomplete or Normal is not its base tier")
-	nexusSmokeAssert(forged_weapon_style_catalog.len == 29 && forged_weapon_style_catalog["hammer"] && forged_weapon_style_catalog["mage_staff"] && forged_weapon_style_catalog["kingdom_key"], "Tenkaichi weapon catalog or legacy DU appearances are incomplete")
-	nexusSmokeAssert(forged_armor_style_catalog.len == 27 && forged_armor_style_catalog["bardock"] && forged_armor_style_catalog["phoenix"], "Tenkaichi armor catalog or legacy DU appearances are incomplete")
-	nexusSmokeAssert(forged_glove_style_catalog.len == 4 && forged_glove_style_catalog["classic"] && forged_glove_style_catalog["boxing"], "Tenkaichi unarmed glove catalog is incomplete")
-	nexusSmokeAssert(forged_mask_style_catalog.len == 3 && forged_mask_style_catalog["normal"] && forged_mask_style_catalog["ninja"], "Tenkaichi Ki mask catalog is incomplete")
+	nexusSmokeAssert(forged_material_catalog.len == 8 && forged_material_catalog["normal"] && forged_material_catalog["masterwork"] && forged_material_catalog["auracite"], "Nexus material catalog is incomplete or Normal is not its base tier")
+	nexusSmokeAssert(forged_weapon_style_catalog.len == 29 && forged_weapon_style_catalog["hammer"] && forged_weapon_style_catalog["mage_staff"] && forged_weapon_style_catalog["kingdom_key"], "Nexus weapon catalog or legacy DU appearances are incomplete")
+	nexusSmokeAssert(forged_armor_style_catalog.len == 27 && forged_armor_style_catalog["bardock"] && forged_armor_style_catalog["phoenix"], "Nexus armor catalog or legacy DU appearances are incomplete")
+	nexusSmokeAssert(forged_glove_style_catalog.len == 4 && forged_glove_style_catalog["classic"] && forged_glove_style_catalog["boxing"], "Nexus unarmed glove catalog is incomplete")
+	nexusSmokeAssert(forged_mask_style_catalog.len == 3 && forged_mask_style_catalog["normal"] && forged_mask_style_catalog["ninja"], "Nexus Ki mask catalog is incomplete")
 	var/mob/NexusSmokeTest/profession_test = new
 	profession_test.gainProfessionExperience("Mining", getProfessionExperienceForLevel(6), "Smoke test")
 	nexusSmokeAssert(profession_test.mining_level == 6, "Mining experience did not advance profession levels")
@@ -2787,7 +2966,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/normal_upgrades = getForgedMaterialUpgradeOptions("normal")
 	var/list/copper_upgrades = getForgedMaterialUpgradeOptions("copper")
 	var/list/bronze_upgrades = getForgedMaterialUpgradeOptions("bronze")
-	nexusSmokeAssert(normal_upgrades.len == 1 && normal_upgrades[1]:id == "copper" && copper_upgrades.len == 1 && bronze_upgrades.len == 2, "Normal does not upgrade to Copper before the Tenkaichi material branches")
+	nexusSmokeAssert(normal_upgrades.len == 1 && normal_upgrades[1]:id == "copper" && copper_upgrades.len == 1 && bronze_upgrades.len == 2, "Normal does not upgrade to Copper before the Nexus material branches")
 	initializeNexusAdminActions()
 	nexusSmokeAssert(nexus_admin_action_catalog.len >= 20 && nexus_admin_action_catalog["give_item"] && nexus_admin_action_catalog["reward"] && nexus_admin_action_catalog["legacy_command"], "Nexus Admin Panel command catalog is incomplete")
 	nexusSmokeAssert(/mob/AdminEssentials/verb/managePlayer in typesof(/mob/AdminEssentials/verb), "contextual Manage Player command is missing")
@@ -2902,6 +3081,17 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/ctrl_north_down_command = getNexusHotkeyDownMacroCommand("CTRL+North", "North")
 	var/north_up_command = getNexusHotkeyUpMacroCommand("North")
 	nexusSmokeAssert(findtext(ctrl_north_down_command, "KeyDown \"north\"") && findtext(ctrl_north_down_command, "nexusHotkeyDown \"CTRL+North\" \"North\"") && findtext(north_up_command, "KeyUp \"north\"") && findtext(north_up_command, "nexusHotkeyUp \"North\""), "bound arrow macros no longer preserve movement and their hotkey action together")
+	nexusSmokeAssert(normalizeNexusMacroInputKey("north") == "north" && normalizeNexusMacroInputKey("Numpad9") == "Numpad9" && !normalizeNexusMacroInputKey("NORTH") && !normalizeNexusMacroInputKey("A;world-reboot") && !normalizeNexusMacroInputKey("12345678901234567"), "movement macro input is not governed by an exact bounded allowlist")
+	var/mob/NexusSmokeTest/macro_guard_test = new
+	var/accepted_macro_events = 0
+	for(var/macro_event_index = 1, macro_event_index <= NEXUS_MACRO_EVENT_LIMIT, macro_event_index++)
+		if(macro_guard_test.acceptNexusMacroInput("A", 100)) accepted_macro_events++
+	nexusSmokeAssert(accepted_macro_events == NEXUS_MACRO_EVENT_LIMIT && !macro_guard_test.acceptNexusMacroInput("A", 100) && macro_guard_test.nexus_macro_input_blocked_until == 100 + NEXUS_MACRO_EVENT_WINDOW, "movement macro event burst limit can be bypassed")
+	nexusSmokeAssert(macro_guard_test.acceptNexusMacroInput("A", 100 + NEXUS_MACRO_EVENT_WINDOW), "movement macro rate limit does not recover after its bounded window")
+	macro_guard_test.keys_down = list("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "malicious-key")
+	macro_guard_test.sanitizeNexusHeldMacroKeys()
+	nexusSmokeAssert(macro_guard_test.keys_down.len == NEXUS_MACRO_HELD_KEY_CAP && !("Q" in macro_guard_test.keys_down) && !("malicious-key" in macro_guard_test.keys_down), "held movement macro state is unbounded or retains rejected keys")
+	del(macro_guard_test)
 	nexusSmokeAssert(getNexusHotkeyDownMacroCommand("CTRL+A", "A") == "nexusHotkeyDown \"CTRL+A\" \"A\"", "Ctrl hotkey macro arguments are not safely quoted")
 	nexusSmokeAssert(getNexusUnixHotkeyName("DOUBLE:Space") == "space + space" && getNexusUnixHotkeyName("CTRL+Numpad1") == "ctrl_l + kp_1", "Unix/XKB hotkey labels are invalid")
 	nexusSmokeAssert(normalizeNexusKeyboardLayout("FR") == "fr" && normalizeNexusKeyboardLayout("unsupported") == "us", "XKB keyboard layout normalization is invalid")
@@ -3079,6 +3269,15 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	android_mutagen_player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
 	nexusSmokeAssert(!android_mutagen_player.awakenRandomMutation(5, 5, 2, FALSE), "organic mutagen altered an Android core")
 	nexusSmokeAssert(android_mutagen_player.awakenRandomMutation(5, 5, 2, TRUE) && android_mutagen_player.character_mutations.len == 1, "self-replicating code did not awaken an Android mutation")
+	var/mob/NexusSmokeTest/angerless_mutation_player = new
+	angerless_mutation_player.Class = "Legendary Saiyan"
+	angerless_mutation_player.max_anger = 200
+	angerless_mutation_player.mutation_rarity = "Common"
+	angerless_mutation_player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
+	angerless_mutation_player.character_mutations = list("volatile_potential" = 10)
+	angerless_mutation_player.normalizeCharacterMutations()
+	nexusSmokeAssert(!angerless_mutation_player.character_mutations["volatile_potential"] && angerless_mutation_player.max_anger == 100 && !angerless_mutation_player.setCharacterMutationValue("volatile_potential", 10), "an Angerless lineage retained or accepted an Anger mutation")
+	del(angerless_mutation_player)
 	del(android_mutagen_player)
 	del(mutagen_player)
 	del(other_mutation_player)
@@ -3097,6 +3296,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/makyo_creation_profile = nexusCreationStatProfile("Makyo", "makyo_starborn")
 	var/list/makyo_creation_caps = makyo_creation_profile["caps"]
 	nexusSmokeAssert(makyo_creation_caps["endurance"] >= 10 && makyo_creation_caps["speed"] >= 10 && makyo_creation_caps["anger"] > 0, "free Makyo lineage points consumed manual allocation room or disabled Anger")
+	var/list/lssj_creation_profile = nexusCreationStatProfile("Legendary Saiyan", "legendary_berserker")
+	var/list/android_creation_profile = nexusCreationStatProfile("Android", "android_chassis")
+	var/list/lssj_creation_caps = lssj_creation_profile["caps"]
+	var/list/android_creation_caps = android_creation_profile["caps"]
+	nexusSmokeAssert(lssj_creation_caps["anger"] == 0 && android_creation_caps["anger"] == 0, "an Angerless fixed lineage exposes Anger allocation")
+	nexusSmokeAssert(!nexusCreationCanAllocateAnger("Alien", list("apex_genome" = TRUE)) && nexusCreationCanAllocateAnger("Alien", list()), "Apex Alien Anger allocation validation is inconsistent")
 	creation_player.Racial_Stats(Start_Redo_Stats = 0, modless_check = 0, stat_allocation = human_allocation)
 	nexusSmokeAssert(!creation_player.Points, "automatic character stats left unspent points")
 	nexusSmokeAssert(creation_player.Max_Points > 0, "automatic character stats did not initialize the point budget")
@@ -3236,6 +3441,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	alien_point_buy_test.applyNexusAlienOptions(list("genius", "limit_breaker", "stretchy_arms", "low_ki_resistance", "low_health_resistance"))
 	nexusSmokeAssert(alien_point_buy_test.Intelligence == 1 && (locate(/obj/Limit_Breaker) in alien_point_buy_test) && alien_point_buy_test.arm_stretch, "Alien point-buy effects were not applied")
 	nexusSmokeAssert(alien_point_buy_test.bp_loss_from_low_ki == 1 / 3 && alien_point_buy_test.bp_loss_from_low_hp == 1 / 3, "Alien low-resource resistance was not applied")
+	var/mob/NexusSmokeTest/apex_alien_anger_test = new
+	apex_alien_anger_test.Alien(interactive_options = 0)
+	apex_alien_anger_test.max_anger = 250
+	apex_alien_anger_test.anger = 200
+	apex_alien_anger_test.applyNexusAlienOptions(list("apex_genome"))
+	nexusSmokeAssert(apex_alien_anger_test.jirenAlien && !apex_alien_anger_test.canPossessAnger() && apex_alien_anger_test.max_anger == 100 && apex_alien_anger_test.anger == 100, "Apex Genome did not remove Anger")
 	var/list/frost_icon_options = nexusFrostIconOptions()
 	nexusSmokeAssert(frost_icon_options.len >= 40, "Frost Lord creation does not expose the complete form catalog")
 	var/list/frost_form_ids = list()
@@ -3360,6 +3571,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(transformation_state_test)
 	del(appearance_test)
 	del(custom_appearance_test)
+	del(apex_alien_anger_test)
 	del(alien_point_buy_test)
 	del(majin_balance_test)
 	del(bio_balance_test)
@@ -3398,6 +3610,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	player.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
 	player.Race = "Demon"
 	player.energy_save_version = 0
+	player.player_profile_name = "The Archivist"
+	player.player_profile_title = "Keeper of Safe Markup"
+	player.player_desc = "\[color=#74a7ff]\[i]A persisted profile.\[/i]\[/color]"
+	player.player_profile_portrait_direction = NORTH
+	player.player_profile_markup_version = 1
+	player.player_profile_portrait_mode = "custom"
+	player.player_profile_art_hash = sha1("nexus-profile-art-serialization-smoke")
+	player.player_profile_art_format = "jpg"
+	player.player_profile_art_bytes = 4096
+	player.player_profile_art_width = 192
+	player.player_profile_art_height = 224
+	player.player_profile_art_version = nexus_profile_art_policy_version
 	var/savefile/energy_save = new("nexus-smoke-energy.sav")
 	player.Write(energy_save)
 	var/mob/NexusSmokeTest/loaded_player = new
@@ -3409,6 +3633,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(loaded_player.energy_save_version == ENERGY_SAVE_VERSION, "energy save migration version was not recorded")
 	nexusSmokeAssert(loaded_player.character_mutations["reactive_guard"] == 7, "character mutation did not survive serialization")
 	nexusSmokeAssert(loaded_player.mutation_rarity == "Common", "character mutation rarity did not survive serialization")
+	nexusSmokeAssert(loaded_player.player_profile_name == player.player_profile_name && loaded_player.player_profile_title == player.player_profile_title && loaded_player.player_desc == player.player_desc && loaded_player.player_profile_portrait_direction == NORTH && loaded_player.player_profile_markup_version == 1 && loaded_player.player_profile_portrait_mode == "custom" && loaded_player.player_profile_art_hash == player.player_profile_art_hash && loaded_player.player_profile_art_format == "jpg" && loaded_player.player_profile_art_bytes == 4096 && loaded_player.player_profile_art_width == 192 && loaded_player.player_profile_art_height == 224 && loaded_player.player_profile_art_version == nexus_profile_art_policy_version, "structured player profile or raw custom-art metadata did not survive character serialization")
 	loaded_player.remove_energy_type("Mental Energy")
 	loaded_player.normalize_energy_types()
 	nexusSmokeAssert(!loaded_player.get_energy("Mental Energy"), "completed migration restored an intentionally removed energy")
@@ -3452,7 +3677,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(forged_science_replacements.len == 4, "Science did not replace legacy equipment with Normal Sword, Hammer, Gloves and Mask")
 	nexusSmokeAssert(shikon_science_reference && !shikon_science_reference.science && isRetiredScienceEquipment(shikon_science_reference) && !progression_node_catalog[getProgressionScienceNodeIdForType(/obj/items/Shikon_Jewel)], "Shikon Jewel remains available through Science")
 	var/datum/ProgressionNode/forge_progression_node = progression_node_catalog[getProgressionScienceNodeIdForType(/obj/Forge)]
-	nexusSmokeAssert(forge_science_reference && forge_science_reference.science_level == 3 && !forge_science_reference.science_path && forge_progression_node && forge_progression_node.branch == "Foundation", "Tenkaichi Forge is not discoverable in the Science Foundation")
+	nexusSmokeAssert(forge_science_reference && forge_science_reference.science_level == 3 && !forge_science_reference.science_path && forge_progression_node && forge_progression_node.branch == "Foundation", "Nexus Forge is not discoverable in the Science Foundation")
 	var/mob/NexusSmokeTest/science_equipment_migration_test = new
 	science_equipment_migration_test.player_tech_level = 1
 	science_equipment_migration_test.progression_tree_version = 1

@@ -1,4 +1,14 @@
 //input state for movement and hotbar macros
+#define NEXUS_MACRO_INPUT_MAX_LENGTH 16
+#define NEXUS_MACRO_HELD_KEY_CAP 16
+#define NEXUS_MACRO_EVENT_WINDOW 10
+#define NEXUS_MACRO_EVENT_LIMIT 64
+
+proc/normalizeNexusMacroInputKey(key_value)
+	if(!istext(key_value) || !length(key_value) || length(key_value) > NEXUS_MACRO_INPUT_MAX_LENGTH) return
+	if(key_value in list("north", "south", "east", "west")) return key_value
+	if(islist(nexus_hotkey_base_keys) && key_value in nexus_hotkey_base_keys) return key_value
+
 mob/var/tmp
 	north=0
 	south=0
@@ -8,6 +18,9 @@ mob/var/tmp
 	movement_loop_generation = 0
 	list/keys_down=new
 	last_direction_pressed = NORTH
+	nexus_macro_input_window_started = 0
+	nexus_macro_input_events = 0
+	nexus_macro_input_blocked_until = 0
 
 mob/var/tmp
 	last_keydown_time=0
@@ -28,6 +41,30 @@ mob/var/tmp
 
 obj/var/repeat_macro
 
+mob/proc/acceptNexusMacroInput(key_value, event_time = world.time)
+	if(!normalizeNexusMacroInputKey(key_value) || !isnum(event_time)) return FALSE
+	if(nexus_macro_input_blocked_until && event_time < nexus_macro_input_blocked_until) return FALSE
+	if(event_time < nexus_macro_input_window_started || event_time - nexus_macro_input_window_started >= NEXUS_MACRO_EVENT_WINDOW)
+		nexus_macro_input_window_started = event_time
+		nexus_macro_input_events = 0
+		nexus_macro_input_blocked_until = 0
+	if(nexus_macro_input_events >= NEXUS_MACRO_EVENT_LIMIT)
+		nexus_macro_input_blocked_until = event_time + NEXUS_MACRO_EVENT_WINDOW
+		StopMovement()
+		return FALSE
+	nexus_macro_input_events++
+	return TRUE
+
+mob/proc/sanitizeNexusHeldMacroKeys()
+	var/list/safe_keys = list()
+	if(islist(keys_down))
+		for(var/key_value in keys_down)
+			var/normalized_key = normalizeNexusMacroInputKey(key_value)
+			if(!normalized_key || normalized_key in safe_keys) continue
+			if(safe_keys.len >= NEXUS_MACRO_HELD_KEY_CAP) break
+			safe_keys += normalized_key
+	keys_down = safe_keys
+
 mob/proc/Macro_direction()
 	if(north>=world.time && east>=world.time) return NORTHEAST
 	if(north>=world.time && west>=world.time) return NORTHWEST
@@ -42,7 +79,11 @@ mob/proc/HandleKeyDown(d)
 	set waitfor=0
 	set instant=1
 	if(nexus_hotkey_editor_open) return
+	d = normalizeNexusMacroInputKey(d)
+	if(!d) return
+	sanitizeNexusHeldMacroKeys()
 	var/was_key_held = (d in keys_down)
+	if(!was_key_held && keys_down.len >= NEXUS_MACRO_HELD_KEY_CAP) return
 
 	/*if(!(d in list("north","south","east","west")))
 		if(last_keydown_time==world.time) return
@@ -118,6 +159,9 @@ mob/proc/HotbarKeyUpHandler(d)
 mob/proc/HandleKeyUp(d)
 	set waitfor=0
 	set instant=1
+	d = normalizeNexusMacroInputKey(d)
+	if(!d) return
+	sanitizeNexusHeldMacroKeys()
 	//world<<"KeyUp time: [world.time]"
 	var/active_combination = active_nexus_hotkey_combinations[d]
 

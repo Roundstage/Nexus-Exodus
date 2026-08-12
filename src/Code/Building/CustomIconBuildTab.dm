@@ -176,7 +176,11 @@ mob/proc
 			alert(usr, "This was not made by you, only the creator of it can customize it")
 			return
 		alert(usr, "Now you will set up the custom decoration, including its name and custom icon. The icon must be on your PC already.")
+		if(!usr.beginNexusLegacyUploadPrompt())
+			usr << "Finish the active file prompt before choosing a decor icon."
+			return
 		var/icon/i = input(usr, "Choose an icon from your computer for the custom objects", "Options") as icon|null
+		usr.endNexusLegacyUploadPrompt()
 		if(findtext("[i]", ".gif"))
 			alert(usr, "gifs are not allowed due to lag")
 			return

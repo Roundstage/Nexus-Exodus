@@ -3,13 +3,13 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
-Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Roleplay Tenkaichi smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Nexus smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
 
 Specialized technologies that historically shared Technology Level 5 are sorted by base resource cost and divided evenly across levels 5-8 within Engineering, Robotics, and Genetics. This preserves inexpensive entry projects, moves complex designs deeper into their specialization, and prevents a single tier from containing most of the science catalog.
 
 Forged equipment is modular. Material owns sharpness, damage type, attack-BP reinforcement, mask Ki-damage/blast-BP reinforcement, protection, endurance-BP reinforcement, and weight; named designs such as Rebellion and Bardock are cosmetic skins only. Items therefore use material-first names such as `Normal Sword`, `Copper Mask`, `Mythril Gloves`, and `Auracite Armor`. Mythril is the lightest advanced armor, Iron is deliberately heavy, and Auracite is the energy-conducting branch. Science level 1 exposes exactly the Normal Sword, Normal War Hammer, Normal Gloves, and Normal Mask instead of the generic DU `/Sword` and `/Armor`; the legacy types remain loadable for save compatibility but are no longer Science designs. Progression schema version 2 grants the four replacements to eligible existing characters and suppresses stale global or individual legacy-recipe overrides.
 
-Craft access is checked through `canAccessTechnology()`: persistent Technology XP produces levels 1-8, and level 5/7/8 makes Genetics, Engineering, or Robotics path nodes eligible for purchase. Knowledge growth and successful crafting award Technology XP, while spendable Progression XP controls the registered design unlocks; admin grants remain compatible as explicit overrides. A successful craft now awards a tier-scaled share of that tier's real XP interval, targeting roughly twelve current-tier fabrications per Technology level before Milestone modifiers; obsolete low-tier projects therefore cannot cheaply power-level late Science, while advanced projects no longer require hundreds of repetitions. Persisted blueprint grants use their type as stable identity and are rebound to the canonical technology catalog after deserialization, so repeated relogs cannot duplicate recipes and previously affected saves clean themselves on the next synchronization. The Tenkaichi Forge is a Technology Level 3 Science Foundation design, so players can discover and build the station before selecting a level-five specialization.
+Craft access is checked through `canAccessTechnology()`: persistent Technology XP produces levels 1-8, and level 5/7/8 makes Genetics, Engineering, or Robotics path nodes eligible for purchase. Knowledge growth and successful crafting award Technology XP, while spendable Progression XP controls the registered design unlocks; admin grants remain compatible as explicit overrides. A successful craft now awards a tier-scaled share of that tier's real XP interval, targeting roughly twelve current-tier fabrications per Technology level before Milestone modifiers; obsolete low-tier projects therefore cannot cheaply power-level late Science, while advanced projects no longer require hundreds of repetitions. Persisted blueprint grants use their type as stable identity and are rebound to the canonical technology catalog after deserialization, so repeated relogs cannot duplicate recipes and previously affected saves clean themselves on the next synchronization. The Nexus Forge is a Technology Level 3 Science Foundation design, so players can discover and build the station before selecting a level-five specialization.
 
 Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed modules. `obj/Module/Combat_Mathematics` adds the same lifecycle for Combat Mathematics, granting and removing its fixed buff with module activation instead of exposing it in Combat progression.
 
@@ -26,9 +26,9 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - `src/Code/Technology/ForgedEquipment.dm`
 - `src/Code/Technology/Shurikens.dm`
 - `src/Code/Technology/SmokeBomb.dm`
-- `src/Code/Technology/TenkaichiMagic.dm`
-- `src/Code/Technology/TenkaichiResearch.dm`
-- `src/Code/Technology/TenkaichiScience.dm`
+- `src/Code/Technology/NexusMagic.dm`
+- `src/Code/Technology/NexusResearch.dm`
+- `src/Code/Technology/NexusScience.dm`
 - `src/Code/Technology/Technology.dm`
 - `src/Code/Technology/ToxicWaste.dm`
 - `src/Code/Technology/Vampires.dm`
@@ -40,7 +40,7 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 
 - `gainProfessionExperience(profession, amount, reason, announce)` advances Mining or Smithing and applies Liberal Arts conversion.
 - `performMiningTick(base_yield)` applies profession level and Mining Expert multipliers, awards XP in mining caves, and rolls material drops.
-- `tryMineOre()` rolls the expanded Tenkaichi ore table according to Mining level.
+- `tryMineOre()` rolls the expanded Nexus ore table according to Mining level.
 - `/obj/items/Ore` stores stackable Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain materials.
 
 ### src/Code/Technology/ForgedEquipment.dm
@@ -54,7 +54,7 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - `getForgedKiAttackBP()` and `getForgedKiDamageMultiplier()` apply an equipped forged mask to blast BP and Ki damage while leaving physical bullets unchanged.
 - `getForgedArmorEnduranceBP()` adds the equipped material's bounded BP reinforcement to physical endurance calculation.
 - `/obj/items/Sword/Forged`, `/obj/items/Gloves/Forged`, `/obj/items/Mask/Forged`, and `/obj/items/Armor/Forged` recalculate all combat values from material while retaining a separately persisted cosmetic skin. Their `Customize` action changes only that skin, so later material upgrades preserve the selection.
-- `Test Tenkaichi Smithing` and `Give Tenkaichi Equipment` are Admin Level 3 verbs for end-to-end testing of every ported asset and tier.
+- `Test Nexus Smithing` and `Give Nexus Equipment` are Admin Level 3 verbs for end-to-end testing of every ported asset and tier.
 
 ### src/Code/Technology/BodySwap.dm
 
@@ -2324,9 +2324,9 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, applies yield talents, grants ore/profession XP, and depletes the node.
 - `mob/Admin4/verb/seedWorldOreDeposits()` exposes non-destructive distribution testing.
 
-### Tenkaichi training technology and alchemy
+### Nexus training technology and alchemy
 
-- `obj/Peebag/Tier2` through `Tier6` are registered Science designs with increasing training multipliers and original RPT presentation.
+- `obj/Peebag/Tier2` through `Tier6` are registered Science designs with increasing training multipliers and original integrated presentation.
 - `obj/Peebag/MagicGoo` through `Tier4` are Alchemy constructs that also grant bounded Magic XP and Arcane Essence when struck.
 - `gainArcaneEssence(amount, reason, announce)` owns the persistent crafting currency produced by magic meditation and Magic Goo practice.
 - `initializeArcaneFormulaCatalog()` registers all 42 active arcane craft adaptations.
@@ -2334,9 +2334,9 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - Shikon Jewel is retired from Science and registered as a Magic level 9 Artifacts ritual costing 750 Arcane Essence, three Auracite ores, and a tier-two magic circle. Legacy character-owned Shikon Science research migrates to the Magic node and stale personal Science entries are removed.
 - `performArcaneTransmutation()` owns resource-to-essence and ore-to-ore equivalent exchange.
 - `getPhilosophersStoneRegenerationBonus()` contributes the carried stone's `+0.5` effective Regeneration without mutating the character's base stat.
-- `obj/ArcaneSpell` contains the twelve RPT spell adaptations and routes damage, healing, speed, cooldown, projectiles, sound, and VFX through Nexus systems.
+- `obj/ArcaneSpell` contains the twelve integrated spell adaptations and routes damage, healing, speed, cooldown, projectiles, sound, and VFX through Nexus systems.
 - Arcane spells use `FoozleMagic64.dmi` states as their actual skill icons and cast/impact actors: fire for Fireball, water/geyser for frost and rejuvenation, wind for lightning/acceleration, earth/rocks for prison and defense, and portal effects for spatial or gravity magic. Projectile impacts select semantic `ability_release`, `electric`, or `explosions` sounds from the Shonen library.
-- `FrostNova.applyNova()` resolves every valid mob in its two-tile area, including NPCs, through the shared Tenkaichi target and damage contracts and applies a two-second forced stun.
+- `FrostNova.applyNova()` resolves every valid mob in its two-tile area, including NPCs, through the shared Nexus target and damage contracts and applies a two-second forced stun.
 - `EarthPrison.createPerimeter()` builds the original five-tile-radius square by coordinates instead of LOS-dependent `range()` traversal; every destructible wall is temporary and the complete unobstructed perimeter contains 40 walls.
 - `EmpoweredDefenses` grants the caster and explicitly teamed allies 50% effective Endurance and Resistance for 30 seconds. The effect is calculated without mutating save-backed base stats, and the Character sheet marks both effective values as empowered.
 - `Enchant` and the Upgrade Kit recalculate masterwork forged statistics immediately. Enchanted weapons, armor, gloves, and masks use a `Masterwork` name prefix and state their exact quality bonus in their description so the permanent result is observable.

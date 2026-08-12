@@ -1,10 +1,10 @@
 obj/Attacks/RoleplayBeam
-	name = "Roleplay Tenkaichi Beam"
-	desc = "A Roleplay Tenkaichi beam adapted to the Nexus beam engine."
+	name = "Nexus Beam"
+	desc = "A Nexus beam adapted to the Nexus beam engine."
 	hotbar_type = "Beam"
 	can_hotbar = 1
 	Wave = 1
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Beams/RTCorkscrewBeam.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Beams/RTCorkscrewBeam.dmi'
 	Drain = 30
 	WaveMult = 1.4
 	damage_factor = 7

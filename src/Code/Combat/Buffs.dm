@@ -20,6 +20,8 @@ Make more transformation graphics modules
 
 Make able to add duplicate trans gfx modules. like 2 kinds of shockwaves
 */
+#define NEXUS_CUSTOM_BUFF_POINT_CAP 27
+
 mob/var
 	list
 		known_buff_attributes=new
@@ -70,6 +72,7 @@ obj/Buff
 	Duplicates_Allowed=1
 
 	New()
+		if(!preset_buff) normalizeNexusCustomBuffStats()
 		spawn if(src&&name!=initial(name))
 			new/obj/Buff/verb/Buff(src,name)
 			verbs-=/obj/Buff/verb/Buff
@@ -227,7 +230,12 @@ obj/Buff
 				if("Reset buff aura") buff_aura=null
 
 				if("Choose buff icon")
-					var/icon/I=input("Choose the icon that you buff will change you to") as icon|null
+					if(!usr.beginNexusLegacyUploadPrompt())
+						usr << "Finish the active file prompt before choosing a buff icon."
+						being_edited = 0
+						return
+					var/icon/I=input(usr, "Choose the icon that you buff will change you to") as icon|null
+					usr.endNexusLegacyUploadPrompt()
 
 					if(findtext("[I]",".jpg") || findtext("[I]",".jpeg"))
 						alert("jpegs are not allowed until BYOND fixes the crashing bug that occurs from jpegs now in BYOND v510")
@@ -236,15 +244,30 @@ obj/Buff
 					if(!IconTooBig(I)) buff_icon=I
 
 				if("Choose buff hair")
-					var/icon/I=input("Choose the hair icon that your buff will change you to") as icon|null
+					if(!usr.beginNexusLegacyUploadPrompt())
+						usr << "Finish the active file prompt before choosing buff hair."
+						being_edited = 0
+						return
+					var/icon/I=input(usr, "Choose the hair icon that your buff will change you to") as icon|null
+					usr.endNexusLegacyUploadPrompt()
 					if(!IconTooBig(I)) buff_hair=I
 
 				if("Choose buff aura")
-					var/icon/I=input("Choose the aura your buff will have when powering up") as icon|null
+					if(!usr.beginNexusLegacyUploadPrompt())
+						usr << "Finish the active file prompt before choosing a buff aura."
+						being_edited = 0
+						return
+					var/icon/I=input(usr, "Choose the aura your buff will have when powering up") as icon|null
+					usr.endNexusLegacyUploadPrompt()
 					if(!IconTooBig(I)) buff_aura=I
 
 				if("Add buff overlay")
-					var/icon/I=input("Choose the overlay the buff will add to you") as icon|null
+					if(!usr.beginNexusLegacyUploadPrompt())
+						usr << "Finish the active file prompt before choosing a buff overlay."
+						being_edited = 0
+						return
+					var/icon/I=input(usr, "Choose the overlay the buff will add to you") as icon|null
+					usr.endNexusLegacyUploadPrompt()
 
 					if(findtext("[I]",".jpg") || findtext("[I]",".jpeg"))
 						alert("jpegs are not allowed until BYOND fixes the crashing bug that occurs from jpegs now in BYOND v510")
@@ -405,7 +428,7 @@ mob/proc
 
 obj/Buff/Focus
 	name = "Focus"
-	desc = "A sustained Tenkaichi focus: moderate power, speed, regeneration, and recovery at a continuous energy cost."
+	desc = "A sustained Nexus focus: moderate power, speed, regeneration, and recovery at a continuous energy cost."
 	editable = FALSE
 	preset_buff = TRUE
 	Duplicates_Allowed = FALSE
@@ -445,7 +468,7 @@ mob/proc/playPresetBuffVfx(obj/Buff/buff, activating = TRUE)
 	if(loc && buff.preset_vfx_icon)
 		var/obj/Effect/ProgressionBuffBurst/burst = new(base_loc())
 		burst.configure(buff.preset_vfx_icon, buff.preset_vfx_color, activating)
-	if(activating) showTenkaichiTechniqueAnnouncement("[buff]", buff.preset_vfx_color, null, 30)
+	if(activating) showNexusTechniqueAnnouncement("[buff]", buff.preset_vfx_color, null, 30)
 
 obj/Buff/Preset
 	editable = FALSE
@@ -501,7 +524,7 @@ obj/Buff/Preset
 		buff_str = 1.12
 		buff_off = 1.22
 		buff_def = 0.9
-		preset_vfx_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+		preset_vfx_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 		preset_vfx_color = "#ff6d55"
 		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Mediumpunch.ogg'
 
@@ -647,12 +670,12 @@ obj/Buff/Ultimate
 		buff_spd = 1.15
 		buff_off = 1.2
 		buff_def = 1.2
-		preset_vfx_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTSlashArc.dmi'
+		preset_vfx_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSlashArc.dmi'
 		preset_vfx_color = "#d8f3ff"
 		preset_vfx_sound = 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg'
 
-mob/Admin4/verb/testTenkaichiBuffs(mob/character in players)
-	set name = "Test Tenkaichi Buffs"
+mob/Admin4/verb/testNexusBuffs(mob/character in players)
+	set name = "Test Nexus Buffs"
 	set category = "Admin"
 	var/list/buff_types = list(
 		/obj/Buff/Focus,
@@ -676,55 +699,90 @@ mob/Admin4/verb/testTenkaichiBuffs(mob/character in players)
 		/obj/Buff/Ultimate/Bushido)
 	for(var/buff_type in buff_types)
 		if(!(locate(buff_type) in character)) character.contents += new buff_type(character)
-	src << "[character] received every imported Tenkaichi preset and Ultimate Buff for testing."
+	src << "[character] received every integrated Nexus preset and Ultimate Buff for testing."
+
+obj/Buff/proc/normalizeNexusCustomBuffStats()
+	if(preset_buff) return
+	var/bp_maximum = 1
+	if(nexusIsFiniteNumber(max_buff_bp)) bp_maximum = Clamp(max_buff_bp, 0.7, 10)
+	buff_bp = nexusIsFiniteNumber(buff_bp) ? Clamp(round(buff_bp * 10) / 10, 0.7, bp_maximum) : 1
+	buff_ki = nexusIsFiniteNumber(buff_ki) ? Clamp(round(buff_ki * 10) / 10, 0.7, 1.5) : 1
+	buff_str = nexusIsFiniteNumber(buff_str) ? Clamp(round(buff_str * 10) / 10, 0.7, 2) : 1
+	buff_dur = nexusIsFiniteNumber(buff_dur) ? Clamp(round(buff_dur * 10) / 10, 0.7, 2) : 1
+	buff_spd = nexusIsFiniteNumber(buff_spd) ? Clamp(round(buff_spd * 10) / 10, 0.7, 2) : 1
+	buff_for = nexusIsFiniteNumber(buff_for) ? Clamp(round(buff_for * 10) / 10, 0.7, 2) : 1
+	buff_res = nexusIsFiniteNumber(buff_res) ? Clamp(round(buff_res * 10) / 10, 0.7, 2) : 1
+	buff_off = nexusIsFiniteNumber(buff_off) ? Clamp(round(buff_off * 10) / 10, 0.7, 2) : 1
+	buff_def = nexusIsFiniteNumber(buff_def) ? Clamp(round(buff_def * 10) / 10, 0.7, 2) : 1
+	buff_reg = nexusIsFiniteNumber(buff_reg) ? Clamp(round(buff_reg * 10) / 10, 1, 1.3) : 1
+	buff_rec = nexusIsFiniteNumber(buff_rec) ? Clamp(round(buff_rec * 10) / 10, 1, 1.3) : 1
+	points = nexusIsFiniteNumber(points) ? Clamp(round(points), 0, NEXUS_CUSTOM_BUFF_POINT_CAP) : 0
+
+obj/Buff/proc/adjustNexusCustomBuffStat(buff_stat, direction)
+	if(preset_buff || !editable || !(direction in list(-1, 1))) return FALSE
+	var/list/allowed_stats = list("buff_bp", "buff_ki", "buff_str", "buff_dur", "buff_spd", "buff_for", "buff_res", "buff_off", "buff_def", "buff_reg", "buff_rec")
+	if(!(buff_stat in allowed_stats)) return FALSE
+	normalizeNexusCustomBuffStats()
+
+	var/current_value
+	var/stat_minimum = 0.7
+	var/stat_maximum = 2
+	switch(buff_stat)
+		if("buff_bp")
+			current_value = buff_bp
+			stat_maximum = nexusIsFiniteNumber(max_buff_bp) ? Clamp(max_buff_bp, 0.7, 10) : 1
+		if("buff_ki")
+			current_value = buff_ki
+			stat_maximum = 1.5
+		if("buff_str") current_value = buff_str
+		if("buff_dur") current_value = buff_dur
+		if("buff_spd") current_value = buff_spd
+		if("buff_for") current_value = buff_for
+		if("buff_res") current_value = buff_res
+		if("buff_off") current_value = buff_off
+		if("buff_def") current_value = buff_def
+		if("buff_reg")
+			current_value = buff_reg
+			stat_minimum = 1
+			stat_maximum = 1.3
+		if("buff_rec")
+			current_value = buff_rec
+			stat_minimum = 1
+			stat_maximum = 1.3
+
+	var/new_value = (round(current_value * 10) + direction) / 10
+	var/new_points = points - direction
+	if(new_value < stat_minimum || new_value > stat_maximum) return FALSE
+	if(new_points < 0 || new_points > NEXUS_CUSTOM_BUFF_POINT_CAP) return FALSE
+
+	switch(buff_stat)
+		if("buff_bp") buff_bp = new_value
+		if("buff_ki") buff_ki = new_value
+		if("buff_str") buff_str = new_value
+		if("buff_dur") buff_dur = new_value
+		if("buff_spd") buff_spd = new_value
+		if("buff_for") buff_for = new_value
+		if("buff_res") buff_res = new_value
+		if("buff_off") buff_off = new_value
+		if("buff_def") buff_def = new_value
+		if("buff_reg") buff_reg = new_value
+		if("buff_rec") buff_rec = new_value
+	points = new_points
+	return TRUE
 
 mob/verb/buff_point(posneg as text, buff_stat as text) //posneg = "-1" | "1". verb called thru skin
 	set name = ".buff_point"
 	set hidden = 1
 
+	if(usr != src || !client || !playerCharacter) return
 	var/obj/Buff/B
 	for(B in src) if(B.being_edited) break
 	if(!B)
 		buff_done()
 		return
-	posneg = text2num(posneg)
-
-	//security
 	if(!(winget(src,"buffstats","is-visible") == "true")) return
-	if(!(posneg in list(-1, 1))) return
-	if(posneg >= 1 && B.points < posneg) return
-
-	var/per_point = posneg * 0.1
-	var/stat_min = 0.7
-
-	switch(buff_stat)
-		if("buff_bp")
-			if(B.vars[buff_stat] >= max_buff_bp && posneg == 1) return
-		if("buff_ki")
-			if(B.vars[buff_stat] >= 1.5 && posneg==1) return
-		if("buff_str")
-			if(B.vars[buff_stat] >= 2&&posneg==1) return
-		if("buff_dur")
-		if("buff_spd")
-			if(B.vars[buff_stat] >= 2 && posneg==1) return
-		if("buff_for")
-			if(B.vars[buff_stat] >= 2 && posneg==1) return
-		if("buff_res")
-		if("buff_off")
-		if("buff_def")
-		if("buff_reg")
-			if(B.vars[buff_stat] >= 1.3 && posneg == 1) return
-			stat_min = 1
-		if("buff_rec")
-			if(B.vars[buff_stat] >= 1.3 && posneg == 1) return
-			stat_min = 1
-
-	if(posneg < 0 && B.vars[buff_stat] <= stat_min) return //stat can not go any lower
-
-	B.vars[buff_stat] += per_point
-	B.points -= posneg
-
-	Refresh_Buff_Window(B)
+	posneg = text2num(posneg)
+	if(B.adjustNexusCustomBuffStat("[buff_stat]", posneg)) Refresh_Buff_Window(B)
 
 mob/verb/buff_done() //verb called thru skin
 	set name=".buff_done"
@@ -817,7 +875,11 @@ mob/proc
 					var/icon/I
 					switch(alert(src,"Custom icon?","Options","Default","Custom"))
 						if("Custom")
+							if(!beginNexusLegacyUploadPrompt())
+								src << "Finish the active file prompt before choosing a shockwave icon."
+								return L
 							I=input(src,"Choose an icon") as icon|null
+							endNexusLegacyUploadPrompt()
 							if(IconTooBig(I)) I=null
 					var/T=input(src,"Enter the delay between this effect and the next in seconds. 0.1-10","Options"\
 					,0.5) as num
@@ -882,7 +944,11 @@ mob/proc
 					var/icon/I
 					switch(alert(src,"Custom icon?","Options","Default","Custom"))
 						if("Custom")
+							if(!beginNexusLegacyUploadPrompt())
+								src << "Finish the active file prompt before choosing a lightning icon."
+								return L
 							I=input(src,"Choose an icon") as icon|null
+							endNexusLegacyUploadPrompt()
 							if(IconTooBig(I)) I=null
 					var/T=input(src,"Enter the delay between this effect and the next in seconds. 0.1-10","Options"\
 					,0.5) as num

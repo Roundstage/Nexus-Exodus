@@ -1,14 +1,14 @@
-obj/Attacks/TenkaichiSpecialStyle
-	name = "Tenkaichi Special Style"
-	desc = "A Roleplay Tenkaichi attack whose behavior is not represented by a generic blast."
+obj/Attacks/NexusSpecialStyle
+	name = "Nexus Special Style"
+	desc = "A Nexus attack whose behavior is not represented by a generic blast."
 	can_hotbar = 1
 	hotbar_type = "Blast"
 	repeat_macro = 0
 
-obj/Attacks/TenkaichiSpecialStyle/WallOfFlame
+obj/Attacks/NexusSpecialStyle/WallOfFlame
 	name = "Wall of Flame"
 	desc = "Create a persistent five-tile wall of fire that damages and briefly stuns enemies who enter it."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTWallOfFlame.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTWallOfFlame.dmi'
 	var
 		energy_cost = 30
 		cooldown_ticks = 160
@@ -41,7 +41,7 @@ obj/Attacks/TenkaichiSpecialStyle/WallOfFlame
 		user.Ki -= drain
 		next_use = world.time + cooldown_ticks
 		flick("Blast", user)
-		user.showTenkaichiTechniqueAnnouncement(name, "#ff7043", 'FogoNaMao.mp3', 45)
+		user.showNexusTechniqueAnnouncement(name, "#ff7043", 'FogoNaMao.mp3', 45)
 		var/list/field_turfs = list(front)
 		var/left_direction = turn(user.dir, -90)
 		var/right_direction = turn(user.dir, 90)
@@ -53,12 +53,12 @@ obj/Attacks/TenkaichiSpecialStyle/WallOfFlame
 			if(left_turf && !left_turf.density) field_turfs += left_turf
 			if(right_turf && !right_turf.density) field_turfs += right_turf
 		for(var/turf/field_turf in field_turfs)
-			new /obj/Effect/TenkaichiFlameField(field_turf, user, field_duration)
+			new /obj/Effect/NexusFlameField(field_turf, user, field_duration)
 		player_view(15, user) << "[user] raises a persistent Wall of Flame!"
 		return TRUE
 
-obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
-	desc = "A charged Roleplay Tenkaichi projectile adapted to Nexus Exodus combat scaling."
+obj/Attacks/NexusSpecialStyle/ChargedProjectile
+	desc = "A charged Nexus projectile adapted to Nexus Exodus combat scaling."
 	var
 		energy_cost = 150
 		cooldown_ticks = 120
@@ -70,7 +70,7 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		requires_weapon = FALSE
 		weapon_projectile = FALSE
 		cast_text_color = "#ffd45c"
-		impact_effect_icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTImpactHeavy.dmi'
+		impact_effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
 		impact_effect_state
 		impact_sound_volume = 55
 		tmp/next_use = 0
@@ -97,11 +97,11 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		user.attacking = 3
 		charging = TRUE
 		if(weapon_projectile)
-			user.showTenkaichiTechniqueAnnouncement("Preparing [name]", cast_text_color, pick(nexus_sword_swing_light_sounds), 26)
+			user.showNexusTechniqueAnnouncement("Preparing [name]", cast_text_color, pick(nexus_sword_swing_light_sounds), 26)
 			user.pulseNexusGlow(cast_text_color, 3.2, 190, max(8, charge_ticks))
 		else
 			user.overlays += user.BlastCharge
-			user.showTenkaichiTechniqueAnnouncement("Charging [name]", cast_text_color, 'BasicbeamCharge.ogg', 42)
+			user.showNexusTechniqueAnnouncement("Charging [name]", cast_text_color, 'BasicbeamCharge.ogg', 42)
 			user.pulseNexusGlow(cast_text_color, 4.5, 225, max(8, charge_ticks))
 		sleep(charge_ticks)
 		if(user && !weapon_projectile) user.overlays -= user.BlastCharge
@@ -140,10 +140,10 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile
 		projectile.startKiProjectileWalk(user.dir)
 		return TRUE
 
-obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova
+obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova
 	name = "Dragon Nova"
-	desc = "A giant charged energy sphere adapted from Roleplay Tenkaichi. It is slow, explosive, and intended as a Force finisher."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTDragonNova.dmi'
+	desc = "A giant charged energy sphere adapted from Nexus. It is slow, explosive, and intended as a Force finisher."
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTDragonNova.dmi'
 	energy_cost = 200
 	cooldown_ticks = 140
 	charge_ticks = 24
@@ -158,10 +158,10 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/DragonNova
 		set category = "Skills"
 		fireChargedProjectile(usr)
 
-obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak
+obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak
 	name = "Sky Break"
 	desc = "A weapon swing that breaks the sound barrier and launches a Strength-scaled cutting blast."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTSkyBreak.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTSkyBreak.dmi'
 	energy_cost = 180
 	cooldown_ticks = 130
 	charge_ticks = 16
@@ -181,10 +181,10 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/SkyBreak
 		set category = "Skills"
 		fireChargedProjectile(usr)
 
-obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash
+obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash
 	name = "Echoing Slash"
 	desc = "A fast weapon swing that launches a physical cutting wave with sword audiovisuals and no blast explosion."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTEchoingSlash.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTEchoingSlash.dmi'
 	energy_cost = 120
 	cooldown_ticks = 90
 	charge_ticks = 8
@@ -204,9 +204,9 @@ obj/Attacks/TenkaichiSpecialStyle/ChargedProjectile/EchoingSlash
 		set category = "Skills"
 		fireChargedProjectile(usr)
 
-obj/Effect/TenkaichiFlameField
+obj/Effect/NexusFlameField
 	name = "Wall of Flame"
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTWallOfFlame.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTWallOfFlame.dmi'
 	density = 0
 	mouse_opacity = 0
 	Grabbable = 0
@@ -237,7 +237,7 @@ obj/Effect/TenkaichiFlameField
 		set waitfor = 0
 		while(src && owner && world.time < expires_at)
 			for(var/mob/target in loc)
-				if(!owner.canHitTenkaichiTechniqueTarget(target)) continue
+				if(!owner.canHitNexusTechniqueTarget(target)) continue
 				if(next_pulse_by_target[target] > world.time) continue
 				if(pulses_by_target[target] >= 6) continue
 				next_pulse_by_target[target] = world.time + 10
@@ -246,7 +246,7 @@ obj/Effect/TenkaichiFlameField
 					target.text_overlay("<center><b><font color=#ff7043>BURN</font></b></center>", xx = -16, yy = 40, timer = 8)
 					player_view(10, target) << sound('Kiplosion.ogg', volume = 28)
 				var/damage = owner.getKiCombatDamage(target, 0.45)
-				owner.applyTenkaichiTechniqueDamage(target, damage, "Wall of Flame")
+				owner.applyNexusTechniqueDamage(target, damage, "Wall of Flame")
 				if(target)
 					target.ApplyStun(time = 4, stun_power = 1.5)
 					target.BurnStack++
@@ -256,12 +256,12 @@ obj/Effect/TenkaichiFlameField
 			sleep(2)
 		if(src) del(src)
 
-// Restored RPT techniques live beside the other special styles so Dream Maker project saves
+// Restored integrated techniques live beside the other special styles so Dream Maker project saves
 // cannot orphan their type definitions by dropping a newly-added include from DU.dme.
-obj/Attacks/TenkaichiAreaTechnique
+obj/Attacks/NexusAreaTechnique
 	parent_type = /obj/Attacks/Shockwave
-	name = "Tenkaichi Area Technique"
-	desc = "A specialized targetless shockwave adapted from Roleplay Tenkaichi."
+	name = "Nexus Area Technique"
+	desc = "A specialized targetless shockwave adapted from Nexus."
 	can_hotbar = 1
 	hotbar_type = "Blast"
 	repeat_macro = 0
@@ -321,26 +321,26 @@ obj/Attacks/TenkaichiAreaTechnique
 		user.Ki -= drain
 		next_use = world.time + cooldown_ticks
 		user.attacking = 3
-		user.showTenkaichiTechniqueAnnouncement(name, cast_text_color, getAreaCastSound(), 55)
+		user.showNexusTechniqueAnnouncement(name, cast_text_color, getAreaCastSound(), 55)
 		flick(physical_damage ? "Attack" : "Blast", user)
 		showNexusOpenCombatEffect(user, "smoke_shockwaves_128", shockwave_effect_state, radius / 2, cast_text_color, 225, BLEND_ADD, 18, 0.25)
 		interceptAreaBlasts(user)
 		var/hit_count = 0
 		for(var/mob/target in oview(radius, user))
 			if(hit_count >= target_limit) break
-			if(!user.canHitTenkaichiTechniqueTarget(target)) continue
+			if(!user.canHitNexusTechniqueTarget(target)) continue
 			if(ground_only && target.Flying) continue
 			if(target.AOE_auto_dodge(user, user.loc)) continue
 			var/distance_falloff = max(0.55, 1 - getdist(user, target) * 0.08)
 			var/damage = physical_damage ? user.getPhysicalCombatDamage(target, area_damage_factor * distance_falloff) : user.getKiCombatDamage(target, area_damage_factor * distance_falloff)
-			if(!user.applyTenkaichiTechniqueDamage(target, damage, name)) continue
+			if(!user.applyNexusTechniqueDamage(target, damage, name)) continue
 			hit_count++
-			if(target && pull_distance > 0) target.pullTowardTenkaichiSource(user, pull_distance)
+			if(target && pull_distance > 0) target.pullTowardNexusSource(user, pull_distance)
 			else if(target && knockback_distance > 0) target.Knockback(user, knockback_distance, bypass_immunity = 1)
 		user.attacking = 0
 		return TRUE
 
-mob/proc/pullTowardTenkaichiSource(mob/source, distance = 1)
+mob/proc/pullTowardNexusSource(mob/source, distance = 1)
 	set waitfor = 0
 	if(!source || source == src || source.z != z) return FALSE
 	var/pull_steps = max(1, round(distance))
@@ -350,10 +350,10 @@ mob/proc/pullTowardTenkaichiSource(mob/source, distance = 1)
 	AlterInputDisabled(-1)
 	return TRUE
 
-obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave
+obj/Attacks/NexusAreaTechnique/SuperExplosiveWave
 	name = "Super Explosive Wave"
 	desc = "Detonate a defensive shockwave that destroys hostile blasts and repels every valid enemy within four tiles."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTMegaBurst.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTMegaBurst.dmi'
 	hotbar_type = "Defensive"
 	energy_cost = 80
 	cooldown_ticks = 140
@@ -371,10 +371,10 @@ obj/Attacks/TenkaichiAreaTechnique/SuperExplosiveWave
 		set category = "Skills"
 		useAreaTechnique(usr)
 
-obj/Attacks/TenkaichiAreaTechnique/Earthquake
+obj/Attacks/NexusAreaTechnique/Earthquake
 	name = "Earthquake"
 	desc = "Collapse the ground inward, damaging and pulling nearby grounded enemies toward you. Flying targets are unaffected."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Effects/RTShockwave.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTShockwave.dmi'
 	energy_cost = 60
 	cooldown_ticks = 160
 	radius = 5
@@ -393,10 +393,10 @@ obj/Attacks/TenkaichiAreaTechnique/Earthquake
 		set category = "Skills"
 		useAreaTechnique(usr)
 
-obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze
+obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze
 	name = "Super Ghost Kamikaze Attack"
 	desc = "Create three homing ghosts that pursue one selected target. Their shared damage budget prevents the volley from multiplying without limit."
-	icon = 'src/Icons/RoleplayTenkaichi/Attacks/Blasts/RTHomingBlast.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTHomingBlast.dmi'
 	var
 		energy_cost = 100
 		cooldown_ticks = 160
@@ -420,7 +420,7 @@ obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze
 			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
 			return FALSE
 		var/mob/target = user.getSelectedTarget(max_dist = 20)
-		if(!user.canHitTenkaichiTechniqueTarget(target))
+		if(!user.canHitNexusTechniqueTarget(target))
 			user << "Select a valid target within 20 tiles."
 			return FALSE
 		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
@@ -430,11 +430,11 @@ obj/Attacks/TenkaichiSpecialStyle/SuperGhostKamikaze
 		user.Ki -= drain
 		next_use = world.time + cooldown_ticks
 		user.attacking = 3
-		user.showTenkaichiTechniqueAnnouncement(name, "#f4f0b0", 'BasicbeamCharge.ogg', 42)
+		user.showNexusTechniqueAnnouncement(name, "#f4f0b0", 'BasicbeamCharge.ogg', 42)
 		var/datum/CombatDamageBudget/shared_budget = new(ghost_damage_factor * ghost_count)
 		for(var/ghost_index = 1, ghost_index <= ghost_count, ghost_index++)
 			if(ghost_index > 1) sleep(3)
-			if(!user || !target || !user.canHitTenkaichiTechniqueTarget(target)) break
+			if(!user || !target || !user.canHitNexusTechniqueTarget(target)) break
 			var/obj/Blast/ghost = get_cached_blast()
 			ghost.setStats(user, Percent = ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = shared_budget)
 			ghost.from_attack = src

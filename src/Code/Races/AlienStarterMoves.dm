@@ -13,7 +13,6 @@ var
 	jirenAlienPowerupMult = 0.75
 	jirenAlienKBresist = 0.8 //knockback resistance
 	jirenTakeDmgMult = 1
-	jirenAlienCanAnger = 1
 	jirenStunResist = 1.25
 
 mob/proc/Alien_Stuff()
@@ -82,11 +81,11 @@ mob/proc/Alien_Stuff()
 					Alien_points-=L[choice]
 				if("Gyren Alien (50 AP)")
 					switch(alert(src, "This attribute concentrates your power into a durable control-focused form. Your combat BP is adjusted by [jirenAlienBPMult]x and you get [1 / jirenAlienKBresist]x resistance to knockbacks. \
-					Your ability to use power up goes down [(1 - jirenAlienPowerupMult) * 100]%, \
-					and anger can restore one Health bar when you are pushed to the brink.", "Options", "Yes", "No"))
+					Your ability to use power up goes down [(1 - jirenAlienPowerupMult) * 100]%, and this form can not gain anger.", "Options", "Yes", "No"))
 						if("No")
 							goto retry
 					jirenAlien = 1
+					disableAnger()
 					Alien_points-=L[choice]
 				if("Giant Form (15 AP)")
 					switch(alert(src, "Use this to transform into a giant and have more power but some stat disadvantages", "Options", "Yes", "No"))

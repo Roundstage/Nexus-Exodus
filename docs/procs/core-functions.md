@@ -5,7 +5,7 @@ Core world, persistence, combat-recovery, and utility functions.
 
 `KoSystem.dm` now coordinates Casual/Lethal recovery through RP Mode and Willpower. `combat_ko_total` remains only as a save-compatibility field and is normalized to zero; it is no longer a three-KO health resource.
 
-Player persistence supports three independent character slots. Character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; the old key-named character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
+Player persistence supports three independent character slots. Live character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; an explicitly isolated playtest runtime uses `data/Playtest/Save` and `data/Playtest/Feats`. Every newly written save carries its immutable runtime environment, and cross-environment loads fail closed. The old key-named live character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
 
 NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds default all three to off. `ServerFeatureDefaults.dm` also performs a one-time migration for pre-versioned `Misc` settings, then preserves later administrator choices. Disabled NPC worlds neither load nor overwrite the persisted `data/NPCs` roster.
 
@@ -49,11 +49,18 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 
 ### src/Code/CoreFunctions/Saving.dm
 
-- `getNexusCharacterSavePathForKey()` and `getNexusFeatSavePathForKey()` produce clamped slot-specific paths for slots 1 through 3.
-- `ensureNexusCharacterSlots()` performs idempotent legacy migration and creates the per-account migration marker.
+- `getNexusCharacterSaveRoot()`, `getNexusFeatSaveRoot()`, `getNexusCharacterSavePathForKey()`, and `getNexusFeatSavePathForKey()` produce environment-scoped, clamped slot paths for slots 1 through 3.
+- `isNexusSaveEnvironmentCompatible()` and `isNexusCharacterSavePathEnvironmentCompatible()` require playtest saves to carry the exact playtest marker and reject cross-environment loading. Markerless legacy saves remain live-only.
+- `ensureNexusCharacterSlots()` performs idempotent live-only legacy migration and creates the per-account migration marker without copying legacy characters or Feats into playtest storage.
 - `getNexusCharacterSlotInfo()` reads lightweight selector metadata without loading a character into the live mob.
 - `deleteNexusCharacterSlot()` removes only the selected character and its feat progression.
-- `save()`, `load()`, `hasSave()`, and `cantRemake()` operate on `active_character_slot`; normal mob serialization records selector name, race, and last-used metadata.
+- `save()`, `load()`, `hasSave()`, and `cantRemake()` operate on `active_character_slot`; normal mob serialization records the immutable runtime environment plus selector name, race, and last-used metadata.
+
+### Security boundaries
+
+- `world/IsBanned()` preserves the native Dream Daemon result unchanged; a native ban is never converted into an allowed login.
+- `parseNexusHostKeyFile()` accepts exactly one non-empty configured account after `ckey()` normalization. `Admin_Check()` compares that complete ckey for equality, so substrings and multi-key files cannot grant host-level administration.
+- Legacy atom `action=edit` hrefs no longer mutate `vars[]`; Admin Level 3+ is routed to the owner-bound structured inspector, which revalidates the target and selected variable.
 
 ### src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm
 
@@ -4585,9 +4592,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/proc/AngerBeyondRaceCap
 - Signature: `AngerBeyondRaceCap()`
 - Inputs: None
-- Purpose: Handle anger beyond race cap.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Enforce the race-specific Anger cap and reject Anger entirely for Android, Legendary Saiyan, and Jiren/Apex Alien.
+- Returns: boolean flag.
+- Side effects: none expected.
 
 #### mob/verb/Skill_Points_Done
 - Signature: `mob/verb/Skill_Points_Done()`
@@ -4676,9 +4683,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/proc/Raise_Anger
 - Signature: `mob/proc/Raise_Anger(Amount=1)`
 - Inputs: Amount=1
-- Purpose: Handle raise anger.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Raise maximum Anger for an eligible race.
+- Returns: false when the target archetype cannot possess Anger; otherwise none (implicit).
+- Side effects: increments `max_anger`, or normalizes an ineligible target to the neutral baseline.
 
 #### mob/proc/RaceBonusStatPoints
 - Signature: `mob/proc/RaceBonusStatPoints()`

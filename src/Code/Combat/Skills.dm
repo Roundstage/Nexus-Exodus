@@ -2842,6 +2842,10 @@ obj/Imitation
 	var/old_text_color
 	var/old_key
 	var/imitatordesc
+	var/imitator_profile_name
+	var/imitator_profile_title
+	var/imitator_profile_portrait_direction
+	var/imitator_profile_markup_version
 
 	Skill=1
 
@@ -2868,6 +2872,10 @@ obj/Imitation
 				imitating=1
 				imitatorname=usr.name
 				imitatordesc=usr.player_desc
+				imitator_profile_name=usr.player_profile_name
+				imitator_profile_title=usr.player_profile_title
+				imitator_profile_portrait_direction=usr.player_profile_portrait_direction
+				imitator_profile_markup_version=usr.player_profile_markup_version
 				imitatoroverlays=usr.overlays
 				imitatoricon=usr.icon
 				old_key=usr.displaykey
@@ -2880,6 +2888,11 @@ obj/Imitation
 				usr.name				=	A.name
 				usr.TextColor			=	A.TextColor
 				usr.player_desc 		= 	A.player_desc
+				usr.player_profile_name = A.player_profile_name
+				usr.player_profile_title = A.player_profile_title
+				usr.player_profile_portrait_direction = A.player_profile_portrait_direction
+				usr.player_profile_markup_version = A.player_profile_markup_version
+				usr.nexus_profile_force_sprite = TRUE
 				break
 		else
 			imitating=0
@@ -2888,6 +2901,11 @@ obj/Imitation
 
 			//usr.displaykey=usr.key //temp. fixes a bug with double imitates making you have the wrong key
 			usr.player_desc=imitatordesc
+			usr.player_profile_name=imitator_profile_name
+			usr.player_profile_title=imitator_profile_title
+			usr.player_profile_portrait_direction=imitator_profile_portrait_direction
+			usr.player_profile_markup_version=imitator_profile_markup_version
+			usr.nexus_profile_force_sprite = FALSE
 			usr.name=imitatorname
 			usr.overlays=null
 			usr.overlays+=imitatoroverlays

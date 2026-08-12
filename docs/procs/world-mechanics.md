@@ -3,6 +3,10 @@
 ## Overview
 World simulation, areas, day/night, lighting, planets, tournaments, vehicles, and long-running world state. Legacy `GiveLightSource()` emitters are attached to their owning object through `vis_contents`; their origin turf, area fading, and occlusion therefore follow torches and carried or moved items, and deletion removes the attached emitter.
 
+League names, login descriptions, notes, chat, announcements, and resource amounts now cross explicit server-side boundaries. Names/descriptions are stored as bounded plain text, notes migrate from legacy HTML and are escaped when rendered, chat/announcements are length-limited and escaped, creation/chat are throttled, leaders may own at most five leagues, and resource transfers reject non-finite values.
+
+`normalizeNexusLeagueInlineText()`, `normalizeNexusLeagueDescription()`, `normalizeNexusLeagueNotes()`, and `renderNexusLeagueNotes()` own these storage and rendering contracts.
+
 ## Files
 - `src/Code/WorldMechanics/BPResets.dm`
 - `src/Code/WorldMechanics/BaseOrbs.dm`
@@ -488,6 +492,9 @@ World simulation, areas, day/night, lighting, planets, tournaments, vehicles, an
 
 ### src/Code/WorldMechanics/Leagues.dm
 
+- `normalizeNexusLeagueNotes(notes)` migrates legacy HTML to plain text and enforces the 2,000-character storage cap.
+- `renderNexusLeagueNotes(league_name, notes)` HTML-encodes the normalized league name and notes before building the read-only browser document.
+
 #### mob/verb/Create_League
 - Signature: `mob/verb/Create_League()`
 - Inputs: None
@@ -561,7 +568,7 @@ World simulation, areas, day/night, lighting, planets, tournaments, vehicles, an
 #### obj/League/Click
 - Signature: `Click() if(src in usr)`
 - Inputs: None
-- Purpose: Handle click.
+- Purpose: Handle league options, including bounded plain-text note editing and escaped note rendering.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

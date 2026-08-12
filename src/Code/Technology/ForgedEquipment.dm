@@ -104,7 +104,7 @@ proc/initializeForgedEquipmentCatalogs()
 		forged_material_catalog["masterwork"] = new /datum/ForgedMaterial("masterwork", "Masterwork", 35, /obj/items/Ore/HeartOfTheMountain, 1, "mythril", 1.68, 0.42, 1.62, 1.08, 0.32, FALSE, "The peak physical alloy: enormous BP reinforcement without iron's weight.", 1.36, 0.42)
 	if(!islist(forged_weapon_style_catalog) || !forged_weapon_style_catalog.len)
 		forged_weapon_style_catalog = list()
-		forged_weapon_style_catalog["trunks"] = new /datum/ForgedWeaponStyle("trunks", "Trunks", "Sword", 'RTSwordTrunks.dmi', "A compact Tenkaichi sword skin.")
+		forged_weapon_style_catalog["trunks"] = new /datum/ForgedWeaponStyle("trunks", "Trunks", "Sword", 'RTSwordTrunks.dmi', "A compact Nexus sword skin.")
 		forged_weapon_style_catalog["knight"] = new /datum/ForgedWeaponStyle("knight", "Knight", "Sword", 'RTIronSword.dmi', "A broad knight sword skin.")
 		forged_weapon_style_catalog["demon"] = new /datum/ForgedWeaponStyle("demon", "Demon", "Sword", 'RTCopperSword.dmi', "A curved demonic sword skin.")
 		forged_weapon_style_catalog["katana"] = new /datum/ForgedWeaponStyle("katana", "Katana", "Katana", 'RTKatana2.dmi', "A single-edged katana skin.")
@@ -136,12 +136,12 @@ proc/initializeForgedEquipmentCatalogs()
 	if(!islist(forged_armor_style_catalog) || !forged_armor_style_catalog.len)
 		forged_armor_style_catalog = list()
 		forged_armor_style_catalog["classic"] = new /datum/ForgedArmorStyle("classic", "Classic Armor", 'RTCopperArmor.dmi')
-		forged_armor_style_catalog["battle_2"] = new /datum/ForgedArmorStyle("battle_2", "Tenkaichi Armor II", 'Armor2.dmi')
-		forged_armor_style_catalog["battle_3"] = new /datum/ForgedArmorStyle("battle_3", "Tenkaichi Armor III", 'Armor3.dmi')
-		forged_armor_style_catalog["battle_4"] = new /datum/ForgedArmorStyle("battle_4", "Tenkaichi Armor IV", 'Armor4.dmi')
-		forged_armor_style_catalog["battle_5"] = new /datum/ForgedArmorStyle("battle_5", "Tenkaichi Armor V", 'Armor5.dmi')
-		forged_armor_style_catalog["battle_6"] = new /datum/ForgedArmorStyle("battle_6", "Tenkaichi Armor VI", 'Armor6.dmi')
-		forged_armor_style_catalog["battle_7"] = new /datum/ForgedArmorStyle("battle_7", "Tenkaichi Armor VII", 'Armor7.dmi')
+		forged_armor_style_catalog["battle_2"] = new /datum/ForgedArmorStyle("battle_2", "Nexus Armor II", 'Armor2.dmi')
+		forged_armor_style_catalog["battle_3"] = new /datum/ForgedArmorStyle("battle_3", "Nexus Armor III", 'Armor3.dmi')
+		forged_armor_style_catalog["battle_4"] = new /datum/ForgedArmorStyle("battle_4", "Nexus Armor IV", 'Armor4.dmi')
+		forged_armor_style_catalog["battle_5"] = new /datum/ForgedArmorStyle("battle_5", "Nexus Armor V", 'Armor5.dmi')
+		forged_armor_style_catalog["battle_6"] = new /datum/ForgedArmorStyle("battle_6", "Nexus Armor VI", 'Armor6.dmi')
+		forged_armor_style_catalog["battle_7"] = new /datum/ForgedArmorStyle("battle_7", "Nexus Armor VII", 'Armor7.dmi')
 		forged_armor_style_catalog["bardock"] = new /datum/ForgedArmorStyle("bardock", "Bardock Armor", 'RTBardockArmor.dmi')
 		forged_armor_style_catalog["turles"] = new /datum/ForgedArmorStyle("turles", "Turles Armor", 'TurlesArmor.dmi')
 		forged_armor_style_catalog["nappa"] = new /datum/ForgedArmorStyle("nappa", "Nappa Armor", 'NappaArmor.dmi')
@@ -363,7 +363,7 @@ mob/proc/upgradeForgedEquipment(obj/items/equipment)
 		current_material_id = mask.forged_material_id
 		is_mask = TRUE
 	else
-		src << "Only equipment made by the Tenkaichi forge can use this upgrade chain."
+		src << "Only equipment made by the Nexus forge can use this upgrade chain."
 		return
 	var/list/upgrades = getForgedMaterialUpgradeOptions(current_material_id)
 	if(!upgrades.len)
@@ -426,7 +426,7 @@ mob/proc/openForgeUpgradeMenu(obj/Forge/forge)
 	for(var/obj/items/Gloves/Forged/gloves in item_list) options += gloves
 	for(var/obj/items/Mask/Forged/mask in item_list) options += mask
 	if(!options.len)
-		src << "You are not carrying Tenkaichi-forged equipment."
+		src << "You are not carrying Nexus-forged equipment."
 		return
 	var/obj/items/equipment = input(src, "Choose equipment to improve. Its design, quality and combat style are preserved.", "Improve Equipment") as null|obj in options
 	if(equipment) upgradeForgedEquipment(equipment)
@@ -506,10 +506,10 @@ mob/proc/openSmithingMenu(obj/Forge/forge)
 	var/datum/ForgedMaterial/base_material = forged_material_catalog["normal"]
 	var/weapon_cost = max(1, base_material.ore_cost - getSmithingOreDiscount())
 	var/armor_cost = max(1, base_material.ore_cost + 1 - getSmithingOreDiscount())
-	var/html = "<html><head>[getForgeBrowserCss()]</head><body><div class='shell'><div class='header'><h1>Tenkaichi Forge</h1><p>Smithing level [smithing_level]. Equipment begins at Normal; Copper is its first material upgrade. The selected design is visual only.</p></div><div class='actions'><a class='action' href='byond://?src=\ref[forge]&forge_action=weapon'><b>FORGE WEAPON</b><span>[weapon_cost] Copper ore for a Normal frame. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=armor'><b>FORGE ARMOR</b><span>[armor_cost] Copper ore for a Normal frame. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=gloves'><b>FORGE GLOVES</b><span>[weapon_cost] Copper ore for Normal gloves. Reinforces unarmed attacks.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=mask'><b>FORGE MASK</b><span>[weapon_cost] Copper ore for a Normal mask. Reinforces Ki damage and blast BP.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=upgrade'><b>IMPROVE EQUIPMENT</b><span>Upgrade Normal to Copper and beyond while preserving the icon.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=pickaxe'><b>FORGE PICKAXE</b><span>3 Copper ore.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=guide'><b>MATERIAL GUIDE</b><span>Compare BP reinforcement, Ki damage, protection and weight.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=close'><b>CLOSE</b><span>Return to the game.</span></a></div><div class='panel'><h2>Quick material comparison</h2>[buildForgeMaterialGuideHtml()]</div></div></body></html>"
+	var/html = "<html><head>[getForgeBrowserCss()]</head><body><div class='shell'><div class='header'><h1>Nexus Forge</h1><p>Smithing level [smithing_level]. Equipment begins at Normal; Copper is its first material upgrade. The selected design is visual only.</p></div><div class='actions'><a class='action' href='byond://?src=\ref[forge]&forge_action=weapon'><b>FORGE WEAPON</b><span>[weapon_cost] Copper ore for a Normal frame. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=armor'><b>FORGE ARMOR</b><span>[armor_cost] Copper ore for a Normal frame. Opens the visual skin gallery.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=gloves'><b>FORGE GLOVES</b><span>[weapon_cost] Copper ore for Normal gloves. Reinforces unarmed attacks.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=mask'><b>FORGE MASK</b><span>[weapon_cost] Copper ore for a Normal mask. Reinforces Ki damage and blast BP.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=upgrade'><b>IMPROVE EQUIPMENT</b><span>Upgrade Normal to Copper and beyond while preserving the icon.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=pickaxe'><b>FORGE PICKAXE</b><span>3 Copper ore.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=guide'><b>MATERIAL GUIDE</b><span>Compare BP reinforcement, Ki damage, protection and weight.</span></a><a class='action' href='byond://?src=\ref[forge]&forge_action=close'><b>CLOSE</b><span>Return to the game.</span></a></div><div class='panel'><h2>Quick material comparison</h2>[buildForgeMaterialGuideHtml()]</div></div></body></html>"
 	src << browse(html, "window=nexus_forge;size=1050x760;can_resize=true")
 
-mob/proc/craftTenkaichiPickaxe()
+mob/proc/craftNexusPickaxe()
 	if(!hasSmithingMaterialUnlock("copper"))
 		src << "Unlock Forge Apprentice in the Smithing progression tree first."
 		return FALSE
@@ -517,14 +517,14 @@ mob/proc/craftTenkaichiPickaxe()
 	if(!consumeOre(/obj/items/Ore/Copper, ore_cost))
 		src << "You need [ore_cost] Copper ore to forge a pickaxe."
 		return FALSE
-	var/obj/items/Digging/TenkaichiPickaxe/pickaxe = new(src)
+	var/obj/items/Digging/NexusPickaxe/pickaxe = new(src)
 	gainProfessionExperience("Smithing", 15, "forging [pickaxe]", announce = TRUE)
 	player_view(15, src) << "<font color=#e0bd83>[src] forges [pickaxe]."
 	return TRUE
 
 obj/Forge
-	name = "Tenkaichi Forge"
-	desc = "A Roleplay Tenkaichi forge used to create and improve persistent weapon, glove, mask and armor designs."
+	name = "Nexus Forge"
+	desc = "A Nexus forge used to create and improve persistent weapon, glove, mask and armor designs."
 	icon = 'RTForge.dmi'
 	density = 1
 	Health = 100000
@@ -558,7 +558,7 @@ obj/Forge
 				usr.openForgeUpgradeMenu(src)
 				usr.openSmithingMenu(src)
 			if("pickaxe")
-				usr.craftTenkaichiPickaxe()
+				usr.craftNexusPickaxe()
 				usr.openSmithingMenu(src)
 			if("craft_weapon")
 				usr.craftForgedWeapon(href_list["style"])
@@ -625,7 +625,7 @@ obj/items/Sword/Forged
 			nearby_forge = forge
 			break
 		if(!nearby_forge)
-			usr << "Stand beside a Tenkaichi Forge to improve this weapon."
+			usr << "Stand beside a Nexus Forge to improve this weapon."
 			return
 		usr.upgradeForgedEquipment(src)
 
@@ -710,7 +710,7 @@ obj/items/Armor/Forged
 			nearby_forge = forge
 			break
 		if(!nearby_forge)
-			usr << "Stand beside a Tenkaichi Forge to improve this armor."
+			usr << "Stand beside a Nexus Forge to improve this armor."
 			return
 		usr.upgradeForgedEquipment(src)
 
@@ -829,7 +829,7 @@ obj/items/Gloves/Forged
 			nearby_forge = forge
 			break
 		if(!nearby_forge)
-			usr << "Stand beside a Tenkaichi Forge to improve these gloves."
+			usr << "Stand beside a Nexus Forge to improve these gloves."
 			return
 		usr.upgradeForgedEquipment(src)
 
@@ -956,7 +956,7 @@ obj/items/Mask/Forged
 			nearby_forge = forge
 			break
 		if(!nearby_forge)
-			usr << "Stand beside a Tenkaichi Forge to improve this mask."
+			usr << "Stand beside a Nexus Forge to improve this mask."
 			return
 		usr.upgradeForgedEquipment(src)
 
@@ -1014,9 +1014,9 @@ mob/proc/getForgedArmorEnduranceBP()
 		effective_bp *= 1 + max(0, armor.forged_defense_bp_bonus)
 	return effective_bp
 
-obj/items/Digging/TenkaichiPickaxe
-	name = "Tenkaichi Pickaxe"
-	desc = "The Roleplay Tenkaichi mining pickaxe. Equip it to improve excavation yield."
+obj/items/Digging/NexusPickaxe
+	name = "Nexus Pickaxe"
+	desc = "The Nexus mining pickaxe. Equip it to improve excavation yield."
 	icon = 'RTPickaxe.dmi'
 	DigMult = 5
 	Cost = 0
@@ -1032,8 +1032,8 @@ obj/items/Digging/TenkaichiPickaxe
 				if(tool != src && tool.suffix) tool.suffix = null
 			suffix = suffix ? null : "Equipped"
 
-mob/Admin3/verb/testTenkaichiSmithing(mob/character in players)
-	set name = "Test Tenkaichi Smithing"
+mob/Admin3/verb/testNexusSmithing(mob/character in players)
+	set name = "Test Nexus Smithing"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !character) return
 	character.mining_experience = getProfessionExperienceForLevel(50)
@@ -1048,29 +1048,29 @@ mob/Admin3/verb/testTenkaichiSmithing(mob/character in players)
 	var/turf/forge_location = get_step(character, SOUTH)
 	if(!forge_location) forge_location = character.loc
 	new /obj/Forge(forge_location)
-	admin_blame(src, "[key] prepared [character] to test the Tenkaichi smithing progression.")
+	admin_blame(src, "[key] prepared [character] to test the Nexus smithing progression.")
 	src << "[character] received level 50 Mining/Smithing, every material, and a forge."
 
-mob/Admin3/verb/giveTenkaichiEquipment(mob/character in players)
-	set name = "Give Tenkaichi Equipment"
+mob/Admin3/verb/giveNexusEquipment(mob/character in players)
+	set name = "Give Nexus Equipment"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !character) return
 	initializeForgedEquipmentCatalogs()
-	var/equipment_kind = input(src, "Choose the equipment family to test.", "Tenkaichi Equipment") in list("Cancel", "Weapon", "Armor", "Gloves", "Mask", "Pickaxe")
+	var/equipment_kind = input(src, "Choose the equipment family to test.", "Nexus Equipment") in list("Cancel", "Weapon", "Armor", "Gloves", "Mask", "Pickaxe")
 	if(equipment_kind == "Cancel") return
 	if(equipment_kind == "Pickaxe")
-		new /obj/items/Digging/TenkaichiPickaxe(character)
-		admin_blame(src, "[key] gave [character] a Tenkaichi Pickaxe.")
+		new /obj/items/Digging/NexusPickaxe(character)
+		admin_blame(src, "[key] gave [character] a Nexus Pickaxe.")
 		return
 	var/list/material_options = list()
 	for(var/material_id in forged_material_catalog)
 		var/datum/ForgedMaterial/material = forged_material_catalog[material_id]
 		material_options[material.name] = material
-	var/material_choice = input(src, "Choose the material tier.", "Tenkaichi Equipment") as null|anything in material_options
+	var/material_choice = input(src, "Choose the material tier.", "Nexus Equipment") as null|anything in material_options
 	if(isnull(material_choice)) return
 	var/datum/ForgedMaterial/selected_material = material_options[material_choice]
 	if(equipment_kind == "Weapon")
-		var/datum/ForgedWeaponStyle/weapon_style = chooseForgedWeaponStyle("Give Tenkaichi Equipment")
+		var/datum/ForgedWeaponStyle/weapon_style = chooseForgedWeaponStyle("Give Nexus Equipment")
 		if(!weapon_style) return
 		var/obj/items/Sword/Forged/weapon = new(character)
 		weapon.forged_material_id = selected_material.id
@@ -1078,7 +1078,7 @@ mob/Admin3/verb/giveTenkaichiEquipment(mob/character in players)
 		weapon.refreshForgedWeapon()
 		admin_blame(src, "[key] gave [character] [weapon].")
 	else if(equipment_kind == "Armor")
-		var/datum/ForgedArmorStyle/armor_style = chooseForgedArmorStyle("Give Tenkaichi Equipment")
+		var/datum/ForgedArmorStyle/armor_style = chooseForgedArmorStyle("Give Nexus Equipment")
 		if(!armor_style) return
 		var/obj/items/Armor/Forged/armor = new(character)
 		armor.forged_material_id = selected_material.id
@@ -1086,7 +1086,7 @@ mob/Admin3/verb/giveTenkaichiEquipment(mob/character in players)
 		armor.refreshForgedArmor()
 		admin_blame(src, "[key] gave [character] [armor].")
 	else if(equipment_kind == "Gloves")
-		var/datum/ForgedGloveStyle/glove_style = chooseForgedGloveStyle("Give Tenkaichi Equipment")
+		var/datum/ForgedGloveStyle/glove_style = chooseForgedGloveStyle("Give Nexus Equipment")
 		if(!glove_style) return
 		var/obj/items/Gloves/Forged/gloves = new(character)
 		gloves.forged_material_id = selected_material.id
@@ -1094,7 +1094,7 @@ mob/Admin3/verb/giveTenkaichiEquipment(mob/character in players)
 		gloves.refreshForgedGloves()
 		admin_blame(src, "[key] gave [character] [gloves].")
 	else
-		var/datum/ForgedMaskStyle/mask_style = chooseForgedMaskStyle("Give Tenkaichi Equipment")
+		var/datum/ForgedMaskStyle/mask_style = chooseForgedMaskStyle("Give Nexus Equipment")
 		if(!mask_style) return
 		var/obj/items/Mask/Forged/mask = new(character)
 		mask.forged_material_id = selected_material.id

@@ -185,9 +185,9 @@ obj/ArcaneSpell/FrostNova
 		if(!caster) return 0
 		var/hit_count = 0
 		for(var/mob/target in oview(2, caster))
-			if(!caster.canHitTenkaichiTechniqueTarget(target) || target.KO) continue
+			if(!caster.canHitNexusTechniqueTarget(target) || target.KO) continue
 			var/damage = Clamp(7 * (caster.BP / max(target.BP, 1)) ** 0.35, 2, 16)
-			if(!caster.applyTenkaichiTechniqueDamage(target, damage, name)) continue
+			if(!caster.applyNexusTechniqueDamage(target, damage, name)) continue
 			target.ApplyStun(time = 20, no_immunity = TRUE, stun_power = 2)
 			showNexusOpenCombatEffect(target, "foozle_magic_64", "water_geyser", 0.75, "#8ee9ff", 225, BLEND_ADD, 12, 0.2)
 			hit_count++
@@ -381,7 +381,7 @@ obj/ArcaneSpell/GravityWell
 obj/ArcaneGravityWell
 	name = "Gravity Well"
 	desc = "A temporary magical gravity field."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicCircle.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
 	density = 0
 	Savable = 0
 	Grabbable = 0
@@ -457,7 +457,7 @@ obj/ArcaneSpell/CreatePortal
 
 obj/ArcaneSpell/Enchant
 	name = "Enchant"
-	desc = "Spend Arcane Essence to permanently grant one Tenkaichi-forged item visible masterwork quality and improved combat statistics."
+	desc = "Spend Arcane Essence to permanently grant one Nexus-forged item visible masterwork quality and improved combat statistics."
 	icon_state = "molten_spear"
 
 	proc/cast(mob/caster)
@@ -540,7 +540,7 @@ obj/items/Armor/Forged/ArcaneArmor
 obj/items/ManaPylon
 	name = "Mana Pylon"
 	desc = "A stationary focus that increases nearby Arcane Essence gathering by 25%."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTMagicCircle.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
 	icon_state = ""
 	Cost = 0
 	Savable = 1
@@ -561,7 +561,7 @@ obj/items/SpellBook
 obj/items/ArcaneFocusGauntlets
 	name = "Magic Gauntlets"
 	desc = "Enchanted gauntlets that increase Magic XP gains by 5% while carried."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	Savable = 1
@@ -575,7 +575,7 @@ obj/items/ArcaneBoxingGloves
 obj/items/ArcaneOrbOfMastery
 	name = "Orb of Mastery"
 	desc = "Carrying this orb increases Magic XP gains by 10%."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "PhiloStone"
 	Cost = 0
 	Savable = 1
@@ -583,7 +583,7 @@ obj/items/ArcaneOrbOfMastery
 obj/items/ArcaneSatchel
 	name = "Utility Belt"
 	desc = "A pocket-space container that can hold up to 20 items."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	Savable = 1
@@ -619,7 +619,7 @@ obj/items/ArcaneSatchel
 
 	CookingBag
 		name = "Cooking Bag"
-		desc = "A 50-slot pocket-space bag adapted from the RPT cooking bag."
+		desc = "A 50-slot pocket-space bag adapted from the integrated cooking bag."
 		capacity = 50
 
 	Bookcase
@@ -629,8 +629,8 @@ obj/items/ArcaneSatchel
 
 obj/items/Simulator/ArcaneCrystal
 	name = "Simulation Crystal"
-	desc = "A crystal-bound version of the native simulator, adapted from Roleplay Tenkaichi."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	desc = "A crystal-bound version of the native simulator, adapted from Nexus."
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	science = 0
@@ -638,7 +638,7 @@ obj/items/Simulator/ArcaneCrystal
 obj/items/MagicVault
 	name = "Magic Vault"
 	desc = "A password-protected vault for storing Arcane Essence."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "PhiloStone"
 	Cost = 0
 	Savable = 1
@@ -742,7 +742,7 @@ obj/items/MagicVault
 obj/items/ArcaneLocator
 	name = "Locator"
 	desc = "A divination compass that reveals the direction and distance of a character in the same realm."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	Savable = 1
@@ -758,7 +758,7 @@ obj/items/ArcaneLocator
 obj/items/MagicScanner
 	name = "Magic Scanner"
 	desc = "A divination lens that reads magical aptitude, essence and mutation signatures."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanEar"
 	Cost = 0
 	Savable = 1
@@ -772,7 +772,7 @@ obj/items/MagicScanner
 obj/items/ArcaneDisguise
 	name = "Disguise"
 	desc = "A glamour veil that makes the bearer difficult to see for one minute. Combat breaks neither the timer nor the veil."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanEar"
 	Cost = 0
 	Savable = 1
@@ -794,7 +794,7 @@ obj/items/ArcaneDisguise
 obj/items/MagicFishingLure
 	name = "Magic Fishing Lure"
 	desc = "Consume beside water to draw ambient magic and aquatic life to the surface."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "Witheroot"
 	Cost = 0
 	Savable = 1
@@ -816,7 +816,7 @@ obj/items/MagicFishingLure
 obj/items/EnchantedDoll
 	name = "Enchanted Doll"
 	desc = "Awaken this construct as a temporary arcane companion."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	Savable = 1
@@ -852,7 +852,7 @@ mob/ArcaneDoll
 
 obj/items/ArcaneUpgradeKit
 	name = "Upgrade Kit"
-	desc = "Apply masterwork arcane quality to one Tenkaichi-forged weapon, pair of gloves, mask, or armor."
+	desc = "Apply masterwork arcane quality to one Nexus-forged weapon, pair of gloves, mask, or armor."
 	icon = 'src/Icons/Objects/Technology/Lab.dmi'
 	icon_state = "Tool2"
 	Cost = 0
@@ -903,7 +903,7 @@ obj/items/ArcaneUpgradeKit
 obj/items/CrystalBall
 	name = "Crystal Ball"
 	desc = "Observe a visible character in the same realm for ten seconds."
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	icon_state = "ArcanOrb"
 	Cost = 0
 	Savable = 1
@@ -921,7 +921,7 @@ obj/items/CrystalBall
 		spawn(100) if(user && user.client && user.client.eye == target) user.client.eye = user
 
 obj/items/ArcaneElixir
-	icon = 'src/Icons/RoleplayTenkaichi/Magic/RTEnchantmentItems.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	Cost = 0
 	Savable = 1
 	var/effect_id
@@ -1016,10 +1016,13 @@ obj/items/ArcaneBook
 		desc = "Age five years and gain one Milestone Point. One effective reading per character."
 		effect_id = "book_ages"
 		applyEffect(mob/user)
+			user.normalizeMilestonePointBalances()
+			if(user.total_milestone_points >= NEXUS_MILESTONE_POINT_CAP)
+				user << "You have already reached the lifetime cap of [NEXUS_MILESTONE_POINT_CAP] Milestone Points."
+				return FALSE
 			if(!user.addArcanePermanentEffect(effect_id)) return FALSE
 			user.Age += 5
-			user.milestone_points++
-			user.total_milestone_points++
+			user.grantMilestonePoints(1, name, announce = TRUE)
 			return TRUE
 
 	Fortitude
