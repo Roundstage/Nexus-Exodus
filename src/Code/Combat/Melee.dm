@@ -26,7 +26,7 @@ proc/drawNexusCriticalSparkLine(icon/canvas, x1, y1, x2, y2, line_color, thickne
 
 proc/getNexusCriticalSparkIcon()
 	if(nexus_critical_spark_icon) return nexus_critical_spark_icon
-	var/icon/spark_icon = icon('Healthbar.dmi', "100")
+	var/icon/spark_icon = icon('healthbar.dmi', "100")
 	spark_icon.Scale(96, 96)
 	spark_icon.DrawBox(null, 1, 1, 96, 96)
 	var/list/segments = list(

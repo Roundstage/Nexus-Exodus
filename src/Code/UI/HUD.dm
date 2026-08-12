@@ -73,7 +73,7 @@ HUD
 	parent_type = /obj
 	plane = NEXUS_FIXED_HUD_PLANE
 	charBubble
-		icon = 'CharBubble.dmi'
+		icon = 'charBubble.dmi'
 		layer = OBJ_LAYER + EFFECTS_LAYER + MOB_LAYER + 1
 
 	screenAnchor
@@ -117,15 +117,15 @@ HUD
 			spawn(1) Update(U, t)
 
 		healthBar
-			icon = 'Healthbar.dmi'
+			icon = 'healthbar.dmi'
 			icon_state = "100"
 			getStat = "health"
 		stamBar
-			icon = 'Stambar.dmi'
+			icon = 'stambar.dmi'
 			icon_state = "100"
 			getStat = "stamina"
 		kiBar
-			icon = 'Kibar.dmi'
+			icon = 'kibar.dmi'
 			icon_state = "100"
 			getStat = "Ki"
 
@@ -171,7 +171,7 @@ proc/getOverheadVitalIcon(percent, accent_color)
 	var/fill_width = round(percent * 0.32)
 	var/cache_key = "[accent_color]-[fill_width]"
 	if(overhead_vital_icon_cache[cache_key]) return overhead_vital_icon_cache[cache_key]
-	var/icon/vital_icon = icon('Healthbar.dmi', "100")
+	var/icon/vital_icon = icon('healthbar.dmi', "100")
 	vital_icon.Scale(32, 3)
 	vital_icon.DrawBox("#21170f", 1, 1, 32, 3)
 	if(fill_width) vital_icon.DrawBox(accent_color, 1, 1, fill_width, 3)

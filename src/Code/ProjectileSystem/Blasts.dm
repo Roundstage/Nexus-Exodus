@@ -266,7 +266,7 @@ obj/Blasts
 	Blast38 icon='BlastDestructoDisk.dmi'
 	Blast39 icon='BlastDualFireBlast.dmi'
 	Blast40 icon='BlastKiShuriken.dmi'
-	Blast41 icon='Holybolt.dmi'
+	Blast41 icon='holybolt.dmi'
 	Blast42 icon='Blast0.dmi'
 	Blast43 icon='Blast1.dmi'
 	Blast44 icon='Blast2.dmi'
@@ -321,7 +321,7 @@ obj/Blasts
 	Blast93 icon='DarkLance.dmi'
 	Blast94 icon='OmegaBlasterZee.dmi'
 	Blast95 icon='DarkBlast.dmi'
-	Blast96 icon='Flareblast.dmi'
+	Blast96 icon='flareblast.dmi'
 	Blast97 icon='FireBlastBig.dmi'
 	Blast98 icon='BigBangAttack.dmi'
 	Blast99 icon = 'GreenBall2017.dmi'
@@ -378,7 +378,7 @@ obj/Aura_Choices
 	BlueFlameAura
 		icon = 'BlueFlameAura.dmi'
 	SuperBuu
-		icon = 'Blurredsuperbuuaura.dmi'
+		icon = 'blurredsuperbuuaura.dmi'
 	Large
 		icon='AuraBig.dmi'
 		Scale=74

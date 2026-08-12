@@ -53,7 +53,7 @@ obj
 		Grabbable = 0
 		Knockable = 0
 		Bolted = 1
-		icon = 'Gorilla.png'
+		icon = 'gorilla.png'
 		layer = 3.9
 
 		New()
