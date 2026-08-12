@@ -7,6 +7,8 @@ Basic Blast now resolves each cast as an affordable, capacity-bounded vector vol
 
 Guided blasts use one resolved control direction for collision checks and movement, preventing Sokidan from stepping away from a contacted target. Kienzan has no one-hit per-target budget; every successful pierce multiplies its live damage factor by `skill_kienzan_pierce_decay` (currently 0.5), allowing repeated bounded hits. Fight to the Death now directly synchronizes `sparring_mode` and `Fatal`; there is no secondary non-lethal choice, and tournaments force Casual mode.
 
+Invested combat skills retain a meaningful advantage over the equal-stat 2.5-factor basic melee baseline. Sokidan reserves a 12-factor direct-plus-splash budget, Kienzan opens at factor 10 before its per-pierce decay, and Makosen reserves a 16-factor volley budget. Dedicated Unarmed techniques receive a +10 accuracy floor and their multi-hit sequences preserve adjacency until any configured finishing knockback, preventing the opening strike from cancelling the rest of the combo.
+
 Equipped forged masks add their material's bounded BP reinforcement to Ki attacks and multiply central Ki damage. Projectile creation captures both values for blasts, while physical bullets retain the owner's unmodified BP.
 
 Sense tracking is persistent while Sense or a compatible scanner is owned. Client-local world images render each readable character's relative power percentage below their sprite, while appearance-matched arrows keep off-screen signatures discoverable. The replacement Sense menu adds sprite icons and exposes qualitative Strength, Endurance, Speed, Force, Resistance, Offense, and Defense ratings to Sense 3.
@@ -20,6 +22,8 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 Custom Buff allocation uses `normalizeNexusCustomBuffStats()` and `adjustNexusCustomBuffStat()`. The hidden skin verb accepts only eleven explicit multiplier tokens, updates discrete tenths, enforces per-stat and 27-point hard caps, and never indexes `vars[]` with client text. Invalid or legacy non-finite/out-of-range values are normalized before use.
 
 Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Nexus approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
+
+`Cycle Target` is a universal configurable targeting action. It orders visible, attackable targets within 30 tiles by pixel distance and angle, skips the user, KO, Safezone and RP Mode targets, advances from the current selection, and wraps to the nearest valid target.
 
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
@@ -403,9 +407,9 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### datum/SkillEngine/proc/castWolfFangFist
 - Signature: `datum/SkillEngine/proc/castWolfFangFist(mob/user, obj/WolfFangFist/skill_obj)`
 - Inputs: mob/user, obj/WolfFangFist/skill_obj
-- Purpose: Execute five strikes with ownership-safe accelerated approaches, each dealing 0.8x melee damage and three-tile knockback.
+- Purpose: Execute five 2x strikes with ownership-safe accelerated approaches, a +15 accuracy bonus, preserved contact between hits, and three-tile knockback on the finisher.
 - Returns: 1 on success, else 0.
-- Side effects: advances after each landed hit, applies multi-hit melee damage, knockback, and VFX.
+- Side effects: advances after each landed hit, applies multi-hit melee damage and VFX, and knocks back only after a complete sequence.
 
 #### datum/SkillEngine/proc/castDropkick
 - Signature: `datum/SkillEngine/proc/castDropkick(mob/user, obj/Dropkick/skill_obj)`
@@ -4222,6 +4226,27 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: boolean.
 - Side effects: none.
 
+#### mob/proc/canCycleTarget
+- Signature: `mob/proc/canCycleTarget(mob/candidate, max_dist = nexus_cycle_target_range)`
+- Inputs: candidate mob and maximum tile distance.
+- Purpose: Apply the stricter quick-cycle rules for visibility, range, z-level, KO, Safezone and RP Mode state.
+- Returns: boolean.
+- Side effects: none.
+
+#### mob/proc/getCycleTargetCandidates
+- Signature: `mob/proc/getCycleTargetCandidates(max_dist = nexus_cycle_target_range)`
+- Inputs: maximum tile distance.
+- Purpose: Collect valid visible targets in stable nearest-first, then angle order.
+- Returns: ordered target list.
+- Side effects: none.
+
+#### mob/proc/cycleSelectedTarget
+- Signature: `mob/proc/cycleSelectedTarget(max_dist = nexus_cycle_target_range, announce = TRUE)`
+- Inputs: maximum tile distance and announcement flag.
+- Purpose: Advance from the selected target through nearby valid candidates and wrap to the nearest candidate.
+- Returns: newly selected target or null.
+- Side effects: updates targeting state and optionally announces the result.
+
 #### mob/proc/setSelectedTarget
 - Signature: `mob/proc/setSelectedTarget(mob/new_target, announce = TRUE)`
 - Inputs: new target and announcement flag.
@@ -4249,6 +4274,13 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Purpose: Clear the explicit combat target and marker.
 - Returns: none (implicit).
 - Side effects: clears targeting state.
+
+#### mob/verb/cycleTarget
+- Signature: `mob/verb/cycleTarget()`
+- Inputs: None.
+- Purpose: Expose `Cycle Target` to the Combat verb list and configurable hotkey registry.
+- Returns: none (implicit).
+- Side effects: delegates to `cycleSelectedTarget()`.
 
 #### atom/movable/proc/FindTarget
 - Signature: `FindTarget(dir_angle=NORTH, angle_limit=33, max_dist=9, prefer_auto_target=1)`
@@ -4329,6 +4361,31 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Returns: none (implicit).
 - Side effects: creates and deletes one transient animated slash actor.
 
+#### obj/Attacks/NexusMeleeTechnique/proc/getAccuracyBonus
+- Signature: `getAccuracyBonus()`
+- Purpose: Combine the technique-specific accuracy bonus with the shared +10 Unarmed accuracy floor.
+- Returns: effective accuracy bonus.
+- Side effects: none.
+
+#### obj/Attacks/NexusMeleeTechnique/proc/getOpeningKnockbackDistance
+- Signature: `getOpeningKnockbackDistance(base_distance)`
+- Inputs: native melee knockback distance.
+- Purpose: Suppress opening knockback for multi-hit techniques so their remaining strikes retain contact.
+- Returns: opening knockback distance.
+- Side effects: none.
+
+#### obj/Attacks/NexusMeleeTechnique/proc/getComboFinisherKnockbackDistance
+- Signature: `getComboFinisherKnockbackDistance()`
+- Purpose: Resolve the configured final-hit knockback for multi-hit techniques.
+- Returns: finisher knockback distance, or zero.
+- Side effects: none.
+
+#### obj/Attacks/NexusMeleeTechnique/proc/getTotalDamageMultiplier
+- Signature: `getTotalDamageMultiplier()`
+- Purpose: Aggregate ordinary, extra-hit, fixed-sequence and kickback-follow-up damage for Skill Examine and regression tests.
+- Returns: total basic-melee damage multiplier.
+- Side effects: none.
+
 #### mob/proc/castNexusMeleeTechnique
 - Signature: `mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)`
 - Inputs: the owned Nexus technique object.
@@ -4339,7 +4396,7 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### obj/Attacks/NexusMeleeTechnique/proc/applyOnHit
 - Signature: `applyOnHit(mob/attacker, mob/target, damage)`
 - Inputs: attacker, primary target and damage produced by the native melee calculation.
-- Purpose: Apply the adapted multi-hit, bleed, stun and front/radius effects after block and dodge resolution.
+- Purpose: Apply adapted multi-hit, bleed, stun and front/radius effects after block and dodge resolution; multi-hit knockback is deferred to the finisher so the sequence cannot cancel itself.
 - Returns: none (implicit).
 - Side effects: may damage secondary targets, apply crowd control, animate integrated effects and play technique-specific impact audio.
 

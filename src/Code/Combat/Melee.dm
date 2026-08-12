@@ -1200,8 +1200,8 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	var/knockback=get_melee_knockback_distance(target)
 	if(nexus_technique)
 		dmg *= nexus_technique.damage_multiplier
-		accuracy = Clamp(accuracy + nexus_technique.accuracy_bonus, 0, 100)
-		knockback = ToOne(knockback * nexus_technique.knockback_multiplier)
+		accuracy = Clamp(accuracy + nexus_technique.getAccuracyBonus(), 0, 100)
+		knockback = nexus_technique.getOpeningKnockbackDistance(knockback)
 	var/omega_kb_used = 1
 	if(Omega_KB() && !tournament_override(fighters_can=0))
 		knockback=Get_Omega_KB()

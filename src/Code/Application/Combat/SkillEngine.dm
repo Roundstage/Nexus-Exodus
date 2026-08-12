@@ -1108,7 +1108,7 @@ datum/SkillEngine
 				player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
 				break
 
-			var/accuracy = user.get_melee_accuracy(victim)
+			var/accuracy = user.get_melee_accuracy(victim) + wolf_fang_accuracy_bonus
 			if(hit_number == 1) accuracy *= 2
 			if(!prob(accuracy))
 				player_view(15, user) << sound('Meleemiss3.ogg', volume = 35)
@@ -1120,12 +1120,13 @@ datum/SkillEngine
 			victim.ScreenShake(Amount = 12, Offset = 7)
 			var/dmg = user.getPhysicalCombatDamage(victim, wolf_fang_hit_damage_mult)
 			victim.TakeDamage(dmg, 1, attacker = user, attack_name = skill_obj.name)
-			if(victim && !victim.KO) victim.Knockback(user, Distance = wolf_fang_knockback_distance, bypass_immunity = 1)
 			sleep(2)
 		if(!hitcount)
 			user.AddStamina(-20)
 			user.dragon_rush_attack_active = null
 			return 0
+		var/finisher_knockback = getWolfFangFinisherKnockback(hitcount, user.numberOfHits)
+		if(victim && !victim.KO && finisher_knockback) victim.Knockback(user, Distance = finisher_knockback, bypass_immunity = 1)
 		user << "Wolf Fang Fist landed [hitcount] hit[hitcount == 1 ? "" : "s"]."
 		user.dragon_rush_attack_active = null
 		return 1

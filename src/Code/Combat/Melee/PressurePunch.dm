@@ -1,5 +1,6 @@
 var/pressure_punch_cooldown_ticks = 90
 var/pressure_punch_charge_ticks = 10
+var/pressure_punch_damage_factor = 10
 
 obj
 	PressurePunch
@@ -58,7 +59,7 @@ mob
 			PressurePunchFX()
 			if(target)
 				for(var/mob/M in list(target))
-					var/dmg = getPhysicalCombatDamage(M, 6)
+					var/dmg = getPhysicalCombatDamage(M, pressure_punch_damage_factor)
 					var/knockback = get_melee_knockback_distance(M) * 10
 					if(M != src)
 						src << "You concentrate your energy into a powerful punch that knocks [M] away!"

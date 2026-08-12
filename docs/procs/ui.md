@@ -978,7 +978,7 @@ These references are intentional and must not be removed, renamed, replaced with
 
 #### datum/NexusHotkeyAction
 - Purpose: Define non-object actions with stable IDs, labels, availability predicates, repeat policy, and execution behavior.
-- Current actions: eight Zanzoken directions available only while the player owns `/obj/Zanzoken`, plus eight universal Short Dash directions categorized as defensive actions.
+- Current actions: eight Zanzoken directions available only while the player owns `/obj/Zanzoken`, eight universal Short Dash directions categorized as defensive actions, and the universal `cycle_target` targeting action.
 
 #### mob/proc/initializeNexusHotkeys
 - Purpose: Migrate positional legacy bindings, normalize the saved keyboard profile, initialize tap state, and rebuild client-local dynamic macros.

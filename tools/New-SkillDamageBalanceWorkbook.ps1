@@ -388,12 +388,12 @@ function Add-SkillRow($name, $path, $status, $model, $factor, $hits, $moveDelay,
 }
 Add-SkillRow "Manual Attack" "/obj/Manual_Attack" "Global action" "Physical" 2.5 1 0 0 "GMD(24)" 0 "Melee delay" 1 "None" "Rear and critical multipliers are capped at 1.25" "Combat/Melee.dm"
 Add-SkillRow "Lunge" "/obj/Lunge" "Standalone verb/hotbar" "Physical" 5 1 0 0 "3x GMD(24)" "Lunge refire" "Windup + travel" 19 "None" "Explicit factor; no hidden base multiplier" "Combat/Melee.dm"
-Add-SkillRow "Wolf Fang Fist" "/obj/WolfFangFist" "Learnable" "Physical" 1 5 0 0 "20 stamina on total miss" 20 "Windup + advancing combo" 19 "None" "Five-hit budget 5" "SkillEngine.dm; Melee/WolfFangFist.dm"
-Add-SkillRow "Hundred Crack Fist" "/obj/Hokuto_Shinken" "Learnable" "Physical" 0.25 24 0 0 "Ki becomes 20% after cast" 0 "6.2s windup; 0.3s/strike" 15 "None" "Exactly 24 attempts; budget 6" "Combat/HokutoShinken.dm"
-Add-SkillRow "Dash Attack" "/obj/Dash_Attack" "Learnable" "Physical" "2-8" 1 0 0 "145*sqrt(maxKi/3000)" 10 "Up to 25 steps" 25 "None" "Factor scales 0.25 per completed step; no second BP ratio" "Application/Combat/SkillEngine.dm"
-Add-SkillRow "Dropkick" "/obj/Dropkick" "Learnable" "Physical" 8 2 0 0 "25 stamina" 30 "Windup + travel" 19 "None" "Two hits: 5 and 3" "Application/Combat/SkillEngine.dm"
-Add-SkillRow "Pressure Punch" "/obj/PressurePunch" "Learnable" "Physical" 6 1 0 0 0 12 "2s" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/PressurePunch.dm"
-Add-SkillRow "Roundhouse Kick" "/obj/RoundhouseKick" "Learnable" "Physical" 4 1 0 0 0 12 "1s" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/RoundhouseKick.dm"
+Add-SkillRow "Wolf Fang Fist" "/obj/WolfFangFist" "Learnable" "Physical" 2 5 0 0 "20 stamina on total miss" 20 "Windup + advancing combo" 19 "None" "Five-hit budget 10; +15 accuracy; knockback only on the finisher" "SkillEngine.dm; Melee/WolfFangFist.dm"
+Add-SkillRow "Hundred Crack Fist" "/obj/Hokuto_Shinken" "Learnable" "Physical" 0.5 24 0 0 "Ki becomes 20% after cast" 0 "6.2s windup; 0.3s/strike" 15 "None" "Exactly 24 attempts; budget 12" "Combat/HokutoShinken.dm"
+Add-SkillRow "Dash Attack" "/obj/Dash_Attack" "Learnable" "Physical" "3-12" 1 0 0 "145*sqrt(maxKi/3000)" 10 "Up to 25 steps" 25 "None" "Factor scales 0.4 per completed step; no second BP ratio" "Application/Combat/SkillEngine.dm"
+Add-SkillRow "Dropkick" "/obj/Dropkick" "Learnable" "Physical" 12 2 0 0 "25 stamina" 30 "Windup + travel" 19 "None" "Two hits: 7 and 5" "Application/Combat/SkillEngine.dm"
+Add-SkillRow "Pressure Punch" "/obj/PressurePunch" "Learnable" "Physical" 10 1 0 0 0 9 "1s charge" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/PressurePunch.dm"
+Add-SkillRow "Roundhouse Kick" "/obj/RoundhouseKick" "Learnable" "Physical" 7.5 1 0 0 0 12 "1s charge" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/RoundhouseKick.dm"
 Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 3.5 1 0 0 40 3 "Instant target resolve" 10 "None" "Strength versus Endurance" "Combat/RockThrow.dm"
 Add-SkillRow "Rock Throw - Rapid" "/obj/RockThrow" "Learnable mode" "Physical" 1 1 0 0 16 0 "Instant target resolve" 8 "None" "No cooldown" "Combat/RockThrow.dm"
 Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Physical" 0.55 "7-15" 0 0 150 12 "1 tick between rocks" 8 "None" "Strength-scaled sequence; maximum shared factor 8.25" "Combat/RockThrow.dm"
@@ -402,10 +402,10 @@ Add-SkillRow "Blast" "/obj/Attacks/Blast" "Learnable" "Ki" "0.105-0.15" 3 0 "Lea
 Add-SkillRow "Big Bang Attack" "/obj/Attacks/Big_Bang_Attack" "Learnable" "Ki" 22 2 0 "22 splash" 80 0 "18*SD(.4)" 60 "None" "22 direct + 22 splash; budget 44" "SkillEngine.dm"
 Add-SkillRow "Charge" "/obj/Attacks/Charge" "Learnable" "Ki" 4 2 0 "4 splash" 20 0 "7.5*SD(.6)" 47 "None" "4 direct + 4 splash" "SkillEngine.dm"
 Add-SkillRow "Cyber Charge" "/obj/Attacks/Cyber_Charge" "Module grant" "Ki" 2.5 2 0 "2.5 splash" 10 0 "5*SD(.6)" 100 "None" "2.5 direct + 2.5 splash" "SkillEngine.dm; Cybernetics.dm"
-Add-SkillRow "Kienzan" "/obj/Attacks/Kienzan" "Learnable" "Ki" 6 1 0 0 100 0 "12*SD(.3)" 180 "None" "Piercing, guided and owner-immune" "SkillEngine.dm; Blasts.dm"
-Add-SkillRow "Sokidan" "/obj/Attacks/Sokidan" "Learnable" "Ki" 3.5 2 0 "3.5 splash" 20 2 "7*SD(.7)" 180 "None" "Guided, owner-immune; budget 7" "SkillEngine.dm; SkillControllers.dm"
+Add-SkillRow "Kienzan" "/obj/Attacks/Kienzan" "Learnable" "Ki" 10 1 0 0 100 0 "12*SD(.3)" 180 "None" "Piercing, guided and owner-immune; 50% decay after each landed pierce" "SkillEngine.dm; Blasts.dm"
+Add-SkillRow "Sokidan" "/obj/Attacks/Sokidan" "Learnable" "Ki" 6 2 0 "6 splash" 20 2 "7*SD(.7)" 180 "None" "Guided, owner-immune; budget 12" "SkillEngine.dm; SkillControllers.dm"
 Add-SkillRow "Spin Blast" "/obj/Attacks/Spin_Blast" "Learnable" "Ki" 0.5 4 0 "Visual only" 10 0 "No charge" 100 "None" "Four shots" "ProjectileSystem/Blasts.dm"
-Add-SkillRow "Makosen" "/obj/Attacks/Makosen" "Learnable" "Ki" 0.4 20 0 0 150 0 "14*SD(.4)" 35 "None" "Nondeflectable barrage capped at 20" "SkillEngine.dm; Blasts.dm"
+Add-SkillRow "Makosen" "/obj/Attacks/Makosen" "Learnable" "Ki" 1 20 0 0 150 0 "14*SD(.4)" 35 "None" "Nondeflectable barrage; shared budget 16 per target" "SkillEngine.dm; Blasts.dm"
 Add-SkillRow "Scatter Shot" "/obj/Attacks/Scatter_Shot" "Learnable" "Ki" 0.3 "Dynamic" 0 "0.3 splash" 30 60 "0.3ds between shots" 70 "None" "Shared factor budget 18 per victim" "SkillEngine.dm; Blasts.dm"
 Add-SkillRow "Genocide" "/obj/Attacks/Genocide" "Learnable" "Ki" 0.25 12 0 0 3 0 "5ds between shots" 500 "None" "Activation capped at 12" "ProjectileSystem/Blasts.dm"
 Add-SkillRow "Buster Barrage" "/obj/Attacks/Buster_Barrage" "Learnable" "Ki" 0.4 20 0 "10% equal splash" 9 0 "Per-shot interval" 250 "None" "20 shots; shared budget 16" "ProjectileSystem/Blasts.dm"
@@ -441,13 +441,13 @@ Add-Row $calculator.Rows @((New-Cell "Outputs exclude dodge/shield/safezone and 
 Add-Row $calculator.Rows @((New-Cell "Skill" 1), (New-Cell "Model" 1), (New-Cell "Factor" 1), (New-Cell "Hits" 1), (New-Cell "MoveDelay" 1), (New-Cell "BP Ratio Term" 1), (New-Cell "Stat Ratio Term" 1), (New-Cell "Off/Def Term" 1), (New-Cell "Segment %" 1), (New-Cell "Per Hit" 1), (New-Cell "Raw Total" 1), (New-Cell "Melee Crit %" 1), (New-Cell "Expected Total" 1), (New-Cell "Notes" 1))
 $damageRows = @(
 	@("Manual Attack", "Physical", 2.5, 1, 0, "Before rear/critical"), @("Lunge", "Physical", 5, 1, 0, ""),
-	@("Wolf Fang Fist", "Physical", 1, 5, 0, "5-hit maximum"), @("Hundred Crack Fist", "Physical", 0.25, 24, 0, "Exact sequence"),
+	@("Wolf Fang Fist", "Physical", 2, 5, 0, "5-hit maximum; finisher knockback"), @("Hundred Crack Fist", "Physical", 0.5, 24, 0, "Exact sequence"),
 	@("Rock Throw - Powerful", "Physical", 3.5, 1, 0, ""), @("Rock Throw - Rapid", "Physical", 1, 1, 0, ""),
 	@("Rock Slide", "Physical", 0.55, 15, 0, "Maximum 15 hits"), @("Rock Tomb", "Physical", 8, 1, 0, "Primary target"),
 	@("Big Bang Attack", "Ki", 22, 2, 0, "Direct plus splash"), @("Charge", "Ki", 4, 2, 0, "Direct plus splash"),
-	@("Cyber Charge", "Ki", 2.5, 2, 0, "Direct plus splash"), @("Kienzan", "Ki", 6, 1, 0, "Owner-immune"),
-	@("Sokidan", "Ki", 3.5, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 0.5, 4, 0, "Direct only"),
-	@("Makosen", "Ki", 0.4, 20, 0, "Emission cap"), @("Scatter Shot", "Ki", 0.3, 40, 0, "Budget caps actual total at 18"),
+	@("Cyber Charge", "Ki", 2.5, 2, 0, "Direct plus splash"), @("Kienzan", "Ki", 10, 1, 0, "Owner-immune; 50% decay after each landed pierce"),
+	@("Sokidan", "Ki", 6, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 0.5, 4, 0, "Direct only"),
+	@("Makosen", "Ki", 1, 16, 0, "Shared budget 16"), @("Scatter Shot", "Ki", 0.3, 40, 0, "Budget caps actual total at 18"),
 	@("Buster Barrage", "Ki", 0.4, 20, 0, "Budget caps actual total at 16"), @("Attack Barrier", "Ki", 0.2, 20, 0, "Emission cap"),
 	@("Noob Ray", "Ki", 52, 1, 0, "Lock uncapped; explosive budget 52"), @("Cyber Laser", "Ki", 4, 1, 0, "Lock uncapped; explosive budget 4"),
 	@("Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"), @("Death Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"),
@@ -476,10 +476,10 @@ Add-Row $validation.Rows @((New-Cell "Scenario" 1), (New-Cell "Expected" 1), (Ne
 $validationRows = @(
 	@("Manual Attack equal stats", 2.5, 4, "Explicit physical factor"),
 	@("Lunge equal stats", 5, 5, "Explicit physical factor"),
-	@("Wolf Fang per hit", 1, 6, "Per-hit factor"),
-	@("Wolf Fang five hits", 5, 6, "Per hit x5"),
-	@("Hundred Crack per hit", 0.25, 7, "Per-hit factor"),
-	@("Hundred Crack minimum total", 6, 7, "Per hit x24"),
+	@("Wolf Fang per hit", 2, 6, "Per-hit factor"),
+	@("Wolf Fang five hits", 10, 6, "Per hit x5"),
+	@("Hundred Crack per hit", 0.5, 7, "Per-hit factor"),
+	@("Hundred Crack minimum total", 12, 7, "Per hit x24"),
 	@("Rock Throw powerful", 3.5, 8, "Explicit physical factor"),
 	@("Charge direct plus splash", 8, 13, "4 x2"),
 	@("Big Bang direct plus splash", 44, 12, "22 x2"),

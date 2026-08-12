@@ -1,6 +1,6 @@
 mob/proc/using_hokuto() if(hokuto_obj&&hokuto_obj.Attacking) return 1
 
-var/hundred_crack_hit_damage_mult = 0.25
+var/hundred_crack_hit_damage_mult = 0.5
 var/hundred_crack_min_hits = 24
 
 mob/var/tmp/obj/Hokuto_Shinken/hokuto_obj

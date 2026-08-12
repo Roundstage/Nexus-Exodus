@@ -7,6 +7,7 @@ mob
 var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight2.ogg')
 var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
 var/list/nexus_sword_impact_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordImpact1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact2.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact3.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact4.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact5.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordImpact6.ogg')
+var/nexus_unarmed_technique_accuracy_bonus = 10
 
 proc/showNexusSwordSlashEffect(atom/target, effect_color = "#8ecae6", impact_scale = 1)
 	set waitfor = 0
@@ -69,6 +70,8 @@ obj/Attacks/NexusMeleeTechnique
 		extra_hits = 0
 		extra_hit_multiplier = 0
 		extra_hit_delay = 2
+		sequence_hits = 0
+		sequence_hit_multiplier = 0
 		stun_ticks = 0
 		bleed_fraction = 0
 		breaks_guard = FALSE
@@ -124,6 +127,23 @@ obj/Attacks/NexusMeleeTechnique
 		if(findtext(lower_name, "kick") || findtext(lower_name, "wing clip")) return 'Strongkick.ogg'
 		if(knockback_multiplier >= 3 || damage_multiplier >= 1.8) return 'Strongpunch.ogg'
 		return 'Mediumpunch.ogg'
+
+	proc/getAccuracyBonus()
+		return accuracy_bonus + (requires_unarmed ? nexus_unarmed_technique_accuracy_bonus : 0)
+
+	proc/getOpeningKnockbackDistance(base_distance)
+		if(extra_hits > 0) return 0
+		return ToOne(base_distance * knockback_multiplier)
+
+	proc/getComboFinisherKnockbackDistance()
+		if(extra_hits <= 0) return 0
+		return max(1, round(knockback_multiplier))
+
+	proc/getTotalDamageMultiplier()
+		if(sequence_hits > 0 && sequence_hit_multiplier > 0)
+			return damage_multiplier * sequence_hits * sequence_hit_multiplier
+		if(behavior == "kickback_combo") return damage_multiplier * 1.8
+		return damage_multiplier * (1 + extra_hits * extra_hit_multiplier)
 
 	proc/playCastEffects(mob/user)
 		if(!user) return
@@ -193,6 +213,9 @@ obj/Attacks/NexusMeleeTechnique
 				if(!target || target.Health <= 0 || getdist(attacker, target) > 1) break
 				showImpact(target)
 				attacker.applyNexusTechniqueDamage(target, damage * extra_hit_multiplier, name)
+				if(hit_index == extra_hits && target)
+					var/finisher_knockback = getComboFinisherKnockbackDistance()
+					if(finisher_knockback) target.Knockback(attacker, finisher_knockback, bypass_immunity = 1)
 		if(behavior == "kickback_combo") spawn() attacker.performNexusKickbackFollowup(src, target)
 
 	proc/applyLineHits(mob/attacker, mob/primary_target, damage)
@@ -221,7 +244,7 @@ mob/proc/applyNexusTechniqueDamage(mob/target, damage, attack_name = "Nexus Tech
 mob/proc/resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE, defensive_evasion_resolved = FALSE)
 	if(!canHitNexusTechniqueTarget(target) || !technique) return FALSE
 	if(!force_hit && !defensive_evasion_resolved && target.isDefensiveDashEvading()) return FALSE
-	var/accuracy = Clamp(get_melee_accuracy(target) + technique.accuracy_bonus, 0, 100)
+	var/accuracy = Clamp(get_melee_accuracy(target) + technique.getAccuracyBonus(), 0, 100)
 	if(!force_hit && target.CanMeleeDodge(src) && target.evade_meter > 0 && !prob(accuracy))
 		target.MeleeAutoDodge(src)
 		return FALSE
@@ -368,13 +391,13 @@ mob/proc/castNexusMarchOfFury(obj/Attacks/NexusMeleeTechnique/technique)
 	technique.playCastEffects(src)
 	AlterInputDisabled(1)
 	attacking = 1
-	for(var/hit_index = 1, hit_index <= 4, hit_index++)
+	for(var/hit_index = 1, hit_index <= technique.sequence_hits, hit_index++)
 		if(!target || !canHitNexusTechniqueTarget(target)) break
 		if(getdist(src, target) > 1)
 			runNexusSkillApproach(target, 2 * world.icon_size, world.icon_size, 105, 220, 280, 0.3)
 		if(getdist(src, target) <= 1)
 			dir = get_dir(src, target)
-			resolveNexusTechniqueHit(target, technique, 0.45)
+			resolveNexusTechniqueHit(target, technique, technique.sequence_hit_multiplier)
 		sleep(4)
 	AlterInputDisabled(-1)
 	Reset_melee()
@@ -391,9 +414,9 @@ mob/proc/castNexusDelayedBarrage(obj/Attacks/NexusMeleeTechnique/technique)
 	attacking = 1
 	player_view(15, src) << "[src] prepares a rapid barrage."
 	sleep(5)
-	for(var/hit_index = 1, hit_index <= 6, hit_index++)
+	for(var/hit_index = 1, hit_index <= technique.sequence_hits, hit_index++)
 		if(!target || getdist(src, target) > 1) break
-		resolveNexusTechniqueHit(target, technique, 0.25)
+		resolveNexusTechniqueHit(target, technique, technique.sequence_hit_multiplier)
 		sleep(1)
 	Reset_melee()
 	return TRUE
@@ -671,7 +694,7 @@ obj/Attacks/NexusMeleeTechnique/Headbutt
 	name = "Headbutt"
 	desc = "A blunt close-range strike with a brief stagger."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.15
+	damage_multiplier = 1.5
 	stun_ticks = 4
 	energy_cost = 10
 	cooldown_ticks = 55
@@ -686,11 +709,11 @@ obj/Attacks/NexusMeleeTechnique/UppercutCombo
 	name = "Uppercut Combo"
 	desc = "A three-hit rising combination whose final uppercut launches the target."
 	requires_unarmed = TRUE
-	damage_multiplier = 0.8
+	damage_multiplier = 1.4
 	extra_hits = 2
-	extra_hit_multiplier = 0.45
+	extra_hit_multiplier = 0.75
 	extra_hit_delay = 3
-	knockback_multiplier = 1.5
+	knockback_multiplier = 2
 	energy_cost = 14
 	cooldown_ticks = 75
 	icon = 'RTUppercut.dmi'
@@ -704,7 +727,7 @@ obj/Attacks/NexusMeleeTechnique/AxeKick
 	name = "Axe Kick"
 	desc = "A descending kick with strong knockback."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.25
+	damage_multiplier = 2
 	knockback_multiplier = 1.4
 	energy_cost = 12
 	cooldown_ticks = 65
@@ -720,7 +743,7 @@ obj/Attacks/NexusMeleeTechnique/KickbackCombo
 	name = "Kickback Combo"
 	desc = "Knock the target away, pursue them with afterimages and land a second hit unless they block."
 	requires_unarmed = TRUE
-	damage_multiplier = 0.9
+	damage_multiplier = 1.5
 	knockback_multiplier = 2
 	energy_cost = 22
 	cooldown_ticks = 110
@@ -735,7 +758,10 @@ obj/Attacks/NexusMeleeTechnique/KickbackCombo
 obj/Attacks/NexusMeleeTechnique/MarchOfFury
 	name = "March of Fury"
 	desc = "Pursue the selected target through movement and deliver four separately resolved melee attacks."
-	damage_multiplier = 1
+	requires_unarmed = TRUE
+	damage_multiplier = 2
+	sequence_hits = 4
+	sequence_hit_multiplier = 0.6
 	dash_range = 7
 	energy_cost = 34
 	cooldown_ticks = 170
@@ -752,7 +778,7 @@ obj/Attacks/NexusMeleeTechnique/PileDriver
 	name = "Pile Driver"
 	desc = "Requires a grabbed opponent; invert and slam them head-first with an unavoidable impact."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.5
+	damage_multiplier = 2.5
 	stun_ticks = 8
 	energy_cost = 24
 	cooldown_ticks = 125
@@ -770,7 +796,7 @@ obj/Attacks/NexusMeleeTechnique/MegatonThrow
 	name = "Megaton Throw"
 	desc = "Requires a grabbed opponent; leap with them, slam them down and throw them away."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.3
+	damage_multiplier = 2.2
 	energy_cost = 20
 	cooldown_ticks = 110
 	behavior = "grapple_throw"
@@ -787,8 +813,10 @@ obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches
 	name = "Consecutive Normal Punches"
 	desc = "Telegraph briefly, then unleash six separately resolved unarmed hits on an adjacent target."
 	requires_unarmed = TRUE
-	damage_multiplier = 1
+	damage_multiplier = 1.4
 	accuracy_bonus = 5
+	sequence_hits = 6
+	sequence_hit_multiplier = 0.5
 	energy_cost = 30
 	cooldown_ticks = 170
 	behavior = "delayed_barrage"
@@ -804,7 +832,7 @@ obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike
 	name = "Exploding Heart Strike"
 	desc = "A precise unarmed strike that deals heavy damage and internal bleeding."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.45
+	damage_multiplier = 2.3
 	accuracy_bonus = 5
 	bleed_fraction = 0.15
 	energy_cost = 24
@@ -818,7 +846,7 @@ obj/Attacks/NexusMeleeTechnique/TexasSmash
 	name = "Texas Smash"
 	desc = "A slow, devastating unarmed blow with extreme knockback."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.6
+	damage_multiplier = 3.5
 	accuracy_bonus = -10
 	knockback_multiplier = 2
 	energy_cost = 32
@@ -832,7 +860,8 @@ obj/Attacks/NexusMeleeTechnique/TexasSmash
 obj/Attacks/NexusMeleeTechnique/GuardBreak
 	name = "Guard Break"
 	desc = "A focused strike that bypasses an active melee guard and briefly staggers the defender."
-	damage_multiplier = 0.8
+	requires_unarmed = TRUE
+	damage_multiplier = 1.25
 	accuracy_bonus = 20
 	breaks_guard = TRUE
 	stun_ticks = 6
@@ -850,7 +879,8 @@ obj/Attacks/NexusMeleeTechnique/GuardBreak
 obj/Attacks/NexusMeleeTechnique/WingClip
 	name = "Wing Clip"
 	desc = "Attack the target's joints with high accuracy, reduced damage and a movement stagger."
-	damage_multiplier = 0.75
+	requires_unarmed = TRUE
+	damage_multiplier = 1.2
 	accuracy_bonus = 18
 	stun_ticks = 7
 	energy_cost = 16
@@ -867,9 +897,9 @@ obj/Attacks/NexusMeleeTechnique/BurningShot
 	name = "Burning Shot"
 	desc = "Warp into range and land a fiery three-hit unarmed combination."
 	requires_unarmed = TRUE
-	damage_multiplier = 0.7
+	damage_multiplier = 1.25
 	extra_hits = 2
-	extra_hit_multiplier = 0.4
+	extra_hit_multiplier = 0.75
 	dash_range = 6
 	energy_cost = 28
 	cooldown_ticks = 140
@@ -883,9 +913,9 @@ obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 	name = "Blue Comet Special"
 	desc = "A speed-focused advancing assault adapted as a long-range five-hit rush."
 	requires_unarmed = TRUE
-	damage_multiplier = 0.5
+	damage_multiplier = 1.2
 	extra_hits = 4
-	extra_hit_multiplier = 0.25
+	extra_hit_multiplier = 0.6
 	dash_range = 8
 	energy_cost = 34
 	cooldown_ticks = 175
@@ -902,7 +932,8 @@ obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 obj/Attacks/NexusMeleeTechnique/CriticalEdge
 	name = "Critical Edge"
 	desc = "Condense the original critical stance into one accurate strike at 133% damage."
-	damage_multiplier = 1.33
+	requires_unarmed = TRUE
+	damage_multiplier = 2
 	accuracy_bonus = 15
 	energy_cost = 20
 	cooldown_ticks = 120

@@ -2,12 +2,17 @@
 	set category = "Other"
 	transform = matrix()*/
 
-var/wolf_fang_hit_damage_mult = 1
+var/wolf_fang_hit_damage_mult = 2
 var/wolf_fang_knockback_distance = 3
+var/wolf_fang_accuracy_bonus = 15
+
+proc/getWolfFangFinisherKnockback(hit_count, planned_hits)
+	if(planned_hits <= 0 || hit_count < planned_hits) return 0
+	return wolf_fang_knockback_distance
 
 obj
 	WolfFangFist
-		desc = "Lunges at your opponent with five advancing strikes. Each hit deals medium knockback and carries you into the next attack."
+		desc = "Lunges at your opponent with five advancing strikes. The sequence stays in contact and its final hit deals medium knockback."
 
 		Cost_To_Learn = 20
 		Teach_Timer = 1

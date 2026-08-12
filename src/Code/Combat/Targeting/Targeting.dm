@@ -13,6 +13,7 @@ mob/var/tmp/mob/selected_target
 client/var/tmp/image/selected_target_marker
 
 var/icon/selected_target_marker_icon
+var/nexus_cycle_target_range = 30
 
 proc/getSelectedTargetMarkerIcon()
 	if(selected_target_marker_icon) return selected_target_marker_icon
@@ -35,6 +36,39 @@ mob/proc/canSelectTarget(mob/candidate)
 	if(candidate.type == /mob/Body || !candidate.attackable) return FALSE
 	if(candidate.invisibility > see_invisible) return FALSE
 	return TRUE
+
+mob/proc/canCycleTarget(mob/candidate, max_dist = nexus_cycle_target_range)
+	if(!canSelectTarget(candidate) || candidate.z != z || candidate.KO || candidate.Safezone || candidate.rp_mode) return FALSE
+	if(max_dist > 0 && bounds_dist(src, candidate) / world.icon_size > max_dist) return FALSE
+	if(client && !viewable(src, candidate)) return FALSE
+	return TRUE
+
+mob/proc/getCycleTargetCandidates(max_dist = nexus_cycle_target_range)
+	var/list/candidates = list()
+	for(var/mob/candidate in range(max_dist, src))
+		if(!canCycleTarget(candidate, max_dist)) continue
+		var/candidate_distance = bounds_dist(src, candidate)
+		var/candidate_angle = get_global_angle(src, candidate)
+		var/insert_at = candidates.len + 1
+		for(var/candidate_index = 1, candidate_index <= candidates.len, candidate_index++)
+			var/mob/existing = candidates[candidate_index]
+			var/existing_distance = bounds_dist(src, existing)
+			var/existing_angle = get_global_angle(src, existing)
+			if(candidate_distance < existing_distance || (candidate_distance == existing_distance && candidate_angle < existing_angle))
+				insert_at = candidate_index
+				break
+		candidates.Insert(insert_at, candidate)
+	return candidates
+
+mob/proc/cycleSelectedTarget(max_dist = nexus_cycle_target_range, announce = TRUE)
+	var/list/candidates = getCycleTargetCandidates(max_dist)
+	if(!candidates.len)
+		setSelectedTarget(null, FALSE)
+		if(announce) src << "<font color=#9aa4b2>No valid combat targets are nearby."
+		return
+	var/next_index = candidates.Find(selected_target) + 1
+	if(next_index <= 1 || next_index > candidates.len) next_index = 1
+	return setSelectedTarget(candidates[next_index], announce)
 
 mob/proc/setSelectedTarget(mob/new_target, announce = TRUE)
 	if(new_target && !canSelectTarget(new_target)) new_target = null
@@ -94,6 +128,11 @@ mob/verb/clearTarget()
 	set name = "Clear Target"
 	set category = "Combat"
 	setSelectedTarget(null)
+
+mob/verb/cycleTarget()
+	set name = "Cycle Target"
+	set category = "Combat"
+	cycleSelectedTarget()
 
 atom/movable/proc
 	//dir_angle is like which way src is facing usually

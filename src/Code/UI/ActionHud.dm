@@ -722,7 +722,7 @@ datum/NexusPlayerMenu
 		var/list/data = list("factor" = 0, "model" = "Dynamic / utility", "preview_profile" = "direct", "range" = "See mechanics", "mechanics" = "Behavior is described by the technique.", "requirements" = "Owned and available on the skill bar.")
 		if(istype(skill, /obj/Attacks/NexusMeleeTechnique))
 			var/obj/Attacks/NexusMeleeTechnique/technique = skill
-			data["factor"] = technique.damage_multiplier * (1 + technique.extra_hits * technique.extra_hit_multiplier)
+			data["factor"] = technique.getTotalDamageMultiplier()
 			data["model"] = "Physical"
 			data["preview_profile"] = "nexus_melee"
 			data["range"] = technique.dash_range > 1 ? "Up to [technique.dash_range] tiles" : "Adjacent target"

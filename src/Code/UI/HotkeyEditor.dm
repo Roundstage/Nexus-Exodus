@@ -203,6 +203,18 @@ datum/NexusHotkeyAction
 			user.tryDefensiveDash(dash_direction)
 			return 1
 
+	CycleTarget
+		New()
+			. = ..()
+			action_id = "cycle_target"
+			display_name = "Cycle Target"
+			hotbar_type = "Targeting"
+
+		execute(mob/user)
+			if(!user) return 0
+			user.cycleSelectedTarget()
+			return 1
+
 var/list/nexus_hotkey_action_registry
 
 proc/initializeNexusHotkeyActionRegistry()
@@ -240,6 +252,8 @@ proc/initializeNexusHotkeyActionRegistry()
 	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_west", "Short Dash: West", WEST)
 	nexus_hotkey_action_registry[action.action_id] = action
 	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_northwest", "Short Dash: Northwest", NORTHWEST)
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/CycleTarget
 	nexus_hotkey_action_registry[action.action_id] = action
 
 proc/getNexusHotkeyAction(action_id)

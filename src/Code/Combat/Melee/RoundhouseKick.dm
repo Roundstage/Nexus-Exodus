@@ -1,3 +1,5 @@
+var/roundhouse_kick_damage_factor = 7.5
+
 obj
 	RoundhouseKick
 		desc = "Concentrate your energy into a powerful punch that can knock back enemies."
@@ -52,7 +54,7 @@ mob
 			var/mob/target = getSelectedTarget(max_dist = 3)
 			if(target)
 				for(var/mob/M in list(target))
-					var/dmg = getPhysicalCombatDamage(M, 4)
+					var/dmg = getPhysicalCombatDamage(M, roundhouse_kick_damage_factor)
 					var/knockback = get_melee_knockback_distance(M)
 					if(M != usr)
 						usr << "You rotate a powerful kick that knocks [M] away!"
