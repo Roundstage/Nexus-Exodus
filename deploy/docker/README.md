@@ -18,9 +18,10 @@ armazenamento privado e recompile depois de qualquer rotação da senha.
 O entrypoint copia o par compilado para `/srv/nexus`, que também é o diretório
 de trabalho do DreamDaemon. Isso mantém `DU.dmb`, `DU.rsc` e `DU.dyn.rsc` no
 mesmo local, como o runtime do BYOND espera. O usuário sem privilégios do
-container pode criar o cache dinâmico, enquanto o restante da imagem continua
-somente leitura. Quando o hash de `DU.dmb` ou `DU.rsc` muda, o cache dinâmico
-antigo é removido e recriado para não misturar recursos de builds diferentes.
+container pode bloquear e atualizar o `DU.rsc`, além de criar o cache dinâmico,
+enquanto o restante da imagem continua somente leitura. Quando o hash de
+`DU.dmb` ou `DU.rsc` muda, o cache dinâmico antigo é removido e recriado para
+não misturar recursos de builds diferentes.
 
 O volume `nexus_state` preserva saves, mapas construídos, uploads e logs entre
 atualizações. Faça backup desse volume antes de trocar a imagem. O container
