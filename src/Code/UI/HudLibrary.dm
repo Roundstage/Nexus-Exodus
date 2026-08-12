@@ -404,6 +404,9 @@ proc/closeNexusLegacyChatMarkup(message)
 proc/getNexusChatEntryHtml(message)
 	return "<div class='chat-entry'>[closeNexusLegacyChatMarkup(message)]</div>"
 
+proc/encodeNexusBrowserFunctionArgument(value)
+	return url_encode(json_encode("[value]"))
+
 proc/nexusChatChannelAppearsInAll(channel)
 	return normalizeNexusChatChannel(channel) != "combat"
 
@@ -475,6 +478,9 @@ datum/NexusChatHud
 			rendered += getNexusChatEntryHtml(entries[entry_index])
 		return rendered
 
+	proc/buildMessageOutputPayload()
+		return encodeNexusBrowserFunctionArgument(buildMessageHtml())
+
 	proc/getRightAnchoredLocation(panel_width, local_x, element_width, bottom_y)
 		var/right_offset = 8 + panel_width - local_x - element_width
 		return "RIGHT:-[right_offset],BOTTOM:[bottom_y]"
@@ -500,7 +506,7 @@ datum/NexusChatHud
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Nexus Chat</title><style>[getNexusHudBrowserCss("bronze")]
 		html,body{width:100%;height:100%;overflow:hidden;font-size:10px}.chat-shell{height:100vh;display:flex;flex-direction:column;padding:6px;gap:5px}.chat-head{display:flex;align-items:center;gap:5px;flex:0 0 37px;padding:4px 7px}.chat-head .title-copy{display:flex;flex:1;min-width:0;flex-direction:column}.chat-head .hud-title{font-size:11px}.chat-head .hud-muted{font-size:7px}.chat-head .hud-button{padding:5px 7px;font-size:8px}.tabs,.footer{display:flex;width:100%;gap:5px;flex:0 0 31px;min-height:31px;overflow:hidden}.tabs .hud-tab{display:flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;padding:4px 2px}.footer{order:4}.footer .hud-button{display:flex;flex:1 1 25%;width:25%;min-width:0;align-items:center;justify-content:center;padding:4px 2px}.messages{order:3;flex:1 1 auto;min-height:0;padding:9px;overflow-y:auto;color:#ead7b0;font-size:9px;line-height:1.45}
 		.chat-entry{display:block;width:100%;min-width:0;overflow-wrap:anywhere}
-		</style><script>function nexusScrollMessages(){var panel=document.getElementById('messages');if(panel)panel.scrollTop=panel.scrollHeight;}function updateMessages(content){var panel=document.getElementById('messages');if(!panel)return;panel.innerHTML=content;nexusScrollMessages();}window.onload=function(){document.body.className='nexus-hud';nexusScrollMessages();}</script></head><body><main class='hud-shell chat-shell'><header class='hud-frame chat-head'><span class='title-copy'><b class='hud-title'>CHAT / [uppertext(active_channel)]</b><small class='hud-muted'>NEXUS COMMUNICATION LINK</small></span>[buildLink("UP", "scroll_up", "hud-button")][buildLink("DOWN", "scroll_down", "hud-button")][buildLink("HIDE", "hide", "hud-button danger")]</header><nav class='tabs'>[tabs]</nav><nav class='footer'>[footer]</nav><section class='hud-panel messages' id='messages'>[buildMessageHtml()]</section></main></body></html>"}
+		</style><script>function nexusScrollMessages(){var panel=document.getElementById('messages');if(panel)panel.scrollTop=panel.scrollHeight;}function updateMessages(payload){var panel=document.getElementById('messages');if(!panel)return;var content='';try{content=JSON.parse(payload);}catch(error){return;}panel.innerHTML=content;nexusScrollMessages();}window.onload=function(){document.body.className='nexus-hud';nexusScrollMessages();}</script></head><body><main class='hud-shell chat-shell'><header class='hud-frame chat-head'><span class='title-copy'><b class='hud-title'>CHAT / [uppertext(active_channel)]</b><small class='hud-muted'>NEXUS COMMUNICATION LINK</small></span>[buildLink("UP", "scroll_up", "hud-button")][buildLink("DOWN", "scroll_down", "hud-button")][buildLink("HIDE", "hide", "hud-button danger")]</header><nav class='tabs'>[tabs]</nav><nav class='footer'>[footer]</nav><section class='hud-panel messages' id='messages'>[buildMessageHtml()]</section></main></body></html>"}
 
 	proc/attachSidePanel()
 		if(!owner || !owner.client) return
@@ -623,7 +629,7 @@ datum/NexusChatHud
 	proc/refreshMessages()
 		if(!is_visible || !owner || !owner.client || !owner.playerCharacter) return
 		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs")
-			owner << output(buildMessageHtml(), "nexuschatwindow.chat:updateMessages")
+			owner << output(buildMessageOutputPayload(), "nexuschatwindow.chat:updateMessages")
 			return
 		if(message_panel && message_panel in elements)
 			message_panel.maptext = "<div style='font-family:Courier New;font-size:8px;color:#ead7b0'>[buildMessageHtml()]</div>"
