@@ -4,6 +4,7 @@ var/const/nexus_profile_art_max_file_bytes = 8 * 1024 * 1024
 var/const/nexus_profile_art_max_artifact_bytes = nexus_profile_art_max_file_bytes
 var/const/nexus_profile_art_max_dimension = 3840
 var/const/nexus_profile_art_max_pixels = 3840 * 2160
+var/const/nexus_profile_art_external_inspection_timeout = 50
 var/const/nexus_profile_art_upload_ticket_lifetime = 1200
 var/const/nexus_profile_art_upload_cooldown = 600
 var/const/nexus_profile_art_daily_account_bytes = 24 * 1024 * 1024
@@ -244,6 +245,92 @@ proc/isNexusProfileArtDimensionsValid(art_width, art_height)
 	if(!nexusIsFiniteNumber(art_width) || !nexusIsFiniteNumber(art_height)) return FALSE
 	if(art_width < 1 || art_height < 1 || art_width > nexus_profile_art_max_dimension || art_height > nexus_profile_art_max_dimension) return FALSE
 	return art_width * art_height <= nexus_profile_art_max_pixels
+
+proc/isNexusProfileArtInspectionTicket(value)
+	if(!istext(value) || length(value) != 32 || lowertext(value) != value) return FALSE
+	for(var/index = 1, index <= length(value), index++)
+		if(!findtext("0123456789abcdef", copytext(value, index, index + 1))) return FALSE
+	return TRUE
+
+proc/getNexusProfileArtInspectionRequestPath(ticket)
+	if(!isNexusProfileArtInspectionTicket(ticket)) return null
+	return "data/ProfileImages/.inspect-[ticket].request"
+
+proc/getNexusProfileArtInspectionResultPath(ticket)
+	if(!isNexusProfileArtInspectionTicket(ticket)) return null
+	return "data/ProfileImages/.inspect-[ticket].result"
+
+proc/trimNexusProfileArtInspectionResult(value)
+	var/result_text = "[value]"
+	while(length(result_text))
+		var/last_character = copytext(result_text, length(result_text), 0)
+		if(last_character != "\n" && last_character != ascii2text(13)) break
+		result_text = copytext(result_text, 1, length(result_text))
+	return result_text
+
+proc/inspectNexusProfileArtExternally(upload_path, upload_format, ticket, expected_bytes, expected_hash)
+	var/list/result = list("ok" = FALSE, "error" = "The server media inspector could not validate that file.")
+	upload_format = normalizeNexusProfileArtFormat(upload_format)
+	if(!(upload_format in list("webp", "webm")) || !isNexusProfileArtInspectionTicket(ticket) || !isNexusProfileArtHash(expected_hash) || !nexusIsFiniteNumber(expected_bytes)) return result
+	var/path_prefix = "data/ProfileImages/"
+	if(!istext(upload_path) || findtext(upload_path, path_prefix) != 1 || findtext(upload_path, "..")) return result
+	var/upload_name = copytext(upload_path, length(path_prefix) + 1)
+	if(!length(upload_name) || findtext(upload_name, "/") || findtext(upload_name, "\\")) return result
+	if(!fexists("data/ProfileImages/.profile-media-inspector.ready"))
+		result["error"] = "The server media inspector is unavailable. Contact an administrator."
+		return result
+	var/request_path = getNexusProfileArtInspectionRequestPath(ticket)
+	var/result_path = getNexusProfileArtInspectionResultPath(ticket)
+	fdel(request_path)
+	fdel(result_path)
+	if(fexists(request_path) || fexists(result_path))
+		result["error"] = "A stale media-inspection request could not be cleared. Try again later."
+		return result
+	var/request_payload = "[upload_format]\n[upload_name]\n[expected_bytes]\n[expected_hash]"
+	if(!text2file(request_payload, request_path) || !fexists(request_path))
+		result["error"] = "The server media-inspection request could not be created."
+		return result
+	for(var/inspection_tick = 1, inspection_tick <= nexus_profile_art_external_inspection_timeout, inspection_tick++)
+		if(fexists(result_path))
+			var/result_text = trimNexusProfileArtInspectionResult(file2text(result_path))
+			var/list/result_fields = params2list(result_text)
+			fdel(result_path)
+			fdel(request_path)
+			if(!islist(result_fields) || result_fields["status"] != "ok")
+				var/error_code = islist(result_fields) ? copytext("[result_fields["code"]]", 1, 65) : "invalid_result"
+				world.log << "PROFILE_ART_INSPECTION_FAILED format=[upload_format] code=[error_code]"
+				result["error"] = "The [uppertext(upload_format)] file failed server-side media inspection ([error_code])."
+				return result
+			var/inspected_bytes = text2num("[result_fields["bytes"]]")
+			var/inspected_width = text2num("[result_fields["width"]]")
+			var/inspected_height = text2num("[result_fields["height"]]")
+			var/inspected_hash = lowertext("[result_fields["hash"]]")
+			var/inspected_format = normalizeNexusProfileArtFormat(result_fields["format"])
+			if(inspected_format != upload_format || inspected_bytes != expected_bytes || inspected_hash != expected_hash || !isNexusProfileArtDimensionsValid(inspected_width, inspected_height))
+				world.log << "PROFILE_ART_INSPECTION_FAILED format=[upload_format] code=result_mismatch inspected_format=[inspected_format] inspected_bytes=[inspected_bytes] expected_bytes=[expected_bytes] inspected_width=[inspected_width] inspected_height=[inspected_height] hash_matches=[inspected_hash == expected_hash]"
+				result["error"] = "The server media-inspection result did not match the uploaded file."
+				return result
+			result["ok"] = TRUE
+			result["error"] = ""
+			result["width"] = inspected_width
+			result["height"] = inspected_height
+			return result
+		sleep(1)
+	fdel(request_path)
+	fdel(result_path)
+	world.log << "PROFILE_ART_INSPECTION_FAILED format=[upload_format] code=timeout"
+	result["error"] = "The server media inspector timed out. Try again later."
+	return result
+
+proc/isNexusProfileArtStoredContentValid(path, expected_hash, expected_format)
+	expected_format = normalizeNexusProfileArtFormat(expected_format)
+	if(!istext(path) || !fexists(path) || !isNexusProfileArtHash(expected_hash) || !length(expected_format)) return FALSE
+	if(sha1(file(path)) != expected_hash) return FALSE
+	// WEBP/WEBM are inspected byte-for-byte by the Docker helper at ingress.
+	// Their immutable hash-named generations can then be rechecked in DM without
+	// file2text(), which truncates binary data at the first NUL byte.
+	if(expected_format in list("webp", "webm")) return TRUE
+	return getNexusProfileArtSignatureFormat(file(path)) == expected_format
 
 proc/getNexusPlayerProfileImagePathForKey(character_key, slot = 1, content_hash = "", art_format = "")
 	var/account_key = ckey(character_key)
@@ -559,7 +646,7 @@ mob/proc/hasNexusPlayerProfileCustomArt()
 	var/path = getNexusPlayerProfileImagePath()
 	if(!path || !fexists(path) || length(file(path)) != player_profile_art_bytes) return FALSE
 	if(nexus_profile_art_runtime_hash != player_profile_art_hash)
-		if(sha1(file(path)) != player_profile_art_hash || getNexusProfileArtSignatureFormat(file(path)) != player_profile_art_format) return FALSE
+		if(!isNexusProfileArtStoredContentValid(path, player_profile_art_hash, player_profile_art_format)) return FALSE
 		nexus_profile_art_runtime_hash = player_profile_art_hash
 	return TRUE
 
@@ -576,17 +663,30 @@ mob/proc/getNexusPlayerProfileCustomArtResourceName(prefix = "nexus_profile_art"
 	var/opaque_id = md5("\ref[src]|[player_profile_art_hash]|[nexus_profile_art_policy_version]")
 	return "[prefix]_[opaque_id]_[player_profile_art_hash].[player_profile_art_format]"
 
-mob/proc/isNexusPlayerProfileArtMetadataPersisted()
-	var/save_path = getNexusCharacterSavePath()
+mob/proc/writeNexusPlayerProfileArtSaveFields(savefile/profile_save)
+	if(!profile_save) return FALSE
+	// Explicit writes also clear old custom-art metadata when a profile returns to
+	// the initial live-sprite values, which datum.Write() intentionally omits.
+	profile_save["player_profile_portrait_mode"] << player_profile_portrait_mode
+	profile_save["player_profile_art_hash"] << player_profile_art_hash
+	profile_save["player_profile_art_format"] << player_profile_art_format
+	profile_save["player_profile_art_bytes"] << player_profile_art_bytes
+	profile_save["player_profile_art_width"] << player_profile_art_width
+	profile_save["player_profile_art_height"] << player_profile_art_height
+	profile_save["player_profile_art_version"] << player_profile_art_version
+	return TRUE
+
+mob/proc/isNexusPlayerProfileArtMetadataPersisted(save_path)
+	if(!save_path) save_path = getNexusCharacterSavePath()
 	if(!save_path || !fexists(save_path)) return FALSE
 	var/savefile/profile_save = new(save_path)
-	var/saved_mode
-	var/saved_hash
-	var/saved_format
-	var/saved_bytes
-	var/saved_width
-	var/saved_height
-	var/saved_version
+	var/saved_mode = initial(player_profile_portrait_mode)
+	var/saved_hash = initial(player_profile_art_hash)
+	var/saved_format = initial(player_profile_art_format)
+	var/saved_bytes = initial(player_profile_art_bytes)
+	var/saved_width = initial(player_profile_art_width)
+	var/saved_height = initial(player_profile_art_height)
+	var/saved_version = initial(player_profile_art_version)
 	profile_save["player_profile_portrait_mode"] >> saved_mode
 	profile_save["player_profile_art_hash"] >> saved_hash
 	profile_save["player_profile_art_format"] >> saved_format
@@ -633,24 +733,27 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 		cleanupNexusProfileArtUntrackedFile(temp_path)
 		result["error"] = "The staged image failed its size validation."
 		return result
-	var/signature_format = getNexusProfileArtSignatureFormat(file(temp_path))
-	if(signature_format != upload_format)
+	var/content_hash = sha1(file(temp_path))
+	if(!isNexusProfileArtHash(content_hash))
 		cleanupNexusProfileArtUntrackedFile(temp_path)
-		result["error"] = "The file contents do not match the selected PNG, JPEG, WEBP, or WEBM extension."
+		result["error"] = "The server could not fingerprint the image."
 		return result
 	var/image_width
 	var/image_height
-	if(upload_format == "webm")
-		var/list/webm_dimensions = getNexusWebmDimensions(file(temp_path))
-		if(islist(webm_dimensions))
-			image_width = webm_dimensions["width"]
-			image_height = webm_dimensions["height"]
-	else if(upload_format == "webp")
-		var/list/webp_dimensions = getNexusWebpDimensions(file(temp_path))
-		if(islist(webp_dimensions))
-			image_width = webp_dimensions["width"]
-			image_height = webp_dimensions["height"]
+	if(upload_format in list("webp", "webm"))
+		var/list/external_inspection = inspectNexusProfileArtExternally(temp_path, upload_format, safe_ticket, artifact_bytes, content_hash)
+		if(!external_inspection["ok"])
+			cleanupNexusProfileArtUntrackedFile(temp_path)
+			result["error"] = external_inspection["error"]
+			return result
+		image_width = external_inspection["width"]
+		image_height = external_inspection["height"]
 	else
+		var/signature_format = getNexusProfileArtSignatureFormat(file(temp_path))
+		if(signature_format != upload_format)
+			cleanupNexusProfileArtUntrackedFile(temp_path)
+			result["error"] = "The file contents do not match the selected PNG or JPEG extension."
+			return result
 		if(nexus_profile_art_decode_active)
 			cleanupNexusProfileArtUntrackedFile(temp_path)
 			result["error"] = "Another profile image is being inspected. Try again in a moment."
@@ -673,11 +776,6 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 		cleanupNexusProfileArtUntrackedFile(temp_path)
 		result["error"] = "Portrait media must fit within 4K: at most 3840x2160 landscape or 2160x3840 portrait."
 		return result
-	var/content_hash = sha1(file(temp_path))
-	if(!isNexusProfileArtHash(content_hash))
-		cleanupNexusProfileArtUntrackedFile(temp_path)
-		result["error"] = "The server could not fingerprint the image."
-		return result
 	var/final_path = getNexusPlayerProfileImagePathForKey(owner.key, owner.active_character_slot, content_hash, upload_format)
 	if(!final_path)
 		cleanupNexusProfileArtUntrackedFile(temp_path)
@@ -697,7 +795,7 @@ proc/storeNexusPlayerProfileImage(mob/owner, uploaded_file, original_name, ticke
 			return result
 		if(nexusIsFiniteNumber(corrupt_bytes) && corrupt_bytes > 0) noteNexusProfileArtStoredDelta(-corrupt_bytes)
 	if(!final_already_valid)
-		if(!fcopy(temp_path, final_path) || !fexists(final_path) || length(file(final_path)) != artifact_bytes || sha1(file(final_path)) != content_hash || getNexusProfileArtSignatureFormat(file(final_path)) != upload_format)
+		if(!fcopy(temp_path, final_path) || !fexists(final_path) || length(file(final_path)) != artifact_bytes || !isNexusProfileArtStoredContentValid(final_path, content_hash, upload_format))
 			cleanupNexusProfileArtUntrackedFile(final_path)
 			cleanupNexusProfileArtUntrackedFile(temp_path)
 			result["error"] = "The original image could not be committed without modification."
@@ -719,7 +817,7 @@ proc/copyNexusPlayerProfileImageForKeys(source_key, source_slot, destination_key
 	var/source_path = ""
 	for(var/format in list("png", "jpg", "webp", "webm"))
 		var/candidate_path = getNexusPlayerProfileImagePathForKey(source_key, source_slot, expected_hash, format)
-		if(candidate_path && fexists(candidate_path) && sha1(file(candidate_path)) == expected_hash && getNexusProfileArtSignatureFormat(file(candidate_path)) == format)
+		if(candidate_path && fexists(candidate_path) && isNexusProfileArtStoredContentValid(candidate_path, expected_hash, format))
 			source_format = format
 			source_path = candidate_path
 			break

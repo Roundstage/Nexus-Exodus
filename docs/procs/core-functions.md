@@ -3961,7 +3961,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - Inputs: None
 - Purpose: Handle save.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: serializes the character, explicitly flushes pending savefile writes for immediate durability checks, restores transient overlays, and saves Feats.
 
 #### mob/proc/load
 - Signature: `mob/proc/load() if(client)`

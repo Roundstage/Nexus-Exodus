@@ -212,6 +212,36 @@ proc/runNexusProfileArtSmokeTests()
 		loadNexusProfileArtBudget()
 		nexusSmokeAssert(nexus_profile_art_global_daily_bytes == 0 && nexus_profile_art_global_stored_bytes == 0 && islist(nexus_profile_art_account_daily_bytes) && !length(getNexusProfileArtUploadAuthorizationError("profileartclean", 1, nexus_profile_art_min_file_bytes)), "a clean server initializes the profile-art budget as already full")
 	nexusSmokeAssert(isNexusProfileArtUploadName("portrait.png") && isNexusProfileArtUploadName("PORTRAIT.PNG") && isNexusProfileArtUploadName("portrait.jpg") && isNexusProfileArtUploadName("portrait.JPEG") && isNexusProfileArtUploadName("portrait.webp") && isNexusProfileArtUploadName("PORTRAIT.WEBP") && isNexusProfileArtUploadName("portrait.webm") && isNexusProfileArtUploadName("PORTRAIT.WEBM") && !isNexusProfileArtUploadName("portrait.webp.exe") && !isNexusProfileArtUploadName("portrait.webm.exe") && !isNexusProfileArtUploadName("portrait.gif") && !isNexusProfileArtUploadName("portrait.dmi"), "profile-art filename preflight does not enforce the PNG/JPEG/WEBP/WEBM allowlist")
+	var/profile_art_inspection_ticket = md5("nexus-profile-art-inspection-smoke")
+	nexusSmokeAssert(isNexusProfileArtInspectionTicket(profile_art_inspection_ticket) && getNexusProfileArtInspectionRequestPath(profile_art_inspection_ticket) == "data/ProfileImages/.inspect-[profile_art_inspection_ticket].request" && getNexusProfileArtInspectionResultPath(profile_art_inspection_ticket) == "data/ProfileImages/.inspect-[profile_art_inspection_ticket].result" && !isNexusProfileArtInspectionTicket("../[profile_art_inspection_ticket]"), "profile-art binary inspection paths are not derived exclusively from a validated ticket")
+	var/profile_art_inspector_ready_path = "data/ProfileImages/.profile-media-inspector.ready"
+	var/profile_art_created_fake_inspector = !fexists(profile_art_inspector_ready_path)
+	var/profile_art_inspection_upload_path = "data/ProfileImages/.upload-profileartsmoke-slot1-[profile_art_inspection_ticket].webp"
+	var/profile_art_inspection_bytes = 72040
+	var/profile_art_inspection_hash = sha1("nexus-profile-art-inspection-result-smoke")
+	if(profile_art_created_fake_inspector)
+		nexusSmokeAssert(text2file("smoke\n", profile_art_inspector_ready_path), "profile-art smoke could not stage its local binary-inspector readiness marker")
+		var/profile_art_inspection_request_path = getNexusProfileArtInspectionRequestPath(profile_art_inspection_ticket)
+		var/profile_art_inspection_result_path = getNexusProfileArtInspectionResultPath(profile_art_inspection_ticket)
+		spawn
+			for(var/profile_art_inspector_tick = 1, profile_art_inspector_tick <= nexus_profile_art_external_inspection_timeout, profile_art_inspector_tick++)
+				if(fexists(profile_art_inspection_request_path))
+					var/list/profile_art_fake_request_fields = splittext(replacetext(file2text(profile_art_inspection_request_path), ascii2text(13), ""), "\n")
+					var/profile_art_fake_expected_hash = profile_art_fake_request_fields.len >= 4 ? profile_art_fake_request_fields[4] : ""
+					text2file("status=ok&format=webp&bytes=72040&width=360&height=543&hash=[profile_art_fake_expected_hash]", profile_art_inspection_result_path)
+					break
+				sleep(1)
+	else
+		var/profile_art_inspection_source_path = "data/ProfileImages/profile-media-inspector-smoke.webp"
+		nexusSmokeAssert(fexists(profile_art_inspection_source_path) && fcopy(profile_art_inspection_source_path, profile_art_inspection_upload_path), "the external profile-art inspector started without a usable WEBP smoke fixture")
+		profile_art_inspection_bytes = length(file(profile_art_inspection_upload_path))
+		profile_art_inspection_hash = sha1(file(profile_art_inspection_upload_path))
+	var/list/profile_art_external_inspection = inspectNexusProfileArtExternally(profile_art_inspection_upload_path, "webp", profile_art_inspection_ticket, profile_art_inspection_bytes, profile_art_inspection_hash)
+	nexusSmokeAssert(profile_art_external_inspection["ok"] && profile_art_external_inspection["width"] == 360 && profile_art_external_inspection["height"] == 543, "profile-art request/result inspection protocol rejected a bound matching WEBP response")
+	if(profile_art_created_fake_inspector) fdel(profile_art_inspector_ready_path)
+	else
+		fdel(profile_art_inspection_upload_path)
+		fdel("data/ProfileImages/profile-media-inspector-smoke.webp")
 	var/profile_art_fixture_hash = sha1("nexus-profile-art-generation-smoke")
 	nexusSmokeAssert(getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "png") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].png" && getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "jpeg") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].jpg" && getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "webp") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].webp" && getNexusPlayerProfileImagePathForKey("Smoke Key", 2, profile_art_fixture_hash, "webm") == "data/ProfileImages/smokekey-slot2-[profile_art_fixture_hash].webm" && !getNexusPlayerProfileImagePathForKey("../Smoke Key", 0, profile_art_fixture_hash, "png") && getNexusPlayerProfileImagePathFromSaveName("smokekey-slot3.sav") == "data/ProfileImages/smokekey-slot3.dmi" && !getNexusPlayerProfileImagePathFromSaveName("../smokekey-slot3.sav"), "profile-art generation paths are not derived exclusively from a validated account, slot, hash, and format")
 	var/list/profile_art_webp_vp8_raw = list(82, 73, 70, 70, 22, 0, 0, 0, 87, 69, 66, 80, 86, 80, 56, 32, 10, 0, 0, 0, 0, 0, 0, 157, 1, 42, 104, 1, 31, 2)
@@ -267,6 +297,51 @@ proc/runNexusProfileArtSmokeTests()
 	nexusSmokeAssert(nexus_profile_art_global_stored_bytes == profile_art_stored_before && !fexists(profile_art_orphan_path), "profile-art reconciliation does not remove a generation whose character slot no longer exists")
 	fdel(profile_art_png_source)
 	fdel(profile_art_jpg_source)
+
+	var/profile_persistence_path = "nexus-smoke-profile.sav"
+	fdel(profile_persistence_path)
+	var/mob/NexusSmokeTest/profile_persistence_test = new
+	var/savefile/profile_persistence_save = new(profile_persistence_path)
+	profile_persistence_test.Write(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileTextSaveFields(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileArtSaveFields(profile_persistence_save)
+	profile_persistence_save.Flush()
+	profile_persistence_save = null
+	nexusSmokeAssert(profile_persistence_test.isNexusPlayerProfileTextPersisted(profile_persistence_path) && profile_persistence_test.isNexusPlayerProfileArtMetadataPersisted(profile_persistence_path), "initial SOUTH/empty/live-sprite profile values do not survive a fresh savefile read")
+	profile_persistence_test.player_desc = "Persisted profile smoke"
+	profile_persistence_test.player_profile_name = "Smoke Profile"
+	profile_persistence_test.player_profile_title = "Persistence Probe"
+	profile_persistence_test.player_profile_portrait_direction = NORTH
+	profile_persistence_test.player_profile_markup_version = 1
+	profile_persistence_test.player_profile_portrait_mode = "custom"
+	profile_persistence_test.player_profile_art_hash = sha1("nexus-profile-persistence-smoke")
+	profile_persistence_test.player_profile_art_format = "webp"
+	profile_persistence_test.player_profile_art_bytes = 72040
+	profile_persistence_test.player_profile_art_width = 360
+	profile_persistence_test.player_profile_art_height = 543
+	profile_persistence_test.player_profile_art_version = nexus_profile_art_policy_version
+	profile_persistence_save = new(profile_persistence_path)
+	profile_persistence_test.Write(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileTextSaveFields(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileArtSaveFields(profile_persistence_save)
+	profile_persistence_save.Flush()
+	profile_persistence_save = null
+	nexusSmokeAssert(profile_persistence_test.isNexusPlayerProfileTextPersisted(profile_persistence_path) && profile_persistence_test.isNexusPlayerProfileArtMetadataPersisted(profile_persistence_path), "non-default profile text or WEBP metadata does not survive immediate savefile reopen")
+	profile_persistence_test.player_desc = initial(profile_persistence_test.player_desc)
+	profile_persistence_test.player_profile_name = initial(profile_persistence_test.player_profile_name)
+	profile_persistence_test.player_profile_title = initial(profile_persistence_test.player_profile_title)
+	profile_persistence_test.player_profile_portrait_direction = initial(profile_persistence_test.player_profile_portrait_direction)
+	profile_persistence_test.player_profile_markup_version = initial(profile_persistence_test.player_profile_markup_version)
+	profile_persistence_test.clearNexusPlayerProfileArtMetadata()
+	profile_persistence_save = new(profile_persistence_path)
+	profile_persistence_test.Write(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileTextSaveFields(profile_persistence_save)
+	profile_persistence_test.writeNexusPlayerProfileArtSaveFields(profile_persistence_save)
+	profile_persistence_save.Flush()
+	profile_persistence_save = null
+	nexusSmokeAssert(profile_persistence_test.isNexusPlayerProfileTextPersisted(profile_persistence_path) && profile_persistence_test.isNexusPlayerProfileArtMetadataPersisted(profile_persistence_path), "resetting a profile to SOUTH/empty/live-sprite values leaves stale savefile fields")
+	del(profile_persistence_test)
+	fdel(profile_persistence_path)
 
 proc/nexusSmokeStatAllocation(list/profile)
 	var/list/allocation = list()

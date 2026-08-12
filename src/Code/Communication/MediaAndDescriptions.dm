@@ -94,15 +94,26 @@ mob/proc/isNexusProfileEditingBlocked()
 mob/proc/canPersistNexusPlayerProfile()
 	return playerCharacter && !dbz_character && !is_saitama && Savable && player_saving_on && key && displaykey && getNexusCharacterSavePath()
 
-mob/proc/isNexusPlayerProfileTextPersisted()
-	var/save_path = getNexusCharacterSavePath()
+mob/proc/writeNexusPlayerProfileTextSaveFields(savefile/profile_save)
+	if(!profile_save) return FALSE
+	// datum.Write() skips values equal to their initial value. Write every profile
+	// field explicitly so SOUTH/empty resets replace stale values in an existing save.
+	profile_save["player_desc"] << player_desc
+	profile_save["player_profile_name"] << player_profile_name
+	profile_save["player_profile_title"] << player_profile_title
+	profile_save["player_profile_portrait_direction"] << player_profile_portrait_direction
+	profile_save["player_profile_markup_version"] << player_profile_markup_version
+	return TRUE
+
+mob/proc/isNexusPlayerProfileTextPersisted(save_path)
+	if(!save_path) save_path = getNexusCharacterSavePath()
 	if(!save_path || !fexists(save_path)) return FALSE
 	var/savefile/profile_save = new(save_path)
-	var/saved_description
-	var/saved_name
-	var/saved_title
-	var/saved_direction
-	var/saved_markup_version
+	var/saved_description = initial(player_desc)
+	var/saved_name = initial(player_profile_name)
+	var/saved_title = initial(player_profile_title)
+	var/saved_direction = initial(player_profile_portrait_direction)
+	var/saved_markup_version = initial(player_profile_markup_version)
 	profile_save["player_desc"] >> saved_description
 	profile_save["player_profile_name"] >> saved_name
 	profile_save["player_profile_title"] >> saved_title

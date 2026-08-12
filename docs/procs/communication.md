@@ -13,11 +13,11 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 ## Player description security contract
 
 - `Set Player Description` opens `datum/NexusPlayerDescriptionEditor`, a structured bronze Profile Builder with separate profile name, title, portrait angle, and 3,000-character biography fields. The preview combines all fields into the same card players see through `View Description`.
-- The portrait source can be the live character composite in one of four cardinal angles or one uploaded PNG, JPEG, WEBP, or WEBM. Profile media is restricted before transfer to `1 KiB..8 MiB`, bound to a one-use editor/account/slot ticket, and limited to the 4K pixel budget (`3840x2160` landscape or `2160x3840` portrait). PNG/JPEG files pass BYOND's transient native decode probe; WEBP files must expose a RIFF/WEBP signature and bounded VP8, VP8L, or VP8X dimensions; WEBM files must expose the EBML signature plus bounded `PixelWidth` and `PixelHeight` metadata. Accepted bytes are fingerprinted and stored unchanged under an immutable account/slot/hash generation. The browser receives that same raw file under an opaque hash-versioned alias with the validated `.png`, `.jpg`, `.webp`, or `.webm` suffix; WEBM portraits autoplay, loop, remain muted, and fall back to the live sprite when browser playback fails. The original filename and filesystem path are never published.
-- Direct player-controlled image URLs are never rendered or fetched. This prevents profile viewers from being sent to tracking hosts and prevents Dream Daemon from becoming an SSRF/download proxy. Because raw uploads intentionally retain their original bytes, they may also retain EXIF/GPS/ICC or container metadata; the editor warns players to remove private metadata before upload. BYOND's native image decode, WEBP container inspection, and WEBM EBML inspection verify compatibility metadata and bounds but are not sanitizers or complete codec validation. Deployments that need a hardened untrusted-media boundary should validate uploads with an isolated, resource-limited sidecar before Dream Daemon publishes them.
+- The portrait source can be the live character composite in one of four cardinal angles or one uploaded PNG, JPEG, WEBP, or WEBM. Profile media is restricted before transfer to `1 KiB..8 MiB`, bound to a one-use editor/account/slot ticket, and limited to the 4K pixel budget (`3840x2160` landscape or `2160x3840` portrait). PNG/JPEG files pass BYOND's transient native decode probe. Because BYOND strings terminate at the first binary NUL byte, Docker starts a separate standard-library Python inspector for WEBP/WEBM: one-use request files bind the staged basename, format, exact size, and SHA-1; the inspector rereads the binary without following symlinks, verifies RIFF/WEBP plus VP8, VP8L, or VP8X dimensions or EBML/WEBM plus video dimensions, enforces the same byte/pixel limits, and atomically returns the independently calculated size/hash/dimensions. Dream Daemon accepts the result only when every field matches its own ticket and fingerprint. Accepted bytes are stored unchanged under an immutable account/slot/hash generation. The browser receives that same raw file under an opaque hash-versioned alias with the validated `.png`, `.jpg`, `.webp`, or `.webm` suffix; WEBM portraits autoplay, loop, remain muted, and fall back to the live sprite when browser playback fails. The original filename and filesystem path are never published.
+- Direct player-controlled image URLs are never rendered or fetched. This prevents profile viewers from being sent to tracking hosts and prevents Dream Daemon from becoming an SSRF/download proxy. Because raw uploads intentionally retain their original bytes, they may also retain EXIF/GPS/ICC or container metadata; the editor warns players to remove private metadata before upload. BYOND's native image decode and the binary inspector verify compatibility metadata, bounds, and immutable identity but are not sanitizers or complete codec decoders. Deployments that need a stronger untrusted-media boundary should replace raw publication with an isolated, resource-limited transcoder.
 - Biography markup reuses the roleplay editor's server-side allowlist: balanced `[b]`, `[i]`, `[u]`, and `[color=#RRGGBB]` tags are rendered, while raw HTML and malformed/unknown tags remain non-executable. `normalizeNexusPlayerDescription()` also removes legacy HTML, normalizes control characters, and enforces the server-side limit. Saves created before the Profile Builder retain bracket tags as literal text until the player explicitly saves through the new editor, which advances `player_profile_markup_version`.
 - Profile name and title are bounded single-line text. Values are escaped specifically for their HTML text or single-quoted attribute context, and the public card always identifies the actual in-game name and verified BYOND account separately from self-authored profile fields.
-- The editor Topic accepts actions only from its owning live character and current controller, rejects stale render generations and Imitation state, serializes save/upload/delete requests, preserves normalized drafts across the native file prompt, avoids unchanged writes, and uses short save/open/upload throttles. Profile fields and art metadata participate in normal character serialization and are reread from the slot save before success is reported; a failed verification restores the previous in-memory state and keeps both immutable image generations when durable rollback cannot be confirmed. Raw generations are isolated by registered account and character slot under `data/ProfileImages/`, and older generations are removed only after the new metadata has been verified. Slot deletion, admin deletion, Hakai purge, old-save purge, and full wipe remove every generation. Public views are throttled, raw-image failures fall back to the live sprite in the browser, and opaque resource IDs do not embed account names. Disconnect and reconnect handoff destroy the editor controller and invalidate pending tickets.
+- The editor Topic accepts actions only from its owning live character and current controller, rejects stale render generations and Imitation state, serializes save/upload/delete requests, preserves normalized drafts across the native file prompt, avoids unchanged writes, and uses short save/open/upload throttles. Profile fields and art metadata participate in normal character serialization and are also written explicitly so initial values such as the SOUTH portrait, empty text, and live-sprite metadata replace stale savefile buffers. Pending writes are flushed before the slot is reopened and compared; a failed verification restores the previous in-memory state and keeps both immutable image generations when durable rollback cannot be confirmed. Raw generations are isolated by registered account and character slot under `data/ProfileImages/`, and older generations are removed only after the new metadata has been verified. Slot deletion, admin deletion, Hakai purge, old-save purge, and full wipe remove every generation. Public views are throttled, raw-image failures fall back to the live sprite in the browser, and opaque resource IDs do not embed account names. Disconnect and reconnect handoff destroy the editor controller and invalidate pending tickets.
 
 ## Player music security contract
 
@@ -40,6 +40,51 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 - Local Say, Whisper, and Communicator transmissions carry a visible language label and no longer leak one shared unmodified message to every listener.
 
 ## Proc Reference
+
+### mob/proc/writeNexusPlayerProfileTextSaveFields(savefile/profile_save)
+
+- Purpose: Explicitly write every profile-text field, including initial values omitted by the default datum serializer.
+- Returns: true when a savefile was supplied.
+
+### mob/proc/writeNexusPlayerProfileArtSaveFields(savefile/profile_save)
+
+- Purpose: Explicitly write every profile-art metadata field so deleting custom art clears stale values durably.
+- Returns: true when a savefile was supplied.
+
+### mob/proc/isNexusPlayerProfileTextPersisted(save_path)
+
+- Purpose: Reopen a character save and compare its profile text, identity, direction, and markup version with the live mob.
+- Inputs: optional save path used by isolated persistence tests; defaults to the active character slot.
+
+### mob/proc/isNexusPlayerProfileArtMetadataPersisted(save_path)
+
+- Purpose: Reopen a character save and compare every profile-art metadata field with the live mob.
+- Inputs: optional save path used by isolated persistence tests; defaults to the active character slot.
+
+### proc/isNexusProfileArtInspectionTicket(value)
+
+- Purpose: Accept only a lowercase 32-character hexadecimal server ticket before deriving an inspector path.
+
+### proc/getNexusProfileArtInspectionRequestPath(ticket)
+
+- Purpose: Derive the private one-use request filename for a validated inspector ticket.
+
+### proc/getNexusProfileArtInspectionResultPath(ticket)
+
+- Purpose: Derive the private one-use result filename for a validated inspector ticket.
+
+### proc/trimNexusProfileArtInspectionResult(value)
+
+- Purpose: Remove only trailing CR/LF delimiters before parsing the inspector's URL-encoded response.
+
+### proc/inspectNexusProfileArtExternally(upload_path, upload_format, ticket, expected_bytes, expected_hash)
+
+- Purpose: Exchange a one-use request/result pair with the Docker binary inspector for WEBP/WEBM validation that DM strings cannot perform safely.
+- Security: accepts only server-generated upload basenames and tickets, then requires the returned format, byte count, SHA-1, and dimensions to match server-owned expectations.
+
+### proc/isNexusProfileArtStoredContentValid(path, expected_hash, expected_format)
+
+- Purpose: Revalidate immutable stored media by SHA-1; PNG/JPEG also repeat their DM-readable signature check, while WEBP/WEBM rely on their ingress inspection plus hash-named generation.
 
 ### mob/proc/receiveNexusChatMessage(message, channel = "all", source_key, write_log = TRUE)
 - Purpose: Route one message to its HudLib channel. IC and OOC also appear in All, while Combat remains isolated so mechanical output does not bury roleplay.

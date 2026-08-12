@@ -33,6 +33,28 @@ done
 
 echo "Persistent runtime directories are ready."
 
+profile_media_dir="$runtime_dir/data/ProfileImages"
+profile_media_ready="$profile_media_dir/.profile-media-inspector.ready"
+rm -f "$profile_media_ready"
+python3 /opt/nexus/profile_media_inspector.py --daemon "$profile_media_dir" &
+profile_media_inspector_pid=$!
+profile_media_inspector_wait=0
+while [ ! -s "$profile_media_ready" ]; do
+	if ! kill -0 "$profile_media_inspector_pid" 2>/dev/null; then
+		wait "$profile_media_inspector_pid" || true
+		echo "Profile media inspector failed during startup." >&2
+		exit 1
+	fi
+	profile_media_inspector_wait=$((profile_media_inspector_wait + 1))
+	if [ "$profile_media_inspector_wait" -ge 100 ]; then
+		echo "Profile media inspector did not become ready." >&2
+		exit 1
+	fi
+	sleep 0.1
+done
+
+echo "Profile media inspector is ready."
+
 if [ -f "$release_marker" ]; then
 	installed_release="$(sed -n '1p' "$release_marker")"
 fi

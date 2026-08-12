@@ -47,6 +47,7 @@ RUN dpkg --add-architecture i386 \
 		libstdc++6:i386 \
 		libgcc-s1:i386 \
 		libcurl4:i386 \
+		python3-minimal \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& groupadd --gid 10001 nexus \
 	&& useradd --uid 10001 --gid nexus \
@@ -58,14 +59,17 @@ RUN dpkg --add-architecture i386 \
 COPY --from=build /opt/byond /opt/byond
 COPY --from=build --chown=root:root /src/DU.dmb /src/DU.rsc /opt/nexus/
 COPY --chown=root:root deploy/docker/entrypoint.sh /usr/local/bin/nexus-entrypoint
+COPY --chown=root:root deploy/docker/profile_media_inspector.py /opt/nexus/profile_media_inspector.py
 
 RUN chmod 0444 /opt/nexus/DU.dmb /opt/nexus/DU.rsc \
-	&& chmod 0555 /usr/local/bin/nexus-entrypoint
+	&& chmod 0555 /usr/local/bin/nexus-entrypoint /opt/nexus/profile_media_inspector.py \
+	&& python3 /opt/nexus/profile_media_inspector.py --self-test
 
 ENV BYOND_SYSTEM=/opt/byond \
 	LD_LIBRARY_PATH=/opt/byond/bin \
 	HOME=/srv/nexus \
-	NEXUS_RUNTIME_DIR=/srv/nexus
+	NEXUS_RUNTIME_DIR=/srv/nexus \
+	PYTHONDONTWRITEBYTECODE=1
 
 USER nexus
 WORKDIR /srv/nexus

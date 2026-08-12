@@ -5,6 +5,7 @@ param(
 	[int]$StartupTimeoutSeconds = 180,
 	[int]$ObservationSeconds = 30,
 	[string]$ByondArchivePath,
+	[string]$ProfileMediaInspectorPythonPath,
 	[switch]$CompileOnly,
 	[switch]$KeepTemp
 )
@@ -77,6 +78,22 @@ function Get-AvailableTcpPort {
 	}
 }
 
+function New-ProfileMediaInspectorFixture {
+	param([string]$RunDirectory)
+
+	$profileMediaDirectory = Join-Path $RunDirectory 'data\ProfileImages'
+	[IO.Directory]::CreateDirectory($profileMediaDirectory) | Out-Null
+	$fixturePath = Join-Path $profileMediaDirectory 'profile-media-inspector-smoke.webp'
+	[byte[]]$fixture = [byte[]]::new(1024)
+	[byte[]]$header = @(
+		82, 73, 70, 70, 248, 3, 0, 0, 87, 69, 66, 80,
+		86, 80, 56, 32, 236, 3, 0, 0, 0, 0, 0, 157, 1, 42, 104, 1, 31, 2
+	)
+	[Array]::Copy($header, $fixture, $header.Length)
+	[IO.File]::WriteAllBytes($fixturePath, $fixture)
+	return $profileMediaDirectory
+}
+
 function Test-TcpPort {
 	param([int]$Port)
 
@@ -138,7 +155,9 @@ function Invoke-WorldSmoke {
 		[string]$RunDirectory,
 		[string]$Label,
 		[int]$StartupTimeout,
-		[int]$ObservationTime
+		[int]$ObservationTime,
+		[string]$InspectorPythonPath,
+		[string]$InspectorScriptPath
 	)
 
 	[IO.Directory]::CreateDirectory($RunDirectory) | Out-Null
@@ -148,6 +167,7 @@ function Invoke-WorldSmoke {
 	$stdoutLog = Join-Path $RunDirectory 'dreamdaemon.stdout.log'
 	$stderrLog = Join-Path $RunDirectory 'dreamdaemon.stderr.log'
 	$logs = @($daemonLog, $worldLog, $stdoutLog, $stderrLog)
+	$inspectorProcess = $null
 
 	foreach($log in $logs) {
 		if([IO.File]::Exists($log)) {
@@ -171,6 +191,37 @@ function Invoke-WorldSmoke {
 	Write-Host "Starting $Label smoke test on port $port..."
 	$process = $null
 	try {
+		if($InspectorPythonPath) {
+			$profileMediaDirectory = New-ProfileMediaInspectorFixture $RunDirectory
+			$inspectorReadyPath = Join-Path $profileMediaDirectory '.profile-media-inspector.ready'
+			$inspectorStdoutLog = Join-Path $RunDirectory 'profile-media-inspector.stdout.log'
+			$inspectorStderrLog = Join-Path $RunDirectory 'profile-media-inspector.stderr.log'
+			$inspectorArguments = @(
+				(Quote-NativeArgument $InspectorScriptPath),
+				'--daemon',
+				(Quote-NativeArgument $profileMediaDirectory)
+			)
+			$inspectorProcess = Start-Process `
+				-FilePath $InspectorPythonPath `
+				-ArgumentList $inspectorArguments `
+				-WorkingDirectory $RunDirectory `
+				-RedirectStandardOutput $inspectorStdoutLog `
+				-RedirectStandardError $inspectorStderrLog `
+				-WindowStyle Hidden `
+				-PassThru
+			$inspectorDeadline = [DateTime]::UtcNow.AddSeconds(10)
+			while(![IO.File]::Exists($inspectorReadyPath) -and [DateTime]::UtcNow -lt $inspectorDeadline) {
+				$inspectorProcess.Refresh()
+				if($inspectorProcess.HasExited) {
+					$inspectorProcess.WaitForExit()
+					throw "Profile media inspector exited during $Label startup with code $($inspectorProcess.ExitCode)."
+				}
+				Start-Sleep -Milliseconds 50
+			}
+			if(![IO.File]::Exists($inspectorReadyPath)) {
+				throw "Profile media inspector did not become ready for $Label."
+			}
+		}
 		$process = Start-Process `
 			-FilePath $DreamDaemonPath `
 			-ArgumentList $arguments `
@@ -229,6 +280,13 @@ function Invoke-WorldSmoke {
 			}
 			Start-Sleep -Seconds 1
 		}
+		if($null -ne $inspectorProcess) {
+			$inspectorProcess.Refresh()
+			if(!$inspectorProcess.HasExited) {
+				Stop-Process -Id $inspectorProcess.Id -Force
+				Wait-Process -Id $inspectorProcess.Id -ErrorAction SilentlyContinue
+			}
+		}
 	}
 }
 
@@ -242,6 +300,7 @@ $previousByondSystem = $env:BYOND_SYSTEM
 $previousCompatibilityLayer = $env:__COMPAT_LAYER
 $cacheMutex = New-Object Threading.Mutex($false, 'Local\NexusExodusByond5161686')
 $cacheLockTaken = $false
+$resolvedProfileMediaInspectorPythonPath = $null
 
 try {
 	try {
@@ -255,6 +314,14 @@ try {
 	}
 	[IO.Directory]::CreateDirectory($toolsDirectory) | Out-Null
 	Copy-WorkingTree $repositoryRoot $worldDirectory
+	if($ProfileMediaInspectorPythonPath) {
+		$resolvedProfileMediaInspectorPythonPath = (Resolve-Path -LiteralPath $ProfileMediaInspectorPythonPath).Path
+		$sourceInspectorScript = Join-Path $repositoryRoot 'deploy\docker\profile_media_inspector.py'
+		& $resolvedProfileMediaInspectorPythonPath $sourceInspectorScript --self-test
+		if($LASTEXITCODE -ne 0) {
+			throw 'Profile media inspector self-test failed.'
+		}
+	}
 
 	if($ByondArchivePath) {
 		$resolvedArchive = (Resolve-Path $ByondArchivePath).Path
@@ -353,12 +420,13 @@ try {
 	}
 
 	if(!$CompileOnly) {
+		$inspectorScriptPath = Join-Path $worldDirectory 'deploy\docker\profile_media_inspector.py'
 		if($DataMode -in @('Versioned', 'Both')) {
-			Invoke-WorldSmoke $dreamDaemonPath $dmbPath $worldDirectory 'Versioned data' $StartupTimeoutSeconds $ObservationSeconds
+			Invoke-WorldSmoke $dreamDaemonPath $dmbPath $worldDirectory 'Versioned data' $StartupTimeoutSeconds $ObservationSeconds $resolvedProfileMediaInspectorPythonPath $inspectorScriptPath
 		}
 		if($DataMode -in @('Clean', 'Both')) {
 			$cleanRunDirectory = Join-Path $worldDirectory '.smoke-clean'
-			Invoke-WorldSmoke $dreamDaemonPath $dmbPath $cleanRunDirectory 'Clean data' $StartupTimeoutSeconds $ObservationSeconds
+			Invoke-WorldSmoke $dreamDaemonPath $dmbPath $cleanRunDirectory 'Clean data' $StartupTimeoutSeconds $ObservationSeconds $resolvedProfileMediaInspectorPythonPath $inspectorScriptPath
 		}
 	}
 

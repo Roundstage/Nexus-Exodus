@@ -398,10 +398,15 @@ mob/proc/save()
 		var/savefile/f=new(getNexusCharacterSavePath())
 		f["Last_Used"]<<world.realtime
 		Write(f)
+		writeNexusPlayerProfileTextSaveFields(f)
+		writeNexusPlayerProfileArtSaveFields(f)
 		f["NexusRuntimeEnvironment"] << nexus_runtime_environment
 		f["NexusSlotName"] << name
 		f["NexusSlotRace"] << Race
 		f["NexusSlotLastUsed"] << world.realtime
+		// Profile actions reopen this path immediately to verify durability.
+		f.Flush()
+		f = null
 		if(blocking) overlays+=block_shield
 		Aura_Overlays()
 		Evil_overlay()

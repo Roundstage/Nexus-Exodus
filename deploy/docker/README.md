@@ -40,6 +40,13 @@ atualize o repositório e reconstrua a imagem; não é necessário compilar ou
 copiar artefatos manualmente. Nunca publique a imagem no Docker Hub ou em outro
 registry público.
 
+O entrypoint também inicia um inspetor binário local antes do DreamDaemon.
+Ele valida WEBP/WEBM enviados para perfis por assinatura, dimensões, tamanho e
+SHA-1 dentro do mesmo volume privado; nenhum arquivo ou URL é enviado a um
+serviço externo. O container falha no startup se o inspetor não ficar pronto.
+Nos logs, as linhas `Profile media inspector is ready.` e
+`Persistent runtime directories are ready.` confirmam as duas precondições.
+
 ## Traefik em host network
 
 O backend do jogo é publicado somente em `127.0.0.1:50001`. O Traefik deve
