@@ -47,7 +47,7 @@ RUN dpkg --add-architecture i386 \
 		libstdc++6:i386 \
 		libgcc-s1:i386 \
 		libcurl4:i386 \
-		python3-minimal \
+		python3 \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& groupadd --gid 10001 nexus \
 	&& useradd --uid 10001 --gid nexus \
