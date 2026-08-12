@@ -14,11 +14,12 @@ armazenamento privado e recompile depois de qualquer rotação da senha.
 3. Execute `docker compose up -d --build` neste diretório.
 4. Acompanhe o primeiro startup com `docker compose logs -f`.
 
-O entrypoint copia o par compilado para `/srv/nexus/runtime`, onde o usuário
-sem privilégios do container pode criar `DU.dyn.rsc`. O restante da imagem
-continua somente leitura. Quando o hash de `DU.dmb` ou `DU.rsc` muda, o cache
-dinâmico antigo é removido e recriado para não misturar recursos de builds
-diferentes.
+O entrypoint copia o par compilado para `/srv/nexus`, que também é o diretório
+de trabalho do DreamDaemon. Isso mantém `DU.dmb`, `DU.rsc` e `DU.dyn.rsc` no
+mesmo local, como o runtime do BYOND espera. O usuário sem privilégios do
+container pode criar o cache dinâmico, enquanto o restante da imagem continua
+somente leitura. Quando o hash de `DU.dmb` ou `DU.rsc` muda, o cache dinâmico
+antigo é removido e recriado para não misturar recursos de builds diferentes.
 
 O volume `nexus_state` preserva saves, mapas construídos, uploads e logs entre
 atualizações. Faça backup desse volume antes de trocar a imagem. O container

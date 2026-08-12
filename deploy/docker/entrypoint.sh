@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-runtime_dir="${NEXUS_RUNTIME_DIR:-/srv/nexus/runtime}"
+runtime_dir="${NEXUS_RUNTIME_DIR:-/srv/nexus}"
 release_marker="$runtime_dir/.release-sha256"
 release_hash="$(sha256sum /opt/nexus/DU.dmb /opt/nexus/DU.rsc | sha256sum | cut -d ' ' -f 1)"
 installed_release=""
@@ -24,4 +24,5 @@ if [ "$installed_release" != "$release_hash" ] || [ ! -s "$runtime_dir/DU.dmb" ]
 	printf '%s\n' "$release_hash" > "$release_marker"
 fi
 
-exec /opt/byond/bin/DreamDaemon "$runtime_dir/DU.dmb" "$@"
+cd "$runtime_dir"
+exec /opt/byond/bin/DreamDaemon DU.dmb "$@"

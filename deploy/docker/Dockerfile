@@ -41,7 +41,7 @@ RUN chmod 0444 /opt/nexus/DU.dmb /opt/nexus/DU.rsc \
 ENV BYOND_SYSTEM=/opt/byond \
 	LD_LIBRARY_PATH=/opt/byond/bin \
 	HOME=/srv/nexus \
-	NEXUS_RUNTIME_DIR=/srv/nexus/runtime
+	NEXUS_RUNTIME_DIR=/srv/nexus
 
 USER nexus
 WORKDIR /srv/nexus
