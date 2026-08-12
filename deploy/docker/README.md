@@ -29,6 +29,12 @@ atualizações. Faça backup desse volume antes de trocar a imagem. O container
 inicia como playtest isolado e habilita os rewards self-service; não reutilize
 esse volume posteriormente como servidor live.
 
+Antes de iniciar o DreamDaemon, o entrypoint cria e testa os diretórios
+persistentes de personagens, Feats, retratos, músicas e logs. Isso inclui os
+caminhos separados de playtest em `data/Playtest`; uma falha de permissão
+interrompe o container com o caminho afetado no log, em vez de manter o jogo
+online sem conseguir salvar personagens.
+
 Antes de uma atualização, salve o mundo pelo painel de administração. Depois,
 atualize o repositório e reconstrua a imagem; não é necessário compilar ou
 copiar artefatos manualmente. Nunca publique a imagem no Docker Hub ou em outro
