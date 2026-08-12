@@ -8,7 +8,9 @@ services:
     restart: unless-stopped
     init: true
     ports:
-      - "${NEXUS_PORT:-50000}:50000/tcp"
+      # Traefik runs in host-network mode and proxies public TCP 50000 to this
+      # loopback-only backend. Override these values only for isolated staging.
+      - "${NEXUS_BIND_ADDRESS:-127.0.0.1}:${NEXUS_BACKEND_PORT:-50001}:50000/tcp"
     volumes:
       - nexus_state:/srv/nexus
     read_only: true

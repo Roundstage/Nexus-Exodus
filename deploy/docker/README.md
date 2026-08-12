@@ -11,9 +11,10 @@ armazenamento privado e recompile depois de qualquer rotação da senha.
 ## Iniciar o playtest
 
 1. Configure `SECRETS.dm` localmente, sem registrar credenciais no Git.
-2. Libere a porta TCP 50000 no firewall da VPS.
-3. Execute `docker compose up -d --build` neste diretório.
-4. Acompanhe o primeiro startup com `docker compose logs -f`.
+2. Configure o roteador TCP do Traefik conforme a seção abaixo.
+3. Libere a porta TCP 50000 no firewall da VPS.
+4. Execute `docker compose up -d --build` neste diretório.
+5. Acompanhe o primeiro startup com `docker compose logs -f`.
 
 O entrypoint copia o par compilado para `/srv/nexus`, que também é o diretório
 de trabalho do DreamDaemon. Isso mantém `DU.dmb`, `DU.rsc` e `DU.dyn.rsc` no
@@ -33,6 +34,33 @@ atualize o repositório e reconstrua a imagem; não é necessário compilar ou
 copiar artefatos manualmente. Nunca publique a imagem no Docker Hub ou em outro
 registry público.
 
+## Traefik em host network
+
+O backend do jogo é publicado somente em `127.0.0.1:50001`. O Traefik deve
+possuir um entrypoint estático `nexus` em `:50000/tcp` e encaminhá-lo para
+`127.0.0.1:50001`. Como BYOND usa TCP sem TLS/SNI, a regra dinâmica precisa ser
+``HostSNI(`*`)``; o subdomínio é resolvido pelo DNS, mas não participa da seleção
+da rota.
+
+Exemplo de configuração dinâmica:
+
+```yaml
+tcp:
+  routers:
+    nexus-exodus:
+      entryPoints:
+        - nexus
+      rule: "HostSNI(`*`)"
+      service: nexus-exodus
+  services:
+    nexus-exodus:
+      loadBalancer:
+        servers:
+          - address: "127.0.0.1:50001"
+```
+
+Conecte com `byond://nexus-exodus.roundstage.net.br:50000`.
+
 ## Homologação isolada
 
 Uma segunda instância pode usar outra porta, imagem e volume sem afetar o
@@ -40,11 +68,12 @@ playtest principal. O nome de projeto diferente faz o Compose criar um volume
 separado:
 
 ```sh
-NEXUS_PORT=50001 NEXUS_IMAGE_TAG=staging-516.1686 \
+NEXUS_BACKEND_PORT=50002 NEXUS_IMAGE_TAG=staging-516.1686 \
 	docker compose -p nexus-staging up -d --build
 ```
 
-Conecte em `byond://IP_DA_VPS:50001` e acompanhe os erros com:
+A porta de homologação fica restrita ao loopback. Para torná-la pública, crie
+outro entrypoint TCP no Traefik. Acompanhe os erros com:
 
 ```sh
 docker compose -p nexus-staging logs -f
