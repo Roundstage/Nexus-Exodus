@@ -1,7 +1,8 @@
 services:
   nexus-exodus:
     build:
-      context: .
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
     image: "nexus-exodus:${NEXUS_IMAGE_TAG:-playtest-516.1686}"
     platform: linux/amd64
     restart: unless-stopped

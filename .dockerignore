@@ -1,0 +1,10 @@
+**
+!DU.dme
+!UI.dmf
+!SECRETS.dm
+!src/
+!src/**
+!deploy/
+!deploy/docker/
+!deploy/docker/Dockerfile
+!deploy/docker/entrypoint.sh
