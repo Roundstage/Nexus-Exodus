@@ -320,13 +320,32 @@ mob/proc/can_anger()
 		return 1
 
 mob/proc/hasAngerHealthRecovery()
-	return FALSE
+	return canPossessAnger()
 
 mob/proc/canUseAngerHealthRecovery()
-	return FALSE
+	if(!hasAngerHealthRecovery()) return FALSE
+	if(has_angered_before_ko || Giving_Power) return FALSE
+	if(cant_anger_until_time > world.time) return FALSE
+	return TRUE
 
 mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")
-	return FALSE
+	if(!canUseAngerHealthRecovery()) return FALSE
+	reason = "[reason]"
+	player_view(15, src) << "<font color=red>[src]'s anger gives them a second wind!"
+	anger_reasons.len = 3
+	anger_reasons.Insert(1, reason)
+	anger_reasons.len = 3
+	last_anger = world.time
+	SetLastAttackedTime(last_attacker)
+	anger = max(100, max_anger)
+	Health = 100
+	Ki = max_ki
+	has_angered_before_ko = TRUE
+	UpdateBP()
+	updateOverheadHealthHud()
+	spawn(800)
+		if(src && has_angered_before_ko) Calm()
+	return TRUE
 
 mob/proc/gainAngerFromDamage(applied_damage)
 	if(applied_damage <= 0 || !can_anger()) return 0

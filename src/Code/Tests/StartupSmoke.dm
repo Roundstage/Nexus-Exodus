@@ -2451,7 +2451,14 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/mob/NexusSmokeTest/normal_anger_test = new
 	normal_anger_test.Race = "Human"
 	normal_anger_test.Health = 0
-	nexusSmokeAssert(normal_anger_test.canPossessAnger() && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0, "ordinary races lost Anger or received an obsolete Health recovery")
+	normal_anger_test.max_ki = 1000
+	normal_anger_test.Ki = 0
+	normal_anger_test.max_anger = 200
+	nexusSmokeAssert(normal_anger_test.canPossessAnger() && normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "ordinary races cannot trigger their Anger second wind")
+	nexusSmokeAssert(normal_anger_test.Health == 100 && normal_anger_test.Ki == normal_anger_test.max_ki && normal_anger_test.anger == normal_anger_test.max_anger && normal_anger_test.has_angered_before_ko, "Anger second wind does not restore full Health and Energy or lock its one use")
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0 && normal_anger_test.Ki == 0, "Anger second wind can trigger more than once before calming")
 	var/mob/NexusSmokeTest/android_anger_test = new
 	android_anger_test.Race = "Android"
 	android_anger_test.Android = TRUE
@@ -2466,7 +2473,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		angerless_test.max_anger = 250
 		nexusSmokeAssert(!angerless_test.canPossessAnger() && !angerless_test.can_anger(), "Android, LSSJ, or Jiren can still gain Anger")
 		nexusSmokeAssert(angerless_test.anger == 100 && angerless_test.max_anger == 100 && angerless_test.Anger_mult() == 1, "an Angerless archetype retained Anger stats or power")
-		nexusSmokeAssert(!angerless_test.TryToCauseAnger(anger_attacker, angerless_test) && angerless_test.Health == 0, "an Angerless archetype received the obsolete Anger Health recovery")
+		nexusSmokeAssert(!angerless_test.TryToCauseAnger(anger_attacker, angerless_test) && angerless_test.Health == 0, "an Angerless archetype received an Anger second wind")
 	del(anger_attacker)
 	del(normal_anger_test)
 	del(android_anger_test)
