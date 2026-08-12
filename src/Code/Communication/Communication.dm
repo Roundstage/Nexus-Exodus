@@ -284,6 +284,7 @@ obj/Effect/NexusTypingIndicator
 	Savable = 0
 	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 121
+	appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 
 mob/proc/Say_Spark()
 	set waitfor=0
@@ -326,6 +327,7 @@ obj/Effect/NexusSayText
 	Grabbable = 0
 	plane = NEXUS_WORLD_OVERLAY_PLANE
 	layer = 120
+	appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 	maptext_width = 256
 	maptext_height = 128
 	pixel_x = -112

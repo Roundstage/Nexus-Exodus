@@ -558,6 +558,7 @@ obj/NexusHud
 	mouse_opacity = 0
 	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 99
+	appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 
 	OverheadHealthBar
 		plane = NEXUS_WORLD_OVERLAY_PLANE
@@ -707,7 +708,7 @@ obj/NexusHud
 			invisibility = 0
 			dir = SOUTH
 			underlays = null
-			appearance_flags = RESET_ALPHA | PIXEL_SCALE | KEEP_TOGETHER
+			appearance_flags = RESET_ALPHA | RESET_TRANSFORM | PIXEL_SCALE | KEEP_TOGETHER
 			var/matrix/portrait_transform = matrix()
 			portrait_transform.Scale(1.9, 2.05)
 			transform = portrait_transform
@@ -715,7 +716,7 @@ obj/NexusHud
 	PowerGauge
 		pixel_y = 40
 		layer = 103
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 
 		proc/update(percent, over_limit)
 			icon = getPowerGaugeIcon(percent, over_limit)
@@ -730,7 +731,7 @@ obj/NexusHud
 		pixel_x = 8
 		pixel_y = 6
 		layer = 104
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		maptext_width = 99
 		maptext_height = 16
 
@@ -742,7 +743,7 @@ obj/NexusHud
 		pixel_x = 0
 		pixel_y = 140
 		layer = 105
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		var/tmp/obj/NexusHud/ActiveModifierText/header_text
 		var/tmp/obj/NexusHud/ActiveModifierText/first_row_text
 		var/tmp/obj/NexusHud/ActiveModifierText/second_row_text
@@ -785,7 +786,7 @@ obj/NexusHud
 	ActiveModifierText
 		pixel_x = 0
 		layer = 106
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		maptext_x = 10
 		maptext_width = 276
 		maptext_height = 9
@@ -812,7 +813,7 @@ obj/NexusHud
 		pixel_x = 52
 		pixel_y = 4
 		layer = 103
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		maptext_width = 108
 		maptext_height = 11
 
@@ -823,7 +824,7 @@ obj/NexusHud
 		maptext_height = 11
 		pixel_x = 120
 		layer = 102
-		appearance_flags = RESET_ALPHA
+		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		var/tmp/obj/NexusHud/VitalDetail/detail_text
 		var/detail_alignment = "right"
 

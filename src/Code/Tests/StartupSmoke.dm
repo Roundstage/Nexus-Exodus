@@ -2033,7 +2033,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/NexusHud/VitalsPanel/vitals_panel = new
 	vitals_panel.initialize(vitals_owner)
 	var/obj/NexusHud/OverheadHealthBar/overhead_zoom_bar = new
-	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8" && vitals_panel.plane == NEXUS_FIXED_HUD_PLANE, "main vitals HUD is not fixed inside the lower-left corner")
+	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:8,BOTTOM:8" && vitals_panel.plane == NEXUS_FIXED_HUD_PLANE && (vitals_panel.appearance_flags & RESET_TRANSFORM), "main vitals HUD is not fixed inside the lower-left corner or isolated from character scaling")
 	nexusSmokeAssert(overhead_zoom_bar.plane == NEXUS_WORLD_OVERLAY_PLANE, "world-space overhead vitals no longer follow map-only zoom")
 	del(overhead_zoom_bar)
 	vitals_panel.setScreenPosition(92, 62)
@@ -2044,6 +2044,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/mob/NexusSmokeTest/chat_contract_owner = new
 	chat_contract_owner.nexus_interface_layout = "side_tabs"
 	var/datum/NexusChatHud/chat_hud_contract = new(chat_contract_owner)
+	var/obj/HudWindow/chat_transform_contract = new
+	nexusSmokeAssert(chat_transform_contract.appearance_flags & RESET_TRANSFORM, "overlay chat elements inherit Giant or Larva character scaling")
+	del(chat_transform_contract)
 	var/chat_panel_html = chat_hud_contract.buildHtml()
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() == 36 && findtext(chat_panel_html, "action=channel&id=all") && !findtext(chat_panel_html, "CMD BAR BELOW") && !findtext(chat_panel_html, "ENTER TO FOCUS OR RETURN TO MAP"), "side chat panel is missing paging/channels or retained the obsolete CMD hint")
 	var/chat_footer_source_position = findtext(chat_panel_html, "<nav class='footer'>")
@@ -3674,6 +3677,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/items/Clothes/ShortSleeveShirt/giant_form_shirt = new(giant_form_test)
 	giant_form_shirt.suffix = "Equipped"
 	giant_form_test.rebuildPlayerAppearance("giant form setup")
+	var/obj/NexusHud/OverheadHealthBar/giant_hud_contract = new
+	var/obj/Effect/NexusTypingIndicator/giant_typing_contract = new
+	var/obj/Effect/NexusSayText/giant_say_contract = new
+	nexusSmokeAssert((giant_hud_contract.appearance_flags & RESET_TRANSFORM) && (giant_typing_contract.appearance_flags & RESET_TRANSFORM) && (giant_say_contract.appearance_flags & RESET_TRANSFORM), "world-attached vitals or communication overlays inherit Giant or Larva scaling")
 	giant_form_test.Enable_giant_form()
 	giant_form_test.Disable_giant_form()
 	var/datum/PlayerAppearanceManager/giant_appearance_manager = giant_form_test.player_appearance_manager
@@ -3682,6 +3689,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		if(giant_appearance_manager.appearanceMatchesEquipment(appearance_value, giant_form_shirt)) giant_equipment_appearances++
 	nexusSmokeAssert(round(giant_form_test.bp_mult, 0.001) == 1, "Giant Form left a permanent BP multiplier")
 	nexusSmokeAssert(giant_appearance_manager.rendered_appearances.len == 1 && giant_equipment_appearances == 1 && findtext(giant_appearance_manager.last_rebuild_reason, "giant disabled"), "Giant Form did not rebuild exactly one copy of equipped clothing")
+	del(giant_hud_contract)
+	del(giant_typing_contract)
+	del(giant_say_contract)
 	del(giant_form_test)
 	del(heran_transformation_test)
 	del(transformation_state_test)

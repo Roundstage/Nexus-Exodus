@@ -296,7 +296,7 @@ obj/HudWindow
 	mouse_opacity = 2
 	plane = NEXUS_FIXED_HUD_PLANE
 	layer = 120
-	appearance_flags = RESET_ALPHA | RESET_COLOR
+	appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 	var/tmp/datum/NexusHudWindow/window
 	var/tmp/action_id
 
