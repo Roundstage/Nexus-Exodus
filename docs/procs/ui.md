@@ -1100,7 +1100,7 @@ These references are intentional and must not be removed, renamed, replaced with
 #### mob/verb/ViewDescription
 - Signature: `mob/verb/ViewDescription(mob/A)`
 - Inputs: mob/A
-- Purpose: Display a target's structured public Character Profile through the shared bronze UI, including self-authored title/name, verified account identity, a byte-preserved PNG/JPEG upload or composite runtime portrait, and allowlisted rich biography markup.
+- Purpose: Display a target's structured public Character Profile through the shared bronze UI, including self-authored title/name, verified account identity, a byte-preserved PNG/JPEG/WEBM upload or composite runtime portrait, and allowlisted rich biography markup. WEBM portraits autoplay, loop, remain muted, and fall back to the live sprite on playback failure.
 - Returns: none (implicit).
 - Side effects: serves a bounded opaque, format-correct portrait resource with live-sprite fallback and opens `NexusPlayerProfile`; repeated requests are briefly throttled.
 

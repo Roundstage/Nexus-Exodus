@@ -778,7 +778,7 @@ These legacy proc summaries are retained for reference. Their implementations no
 #### mob/verb/Set_Player_Description
 - Signature: `mob/verb/Set_Player_Description()`
 - Inputs: None
-- Purpose: Toggle the structured Profile Builder for a self-authored name, title, live sprite or bounded raw PNG/JPEG upload, and safely formatted biography instead of accepting arbitrary HTML or remote image URLs.
+- Purpose: Toggle the structured Profile Builder for a self-authored name, title, live sprite or bounded raw PNG/JPEG/WEBM upload up to the 4K pixel budget, and safely formatted biography instead of accepting arbitrary HTML or remote image URLs.
 - Returns: none (implicit).
 - Side effects: opens or closes `NexusDescriptionEditor`; actions normalize, bound, and persist profile identity, portrait source/direction, custom-art metadata, and biography fields.
 
