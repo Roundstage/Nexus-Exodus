@@ -147,7 +147,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova
 	energy_cost = 200
 	cooldown_ticks = 140
 	charge_ticks = 24
-	projectile_damage_factor = 12
+	projectile_damage_factor = 18
 	explosion_size = 4
 	projectile_shockwave = 4
 	cast_text_color = "#ffb347"
@@ -165,7 +165,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak
 	energy_cost = 180
 	cooldown_ticks = 130
 	charge_ticks = 16
-	projectile_damage_factor = 8
+	projectile_damage_factor = 13
 	explosion_size = 2
 	projectile_shockwave = 4
 	strength_scaled = TRUE
@@ -188,7 +188,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash
 	energy_cost = 120
 	cooldown_ticks = 90
 	charge_ticks = 8
-	projectile_damage_factor = 7
+	projectile_damage_factor = 14
 	explosion_size = 0
 	projectile_shockwave = 3
 	strength_scaled = TRUE
@@ -239,13 +239,13 @@ obj/Effect/NexusFlameField
 			for(var/mob/target in loc)
 				if(!owner.canHitNexusTechniqueTarget(target)) continue
 				if(next_pulse_by_target[target] > world.time) continue
-				if(pulses_by_target[target] >= 6) continue
+				if(pulses_by_target[target] >= skill_wall_of_flame_max_pulses) continue
 				next_pulse_by_target[target] = world.time + 10
 				pulses_by_target[target] = pulses_by_target[target] + 1
 				if(pulses_by_target[target] == 1)
 					target.text_overlay("<center><b><font color=#ff7043>BURN</font></b></center>", xx = -16, yy = 40, timer = 8)
 					player_view(10, target) << sound('Kiplosion.ogg', volume = 28)
-				var/damage = owner.getKiCombatDamage(target, 0.45)
+				var/damage = owner.getKiCombatDamage(target, skill_wall_of_flame_pulse_factor)
 				owner.applyNexusTechniqueDamage(target, damage, "Wall of Flame")
 				if(target)
 					target.ApplyStun(time = 4, stun_power = 1.5)
@@ -358,7 +358,7 @@ obj/Attacks/NexusAreaTechnique/SuperExplosiveWave
 	energy_cost = 80
 	cooldown_ticks = 140
 	radius = 4
-	area_damage_factor = 6
+	area_damage_factor = 12
 	knockback_distance = 4
 	intercepts_blasts = TRUE
 	blast_intercept_limit = 24
@@ -378,7 +378,7 @@ obj/Attacks/NexusAreaTechnique/Earthquake
 	energy_cost = 60
 	cooldown_ticks = 160
 	radius = 5
-	area_damage_factor = 5
+	area_damage_factor = 10
 	knockback_distance = 0
 	pull_distance = 3
 	physical_damage = TRUE
@@ -401,7 +401,7 @@ obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze
 		energy_cost = 100
 		cooldown_ticks = 160
 		ghost_count = 3
-		ghost_damage_factor = 2.5
+		ghost_damage_factor = 6
 		tmp/next_use = 0
 
 	verb/Hotbar_use()

@@ -97,7 +97,7 @@ obj/Attacks/Laser_Beam
 	icon='EnergyWave1.dmi'
 	Drain=4.5
 	WaveMult=1.1
-	damage_factor = 4
+	damage_factor = 12
 	Range=60
 	MoveDelay=1
 	deflect_difficulty=5
@@ -120,7 +120,7 @@ obj/Attacks/Beam
 	say_name_when_fired=1
 	Drain=3.55
 	WaveMult=1
-	damage_factor = 3
+	damage_factor = 10
 	Range=40
 	MoveDelay=1.5
 	Cost_To_Learn=2
@@ -144,7 +144,7 @@ obj/Attacks/Ray
 	icon='Beam8.dmi'
 	Drain=4.3
 	WaveMult=1
-	damage_factor = 3
+	damage_factor = 12
 	Range=30
 	MoveDelay=1
 	Piercer=0
@@ -171,7 +171,7 @@ obj/Attacks/Piercer
 	Drain=127
 	gain_power_with_range=1
 	WaveMult=1.2
-	damage_factor = 5
+	damage_factor = 16
 	Range=60
 	MoveDelay=1
 	deflect_difficulty=1.6
@@ -198,7 +198,7 @@ obj/Attacks/Kamehameha
 	say_name_when_fired=1
 	Drain=16
 	WaveMult=1.7
-	damage_factor = 8
+	damage_factor = 18
 	Range=40
 	MoveDelay=1.5
 	Piercer=0
@@ -224,7 +224,7 @@ obj/Attacks/Dodompa
 	icon='Beam4.dmi'
 	Drain=26.1
 	WaveMult=1.5
-	damage_factor = 5
+	damage_factor = 13
 	say_name_when_fired=1
 	lose_power_with_range=1
 	Range=32
@@ -252,7 +252,7 @@ obj/Attacks/Final_Flash
 	Beam_Sound='BasicbeamFire.ogg'
 	Drain=91.4
 	WaveMult=2
-	damage_factor = 12
+	damage_factor = 24
 	say_name_when_fired=1
 	Range=60
 	MoveDelay=2
@@ -281,7 +281,7 @@ obj/Attacks/Garlic_Gun
 	Beam_Sound='BasicbeamFire.ogg'
 	Drain=36.7
 	WaveMult=1.4
-	damage_factor = 7
+	damage_factor = 17
 	say_name_when_fired=1
 	Range=40
 	MoveDelay=1.8
@@ -305,7 +305,7 @@ obj/Attacks/Masenko
 	icon='Beam5.dmi'
 	Drain=17.6
 	WaveMult=1.6
-	damage_factor = 6
+	damage_factor = 15
 	say_name_when_fired=1
 	Range=32
 	lose_power_with_range=1

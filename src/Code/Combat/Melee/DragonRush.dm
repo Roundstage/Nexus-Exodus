@@ -201,7 +201,7 @@ proc
 		winner.in_dragon_rush = 0
 		loser.in_dragon_rush = 0
 
-		var/dr_dmg = winner.getPhysicalCombatDamage(loser, 2.5)
+		var/dr_dmg = winner.getPhysicalCombatDamage(loser, skill_dragon_rush_damage_factor)
 		var/base_stun = 80
 		var/stun = base_stun * (winner.BP / loser.BP)**bp_exponent * (winner.Str / loser.Res)**0.4
 		stun = Clamp(stun, 0, base_stun * 2)

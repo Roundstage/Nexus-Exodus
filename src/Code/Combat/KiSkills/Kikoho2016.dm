@@ -39,9 +39,7 @@ mob/var
 	tmp
 		kikoho_loop
 
-var
-	kikoho_self_dmg = 24 //% per shot over time
-	list/kikoho_craters = new
+var/list/kikoho_craters = new
 
 proc
 	KikohoCrater(turf/t)
@@ -128,7 +126,7 @@ mob/proc
 		while(kikoho_damage > 0)
 			var
 				dmg_min = 2 //minimum damage per second
-				dmg = dmg_min * RegenMod() * (kikoho_damage / kikoho_self_dmg)
+				dmg = dmg_min * RegenMod() * (kikoho_damage / skill_kikoho_self_damage_percent)
 			if(dmg < dmg_min) dmg = dmg_min
 			Health -= dmg
 			kikoho_damage -= dmg
@@ -138,7 +136,7 @@ mob/proc
 		kikoho_loop=0
 
 	KikohoDamageTo(mob/m)
-		return getKiCombatDamage(m, 7)
+		return getKiCombatDamage(m, skill_kikoho_damage_factor)
 
 	FireKikoho(obj/Attacks/Kikoho/k)
 		if(skill_engine) return skill_engine.castKikoho(src, k)

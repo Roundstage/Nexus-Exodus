@@ -744,10 +744,10 @@ datum/NexusPlayerMenu
 			return data
 		if(istype(skill, /obj/Attacks/NexusSpecialStyle/WallOfFlame))
 			var/obj/Attacks/NexusSpecialStyle/WallOfFlame/flame_wall = skill
-			data["factor"] = 0.45 * 6
+			data["factor"] = skill_wall_of_flame_pulse_factor * skill_wall_of_flame_max_pulses
 			data["model"] = "Ki"
 			data["range"] = "Five-tile wall in front of the user"
-			data["mechanics"] = "Persists for [round(flame_wall.field_duration / 10, 0.1)] seconds. A target can take up to six 0.45-factor pulses; each pulse briefly stuns and adds a Burn stack."
+			data["mechanics"] = "Persists for [round(flame_wall.field_duration / 10, 0.1)] seconds. A target can take up to [skill_wall_of_flame_max_pulses] [skill_wall_of_flame_pulse_factor]-factor pulses; each pulse briefly stuns and adds a Burn stack."
 			data["cost"] = "[flame_wall.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(flame_wall.cooldown_ticks / 10, 0.1)] seconds"
 			return data
@@ -793,6 +793,28 @@ datum/NexusPlayerMenu
 			data["requirements"] = "Enough energy; cannot fire while grabbed, disabled or in RP Mode"
 			data["cost"] = "Drain [beam_skill.Drain]"
 			data["cooldown"] = "[round(beam_skill_cooldown_ticks / 10, 0.1)] seconds"
+			return data
+		if(istype(skill, /obj/ArcaneSpell/Projectile))
+			var/obj/ArcaneSpell/Projectile/arcane_projectile = skill
+			var/arcane_splash_factor = arcane_projectile.explosion_size ? arcane_projectile.damage_percent * 0.7 : 0
+			data["factor"] = arcane_projectile.damage_percent + arcane_splash_factor
+			data["model"] = "Ki"
+			data["preview_profile"] = "ki_projectile"
+			data["projectile_direct_factor"] = arcane_projectile.damage_percent
+			data["projectile_explosion_factor"] = arcane_splash_factor
+			data["projectile_budget_factor"] = data["factor"]
+			data["range"] = "Arcane projectile / [arcane_projectile.projectile_distance] tiles"
+			data["mechanics"] = "Consumes Arcane Essence and deals scaled direct damage[arcane_splash_factor ? " plus splash" : ""]."
+			data["cost"] = "[arcane_projectile.essence_cost] Arcane Essence"
+			data["cooldown"] = "[round(arcane_projectile.cooldown / 10, 0.1)] seconds"
+			return data
+		if(istype(skill, /obj/ArcaneSpell/FrostNova))
+			data["factor"] = 12
+			data["model"] = "Ki"
+			data["range"] = "Two-tile area around the user"
+			data["mechanics"] = "Damages and stuns every valid enemy in range."
+			data["cost"] = "35 Arcane Essence"
+			data["cooldown"] = "7 seconds"
 			return data
 		if(istype(skill, /obj/Attacks/Big_Bang_Attack))
 			data["factor"] = skill_big_bang_damage_factor * 2
@@ -856,18 +878,43 @@ datum/NexusPlayerMenu
 			data["projectile_budget_factor"] = 0
 			data["range"] = "Guided piercing projectile"
 			data["mechanics"] = "Can hit multiple targets and loses half of its remaining damage after each pierce."
+		else if(istype(skill, /obj/Attacks/Spin_Blast))
+			data["factor"] = skill_spin_blast_damage_factor * skill_spin_blast_projectiles
+			data["model"] = "Ki"
+			data["range"] = "Four directions around the user"
+			data["mechanics"] = "Preview assumes all [skill_spin_blast_projectiles] projectiles hit the same target."
+		else if(istype(skill, /obj/Attacks/Genocide))
+			data["factor"] = skill_genocide_damage_factor * skill_genocide_max_projectiles
+			data["model"] = "Ki"
+			data["range"] = "Selected target across the planet"
+			data["mechanics"] = "Preview assumes all [skill_genocide_max_projectiles] homing projectiles hit."
+		else if(istype(skill, /obj/Attacks/Buster_Barrage))
+			data["factor"] = skill_buster_barrage_total_factor
+			data["model"] = "Ki"
+			data["range"] = "Random long-range barrage"
+			data["mechanics"] = "Up to [skill_buster_barrage_max_projectiles] shots share a [skill_buster_barrage_total_factor]-factor per-target budget."
+		else if(istype(skill, /obj/Lunge))
+			data["factor"] = skill_lunge_damage_factor
+			data["model"] = "Physical"
+			data["range"] = "Lunge to selected target"
+			data["mechanics"] = "Committed advancing strike with increased accuracy and knockback."
+		else if(istype(skill, /obj/Hokuto_Shinken))
+			data["factor"] = hundred_crack_hit_damage_mult * hundred_crack_min_hits
+			data["model"] = "Physical"
+			data["range"] = "Advancing sustained combo"
+			data["mechanics"] = "Preview assumes all [hundred_crack_min_hits] strike attempts land."
 		else if(istype(skill, /obj/RockThrow))
-			data["factor"] = 3.5
+			data["factor"] = skill_rock_throw_powerful_damage_factor
 			data["model"] = "Physical"
 			data["range"] = "Selected target / thrown projectile"
 			data["mechanics"] = "Powerful mode uses one heavy rock; rapid mode uses weaker repeated rocks."
 		else if(istype(skill, /obj/RockSlide))
-			data["factor"] = 8.25
+			data["factor"] = skill_rock_slide_damage_factor * skill_rock_slide_max_hits
 			data["model"] = "Physical"
 			data["range"] = "Area barrage"
-			data["mechanics"] = "Maximum preview for fifteen rocks; actual hits and total damage vary."
+			data["mechanics"] = "Maximum preview for [skill_rock_slide_max_hits] rocks; actual hits and total damage vary."
 		else if(istype(skill, /obj/RockTomb))
-			data["factor"] = 8
+			data["factor"] = skill_rock_tomb_damage_factor
 			data["model"] = "Physical"
 			data["range"] = "Selected target / heavy projectile"
 			data["mechanics"] = "Heavy rock; mastery adds secondary explosion damage."
@@ -877,7 +924,7 @@ datum/NexusPlayerMenu
 			data["range"] = "Lunge to selected target"
 			data["mechanics"] = "Opening kick plus finisher; may initiate Dragon Rush on collision."
 		else if(istype(skill, /obj/WolfFangFist))
-			data["factor"] = 5
+			data["factor"] = wolf_fang_hit_damage_mult * 5
 			data["model"] = "Physical"
 			data["range"] = "Advancing five-hit melee"
 			data["mechanics"] = "Five advancing strikes; may initiate Dragon Rush on collision."
@@ -887,11 +934,11 @@ datum/NexusPlayerMenu
 			data["range"] = "Movement-scaled dash"
 			data["mechanics"] = "Preview shows the maximum factor; actual damage grows with distance traveled."
 		else if(istype(skill, /obj/RoundhouseKick))
-			data["factor"] = 4
+			data["factor"] = roundhouse_kick_damage_factor
 			data["model"] = "Physical"
 			data["range"] = "Adjacent area strike"
 		else if(istype(skill, /obj/PressurePunch))
-			data["factor"] = 6
+			data["factor"] = pressure_punch_damage_factor
 			data["model"] = "Physical"
 			data["range"] = "Adjacent area strike"
 		else if(istype(skill, /obj/Attacks/NexusAreaTechnique))
@@ -903,29 +950,29 @@ datum/NexusPlayerMenu
 			data["cost"] = "[area_skill.energy_cost] [area_skill.physical_damage ? "stamina" : "energy"]-drain units"
 			data["cooldown"] = "[round(area_skill.cooldown_ticks / 10, 0.1)] seconds"
 		else if(istype(skill, /obj/Attacks/Attack_Barrier))
-			data["factor"] = skill_attack_barrier_damage_factor
+			data["factor"] = skill_attack_barrier_damage_factor * skill_attack_barrier_max_orbs
 			data["model"] = "Ki"
 			data["preview_profile"] = "ki_projectile"
-			data["projectile_direct_factor"] = skill_attack_barrier_damage_factor
+			data["projectile_direct_factor"] = data["factor"]
 			data["projectile_explosion_factor"] = 0
 			data["projectile_budget_factor"] = 0
 			data["range"] = "Orbiting projectile / contact"
-			data["mechanics"] = "Preview is for one orbiting blast; the barrier can launch multiple independently damaging blasts."
+			data["mechanics"] = "Preview assumes all [skill_attack_barrier_max_orbs] independently damaging orbiting blasts connect."
 		else if(istype(skill, /obj/Attacks/Shockwave))
-			data["factor"] = skill_shockwave_damage_factor
+			data["factor"] = skill_shockwave_damage_factor * skill_shockwave_pulses
 			data["model"] = "Hybrid"
 			data["range"] = "7-tile area around the user"
-			data["mechanics"] = "Hybrid Strength/Force shockwave damage plus distance-scaled knockback."
+			data["mechanics"] = "Preview assumes all [skill_shockwave_pulses] Hybrid Strength/Force pulses connect; each also applies distance-scaled knockback."
 		else if(istype(skill, /obj/Attacks/Explosion))
 			data["factor"] = skill_explosion_damage_factor
 			data["model"] = "Ki"
 			data["range"] = "Clicked ground within 20 tiles / learned blast radius"
 			data["mechanics"] = "Toggles an aimed ground explosion; preview is the damage to one target in its area."
 		else if(istype(skill, /obj/Attacks/Kikoho))
-			data["factor"] = 7
+			data["factor"] = skill_kikoho_damage_factor
 			data["model"] = "Ki"
 			data["range"] = "Target in front"
-			data["mechanics"] = "High-impact Ki strike that also accumulates self-damage."
+			data["mechanics"] = "High-impact Ki strike that accumulates [skill_kikoho_self_damage_percent]% self-damage over time."
 		else if(istype(skill, /obj/Attacks/Genki_Dama))
 			var/obj/Attacks/Genki_Dama/spirit_bomb = skill
 			data["factor"] = spirit_bomb.sb_max_dmg * (spirit_bomb.sb_explosion_size ? 2 : 1)
@@ -939,7 +986,7 @@ datum/NexusPlayerMenu
 			data["cost"] = "[spirit_bomb.Genki_Dama_drain] Energy to begin charging"
 			data["cooldown"] = "[spirit_bomb.self_cooldown] seconds"
 		else if(istype(skill, /obj/Final_Explosion))
-			data["factor"] = 25
+			data["factor"] = skill_final_explosion_max_factor
 			data["model"] = "Ki"
 			data["preview_profile"] = "raw_ki"
 			data["range"] = "Expanding self-centered area"

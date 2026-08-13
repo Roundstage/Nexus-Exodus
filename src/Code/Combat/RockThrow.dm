@@ -251,7 +251,7 @@ mob
 				
 				var/mob/target = getSelectedTarget(max_dist = 10, dir_angle = usr.dir, angle_limit = 30)
 				if(target)
-					var/dmg = getPhysicalCombatDamage(target, 3.5)
+					var/dmg = getPhysicalCombatDamage(target, skill_rock_throw_powerful_damage_factor)
 					var/knockback = get_melee_knockback_distance(target)
 					usr << "You throw a rock at [target]!"
 					target << "[usr] throws a rock at you!"
@@ -272,7 +272,7 @@ mob
 				
 				var/mob/target = getSelectedTarget(max_dist = 8, dir_angle = usr.dir, angle_limit = 30)
 				if(target)
-					var/dmg = getPhysicalCombatDamage(target, 1)
+					var/dmg = getPhysicalCombatDamage(target, skill_rock_throw_rapid_damage_factor)
 					var/knockback = get_melee_knockback_distance(target) * 0.5
 					usr << "You throw a small rock at [target]!"
 					target << "[usr] throws a small rock at you!"
@@ -311,15 +311,15 @@ mob
 			showNexusTechniqueAnnouncement("Rock Slide", "#c99a63")
 			
 			var/amount = 7 + round(usr.BP / 1000000) // Base skill level based on BP
-			if(amount > 15) amount = 15
+			if(amount > skill_rock_slide_max_hits) amount = skill_rock_slide_max_hits
 			var/hits = 0
 			
-			while(amount > 0 && hits < 15)
+			while(amount > 0 && hits < skill_rock_slide_max_hits)
 				var/search_angle = pick(-45, -30, -15, 0, 15, 30, 45)
 				var/search_dir = turn(usr.dir, search_angle)
 				var/mob/target = FindTarget(search_dir, angle_limit = 15, max_dist = 8, prefer_auto_target = FALSE)
-				if(target && target != usr && hits < 15)
-					var/dmg = getPhysicalCombatDamage(target, 0.55)
+				if(target && target != usr && hits < skill_rock_slide_max_hits)
+					var/dmg = getPhysicalCombatDamage(target, skill_rock_slide_damage_factor)
 					var/knockback = get_melee_knockback_distance(target) * 0.7
 					usr << "A rock from your slide hits [target]!"
 					target << "A rock from [usr]'s slide hits you!"
@@ -367,7 +367,7 @@ mob
 			
 			var/mob/target = getSelectedTarget(max_dist = 12, dir_angle = usr.dir, angle_limit = 45)
 			if(target)
-				var/dmg = getPhysicalCombatDamage(target, 8)
+				var/dmg = getPhysicalCombatDamage(target, skill_rock_tomb_damage_factor)
 				var/knockback = get_melee_knockback_distance(target) * 1.5
 
 				if(skill.mastered)

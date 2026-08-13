@@ -1,4 +1,4 @@
-var/roundhouse_kick_damage_factor = 7.5
+var/roundhouse_kick_damage_factor = 13
 
 obj
 	RoundhouseKick

@@ -2,7 +2,7 @@
 	set category = "Other"
 	transform = matrix()*/
 
-var/wolf_fang_hit_damage_mult = 2
+var/wolf_fang_hit_damage_mult = 3
 var/wolf_fang_knockback_distance = 3
 var/wolf_fang_accuracy_bonus = 15
 

@@ -25,8 +25,8 @@ obj/Attacks/Genki_Dama
 		sb_charge_time = 120
 		sb_speed_stat_influence = 0.25
 		max_dmg_range = 3 //how big the collision box is at full charge
-		sb_initial_dmg = 4
-		sb_max_dmg = 18
+		sb_initial_dmg = 8
+		sb_max_dmg = 30
 		sb_dmg_add = 0
 		sb_deflect_difficulty = 10
 		sb_explosion_size = 5

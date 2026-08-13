@@ -744,7 +744,7 @@ datum/SkillEngine
 		sleep(15 + (2 * user.Speed_delay_mult(severity = 0.5)))
 		var/orbs_fired = 0
 
-		while(skill_obj.Firing_Attack_Barrier && orbs_fired < 20)
+		while(skill_obj.Firing_Attack_Barrier && orbs_fired < skill_attack_barrier_max_orbs)
 			var/max_blasts = user.MaxAttackBarrierBlasts()
 			while(skill_obj && user && skill_obj.Firing_Attack_Barrier && user.attack_barrier_blasts >= max_blasts)
 				sleep(5)
@@ -802,7 +802,7 @@ datum/SkillEngine
 		skill_obj.Skill_Increase(1.5, user)
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)
 		user.shockwaving = 1
-		var/amount = 7
+		var/amount = skill_shockwave_pulses
 		player_view(10, user) << sound('Wallhit.ogg', volume = 25)
 		spawn if(user) while(amount)
 			amount -= 1
@@ -971,7 +971,7 @@ datum/SkillEngine
 				target.GetHitByKikoho(user)
 				user.KikohoKnockAwayNonTargets(target)
 
-				user.kikoho_damage += kikoho_self_dmg
+				user.kikoho_damage += skill_kikoho_self_damage_percent
 				user.KikohoDamageLoop()
 
 		if(target_was_hit)

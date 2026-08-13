@@ -7,7 +7,7 @@ obj/Attacks/RoleplayBeam
 	icon = 'src/Icons/NexusIntegrated/Attacks/Beams/RTCorkscrewBeam.dmi'
 	Drain = 30
 	WaveMult = 1.4
-	damage_factor = 7
+	damage_factor = 16
 	Range = 40
 	MoveDelay = 1.5
 	Piercer = 0
@@ -25,7 +25,7 @@ obj/Attacks/RoleplayBeam/DoubleSunday
 	desc = "A wide corkscrew beam with strong knockback and balanced charge time."
 	Drain = 42
 	WaveMult = 1.55
-	damage_factor = 8
+	damage_factor = 18
 	Range = 44
 	MoveDelay = 1.5
 	deflect_difficulty = 1.7
@@ -39,7 +39,7 @@ obj/Attacks/RoleplayBeam/PhotonFlash
 	desc = "A fast, efficient beam that trades impact for reach and control."
 	Drain = 30
 	WaveMult = 1.25
-	damage_factor = 6
+	damage_factor = 14
 	Range = 52
 	MoveDelay = 1
 	deflect_difficulty = 1.4
@@ -53,7 +53,7 @@ obj/Attacks/RoleplayBeam/TyrantLancer
 	desc = "A narrow offensive beam designed to pierce shields and distant targets."
 	Drain = 52
 	WaveMult = 1.5
-	damage_factor = 9
+	damage_factor = 20
 	Range = 58
 	MoveDelay = 1.2
 	deflect_difficulty = 2
@@ -69,7 +69,7 @@ obj/Attacks/RoleplayBeam/BusterCannon
 	desc = "A slow, high-drain cannon beam built for raw impact."
 	Drain = 68
 	WaveMult = 1.8
-	damage_factor = 11
+	damage_factor = 24
 	Range = 46
 	MoveDelay = 1.8
 	deflect_difficulty = 2.5

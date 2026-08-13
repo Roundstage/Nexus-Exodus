@@ -28,8 +28,8 @@ obj/Attacks/Genki_Dama/Death_Ball
 	max_dmg_range = 1 //how big the collision box is at full charge
 	sb_stun_level = 8
 
-	sb_initial_dmg = 2.5
-	sb_max_dmg = 10
+	sb_initial_dmg = 8
+	sb_max_dmg = 28
 	sb_dmg_add = 0
 
 	sb_deflect_difficulty = 2

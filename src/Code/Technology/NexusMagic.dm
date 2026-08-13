@@ -91,7 +91,7 @@ obj/ArcaneSpell/Projectile
 	var
 		essence_cost = 10
 		cooldown = 20
-		damage_percent = 0.55
+		damage_percent = 8
 		explosion_size = 0
 		projectile_speed = 48
 		projectile_distance = 48
@@ -134,7 +134,7 @@ obj/ArcaneSpell/Projectile
 		icon_state = "fire_ball"
 		essence_cost = 18
 		cooldown = 24
-		damage_percent = 0.72
+		damage_percent = 8
 		explosion_size = 1
 		cast_effect_state = "fire_ball"
 		impact_effect_state = "explosion"
@@ -149,7 +149,7 @@ obj/ArcaneSpell/Projectile
 		icon_state = "water"
 		essence_cost = 15
 		cooldown = 20
-		damage_percent = 0.55
+		damage_percent = 8
 		projectile_stun = 1
 		projectile_speed = 54
 		cast_effect_state = "water"
@@ -164,7 +164,7 @@ obj/ArcaneSpell/Projectile
 		icon_state = "wind"
 		essence_cost = 20
 		cooldown = 32
-		damage_percent = 0.68
+		damage_percent = 10
 		projectile_stun = 1
 		projectile_speed = 64
 		projectile_distance = 36
@@ -186,7 +186,7 @@ obj/ArcaneSpell/FrostNova
 		var/hit_count = 0
 		for(var/mob/target in oview(2, caster))
 			if(!caster.canHitNexusTechniqueTarget(target) || target.KO) continue
-			var/damage = Clamp(7 * (caster.BP / max(target.BP, 1)) ** 0.35, 2, 16)
+			var/damage = caster.getKiCombatDamage(target, 12)
 			if(!caster.applyNexusTechniqueDamage(target, damage, name)) continue
 			target.ApplyStun(time = 20, no_immunity = TRUE, stun_power = 2)
 			showNexusOpenCombatEffect(target, "foozle_magic_64", "water_geyser", 0.75, "#8ee9ff", 225, BLEND_ADD, 12, 0.2)

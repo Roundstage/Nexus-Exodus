@@ -2476,7 +2476,7 @@ obj/Self_Destruct
 		using_sd=0
 
 proc/Get_self_destruct_damage(mob/a,mob/b)
-	var/dmg = a.getKiCombatDamage(b, 30)
+	var/dmg = a.getKiCombatDamage(b, skill_self_destruct_damage_factor)
 
 	if(a.Regenerate || (locate(/obj/Module/Rebuild) in a.active_modules)) dmg *= 0.5
 	return dmg

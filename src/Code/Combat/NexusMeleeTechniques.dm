@@ -110,7 +110,7 @@ obj/Attacks/NexusMeleeTechnique
 	proc/getCastSound()
 		if(behavior == "grapple_throw" || behavior == "grapple_slam") return 'Throw.ogg'
 		if(requires_weapon)
-			if(behavior == "iai_dash" || damage_multiplier < 1.25) return pick(nexus_sword_swing_light_sounds)
+			if(istype(src, /obj/Attacks/NexusMeleeTechnique/Slice) || behavior == "iai_dash" || damage_multiplier < 1.25) return pick(nexus_sword_swing_light_sounds)
 			return pick(nexus_sword_swing_heavy_sounds)
 		var/open_sound = getNexusShonenSound(cast_sound_category ? cast_sound_category : "swings")
 		return open_sound ? open_sound : pick('Meleemiss1.ogg', 'Meleemiss2.ogg', 'Meleemiss3.ogg')
@@ -511,6 +511,7 @@ obj/Attacks/NexusMeleeTechnique/Slice
 	desc = "A fast weapon strike with regular damage and a very short cooldown."
 	cast_text_color = "#d8f3ff"
 	requires_weapon = TRUE
+	damage_multiplier = 1.5
 	accuracy_bonus = 5
 	energy_cost = 4
 	cooldown_ticks = 15
@@ -524,7 +525,7 @@ obj/Attacks/NexusMeleeTechnique/Bash
 	desc = "Bash with a hammer or sword pommel, sacrificing damage to stun the target."
 	cast_text_color = "#ffd166"
 	requires_weapon = TRUE
-	damage_multiplier = 0.65
+	damage_multiplier = 2.5
 	accuracy_bonus = 5
 	stun_ticks = 10
 	energy_cost = 10
@@ -539,7 +540,7 @@ obj/Attacks/NexusMeleeTechnique/Flourish
 	desc = "An elaborate weapon strike that converts speed into stronger impact."
 	cast_text_color = "#8ee3f5"
 	requires_weapon = TRUE
-	damage_multiplier = 1.35
+	damage_multiplier = 4
 	accuracy_bonus = 10
 	knockback_multiplier = 1.2
 	energy_cost = 18
@@ -554,7 +555,7 @@ obj/Attacks/NexusMeleeTechnique/WindHowl
 	desc = "Unleash a true area slicing shockwave that strikes enemies within three tiles without requiring a selected target."
 	cast_text_color = "#a8f0d2"
 	requires_weapon = TRUE
-	damage_multiplier = 0.9
+	damage_multiplier = 2.5
 	energy_cost = 30
 	cooldown_ticks = 140
 	behavior = "radial"
@@ -573,7 +574,7 @@ obj/Attacks/NexusMeleeTechnique/IaiSlash
 	desc = "Rush up to six tiles and strike through the target with a speed-amplified slash."
 	cast_text_color = "#f2fbff"
 	requires_weapon = TRUE
-	damage_multiplier = 1.25
+	damage_multiplier = 4
 	accuracy_bonus = 10
 	knockback_multiplier = 1.2
 	energy_cost = 20
@@ -591,7 +592,7 @@ obj/Attacks/NexusMeleeTechnique/Riposte
 	desc = "Ready your equipped weapon and counter the next incoming melee attack within four seconds."
 	cast_text_color = "#c9b8ff"
 	requires_weapon = TRUE
-	damage_multiplier = 1.15
+	damage_multiplier = 4.5
 	accuracy_bonus = 100
 	energy_cost = 14
 	cooldown_ticks = 100
@@ -606,7 +607,7 @@ obj/Attacks/NexusMeleeTechnique/Cleave
 	desc = "Sweep the three tiles in front of you with increased accuracy and damage."
 	cast_text_color = "#91d8ff"
 	requires_weapon = TRUE
-	damage_multiplier = 1.1
+	damage_multiplier = 3
 	accuracy_bonus = 10
 	energy_cost = 12
 	cooldown_ticks = 60
@@ -623,7 +624,7 @@ obj/Attacks/NexusMeleeTechnique/SwordStab
 	desc = "A focused stab that pierces the adjacent target and a second target directly behind them."
 	cast_text_color = "#e1e8ed"
 	requires_weapon = TRUE
-	damage_multiplier = 1.4
+	damage_multiplier = 4.5
 	accuracy_bonus = 5
 	knockback_multiplier = 0
 	bleed_fraction = 0.1
@@ -641,7 +642,7 @@ obj/Attacks/NexusMeleeTechnique/OverheadSmash
 	desc = "A heavy, less accurate overhead attack that crashes through three tiles in a straight line."
 	cast_text_color = "#ffc46b"
 	requires_weapon = TRUE
-	damage_multiplier = 1.35
+	damage_multiplier = 5
 	accuracy_bonus = -15
 	knockback_multiplier = 1.3
 	energy_cost = 20
@@ -658,7 +659,7 @@ obj/Attacks/NexusMeleeTechnique/ColossalImpact
 	desc = "Drive your weapon down and unleash a gigantic close-range shockwave."
 	cast_text_color = "#ff9f4a"
 	requires_weapon = TRUE
-	damage_multiplier = 1.1
+	damage_multiplier = 3.5
 	knockback_multiplier = 1.5
 	energy_cost = 35
 	cooldown_ticks = 180
@@ -677,7 +678,7 @@ obj/Attacks/NexusMeleeTechnique/BurningSlash
 	desc = "A three-hit weapon combo whose finishing strike tears open a bleeding wound."
 	cast_text_color = "#ff654f"
 	requires_weapon = TRUE
-	damage_multiplier = 0.65
+	damage_multiplier = 1.8
 	extra_hits = 2
 	extra_hit_multiplier = 0.45
 	extra_hit_delay = 3
@@ -694,7 +695,7 @@ obj/Attacks/NexusMeleeTechnique/Headbutt
 	name = "Headbutt"
 	desc = "A blunt close-range strike with a brief stagger."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.5
+	damage_multiplier = 3
 	stun_ticks = 4
 	energy_cost = 10
 	cooldown_ticks = 55
@@ -709,7 +710,7 @@ obj/Attacks/NexusMeleeTechnique/UppercutCombo
 	name = "Uppercut Combo"
 	desc = "A three-hit rising combination whose final uppercut launches the target."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.4
+	damage_multiplier = 2.2
 	extra_hits = 2
 	extra_hit_multiplier = 0.75
 	extra_hit_delay = 3
@@ -727,7 +728,7 @@ obj/Attacks/NexusMeleeTechnique/AxeKick
 	name = "Axe Kick"
 	desc = "A descending kick with strong knockback."
 	requires_unarmed = TRUE
-	damage_multiplier = 2
+	damage_multiplier = 4.5
 	knockback_multiplier = 1.4
 	energy_cost = 12
 	cooldown_ticks = 65
@@ -743,7 +744,7 @@ obj/Attacks/NexusMeleeTechnique/KickbackCombo
 	name = "Kickback Combo"
 	desc = "Knock the target away, pursue them with afterimages and land a second hit unless they block."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.5
+	damage_multiplier = 3
 	knockback_multiplier = 2
 	energy_cost = 22
 	cooldown_ticks = 110
@@ -759,7 +760,7 @@ obj/Attacks/NexusMeleeTechnique/MarchOfFury
 	name = "March of Fury"
 	desc = "Pursue the selected target through movement and deliver four separately resolved melee attacks."
 	requires_unarmed = TRUE
-	damage_multiplier = 2
+	damage_multiplier = 3
 	sequence_hits = 4
 	sequence_hit_multiplier = 0.6
 	dash_range = 7
@@ -778,7 +779,7 @@ obj/Attacks/NexusMeleeTechnique/PileDriver
 	name = "Pile Driver"
 	desc = "Requires a grabbed opponent; invert and slam them head-first with an unavoidable impact."
 	requires_unarmed = TRUE
-	damage_multiplier = 2.5
+	damage_multiplier = 5.5
 	stun_ticks = 8
 	energy_cost = 24
 	cooldown_ticks = 125
@@ -796,7 +797,7 @@ obj/Attacks/NexusMeleeTechnique/MegatonThrow
 	name = "Megaton Throw"
 	desc = "Requires a grabbed opponent; leap with them, slam them down and throw them away."
 	requires_unarmed = TRUE
-	damage_multiplier = 2.2
+	damage_multiplier = 5
 	energy_cost = 20
 	cooldown_ticks = 110
 	behavior = "grapple_throw"
@@ -813,7 +814,7 @@ obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches
 	name = "Consecutive Normal Punches"
 	desc = "Telegraph briefly, then unleash six separately resolved unarmed hits on an adjacent target."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.4
+	damage_multiplier = 2.3
 	accuracy_bonus = 5
 	sequence_hits = 6
 	sequence_hit_multiplier = 0.5
@@ -832,7 +833,7 @@ obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike
 	name = "Exploding Heart Strike"
 	desc = "A precise unarmed strike that deals heavy damage and internal bleeding."
 	requires_unarmed = TRUE
-	damage_multiplier = 2.3
+	damage_multiplier = 4.5
 	accuracy_bonus = 5
 	bleed_fraction = 0.15
 	energy_cost = 24
@@ -846,7 +847,7 @@ obj/Attacks/NexusMeleeTechnique/TexasSmash
 	name = "Texas Smash"
 	desc = "A slow, devastating unarmed blow with extreme knockback."
 	requires_unarmed = TRUE
-	damage_multiplier = 3.5
+	damage_multiplier = 7
 	accuracy_bonus = -10
 	knockback_multiplier = 2
 	energy_cost = 32
@@ -861,7 +862,7 @@ obj/Attacks/NexusMeleeTechnique/GuardBreak
 	name = "Guard Break"
 	desc = "A focused strike that bypasses an active melee guard and briefly staggers the defender."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.25
+	damage_multiplier = 3
 	accuracy_bonus = 20
 	breaks_guard = TRUE
 	stun_ticks = 6
@@ -880,7 +881,7 @@ obj/Attacks/NexusMeleeTechnique/WingClip
 	name = "Wing Clip"
 	desc = "Attack the target's joints with high accuracy, reduced damage and a movement stagger."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.2
+	damage_multiplier = 2.75
 	accuracy_bonus = 18
 	stun_ticks = 7
 	energy_cost = 16
@@ -897,7 +898,7 @@ obj/Attacks/NexusMeleeTechnique/BurningShot
 	name = "Burning Shot"
 	desc = "Warp into range and land a fiery three-hit unarmed combination."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.25
+	damage_multiplier = 2.2
 	extra_hits = 2
 	extra_hit_multiplier = 0.75
 	dash_range = 6
@@ -913,7 +914,7 @@ obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 	name = "Blue Comet Special"
 	desc = "A speed-focused advancing assault adapted as a long-range five-hit rush."
 	requires_unarmed = TRUE
-	damage_multiplier = 1.2
+	damage_multiplier = 1.8
 	extra_hits = 4
 	extra_hit_multiplier = 0.6
 	dash_range = 8
@@ -933,7 +934,7 @@ obj/Attacks/NexusMeleeTechnique/CriticalEdge
 	name = "Critical Edge"
 	desc = "Condense the original critical stance into one accurate strike at 133% damage."
 	requires_unarmed = TRUE
-	damage_multiplier = 2
+	damage_multiplier = 4.5
 	accuracy_bonus = 15
 	energy_cost = 20
 	cooldown_ticks = 120

@@ -194,7 +194,7 @@ proc/unhide_restored_planets(planet)
 			p.planet_turf=null
 
 proc/destroy_planet(planet, power = 1, force = 1)
-	var/datum/CombatDamageBudget/player_damage_budget = new(20)
+	var/datum/CombatDamageBudget/player_damage_budget = new(skill_planet_destroy_total_factor)
 
 	/*for(var/p in destroyable_planets)
 		var/time_add=40*60*10
@@ -274,7 +274,7 @@ proc/destroy_planet(planet, power = 1, force = 1)
 					if(KB>10) KB=10
 					KB=round(KB)
 					m2.Shockwave_Knockback(KB,m2.loc)
-					var/damage_factor = player_damage_budget.reserveFactor(m2, 2)
+					var/damage_factor = player_damage_budget.reserveFactor(m2, skill_planet_destroy_event_factor)
 					var/dmg = calculateScaledCombatDamage(damage_factor, power, m2.BP, force, m2.Res)
 					m2.TakeDamage(dmg)
 					if(m2.Health<=0) m2.Death("random explosion!")

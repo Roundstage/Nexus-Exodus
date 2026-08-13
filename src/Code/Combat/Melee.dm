@@ -495,7 +495,7 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		dmg = base_melee_damage
 
 		if(lunge_attacking)
-			dmg = 5 //compensate for the time it takes to charge up a lunge
+			dmg = skill_lunge_damage_factor //compensate for the windup and committed travel of a lunge
 			//dmg += base_melee_damage * 0.1 * distance_lunged
 		else if(ultra_instinct) dmg /= 1
 

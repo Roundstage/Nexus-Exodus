@@ -1075,30 +1075,31 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/NexusAreaTechnique/Earthquake/nexus_earthquake = new
 	nexusSmokeAssert(nexus_slice.requires_weapon && nexus_slice.hotbar_type == "Melee", "Nexus weapon technique does not enforce equipment")
 	nexusSmokeAssert(nexus_slice.icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && (nexus_slice.getCastSound() in nexus_sword_swing_light_sounds) && (nexus_slice.getImpactSound() in nexus_sword_impact_sounds), "Nexus weapon techniques are missing their animated hotbar icons or CC0 sword audio")
-	nexusSmokeAssert(nexus_combo.extra_hits == 2 && nexus_combo.extra_hit_multiplier == 0.45 && !nexus_combo.getOpeningKnockbackDistance(3), "Burning Slash is not a contact-safe multi-hit technique")
-	nexusSmokeAssert(nexus_iai.behavior == "iai_dash" && nexus_iai.dash_range == 6, "Iai Slash is not a pass-through line attack")
-	nexusSmokeAssert(nexus_stab.line_reach == 2 && nexus_stab.knockback_multiplier == 0, "Sword Stab does not pierce the tile behind its target")
+	nexusSmokeAssert(nexus_combo.extra_hits == 2 && nexus_combo.extra_hit_multiplier == 0.45 && nexus_combo.damage_multiplier == 1.8 && !nexus_combo.getOpeningKnockbackDistance(3), "Burning Slash is not a contact-safe multi-hit technique")
+	nexusSmokeAssert(nexus_iai.behavior == "iai_dash" && nexus_iai.dash_range == 6 && nexus_iai.damage_multiplier == 4, "Iai Slash is not a pass-through line attack")
+	nexusSmokeAssert(nexus_stab.line_reach == 2 && nexus_stab.knockback_multiplier == 0 && nexus_stab.damage_multiplier == 4.5, "Sword Stab does not pierce the tile behind its target")
 	nexusSmokeAssert(nexus_throw.behavior == "grapple_throw" && nexus_march.behavior == "march", "Nexus grapple or advancing melee behavior is missing")
-	nexusSmokeAssert(nexus_march.requires_unarmed && nexus_march.getTotalDamageMultiplier() == 4.8 && nexus_texas_smash.damage_multiplier == 3.5 && nexus_exploding_heart.damage_multiplier == 2.3 && nexus_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
+	nexusSmokeAssert(nexus_march.requires_unarmed && nexus_texas_smash.damage_multiplier == 7 && nexus_exploding_heart.damage_multiplier == 4.5 && nexus_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
+	nexusSmokeAssertNear(nexus_march.getTotalDamageMultiplier(), 7.2, 0.0001, "March of Fury lost its sustained damage profile")
 	nexusSmokeAssert(nexus_pile_driver.icon == 'RTGrappleImpact.dmi' && nexus_throw.icon_state == "2", "Nexus grapple techniques are missing their original effect icons")
 	nexusSmokeAssert(nexus_uppercut.icon == 'RTUppercut.dmi' && nexus_kickback.icon == 'RTSweepingKick.dmi', "Nexus combo techniques are missing their original effect icons")
 	nexusSmokeAssert(nexus_pile_driver.getImpactSound() == 'RockImpactHeavy1.ogg' && (nexus_kickback.getImpactSound() in nexus_shonen_sound_bank["melee"]), "Nexus grapple or kick techniques are missing their adapted impact audio")
 	nexusSmokeAssert(nexus_headbutt.effect_icon_state == "explosion_orange" && nexus_axe_kick.effect_icon_state == "blast_orange" && nexus_march.effect_icon_state == "blast_blue" && nexus_consecutive_punches.effect_icon_state == "blast_orange", "core Unarmed strikes are missing their open combat impact animations")
 	nexusSmokeAssert(nexus_guard_break.effect_icon_state == "explosion_blue" && nexus_wing_clip.effect_icon_state == "blast_blue" && nexus_blue_comet.effect_icon_state == "blast_blue" && (nexus_guard_break.getImpactSound() in nexus_shonen_sound_bank["electric"]), "control and speed Unarmed strikes are missing their distinct blue impact VFX or electric audio")
-	nexusSmokeAssertNear(nexus_uppercut.getTotalDamageMultiplier(), 3.5, 0.0001, "Uppercut Combo damage budget is below its three-hit investment")
+	nexusSmokeAssertNear(nexus_uppercut.getTotalDamageMultiplier(), 5.5, 0.0001, "Uppercut Combo damage budget is below its three-hit investment")
 	nexusSmokeAssert(!nexus_uppercut.getOpeningKnockbackDistance(4) && nexus_uppercut.getComboFinisherKnockbackDistance() == 2, "Uppercut Combo can still knock its target out of the sequence before the launcher")
-	nexusSmokeAssertNear(nexus_burning_shot.getTotalDamageMultiplier(), 3.125, 0.0001, "Burning Shot damage budget is below its multi-hit investment")
+	nexusSmokeAssertNear(nexus_burning_shot.getTotalDamageMultiplier(), 5.5, 0.0001, "Burning Shot damage budget is below its multi-hit investment")
 	nexusSmokeAssert(nexus_burning_shot.getComboFinisherKnockbackDistance() == 1, "Burning Shot does not defer its native knockback to the final hit")
-	nexusSmokeAssertNear(nexus_blue_comet.getTotalDamageMultiplier(), 4.08, 0.0001, "Blue Comet damage budget is below its five-hit investment")
-	nexusSmokeAssertNear(nexus_consecutive_punches.getTotalDamageMultiplier(), 4.2, 0.0001, "Consecutive Normal Punches lost its six-hit damage budget")
+	nexusSmokeAssertNear(nexus_blue_comet.getTotalDamageMultiplier(), 6.12, 0.0001, "Blue Comet damage budget is below its five-hit investment")
+	nexusSmokeAssertNear(nexus_consecutive_punches.getTotalDamageMultiplier(), 6.9, 0.0001, "Consecutive Normal Punches lost its six-hit damage budget")
 	nexusSmokeAssert(nexus_consecutive_punches.sequence_hits == 6 && nexus_consecutive_punches.sequence_hit_multiplier == 0.5, "Consecutive Normal Punches lost its six-hit sequence")
 	nexusSmokeAssert(nexus_guard_break.requires_unarmed && nexus_wing_clip.requires_unarmed && nexus_critical_edge.requires_unarmed && nexus_headbutt.getAccuracyBonus() == nexus_unarmed_technique_accuracy_bonus, "Unarmed-tree techniques do not consistently require empty hands or receive their accuracy floor")
-	nexusSmokeAssert(nexus_beam.hotbar_type == "Beam" && nexus_beam.damage_factor == 11, "Buster Cannon is not routed as a balanced beam")
-	nexusSmokeAssert(nexus_wind_howl.behavior == "radial" && nexus_wind_howl.splash_radius == 3 && nexus_wind_howl.splash_target_limit == 12, "Wind Howl is not a targetless three-tile area attack")
-	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 2.5, "Super Ghost Kamikaze Attack lost its bounded three-projectile profile")
+	nexusSmokeAssert(nexus_beam.hotbar_type == "Beam" && nexus_beam.damage_factor == 24, "Buster Cannon is not routed as a balanced beam")
+	nexusSmokeAssert(nexus_wind_howl.behavior == "radial" && nexus_wind_howl.damage_multiplier == 2.5 && nexus_wind_howl.splash_radius == 3 && nexus_wind_howl.splash_target_limit == 12, "Wind Howl is not a targetless three-tile area attack")
+	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 6, "Super Ghost Kamikaze Attack lost its bounded three-projectile profile")
 	nexusSmokeAssert(istype(nexus_explosive_wave, /obj/Attacks/Shockwave) && istype(nexus_earthquake, /obj/Attacks/Shockwave), "the ported area techniques no longer derive from Shockwave")
-	nexusSmokeAssert(nexus_explosive_wave.radius == 4 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
-	nexusSmokeAssert(nexus_earthquake.radius == 5 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
+	nexusSmokeAssert(nexus_explosive_wave.radius == 4 && nexus_explosive_wave.area_damage_factor == 12 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
+	nexusSmokeAssert(nexus_earthquake.radius == 5 && nexus_earthquake.area_damage_factor == 10 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
 	var/mob/NexusSmokeTest/wave_owner = new
 	var/mob/NexusSmokeTest/wave_enemy = new
 	wave_owner.loc = locate(445, 3, 2)
@@ -1115,22 +1116,22 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(hostile_beam_segment)
 	del(wave_enemy)
 	del(wave_owner)
-	nexusSmokeAssert(pressure_punch_cooldown_ticks == 90 && pressure_punch_charge_ticks == 10 && pressure_punch_damage_factor == 10 && roundhouse_kick_damage_factor == 7.5, "legacy charged Unarmed strikes lost their speed or damage budgets")
+	nexusSmokeAssert(pressure_punch_cooldown_ticks == 90 && pressure_punch_charge_ticks == 10 && pressure_punch_damage_factor == 16 && roundhouse_kick_damage_factor == 13, "legacy charged Unarmed strikes lost their speed or damage budgets")
 	var/obj/Attacks/NexusSpecialStyle/WallOfFlame/nexus_flame_wall = new
 	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova/nexus_dragon_nova = new
 	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak/nexus_sky_break = new
 	var/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash/nexus_echoing_slash = new
 	nexusSmokeAssert(nexus_guard_break.breaks_guard && nexus_guard_break.stun_ticks == 6, "Guard Break does not bypass active melee guard")
 	nexusSmokeAssert(nexus_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
-	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 12 && nexus_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
+	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 18 && nexus_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
 	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated physical sword projectile")
 	nexusSmokeAssert(nexus_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && nexus_echoing_slash.weapon_projectile && nexus_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
-	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 7, "Echoing Slash is missing its integrated projectile art or adapted balance")
+	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 14, "Echoing Slash is missing its integrated projectile art or adapted balance")
 	var/obj/ArcaneSpell/Projectile/Fireball/arcane_fireball_vfx = new
 	var/obj/ArcaneSpell/Projectile/FrostBolt/arcane_frost_vfx = new
 	var/obj/ArcaneSpell/Projectile/LightningBolt/arcane_lightning_vfx = new
-	nexusSmokeAssert(arcane_fireball_vfx.icon == 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi' && arcane_fireball_vfx.icon_state == "fire_ball" && arcane_fireball_vfx.impact_effect_state == "explosion", "Fireball is missing its authored magic icon or impact VFX")
-	nexusSmokeAssert(arcane_frost_vfx.icon_state == "water" && arcane_frost_vfx.impact_effect_state == "water_geyser" && arcane_lightning_vfx.icon_state == "wind" && arcane_lightning_vfx.impact_sound_category == "electric", "Frost Bolt or Lightning Bolt is missing its elemental magic presentation")
+	nexusSmokeAssert(arcane_fireball_vfx.icon == 'src/Icons/Effects/OpenCombat/FoozleMagic64.dmi' && arcane_fireball_vfx.icon_state == "fire_ball" && arcane_fireball_vfx.impact_effect_state == "explosion" && arcane_fireball_vfx.damage_percent == 8, "Fireball is missing its authored magic icon, impact VFX or damage profile")
+	nexusSmokeAssert(arcane_frost_vfx.icon_state == "water" && arcane_frost_vfx.impact_effect_state == "water_geyser" && arcane_frost_vfx.damage_percent == 8 && arcane_lightning_vfx.icon_state == "wind" && arcane_lightning_vfx.impact_sound_category == "electric" && arcane_lightning_vfx.damage_percent == 10, "Frost Bolt or Lightning Bolt is missing its elemental magic presentation or damage profile")
 	var/mob/NexusSmokeTest/skill_examine_owner = new
 	var/obj/Attacks/NexusMeleeTechnique/Slice/menu_skill_contract = new(skill_examine_owner)
 	var/obj/NexusSmokeSkillAction/menu_action_contract = new(skill_examine_owner)
@@ -1301,9 +1302,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/dragon_nova_damage_data = skill_examine_contract.getSkillDamageData(nexus_dragon_nova)
 	var/list/iai_damage_data = skill_examine_contract.getSkillDamageData(nexus_iai)
 	var/list/echoing_slash_damage_data = skill_examine_contract.getSkillDamageData(nexus_echoing_slash)
-	nexusSmokeAssert(dragon_nova_damage_data["factor"] == 24 && dragon_nova_damage_data["model"] == "Ki", "skill examination does not expose Dragon Nova's full direct/splash budget")
+	nexusSmokeAssert(dragon_nova_damage_data["factor"] == 36 && dragon_nova_damage_data["model"] == "Ki", "skill examination does not expose Dragon Nova's full direct/splash budget")
 	nexusSmokeAssert(iai_damage_data["model"] == "Physical" && findtext(iai_damage_data["requirements"], "Weapon equipped"), "skill examination omits Iai Slash damage model or weapon requirement")
-	nexusSmokeAssert(echoing_slash_damage_data["factor"] == 7 && findtext(echoing_slash_damage_data["range"], "direct impact"), "skill examination treats Echoing Slash as an explosive blast")
+	nexusSmokeAssert(echoing_slash_damage_data["factor"] == 14 && findtext(echoing_slash_damage_data["range"], "direct impact"), "skill examination treats Echoing Slash as an explosive blast")
 	del(skill_examine_contract)
 	del(skill_examine_owner)
 	del(nexus_slice)
@@ -2221,10 +2222,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/Admin2/verb/orderCombatDummyLunge") && text2path("/obj/NexusHud/DragonRushPrompt"), "Dragon Rush dummy control or direction prompt is missing")
 	nexusSmokeAssert(text2path("/obj/NexusHud/BeamClashPrompt") && text2path("/obj/BeamClashMarker"), "Beam Clash prompt or center marker is missing")
 	del(lunge_action)
-	nexusSmokeAssert(wolf_fang_hit_damage_mult == 2 && wolf_fang_knockback_distance == 3 && wolf_fang_accuracy_bonus == 15 && !getWolfFangFinisherKnockback(4, 5) && getWolfFangFinisherKnockback(5, 5) == 3, "Wolf Fang Fist does not preserve contact until its finisher")
-	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.5, "Hundred Crack Fist lost its sustained damage budget")
+	nexusSmokeAssert(wolf_fang_hit_damage_mult == 3 && wolf_fang_knockback_distance == 3 && wolf_fang_accuracy_bonus == 15 && !getWolfFangFinisherKnockback(4, 5) && getWolfFangFinisherKnockback(5, 5) == 3, "Wolf Fang Fist does not preserve contact until its finisher")
+	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.75, "Hundred Crack Fist lost its sustained damage budget")
 	nexusSmokeAssert(base_melee_damage == 2.5 && combat_damage_bp_exponent == 1 && combat_damage_stat_exponent == 0.85, "central combat damage constants are invalid")
-	nexusSmokeAssert(skill_blast_total_factor == 0.6 && skill_big_bang_damage_factor == 22 && skill_charge_damage_factor == 4 && skill_cyber_charge_damage_factor == 2.5, "core projectile factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_blast_total_factor == 0.6 && skill_big_bang_damage_factor == 28 && skill_charge_damage_factor == 8 && skill_cyber_charge_damage_factor == 6, "core projectile factors diverged from the balance workbook")
 	nexusSmokeAssert(basic_blast_base_refire_deciseconds == 0.75 && basic_blast_default_volley_size == 3 && basic_blast_max_volley_size == 3 && basic_blast_damage_scale == 0.3 && basic_blast_energy_scale == 0.2 && basic_blast_angle_spacing_degrees == 6 && basic_blast_angle_jitter_degrees == 2 && basic_blast_owner_active_limit == 24 && basic_blast_global_active_limit == 256 && basic_blast_volley_configuration_version == 1, "rapid basic-blast volley tuning is invalid")
 	nexusSmokeAssertNear(basic_blast_default_volley_size / basic_blast_base_refire_deciseconds, 4, 0.0001, "rapid basic blasts exceed the former maximum launch rate")
 	nexusSmokeAssertNear(basic_blast_default_volley_size * basic_blast_energy_scale / basic_blast_base_refire_deciseconds, 0.8, 0.0001, "rapid basic blasts do not preserve the intended lower sustained Energy cost")
@@ -2245,12 +2246,26 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!basic_blast_migration_owner.migrateBasicBlastVolley(basic_blast_migration_skill) && basic_blast_migration_skill.Blast_Count == 1, "basic-blast volley migration overwrote a post-migration player choice")
 	del(basic_blast_migration_skill)
 	del(basic_blast_migration_owner)
-	nexusSmokeAssert(skill_makosen_damage_factor == 1 && skill_makosen_total_factor == 16 && skill_scatter_shot_damage_factor == 0.3 && skill_scatter_shot_total_factor == 18, "barrage factors diverged from the balance workbook")
-	nexusSmokeAssert(skill_attack_barrier_damage_factor == 0.2 && skill_shockwave_damage_factor == 0.5 && skill_explosion_damage_factor == 3, "AoE factors diverged from the balance workbook")
-	nexusSmokeAssert(skill_dash_attack_min_factor == 3 && skill_dash_attack_max_factor == 12 && skill_dash_attack_step_factor == 0.4, "Dash Attack factor curve diverged from the balance contract")
+	nexusSmokeAssert(skill_makosen_damage_factor == 1.5 && skill_makosen_total_factor == 24 && skill_scatter_shot_damage_factor == 0.5 && skill_scatter_shot_total_factor == 30, "barrage factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_attack_barrier_damage_factor == 0.75 && skill_shockwave_damage_factor == 1.5 && skill_explosion_damage_factor == 12, "AoE factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_attack_barrier_max_orbs == 20 && skill_shockwave_pulses == 7 && skill_wall_of_flame_pulse_factor == 2 && skill_wall_of_flame_max_pulses == 6, "multi-hit area skill budgets diverged from the balance workbook")
+	nexusSmokeAssert(skill_spin_blast_damage_factor == 2 && skill_spin_blast_projectiles == 4 && skill_genocide_damage_factor == 1.25 && skill_genocide_max_projectiles == 12 && skill_buster_barrage_damage_factor == 0.75 && skill_buster_barrage_total_factor == 24 && skill_buster_barrage_max_projectiles == 20, "rapid projectile skill budgets diverged from the balance workbook")
+	nexusSmokeAssert(skill_lunge_damage_factor == 8 && skill_dragon_rush_damage_factor == 8 && skill_rock_throw_powerful_damage_factor == 8 && skill_rock_throw_rapid_damage_factor == 2 && skill_rock_slide_damage_factor == 0.8 && skill_rock_slide_max_hits == 15 && skill_rock_tomb_damage_factor == 14, "physical utility skill factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_dash_attack_min_factor == 5 && skill_dash_attack_max_factor == 18 && skill_dash_attack_step_factor == 0.55, "Dash Attack factor curve diverged from the balance contract")
 	nexusSmokeAssert(!text2path("/mob/proc/PowerupDamageGrabber"), "ordinary Power Control aura can still damage a nearby grabber")
-	nexusSmokeAssert(skill_dropkick_opening_factor == 7 && skill_dropkick_finisher_factor == 5 && skill_sokidan_damage_factor == 6 && skill_sokidan_total_factor == 12 && skill_kienzan_damage_factor == 10, "special skill factors diverged from the balance workbook")
-	nexusSmokeAssert(skill_sokidan_total_factor >= base_melee_damage * 4 && skill_kienzan_damage_factor >= base_melee_damage * 4 && skill_makosen_total_factor >= base_melee_damage * 6, "invested Ki skills fell back below their intended basic-attack equivalents")
+	nexusSmokeAssert(skill_dropkick_opening_factor == 11 && skill_dropkick_finisher_factor == 7 && skill_sokidan_damage_factor == 12 && skill_sokidan_total_factor == 24 && skill_kienzan_damage_factor == 18, "special skill factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_kikoho_damage_factor == 24 && skill_kikoho_self_damage_percent == 6 && skill_kikoho_damage_factor >= skill_kikoho_self_damage_percent * 3, "Kikoho no longer rewards its self-damage risk")
+	var/mob/NexusSmokeTest/kikoho_attacker = new
+	var/mob/NexusSmokeTest/kikoho_target = new
+	kikoho_attacker.BP = 100
+	kikoho_attacker.Pow = 100
+	kikoho_target.BP = 100
+	kikoho_target.Res = 100
+	nexusSmokeAssertNear(kikoho_attacker.KikohoDamageTo(kikoho_target), skill_kikoho_damage_factor, 0.0001, "Kikoho runtime target damage diverged from its configured factor")
+	del(kikoho_target)
+	del(kikoho_attacker)
+	nexusSmokeAssert(skill_final_explosion_initial_factor == 10 && skill_final_explosion_max_factor == 40 && skill_self_destruct_damage_factor == 45 && skill_planet_destroy_event_factor == 3 && skill_planet_destroy_total_factor == 30, "finisher skill factors diverged from the balance workbook")
+	nexusSmokeAssert(skill_sokidan_total_factor >= base_melee_damage * 8 && skill_kienzan_damage_factor >= base_melee_damage * 7 && skill_makosen_total_factor >= base_melee_damage * 9, "invested Ki skills fell back below their intended basic-attack equivalents")
 	nexusSmokeAssert(beam_skill_cooldown_ticks == 30 && beam_clash_winner_damage_mult == 1.35 && beam_clash_input_mult == 1.15, "beam cooldown or clash damage tuning is invalid")
 	nexusSmokeAssert(calculateScaledCombatDamage(10, 100, 100, 100, 100) == 10, "equal-stat central damage did not preserve its factor")
 	nexusSmokeAssert(calculateScaledCombatDamage(3, 13000, 200, 100, 100) == 195, "a 65x BP advantage cannot make a standard beam immediately decisive")
@@ -2407,11 +2422,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(barrier_lifecycle_new_owner)
 	del(barrier_lifecycle_owner)
 	var/obj/Blast/big_bang_projectile = new
-	big_bang_projectile.setStats(projectile_owner, Percent = 22, Explosion = 4, explosion_percent = 22, max_damage_factor = 44)
-	nexusSmokeAssert(big_bang_projectile.percent_damage == 22 && big_bang_projectile.explosion_damage_factor == 22 && big_bang_projectile.damage_budget.max_factor_per_target == 44, "Big Bang direct/splash budget is invalid")
+	big_bang_projectile.setStats(projectile_owner, Percent = skill_big_bang_damage_factor, Explosion = 4, explosion_percent = skill_big_bang_damage_factor, max_damage_factor = skill_big_bang_damage_factor * 2)
+	nexusSmokeAssert(big_bang_projectile.percent_damage == 28 && big_bang_projectile.explosion_damage_factor == 28 && big_bang_projectile.damage_budget.max_factor_per_target == 56, "Big Bang direct/splash budget is invalid")
 	var/obj/Attacks/Final_Flash/final_flash_skill = new
 	var/obj/Attacks/Noob_Ray/noob_ray_skill = new
-	nexusSmokeAssert(final_flash_skill.damage_factor == 12 && noob_ray_skill.damage_factor == 52, "beam damage factors are invalid")
+	nexusSmokeAssert(final_flash_skill.damage_factor == 24 && noob_ray_skill.damage_factor == 52, "beam damage factors are invalid")
 	var/strongest_progression_beam_factor = 0
 	for(var/progression_beam_type in getNexusBeamAttackTypes())
 		strongest_progression_beam_factor = max(strongest_progression_beam_factor, initial(progression_beam_type:damage_factor))
@@ -2420,15 +2435,15 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(initial(makankosappo_type:shield_pierce_mult) == 2.3, "Makankosappo lost its high shield-penetration profile")
 	var/list/expected_beam_factors = list(
 		/obj/Attacks/Noob_Ray = 52,
-		/obj/Attacks/Laser_Beam = 4,
-		/obj/Attacks/Beam = 3,
-		/obj/Attacks/Ray = 3,
-		/obj/Attacks/Piercer = 5,
-		/obj/Attacks/Kamehameha = 8,
-		/obj/Attacks/Dodompa = 5,
-		/obj/Attacks/Final_Flash = 12,
-		/obj/Attacks/Garlic_Gun = 7,
-		/obj/Attacks/Masenko = 6)
+		/obj/Attacks/Laser_Beam = 12,
+		/obj/Attacks/Beam = 10,
+		/obj/Attacks/Ray = 12,
+		/obj/Attacks/Piercer = 16,
+		/obj/Attacks/Kamehameha = 18,
+		/obj/Attacks/Dodompa = 13,
+		/obj/Attacks/Final_Flash = 24,
+		/obj/Attacks/Garlic_Gun = 17,
+		/obj/Attacks/Masenko = 15)
 	for(var/beam_type in expected_beam_factors)
 		nexusSmokeAssert(initial(beam_type:damage_factor) == expected_beam_factors[beam_type], "beam factor diverged from the balance workbook: [beam_type]")
 	var/obj/Attacks/Genki_Dama/omega_bomb_balance = new
@@ -2436,9 +2451,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/Attacks/Genki_Dama/Supernova/supernova_balance = new
 	var/obj/Blast/Genki_Dama/genki_projectile_lifecycle = new
 	genki_projectile_lifecycle.Size = 4
-	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 4 && omega_bomb_balance.sb_max_dmg == 18, "Genki Dama charge curve diverged from its tier-ten damage budget")
-	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 2.5 && death_ball_balance.sb_max_dmg == 10, "Death Ball charge curve diverged from the balance workbook")
-	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 2 && supernova_balance.sb_max_dmg == 5, "Supernova charge curve diverged from the balance workbook")
+	nexusSmokeAssert(omega_bomb_balance.sb_initial_dmg == 8 && omega_bomb_balance.sb_max_dmg == 30, "Genki Dama charge curve diverged from its tier-ten damage budget")
+	nexusSmokeAssert(death_ball_balance.sb_initial_dmg == 8 && death_ball_balance.sb_max_dmg == 28, "Death Ball charge curve diverged from the balance workbook")
+	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 6 && supernova_balance.sb_max_dmg == 18, "Supernova charge curve diverged from the balance workbook")
 	nexusSmokeAssert(genki_projectile_lifecycle.in_use, "new Genki Dama projectiles are inactive and cannot enter guided movement")
 	nexusSmokeAssert(genki_projectile_lifecycle.getBlastCollisionRadiusPixels() == 4 * world.icon_size, "large blast collision radius no longer matches its authored Size in tiles")
 	del(big_bang_projectile)

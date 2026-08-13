@@ -70,7 +70,7 @@ mob
 
 			player_view(20,src) << sound('Powerup.wav', volume = 50)
 			AlterInputDisabled(1)
-			final_explosion_dmg = 5
+			final_explosion_dmg = skill_final_explosion_initial_factor
 			final_explosion_visual_power = 15
 			setNexusActionGlow("#ffe06b", 2.8, 210, 'NexusLightGradient.dmi', 8, "charge")
 
@@ -87,7 +87,7 @@ mob
 			for(var/v in 1 to final_explosion_max_charge_seconds)
 				if(!charging_final_explosion) break
 				else
-					final_explosion_dmg = min(25, final_explosion_dmg + (20 / final_explosion_max_charge_seconds))
+					final_explosion_dmg = min(skill_final_explosion_max_factor, final_explosion_dmg + ((skill_final_explosion_max_factor - skill_final_explosion_initial_factor) / final_explosion_max_charge_seconds))
 					final_explosion_visual_power += 25
 					setNexusActionGlow("#ffe06b", Clamp(2.5 + sqrt(final_explosion_visual_power) * 0.13, 2.8, 4.6), Clamp(190 + round(final_explosion_visual_power * 0.2), 190, 245), 'NexusLightGradient.dmi', 9, "charge")
 				sleep(10 * spirit_doll_final_explosion_time_mult)

@@ -1,6 +1,6 @@
 obj/Attacks/Genki_Dama/Supernova
 	name = "Supernova"
-	desc = "A chargeable energy ball of great size with a big explosion that charges very quickly but isn't as powerful as it looks and moves slow"
+	desc = "A fast-charging energy sphere with a massive explosion and high area damage, balanced by its slow travel speed."
 	Cost_To_Learn = 20
 	clonable = 1
 	Teach_Timer = 1
@@ -22,8 +22,8 @@ obj/Attacks/Genki_Dama/Supernova
 	max_dmg_range = 4 //how big the collision box is at full charge
 	sb_stun_level = 0
 
-	sb_initial_dmg = 2
-	sb_max_dmg = 5
+	sb_initial_dmg = 6
+	sb_max_dmg = 18
 	sb_dmg_add = 0
 
 	sb_deflect_difficulty = 10

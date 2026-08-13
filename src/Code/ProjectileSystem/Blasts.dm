@@ -49,9 +49,9 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 
 	B.Barraging=1
 	var/projectiles_fired = 0
-	var/datum/CombatDamageBudget/damage_budget = new(16)
+	var/datum/CombatDamageBudget/damage_budget = new(skill_buster_barrage_total_factor)
 
-	while(B.Barraging && projectiles_fired < 20 && !cant_blast(ignore_attack_check = 1) && Ki>=GetSkillDrain(mod = B.Drain, is_energy = 1))
+	while(B.Barraging && projectiles_fired < skill_buster_barrage_max_projectiles && !cant_blast(ignore_attack_check = 1) && Ki>=GetSkillDrain(mod = B.Drain, is_energy = 1))
 		if(world.time - B.lastBlastSfx > 1.5)
 			player_view(10,src)<<sound('Blast.wav',volume=10)
 			B.lastBlastSfx = world.time
@@ -59,7 +59,7 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 		Ki-=GetSkillDrain(mod = B.Drain, is_energy = 1)
 		var/obj/Blast/A=get_cached_blast()
 
-		A.setStats(src, Percent = 0.4, Off_Mult = 1, Explosion = 0, explosion_percent = 0.4, shared_budget = damage_budget)
+		A.setStats(src, Percent = skill_buster_barrage_damage_factor, Off_Mult = 1, Explosion = 0, explosion_percent = skill_buster_barrage_damage_factor, shared_budget = damage_budget)
 		A.weaker_obstacles_cant_destroy_blast = 1
 		A.from_attack=B
 		A.Distance = 250
@@ -920,12 +920,12 @@ obj/Attacks/Spin_Blast
 			spawn(Delay) usr.attacking=0
 		Experience+=0.01
 		player_view(10,usr)<<sound('Blast.wav',volume=30)
-		for(var/v in 1 to 4)
+		for(var/v in 1 to skill_spin_blast_projectiles)
 			var/obj/Blast/A=get_cached_blast()
 			A.pixel_x+=rand(-12,12)
 			A.pixel_y+=rand(-12,12)
 			A.icon=icon
-			A.setStats(usr, Percent = 0.5, Off_Mult = 1, Explosion = rand(2,3))
+			A.setStats(usr, Percent = skill_spin_blast_damage_factor, Off_Mult = 1, Explosion = rand(2,3))
 			A.from_attack=src
 			A.vector_speed = ToOne(32 * 0.67)
 			A.Shockwave=Shockwave
@@ -1383,7 +1383,7 @@ obj/Attacks/Genocide
 			sleep(25*usr.Speed_delay_mult(severity=0.5))
 			var/projectiles_fired = 0
 
-			while(Charging && projectiles_fired < 12 && !usr.cant_blast(ignore_attack_check = 1) && usr.Ki>10)
+			while(Charging && projectiles_fired < skill_genocide_max_projectiles && !usr.cant_blast(ignore_attack_check = 1) && usr.Ki>10)
 				var/mob/target = usr.getSelectedTarget(require_view = FALSE)
 				if(target && !target.Safezone && !(target in All_Entrants) && !target.hiding_energy)
 					Skill_Increase(1,usr)
@@ -1391,7 +1391,7 @@ obj/Attacks/Genocide
 					var/obj/Blast/A=get_cached_blast()
 					A.Distance=500
 					A.icon=icon
-					A.setStats(usr, Percent = 0.25, Off_Mult = 1, Explosion = 0)
+					A.setStats(usr, Percent = skill_genocide_damage_factor, Off_Mult = 1, Explosion = 0)
 					if(skill_engine) skill_engine.applyHomingSettings(usr, A, null, src)
 					A.from_attack=src
 					A.loc=usr.loc

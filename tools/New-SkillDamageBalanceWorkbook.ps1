@@ -106,6 +106,7 @@ Add-Row $readme.Rows @((New-Cell "Section" 1), (New-Cell "Details" 1), (New-Cell
 Add-Row $readme.Rows @((New-Cell "Purpose" 6), (New-Cell "Compare current skill damage under repeatable attacker/defender scenarios. Yellow cells are scenario inputs; green cells are formulas." 5), (New-Cell "Repository combat code" 5))
 Add-Row $readme.Rows @((New-Cell "Scope" 6), (New-Cell "Includes standard melee, special melee, rocks, projectiles, beams, custom AoE/execution skills, race profiles, modules, powerup, anger, cyber BP and transformations." 5), (New-Cell "Skill Catalog and Modifiers sheets" 5))
 Add-Row $readme.Rows @((New-Cell "Damage basis" 6), (New-Cell "Factors are equal-stat percentages. Physical damage uses Strength/Endurance; Ki uses Force/Resistance; both use a linear BP ratio and the bounded stat term (2*source/(source+guard))^0.85. Offense/Defense affect hit outcomes only." 5), (New-Cell "Combat/DamageScaling.dm" 5))
+Add-Row $readme.Rows @((New-Cell "Skill policy" 6), (New-Cell "The 2.5-factor manual attack is the baseline. Standard invested skills target about five to seven basic hits, high-commitment attacks target eight to twelve, and self-risk finishers target sixteen or more. Cheap repeatable basics remain below these floors." 5), (New-Cell "GlobalCombatSettings.dm; Skill Catalog" 5))
 Add-Row $readme.Rows @((New-Cell "BP pipeline" 6), (New-Cell "The BP Pipeline sheet exposes the major ordering stages. The game has additional situational branches; use current Effective BP in Combatants when exact runtime BP is known." 5), (New-Cell "BackgroundCode/StatLoop.dm:95-242" 5))
 Add-Row $readme.Rows @((New-Cell "Powerup and anger" 6), (New-Cell "Current mixture is additive: anger/100 + BPpcnt/100 - 1 + Super Kaioken addition. It is not anger multiplied by powerup." 5), (New-Cell "BackgroundCode/StatLoop.dm:25-49" 5))
 Add-Row $readme.Rows @((New-Cell "Cyber BP" 6), (New-Cell "With current cyber_bp_cuts_natural_bp_by=0, any cyber BP replaces natural BP before cyber contribution is added. Overdrive multiplies cyber contribution by 1.5." 5), (New-Cell "BackgroundCode/StatLoop.dm:183-193" 5))
@@ -139,7 +140,11 @@ $settingRows = @(
 	@("World FPS", 60, "frames/second", "Application/Movement/MovementInput.dm"),
 	@("Android incoming damage", 0.55, "multiplier", "BackgroundCode/StatLoop.dm"),
 	@("Legendary incoming damage", 0.9, "multiplier", "BackgroundCode/StatLoop.dm"),
-	@("Jiren incoming damage", 1, "multiplier", "BackgroundCode/StatLoop.dm")
+	@("Jiren incoming damage", 1, "multiplier", "BackgroundCode/StatLoop.dm"),
+	@("Standard invested skill target", 12.5, "5 basic melee hits", "Balance policy"),
+	@("High-commitment skill target", 20, "8 basic melee hits", "Balance policy"),
+	@("Finisher target", 40, "16 basic melee hits", "Balance policy"),
+	@("Kikoho target/self ratio", 4, "minimum reward-to-risk", "GlobalCombatSettings.dm")
 )
 foreach ($row in $settingRows) { Add-Row $settings.Rows @((New-Cell $row[0]), (New-Cell $row[1] 3), (New-Cell $row[2]), (New-Cell $row[3] 5)) }
 $sheets.Add($settings) | Out-Null
@@ -387,52 +392,91 @@ function Add-SkillRow($name, $path, $status, $model, $factor, $hits, $moveDelay,
 	Add-Row $catalog.Rows @((New-Cell $name), (New-Cell $path 5), (New-Cell $status), (New-Cell $model), (New-Cell $factor), (New-Cell $hits), (New-Cell $moveDelay), (New-Cell $explosion), (New-Cell $drain), (New-Cell $cooldown), (New-Cell $charge 5), (New-Cell $range), (New-Cell $race 5), (New-Cell $issue 5), (New-Cell $source 5))
 }
 Add-SkillRow "Manual Attack" "/obj/Manual_Attack" "Global action" "Physical" 2.5 1 0 0 "GMD(24)" 0 "Melee delay" 1 "None" "Rear and critical multipliers are capped at 1.25" "Combat/Melee.dm"
-Add-SkillRow "Lunge" "/obj/Lunge" "Standalone verb/hotbar" "Physical" 5 1 0 0 "3x GMD(24)" "Lunge refire" "Windup + travel" 19 "None" "Explicit factor; no hidden base multiplier" "Combat/Melee.dm"
-Add-SkillRow "Wolf Fang Fist" "/obj/WolfFangFist" "Learnable" "Physical" 2 5 0 0 "20 stamina on total miss" 20 "Windup + advancing combo" 19 "None" "Five-hit budget 10; +15 accuracy; knockback only on the finisher" "SkillEngine.dm; Melee/WolfFangFist.dm"
-Add-SkillRow "Hundred Crack Fist" "/obj/Hokuto_Shinken" "Learnable" "Physical" 0.5 24 0 0 "Ki becomes 20% after cast" 0 "6.2s windup; 0.3s/strike" 15 "None" "Exactly 24 attempts; budget 12" "Combat/HokutoShinken.dm"
-Add-SkillRow "Dash Attack" "/obj/Dash_Attack" "Learnable" "Physical" "3-12" 1 0 0 "145*sqrt(maxKi/3000)" 10 "Up to 25 steps" 25 "None" "Factor scales 0.4 per completed step; no second BP ratio" "Application/Combat/SkillEngine.dm"
-Add-SkillRow "Dropkick" "/obj/Dropkick" "Learnable" "Physical" 12 2 0 0 "25 stamina" 30 "Windup + travel" 19 "None" "Two hits: 7 and 5" "Application/Combat/SkillEngine.dm"
-Add-SkillRow "Pressure Punch" "/obj/PressurePunch" "Learnable" "Physical" 10 1 0 0 0 9 "1s charge" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/PressurePunch.dm"
-Add-SkillRow "Roundhouse Kick" "/obj/RoundhouseKick" "Learnable" "Physical" 7.5 1 0 0 0 12 "1s charge" 3 "None" "No flat damage; calculated against the victim" "Combat/Melee/RoundhouseKick.dm"
-Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 3.5 1 0 0 40 3 "Instant target resolve" 10 "None" "Strength versus Endurance" "Combat/RockThrow.dm"
-Add-SkillRow "Rock Throw - Rapid" "/obj/RockThrow" "Learnable mode" "Physical" 1 1 0 0 16 0 "Instant target resolve" 8 "None" "No cooldown" "Combat/RockThrow.dm"
-Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Physical" 0.55 "7-15" 0 0 150 12 "1 tick between rocks" 8 "None" "Strength-scaled sequence; maximum shared factor 8.25" "Combat/RockThrow.dm"
-Add-SkillRow "Rock Tomb" "/obj/RockTomb" "Learnable" "Physical" 8 1 0 "30% mastered splash" 100 15 "Instant target resolve" 12 "None" "Mastered splash affects secondary targets only" "Combat/RockThrow.dm"
+Add-SkillRow "Lunge" "/obj/Lunge" "Standalone verb/hotbar" "Physical" 8 1 0 0 "3x GMD(24)" "Lunge refire" "Windup + travel" 19 "None" "Committed advancing strike" "Combat/Melee.dm"
+Add-SkillRow "Wolf Fang Fist" "/obj/WolfFangFist" "Learnable" "Physical" 3 5 0 0 "20 stamina on total miss" 20 "Windup + advancing combo" 19 "None" "Five-hit budget 15; +15 accuracy; knockback only on the finisher" "SkillEngine.dm; Melee/WolfFangFist.dm"
+Add-SkillRow "Hundred Crack Fist" "/obj/Hokuto_Shinken" "Learnable" "Physical" 0.75 24 0 0 "Ki becomes 20% after cast" 0 "6.2s windup; 0.3s/strike" 15 "None" "Exactly 24 attempts; budget 18" "Combat/HokutoShinken.dm"
+Add-SkillRow "Dash Attack" "/obj/Dash_Attack" "Learnable" "Physical" "5-18" 1 0 0 "145*sqrt(maxKi/3000)" 10 "Up to 25 steps" 25 "None" "Factor scales 0.55 per completed step; no second BP ratio" "Application/Combat/SkillEngine.dm"
+Add-SkillRow "Dropkick" "/obj/Dropkick" "Learnable" "Physical" 18 2 0 0 "25 stamina" 30 "Windup + travel" 19 "None" "Two hits: 11 and 7" "Application/Combat/SkillEngine.dm"
+Add-SkillRow "Pressure Punch" "/obj/PressurePunch" "Learnable" "Physical" 16 1 0 0 0 9 "1s charge" 3 "None" "High-impact charged strike" "Combat/Melee/PressurePunch.dm"
+Add-SkillRow "Roundhouse Kick" "/obj/RoundhouseKick" "Learnable" "Physical" 13 1 0 0 0 12 "1s charge" 3 "None" "Charged area kick" "Combat/Melee/RoundhouseKick.dm"
+Add-SkillRow "Rock Throw - Powerful" "/obj/RockThrow" "Learnable" "Physical" 8 1 0 0 40 3 "Instant target resolve" 10 "None" "Strength versus Endurance" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Throw - Rapid" "/obj/RockThrow" "Learnable mode" "Physical" 2 1 0 0 16 0 "Instant target resolve" 8 "None" "No cooldown" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Slide" "/obj/RockSlide" "Learnable" "Physical" 0.8 "7-15" 0 0 150 12 "1 tick between rocks" 8 "None" "Strength-scaled sequence; maximum factor 12" "Combat/RockThrow.dm"
+Add-SkillRow "Rock Tomb" "/obj/RockTomb" "Learnable" "Physical" 14 1 0 "30% mastered splash" 100 15 "Instant target resolve" 12 "None" "Mastered splash affects secondary targets only" "Combat/RockThrow.dm"
 Add-SkillRow "Blast" "/obj/Attacks/Blast" "Learnable" "Ki" "0.105-0.15" 3 0 "Lead only" "20% per pellet" "Dynamic" "0.75ds base refire" 47 "None" "3-pellet fan; shared budget 0.6; lead utility; caps 24/owner and 256/global" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
-Add-SkillRow "Big Bang Attack" "/obj/Attacks/Big_Bang_Attack" "Learnable" "Ki" 22 2 0 "22 splash" 80 0 "18*SD(.4)" 60 "None" "22 direct + 22 splash; budget 44" "SkillEngine.dm"
-Add-SkillRow "Charge" "/obj/Attacks/Charge" "Learnable" "Ki" 4 2 0 "4 splash" 20 0 "7.5*SD(.6)" 47 "None" "4 direct + 4 splash" "SkillEngine.dm"
-Add-SkillRow "Cyber Charge" "/obj/Attacks/Cyber_Charge" "Module grant" "Ki" 2.5 2 0 "2.5 splash" 10 0 "5*SD(.6)" 100 "None" "2.5 direct + 2.5 splash" "SkillEngine.dm; Cybernetics.dm"
-Add-SkillRow "Kienzan" "/obj/Attacks/Kienzan" "Learnable" "Ki" 10 1 0 0 100 0 "12*SD(.3)" 180 "None" "Piercing, guided and owner-immune; 50% decay after each landed pierce" "SkillEngine.dm; Blasts.dm"
-Add-SkillRow "Sokidan" "/obj/Attacks/Sokidan" "Learnable" "Ki" 6 2 0 "6 splash" 20 2 "7*SD(.7)" 180 "None" "Guided, owner-immune; budget 12" "SkillEngine.dm; SkillControllers.dm"
-Add-SkillRow "Spin Blast" "/obj/Attacks/Spin_Blast" "Learnable" "Ki" 0.5 4 0 "Visual only" 10 0 "No charge" 100 "None" "Four shots" "ProjectileSystem/Blasts.dm"
-Add-SkillRow "Makosen" "/obj/Attacks/Makosen" "Learnable" "Ki" 1 20 0 0 150 0 "14*SD(.4)" 35 "None" "Nondeflectable barrage; shared budget 16 per target" "SkillEngine.dm; Blasts.dm"
-Add-SkillRow "Scatter Shot" "/obj/Attacks/Scatter_Shot" "Learnable" "Ki" 0.3 "Dynamic" 0 "0.3 splash" 30 60 "0.3ds between shots" 70 "None" "Shared factor budget 18 per victim" "SkillEngine.dm; Blasts.dm"
-Add-SkillRow "Genocide" "/obj/Attacks/Genocide" "Learnable" "Ki" 0.25 12 0 0 3 0 "5ds between shots" 500 "None" "Activation capped at 12" "ProjectileSystem/Blasts.dm"
-Add-SkillRow "Buster Barrage" "/obj/Attacks/Buster_Barrage" "Learnable" "Ki" 0.4 20 0 "10% equal splash" 9 0 "Per-shot interval" 250 "None" "20 shots; shared budget 16" "ProjectileSystem/Blasts.dm"
-Add-SkillRow "Attack Barrier" "/obj/Attacks/Attack_Barrier" "Learnable" "Ki" 0.2 20 0 0 6 0 "Initial delay" 3 "None" "Activation capped at 20 orbs" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
+Add-SkillRow "Big Bang Attack" "/obj/Attacks/Big_Bang_Attack" "Learnable" "Ki" 28 2 0 "28 splash" 80 0 "18*SD(.4)" 60 "None" "28 direct + 28 splash; budget 56" "SkillEngine.dm"
+Add-SkillRow "Charge" "/obj/Attacks/Charge" "Learnable" "Ki" 8 2 0 "8 splash" 20 0 "7.5*SD(.6)" 47 "None" "8 direct + 8 splash" "SkillEngine.dm"
+Add-SkillRow "Cyber Charge" "/obj/Attacks/Cyber_Charge" "Module grant" "Ki" 6 2 0 "6 splash" 10 0 "5*SD(.6)" 100 "None" "6 direct + 6 splash" "SkillEngine.dm; Cybernetics.dm"
+Add-SkillRow "Kienzan" "/obj/Attacks/Kienzan" "Learnable" "Ki" 18 1 0 0 100 0 "12*SD(.3)" 180 "None" "Piercing, guided and owner-immune; 50% decay after each landed pierce" "SkillEngine.dm; Blasts.dm"
+Add-SkillRow "Sokidan" "/obj/Attacks/Sokidan" "Learnable" "Ki" 12 2 0 "12 splash" 20 2 "7*SD(.7)" 180 "None" "Guided, owner-immune; budget 24" "SkillEngine.dm; SkillControllers.dm"
+Add-SkillRow "Spin Blast" "/obj/Attacks/Spin_Blast" "Learnable" "Ki" 2 4 0 "Visual only" 10 0 "No charge" 100 "None" "Four shots; maximum direct total 8" "ProjectileSystem/Blasts.dm"
+Add-SkillRow "Makosen" "/obj/Attacks/Makosen" "Learnable" "Ki" 1.5 20 0 0 150 0 "14*SD(.4)" 35 "None" "Nondeflectable barrage; shared budget 24 per target" "SkillEngine.dm; Blasts.dm"
+Add-SkillRow "Scatter Shot" "/obj/Attacks/Scatter_Shot" "Learnable" "Ki" 0.5 "Dynamic" 0 "0.5 splash" 30 60 "0.3ds between shots" 70 "None" "Shared factor budget 30 per victim" "SkillEngine.dm; Blasts.dm"
+Add-SkillRow "Genocide" "/obj/Attacks/Genocide" "Learnable" "Ki" 1.25 12 0 0 3 0 "5ds between shots" 500 "None" "Activation capped at 12; maximum total 15" "ProjectileSystem/Blasts.dm"
+Add-SkillRow "Buster Barrage" "/obj/Attacks/Buster_Barrage" "Learnable" "Ki" 0.75 20 0 "10% equal splash" 9 0 "Per-shot interval" 250 "None" "20 shots; shared budget 24" "ProjectileSystem/Blasts.dm"
+Add-SkillRow "Attack Barrier" "/obj/Attacks/Attack_Barrier" "Learnable" "Ki" 0.75 20 0 0 6 0 "Initial delay" 3 "None" "Activation capped at 20 orbs; maximum total 15" "ProjectileSystem/Blasts.dm; SkillEngine.dm"
 Add-SkillRow "Noob Ray" "/obj/Attacks/Noob_Ray" "Unobtainable normally" "Ki Beam" 52 1 1 0 "Recalculated 500.8" 3 "Beam toggle" 50 "None" "Lock ticks uncapped; explosive budget 52; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 4 1 1 0 "Recalculated 27.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 4; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 3 1 1.5 0 "Recalculated 4.3" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 3 1 1 0 "Recalculated 5" 3 "Beam toggle" 30 "None" "Lock ticks uncapped; explosive budget 3; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 5 1 1 0 "Recalculated 13.7" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 5; shield pierce; 3s cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 8 1 1.5 0 "Recalculated 12.9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 8; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 5 1 1.2 0 "Recalculated 8.6" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 5; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 12 1 2 0 "Recalculated 21.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 7 1 1.8 0 "Recalculated 9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 7; 3s restart cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 6 1 1.4 0 "Recalculated 9.1" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 6; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
-Add-SkillRow "Dragon Nova" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova" "Test package" "Ki" 12 2 0 4 200 14 "2.4s charge" 40 "None" "Direct plus equal splash; budget cap 24" "Combat/NexusSpecialStyles.dm"
-Add-SkillRow "Sky Break" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak" "Test package" "Physical" 8 2 0 2 180 13 "1.6s charge" 40 "None" "Strength-scaled direct plus splash; weapon required; budget cap 16" "Combat/NexusSpecialStyles.dm"
-Add-SkillRow "Echoing Slash" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash" "Test package" "Physical" 7 1 0 0 120 9 "0.8s charge" 40 "None" "Strength-scaled cutting wave; weapon required; no explosion" "Combat/NexusSpecialStyles.dm"
-Add-SkillRow "Explosion" "/obj/Attacks/Explosion" "Learnable" "Ki AoE" 3 1 0 5 150 "2*SD(.35)" "No charge" 20 "None" "Force versus Resistance" "SkillEngine.dm"
-Add-SkillRow "Shockwave" "/obj/Attacks/Shockwave" "Learnable" "Hybrid AoE" 0.5 7 0 10 15 "7*SD(.25)" "No charge" 10 "None" "Half physical and half Ki per pulse" "SkillEngine.dm"
-Add-SkillRow "Kikoho" "/obj/Attacks/Kikoho" "Granted" "Ki" 7 1 0 0 100 0 "0.5*(5+11*SD(.4))" 11 "None" "Instant hit; separate self-damage pool +24" "Combat/KiSkills/Kikoho2016.dm"
-Add-SkillRow "Omega Bomb" "/obj/Attacks/Genki_Dama" "Granted" "Ki charge" "4-15" 2 0 5 1000 90 "25-100% charge" 100 "None" "Equal direct+splash; total 8-30" "Combat/KiSkills/SpiritBomb2016.dm"
-Add-SkillRow "Death Ball" "/obj/Attacks/Genki_Dama/Death_Ball" "Learnable/granted" "Ki charge" "2.5-10" 1 0 0 750 0 "25-100% charge" 100 "None" "Explicit capped interpolation" "Combat/KiSkills/DeathBall2017.dm"
-Add-SkillRow "Supernova" "/obj/Attacks/Genki_Dama/Supernova" "Learnable/granted" "Ki charge" "2-5" 2 0 5 500 0 "25-100% charge" 100 "None" "Equal direct+splash; total 4-10" "Combat/KiSkills/Supernova.dm"
-Add-SkillRow "Final Explosion" "/obj/Final_Explosion" "Learnable" "Ki AoE" "1-5" 5 0 "Charge-scaled radius" 0 0 "Total 5-25" "Dynamic" "None" "Five stacks; visual range decoupled from damage" "Combat/KiSkills/FinalExplosion.dm"
-Add-SkillRow "Self Destruct" "/obj/Self_Destruct" "Learnable/granted" "Ki AoE" 30 1 0 10 "Caster dies" 1200 "No charge" 10 "None" "Rebuild/Regenerate x0.5; no repeated anger hit" "Combat/Skills.dm"
+Add-SkillRow "Cyber Laser" "/obj/Attacks/Laser_Beam" "Module grant" "Ki Beam" 12 1 1 0 "Recalculated 27.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Beam" "/obj/Attacks/Beam" "Learnable" "Ki Beam" 10 1 1.5 0 "Recalculated 4.3" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 10; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Death Beam" "/obj/Attacks/Ray" "Learnable/granted" "Ki Beam" 12 1 1 0 "Recalculated 5" 3 "Beam toggle" 30 "None" "Lock ticks uncapped; explosive budget 12; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Makankosappo" "/obj/Attacks/Piercer" "Learnable/granted" "Ki Beam" 16 1 1 0 "Recalculated 13.7" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 16; shield pierce; 3s cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Kamehameha" "/obj/Attacks/Kamehameha" "Granted" "Ki Beam" 18 1 1.5 0 "Recalculated 12.9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 18; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Dodompa" "/obj/Attacks/Dodompa" "Granted" "Ki Beam" 13 1 1.2 0 "Recalculated 8.6" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 13; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Final Flash" "/obj/Attacks/Final_Flash" "Granted" "Ki Beam" 24 1 2 0 "Recalculated 21.2" 3 "Beam toggle" 60 "None" "Lock ticks uncapped; explosive budget 24; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Galick Gun" "/obj/Attacks/Garlic_Gun" "Granted" "Ki Beam" 17 1 1.8 0 "Recalculated 9" 3 "Beam toggle" 40 "None" "Lock ticks uncapped; explosive budget 17; 3s restart cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Masenko" "/obj/Attacks/Masenko" "Granted" "Ki Beam" 15 1 1.4 0 "Recalculated 9.1" 3 "Beam toggle" 32 "None" "Lock ticks uncapped; explosive budget 15; range utility; 3s cooldown" "ProjectileSystem/Beams.dm"
+Add-SkillRow "Dragon Nova" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova" "Test package" "Ki" 18 2 0 4 200 14 "2.4s charge" 40 "None" "Direct plus equal splash; budget cap 36" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Sky Break" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak" "Test package" "Physical" 13 2 0 2 180 13 "1.6s charge" 40 "None" "Strength-scaled direct plus splash; weapon required; budget cap 26" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Echoing Slash" "/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash" "Test package" "Physical" 14 1 0 0 120 9 "0.8s charge" 40 "None" "Strength-scaled cutting wave; weapon required; no explosion" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Explosion" "/obj/Attacks/Explosion" "Learnable" "Ki AoE" 12 1 0 5 150 "2*SD(.35)" "No charge" 20 "None" "Force versus Resistance" "SkillEngine.dm"
+Add-SkillRow "Shockwave" "/obj/Attacks/Shockwave" "Learnable" "Hybrid AoE" 1.5 7 0 10 15 "7*SD(.25)" "No charge" 10 "None" "Seven pulses; maximum per-target budget 10.5" "SkillEngine.dm"
+Add-SkillRow "Kikoho" "/obj/Attacks/Kikoho" "Granted" "Ki" 24 1 0 0 100 0 "0.5*(5+11*SD(.4))" 11 "None" "Instant hit; separate self-damage pool +6%" "Combat/KiSkills/Kikoho2016.dm"
+Add-SkillRow "Omega Bomb" "/obj/Attacks/Genki_Dama" "Granted" "Ki charge" "8-30" 2 0 5 1000 90 "25-100% charge" 100 "None" "Equal direct+splash; total 16-60" "Combat/KiSkills/SpiritBomb2016.dm"
+Add-SkillRow "Death Ball" "/obj/Attacks/Genki_Dama/Death_Ball" "Learnable/granted" "Ki charge" "8-28" 1 0 0 750 0 "25-100% charge" 100 "None" "Explicit capped interpolation" "Combat/KiSkills/DeathBall2017.dm"
+Add-SkillRow "Supernova" "/obj/Attacks/Genki_Dama/Supernova" "Learnable/granted" "Ki charge" "6-18" 2 0 5 500 0 "25-100% charge" 100 "None" "Equal direct+splash; total 12-36" "Combat/KiSkills/Supernova.dm"
+Add-SkillRow "Final Explosion" "/obj/Final_Explosion" "Learnable" "Ki AoE" "2-8" 5 0 "Charge-scaled radius" 0 0 "Total 10-40" "Dynamic" "None" "Five stacks; visual range decoupled from damage" "Combat/KiSkills/FinalExplosion.dm"
+Add-SkillRow "Self Destruct" "/obj/Self_Destruct" "Learnable/granted" "Ki AoE" 45 1 0 10 "Caster dies" 1200 "No charge" 10 "None" "Rebuild/Regenerate x0.5; no repeated anger hit" "Combat/Skills.dm"
 Add-SkillRow "Hakai" "/obj/Hakai" "Granted" "Execution" 0 1 0 0 "25% current Ki" 30 "About 8.5s" 20 "None" "Requires BP >=2.2x target; still forced death" "Combat/KiSkills/Hakai.dm"
-Add-SkillRow "Planet Destroy" "/obj/Planet_Destroy" "Learnable/granted" "World Ki hazard" 2 10 0 "Radius 2 events" 0 "Planet 21600" "70*SD(.3)" "Planet" "None" "Shared per-victim hazard budget 20" "WorldMechanics/PlanetDestroy.dm"
+Add-SkillRow "Planet Destroy" "/obj/Planet_Destroy" "Learnable/granted" "World Ki hazard" 3 10 0 "Radius 2 events" 0 "Planet 21600" "70*SD(.3)" "Planet" "None" "Shared per-victim hazard budget 30" "WorldMechanics/PlanetDestroy.dm"
+Add-SkillRow "Nexus Beam" "/obj/Attacks/RoleplayBeam" "Ported progression" "Ki Beam" 16 1 1.5 0 30 3 "Beam toggle" 40 "None" "Baseline integrated beam" "ProjectileSystem/NexusBeams.dm"
+Add-SkillRow "Double Sunday" "/obj/Attacks/RoleplayBeam/DoubleSunday" "Ported progression" "Ki Beam" 18 1 1.5 0 42 3 "Beam toggle" 44 "None" "Wide balanced beam" "ProjectileSystem/NexusBeams.dm"
+Add-SkillRow "Photon Flash" "/obj/Attacks/RoleplayBeam/PhotonFlash" "Ported progression" "Ki Beam" 14 1 1 0 30 3 "Beam toggle" 52 "None" "Fast control beam" "ProjectileSystem/NexusBeams.dm"
+Add-SkillRow "Tyrant Lancer" "/obj/Attacks/RoleplayBeam/TyrantLancer" "Ported progression" "Ki Beam" 20 1 1.2 0 52 3 "Beam toggle" 58 "None" "Shield pierce 1.8x; gains power with range" "ProjectileSystem/NexusBeams.dm"
+Add-SkillRow "Buster Cannon" "/obj/Attacks/RoleplayBeam/BusterCannon" "Ported progression" "Ki Beam" 24 1 1.8 0 68 3 "Beam toggle" 46 "None" "Slow raw-impact beam" "ProjectileSystem/NexusBeams.dm"
+Add-SkillRow "Wall of Flame" "/obj/Attacks/NexusSpecialStyle/WallOfFlame" "Ported progression" "Ki field" 2 6 0 0 30 16 "Persistent pulses" 5 "None" "Maximum per-target total 12" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Super Explosive Wave" "/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave" "Ported progression" "Ki AoE" 12 1 0 4 80 14 "Instant area" 4 "None" "Intercepts hostile non-beam blasts" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Earthquake" "/obj/Attacks/NexusAreaTechnique/Earthquake" "Ported progression" "Physical AoE" 10 1 0 0 60 16 "Instant area" 5 "None" "Ground-only pull; distance falloff" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Super Ghost Kamikaze" "/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze" "Ported progression" "Ki" 6 3 0 0 100 16 "Three homing ghosts" 20 "None" "Shared per-target budget 18" "Combat/NexusSpecialStyles.dm"
+Add-SkillRow "Fireball" "/obj/ArcaneSpell/Projectile/Fireball" "Magic progression" "Ki" 8 1.7 0 "70% splash" "18 essence" 2.4 "Instant projectile" 48 "None" "Maximum direct+splash factor 13.6" "Technology/NexusMagic.dm"
+Add-SkillRow "Frost Bolt" "/obj/ArcaneSpell/Projectile/FrostBolt" "Magic progression" "Ki" 8 1 0 0 "15 essence" 2 "Instant projectile" 48 "None" "Brief stun" "Technology/NexusMagic.dm"
+Add-SkillRow "Lightning Bolt" "/obj/ArcaneSpell/Projectile/LightningBolt" "Magic progression" "Ki" 10 1 0 0 "20 essence" 3.2 "Instant projectile" 36 "None" "Fast stunning projectile" "Technology/NexusMagic.dm"
+Add-SkillRow "Frost Nova" "/obj/ArcaneSpell/FrostNova" "Magic progression" "Ki AoE" 12 1 0 0 "35 essence" 7 "Instant area" 2 "None" "Damages and stuns every valid nearby target" "Technology/NexusMagic.dm"
+Add-SkillRow "Slice" "/obj/Attacks/NexusMeleeTechnique/Slice" "Weapon progression" "Physical melee" 1.5 1 0 0 4 1.5 "Immediate" 1 "Weapon" "Fast baseline weapon skill" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Bash" "/obj/Attacks/NexusMeleeTechnique/Bash" "Weapon progression" "Physical melee" 2.5 1 0 0 10 8 "Immediate" 1 "Weapon" "Stun utility" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Flourish" "/obj/Attacks/NexusMeleeTechnique/Flourish" "Weapon progression" "Physical melee" 4 1 0 0 18 10 "Immediate" 1 "Weapon" "High-accuracy impact" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Wind Howl" "/obj/Attacks/NexusMeleeTechnique/WindHowl" "Weapon progression" "Physical AoE" 2.5 1 0 0 30 14 "Instant radial" 3 "Weapon" "75% splash against up to 12 targets" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Iai Slash" "/obj/Attacks/NexusMeleeTechnique/IaiSlash" "Weapon progression" "Physical melee" 4 1 0 0 20 10 "Dash strike" 6 "Weapon" "Pass-through line attack" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Riposte" "/obj/Attacks/NexusMeleeTechnique/Riposte" "Weapon progression" "Physical melee" 4.5 1 0 0 14 10 "Counter window" 1 "Weapon" "Guaranteed counter accuracy" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Cleave" "/obj/Attacks/NexusMeleeTechnique/Cleave" "Weapon progression" "Physical AoE" 3 1 0 0 12 6 "Front sweep" 1 "Weapon" "65% splash against two targets" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Sword Stab" "/obj/Attacks/NexusMeleeTechnique/SwordStab" "Weapon progression" "Physical melee" 4.5 1 0 0 18 10 "Immediate" 2 "Weapon" "Line pierce and bleed" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Overhead Smash" "/obj/Attacks/NexusMeleeTechnique/OverheadSmash" "Weapon progression" "Physical melee" 5 1 0 0 20 10 "Immediate" 3 "Weapon" "Lower accuracy; line impact" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Colossal Impact" "/obj/Attacks/NexusMeleeTechnique/ColossalImpact" "Weapon progression" "Physical AoE" 3.5 1 0 0 35 18 "Instant radial" 2 "Weapon" "65% splash against up to 12 targets" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Burning Slash" "/obj/Attacks/NexusMeleeTechnique/BurningSlash" "Weapon progression" "Physical melee" 1.8 3 0 0 30 14 "Three-hit combo" 1 "Weapon" "Weighted total 3.96 plus bleed" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Headbutt" "/obj/Attacks/NexusMeleeTechnique/Headbutt" "Unarmed progression" "Physical melee" 3 1 0 0 10 5.5 "Immediate" 1 "Unarmed" "Brief stagger" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Uppercut Combo" "/obj/Attacks/NexusMeleeTechnique/UppercutCombo" "Unarmed progression" "Physical melee" 2.2 3 0 0 14 7.5 "Three-hit combo" 1 "Unarmed" "Weighted total 5.5; finisher launch" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Axe Kick" "/obj/Attacks/NexusMeleeTechnique/AxeKick" "Unarmed progression" "Physical melee" 4.5 1 0 0 12 6.5 "Immediate" 1 "Unarmed" "Strong knockback" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Kickback Combo" "/obj/Attacks/NexusMeleeTechnique/KickbackCombo" "Unarmed progression" "Physical melee" 3 2 0 0 22 11 "Pursuit combo" 1 "Unarmed" "Weighted total 5.4" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "March of Fury" "/obj/Attacks/NexusMeleeTechnique/MarchOfFury" "Unarmed progression" "Physical melee" 3 4 0 0 34 17 "Advancing sequence" 1 "Unarmed" "Weighted total 7.2" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Pile Driver" "/obj/Attacks/NexusMeleeTechnique/PileDriver" "Unarmed progression" "Physical melee" 5.5 1 0 0 24 12.5 "Grab slam" 1 "Grabbed target" "Unavoidable impact" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Megaton Throw" "/obj/Attacks/NexusMeleeTechnique/MegatonThrow" "Unarmed progression" "Physical melee" 5 1 0 0 20 11 "Grab throw" 1 "Grabbed target" "Throw finisher" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Consecutive Normal Punches" "/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches" "Unarmed progression" "Physical melee" 2.3 6 0 0 30 17 "Delayed barrage" 1 "Unarmed" "Weighted total 6.9" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Exploding Heart Strike" "/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike" "Unarmed progression" "Physical melee" 4.5 1 0 0 24 13 "Immediate" 1 "Unarmed" "15% bleed" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Texas Smash" "/obj/Attacks/NexusMeleeTechnique/TexasSmash" "Unarmed progression" "Physical melee" 7 1 0 0 32 18 "Slow impact" 1 "Unarmed" "Extreme knockback" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Guard Break" "/obj/Attacks/NexusMeleeTechnique/GuardBreak" "Unarmed progression" "Physical melee" 3 1 0 0 18 10.5 "Immediate" 1 "Unarmed" "Breaks guard and staggers" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Wing Clip" "/obj/Attacks/NexusMeleeTechnique/WingClip" "Unarmed progression" "Physical melee" 2.75 1 0 0 16 9 "Immediate" 1 "Unarmed" "High accuracy and movement stagger" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Burning Shot" "/obj/Attacks/NexusMeleeTechnique/BurningShot" "Unarmed progression" "Physical melee" 2.2 3 0 0 28 14 "Warp combo" 1 "Unarmed" "Weighted total 5.5" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Blue Comet Special" "/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial" "Unarmed progression" "Physical melee" 1.8 5 0 0 34 17.5 "Long rush" 1 "Unarmed" "Weighted total 6.12" "Combat/NexusMeleeTechniques.dm"
+Add-SkillRow "Critical Edge" "/obj/Attacks/NexusMeleeTechnique/CriticalEdge" "Unarmed progression" "Physical melee" 4.5 1 0 0 20 12 "Immediate" 1 "Unarmed" "Accurate condensed critical strike" "Combat/NexusMeleeTechniques.dm"
 $sheets.Add($catalog) | Out-Null
 
 $calculator = New-Sheet "Damage Calculator" @(24, 18, 12, 10, 12, 16, 16, 16, 16, 15, 18, 18, 18, 18) 3
@@ -440,27 +484,34 @@ Add-Row $calculator.Rows @((New-Cell "Standardized Damage Calculator" 2), (New-C
 Add-Row $calculator.Rows @((New-Cell "Outputs exclude dodge/shield/safezone and situational rear/KO/one-shot modifiers." 6))
 Add-Row $calculator.Rows @((New-Cell "Skill" 1), (New-Cell "Model" 1), (New-Cell "Factor" 1), (New-Cell "Hits" 1), (New-Cell "MoveDelay" 1), (New-Cell "BP Ratio Term" 1), (New-Cell "Stat Ratio Term" 1), (New-Cell "Off/Def Term" 1), (New-Cell "Segment %" 1), (New-Cell "Per Hit" 1), (New-Cell "Raw Total" 1), (New-Cell "Melee Crit %" 1), (New-Cell "Expected Total" 1), (New-Cell "Notes" 1))
 $damageRows = @(
-	@("Manual Attack", "Physical", 2.5, 1, 0, "Before rear/critical"), @("Lunge", "Physical", 5, 1, 0, ""),
-	@("Wolf Fang Fist", "Physical", 2, 5, 0, "5-hit maximum; finisher knockback"), @("Hundred Crack Fist", "Physical", 0.5, 24, 0, "Exact sequence"),
-	@("Rock Throw - Powerful", "Physical", 3.5, 1, 0, ""), @("Rock Throw - Rapid", "Physical", 1, 1, 0, ""),
-	@("Rock Slide", "Physical", 0.55, 15, 0, "Maximum 15 hits"), @("Rock Tomb", "Physical", 8, 1, 0, "Primary target"),
-	@("Big Bang Attack", "Ki", 22, 2, 0, "Direct plus splash"), @("Charge", "Ki", 4, 2, 0, "Direct plus splash"),
-	@("Cyber Charge", "Ki", 2.5, 2, 0, "Direct plus splash"), @("Kienzan", "Ki", 10, 1, 0, "Owner-immune; 50% decay after each landed pierce"),
-	@("Sokidan", "Ki", 6, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 0.5, 4, 0, "Direct only"),
-	@("Makosen", "Ki", 1, 16, 0, "Shared budget 16"), @("Scatter Shot", "Ki", 0.3, 40, 0, "Budget caps actual total at 18"),
-	@("Buster Barrage", "Ki", 0.4, 20, 0, "Budget caps actual total at 16"), @("Attack Barrier", "Ki", 0.2, 20, 0, "Emission cap"),
-	@("Noob Ray", "Ki", 52, 1, 0, "Lock uncapped; explosive budget 52"), @("Cyber Laser", "Ki", 4, 1, 0, "Lock uncapped; explosive budget 4"),
-	@("Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"), @("Death Beam", "Ki", 3, 1, 0, "Lock uncapped; explosive budget 3"),
-	@("Makankosappo", "Ki", 5, 1, 0, "Lock uncapped; explosive budget 5"), @("Kamehameha", "Ki", 8, 1, 0, "Lock uncapped; explosive budget 8"),
-	@("Dodompa", "Ki", 5, 1, 0, "Lock uncapped; explosive budget 5"), @("Final Flash", "Ki", 12, 1, 0, "Lock uncapped; explosive budget 12"),
-	@("Galick Gun", "Ki", 7, 1, 0, "Lock uncapped; explosive budget 7"), @("Masenko", "Ki", 6, 1, 0, "Lock uncapped; explosive budget 6"),
-	@("Dragon Nova", "Ki", 12, 2, 0, "Direct plus equal splash"), @("Sky Break", "Physical", 8, 2, 0, "Strength-scaled direct plus splash"),
-	@("Echoing Slash", "Physical", 7, 1, 0, "Strength-scaled cutting wave")
+	@("Manual Attack", "Physical", 2.5, 1, 0, "Before rear/critical"), @("Lunge", "Physical", 8, 1, 0, ""),
+	@("Wolf Fang Fist", "Physical", 3, 5, 0, "5-hit maximum; finisher knockback"), @("Hundred Crack Fist", "Physical", 0.75, 24, 0, "Exact sequence"),
+	@("Rock Throw - Powerful", "Physical", 8, 1, 0, ""), @("Rock Throw - Rapid", "Physical", 2, 1, 0, ""),
+	@("Rock Slide", "Physical", 0.8, 15, 0, "Maximum 15 hits"), @("Rock Tomb", "Physical", 14, 1, 0, "Primary target"),
+	@("Big Bang Attack", "Ki", 28, 2, 0, "Direct plus splash"), @("Charge", "Ki", 8, 2, 0, "Direct plus splash"),
+	@("Cyber Charge", "Ki", 6, 2, 0, "Direct plus splash"), @("Kienzan", "Ki", 18, 1, 0, "Owner-immune; 50% decay after each landed pierce"),
+	@("Sokidan", "Ki", 12, 2, 0, "Direct plus splash; owner-immune"), @("Spin Blast", "Ki", 2, 4, 0, "Direct only"),
+	@("Makosen", "Ki", 1.5, 16, 0, "Shared budget 24"), @("Scatter Shot", "Ki", 30, 1, 0, "Maximum shared budget"),
+	@("Buster Barrage", "Ki", 24, 1, 0, "Maximum shared budget"), @("Attack Barrier", "Ki", 0.75, 20, 0, "Maximum 20 emissions"),
+	@("Noob Ray", "Ki", 52, 1, 0, "Lock uncapped; explosive budget 52"), @("Cyber Laser", "Ki", 12, 1, 0, "Lock uncapped; explosive budget 12"),
+	@("Beam", "Ki", 10, 1, 0, "Lock uncapped; explosive budget 10"), @("Death Beam", "Ki", 12, 1, 0, "Lock uncapped; explosive budget 12"),
+	@("Makankosappo", "Ki", 16, 1, 0, "Lock uncapped; explosive budget 16"), @("Kamehameha", "Ki", 18, 1, 0, "Lock uncapped; explosive budget 18"),
+	@("Dodompa", "Ki", 13, 1, 0, "Lock uncapped; explosive budget 13"), @("Final Flash", "Ki", 24, 1, 0, "Lock uncapped; explosive budget 24"),
+	@("Galick Gun", "Ki", 17, 1, 0, "Lock uncapped; explosive budget 17"), @("Masenko", "Ki", 15, 1, 0, "Lock uncapped; explosive budget 15"),
+	@("Dragon Nova", "Ki", 18, 2, 0, "Direct plus equal splash"), @("Sky Break", "Physical", 13, 2, 0, "Strength-scaled direct plus splash"),
+	@("Echoing Slash", "Physical", 14, 1, 0, "Strength-scaled cutting wave"), @("Explosion", "Ki", 12, 1, 0, "Aimed area hit"),
+	@("Shockwave", "Hybrid", 1.5, 7, 0, "Seven pulses"), @("Kikoho", "Ki", 24, 1, 0, "6% self-damage pool"),
+	@("Death Ball - Full", "Ki", 28, 1, 0, "Full charge"), @("Supernova - Full", "Ki", 18, 2, 0, "Full-charge direct plus splash"),
+	@("Final Explosion - Full", "Ki", 8, 5, 0, "Full charge in five stacks"), @("Self Destruct", "Ki", 45, 1, 0, "Caster dies"),
+	@("Wall of Flame", "Ki", 2, 6, 0, "Maximum six pulses"), @("Super Ghost Kamikaze", "Ki", 6, 3, 0, "Three homing ghosts"),
+	@("Fireball", "Ki", 8, 1.7, 0, "Direct plus 70% splash"), @("Frost Nova", "Ki", 12, 1, 0, "Two-tile area")
 )
 foreach ($entry in $damageRows) {
 	$rowNumber = $calculator.Rows.Count + 1
 	$bpFormula = "POWER(Combatants!`$E`$4/Combatants!`$E`$5,Settings!`$B`$6)"
-	$strFormula = "IF(B$rowNumber=`"Physical`",POWER(2*Combatants!`$H`$4/(Combatants!`$H`$4+Combatants!`$I`$5),Settings!`$B`$7),POWER(2*Combatants!`$J`$4/(Combatants!`$J`$4+Combatants!`$K`$5),Settings!`$B`$7))"
+	$physicalStatFormula = "POWER(2*Combatants!`$H`$4/(Combatants!`$H`$4+Combatants!`$I`$5),Settings!`$B`$7)"
+	$kiStatFormula = "POWER(2*Combatants!`$J`$4/(Combatants!`$J`$4+Combatants!`$K`$5),Settings!`$B`$7)"
+	$strFormula = "IF(B$rowNumber=`"Physical`",$physicalStatFormula,IF(B$rowNumber=`"Hybrid`",($physicalStatFormula+$kiStatFormula)/2,$kiStatFormula))"
 	$defFormula = "1"
 	$segmentFormula = "0"
 	$perHitFormula = "C$rowNumber*F$rowNumber*G$rowNumber*Combatants!`$O`$5"
@@ -475,17 +526,18 @@ Add-Row $validation.Rows @((New-Cell "Validation Scenarios" 2), (New-Cell "Equal
 Add-Row $validation.Rows @((New-Cell "Scenario" 1), (New-Cell "Expected" 1), (New-Cell "Workbook result" 1), (New-Cell "Difference" 1), (New-Cell "Reason" 1))
 $validationRows = @(
 	@("Manual Attack equal stats", 2.5, 4, "Explicit physical factor"),
-	@("Lunge equal stats", 5, 5, "Explicit physical factor"),
-	@("Wolf Fang per hit", 2, 6, "Per-hit factor"),
-	@("Wolf Fang five hits", 10, 6, "Per hit x5"),
-	@("Hundred Crack per hit", 0.5, 7, "Per-hit factor"),
-	@("Hundred Crack minimum total", 12, 7, "Per hit x24"),
-	@("Rock Throw powerful", 3.5, 8, "Explicit physical factor"),
-	@("Charge direct plus splash", 8, 13, "4 x2"),
-	@("Big Bang direct plus splash", 44, 12, "22 x2"),
-	@("Dragon Nova direct plus splash", 24, 32, "12 x2"),
-	@("Sky Break direct plus splash", 16, 33, "8 x2"),
-	@("Echoing Slash", 7, 34, "Strength-scaled factor")
+	@("Lunge equal stats", 8, 5, "Explicit physical factor"),
+	@("Wolf Fang per hit", 3, 6, "Per-hit factor"),
+	@("Wolf Fang five hits", 15, 6, "Per hit x5"),
+	@("Hundred Crack per hit", 0.75, 7, "Per-hit factor"),
+	@("Hundred Crack minimum total", 18, 7, "Per hit x24"),
+	@("Rock Throw powerful", 8, 8, "Explicit physical factor"),
+	@("Charge direct plus splash", 16, 13, "8 x2"),
+	@("Big Bang direct plus splash", 56, 12, "28 x2"),
+	@("Dragon Nova direct plus splash", 36, 32, "18 x2"),
+	@("Sky Break direct plus splash", 26, 33, "13 x2"),
+	@("Echoing Slash", 14, 34, "Strength-scaled factor"),
+	@("Kikoho target hit", 24, 37, "Target factor; self pool is only 6%")
 )
 foreach ($row in $validationRows) {
 	$resultFormula = if ($row[0] -like "*five hits*") { "'Damage Calculator'!J$($row[2])*5" } elseif ($row[0] -like "*minimum total*") { "'Damage Calculator'!J$($row[2])*24" } elseif ($row[0] -like "*plus splash*") { "'Damage Calculator'!J$($row[2])*2" } else { "'Damage Calculator'!J$($row[2])" }
@@ -493,7 +545,7 @@ foreach ($row in $validationRows) {
 	Add-Row $validation.Rows @((New-Cell $row[0]), (New-Cell $row[1]), (New-FormulaCell $resultFormula), (New-FormulaCell "C$rowNumber-B$rowNumber"), (New-Cell $row[3] 5))
 }
 $powerGapRow = $validation.Rows.Count + 1
-Add-Row $validation.Rows @((New-Cell "Standard Beam at 13000 BP vs 200 BP"), (New-Cell 195), (New-FormulaCell "3*POWER(13000/200,Settings!`$B`$6)"), (New-FormulaCell "C$powerGapRow-B$powerGapRow"), (New-Cell "Linear BP scaling makes a 65x advantage immediately decisive" 5))
+Add-Row $validation.Rows @((New-Cell "Standard Beam at 13000 BP vs 200 BP"), (New-Cell 650), (New-FormulaCell "10*POWER(13000/200,Settings!`$B`$6)"), (New-FormulaCell "C$powerGapRow-B$powerGapRow"), (New-Cell "Linear BP scaling makes a 65x advantage immediately decisive" 5))
 $sheets.Add($validation) | Out-Null
 
 $sources = New-Sheet "Sources" @(44, 100) 2
@@ -506,13 +558,17 @@ $sourceRows = @(
 	@("src/Code/ProjectileSystem/Projectiles.dm", "Direct projectile, explosion, beam collision and shield formulas"),
 	@("src/Code/ProjectileSystem/BeamCore.dm", "Beam segment percent, range behavior and drain"),
 	@("src/Code/ProjectileSystem/Beams.dm", "Beam WaveMult, MoveDelay, range and deflection parameters"),
+	@("src/Code/ProjectileSystem/NexusBeams.dm", "Integrated beam factors, range, drain and shield-pierce profiles"),
 	@("src/Code/ProjectileSystem/Blasts.dm", "Projectile skill parameters and normalized 0.5ds Ki cadence"),
 	@("src/Code/Application/Combat/SkillEngine.dm", "Current cast paths, projectile percentages and melee special routing"),
 	@("src/Code/Application/Combat/SkillControllers.dm", "Sokidan/Kienzan guided movement"),
+	@("src/Code/Combat/NexusMeleeTechniques.dm", "Integrated weapon and Unarmed technique damage budgets"),
+	@("src/Code/Combat/NexusSpecialStyles.dm", "Charged projectiles, persistent fields, area attacks and ghosts"),
 	@("src/Code/Combat/RockThrow.dm", "Rock skill damage, cost, cooldown and targeting"),
 	@("src/Code/Combat/HokutoShinken.dm", "Hundred Crack Fist hit count and per-hit multiplier"),
 	@("src/Code/BackgroundCode/StatLoop.dm", "get_bp ordering, powerup, anger, cyber and late multipliers"),
 	@("src/Code/Technology/Cybernetics.dm", "Module stat effects, Overdrive and cyber skill grants"),
+	@("src/Code/Technology/NexusMagic.dm", "Arcane projectile and area spell damage"),
 	@("src/Code/CharacterCreation/NexusCharacterCreation.dm", "Race creation budgets and presets"),
 	@("src/Code/CoreFunctions/StatPoints.dm", "Race caps and additional profile data"),
 	@("src/Code/PlayerMechanics/Ascension.dm", "SSJ, USSJ, Third Eye and Frost form effects"),

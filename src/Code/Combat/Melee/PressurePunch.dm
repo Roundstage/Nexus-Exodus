@@ -1,6 +1,6 @@
 var/pressure_punch_cooldown_ticks = 90
 var/pressure_punch_charge_ticks = 10
-var/pressure_punch_damage_factor = 10
+var/pressure_punch_damage_factor = 16
 
 obj
 	PressurePunch
