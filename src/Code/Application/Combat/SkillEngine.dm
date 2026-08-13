@@ -1019,8 +1019,8 @@ datum/SkillEngine
 		var/contact_was_recorded = FALSE
 		var/contact_was_evaded = FALSE
 		if(dash_motion_result.valid && target && user.canHitNexusTechniqueTarget(target))
-			contact_was_recorded = target in dash_motion_result.contacted_mobs
-			contact_was_evaded = target in dash_motion_result.evaded_contacts
+			contact_was_recorded = (target in dash_motion_result.contacted_mobs)
+			contact_was_evaded = (target in dash_motion_result.evaded_contacts)
 			reached_target = contact_was_recorded
 		if(reached_target)
 			var/approach_pixels = dash_motion_result.moved_pixels
@@ -1036,10 +1036,11 @@ datum/SkillEngine
 			var/damage_factor = min(skill_dash_attack_max_factor, \
 				skill_dash_attack_min_factor + (starting_distance - 1) * skill_dash_attack_step_factor)
 			var/damage = user.getPhysicalCombatDamage(target, damage_factor)
-			var/acc = user.get_melee_accuracy(target) * 2
+			var/acc = Clamp(user.get_melee_accuracy(target) * 2, 0, 100)
 			var/kb_distance = (user.BP / target.BP) * (user.Str / target.End) * 5
 			var/attack_name = skill_obj ? skill_obj.name : "Dash Attack"
-			if(prob(acc))
+			var/hit_landed = !target.CanMeleeDodge(user) || target.evade_meter <= 0 || prob(acc)
+			if(hit_landed)
 				flick("Attack", user)
 				if(target.ki_shield_on())
 					target.applyNexusCombatShieldDamage(damage * target.ShieldDamageReduction() * (target.max_ki / 100) / (target.Eff ** shield_exponent) * target.Generator_reduction(is_melee = 1), user, attack_name)
@@ -1047,7 +1048,7 @@ datum/SkillEngine
 					target.TakeDamage(damage, attacker = user, attack_name = attack_name)
 				if(target && (target.Health <= 0 || target.Ki <= 0)) target.KO(user)
 				if(target) target.DashAttackPart2(user, kb_distance)
-			else flick('Zanzoken.dmi', target)
+			else target.MeleeAutoDodge(user)
 		user.Ki -= drain
 		if(skill_obj && skill_obj.icon) user.overlays -= skill_obj.icon
 		user.attack_forced_movement = 0

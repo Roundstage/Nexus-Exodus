@@ -62,6 +62,10 @@ mob/NexusSmokeTest/ForcedMovementProbe
 			forced_teleport_had_inertia = movementVelocityMagnitude() || movement_acceleration_x || movement_acceleration_y || vector_fraction_x || vector_fraction_y
 		return ..()
 
+mob/NexusSmokeTest/ForcedMovementProbe/DashImpact
+	get_melee_accuracy(mob/target)
+		return 0
+
 mob/NexusSmokeTest/InertialTeleport
 	var/turf/nexus_smoke_teleport_destination
 
@@ -1349,13 +1353,13 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	dash_movement_test.attack_forced_movement = TRUE
 	nexusSmokeAssert(step(dash_movement_test, EAST) && dash_movement_test.loc == attack_movement_destination, "Dash Attack cannot move while its attack lock is active")
 	del(dash_movement_test)
-	var/mob/NexusSmokeTest/ForcedMovementProbe/targeted_dash_user = new
+	var/mob/NexusSmokeTest/ForcedMovementProbe/DashImpact/targeted_dash_user = new
 	var/mob/NexusSmokeTest/targeted_dash_target = new
 	targeted_dash_user.SafeTeleport(attack_movement_origin)
 	targeted_dash_target.SafeTeleport(attack_movement_destination)
 	targeted_dash_user.BP = 100
 	targeted_dash_user.Str = 100
-	targeted_dash_user.Off = 100000
+	targeted_dash_user.Off = 0
 	targeted_dash_user.max_ki = 3000
 	targeted_dash_user.Ki = 3000
 	targeted_dash_user.movement_velocity_x = 4
@@ -1363,15 +1367,19 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	targeted_dash_user.vector_fraction_x = 0.4
 	targeted_dash_user.vector_fraction_y = -0.4
 	targeted_dash_user.observe_next_move = TRUE
-	targeted_dash_target.BP = 1000000
-	targeted_dash_target.End = 1000000
-	targeted_dash_target.Def = 1
+	targeted_dash_target.BP = 100
+	targeted_dash_target.End = 100
+	targeted_dash_target.Def = 1000000
+	targeted_dash_target.Health = 100
 	targeted_dash_target.max_ki = 1000
 	targeted_dash_target.Ki = 1000
 	targeted_dash_user.setSelectedTarget(targeted_dash_target, FALSE)
 	var/obj/Dash_Attack/targeted_dash_skill = new(targeted_dash_user)
 	var/targeted_dash_start_x = targeted_dash_user.Px(0)
+	var/targeted_dash_expected_damage = targeted_dash_user.getPhysicalCombatDamage(targeted_dash_target, skill_dash_attack_min_factor)
+	nexusSmokeAssert(targeted_dash_expected_damage > 0 && !targeted_dash_target.Shielding(), "Dash Attack test setup produced no physical damage or an unexpected shield: damage=[targeted_dash_expected_damage], shielding=[targeted_dash_target.Shielding()]")
 	nexusSmokeAssert(skill_engine.castDashAttack(targeted_dash_user, targeted_dash_skill) && targeted_dash_user.last_skill_motion_pixels > world.icon_size && targeted_dash_user.last_skill_motion_pixels <= world.icon_size * 2 + 1 && (targeted_dash_target in targeted_dash_user.last_skill_motion_contacts), "Dash Attack did not accelerate through its selected opponent")
+	nexusSmokeAssert(targeted_dash_target.Health < 100, "Dash Attack contact did not damage an opponent that cannot melee-dodge: health=[targeted_dash_target.Health], expected_damage=[targeted_dash_expected_damage], evaded=[targeted_dash_target in targeted_dash_user.last_skill_motion_evaded_contacts]")
 	nexusSmokeAssert(targeted_dash_user.observed_forced_move && targeted_dash_user.Px(0) > targeted_dash_start_x + world.icon_size && !targeted_dash_user.movementVelocityMagnitude() && !targeted_dash_user.active_skill_motion, "Dash Attack did not use an isolated vector motion or left movement inertia active")
 	del(targeted_dash_skill)
 	del(targeted_dash_target)

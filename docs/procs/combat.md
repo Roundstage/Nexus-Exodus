@@ -23,7 +23,7 @@ Confirmed melee critical hits use the original `showNexusCriticalImpact()` prese
 
 Custom Buff allocation uses `normalizeNexusCustomBuffStats()` and `adjustNexusCustomBuffStat()`. The hidden skin verb accepts only eleven explicit multiplier tokens, updates discrete tenths, enforces per-stat and 27-point hard caps, and never indexes `vars[]` with client text. Invalid or legacy non-finite/out-of-range values are normalized before use.
 
-Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Nexus approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
+Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Nexus approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. A recorded Dash Attack contact follows canonical melee evasion: opponents that cannot currently dodge are hit, while an eligible defender may spend a normal melee dodge. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
 
 `Cycle Target` is a universal configurable targeting action. It orders visible, attackable targets within 30 tiles by pixel distance and angle, skips the user, KO, Safezone and RP Mode targets, advances from the current selection, and wraps to the nearest valid target.
 
@@ -402,7 +402,7 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### datum/SkillEngine/proc/castDashAttack
 - Signature: `datum/SkillEngine/proc/castDashAttack(mob/user, obj/Dash_Attack/skill_obj)`
 - Inputs: mob/user, obj/Dash_Attack/skill_obj
-- Purpose: Execute a selected-target accelerated vector Dash Attack that passes through the opponent while granting only its owned skill-motion steps permission to bypass the attack movement lock.
+- Purpose: Execute a selected-target accelerated vector Dash Attack that passes through the opponent, applies its impact unless the opponent successfully performs an eligible melee dodge, and grants only its owned skill-motion steps permission to bypass the attack movement lock.
 - Returns: 1 on success, else 0.
 - Side effects: moves user, applies melee damage and knockback.
 
