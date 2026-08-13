@@ -25,6 +25,7 @@ var/vector_glide_target = 0
 var/vector_glide_max = 0
 var/vector_glide_high_speed_scale = 1
 var/vector_move_base_pixels_per_second = 70
+var/vector_walk_speed_pixels_per_second = 16
 var/vector_move_speed_stat_severity = 0.2
 var/vector_move_speed_stat_minimum = 0.7
 var/vector_move_speed_stat_maximum = 1.4
@@ -33,6 +34,7 @@ var/vector_gap_nudge_fraction = 0.5
 var/vector_gap_nudge_pixels = 1
 
 mob/var/tmp
+	walking_mode = FALSE
 	nexus_gap_nudge_direction
 	nexus_gap_nudge_input_direction
 	nexus_gap_nudge_target_offset
@@ -257,7 +259,23 @@ mob/proc
 		var/delay_mult = _GetInputMoveDelay_apply_basic_modifiers(BASE_MOVE_DELAY)
 		if(apply_diagonal_penalty && isMovementDiagonal(d)) delay_mult = _GetInputMoveDelay_diagonal_mult(delay_mult)
 		if(delay_mult) speed /= delay_mult
+		if(walking_mode) speed = min(speed, vector_walk_speed_pixels_per_second)
 		return max(0, speed)
+
+	setWalkingMode(enabled, announce = TRUE)
+		enabled = !!enabled
+		if(walking_mode == enabled) return walking_mode
+		walking_mode = enabled
+		if(walking_mode) clampMovementVelocity(vector_walk_speed_pixels_per_second)
+		if(announce)
+			var/mode_label = walking_mode ? "enabled" : "disabled"
+			var/mode_color = walking_mode ? "#7ee7b8" : "#aeb8c2"
+			src << "<font color=[mode_color]>Walk mode [mode_label]."
+			text_overlay("<center><b><font color=[mode_color]>WALK [uppertext(mode_label)]</font></b></center>", xx = -32, yy = 44, timer = 12)
+		return walking_mode
+
+	toggleWalkingMode()
+		return setWalkingMode(!walking_mode)
 
 	GetVectorMovePixels(d = NORTH)
 		if(!d) d = NORTH

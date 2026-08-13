@@ -166,7 +166,12 @@ mob/proc/consumeOre(ore_type, amount)
 	return TRUE
 
 var/list/world_ore_deposits = list()
-var/world_ore_target_count = 180
+var/world_ore_target_count = 600
+var/world_ore_regular_deposit_min = 8
+var/world_ore_regular_deposit_max = 16
+var/world_ore_heart_deposit_amount = 3
+var/world_ore_base_extraction_yield = 3
+var/world_ore_generation_interval = 1800
 var/world_ore_generation_running = FALSE
 
 proc/getWorldOreTypeForRoll(roll)
@@ -204,6 +209,10 @@ proc/getWorldOreName(ore_type)
 	del(example)
 	return result
 
+proc/getWorldOreDepositAmount(ore_type)
+	if(ore_type == /obj/items/Ore/HeartOfTheMountain) return world_ore_heart_deposit_amount
+	return rand(world_ore_regular_deposit_min, world_ore_regular_deposit_max)
+
 proc/isValidWorldOreTurf(turf/target)
 	if(!target || target.density || target.Water || istype(target, /turf/Other/Blank)) return FALSE
 	var/area/target_area = target.get_area()
@@ -232,7 +241,7 @@ proc/startWorldOreGeneration()
 	sleep(100)
 	while(TRUE)
 		generateWorldOreDeposits()
-		sleep(max(1200, round(6000 / max(0.1, Year_Speed))))
+		sleep(max(600, round(world_ore_generation_interval / max(0.1, Year_Speed))))
 
 obj/WorldOreDeposit
 	name = "Ore Deposit"
@@ -258,7 +267,7 @@ obj/WorldOreDeposit
 	proc/configureOre(new_ore_type)
 		ore_type = new_ore_type
 		required_mining_level = getWorldOreRequirement(ore_type)
-		ore_amount = ore_type == /obj/items/Ore/HeartOfTheMountain ? 1 : rand(2, 5)
+		ore_amount = getWorldOreDepositAmount(ore_type)
 		var/ore_name = getWorldOreName(ore_type)
 		name = "[ore_name] Deposit"
 		desc = "A [ore_name] deposit containing approximately [ore_amount] ore. Mining level [required_mining_level] required."
@@ -289,7 +298,7 @@ obj/WorldOreDeposit
 				being_mined = FALSE
 				miner << "Mining interrupted."
 				return
-			var/yield_amount = max(1, round(miner.getMiningYieldMultiplier()))
+			var/yield_amount = max(1, round(world_ore_base_extraction_yield * miner.getMiningYieldMultiplier()))
 			yield_amount = min(yield_amount, ore_amount)
 			miner.addMinedOre(ore_type, yield_amount)
 			miner.gainProfessionExperience("Mining", max(2, required_mining_level * 1.5), "mining [src]", announce = TRUE)

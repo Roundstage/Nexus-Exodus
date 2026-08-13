@@ -3,7 +3,7 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
-Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Nexus smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Nexus smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. The world maintains 600 active deposits, replenishes them every three baseline minutes, gives common deposits 8-16 ore, gives Heart of the Mountain deposits 3, and starts each extraction at 3 ore before Mining yield multipliers. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
 
 Specialized technologies that historically shared Technology Level 5 are sorted by base resource cost and divided evenly across levels 5-8 within Engineering, Robotics, and Genetics. This preserves inexpensive entry projects, moves complex designs deeper into their specialization, and prevents a single tier from containing most of the science catalog.
 
@@ -2319,9 +2319,10 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - Side effects: see implementation.
 ### World ore deposits
 
-- `generateWorldOreDeposits(target_count)` tops resource-bearing planets up to the configured deposit target.
-- `startWorldOreGeneration()` replenishes deposits on a Year-Speed-aware interval.
-- `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, applies yield talents, grants ore/profession XP, and depletes the node.
+- `generateWorldOreDeposits(target_count)` tops resource-bearing planets up to the configured 600-deposit target.
+- `startWorldOreGeneration()` replenishes deposits every three baseline minutes on a Year-Speed-aware interval.
+- `getWorldOreDepositAmount(ore_type)` assigns 8-16 ore to regular deposits and 3 to Heart of the Mountain.
+- `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, starts at 3 ore per extraction, applies yield talents, grants ore/profession XP, and depletes the node.
 - `mob/Admin4/verb/seedWorldOreDeposits()` exposes non-destructive distribution testing.
 
 ### Nexus training technology and alchemy

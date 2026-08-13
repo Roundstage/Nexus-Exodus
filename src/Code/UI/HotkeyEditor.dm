@@ -215,6 +215,18 @@ datum/NexusHotkeyAction
 			user.cycleSelectedTarget()
 			return 1
 
+	ToggleWalk
+		New()
+			. = ..()
+			action_id = "toggle_walk"
+			display_name = "Toggle Walk"
+			hotbar_type = "Movement"
+
+		execute(mob/user)
+			if(!user) return 0
+			user.toggleWalkingMode()
+			return 1
+
 var/list/nexus_hotkey_action_registry
 
 proc/initializeNexusHotkeyActionRegistry()
@@ -254,6 +266,8 @@ proc/initializeNexusHotkeyActionRegistry()
 	action = new /datum/NexusHotkeyAction/DefensiveDash("short_dash_northwest", "Short Dash: Northwest", NORTHWEST)
 	nexus_hotkey_action_registry[action.action_id] = action
 	action = new /datum/NexusHotkeyAction/CycleTarget
+	nexus_hotkey_action_registry[action.action_id] = action
+	action = new /datum/NexusHotkeyAction/ToggleWalk
 	nexus_hotkey_action_registry[action.action_id] = action
 
 proc/getNexusHotkeyAction(action_id)
