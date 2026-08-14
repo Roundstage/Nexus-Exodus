@@ -1244,5 +1244,5 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 
 ### Super Ghost Kamikaze projectiles and Milestone stats
 
-- Super Ghost Kamikaze Attack reuses `get_cached_blast()`, explicit `blast_homing_target`, and `startKiProjectileWalk()` for three staggered ghosts. All three receive the same `CombatDamageBudget`, so repeated contacts cannot exceed the authored per-target volley.
+- Super Ghost Kamikaze Attack reuses `get_cached_blast()` for three staggered copies of the caster's current body, overlays and underlays. Each copy uses `followSelectedTarget()` to recalculate its route toward the marked target on every movement tick instead of relying on probabilistic legacy steering. All three receive the same `CombatDamageBudget`, so repeated contacts cannot exceed the authored per-target volley.
 - `obj/Blast/setStats()` snapshots the owner's effective Milestone Force/Strength and Offense. Projectile hit, deflection, reflection, and stamina-drain checks compare against effective Milestone Defense, while the target's scaled Endurance/Resistance remains the guard term.

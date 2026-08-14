@@ -31,6 +31,8 @@ Standalone visual effects such as rock debris, Harambe event visuals, rising roc
 - Purpose: Mark each affected target with the legacy time-ring overlay and a short violet glow without changing its equipment appearance stack.
 
 ### datum/PlayerAppearanceManager
+
+Managed equipment appearances carry an explicit copy of the character body matrix and opt out of inheriting it a second time. This keeps clothing, forged swords, masks and armor synchronized through Giant Form and Android Giant Version even on clients that detach item appearances from the parent transform. Character scaling changes only the linear matrix components, preserving any existing translation and pixel anchor.
 - Purpose: Own player equipment overlay slots, source identity, stable priorities, and isolated rendered images.
 - Behavior: removes legacy raw item icons plus orphaned rendered equipment images by icon state and pixel offset, derives equipped sources, sorts by priority/category/slot, rebuilds once, and re-adds injuries above equipment. Signature cleanup is what makes the manager safe after a relog or a transformation temporarily stores and restores the mob overlay list.
 

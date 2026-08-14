@@ -16,15 +16,17 @@ datum/PlayerAppearanceEntry
 	var/alpha = 255
 	var/image/rendered
 
-	proc/createRenderedAppearance()
+	proc/createRenderedAppearance(matrix/character_transform)
 		var/image/result = image(icon = appearance_icon, icon_state = icon_state)
 		result.pixel_x = pixel_x
 		result.pixel_y = pixel_y
 		result.color = color
 		result.alpha = alpha
-		// Equipment is part of the character silhouette and must inherit Giant/Android scaling.
-		// World-attached HUD/chat actors opt out separately with RESET_TRANSFORM.
-		result.appearance_flags = result.appearance_flags & ~RESET_TRANSFORM
+		// Keep equipment on the exact same transform as the body. Some clients detached item
+		// appearances from the parent transform, leaving forged swords, masks and armor at 32px.
+		// RESET_TRANSFORM prevents a second parent multiplication after applying the body matrix.
+		result.appearance_flags |= RESET_TRANSFORM | PIXEL_SCALE
+		if(character_transform) result.transform = matrix(character_transform)
 		return result
 
 datum/PlayerAppearanceManager
@@ -143,12 +145,20 @@ datum/PlayerAppearanceManager
 		syncEquipment()
 		var/list/ordered_entries = sortedEntries()
 		for(var/datum/PlayerAppearanceEntry/entry in ordered_entries)
-			entry.rendered = entry.createRenderedAppearance()
+			entry.rendered = entry.createRenderedAppearance(owner.transform)
 			owner.overlays += entry.rendered
 			rendered_appearances += entry.rendered
 		owner.Add_Injury_Overlays()
 		rebuild_generation++
 		rebuilding = FALSE
+
+	proc/setRenderedTransform(matrix/character_transform, animation_time = 0)
+		if(!character_transform) return
+		for(var/image/rendered in rendered_appearances)
+			if(animation_time > 0)
+				animate(rendered, transform = character_transform, time = animation_time, easing = CUBIC_EASING)
+			else
+				rendered.transform = matrix(character_transform)
 
 obj/items/var
 	appearance_managed
@@ -196,8 +206,16 @@ mob/proc/setNexusCharacterVisualScaleSource(source_id, source_scale = 1, animati
 	var/new_scale = getNexusCharacterVisualScale()
 	if(abs(new_scale - old_scale) <= 0.0001) return new_scale
 	var/matrix/target_transform = matrix(transform)
-	target_transform *= new_scale / old_scale
+	var/scale_ratio = new_scale / old_scale
+	// Scale only the linear portion. Multiplying the full matrix also scales an existing
+	// translation and visibly moves custom Android bodies away from their original anchor.
+	target_transform.a *= scale_ratio
+	target_transform.b *= scale_ratio
+	target_transform.d *= scale_ratio
+	target_transform.e *= scale_ratio
 	nexus_character_visual_scale = new_scale
+	if(player_appearance_manager)
+		player_appearance_manager.setRenderedTransform(target_transform, animation_time)
 	if(animation_time > 0)
 		animate(src, transform = target_transform, time = animation_time, easing = CUBIC_EASING)
 	else

@@ -53,7 +53,7 @@ The integrated Magic Goo, tiered Punching Bag, Magic Circle, alchemical circle, 
 
 - `Racial` packages are generated from the highest-rank skill grants already defined by Nexus: Earth Guardian, Braal Elite, Namekian Elder/Teacher, Arconian Yardrat/Skill Master, Ice Master, Android Master, Kaioshin, and Daimao. Related playable lineages resolve to the spawn-world package, and both rendering and purchase validation reject another lineage's nodes.
 - Kaioshin and Daimao place Hakai at tier 10. Hakai costs 600 spendable XP, requires 3300 lifetime XP, and lists every final route prerequisite on its node.
-- Super Ghost Kamikaze Attack uses three homing integrated ghost sprites with one shared damage budget. Super Explosive Wave is a targetless four-tile ki burst. Earthquake is a targetless five-tile physical tremor that ignores flying targets.
+- Super Ghost Kamikaze Attack uses three homing copies of the caster's current character silhouette with one shared damage budget. Super Explosive Wave is a targetless four-tile ki burst. Earthquake is a targetless five-tile physical tremor that ignores flying targets.
 - Wind Howl is now a true targetless three-tile weapon area attack rather than splash chained from one selected target. Pressure Punch charges in one second and uses a nine-second cooldown.
 
 ## Complete magic and expanded science
