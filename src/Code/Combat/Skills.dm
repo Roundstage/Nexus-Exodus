@@ -53,6 +53,7 @@ mob/proc
 	Enable_giant_form(obj/Giant_Form/g)
 		if(using_giant_form) return
 		using_giant_form=1
+		setNexusCombatHitboxSource("giant_form", 48, 48)
 		if(Race=="Makyo")
 			icon='BigGarlic.dmi'
 			if(player_appearance_manager) player_appearance_manager.removeRenderedAppearances()
@@ -61,7 +62,7 @@ mob/proc
 			overlays=null
 			bp_mult+=0.3
 		else
-			animate(src, transform = transform * 2, time = 6, easing = CUBIC_EASING)
+			setNexusCharacterVisualScaleSource("giant_form", 2, 6)
 		bp_mult+=0.2
 		Str*=1.25
 		strmod*=1.25
@@ -81,13 +82,17 @@ mob/proc
 	Disable_giant_form(icon_change=1)
 		if(!using_giant_form) return
 		using_giant_form=0
+		setNexusCombatHitboxSource("giant_form")
 		if(Race=="Makyo")
 			if(icon=='BigGarlic.dmi')
 				icon='Makyojin2.dmi'
 				overlays.Add(giant_form_overlays)
+				giant_form_overlays = new/list
 				bp_mult-=0.3
 		else if(icon_change)
-			animate(src, transform = transform * 0.5, time = 15, easing = CUBIC_EASING)
+			setNexusCharacterVisualScaleSource("giant_form", 1, 15)
+		else
+			setNexusCharacterVisualScaleSource("giant_form")
 		bp_mult-=0.2
 		Spd/=0.75
 		spdmod/=0.75

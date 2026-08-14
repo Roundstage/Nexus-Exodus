@@ -3,6 +3,13 @@ mob
 	var/tmp/mob/active_nexus_melee_target
 	var/tmp/nexus_melee_context_id = 0
 	var/tmp/active_nexus_riposte_until = 0
+	var/tmp/active_nexus_stance_id
+	var/tmp/active_nexus_stance_until = 0
+	var/tmp/active_nexus_stance_charges = 0
+	var/tmp/nexus_guard_break_stacks = 0
+	var/tmp/nexus_guard_break_until = 0
+	var/tmp/nexus_wing_clip_until = 0
+	var/tmp/nexus_sand_throw_until = 0
 
 var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight2.ogg')
 var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
@@ -51,6 +58,147 @@ mob/proc/showNexusTechniqueAnnouncement(technique_name, text_color = "#ffd166", 
 	sleep(10)
 	if(announcement) del(announcement)
 
+mob/proc/clearNexusStance(announce = FALSE)
+	if(!active_nexus_stance_id) return FALSE
+	var/old_stance = active_nexus_stance_id
+	active_nexus_stance_id = null
+	active_nexus_stance_until = 0
+	active_nexus_stance_charges = 0
+	if(announce) src << "You release your [old_stance] stance."
+	return TRUE
+
+mob/proc/setNexusStance(stance_id, duration_ticks = 0, charges = 0)
+	if(!stance_id) return FALSE
+	active_nexus_stance_id = stance_id
+	active_nexus_stance_until = duration_ticks > 0 ? world.time + duration_ticks : 0
+	active_nexus_stance_charges = max(0, round(charges))
+	return TRUE
+
+mob/proc/hasNexusStance(stance_id)
+	if(!stance_id || active_nexus_stance_id != stance_id) return FALSE
+	if(active_nexus_stance_until > 0 && world.time >= active_nexus_stance_until)
+		clearNexusStance()
+		return FALSE
+	return TRUE
+
+mob/proc/getNexusStanceCriticalChanceBonus()
+	if(!hasNexusStance("critical_edge") || !using_sword()) return 0
+	return 15
+
+mob/proc/getNexusBlockIncomingDamageMultiplier()
+	return hasNexusStance("block") ? 0.7 : 1
+
+mob/proc/getNexusBlockBlastEvasionBonus()
+	return hasNexusStance("block") ? 20 : 0
+
+mob/proc/getNexusStanceStrengthMultiplier()
+	return hasNexusStance("block") ? 0.8 : 1
+
+mob/proc/getNexusStanceForceMultiplier()
+	return hasNexusStance("block") ? 0.8 : 1
+
+mob/proc/getNexusStanceDefenseMultiplier()
+	return hasNexusStance("block") ? 0.8 : 1
+
+mob/proc/applyNexusGuardBreakDebuff(duration_ticks = 80)
+	if(KO || rp_mode) return FALSE
+	if(world.time >= nexus_guard_break_until) nexus_guard_break_stacks = 0
+	nexus_guard_break_stacks = min(3, nexus_guard_break_stacks + 1)
+	nexus_guard_break_until = world.time + max(1, duration_ticks)
+	src << "Your Reflex is weakened by Guard Break ([nexus_guard_break_stacks]/3)."
+	return TRUE
+
+mob/proc/getNexusGuardBreakDefenseMultiplier()
+	if(world.time >= nexus_guard_break_until)
+		nexus_guard_break_stacks = 0
+		nexus_guard_break_until = 0
+	return max(0.7, 1 - nexus_guard_break_stacks * 0.1)
+
+mob/proc/tryApplyNexusGuardBreak(mob/target)
+	if(!target || !hasNexusStance("guard_break") || active_nexus_stance_charges <= 0) return FALSE
+	if(!target.applyNexusGuardBreakDebuff()) return FALSE
+	active_nexus_stance_charges--
+	if(active_nexus_stance_charges <= 0) clearNexusStance()
+	return TRUE
+
+mob/proc/applyNexusWingClipDebuff(duration_ticks = 80)
+	if(KO || rp_mode) return FALSE
+	nexus_wing_clip_until = world.time + max(1, duration_ticks)
+	src << "Wing Clip reduces your Speed for [round(duration_ticks / 10, 0.1)] seconds."
+	return TRUE
+
+mob/proc/getNexusWingClipSpeedMultiplier()
+	return world.time < nexus_wing_clip_until ? 0.75 : 1
+
+mob/proc/applyNexusSandThrowDebuff(duration_ticks = 80)
+	if(KO || rp_mode) return FALSE
+	nexus_sand_throw_until = world.time + max(1, duration_ticks)
+	src << "Sand obscures your vision, reducing Accuracy and Reflex for [round(duration_ticks / 10, 0.1)] seconds."
+	return TRUE
+
+mob/proc/getNexusSandThrowStatMultiplier()
+	return world.time < nexus_sand_throw_until ? 0.8 : 1
+
+obj/Attacks/NexusStance
+	name = "Nexus Stance"
+	desc = "Adopt a temporary combat stance. Only one Nexus stance can be active at a time."
+	can_hotbar = 1
+	hotbar_type = "Buff"
+	repeat_macro = 0
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
+	var
+		stance_id
+		duration_ticks = 100
+		stance_charges = 0
+		energy_cost = 10
+		cooldown_ticks = 200
+		requires_weapon = FALSE
+		requires_unarmed = FALSE
+		activation_color = "#ffd166"
+		activation_message = "You settle into a combat stance."
+		effect_icon_state
+		breaks_guard = FALSE
+		stun_ticks = 0
+		tmp/next_use = 0
+
+	verb/Hotbar_use()
+		set hidden = 1
+		activate(usr)
+
+	proc/activate(mob/user)
+		if(!user || loc != user || user.KO || user.rp_mode) return FALSE
+		if(user.hasNexusStance(stance_id))
+			user.clearNexusStance()
+			user << "You release [name]."
+			return TRUE
+		if(!user.CanMeleeFromOtherCauses() || user.Disabled() || user.input_disabled || user.attacking || user.power_attacking || user.dash_attacking || user.lunge_attacking)
+			user << "You cannot adopt [name] while unable to fight."
+			return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/obj/items/Sword/weapon = user.using_sword()
+		if(requires_weapon && !weapon)
+			user << "You must equip a weapon before using [src]."
+			return FALSE
+		if(requires_unarmed && weapon)
+			user << "You must unequip your weapon before using [src]."
+			return FALSE
+		var/stance_drain = user.GetSkillDrain(mod = energy_cost, is_energy = 0)
+		if(user.Ki < stance_drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		user.Ki -= stance_drain
+		next_use = world.time + cooldown_ticks
+		user.setNexusStance(stance_id, duration_ticks, stance_charges)
+		user.showNexusTechniqueAnnouncement(name, activation_color, 'Kiplosion.ogg', 24)
+		user << activation_message
+		return TRUE
+
+	proc/getImpactSound()
+		var/open_sound = getNexusShonenSound("electric")
+		return open_sound ? open_sound : 'Kiplosion.ogg'
+
 obj/Attacks/NexusMeleeTechnique
 	name = "Nexus Melee Technique"
 	desc = "A Nexus technique adapted to the Nexus combat engine."
@@ -75,6 +223,7 @@ obj/Attacks/NexusMeleeTechnique
 		stun_ticks = 0
 		bleed_fraction = 0
 		breaks_guard = FALSE
+		unavoidable = FALSE
 		behavior = "strike"
 		line_reach = 0
 		splash_mode
@@ -198,6 +347,7 @@ obj/Attacks/NexusMeleeTechnique
 		showImpact(target)
 		if(target && bleed_fraction > 0) target.BleedDamage(damage * bleed_fraction, attacker, "[name] Bleed")
 		if(target && stun_ticks > 0) target.ApplyStun(time = stun_ticks, stun_power = 1.5)
+		applyControlEffect(attacker, target)
 		if(line_reach > 1) applyLineHits(attacker, target, damage)
 		var/secondary_count = 0
 		for(var/mob/secondary_target in getSplashTargets(attacker, target))
@@ -218,6 +368,9 @@ obj/Attacks/NexusMeleeTechnique
 					if(finisher_knockback) target.Knockback(attacker, finisher_knockback, bypass_immunity = 1)
 		if(behavior == "kickback_combo") spawn() attacker.performNexusKickbackFollowup(src, target)
 
+	proc/applyControlEffect(mob/attacker, mob/target)
+		return FALSE
+
 	proc/applyLineHits(mob/attacker, mob/primary_target, damage)
 		if(!attacker || line_reach < 2) return
 		var/turf/line_turf = get_step(attacker, attacker.dir)
@@ -235,7 +388,11 @@ mob/proc/canHitNexusTechniqueTarget(mob/target)
 
 mob/proc/applyNexusTechniqueDamage(mob/target, damage, attack_name = "Nexus Technique")
 	if(!canHitNexusTechniqueTarget(target) || damage <= 0) return FALSE
+	var/health_before = target.Health
 	target.TakeDamage(damage, attacker = src, attack_name = attack_name)
+	if(target.Health < health_before)
+		tryApplyNexusGuardBreak(target)
+		tryApplyMilestoneHitStances(target)
 	if(target && target.Health <= 0)
 		if(!target.KO) target.KO(src)
 		else if(Fatal) target.Death(src)
@@ -254,10 +411,11 @@ mob/proc/resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/te
 			return FALSE
 		damage_multiplier *= 0.23
 	var/damage = get_melee_damage(target) * technique.damage_multiplier * damage_multiplier
-	if(!applyNexusTechniqueDamage(target, damage, technique.name)) return FALSE
+	if(damage > 0 && !applyNexusTechniqueDamage(target, damage, technique.name)) return FALSE
 	technique.showImpact(target)
 	if(technique.bleed_fraction > 0) target.BleedDamage(damage * technique.bleed_fraction, src, "[technique.name] Bleed")
 	if(technique.stun_ticks > 0) target.ApplyStun(time = technique.stun_ticks, stun_power = 1.5)
+	technique.applyControlEffect(src, target)
 	if(technique.knockback_multiplier > 1) target.Knockback(src, max(1, round(technique.knockback_multiplier)), bypass_immunity = 1)
 	return TRUE
 
@@ -336,10 +494,10 @@ mob/proc/castNexusRadialTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	attacking = 1
 	Make_Shockwave(src, sw_icon_size = 128)
 	var/hit_count = 0
-	for(var/mob/target in oview(max(1, technique.splash_radius), src))
+	for(var/mob/target in nexusMobsInCircle(src, max(1, technique.splash_radius) * world.icon_size))
 		if(hit_count >= technique.splash_target_limit) break
 		if(!canHitNexusTechniqueTarget(target)) continue
-		if(target.AOE_auto_dodge(src, loc)) continue
+		if(!technique.unavoidable && target.AOE_auto_dodge(src, loc)) continue
 		if(resolveNexusTechniqueHit(target, technique, technique.splash_damage_multiplier, force_hit = TRUE)) hit_count++
 	Reset_melee()
 	return TRUE
@@ -471,12 +629,14 @@ mob/proc/performNexusKickbackFollowup(obj/Attacks/NexusMeleeTechnique/technique,
 	set waitfor = 0
 	if(!technique || !target) return
 	sleep(5)
-	if(!canHitNexusTechniqueTarget(target) || target.blocking) return
+	if(!canHitNexusTechniqueTarget(target) || target.KO || target.blocking || target.Shielding() || target.hasNexusStance("block")) return
 	AlterInputDisabled(1)
-	if(getdist(src, target) > 1)
-		runNexusSkillApproach(target, 6 * world.icon_size, world.icon_size, 120, 260, 320, 0.3, FALSE)
+	for(var/approach_attempt = 1, approach_attempt <= 2, approach_attempt++)
+		if(!target || getdist(src, target) <= 1) break
+		var/follow_distance = max(8, getdist(src, target) + 2) * world.icon_size
+		runNexusSkillApproach(target, follow_distance, world.icon_size, 120, 260, 320, 0.3, FALSE)
 	AlterInputDisabled(-1)
-	if(target && getdist(src, target) <= 1)
+	if(target && !target.blocking && !target.Shielding() && !target.hasNexusStance("block") && getdist(src, target) <= 1)
 		resolveNexusTechniqueHit(target, technique, 0.8)
 
 mob/proc/activateNexusRiposte(obj/Attacks/NexusMeleeTechnique/technique)
@@ -859,38 +1019,65 @@ obj/Attacks/NexusMeleeTechnique/TexasSmash
 		useTechnique(usr)
 
 obj/Attacks/NexusMeleeTechnique/GuardBreak
+	parent_type = /obj/Attacks/NexusStance
 	name = "Guard Break"
-	desc = "A focused strike that bypasses an active melee guard and briefly staggers the defender."
+	desc = "Adopt an unarmed stance for ten seconds. Your next three landed melee attacks each reduce the target's effective Reflex by 10% for eight seconds, stacking to 30%."
+	stance_id = "guard_break"
+	duration_ticks = 100
+	stance_charges = 3
+	energy_cost = 16
+	cooldown_ticks = 250
 	requires_unarmed = TRUE
-	damage_multiplier = 3
-	accuracy_bonus = 20
-	breaks_guard = TRUE
-	stun_ticks = 6
-	energy_cost = 18
-	cooldown_ticks = 105
-	cast_text_color = "#77d8ff"
-	impact_sound_category = "electric"
-	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
-	effect_icon_state = "explosion_blue"
+	activation_color = "#77d8ff"
+	activation_message = "Your next three landed melee attacks will fracture the opponent's Reflex."
 	verb/Guard_Break()
 		set name = "Guard Break"
 		set category = "Skills"
-		useTechnique(usr)
+		activate(usr)
 
 obj/Attacks/NexusMeleeTechnique/WingClip
 	name = "Wing Clip"
-	desc = "Attack the target's joints with high accuracy, reduced damage and a movement stagger."
+	desc = "Sweep every opponent within two tiles with an unavoidable low-damage kick, knocking them back and reducing Speed by 25% for eight seconds."
 	requires_unarmed = TRUE
-	damage_multiplier = 2.75
-	accuracy_bonus = 18
-	stun_ticks = 7
+	damage_multiplier = 1
+	knockback_multiplier = 2
 	energy_cost = 16
-	cooldown_ticks = 90
+	cooldown_ticks = 120
+	behavior = "radial"
+	splash_mode = "radius"
+	splash_radius = 2
+	splash_damage_multiplier = 0.75
+	splash_target_limit = 12
+	unavoidable = TRUE
 	cast_text_color = "#8bd6ff"
 	effect_icon = 'src/Icons/Effects/OpenCombat/AimExplosions32.dmi'
 	effect_icon_state = "blast_blue"
+	applyControlEffect(mob/attacker, mob/target)
+		return target ? target.applyNexusWingClipDebuff() : FALSE
 	verb/Wing_Clip()
 		set name = "Wing Clip"
+		set category = "Skills"
+		useTechnique(usr)
+
+obj/Attacks/NexusMeleeTechnique/SandThrow
+	name = "Sand Throw"
+	desc = "Scatter sand around you with unavoidable accuracy, reducing nearby opponents' Accuracy and Reflex by 20% for eight seconds."
+	requires_unarmed = TRUE
+	damage_multiplier = 0
+	energy_cost = 12
+	cooldown_ticks = 180
+	behavior = "radial"
+	splash_mode = "radius"
+	splash_radius = 2
+	splash_damage_multiplier = 1
+	splash_target_limit = 12
+	unavoidable = TRUE
+	cast_text_color = "#d6b26e"
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
+	applyControlEffect(mob/attacker, mob/target)
+		return target ? target.applyNexusSandThrowDebuff() : FALSE
+	verb/Sand_Throw()
+		set name = "Sand Throw"
 		set category = "Skills"
 		useTechnique(usr)
 
@@ -931,15 +1118,32 @@ obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 		useTechnique(usr)
 
 obj/Attacks/NexusMeleeTechnique/CriticalEdge
+	parent_type = /obj/Attacks/NexusStance
 	name = "Critical Edge"
-	desc = "Condense the original critical stance into one accurate strike at 133% damage."
-	requires_unarmed = TRUE
-	damage_multiplier = 4.5
-	accuracy_bonus = 15
-	energy_cost = 20
-	cooldown_ticks = 120
-	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpactHeavy.dmi'
+	desc = "Adopt a weapon-exclusive stance for twelve seconds, adding 15 percentage points to melee critical chance."
+	stance_id = "critical_edge"
+	duration_ticks = 120
+	energy_cost = 15
+	cooldown_ticks = 300
+	requires_weapon = TRUE
+	activation_color = "#ff5470"
+	activation_message = "Your weapon seeks critical openings for twelve seconds."
 	verb/Critical_Edge()
 		set name = "Critical Edge"
 		set category = "Skills"
-		useTechnique(usr)
+		activate(usr)
+
+obj/Attacks/NexusStance/Block
+	name = "Block"
+	desc = "Brace for eight seconds: take 30% less final damage and gain 20 percentage points of blast evasion, but lose 20% effective Strength, Force and Reflex."
+	stance_id = "block"
+	duration_ticks = 80
+	energy_cost = 12
+	cooldown_ticks = 240
+	activation_color = "#9ed0ff"
+	activation_message = "You brace behind a guarded stance for eight seconds."
+	icon = 'BlockShield.dmi'
+	verb/Block_Stance()
+		set name = "Block"
+		set category = "Skills"
+		activate(usr)

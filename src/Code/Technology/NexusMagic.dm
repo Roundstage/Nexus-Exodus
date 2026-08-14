@@ -96,6 +96,9 @@ obj/ArcaneSpell/Projectile
 		projectile_speed = 48
 		projectile_distance = 48
 		projectile_stun = 0
+		projectile_status_effect
+		projectile_status_duration = 0
+		projectile_status_damage_percent = 0
 		cast_effect_state = "portal"
 		impact_effect_state = "explosion"
 		cast_sound_category = "ability_charge"
@@ -114,6 +117,9 @@ obj/ArcaneSpell/Projectile
 		projectile.projectile_impact_sound = getNexusShonenSound(impact_sound_category)
 		projectile.projectile_impact_sound_volume = 46
 		projectile.Stun = projectile_stun
+		projectile.nexus_status_effect = projectile_status_effect
+		projectile.nexus_status_duration = projectile_status_duration
+		projectile.nexus_status_damage_percent = projectile_status_damage_percent
 		projectile.Shockwave = explosion_size ? 1.5 : 0.5
 		projectile.dir = caster.dir
 		projectile.SafeTeleport(caster.loc)
@@ -130,7 +136,7 @@ obj/ArcaneSpell/Projectile
 
 	Fireball
 		name = "Fireball"
-		desc = "Launch a homing sphere of arcane fire that erupts on impact."
+		desc = "Launch a homing sphere that erupts on impact and burns for eight seconds, dealing 2% maximum Health every two seconds and reducing regeneration by 70%."
 		icon_state = "fire_ball"
 		essence_cost = 18
 		cooldown = 24
@@ -139,6 +145,9 @@ obj/ArcaneSpell/Projectile
 		cast_effect_state = "fire_ball"
 		impact_effect_state = "explosion"
 		impact_sound_category = "explosions"
+		projectile_status_effect = "fire"
+		projectile_status_duration = 80
+		projectile_status_damage_percent = 2
 		verb/Fireball()
 			set category = "Skills"
 			cast(usr)
@@ -160,18 +169,21 @@ obj/ArcaneSpell/Projectile
 
 	LightningBolt
 		name = "Lightning Bolt"
-		desc = "Condense Arcane Essence into a fast, stunning lightning strike."
+		desc = "Launch a fast bolt that electrifies for six seconds, dealing 1% maximum Health every two seconds while reducing Accuracy, Reflex and Speed by 15% and causing weak stuns."
 		icon_state = "wind"
 		essence_cost = 20
 		cooldown = 32
 		damage_percent = 10
-		projectile_stun = 1
+		projectile_stun = 0
 		projectile_speed = 64
 		projectile_distance = 36
 		cast_effect_state = "wind"
 		impact_effect_state = "wind"
 		cast_sound_category = "electric"
 		impact_sound_category = "electric"
+		projectile_status_effect = "electric"
+		projectile_status_duration = 60
+		projectile_status_damage_percent = 1
 		verb/Lightning_Bolt()
 			set category = "Skills"
 			cast(usr)

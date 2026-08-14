@@ -22,6 +22,9 @@ datum/PlayerAppearanceEntry
 		result.pixel_y = pixel_y
 		result.color = color
 		result.alpha = alpha
+		// Equipment is part of the character silhouette and must inherit Giant/Android scaling.
+		// World-attached HUD/chat actors opt out separately with RESET_TRANSFORM.
+		result.appearance_flags = result.appearance_flags & ~RESET_TRANSFORM
 		return result
 
 datum/PlayerAppearanceManager
@@ -152,6 +155,54 @@ obj/items/var
 	appearance_priority = APPEARANCE_PRIORITY_BODY
 
 mob/var/tmp/datum/PlayerAppearanceManager/player_appearance_manager
+
+mob/var/tmp
+	list/nexus_character_visual_scale_sources
+mob/var/nexus_character_visual_scale = 1
+
+mob/proc/normalizeNexusCharacterVisualScale()
+	// datum.Write() persists the live transform. Adopt the scale already represented by that
+	// matrix before restoring transient source ownership, otherwise relog would multiply it again.
+	nexus_character_visual_scale_sources = list()
+	var/adopted_scale = 1
+	if(using_giant_form && Race != "Makyo")
+		nexus_character_visual_scale_sources["giant_form"] = 2
+		adopted_scale = 2
+	for(var/obj/Module/module in contents)
+		if(module.Giant && module.suffix)
+			nexus_character_visual_scale_sources["android_giant"] = 42 / 32
+			adopted_scale = max(adopted_scale, 42 / 32)
+	if(!nexus_character_visual_scale_sources.len) nexus_character_visual_scale_sources = null
+	nexus_character_visual_scale = adopted_scale
+	return adopted_scale
+
+mob/proc/getNexusCharacterVisualScale()
+	var/effective_scale = 1
+	if(nexus_character_visual_scale_sources)
+		for(var/source_id in nexus_character_visual_scale_sources)
+			var/source_scale = nexus_character_visual_scale_sources[source_id]
+			if(isnum(source_scale)) effective_scale = max(effective_scale, source_scale)
+	return effective_scale
+
+mob/proc/setNexusCharacterVisualScaleSource(source_id, source_scale = 1, animation_time = 0)
+	if(!source_id) return
+	if(!nexus_character_visual_scale_sources) nexus_character_visual_scale_sources = list()
+	if(source_scale > 1)
+		nexus_character_visual_scale_sources[source_id] = source_scale
+	else
+		nexus_character_visual_scale_sources -= source_id
+		if(!nexus_character_visual_scale_sources.len) nexus_character_visual_scale_sources = null
+	var/old_scale = max(0.01, nexus_character_visual_scale)
+	var/new_scale = getNexusCharacterVisualScale()
+	if(abs(new_scale - old_scale) <= 0.0001) return new_scale
+	var/matrix/target_transform = matrix(transform)
+	target_transform *= new_scale / old_scale
+	nexus_character_visual_scale = new_scale
+	if(animation_time > 0)
+		animate(src, transform = target_transform, time = animation_time, easing = CUBIC_EASING)
+	else
+		transform = target_transform
+	return new_scale
 
 mob/proc/ensurePlayerAppearanceManager()
 	if(!player_appearance_manager) player_appearance_manager = new(src)

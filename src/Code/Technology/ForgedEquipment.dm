@@ -13,10 +13,12 @@ datum/ForgedMaterial
 		armor_bp_bonus = 0.08
 		ki_damage_multiplier = 1
 		ki_bp_bonus = 0
+		critical_chance_bonus = 0
+		critical_resistance = 0
 		energy_weapon = FALSE
 		description
 
-	New(new_id, new_name, new_level, new_ore_type, new_cost, new_previous_id, new_damage, new_weapon_bp_bonus, new_protection, new_heaviness, new_armor_bp_bonus, new_energy_weapon = FALSE, new_description = "", new_ki_damage_multiplier = 1, new_ki_bp_bonus = 0)
+	New(new_id, new_name, new_level, new_ore_type, new_cost, new_previous_id, new_damage, new_weapon_bp_bonus, new_protection, new_heaviness, new_armor_bp_bonus, new_energy_weapon = FALSE, new_description = "", new_ki_damage_multiplier = 1, new_ki_bp_bonus = 0, new_critical_chance_bonus = 0, new_critical_resistance = 0)
 		id = new_id
 		name = new_name
 		required_level = new_level
@@ -30,6 +32,8 @@ datum/ForgedMaterial
 		armor_bp_bonus = new_armor_bp_bonus
 		ki_damage_multiplier = new_ki_damage_multiplier
 		ki_bp_bonus = new_ki_bp_bonus
+		critical_chance_bonus = max(0, new_critical_chance_bonus)
+		critical_resistance = max(0, new_critical_resistance)
 		energy_weapon = new_energy_weapon
 		description = new_description
 
@@ -98,9 +102,9 @@ proc/initializeForgedEquipmentCatalogs()
 		forged_material_catalog["copper"] = new /datum/ForgedMaterial("copper", "Copper", 1, /obj/items/Ore/Copper, 3, "normal", 1.2, 0.12, 1.2, 1.08, 0.08, FALSE, "Accessible and balanced, but comparatively soft.", 1.08, 0.12)
 		forged_material_catalog["bronze"] = new /datum/ForgedMaterial("bronze", "Bronze", 4, /obj/items/Ore/Tin, 3, "copper", 1.28, 0.18, 1.28, 1.12, 0.12, FALSE, "A durable copper alloy with moderate weight.", 1.12, 0.18)
 		forged_material_catalog["iron"] = new /datum/ForgedMaterial("iron", "Iron", 8, /obj/items/Ore/Iron, 4, "bronze", 1.38, 0.28, 1.42, 1.22, 0.22, FALSE, "Heavy and powerful; excellent direct impact at a mobility cost.", 1.18, 0.28)
-		forged_material_catalog["silver"] = new /datum/ForgedMaterial("silver", "Silver", 14, /obj/items/Ore/Silver, 4, "bronze", 1.42, 0.22, 1.4, 1.1, 0.16, FALSE, "A refined anti-undead branch with good handling and critical potential.", 1.2, 0.22)
+		forged_material_catalog["silver"] = new /datum/ForgedMaterial("silver", "Silver", 14, /obj/items/Ore/Silver, 4, "bronze", 1.42, 0.22, 1.4, 1.1, 0.16, FALSE, "A refined anti-undead branch with good handling and critical potential.", 1.2, 0.22, 4, 4)
 		forged_material_catalog["mythril"] = new /datum/ForgedMaterial("mythril", "Mythril", 20, /obj/items/Ore/Mythril, 5, "iron", 1.52, 0.32, 1.48, 1.04, 0.2, FALSE, "Exceptionally light for its strength; retains far more mobility than iron.", 1.24, 0.32)
-		forged_material_catalog["auracite"] = new /datum/ForgedMaterial("auracite", "Auracite", 30, /obj/items/Ore/Auracite, 5, "silver", 1.64, 0.38, 1.68, 1.12, 0.28, TRUE, "Energy-reactive crystal metal with the strongest specialized protection.", 1.32, 0.38)
+		forged_material_catalog["auracite"] = new /datum/ForgedMaterial("auracite", "Auracite", 30, /obj/items/Ore/Auracite, 5, "silver", 1.64, 0.38, 1.68, 1.12, 0.28, TRUE, "Energy-reactive crystal metal with the strongest specialized protection.", 1.32, 0.38, 7, 8)
 		forged_material_catalog["masterwork"] = new /datum/ForgedMaterial("masterwork", "Masterwork", 35, /obj/items/Ore/HeartOfTheMountain, 1, "mythril", 1.68, 0.42, 1.62, 1.08, 0.32, FALSE, "The peak physical alloy: enormous BP reinforcement without iron's weight.", 1.36, 0.42)
 	if(!islist(forged_weapon_style_catalog) || !forged_weapon_style_catalog.len)
 		forged_weapon_style_catalog = list()
@@ -378,12 +382,15 @@ mob/proc/upgradeForgedEquipment(obj/items/equipment)
 		var/stat_summary
 		if(is_weapon)
 			stat_summary = "+[round(material.weapon_bp_bonus * 100)]% attack BP / [round(material.weapon_damage, 0.01)]x sharpness"
+			if(material.critical_chance_bonus) stat_summary += " / +[round(material.critical_chance_bonus)] critical chance"
 		else if(is_gloves)
 			stat_summary = "+[round(material.weapon_bp_bonus * 100)]% unarmed attack BP"
+			if(material.critical_chance_bonus) stat_summary += " / +[round(material.critical_chance_bonus)] critical chance"
 		else if(is_mask)
 			stat_summary = "+[round(material.ki_bp_bonus * 100)]% blast BP / [round((material.ki_damage_multiplier - 1) * 100)]% Ki damage"
 		else
 			stat_summary = "+[round(material.armor_bp_bonus * 100)]% endurance BP / [round(material.armor_protection, 0.01)]x protection / [round(material.armor_heaviness, 0.01)]x weight"
+			if(material.critical_resistance) stat_summary += " / +[round(material.critical_resistance)] critical resistance"
 		options["[material.name] - [stat_summary] - [ore_cost] [ore_example.ore_name] - Smithing [material.required_level]"] = material
 		del(ore_example)
 	if(!options.len)
@@ -451,7 +458,9 @@ proc/buildForgeMaterialGuideHtml()
 		else if(material.armor_heaviness >= 1.18) weight_text = "Heavy"
 		else if(material.armor_heaviness >= 1.1) weight_text = "Moderate"
 		var/damage_type = material.energy_weapon ? "Energy" : "Physical"
-		html += "<tr><td><b>[material.name]</b><br>Smithing [material.required_level]<br><small>[path_text]</small></td><td>+[round(material.weapon_bp_bonus * 100)]% attack BP<br>[round(material.weapon_damage, 0.01)]x weapon sharpness<br>[damage_type] weapon</td><td>+[round(material.ki_bp_bonus * 100)]% blast BP<br>+[round((material.ki_damage_multiplier - 1) * 100)]% Ki damage</td><td>+[round(material.armor_bp_bonus * 100)]% endurance BP<br>[round(material.armor_protection, 0.01)]x protection<br>[weight_text] ([round(material.armor_heaviness, 0.01)]x)</td><td>[html_encode(material.description)]</td></tr>"
+		var/critical_weapon_text = material.critical_chance_bonus ? "<br>+[round(material.critical_chance_bonus)] critical chance" : ""
+		var/critical_armor_text = material.critical_resistance ? "<br>+[round(material.critical_resistance)] critical resistance" : ""
+		html += "<tr><td><b>[material.name]</b><br>Smithing [material.required_level]<br><small>[path_text]</small></td><td>+[round(material.weapon_bp_bonus * 100)]% attack BP<br>[round(material.weapon_damage, 0.01)]x weapon sharpness<br>[damage_type] weapon[critical_weapon_text]</td><td>+[round(material.ki_bp_bonus * 100)]% blast BP<br>+[round((material.ki_damage_multiplier - 1) * 100)]% Ki damage</td><td>+[round(material.armor_bp_bonus * 100)]% endurance BP<br>[round(material.armor_protection, 0.01)]x protection<br>[weight_text] ([round(material.armor_heaviness, 0.01)]x)[critical_armor_text]</td><td>[html_encode(material.description)]</td></tr>"
 	return html + "</table>"
 
 mob/proc/openForgeStyleBrowser(obj/Forge/forge, equipment_kind)
@@ -582,6 +591,7 @@ obj/items/Sword/Forged
 	var/forged_style_id = "trunks"
 	var/master_blacksmith_quality = FALSE
 	var/forged_attack_bp_bonus = 0.12
+	var/forged_critical_chance_bonus = 0
 
 	New()
 		. = ..()
@@ -601,11 +611,12 @@ obj/items/Sword/Forged
 		icon = style.icon_file
 		Damage = min(2, material.weapon_damage * (master_blacksmith_quality ? 1.05 : 1))
 		forged_attack_bp_bonus = min(0.5, material.weapon_bp_bonus + (master_blacksmith_quality ? 0.03 : 0))
+		forged_critical_chance_bonus = material.critical_chance_bonus
 		Style = material.energy_weapon ? "Energy" : "Physical"
 		is_silver = material.id == "silver"
 		Sword_Desc()
 		if(master_blacksmith_quality) desc += "<br>Quality: Masterwork enchantment (+5% weapon damage and +3% BP reinforcement)."
-		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Attack BP reinforcement: +[round(forged_attack_bp_bonus * 100)]%<br>Damage type: [Style]<br>[material.description]"
+		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Attack BP reinforcement: +[round(forged_attack_bp_bonus * 100)]%<br>Critical chance: +[round(forged_critical_chance_bonus)] percentage points<br>Damage type: [Style]<br>[material.description]"
 
 	proc/customizeForgedWeapon(mob/user)
 		if(!canUseAfterNexusTradeYield(user)) return
@@ -668,6 +679,7 @@ obj/items/Armor/Forged
 	var/forged_style_id = "classic"
 	var/master_blacksmith_quality = FALSE
 	var/forged_defense_bp_bonus = 0.08
+	var/forged_critical_resistance = 0
 
 	New()
 		. = ..()
@@ -688,9 +700,10 @@ obj/items/Armor/Forged
 		Armor = min(2, material.armor_protection * (master_blacksmith_quality ? 1.05 : 1))
 		heaviness = material.armor_heaviness
 		forged_defense_bp_bonus = min(0.4, material.armor_bp_bonus + (master_blacksmith_quality ? 0.03 : 0))
+		forged_critical_resistance = material.critical_resistance
 		Armor_Desc()
 		if(master_blacksmith_quality) desc += "<br>Quality: Masterwork enchantment (+5% protection and +3% BP reinforcement)."
-		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Endurance BP reinforcement: +[round(forged_defense_bp_bonus * 100)]%<br>Weight: [round(heaviness, 0.01)]x<br>[material.description]"
+		desc += "<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Endurance BP reinforcement: +[round(forged_defense_bp_bonus * 100)]%<br>Critical resistance: +[round(forged_critical_resistance)] percentage points<br>Weight: [round(heaviness, 0.01)]x<br>[material.description]"
 
 	proc/customizeForgedArmor(mob/user)
 		if(!canUseAfterNexusTradeYield(user)) return
@@ -761,6 +774,7 @@ obj/items/Gloves/Forged
 	var/forged_style_id = "classic"
 	var/master_blacksmith_quality = FALSE
 	var/forged_attack_bp_bonus = 0.12
+	var/forged_critical_chance_bonus = 0
 
 	New()
 		. = ..()
@@ -792,7 +806,8 @@ obj/items/Gloves/Forged
 		icon = style.icon_file
 		icon_state = style.icon_state
 		forged_attack_bp_bonus = min(0.5, material.weapon_bp_bonus + (master_blacksmith_quality ? 0.03 : 0))
-		desc = "Forged gloves that reinforce unarmed attacks without counting as a sword.<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Unarmed attack BP reinforcement: +[round(forged_attack_bp_bonus * 100)]%<br>[material.description]"
+		forged_critical_chance_bonus = material.critical_chance_bonus
+		desc = "Forged gloves that reinforce unarmed attacks without counting as a sword.<br>Material: [material.name]<br>Appearance: [style.name] skin (cosmetic)<br>Unarmed attack BP reinforcement: +[round(forged_attack_bp_bonus * 100)]%<br>Critical chance: +[round(forged_critical_chance_bonus)] percentage points<br>[material.description]"
 		if(master_blacksmith_quality) desc += "<br>Quality: Masterwork enchantment (+3% BP reinforcement)."
 		if(suffix && ismob(loc))
 			var/mob/wearer = loc
@@ -989,6 +1004,22 @@ mob/proc/getForgedWeaponAttackBP()
 	if(istype(weapon) && weapon.Health > 0)
 		effective_bp *= 1 + max(0, weapon.forged_attack_bp_bonus)
 	return effective_bp
+
+mob/proc/getForgedCriticalChanceBonus()
+	var/obj/items/Sword/current_weapon = using_sword()
+	if(istype(current_weapon, /obj/items/Sword/Forged))
+		var/obj/items/Sword/Forged/forged_weapon = current_weapon
+		return max(0, forged_weapon.forged_critical_chance_bonus)
+	if(current_weapon && current_weapon.is_silver) return 4
+	var/obj/items/Gloves/Forged/gloves = usingForgedGloves()
+	if(gloves) return max(0, gloves.forged_critical_chance_bonus)
+	return 0
+
+mob/proc/getForgedArmorCriticalResistance()
+	if(istype(armor_obj, /obj/items/Armor/Forged) && armor_obj.suffix && armor_obj.Health > 0)
+		var/obj/items/Armor/Forged/armor = armor_obj
+		return max(0, armor.forged_critical_resistance)
+	return 0
 
 mob/proc/getForgedUnarmedAttackBP()
 	var/effective_bp = BP

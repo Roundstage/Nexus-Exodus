@@ -1,7 +1,7 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools. Pressing an active window icon again closes that window.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools. The experimental Planet Map is available only through an admin verb. Pressing an active window icon again closes that window.
 
 The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Player-attached bars, speech/typing feedback, fixed vitals, and overlay chat reset inherited transforms so Giant Form, Return to Larva, and other character scaling never resize the interface. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
@@ -36,6 +36,8 @@ These references are intentional and must not be removed, renamed, replaced with
 - `src/Code/UI/Hotkeys.dm`
 - `src/Code/UI/HudLibrary.dm`
 - `src/Code/UI/MusicLibrary.dm`
+- `src/Code/UI/PlanetMap.dm`
+- `src/Code/UI/PlanetMapScanner.dm`
 - `src/Code/UI/RPWindow.dm`
 - `src/Code/UI/SavePlayerSettings.dm`
 - `src/Code/UI/Tabs2017/BuildTab.dm`
@@ -54,7 +56,7 @@ These references are intentional and must not be removed, renamed, replaced with
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
 - `getNexusLiveBrowserScript()` supplies the owner-authenticated refresh heartbeat shared by live browser windows. Scroll events publish their position immediately, restoration is retried after layout settles, and the refresh cadence remains an internal implementation detail rather than a visible status badge.
 - `getNexusHotkeyDownMacroCommand()` and `getNexusHotkeyUpMacroCommand()` quote modifier combinations, provide matching release macros, and preserve normal cardinal/diagonal movement when an arrow also owns a custom action.
-- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory presents both carried Resources and the authoritative Arcane Essence balance as currencies; Inventory, Skills, Sense, and World export actual runtime sprites where their subjects are atoms. Items committed to an active trade offer remain visible but cannot be invoked through the Inventory action. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate an attacker-only, equal-power damage preview with zero enemy Endurance/Resistance plus range, cost, cooldown, mechanics, and equipment/grab requirements. Nexus melee previews retain the canonical base melee, speed, equipped sword/style, forged BP, and Milestone path; projectile previews reserve `setStats()`-scaled direct damage and unscaled splash separately through the authored shared budget. Basic Blast derives its preview from the currently configured volley count, refire factor, and optional center-projectile splash instead of displaying the shared-budget ceiling as every configuration's damage; Super Ghost Kamikaze exposes the maximum of its three fixed direct hits through their shared budget. Buffs expose all non-neutral BP/Energy/stat/regeneration/recovery multipliers and special attributes; transformations explain their form behavior and current state, including Great Ape's concrete multipliers, activation requirements, cooldown, and controlled/uncontrolled behavior, without exposing Sense information above the owner's access level.
+- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory presents both carried Resources and the authoritative Arcane Essence balance as currencies; every carried item exposes Use, Examine, and a confirmation-gated Drop action, and Inventory, Skills, Sense, and World export actual runtime sprites where their subjects are atoms. Items committed to an active trade offer remain visible but cannot be used or dropped through the Inventory action. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate an attacker-only, equal-power damage preview with zero enemy Endurance/Resistance plus range, cost, cooldown, mechanics, and equipment/grab requirements. Nexus melee previews retain the canonical base melee, speed, equipped sword/style, forged BP, and Milestone path; projectile previews reserve `setStats()`-scaled direct damage and unscaled splash separately through the authored shared budget. Basic Blast derives its preview from the currently configured volley count, refire factor, and optional center-projectile splash instead of displaying the shared-budget ceiling as every configuration's damage; Super Ghost Kamikaze exposes the maximum of its three fixed direct hits through their shared budget. Buffs expose all non-neutral BP/Energy/stat/regeneration/recovery multipliers and special attributes; transformations explain their form behavior and current state, including Great Ape's concrete multipliers, activation requirements, cooldown, and controlled/uncontrolled behavior, without exposing Sense information above the owner's access level.
 - `getSkillDamageData()`, `getProjectilePreviewReservedFactor()`, `getUnresistedSkillDamage()`, and `getSkillEffectData()` keep runtime preview profiles, projectile reservation semantics, resistance-free damage math, and buff/transformation metadata separate so Examine never reads the selected opponent. Direct physical/Ki/hybrid skills, projectile `setStats()` paths, weapon projectiles, canonical melee, and raw Final Explosion BP/Force scaling remain distinct profiles.
 - `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
 - `showNexusPlayerMenu(section)` opens the requested player-menu section; `toggleNexusPlayerMenu(section)` closes it when the matching Inventory, Skills, Sense, or World icon is pressed again.
@@ -91,6 +93,21 @@ These references are intentional and must not be removed, renamed, replaced with
 - Rename and delete resolve the opaque track ID only through the captured account library, then re-resolve it and compare the expected hash after `input()` or `alert()` returns.
 - `showNexusMusicLibrary()` and `toggleNexusMusicLibrary()` preserve the existing `Play_Music` verb and `/obj/Play_Music` hotkey contract. The dedicated browser uses its explicit CLOSE action (`can_close=false`) so a native X cannot strand a live controller or reopen a hidden window after validation. `client/Del()` deletes the controller without occupying the shared modal `NexusHudWindow` slot.
 - The interface exposes Upload OGG, Validate, Play Nearby, Stop For Me, Stop My Broadcast, Mute/Unmute, Rename, Delete, and the seven pre-existing server tracks. PLAY NEARBY is never rendered for a PENDING personal track, and the domain playback wrapper enforces the same rule independently of the browser. The interface never displays internal paths or original filenames.
+
+### src/Code/UI/PlanetMapScanner.dm
+
+- `requestNexusPlanetMapScan()` schedules the current manifested planet surface for a shared runtime terrain scan. Cache identity includes stable region ID, z-level, and area type, so planets sharing one z-level, such as Desert, Jungle, and Android, never share or reveal one another's image.
+- `datum/NexusPlanetMapScan` rasterizes one map pixel per turf inside the selected planet's explicit bounds, drawing nonmatching area holes as background. Characters and movable objects are never enumerated. Runtime turf changes can appear because this experiment intentionally measures generation from the live world state.
+- Only one global scan runs at a time. Appearance colors, completed images, and browser resource names are cached for the lifetime of the server; additional players reuse the same result. The scanner yields periodically and whenever `world.tick_usage` reaches its threshold.
+- `getNexusPlanetMapUiState()` and `getNexusPlanetMapScanStats()` expose progress, elapsed time, tiles per second, yield count, unique appearances, peak tick usage, bounds, and queue state. These measurements determine whether runtime scanning should remain or be replaced by authored static maps.
+- Space and ship interiors are unavailable. A failed cache entry may be replaced by a later explicit request; ready scans are never regenerated during the same server boot.
+
+### src/Code/UI/PlanetMap.dm
+
+- `datum/NexusPlanetMapWindow` owns the resizable bronze map browser, captures both its mob and client, validates every Topic against the current admin and client slot, and polls only while its browser remains open. Capturing the client lets teardown close the native browser even when character or reconnect handoff has already detached that client from the old mob.
+- The server computes the north-up self marker from the owner's authoritative coordinates and the scanner's crop. The browser receives only the owner marker and safe JSON; it cannot submit coordinates or discover other mobs.
+- Scan progress and performance telemetry update through `NexusPlanetMap.browser:updateMarker` without replacing the whole document. SCAN is available only before a cache exists; closing the browser does not cancel the shared background job.
+- `showNexusPlanetMap()`, `toggleNexusPlanetMap()`, and `closeNexusPlanetMap()` provide the browser lifecycle. Opening and continued browser ownership require an active administrator, and `/mob/Admin1/verb/planetMap` is the only user-facing entry point while runtime scanning remains experimental. A z/area change naturally selects a different cache and full-render state.
 
 ### src/Code/UI/SavePlayerSettings.dm
 
@@ -171,6 +188,7 @@ These references are intentional and must not be removed, renamed, replaced with
 
 - Skill and Sense links use one `subject` reference contract, with legacy `skill` and `target` parameters accepted by the handler.
 - `NexusPlayerMenu.useOwnedSkill()` delegates to `executeNexusHotkeyAction()`, preserving the same ownership, `can_hotbar`, handler, and caller semantics as keyboard activation.
+- `NexusPlayerMenu.dropOwnedItem()` revalidates direct ownership and active-trade state before delegating browser requests to the canonical inventory drop routine.
 - Skill use/examination requires the object to remain directly owned; Sense targeting/examination revalidates the target's actual area and `CanSense()` state rather than depending on a possibly stale area list.
 - Dynamic inventory details are read through a variable-name indirection so examining an item without a subtype-only durability variable cannot raise an undefined-variable runtime.
 
@@ -1184,9 +1202,9 @@ The Nexus HUD, HudLib windows, overhead vitals, damage numbers, and Nexus techni
 #### client/Del
 - Signature: `client/Del()`
 - Inputs: None
-- Purpose: Remove the client from the global list and delete the client-owned vitals panel with all child visuals.
+- Purpose: Remove the client from the global list and delete its client-owned windows, including the experimental Planet Map, plus the vitals panel and child visuals.
 - Returns: parent deletion result.
-- Side effects: removes the panel from `client.screen`.
+- Side effects: closes owned browser controllers and removes the panel from `client.screen`.
 
 #### client/proc/DisplayTitleScreen
 - Signature: `DisplayTitleScreen()`

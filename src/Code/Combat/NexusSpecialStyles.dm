@@ -296,9 +296,13 @@ obj/Attacks/NexusAreaTechnique
 	proc/interceptAreaBlasts(mob/user)
 		if(!user || !intercepts_blasts) return 0
 		var/intercepted = 0
-		for(var/obj/Blast/projectile in range(radius, user))
+		for(var/obj/Blast/projectile in blast_view(radius + 1, user))
 			if(intercepted >= blast_intercept_limit) break
 			if(!projectile.z || projectile.Beam || projectile.Owner == user) continue
+			var/projectile_delta_x = projectile.nexusCollisionCenterXPixels() - user.nexusCollisionCenterXPixels()
+			var/projectile_delta_y = projectile.nexusCollisionCenterYPixels() - user.nexusCollisionCenterYPixels()
+			var/projectile_radius = projectile.getNexusProjectileCollisionRadiusPixels()
+			if(projectile_delta_x * projectile_delta_x + projectile_delta_y * projectile_delta_y > (radius * world.icon_size + projectile_radius) ** 2) continue
 			showNexusOpenCombatEffect(projectile, "aim_32", "blast_blue", 1.25, null, 245, BLEND_ADD, 5, 0.35)
 			projectile.Explosive = 0
 			projectile.skip_all_collisions = 1
@@ -326,12 +330,15 @@ obj/Attacks/NexusAreaTechnique
 		showNexusOpenCombatEffect(user, "smoke_shockwaves_128", shockwave_effect_state, radius / 2, cast_text_color, 225, BLEND_ADD, 18, 0.25)
 		interceptAreaBlasts(user)
 		var/hit_count = 0
-		for(var/mob/target in oview(radius, user))
+		for(var/mob/target in nexusMobsInCircle(user, radius * world.icon_size))
 			if(hit_count >= target_limit) break
 			if(!user.canHitNexusTechniqueTarget(target)) continue
 			if(ground_only && target.Flying) continue
 			if(target.AOE_auto_dodge(user, user.loc)) continue
-			var/distance_falloff = max(0.55, 1 - getdist(user, target) * 0.08)
+			var/center_delta_x = target.nexusCollisionCenterXPixels() - user.nexusCollisionCenterXPixels()
+			var/center_delta_y = target.nexusCollisionCenterYPixels() - user.nexusCollisionCenterYPixels()
+			var/distance_tiles = sqrt(center_delta_x * center_delta_x + center_delta_y * center_delta_y) / world.icon_size
+			var/distance_falloff = max(0.55, 1 - distance_tiles * 0.08)
 			var/damage = physical_damage ? user.getPhysicalCombatDamage(target, area_damage_factor * distance_falloff) : user.getKiCombatDamage(target, area_damage_factor * distance_falloff)
 			if(!user.applyNexusTechniqueDamage(target, damage, name)) continue
 			hit_count++

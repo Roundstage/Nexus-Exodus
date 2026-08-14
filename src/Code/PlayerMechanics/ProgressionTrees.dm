@@ -216,6 +216,7 @@ proc/getProgressionFoundationSkillTypes()
 		/obj/Lunge,
 		/obj/Fly,
 		/obj/Shield,
+		/obj/Attacks/NexusStance/Block,
 		/obj/Meditate_Level_2,
 		/obj/Attacks/Charge,
 		/obj/Attacks/Shockwave,
@@ -381,6 +382,7 @@ proc/configureProgressionFoundationPaths()
 	configureProgressionFoundationReward(/obj/Attacks/Shockwave, 3, 5, list(/obj/Power_Control, /obj/Attacks/Blast), "Release controlled ki and physical force in a radial wave that damages and repels nearby opponents.")
 	configureProgressionFoundationReward(/obj/Dash_Attack, 3, 6, list(/obj/Lunge), "Turn the basic lunge into a controllable line rush that rewards distance and attacking from behind.")
 
+	configureProgressionFoundationReward(/obj/Attacks/NexusStance/Block, 4, 8, list(/obj/Shield), "Brace in a timed stance that reduces final damage and improves blast evasion while sacrificing Strength, Force and Reflex.")
 	configureProgressionFoundationReward(/obj/Zanzoken, 4, 8, list(/obj/Fly, /obj/Dash_Attack), "Use a burst of extreme speed to evade, reposition and pursue through an afterimage-like movement technique.")
 	configureProgressionFoundationReward(/obj/Buff, 4, 10, list(/obj/Power_Control, /obj/Shield), "Create and tune a personal combat buff after mastering safe control of your own ki output.")
 	configureProgressionFoundationReward(/obj/Attacks/Beam, 4, 8, list(/obj/Attacks/Charge), "Sustain concentrated ki as a controllable energy wave; the basis of named beam techniques.")
@@ -429,7 +431,7 @@ proc/configureProgressionBeamPaths()
 	if(makankosappo) makankosappo.description = "A peak piercing beam that grows over distance and deals 2.3x damage to shields."
 
 proc/configureProgressionKiPaths()
-	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Explosion))
+	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Shockwave))
 	if(explosive_wave) explosive_wave.description = "Release a defensive four-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
 	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))
 	if(ghost_attack) ghost_attack.description = "Launch three homing ghosts at one selected target; the volley uses a shared damage budget."
@@ -448,6 +450,7 @@ proc/configureProgressionPhysicalPaths()
 	if(earthquake) earthquake.description = "Collapse a five-tile physical shockwave inward, damaging and pulling grounded enemies toward you; flying targets are unaffected."
 
 proc/configureProgressionWeaponPaths()
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/CriticalEdge, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/Riposte))
 	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/WindHowl))
 	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak, 5, 28, list(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash))
 
@@ -455,6 +458,7 @@ proc/configureProgressionUnarmedPaths()
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/Headbutt, 2, 8, list("combat_unarmed_root"))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/UppercutCombo, 2, 8, list("combat_unarmed_root"))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/WingClip, 2, 8, list("combat_unarmed_root"))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/SandThrow, 2, 8, list("combat_unarmed_root"))
 
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/AxeKick, 3, 12, list(/obj/Attacks/NexusMeleeTechnique/Headbutt))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/MegatonThrow, 3, 14, list(/obj/Attacks/NexusMeleeTechnique/Headbutt))
@@ -465,7 +469,6 @@ proc/configureProgressionUnarmedPaths()
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BurningShot, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
-	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/CriticalEdge, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/GuardBreak))
 	configureProgressionRewardPath(/obj/RoundhouseKick, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/AxeKick))
 	configureProgressionRewardPath(/obj/WolfFangFist, 4, 22, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 
@@ -473,7 +476,7 @@ proc/configureProgressionUnarmedPaths()
 	if(texas_smash) texas_smash.description = "The impact route's peak single blow, trading accuracy for devastating raw damage and knockback."
 	var/datum/ProgressionNode/march_of_fury = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/MarchOfFury, 5, 30, list(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches))
 	if(march_of_fury) march_of_fury.description = "The combo route's peak pursuit technique, resolving four attacks for the highest sustained unarmed damage."
-	var/datum/ProgressionNode/exploding_heart = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike, 5, 28, list(/obj/Attacks/NexusMeleeTechnique/CriticalEdge))
+	var/datum/ProgressionNode/exploding_heart = configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ExplodingHeartStrike, 5, 28, list(/obj/Attacks/NexusMeleeTechnique/GuardBreak))
 	if(exploding_heart) exploding_heart.description = "The precision route's capstone strike, combining heavy direct damage with internal bleeding."
 	var/datum/ProgressionNode/pressure_punch = configureProgressionRewardPath(/obj/PressurePunch, 5, 30, list(/obj/RoundhouseKick))
 	if(pressure_punch) pressure_punch.description = "A peak impact strike with a raw physical factor of 6 and extreme knockback."

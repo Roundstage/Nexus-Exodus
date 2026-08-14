@@ -1124,6 +1124,7 @@ mob/proc/RegenMod()
 
 	if(arcane_regeneration_until > world.time) regen_mult *= 3
 	regen_mult *= getScientificHealingMultiplier()
+	regen_mult *= getNexusFireRegenerationMultiplier()
 	return regen_mult
 
 mob/proc

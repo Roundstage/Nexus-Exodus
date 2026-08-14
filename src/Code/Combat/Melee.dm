@@ -237,6 +237,7 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 		dmg  *= stun_damage_mod
 
 	dmg *= racialDamageTakenMult()
+	dmg *= getNexusBlockIncomingDamageMultiplier()
 
 	if(Shielding())
 		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
@@ -1300,7 +1301,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				target << "You are now Burning due to being hit by someone using Fire Fist!"
 				target.isBurning = TRUE
 				target.try_applying_burn_effect()
-		if(prob(GetCriticalChance()))
+		if(prob(GetCriticalChance(target)))
 			dmg*=1.25
 			knockback*=5
 			showNexusCriticalImpact(target)
@@ -1340,7 +1341,11 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 						target.BleedDamage(dmg * 0.125, src, "Bleeding Edge")
 
 				var/melee_attack_name = getNexusMeleeAttackName(nexus_technique)
+				var/target_health_before = target.Health
 				target.TakeDamage(dmg, attacker = src, attack_name = melee_attack_name)
+				if(target && target.Health < target_health_before)
+					tryApplyNexusGuardBreak(target)
+					tryApplyMilestoneHitStances(target)
 				if(target && !nexus_technique)
 					applyMilestoneMeleeAreaDamage(target, dmg, melee_attack_name)
 					tryApplyMilestoneDoubleAttack(target, dmg, melee_attack_name)
@@ -1474,7 +1479,7 @@ mob/proc
 		set waitfor=0
 		Knockback(m, kb_pow)
 
-mob/proc/GetCriticalChance()
+mob/proc/GetCriticalChance(mob/target)
 
 	var/crit_chance = (1 + getMilestoneEffectiveOffense()) * 0.1
 	if(crit_chance < 40){
@@ -1483,6 +1488,7 @@ mob/proc/GetCriticalChance()
 		crit_chance *= 0.3;
 	}
 	crit_chance += getMilestoneCriticalChanceBonus()
-	if (crit_chance > 100)
-		crit_chance = 100
-	return crit_chance
+	crit_chance += getForgedCriticalChanceBonus()
+	crit_chance += getNexusStanceCriticalChanceBonus()
+	if(target) crit_chance -= target.getForgedArmorCriticalResistance()
+	return Clamp(crit_chance, 0, 100)

@@ -7,6 +7,8 @@ The former cumulative KO counter is deprecated. Casual defeats recover automatic
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
+Super Explosive Wave now depends on learned Shockwave in Ki progression. The Survival milestone Venomous Intent grants a toggle stance whose damaging hits have a 25% chance to apply a twelve-second poison: six 2%-maximum-Health ticks modified by racial poison resistance, with complete immunity at resistance 100 or above. Crushing Resolve grants a lethal-only toggle stance whose damaging hits have a 25% chance to spend 1 of the user's Willpower and drain 2 from the target, retaining a reserve of 1 and a five-second internal cooldown. Projectile and supplemental melee technique paths share the same real-damage gate; legacy bleeding behavior is unchanged.
+
 ## Files
 - `src/Code/PlayerMechanics/Aging.dm`
 - `src/Code/PlayerMechanics/Ascension.dm`
@@ -48,11 +50,13 @@ Instant Transmission retains its long-range signature targeting and now also exp
 - `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, displacement, and grab retention while active.
 - `forceWillpowerBreakKnockout()` converts zero Willpower into a lethal KO state before locking the character in RP Mode.
 - `tryDrainTechniqueWillpower(amount, technique_name, reserve)` lets sustained techniques spend Willpower without crossing their configured safe reserve.
+- `KO(attacker, allow_anger, combat_ko_handled, victim, combat_mode_override)` and `Cause_Combat_KO(victim, attacker, combat_mode_override)` accept an optional explicit disposition for delayed damage. Nexus DoTs snapshot it when applied, so later intent changes or a deleted source cannot turn a Casual DoT knockout Lethal.
 - `canGrabMovable(target)` is the shared normal/fallback/extended-grab gate and rejects RP Mode targets.
 - `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
 - `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
-- `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, and Thundering Blows technique objects for owned integrated combat Milestones.
+- `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, Thundering Blows, Venomous Intent, and Crushing Resolve technique objects for owned integrated combat Milestones.
+- `tryApplyMilestoneHitStances(target)` resolves Venomous Intent and Crushing Resolve only after a hit reduced target Health, respecting KO, Safezone, RP Mode, poison immunity, lethal-mode, resource-reserve, chance, and internal-cooldown gates.
 - `getMilestoneMeleeDamageMultiplier()`, `getMilestoneMeleeDelayMultiplier()`, `getMilestoneOutgoingDamageMultiplier()`, and the projectile helpers adapt integrated talent effects to the canonical Nexus combat calculations.
 - `syncTechnologyProgression(silent)` converts Knowledge growth into Technology XP and levels 1–8.
 - `getTechnologyCraftExperienceForLevel(science_level)` derives fabrication XP from the matching threshold interval, targeting about twelve successful current-tier crafts per level instead of paying only 1–8 XP.
@@ -2803,12 +2807,19 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### obj/items/proc/dropFromInventory
+- Signature: `obj/items/proc/dropFromInventory(mob/user)`
+- Inputs: the character attempting to drop or hand off the directly carried item.
+- Purpose: Apply the canonical inventory-drop rules independently of the UI entry point.
+- Returns: true after a successful drop or handoff, otherwise false.
+- Side effects: Revalidates trade ownership, destination capacity, equipped state, restricted areas, appearance, hotbar, storage, Senzu, and Dragon Ball behavior.
+
 #### obj/items/verb/Drop
 - Signature: `obj/items/verb/Drop()`
 - Inputs: None
-- Purpose: Handle drop.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Delegate the legacy item command to `dropFromInventory(usr)`.
+- Returns: the canonical drop result.
+- Side effects: see `dropFromInventory()`.
 
 #### obj/items/Scouter/New
 - Signature: `New()`
@@ -3340,9 +3351,9 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - Side effects: see implementation.
 
 #### mob/proc/KO
-- Signature: `mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src)`
-- Inputs: mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src
-- Purpose: Handle ko.
+- Signature: `mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src, combat_mode_override)`
+- Inputs: attacker, Anger gate, already-handled flag, victim, and optional snapshotted Casual/Lethal disposition.
+- Purpose: Resolve the knockout and forward an explicit delayed-damage disposition when supplied.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

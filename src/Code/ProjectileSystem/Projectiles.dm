@@ -48,6 +48,14 @@ obj/Blast/proc/getNexusCombatAttackName()
 	return "Ki Blast"
 	//world<<"BP: [BP]<br>Force: [Force]<br>Offense: [Offense]"
 
+obj/Blast/proc/applyNexusOnHitStatus(mob/target)
+	if(!target || !nexus_status_effect) return FALSE
+	var/mob/source = ismob(Owner) ? Owner : null
+	switch(nexus_status_effect)
+		if("fire") return target.applyNexusFireDot(source, nexus_status_duration, nexus_status_damage_percent)
+		if("electric") return target.applyNexusElectricDot(source, nexus_status_duration, nexus_status_damage_percent)
+	return FALSE
+
 obj/Blast/proc/getNexusProjectileImpactIcon()
 	if(projectile_impact_icon) return projectile_impact_icon
 	if(istype(from_attack, /obj/Attacks) && percent_damage >= 3) return 'src/Icons/NexusIntegrated/Attacks/Effects/RTImpact.dmi'
@@ -83,6 +91,20 @@ obj/Blast/proc/queueNexusProjectileGlowUpdate()
 		if(src && nexus_projectile_glow_serial == update_serial) updateNexusProjectileGlow()
 
 mob/var/blast_homing_mod=1
+
+mob/var/tmp
+	list/nexus_beam_contact_times
+	nexus_beam_contact_tick = -1
+
+mob/proc/claimNexusBeamContact(obj/Blast/beam_segment)
+	if(!beam_segment || !beam_segment.Beam || !beam_segment.Owner) return FALSE
+	if(nexus_beam_contact_tick != world.time)
+		nexus_beam_contact_tick = world.time
+		nexus_beam_contact_times = list()
+	var/contact_key = "\ref[beam_segment.Owner]|\ref[beam_segment.from_attack]"
+	if(nexus_beam_contact_times[contact_key]) return FALSE
+	nexus_beam_contact_times[contact_key] = TRUE
+	return TRUE
 
 obj/var/Stun
 
@@ -175,6 +197,9 @@ proc/get_cached_blast()
 		b.projectile_impact_color = null
 		b.projectile_impact_sound = null
 		b.projectile_impact_sound_volume = 40
+		b.nexus_status_effect = null
+		b.nexus_status_duration = 0
+		b.nexus_status_damage_percent = 0
 		b.damage_budget = null
 		b.shuriken = 0
 		b.deflected=0
@@ -290,12 +315,22 @@ obj/Blast
 	var/strength_scaled = FALSE
 	var/weapon_scaled = FALSE
 	var/tmp/clash_damage_bonus_applied = FALSE
+	var/tmp
+		nexus_collision_sweep_active
+		nexus_collision_sweep_start_x
+		nexus_collision_sweep_start_y
+		nexus_collision_sweep_end_x
+		nexus_collision_sweep_end_y
+		list/nexus_pre_move_geometric_contacts
 	var/explosion_damage_factor = 0
 	var/projectile_impact_icon
 	var/projectile_impact_icon_state
 	var/projectile_impact_color
 	var/projectile_impact_sound
 	var/projectile_impact_sound_volume = 40
+	var/nexus_status_effect
+	var/nexus_status_duration = 0
+	var/nexus_status_damage_percent = 0
 	var/datum/CombatDamageBudget/damage_budget
 	var/owner_immune = 0
 	var/Force=1
@@ -353,6 +388,7 @@ obj/Blast
 
 	proc/Update_transform_size(new_size=1)
 		transform = matrix() * new_size
+		transform_size = new_size
 		return
 
 		if(new_size==transform_size) return
@@ -390,6 +426,9 @@ obj/Blast
 			A.projectile_impact_color = projectile_impact_color
 			A.projectile_impact_sound = projectile_impact_sound
 			A.projectile_impact_sound_volume = projectile_impact_sound_volume
+			A.nexus_status_effect = nexus_status_effect
+			A.nexus_status_duration = nexus_status_duration
+			A.nexus_status_damage_percent = nexus_status_damage_percent
 			A.damage_budget = damage_budget
 			A.owner_immune = owner_immune
 			A.Offense=Offense
@@ -400,10 +439,21 @@ obj/Blast
 
 	var/delete_on_next_move=0
 
-	Move()
+	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		nexus_collision_sweep_active = FALSE
+		nexus_pre_move_geometric_contacts = list()
+		if(isturf(NewLoc))
+			var/turf/destination = NewLoc
+			nexus_collision_sweep_active = TRUE
+			nexus_collision_sweep_start_x = nexusCollisionCenterXPixels()
+			nexus_collision_sweep_start_y = nexusCollisionCenterYPixels()
+			nexus_collision_sweep_end_x = ((destination.x - 1) * world.icon_size) + step_x + bound_x + round(bound_width / 2)
+			nexus_collision_sweep_end_y = ((destination.y - 1) * world.icon_size) + step_y + bound_y + round(bound_height / 2)
 		if(Size)
 			for(var/atom/A in orange(Size,src)) if(A!=src&&A.density&&!isarea(A))
-				if(withinBlastCircle(A)) Bump(A)
+				if(withinBlastCircle(A))
+					if(ismob(A)) nexus_pre_move_geometric_contacts += A
+					Bump(A)
 		if(Spread)
 			for(var/atom/A in Get_step(src,turn(dir,90))) if(A!=src&&A.density&&!isarea(A)) Bump(A)
 			for(var/atom/A in Get_step(src,turn(dir,-90))) if(A!=src&&A.density&&!isarea(A)) Bump(A)
@@ -411,6 +461,13 @@ obj/Blast
 			var/turf/t = loc
 			if(isturf(t) && t.Water) t.ki_water(dir)
 		if(!Can_Home || !Blast_Homing()) . = ..()
+		if(nexus_collision_sweep_active)
+			// Native collision may stop or partially move the projectile. Narrow phase after Move()
+			// must use the achieved endpoint so an enlarged target cannot be hit through a wall.
+			nexus_collision_sweep_end_x = nexusCollisionCenterXPixels()
+			nexus_collision_sweep_end_y = nexusCollisionCenterYPixels()
+		if(src && z && in_use && !Beam) checkNexusExpandedCombatHitboxes()
+		nexus_collision_sweep_active = FALSE
 		steps_since_last_homing_check++
 
 		Distance--
@@ -420,17 +477,54 @@ obj/Blast
 			del(src)
 
 	proc/withinBlastCircle(A)
-		//broad-phase (orange()) is a tile square; this turns the hit area into a circle
-		//inscribed in that square by checking pixel distance from bound center to bound center.
-		//dynamic call because bound_center_x/y live on both /turf and /atom/movable, not /atom
 		if(!A || !Size) return 0
-		var/radius = getBlastCollisionRadiusPixels()
-		var/dx = (call(A, "bound_center_x")() - bound_center_x()) * world.icon_size
-		var/dy = (call(A, "bound_center_y")() - bound_center_y()) * world.icon_size
-		return dx * dx + dy * dy <= radius * radius
+		if(ismob(A))
+			var/mob/target = A
+			return nexusCircleIntersectsHitbox(nexusCollisionCenterXPixels(), nexusCollisionCenterYPixels(), getBlastCollisionRadiusPixels(), target)
+		if(isobj(A))
+			var/obj/target_object = A
+			var/radius = getBlastCollisionRadiusPixels() + max(target_object.bound_width, target_object.bound_height) * 0.5
+			var/delta_x = target_object.nexusCollisionCenterXPixels() - nexusCollisionCenterXPixels()
+			var/delta_y = target_object.nexusCollisionCenterYPixels() - nexusCollisionCenterYPixels()
+			return delta_x * delta_x + delta_y * delta_y <= radius * radius
+		return FALSE
 
 	proc/getBlastCollisionRadiusPixels()
 		return max(0, Size) * world.icon_size
+
+	proc/getNexusProjectileCollisionRadiusPixels()
+		var/base_radius = min(max(1, bound_width), max(1, bound_height)) * 0.5
+		return Clamp(base_radius * max(0.25, transform_size), 3, world.icon_size * 3)
+
+	proc/checkNexusExpandedCombatHitboxes()
+		if(skip_all_collisions) return
+		var/radius = Size ? getBlastCollisionRadiusPixels() : getNexusProjectileCollisionRadiusPixels()
+		var/start_x = nexus_collision_sweep_active ? nexus_collision_sweep_start_x : nexusCollisionCenterXPixels()
+		var/start_y = nexus_collision_sweep_active ? nexus_collision_sweep_start_y : nexusCollisionCenterYPixels()
+		var/end_x = nexus_collision_sweep_active ? nexus_collision_sweep_end_x : start_x
+		var/end_y = nexus_collision_sweep_active ? nexus_collision_sweep_end_y : start_y
+		var/list/contact_candidates
+		if(Size && radius > min(bound_width, bound_height) * 0.5)
+			contact_candidates = nexusMobsInCapsule(src, start_x, start_y, end_x, end_y, radius)
+		else if(nexus_expanded_combat_hitbox_mobs && nexus_expanded_combat_hitbox_mobs.len)
+			contact_candidates = nexus_expanded_combat_hitbox_mobs.Copy()
+		if(!contact_candidates || !contact_candidates.len) return
+		for(var/mob/target in contact_candidates)
+			if(!target || !target.z)
+				continue
+			if(!target.density || target.locz() != locz()) continue
+			if(!Size && getdist(src, target) > 3) continue
+			// Large blasts preserve their legacy pre-move scan; only contacts actually returned by
+			// that broad phase are excluded from the destination/sweep narrow phase.
+			if(target in nexus_pre_move_geometric_contacts) continue
+			if(nexus_collision_sweep_active)
+				if(nexusCapsuleIntersectsHitbox(start_x, start_y, end_x, end_y, radius, target, physical_bounds_only = TRUE)) continue
+				if(!nexusCapsuleIntersectsHitbox(start_x, start_y, end_x, end_y, radius, target)) continue
+			else
+				if(nexusCircleIntersectsHitbox(start_x, start_y, radius, target, physical_bounds_only = TRUE)) continue
+				if(!nexusCircleIntersectsHitbox(start_x, start_y, radius, target)) continue
+			Bump(target)
+			if(!src || !z || skip_all_collisions) return
 
 	var/Can_Home=1 //i think this is to the old homing system and does nothing now
 	var/tmp/mob/blast_homing_target
@@ -591,6 +685,22 @@ obj/Blast
 		if(impact_mob) knockback_distance = impact_mob.relative_kb_dist(src, knockback_distance)
 		return Clamp(ToOne(knockback_distance), 3, 15)
 
+	proc/getNexusBeamCollisionRadiusPixels()
+		return Clamp(6 * max(0.5, transform_size), 4, 18)
+
+	proc/getNexusBeamCollisionTargets()
+		var/center_x = nexusCollisionCenterXPixels()
+		var/center_y = nexusCollisionCenterYPixels()
+		var/half_length = world.icon_size * 0.5
+		var/beam_angle = dir_to_angle_0_360(dir)
+		var/direction_x = sin(beam_angle)
+		var/direction_y = cos(beam_angle)
+		var/start_x = center_x - direction_x * half_length
+		var/start_y = center_y - direction_y * half_length
+		var/end_x = center_x + direction_x * half_length
+		var/end_y = center_y + direction_y * half_length
+		return nexusMobsInCapsule(src, start_x, start_y, end_x, end_y, getNexusBeamCollisionRadiusPixels())
+
 	proc/showExplosiveBeamImpact(atom/impact_target, force_mob_impact = 0)
 		if(beam_impact_mode != BEAM_IMPACT_EXPLOSIVE) return 0
 		var/is_mob_impact = force_mob_impact || ismob(impact_target)
@@ -640,9 +750,16 @@ obj/Blast
 			if(br)
 				deflected=1
 				blast_go_over_owner = 0
+			var/list/beam_contact_targets = getNexusBeamCollisionTargets()
+			var/list/unique_beam_contacts = list()
+			for(var/mob/contact_target in beam_contact_targets)
+				if(contact_target.rp_mode) continue
+				if(contact_target == Owner && !deflected) continue
+				if(contact_target.claimNexusBeamContact(src)) unique_beam_contacts += contact_target
+			beam_contact_targets = unique_beam_contacts
 
 			if(!br && Deflectable && (icon_state in list("head","struggle")))
-				for(var/mob/m in Get_step(src,dir)) if(!m.KO && !m.grabber && !m.regenerator_obj)
+				for(var/mob/m in beam_contact_targets) if(!m.KO && !m.grabber && !m.regenerator_obj && (m.loc == loc || get_dir(src, m) == dir))
 					Debug(Tens,"mob contacted by beam")
 					m.beam_deflect_difficulty = deflect_difficulty
 					m.dir=get_dir(m,src)
@@ -675,15 +792,7 @@ obj/Blast
 							br=br2
 							break
 			if(!br)
-
-				//seems like we could use the beam_size var/for this
-				var/beam_radius=0
-				if(ismob(Owner)) beam_radius += (Owner.BPpcnt - 100) / 130
-				beam_radius=Clamp(beam_radius,0,1)
-				beam_radius=ToOne(beam_radius)
-				if(is_makosen || deflected) beam_radius=0
-
-				for(var/mob/A in range(beam_radius,src)) if((A.loc==loc || A!=Owner) && (A.loc==loc || get_dir(src,A) != dir))
+				for(var/mob/A in beam_contact_targets) if(A != Owner || deflected)
 					if(A.rp_mode) continue
 					if(A.ultra_instinct)
 						var/d = turn(dir,pick(135,-135))
@@ -751,8 +860,11 @@ obj/Blast
 
 							if(P.Vampire) dmg *= vampire_damage_multiplier
 							if(!is_makosen) P.last_hit_by_beam = world.time
+							var/health_before_projectile = P.Health
 							P.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
-							if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(P)
+							if(P && P.Health < health_before_projectile)
+								applyNexusOnHitStatus(P)
+								if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(P)
 							if(ismob(Owner)&&!P.KO) P.setOpponent(Owner)
 							if(P && P == A && !P.Safezone && beam_impact_mode != BEAM_IMPACT_EXPLOSIVE)
 								if(getdist(Owner,P) < beam_stun_start && P.last_beam_kb_pos != P.loc && apply_short_range_beam_knock && P.type != /mob/Body && !P.KO && P.client)
@@ -962,9 +1074,13 @@ obj/Blast
 		set waitfor=0
 		if(!Explosive) return
 		Damage = BP * Force * explosion_damage_factor
+		var/explosion_radius_pixels = max(0, Explosive) * world.icon_size
+		var/explosion_center_x = nexusCollisionCenterXPixels()
+		var/explosion_center_y = nexusCollisionCenterYPixels()
 		for(var/atom/movable/am in view(Explosive,src))
 			if(ismob(am)&&am!=Owner)
 				var/mob/m=am
+				if(!nexusCircleIntersectsHitbox(explosion_center_x, explosion_center_y, explosion_radius_pixels, m)) continue
 				if(m.rp_mode) continue
 				var/same_tile_as_firer
 				if(Owner && ismob(Owner) && am.loc==Owner.loc) same_tile_as_firer=1
@@ -984,9 +1100,12 @@ obj/Blast
 						if(Owner&&ismob(Owner)&&Owner.is_teamer) dmg/=teamer_dmg_mult
 						if(m.regenerator_obj) dmg *= regenerator_damage_mod
 
+						var/health_before_explosion = m.Health
 						if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
 						else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
-						if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
+						if(m && m.Health < health_before_explosion)
+							applyNexusOnHitStatus(m)
+							if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
 
 						if(m.Health<=0)
 							if(Noob_Attack) m.KO()
@@ -1021,6 +1140,11 @@ obj/Blast
 	proc/BlastMobCross(mob/m, override_dir, override_delete)
 		if(Beam) return 1 //i think this is right...
 		if(m.rp_mode) return 1
+		var/projectile_radius = getNexusProjectileCollisionRadiusPixels()
+		if(nexus_collision_sweep_active)
+			if(!nexusCapsuleIntersectsHitbox(nexus_collision_sweep_start_x, nexus_collision_sweep_start_y, nexus_collision_sweep_end_x, nexus_collision_sweep_end_y, projectile_radius, m)) return 1
+		// When a mob walks into a stationary blast, Cross() does not expose the mob's prospective
+		// destination. Preserve native rectangular contact for that legacy direction of movement.
 		if(owner_immune && m == Owner) return 1
 		if(m.ultra_instinct)
 			m.Flip()
@@ -1078,6 +1202,7 @@ obj/Blast
 		if(dir == m.dir && !m.knockback_immune && !m.KB && !m.standing_powerup)
 			hit_chance *= 2
 		if(projectile_owner) hit_chance += projectile_owner.getMilestoneProjectileAccuracyBonus()
+		if(!Bullet) hit_chance -= m.getNexusBlockBlastEvasionBonus()
 		hit_chance = Clamp(hit_chance, 15, 95)
 		if(dodging_mode == MANUAL_DODGE)
 			m.last_stamina_drain = world.time + 10 //prevent stam recharging and +whatever to add a lil more delay than usual
@@ -1105,9 +1230,12 @@ obj/Blast
 			original_dmg = dmg
 			if(dir == m.dir) Offense *= 3
 			if(m.Vampire) dmg *= vampire_damage_multiplier
+			var/health_before_impact = m.Health
 			if(bleed_damage) m.BleedDamage(dmg, ismob(Owner) ? Owner : null, "[getNexusCombatAttackName()] Bleed")
 			else m.TakeDamage(dmg, attacker = ismob(Owner) ? Owner : null, attack_name = getNexusCombatAttackName())
-			if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
+			if(m && m.Health < health_before_impact)
+				applyNexusOnHitStatus(m)
+				if(ismob(Owner)) Owner:tryApplyMilestoneProjectileEffects(m)
 			showConfiguredProjectileImpact(m)
 			if(shuriken) m.ShurikenOverlayEffect(icon)
 			if(percent_damage >= 10) Make_Shockwave(m, sw_icon_size = Get_projectile_shockwave_size(src))

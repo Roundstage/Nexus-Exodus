@@ -473,6 +473,8 @@
 #include "src\Code\UI\HudLibrary.dm"
 #include "src\Code\UI\MapZoom.dm"
 #include "src\Code\UI\MusicLibrary.dm"
+#include "src\Code\UI\PlanetMap.dm"
+#include "src\Code\UI\PlanetMapScanner.dm"
 #include "src\Code\UI\RPWindow.dm"
 #include "src\Code\UI\SavePlayerSettings.dm"
 #include "src\Code\UI\UIStuff.dm"

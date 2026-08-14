@@ -8,3 +8,4 @@
 !deploy/docker/
 !deploy/docker/Dockerfile
 !deploy/docker/entrypoint.sh
+!deploy/docker/profile_media_inspector.py

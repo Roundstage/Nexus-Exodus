@@ -3,11 +3,13 @@
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 
-Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Nexus smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. The world maintains 600 active deposits, replenishes them every three baseline minutes, gives common deposits 8-16 ore, gives Heart of the Mountain deposits 3, and starts each extraction at 3 ore before Mining yield multipliers. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
+Mining and Smithing advance independently from level 1-50 and feed Technology progression through the Liberal Arts milestone. Their levels satisfy requirements, while purchased progression nodes unlock ore discovery, yield ranks, forge access, material branches, and resource efficiency. The Nexus smithing port includes Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain drops. The world maintains 600 active deposits and replenishes them every three baseline minutes. Deposit capacity now favors foundational materials: Copper holds 36-60 ore, Tin 30-50, Iron 24-40, Silver 18-30, Mythril 15-25, Auracite 12-20, and Heart of the Mountain 3. Each extraction starts at 5 ore before Mining yield multipliers, and its base Mining XP equals the actual number of ore extracted. Equipment begins at Normal and follows persistent upgrade branches: Normal -> Copper -> Bronze -> Iron -> Mythril -> Masterwork, or Normal -> Copper -> Bronze -> Silver -> Auracite. Prospecting and Materials use authored display tiers, so their roots never overlap the first unlock and their two advanced branches remain visually distinct.
 
 Specialized technologies that historically shared Technology Level 5 are sorted by base resource cost and divided evenly across levels 5-8 within Engineering, Robotics, and Genetics. This preserves inexpensive entry projects, moves complex designs deeper into their specialization, and prevents a single tier from containing most of the science catalog.
 
 Forged equipment is modular. Material owns sharpness, damage type, attack-BP reinforcement, mask Ki-damage/blast-BP reinforcement, protection, endurance-BP reinforcement, and weight; named designs such as Rebellion and Bardock are cosmetic skins only. Items therefore use material-first names such as `Normal Sword`, `Copper Mask`, `Mythril Gloves`, and `Auracite Armor`. Mythril is the lightest advanced armor, Iron is deliberately heavy, and Auracite is the energy-conducting branch. Science level 1 exposes exactly the Normal Sword, Normal War Hammer, Normal Gloves, and Normal Mask instead of the generic DU `/Sword` and `/Armor`; the legacy types remain loadable for save compatibility but are no longer Science designs. Progression schema version 2 grants the four replacements to eligible existing characters and suppresses stale global or individual legacy-recipe overrides.
+
+Silver and Auracite now own explicit critical material stats. Equipped Silver/Auracite forged weapons or gloves add +4/+7 percentage points to melee critical chance; equipped armor subtracts +4/+8 percentage points from an attacker's final critical roll. Fireball carries an eight-second fire DoT for four 2%-maximum-Health ticks and suppresses regeneration by 70%. Lightning Bolt carries a six-second electric DoT for three 1%-maximum-Health ticks, reduces effective Accuracy, Defense/Reflex, and Speed by 15%, and applies only a weak tick stun.
 
 Craft access is checked through `canAccessTechnology()`: persistent Technology XP produces levels 1-8, and level 5/7/8 makes Genetics, Engineering, or Robotics path nodes eligible for purchase. Knowledge growth and successful crafting award Technology XP, while spendable Progression XP controls the registered design unlocks; admin grants remain compatible as explicit overrides. A successful craft now awards a tier-scaled share of that tier's real XP interval, targeting roughly twelve current-tier fabrications per Technology level before Milestone modifiers; obsolete low-tier projects therefore cannot cheaply power-level late Science, while advanced projects no longer require hundreds of repetitions. Persisted blueprint grants use their type as stable identity and are rebound to the canonical technology catalog after deserialization, so repeated relogs cannot duplicate recipes and previously affected saves clean themselves on the next synchronization. The Nexus Forge is a Technology Level 3 Science Foundation design, so players can discover and build the station before selecting a level-five specialization.
 
@@ -39,8 +41,9 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 ### src/Code/Technology/Professions.dm
 
 - `gainProfessionExperience(profession, amount, reason, announce)` advances Mining or Smithing and applies Liberal Arts conversion.
-- `performMiningTick(base_yield)` applies profession level and Mining Expert multipliers, awards XP in mining caves, and rolls material drops.
-- `tryMineOre()` rolls the expanded Nexus ore table according to Mining level.
+- `performMiningTick(base_yield)` applies profession level and Mining Expert resource multipliers, passes the resulting extraction strength into cave discovery, then awards Mining XP only for the ore quantity actually returned.
+- `getIncidentalMiningOreYield(resource_yield)` converts cave-digging strength into 1-20 ore with a three-times-square-root curve, so a basic dig preserves the former early XP pace while stronger tools improve ore and XP without making high-BP digging unbounded.
+- `tryMineOre(resource_yield)` rolls the expanded Nexus ore table with a 15.6%-45% level-scaled base discovery chance and returns the exact strength-scaled number of ore units added, or zero when no ore was found.
 - `/obj/items/Ore` stores stackable Copper, Tin, Iron, Silver, Mythril, Auracite, and Heart of the Mountain materials.
 
 ### src/Code/Technology/ForgedEquipment.dm
@@ -51,6 +54,8 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 - `openSmithingMenu(forge)`, `openForgeStyleBrowser(forge, equipment_kind)`, and `openForgeMaterialGuide(forge)` expose a pixel-styled visual forge, icon gallery, and complete material comparison.
 - `getForgedWeaponAttackBP()` adds the equipped material's bounded BP reinforcement to melee attack calculation.
 - `getForgedUnarmedAttackBP()` adds equipped forged gloves' bounded BP reinforcement to physical/unarmed attack calculation without treating them as a sword.
+- `getForgedCriticalChanceBonus()` returns the equipped Silver/Auracite forged weapon or unarmed-glove critical bonus; weapon and glove values do not stack.
+- `getForgedArmorCriticalResistance()` returns equipped forged armor's material resistance for subtraction from incoming melee critical chance.
 - `getForgedKiAttackBP()` and `getForgedKiDamageMultiplier()` apply an equipped forged mask to blast BP and Ki damage while leaving physical bullets unchanged.
 - `getForgedArmorEnduranceBP()` adds the equipped material's bounded BP reinforcement to physical endurance calculation.
 - `/obj/items/Sword/Forged`, `/obj/items/Gloves/Forged`, `/obj/items/Mask/Forged`, and `/obj/items/Armor/Forged` recalculate all combat values from material while retaining a separately persisted cosmetic skin. Their `Customize` action changes only that skin, so later material upgrades preserve the selection.
@@ -664,14 +669,14 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 #### proc/Enable_Module
 - Signature: `proc/Enable_Module(mob/P)`
 - Inputs: mob/P
-- Purpose: Handle enable module.
+- Purpose: Enable a cybernetic module; Giant Version uses reversible character transform scaling inherited by equipped overlays plus a separate rectangular combat hitbox instead of destructively resampling icons.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### proc/Disable_Module
 - Signature: `proc/Disable_Module(mob/P)`
 - Inputs: mob/P
-- Purpose: Handle disable module.
+- Purpose: Disable a cybernetic module and remove any visual-scale/combat-hitbox source it registered.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -2321,8 +2326,10 @@ Cyber Charge, Cyber Laser, and Overdrive remain exclusive to their installed mod
 
 - `generateWorldOreDeposits(target_count)` tops resource-bearing planets up to the configured 600-deposit target.
 - `startWorldOreGeneration()` replenishes deposits every three baseline minutes on a Year-Speed-aware interval.
-- `getWorldOreDepositAmount(ore_type)` assigns 8-16 ore to regular deposits and 3 to Heart of the Mountain.
-- `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, starts at 3 ore per extraction, applies yield talents, grants ore/profession XP, and depletes the node.
+- `getWorldOreAbundanceMultiplier(ore_type)` applies the descending 3x/2.5x/2x/1.5x/1.25x abundance curve to Copper through Mythril; Auracite uses the 12-20 base range and Heart of the Mountain remains fixed at 3.
+- `getWorldOreDepositAmount(ore_type)` applies that rarity-aware capacity contract when a deposit is configured.
+- `getMiningExperienceForOreYield(ore_yield)` maps each successfully extracted ore to one base Mining XP before profession Milestones.
+- `obj/WorldOreDeposit/mineDeposit(miner)` validates range, Mining level, and the ore's progression node, then completes interruptible mining, starts at 5 ore per extraction, applies yield talents, grants XP from the exact extracted amount, and depletes the node.
 - `mob/Admin4/verb/seedWorldOreDeposits()` exposes non-destructive distribution testing.
 
 ### Nexus training technology and alchemy

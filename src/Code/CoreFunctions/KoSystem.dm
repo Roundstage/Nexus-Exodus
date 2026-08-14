@@ -6,17 +6,19 @@ mob/var/tmp
 	has_angered_before_ko = FALSE
 	is_healing_something = FALSE
 
-mob/proc/Cause_Combat_KO(mob/victim, mob/attacker)
+mob/proc/Cause_Combat_KO(mob/victim, mob/attacker, combat_mode_override)
 	if(!victim) victim = src
 	victim.combat_ko_total = 0 // Deprecated three-KO save field.
 	victim.is_waiting_for_healing = FALSE
 	victim.is_healing_something = FALSE
 	victim.willpower_ready_announced = FALSE
-	var/is_casual = attacker && attacker.sparring_mode == CASUAL_COMBAT
+	var/has_mode_override = combat_mode_override == CASUAL_COMBAT || combat_mode_override == LETHAL_COMBAT
+	var/is_casual = has_mode_override ? combat_mode_override == CASUAL_COMBAT : attacker && attacker.sparring_mode == CASUAL_COMBAT
 	if(is_casual)
 		victim.ko_is_lethal = FALSE
 		victim.ko_recovery_ready_at = world.time + victim.time_to_heal_ko(victim)
-		victim.announce_combat_message("[victim] was defeated by [attacker] during a [CASUAL_COMBAT].", center = victim)
+		var/attacker_name = attacker ? "[attacker]" : "an unknown cause"
+		victim.announce_combat_message("[victim] was defeated by [attacker_name] during a [CASUAL_COMBAT].", center = victim)
 		return
 	victim.enterLethalCombat()
 	victim.ko_recovery_ready_at = world.time + victim.time_to_heal_ko(victim)
