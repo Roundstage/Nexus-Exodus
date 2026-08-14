@@ -506,14 +506,14 @@ The shared dispatchers have these current signatures:
 #### mob/proc/Great_Ape_revert
 - Signature: `mob/proc/Great_Ape_revert() if(IsGreatApe())`
 - Inputs: None
-- Purpose: Handle great ape revert.
+- Purpose: Revert Great Ape stats and art, restore the exact pre-form pixel anchor/overlays, and remove its enlarged combat hitbox.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Great_Ape
 - Signature: `mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&!ssj&&!Dead)`
 - Inputs: Golden=0
-- Purpose: Handle great ape.
+- Purpose: Apply Great Ape stats and centered 96-pixel art while registering a 60-by-72 rectangular combat hitbox that remains anchored to the character's physical center.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

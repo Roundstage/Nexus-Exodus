@@ -59,6 +59,8 @@ proc/initializeMilestoneCatalog()
 	milestone_catalog["sturdy_build"] = new /datum/MilestoneDefinition("sturdy_build", "Sturdy Build", "Reduces all incoming damage by 3% per rank.", 2, 2, "Survival", 2, list("turtle_shell"))
 	milestone_catalog["desperate_struggle"] = new /datum/MilestoneDefinition("desperate_struggle", "Desperate Struggle", "+20% damage while below 50 Willpower.", 3, 1, "Survival", 3, list("sturdy_build"))
 	milestone_catalog["challengers_mark"] = new /datum/MilestoneDefinition("challengers_mark", "Challenger's Mark", "Take 15% less damage from your selected target, but 5% more from other attackers.", 6, 1, "Survival", 4, list("desperate_struggle"))
+	milestone_catalog["venomous_intent"] = new /datum/MilestoneDefinition("venomous_intent", "Venomous Intent", "Unlocks a stance whose damaging hits have a 25% chance to poison for 12% maximum Health over twelve seconds.", 6, 1, "Survival", 4, list("sturdy_build"))
+	milestone_catalog["crushing_resolve"] = new /datum/MilestoneDefinition("crushing_resolve", "Crushing Resolve", "Unlocks a lethal-only stance whose damaging hits can spend 1 Willpower to drain 2 Willpower, with a five-second internal cooldown.", 6, 1, "Resolve", 4, list("will_of_fire"))
 
 	milestone_catalog["salt_of_the_earth"] = new /datum/MilestoneDefinition("salt_of_the_earth", "Salt of the Earth", "Doubles Anger gained from damage.", 3, 1, "Fire", 2, list("controlled_fury"))
 	milestone_catalog["fire_lord"] = new /datum/MilestoneDefinition("fire_lord", "Fire Lord", "Fire attacks deal 5% more damage per Burn stack on the target, up to 25%.", 3, 1, "Fire", 3, list("salt_of_the_earth"))
@@ -97,6 +99,10 @@ mob/var
 	milestone_progression_version = 0
 	tmp/milestone_bleeding_edge_active = FALSE
 	tmp/milestone_thundering_blows_active = FALSE
+	tmp/milestone_venomous_intent_active = FALSE
+	tmp/milestone_crushing_resolve_active = FALSE
+	tmp/milestone_next_poison_proc = 0
+	tmp/milestone_next_willpower_proc = 0
 
 mob/proc/getMilestoneRank(milestone_id)
 	if(!islist(milestones_owned)) milestones_owned = list()
@@ -179,6 +185,8 @@ mob/proc/ensureMilestoneCombatRewards()
 	if(getMilestoneRank("burning_fists") && !(locate(/obj/FireFist) in src)) contents += new /obj/FireFist(src)
 	if(getMilestoneRank("bleeding_edge") && !(locate(/obj/MilestoneTechnique/BleedingEdge) in src)) contents += new /obj/MilestoneTechnique/BleedingEdge(src)
 	if(getMilestoneRank("thundering_blows") && !(locate(/obj/MilestoneTechnique/ThunderingBlows) in src)) contents += new /obj/MilestoneTechnique/ThunderingBlows(src)
+	if(getMilestoneRank("venomous_intent") && !(locate(/obj/MilestoneTechnique/VenomousIntent) in src)) contents += new /obj/MilestoneTechnique/VenomousIntent(src)
+	if(getMilestoneRank("crushing_resolve") && !(locate(/obj/MilestoneTechnique/CrushingResolve) in src)) contents += new /obj/MilestoneTechnique/CrushingResolve(src)
 
 mob/proc/getMilestoneMeleeDamageMultiplier(mob/target, has_weapon = FALSE)
 	var/multiplier = 1
@@ -230,14 +238,14 @@ mob/proc/getMilestonePhysicalDamageStat()
 	if(getMilestoneRank("momentum_damage")) source_stat += Spd * 0.25
 	else if(getMilestoneRank("precision_damage")) source_stat += Off * 0.25
 	else if(getMilestoneRank("fortified_damage")) source_stat += End * 0.2
-	return getMilestoneScaledCombatStat(source_stat)
+	return getMilestoneScaledCombatStat(source_stat) * getNexusStanceStrengthMultiplier()
 
 mob/proc/getMilestoneKiDamageStat()
 	var/source_stat = Pow
 	if(getMilestoneRank("momentum_damage")) source_stat += Spd * 0.25
 	else if(getMilestoneRank("precision_damage")) source_stat += Off * 0.25
 	else if(getMilestoneRank("fortified_damage")) source_stat += Res * 0.2
-	return getMilestoneScaledCombatStat(source_stat)
+	return getMilestoneScaledCombatStat(source_stat) * getNexusStanceForceMultiplier()
 
 mob/proc/isMilestoneUnencumbered()
 	if(!getMilestoneRank("unencumbered_combatant")) return FALSE
@@ -250,15 +258,21 @@ mob/proc/isMilestoneUnencumbered()
 mob/proc/getMilestoneEffectiveOffense()
 	var/effective_offense = getMilestoneScaledCombatStat(Off)
 	if(isMilestoneUnencumbered()) effective_offense *= 1.15
+	effective_offense *= getNexusElectricStatMultiplier()
+	effective_offense *= getNexusSandThrowStatMultiplier()
 	return effective_offense
 
 mob/proc/getMilestoneEffectiveDefense()
 	var/effective_defense = getMilestoneScaledCombatStat(Def)
 	if(isMilestoneUnencumbered()) effective_defense *= 1.15
+	effective_defense *= getNexusStanceDefenseMultiplier()
+	effective_defense *= getNexusElectricStatMultiplier()
+	effective_defense *= getNexusSandThrowStatMultiplier()
+	effective_defense *= getNexusGuardBreakDefenseMultiplier()
 	return effective_defense
 
 mob/proc/getMilestoneEffectiveSpeed()
-	return getMilestoneScaledCombatStat(Spd)
+	return getMilestoneScaledCombatStat(Spd) * getNexusElectricStatMultiplier() * getNexusWingClipSpeedMultiplier()
 
 mob/proc/getMilestoneCriticalChanceBonus()
 	return getMilestoneRank("keen_edge") * 3
@@ -298,12 +312,29 @@ mob/proc/getMilestoneIncomingDamageMultiplier(mob/attacker)
 	return max(0.1, multiplier)
 
 mob/proc/tryApplyMilestoneProjectileEffects(mob/target)
-	if(!target || !getMilestoneRank("smolder") || target.BurnStack >= 5 || !prob(35)) return FALSE
-	target.BurnStack++
-	if(!target.isBurning)
-		target.isBurning = TRUE
-		target.try_applying_burn_effect()
-	return TRUE
+	if(!target) return FALSE
+	var/applied = tryApplyMilestoneHitStances(target)
+	if(getMilestoneRank("smolder") && target.BurnStack < 5 && prob(35))
+		target.BurnStack++
+		if(!target.isBurning)
+			target.isBurning = TRUE
+			target.try_applying_burn_effect()
+		applied = TRUE
+	return applied
+
+mob/proc/tryApplyMilestoneHitStances(mob/target)
+	if(!target || target.KO || target.rp_mode || target.Safezone) return FALSE
+	var/applied = FALSE
+	if(milestone_venomous_intent_active && getMilestoneRank("venomous_intent") && world.time >= milestone_next_poison_proc && prob(25))
+		if(target.applyNexusPoisonDot(src, 120, 2))
+			milestone_next_poison_proc = world.time + 20
+			applied = TRUE
+	if(milestone_crushing_resolve_active && getMilestoneRank("crushing_resolve") && sparring_mode == LETHAL_COMBAT && target.sparring_mode == LETHAL_COMBAT && world.time >= milestone_next_willpower_proc && prob(25))
+		if(tryDrainTechniqueWillpower(1, "Crushing Resolve", 1))
+			target.drainWillpower(2, "[src]'s Crushing Resolve attacks your will.")
+			milestone_next_willpower_proc = world.time + 50
+			applied = TRUE
+	return applied
 
 mob/proc/applyMilestoneMeleeAreaDamage(mob/primary_target, damage, attack_name)
 	var/radius = getMilestoneMeleeAreaRadius()
@@ -368,6 +399,42 @@ obj/MilestoneTechnique
 			user.milestone_thundering_blows_active = !user.milestone_thundering_blows_active
 			player_view(10, user) << sound('Kiplosion.ogg', volume = 30)
 			user << (user.milestone_thundering_blows_active ? "Thunder gathers around your weapon." : "Your weapon falls silent.")
+
+	VenomousIntent
+		name = "Venomous Intent (Milestone)"
+		desc = "Toggle a stance with a 25% chance on damaging hits to inflict a twelve-second poison based on maximum Health."
+
+		verb/Hotbar_use()
+			set hidden = 1
+			toggle(usr)
+
+		verb/Toggle_Venomous_Intent()
+			set name = "Toggle Venomous Intent"
+			set category = "Skills"
+			toggle(usr)
+
+		proc/toggle(mob/user)
+			if(!user || !user.getMilestoneRank("venomous_intent")) return
+			user.milestone_venomous_intent_active = !user.milestone_venomous_intent_active
+			user << (user.milestone_venomous_intent_active ? "Your attacks carry Venomous Intent." : "You release your Venomous Intent.")
+
+	CrushingResolve
+		name = "Crushing Resolve (Milestone)"
+		desc = "Toggle a lethal-only stance. Damaging hits have a 25% chance to spend 1 Willpower and drain 2 from the target, at most once every five seconds."
+
+		verb/Hotbar_use()
+			set hidden = 1
+			toggle(usr)
+
+		verb/Toggle_Crushing_Resolve()
+			set name = "Toggle Crushing Resolve"
+			set category = "Skills"
+			toggle(usr)
+
+		proc/toggle(mob/user)
+			if(!user || !user.getMilestoneRank("crushing_resolve")) return
+			user.milestone_crushing_resolve_active = !user.milestone_crushing_resolve_active
+			user << (user.milestone_crushing_resolve_active ? "You focus on crushing hostile resolve." : "You stop attacking your opponents' resolve.")
 
 mob/proc/getLegacyUltimateBuffType(milestone_id)
 	var/buff_type

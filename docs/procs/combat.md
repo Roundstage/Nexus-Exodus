@@ -25,6 +25,8 @@ Custom Buff allocation uses `normalizeNexusCustomBuffStats()` and `adjustNexusCu
 
 Ordinary power-up auras remain visual and screen-shake feedback but neither damage nor repel nearby characters; `PowerupKnockbackEffect()` remains reserved for Final Explosion. Dash Attack, Lunge, Wolf Fang Fist, Dropkick, Evade Lunge, Iai Slash, March of Fury, Nexus approaches, kickback follow-ups, and area pulls use the shared accelerated vector skill-motion core instead of tile jumps. Dash Attack still requires a selected target, crosses beyond the opponent, and retains its distance-scaled damage. A recorded Dash Attack contact follows canonical melee evasion: opponents that cannot currently dodge are hit, while an eligible defender may spend a normal melee dodge. Guided blasts and bombs also steer by retained vector velocity instead of snapping instantly between eight full-speed directions. Meditate Level 2 and Shockwave are purchasable tier-three Combat Foundation rewards.
 
+Critical Edge, Guard Break, and Block are mutually exclusive timed Nexus stances. Critical Edge is weapon-only and grants +15 percentage points of melee critical chance for twelve seconds. Guard Break is unarmed, lasts ten seconds, and spends at most three charges on health-damaging hits; each charge refreshes an eight-second, 10% effective Defense/Reflex penalty capped at three stacks. Block lasts eight seconds, reduces final incoming damage by exactly 30%, grants +20 percentage points of blast evasion, and reduces effective Strength, Force, and Defense/Reflex by 20%. Wing Clip and Sand Throw are unavoidable two-tile radial actions: Wing Clip deals 0.75-factor damage, knocks back two tiles, and reduces Speed by 25% for eight seconds; Sand Throw deals no damage and reduces Accuracy and Defense/Reflex by 20% for eight seconds. Kickback Attack's delayed follow-up pursues the original target and uses normal melee accuracy-versus-defense evasion, while an active shield or block cancels that second strike.
+
 `Cycle Target` is a universal configurable targeting action. It orders visible, attackable targets within 30 tiles by pixel distance and angle, skips the user, KO, Safezone and RP Mode targets, advances from the current selection, and wraps to the nearest valid target.
 
 ## Files
@@ -2810,14 +2812,14 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 #### mob/proc/Enable_giant_form
 - Signature: `Enable_giant_form(obj/Giant_Form/g)`
 - Inputs: obj/Giant_Form/g
-- Purpose: Apply the reversible Giant Form BP/stat package.
+- Purpose: Apply the reversible Giant Form BP/stat package, a centered visual scale inherited by equipment, and a separate enlarged rectangular combat hitbox.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Disable_giant_form
 - Signature: `Disable_giant_form(icon_change=1)`
 - Inputs: icon_change=1
-- Purpose: Remove exactly the BP/stat package applied by Giant Form without leaving permanent `bp_mult` drift.
+- Purpose: Remove exactly the BP/stat, visual-scale, and combat-hitbox state applied by Giant Form without leaving permanent `bp_mult` drift.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4341,6 +4343,32 @@ Ordinary power-up auras remain visual and screen-shake feedback but neither dama
 - Side effects: see implementation.
 
 ### src/Code/Combat/NexusMeleeTechniques.dm
+
+#### mob/proc/setNexusStance, hasNexusStance, clearNexusStance
+- Signatures: `setNexusStance(stance_id, duration_ticks, charges)`, `hasNexusStance(stance_id)`, `clearNexusStance(announce)`
+- Purpose: Maintain one mutually exclusive timed stance with an optional bounded hit-charge pool.
+- Returns: boolean success or active-state result.
+- Side effects: replaces or clears the current stance and its charges.
+
+#### mob/proc/tryApplyNexusGuardBreak
+- Signature: `tryApplyNexusGuardBreak(mob/target)`
+- Inputs: target whose Health was reduced by the triggering hit.
+- Purpose: Spend one Guard Break charge only after real damage and apply or refresh one capped effective Defense/Reflex penalty stack.
+- Returns: boolean indicating that a charge and debuff were applied.
+- Side effects: updates the target's eight-second stack window and the attacker's remaining stance charges.
+
+#### mob/proc/castNexusRadialTechnique
+- Signature: `castNexusRadialTechnique(obj/Attacks/NexusMeleeTechnique/technique)`
+- Inputs: configured radial technique.
+- Purpose: Resolve bounded circle targets, preserving normal area dodge unless the technique explicitly declares unavoidable contact.
+- Returns: boolean cast success.
+- Side effects: spends Energy/cooldown and may damage, knock back, or debuff nearby opponents.
+
+#### mob/proc/performNexusKickbackFollowup
+- Signature: `performNexusKickbackFollowup(obj/Attacks/NexusMeleeTechnique/technique, mob/target)`
+- Purpose: Reacquire and pursue the original Kickback target for its delayed second hit, then use canonical melee evasion.
+- Returns: none (asynchronous).
+- Side effects: briefly disables attacker input; an energy shield, legacy block, or active Block stance prevents the follow-up.
 
 #### mob/proc/showNexusTechniqueAnnouncement
 - Signature: `showNexusTechniqueAnnouncement(technique_name, text_color, sound_file, sound_volume)`

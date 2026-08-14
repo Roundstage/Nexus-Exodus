@@ -141,7 +141,7 @@ mob/proc/TryToCauseAngerDueToKo(mob/Victim)
 	// Anger now builds from damage instead of granting a random full-heal proc on KO.
 	return FALSE
 		
-mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src)
+mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src, combat_mode_override)
 	set waitfor=0
 	
 	if(!Victim.client || !Victim.empty_player) 
@@ -172,7 +172,7 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 
 	ResetStatsToDefault(Victim)
 	if(!combat_ko_handled)
-		Cause_Combat_KO(Victim, Attacker)
+		Cause_Combat_KO(Victim, Attacker, combat_mode_override)
 
 mob/proc/UnKO() if(KO)
 	set waitfor=0

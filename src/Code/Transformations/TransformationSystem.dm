@@ -170,6 +170,11 @@ mob/proc/availablePrimaryTransformations()
 
 mob/proc/normalizePrimaryTransformation()
 	normalizeHeranTransformation()
+	normalizeNexusCharacterVisualScale()
+	syncNexusAndroidGiantAppearance()
+	if(using_giant_form) setNexusCombatHitboxSource("giant_form", 48, 48)
+	else setNexusCombatHitboxSource("giant_form")
+	syncGreatApeCombatAppearance()
 	var/detected_id = detectPrimaryTransformation()
 	if(countPrimaryTransformations() > 1)
 		var/restore_id = detected_id

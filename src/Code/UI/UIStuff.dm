@@ -25,6 +25,9 @@ client/Del()
 	if(nexus_music_library_window)
 		del(nexus_music_library_window)
 		nexus_music_library_window = null
+	if(nexus_planet_map)
+		del(nexus_planet_map)
+		nexus_planet_map = null
 	if(nexus_description_editor)
 		del(nexus_description_editor)
 		nexus_description_editor = null

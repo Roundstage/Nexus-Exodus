@@ -815,7 +815,7 @@ datum/SkillEngine
 						var/image/i = image(icon = 'DamagedGround.dmi', pixel_x = rand(-16, 16), pixel_y = rand(-16, 16))
 						t.overlays += i
 						t.Remove_Damaged_Ground(i)
-			spawn for(var/mob/p in mob_view(10, user)) if(p.z && p != user && p.grabbedObject != user)
+			spawn for(var/mob/p in nexusMobsInCircle(user, 10 * world.icon_size)) if(p.z && p.grabbedObject != user)
 				if(!p.AOE_auto_dodge(user, user.loc))
 					var/distance = 7 * (((user.Pow + user.Str) / (p.Res + p.End)) ** 0.5) * ((user.BP / p.BP) ** 0.5)
 					distance = round(distance)

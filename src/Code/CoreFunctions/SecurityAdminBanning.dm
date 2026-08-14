@@ -84,6 +84,7 @@ mob/proc/grantAdminVerbsForLevel(admin_level)
 	if(admin_level >= 5) verbs += typesof(/mob/Admin5/verb)
 
 mob/proc/Remove_Admin()
+	closeNexusPlanetMap()
 	verbs -= typesof(/mob/Admin1/verb, /mob/Admin2/verb, /mob/Admin3/verb, /mob/Admin4/verb, /mob/Admin5/verb, /mob/AdminEssentials/verb)
 	Admins-=key
 

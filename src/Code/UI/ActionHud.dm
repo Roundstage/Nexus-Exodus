@@ -534,6 +534,10 @@ datum/NexusPlayerMenu
 		if(!isOwnedSkill(skill)) return FALSE
 		return owner.executeNexusHotkeyAction(skill)
 
+	proc/dropOwnedItem(obj/items/item)
+		if(!item || !item.canUseAfterNexusTradeYield(owner)) return FALSE
+		return item.dropFromInventory(owner)
+
 	proc/getNumericObjectVar(datum/subject, variable_name)
 		if(!subject || !variable_name) return null
 		var/dynamic_name = "[variable_name]"
@@ -1042,7 +1046,9 @@ datum/NexusPlayerMenu
 		if(isnum(item_level)) details += buildDetailRow("LEVEL", round(item_level, 0.1))
 		if(isnum(item_durability)) details += buildDetailRow("DURABILITY", round(item_durability, 0.1))
 		if(isnum(item_cost)) details += buildDetailRow("BASE VALUE", Commas(item_cost))
-		showExamineWindow("[item]", "INVENTORY ITEM", buildIcon(item, "[item]"), "<div class='description'>[html_encode(description_text)]</div><div class='details'>[details]</div><div class='notice'>Left-click the item in Inventory to open its interaction menu.</div>")
+		var/drop_url = "byond://?src=\ref[src]&action=drop_item&item=\ref[item]"
+		var/drop_link = item.canUseAfterNexusTradeYield(owner) ? "<a class='hud-button danger' href='[drop_url]' onclick=\"return confirm('Drop this item in front of your character?');\">DROP ITEM</a>" : ""
+		showExamineWindow("[item]", "INVENTORY ITEM", buildIcon(item, "[item]"), "<div class='description'>[html_encode(description_text)]</div><div class='details'>[details]</div><div class='notice'>Use Inventory actions to interact with or drop this item.</div><div class='notice'>[drop_link]</div>")
 
 	proc/showSkillExamine(obj/skill)
 		var/list/data = getSkillDamageData(skill)
@@ -1109,7 +1115,8 @@ datum/NexusPlayerMenu
 			var/description_text = item.desc ? "[item.desc]" : "No description available."
 			var/use_url = "byond://?src=\ref[src]&action=use_item&item=\ref[item]"
 			var/examine_url = "byond://?src=\ref[src]&action=examine_item&item=\ref[item]"
-			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[examine_url]')\" oncontextmenu=\"window.location.href='[examine_url]';return false;\">[buildIcon(item, "[item]")]<div class='card-copy'><span class='hud-label'>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><div class='card-actions'><a class='hud-button' href='[use_url]'>USE</a><a class='hud-button' href='[examine_url]'>EXAMINE</a></div></div>"
+			var/drop_url = "byond://?src=\ref[src]&action=drop_item&item=\ref[item]"
+			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[examine_url]')\" oncontextmenu=\"window.location.href='[examine_url]';return false;\">[buildIcon(item, "[item]")]<div class='card-copy'><span class='hud-label'>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><div class='card-actions'><a class='hud-button' href='[use_url]'>USE</a><a class='hud-button' href='[examine_url]'>EXAMINE</a><a class='hud-button danger' href='[drop_url]' onclick=\"return confirm('Drop this item in front of your character?');\">DROP</a></div></div>"
 		if(!item_count) html += "<div class='empty'>This character is not carrying any items.</div>"
 		return html
 
@@ -1213,6 +1220,9 @@ datum/NexusPlayerMenu
 			if("use_item")
 				var/obj/items/item = locate(href_list["item"])
 				if(item && item in owner.item_list && !item.isNexusTradeOfferedBy(owner)) item.Click()
+			if("drop_item")
+				var/obj/items/dropped_item = locate(href_list["item"])
+				dropOwnedItem(dropped_item)
 			if("use_skill")
 				var/obj/skill = locate(href_list["subject"] ? href_list["subject"] : href_list["skill"])
 				useOwnedSkill(skill)

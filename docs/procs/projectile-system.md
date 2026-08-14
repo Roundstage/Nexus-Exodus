@@ -3,6 +3,8 @@
 ## Overview
 Projectile movement, collision, beam segments, and damage behavior.
 
+Combat contact now uses the shared geometric layer after native range/density broad phases. Ordinary Ki projectiles and large blast checks use circular contact against rectangular character hitboxes; radial explosions use the same circle/rectangle rule; beam segments use an oriented capsule whose radius follows beam visual scale. BYOND density collision is intentionally retained for turfs, doors, destructible objects, projectile clashes, and beam-chain traversal.
+
 Basic Blast fires a three-projectile vector fan on a 0.75-decisecond base refire. Each projectile deals 30% of the former basic-blast factor and costs 20% of the configured per-projectile Energy drain; only the center projectile carries explosion, stun, and knockback utility. The maximum launch rate remains equal to the former four-projectile configuration. Dedicated counters cap basic blasts at 24 active projectiles per owner and 256 globally without scanning the pooled projectile list; the slot is released before deletion or caching.
 
 `obj/Blast/applyPiercingDamageDecay()` updates both the legacy flat damage and the active `percent_damage` factor. This is required for Kienzan-style piercing projectiles after central damage resolution moved away from `Damage`.
@@ -12,6 +14,8 @@ Basic Blast fires a three-projectile vector fan on a 0.75-decisecond base refire
 Every Beam skill receives a three-second per-skill cooldown when charging starts and whenever `BeamStop()` completes. Explosive beams retain a per-target factor budget, while Beam Lock deliberately has no cumulative damage ceiling and keeps ticking until the stream ends or the victim escapes. Beam clashes report the pressure ratio, place a lit impact marker at the collision turf, show each owner a directional mash prompt, grant a 1.15x pressure pulse for current correct input, and grant the winning beam a single 1.35x damage-factor bonus. `obj/Blast/strength_scaled` routes weapon-launched projectiles such as Sky Break and Echoing Slash through physical Strength-versus-Endurance resolution. Explosive beam impacts calculate a power-relative knockback before immediately tearing down the stream.
 
 Configured projectile-impact art, color and audio are carried on `obj/Blast`, including cached and shrapnel projectiles. This gives physical cutting waves sword impacts without routing them through generic blast sounds, while explosive Ki techniques retain their own presentation. Named skill projectiles with a damage factor of at least 3 receive a shared integrated impact effect when they do not define specialized art; small barrage shots are intentionally excluded.
+
+Configured Fire and Electric on-hit statuses are copied into cached projectiles and shrapnel. Direct, explosive, and beam contact records target Health before `TakeDamage()` and applies status or milestone hit effects only when Health actually decreases, so shields and zero-damage contacts cannot proc them. Block's blast-evasion bonus applies to non-bullet projectile accuracy only.
 
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
@@ -391,6 +395,21 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Purpose: Initialize object state and register references.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### obj/Blast/proc/getNexusBeamCollisionTargets
+- Signature: `obj/Blast/proc/getNexusBeamCollisionTargets()`
+- Purpose: Resolve exact character contacts for one beam segment using an oriented capsule against rectangular combat hitboxes.
+- Returns: list of contacted mobs from a bounded native broad phase. Adjacent segments from the same owner/attack are deduplicated per target and world tick before combat resolution.
+
+#### mob/proc/claimNexusBeamContact
+- Signature: `mob/proc/claimNexusBeamContact(obj/Blast/beam_segment)`
+- Purpose: Claim one target contact for an owner's active beam attack during the current world tick so overlapping segment capsules cannot apply duplicate damage.
+- Returns: true only for the first matching segment contact in that tick.
+
+#### obj/Blast/proc/checkNexusExpandedCombatHitboxes
+- Signature: `obj/Blast/proc/checkNexusExpandedCombatHitboxes()`
+- Purpose: Sweep circular projectiles against enlarged transformation hitboxes and query every nearby character for large `Size` blasts whose virtual radius extends beyond native movement bounds. The achieved post-`Move()` endpoint is used so walls still stop hits.
+- Side effects: may dispatch the existing `Bump()` damage path once an exact geometric contact is found.
 
 #### mob/proc/migrateBasicBlastVolley
 - Signature: `migrateBasicBlastVolley(obj/Attacks/Blast/skill_obj)`
@@ -920,6 +939,13 @@ Configured projectile-impact art, color and audio are carried on `obj/Blast`, in
 - Side effects: see implementation.
 
 ### src/Code/ProjectileSystem/Projectiles.dm
+
+#### obj/Blast/proc/applyNexusOnHitStatus
+- Signature: `applyNexusOnHitStatus(mob/target)`
+- Inputs: mob that took real Health damage from this projectile.
+- Purpose: Route authored `fire` and `electric` payloads into the centralized Nexus status controller.
+- Returns: boolean indicating that the status was accepted.
+- Side effects: starts or refreshes one timestamp-based DoT; it does not create a per-effect loop.
 
 #### mob/proc/getAvailableBasicBlastSlots
 - Signature: `getAvailableBasicBlastSlots(requested_count = basic_blast_max_volley_size)`

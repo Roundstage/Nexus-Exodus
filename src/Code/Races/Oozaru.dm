@@ -28,14 +28,32 @@ var
 
 mob/var
 	lastGreatApeRevert = -999999
+	great_ape_base_pixel_x
+	great_ape_base_pixel_y
+	great_ape_base_pixel_recorded
+
+mob/proc/syncGreatApeCombatAppearance()
+	if(!IsGreatApe())
+		setNexusCombatHitboxSource("great_ape")
+		return FALSE
+	var/obj/Great_Ape/O = Great_Ape_obj
+	if(!great_ape_base_pixel_recorded)
+		great_ape_base_pixel_x = O && O.icon ? Icon_Center_X(O.icon) : 0
+		great_ape_base_pixel_y = O && O.icon ? Icon_Center_Y(O.icon) : 0
+		great_ape_base_pixel_recorded = TRUE
+	CenterIcon(src)
+	setNexusCombatHitboxSource("great_ape", 60, 72)
+	return TRUE
 
 mob/proc/Great_Ape_revert() if(IsGreatApe())
 	var/obj/Great_Ape/O=Great_Ape_obj
 	O.suffix=null
 	walk(src,0)
 	icon=O.icon
-	CenterIcon(src)
-	pixel_y=0
+	pixel_x = great_ape_base_pixel_x
+	pixel_y = great_ape_base_pixel_y
+	great_ape_base_pixel_recorded = FALSE
+	setNexusCombatHitboxSource("great_ape")
 	bp_mult -= oozaruBPMultAdd
 	Str/=1.3
 	strmod/=1.3
@@ -48,7 +66,7 @@ mob/proc/Great_Ape_revert() if(IsGreatApe())
 	Spd/=0.1
 	spdmod/=0.1
 	overlays.Add(Great_Ape_Overlays)
-	Great_Ape_Overlays.Remove(Great_Ape_Overlays)
+	Great_Ape_Overlays = new/list
 	lastGreatApeRevert = world.realtime
 	syncActivePrimaryTransformation("great ape revert")
 
@@ -66,7 +84,11 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 	God_Fist_Revert()
 	O.suffix="Active"
 	O.icon=icon
+	great_ape_base_pixel_x = pixel_x
+	great_ape_base_pixel_y = pixel_y
+	great_ape_base_pixel_recorded = TRUE
 	if(player_appearance_manager) player_appearance_manager.removeRenderedAppearances()
+	Great_Ape_Overlays = new/list
 	Great_Ape_Overlays.Add(overlays)
 	overlays.Remove(overlays)
 	spawn(rand(1,100)) for(var/mob/A in player_view(20,src))
@@ -75,10 +97,14 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 	if(Golden) icon='GoldOozaruHayate.dmi'
 	else icon='OozaruHayate.dmi'
 	CenterIcon(src)
+	setNexusCombatHitboxSource("great_ape", 60, 72)
 
 	var/initSize = 0.33
-	transform *= initSize
-	animate(src, transform = transform * (1 / initSize), time = rand(15,25), easing = CUBIC_EASING)
+	var/matrix/final_transform = matrix(transform)
+	var/matrix/start_transform = matrix(final_transform)
+	start_transform *= initSize
+	transform = start_transform
+	animate(src, transform = final_transform, time = rand(15,25), easing = CUBIC_EASING)
 
 	pixel_y = 0
 	bp_mult += oozaruBPMultAdd

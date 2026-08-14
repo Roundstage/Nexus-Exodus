@@ -11,6 +11,7 @@ proc/getNexusWeaponAttackTypes()
 		/obj/Attacks/NexusMeleeTechnique/OverheadSmash,
 		/obj/Attacks/NexusMeleeTechnique/ColossalImpact,
 		/obj/Attacks/NexusMeleeTechnique/BurningSlash,
+		/obj/Attacks/NexusMeleeTechnique/CriticalEdge,
 		/obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash,
 		/obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak)
 
@@ -28,9 +29,9 @@ proc/getNexusUnarmedAttackTypes()
 		/obj/Attacks/NexusMeleeTechnique/TexasSmash,
 		/obj/Attacks/NexusMeleeTechnique/GuardBreak,
 		/obj/Attacks/NexusMeleeTechnique/WingClip,
+		/obj/Attacks/NexusMeleeTechnique/SandThrow,
 		/obj/Attacks/NexusMeleeTechnique/BurningShot,
-		/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial,
-		/obj/Attacks/NexusMeleeTechnique/CriticalEdge)
+		/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial)
 
 proc/getNexusBeamAttackTypes()
 	return list(

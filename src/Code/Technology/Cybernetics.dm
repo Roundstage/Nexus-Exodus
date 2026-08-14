@@ -17,6 +17,20 @@ mob/proc/HasRebuildRequirements()
 mob/proc/AlreadyHasModule(t)
 	for(var/obj/Module/m in active_modules) if(m.type == t) return 1
 
+mob/proc/syncNexusAndroidGiantAppearance()
+	var/giant_active
+	for(var/obj/Module/module in contents)
+		if(module.Giant && module.suffix)
+			giant_active = TRUE
+			break
+	if(giant_active)
+		setNexusCharacterVisualScaleSource("android_giant", 42 / 32)
+		setNexusCombatHitboxSource("android_giant", 32, 34)
+	else
+		setNexusCharacterVisualScaleSource("android_giant")
+		setNexusCombatHitboxSource("android_giant")
+	return giant_active
+
 mob/proc/Firewall(mob/P)
 	for(var/obj/Module/Firewall/F in active_modules)
 		P.TakeDamage(50, attacker = src, attack_name = "Firewall")
@@ -323,12 +337,9 @@ obj/Module
 		if(Icon_Change&&P.Android)
 			P.icon=Icon_Change
 			P.overlays-=P.overlays
-			for(var/obj/Module/M in P.active_modules) if(M.suffix&&M.Giant)
-				P.Enlarge_Icon(48,48)
-				P.pixel_y=0
 		if(Giant)
-			P.Enlarge_Icon(42,42)
-			P.pixel_y=0
+			P.setNexusCharacterVisualScaleSource("android_giant", 42 / 32)
+			P.setNexusCombatHitboxSource("android_giant", 32, 34)
 		//var/CP_Add=P.Knowledge*2
 		//if(P.cyber_bp<CP_Add)
 		//	P.cyber_bp+=CP_Add*CP_Mult*cyber_bp_mod
@@ -344,6 +355,7 @@ obj/Module
 		if(type == /obj/Module/Body_Swap) P.has_body_swap = 1
 		if(type == /obj/Module/Grab_Absorb) P.grab_absorb_module = src
 		if(istype(src,/obj/Module/Drone_AI)) P.Drone_initialize()
+		if(Giant || Icon_Change) P.rebuildPlayerAppearance("android module enabled")
 
 	proc/Disable_Module(mob/P)
 
@@ -361,7 +373,9 @@ obj/Module
 		P.Nanite_Repair-=Nanite_Repair;P.Cyber_Scanner-=Scanner;P.Cyber_Force_Field-=Cyber_Force_Field;\
 		P.Blast_Absorb-=Blast_Absorb
 		P.paralysis_immune-=paralysis_immunity
-		if(Giant) P.Enlarge_Icon(32,32)
+		if(Giant)
+			P.setNexusCharacterVisualScaleSource("android_giant")
+			P.setNexusCombatHitboxSource("android_giant")
 		//P.cyber_bp-=P.Knowledge*2*CP_Mult*cyber_bp_mod
 		//if(P.cyber_bp<0) P.cyber_bp=0
 		if(istype(src,/obj/Module/Generator)) P.generator_module=null
@@ -375,6 +389,7 @@ obj/Module
 		P.active_modules-=src
 		if(type == /obj/Module/Body_Swap) P.has_body_swap = 0
 		if(type == /obj/Module/Grab_Absorb) P.grab_absorb_module = null
+		if(Giant || Icon_Change) P.rebuildPlayerAppearance("android module disabled")
 
 	Click() if(src in usr)
 		if(!suffix)

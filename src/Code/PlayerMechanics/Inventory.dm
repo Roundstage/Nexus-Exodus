@@ -2723,52 +2723,57 @@ mob/proc/MaxItems() //max items you can carry
 	//if(HasAnyPack()) n += 20
 	return n
 
-obj/items/verb/Drop()
-	if(usr.Final_Realm())
-		usr << "You can not drop items in this place"
-		return
-	var/mob/P
-	for(P in Get_step(usr,usr.dir)) break
-	if(P&&!P.client) P=null
-	if(P&&istype(src,/obj/items/Force_Field))
-		usr<<"You can not drop force fields onto other players. This is to prevent bug abuse where a person drops a super \
+obj/items/proc/dropFromInventory(mob/user)
+	if(!canUseAfterNexusTradeYield(user)) return FALSE
+	if(user.Final_Realm())
+		user << "You can not drop items in this place"
+		return FALSE
+	var/mob/recipient
+	for(recipient in Get_step(user,user.dir)) break
+	if(recipient && !recipient.client) recipient = null
+	if(recipient && istype(src,/obj/items/Force_Field))
+		user<<"You can not drop force fields onto other players. This is to prevent bug abuse where a person drops a super \
 		weak force field on someone during a fight then kills them with 1 energy blast"
-		return
-	if(P&&P.item_count()>=P.MaxItems())
-		usr<<"You can not give [P] this item because their inventory is full"
-		P<<"[usr] tried to give you an item but your inventory is full"
-		return
-	var/Amount=0
-	for(var/obj/A in Get_step(usr,usr.dir)) if(!(locate(A) in usr)) Amount+=1
-	for(var/obj/Turfs/Door/D in Get_step(usr,usr.dir))
-		usr<<"You can not drop anything on top of a door"
-		return
-	if(!(locate(/obj/Bank) in Get_step(usr,usr.dir))&&Amount>4&&!P)
-		usr<<"Nothing more can be placed on this spot."
-		return
+		return FALSE
+	if(recipient && recipient.item_count() >= recipient.MaxItems())
+		user<<"You can not give [recipient] this item because their inventory is full"
+		recipient<<"[user] tried to give you an item but your inventory is full"
+		return FALSE
+	var/target_item_count = 0
+	for(var/obj/nearby_object in Get_step(user,user.dir)) if(!(locate(nearby_object) in user)) target_item_count++
+	for(var/obj/Turfs/Door/door in Get_step(user,user.dir))
+		user<<"You can not drop anything on top of a door"
+		return FALSE
+	if(!(locate(/obj/Bank) in Get_step(user,user.dir)) && target_item_count > 4 && !recipient)
+		user<<"Nothing more can be placed on this spot."
+		return FALSE
 	if(suffix) if(!Can_Drop_With_Suffix)
-		usr<<"You must unequip it first"
-		return
-	for(var/mob/A in player_view(15,usr)) if(A.see_invisible>=usr.invisibility)
-		if(!P) A<<"[usr] drops [src]"
-		else A<<"[usr] gives [P] a [src]"
-	usr.overlays-=icon
-	//SafeTeleport(Get_step(usr,usr.dir))
-	Move(usr.loc)
-	step(src, usr.dir)
+		user<<"You must unequip it first"
+		return FALSE
+	for(var/mob/viewer in player_view(15,user)) if(viewer.see_invisible >= user.invisibility)
+		if(!recipient) viewer<<"[user] drops [src]"
+		else viewer<<"[user] gives [recipient] a [src]"
+	user.overlays-=icon
+	//SafeTeleport(Get_step(user,user.dir))
+	Move(user.loc)
+	step(src, user.dir)
 	dir=SOUTH
-	if(P) Move(P)
-	else usr.Store_item_check(src)
+	if(recipient) Move(recipient)
+	else user.Store_item_check(src)
 
-	if(usr && ismob(usr) && usr.client)
-		usr.rebuildPlayerAppearance("item dropped")
-		usr.Restore_hotbar_from_IDs()
+	if(user.client)
+		user.rebuildPlayerAppearance("item dropped")
+		user.Restore_hotbar_from_IDs()
 
-	if(z&&istype(src,/obj/items/Senzu)) src:Senzu_grow()
+	if(z && istype(src,/obj/items/Senzu)) src:Senzu_grow()
 
 	if(istype(src,/obj/items/Dragon_Ball))
 		var/obj/items/Dragon_Ball/db = src
 		db.SetDBPixelOffsets()
+	return TRUE
+
+obj/items/verb/Drop()
+	return dropFromInventory(usr)
 
 mob/var/tmp/skip_restore_hotbar
 

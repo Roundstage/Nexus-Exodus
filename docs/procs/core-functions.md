@@ -3,6 +3,8 @@
 ## Overview
 Core world, persistence, combat-recovery, and utility functions.
 
+`SpatialQueries.dm` now supplies the shared combat-hitbox layer. Character targets expose centered rectangular combat bounds independently of their density/movement bounds; projectile and radial checks use exact circle-versus-rectangle intersections after native range broad-phase queries, while beams use capsule-versus-rectangle intersections. Legacy density, turf, door, object destruction, and beam-clash movement remain on BYOND's rectangular tile/bounds collision so world traversal and old maps retain their behavior.
+
 `KoSystem.dm` now coordinates Casual/Lethal recovery through RP Mode and Willpower. `combat_ko_total` remains only as a save-compatibility field and is normalized to zero; it is no longer a three-KO health resource.
 
 Player persistence supports three independent character slots. Live character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; an explicitly isolated playtest runtime uses `data/Playtest/Save` and `data/Playtest/Feats`. Every newly written save carries its immutable runtime environment, and cross-environment loads fail closed. The old key-named live character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
@@ -46,6 +48,13 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - `src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm`
 
 ## Proc Reference
+
+### src/Code/CoreFunctions/SpatialQueries.dm
+
+- `setNexusCombatHitboxSource()` composes temporary rectangular character hitboxes by named source so Giant Form, Great Ape, and Giant Version can enter and leave independently without changing movement density bounds.
+- `nexusCircleIntersectsHitbox()` performs an exact circle-versus-rectangle check for projectiles, explosions, and radial techniques.
+- `nexusCapsuleIntersectsHitbox()` performs the beam capsule-versus-character-rectangle check, including endpoint caps and segment/edge contact.
+- `nexusMobsInCircle()` and `nexusMobsInCapsule()` use a native range query as broad phase, then return only exact geometric contacts.
 
 ### src/Code/CoreFunctions/Saving.dm
 
@@ -367,9 +376,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 ### src/Code/CoreFunctions/KoSystem.dm
 
 #### mob/proc/Cause_Combat_KO
-- Signature: `Cause_Combat_KO(mob/victim, mob/attacker)`
-- Inputs: victim and optional attacking mob.
-- Purpose: Schedule casual recovery or start lethal combat, RP Mode, and Willpower loss.
+- Signature: `Cause_Combat_KO(mob/victim, mob/attacker, combat_mode_override)`
+- Inputs: victim, optional attacking mob, and optional explicit Casual/Lethal disposition.
+- Purpose: Schedule casual recovery or start lethal combat, RP Mode, and Willpower loss; delayed effects may override live attacker intent with their application-time snapshot.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4320,9 +4329,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/proc/Remove_Admin
 - Signature: `mob/proc/Remove_Admin()`
 - Inputs: None
-- Purpose: Remove Admin.
+- Purpose: Revoke every admin verb and permission, closing the experimental Planet Map immediately if it is open.
 - Returns: none (implicit).
-- Side effects: mutates game state and/or world resources.
+- Side effects: removes the account from `Admins`, mutates the mob's verb list, and closes its admin-only map browser.
 
 #### mob/proc/Admin_Check
 - Signature: `mob/proc/Admin_Check()`
@@ -5206,12 +5215,30 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - Returns: none (implicit).
 - Side effects: Drains health and temporarily reduces regeneration until all burn stacks are consumed.
 
+#### mob/proc/applyNexusFireDot, applyNexusElectricDot, applyNexusPoisonDot
+- Signatures: `applyNexusFireDot(source, duration_ticks, damage_percent)`, `applyNexusElectricDot(source, duration_ticks, damage_percent)`, `applyNexusPoisonDot(source, duration_ticks, damage_percent)`
+- Purpose: Start or refresh one timestamp-based status without spawning an independent loop; a newly applied status replaces stale expired potency, while an active refresh keeps the stronger potency.
+- Returns: boolean indicating that the target accepted the status.
+- Side effects: stores source, potency, expiration, next scheduled tick, and a Casual/Lethal disposition snapshot; poison respects racial immunity at application.
+
+#### mob/proc/processNexusStatusEffects
+- Signature: `processNexusStatusEffects()`
+- Purpose: Process Fire, Electric, and Poison for one registered mob while preserving application-anchored two-second ticks, including the final tick at expiration.
+- Returns: none (implicit).
+- Side effects: applies maximum-Health damage, electric micro-stun, poison resistance, KO attribution, and clears every Nexus status on KO, RP Mode, or Safezone entry.
+
+#### proc/processNexusActiveStatusEffects
+- Signature: `processNexusActiveStatusEffects()`
+- Purpose: Run the single global status registry for players, NPCs, and monsters without creating per-status asynchronous loops.
+- Returns: none (implicit).
+- Side effects: processes a safe copy of active status targets and drops expired or deleted registrations.
+
 ### src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm
 
 #### mob/proc/process_player_action_cycle
 - Signature: `mob/proc/process_player_action_cycle(run_background_tasks = FALSE)`
 - Inputs: Whether the slower logging and progression work is due in this cycle.
-- Purpose: Process burn, knockout recovery, HUD/target validation, energy schedules, and optionally background player tasks in one scheduler cycle.
+- Purpose: Process burn, knockout recovery, HUD/target validation, energy schedules, and optionally background player tasks in one player scheduler cycle.
 - Returns: none (implicit).
 - Side effects: Mutates player effects and progression; writes chat logs only when buffered entries exist.
 
@@ -5225,6 +5252,6 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### proc/LogicLoop
 - Signature: `proc/LogicLoop()`
 - Inputs: None
-- Purpose: Start the consolidated action loop for active players that do not already have one.
+- Purpose: Start the consolidated action loop for active players that do not already have one and process the global Nexus status registry for players and NPCs once per ten ticks.
 - Returns: none (implicit).
 - Side effects: see implementation.

@@ -65,13 +65,16 @@ mob/proc/addMinedOre(ore_type, amount = 1)
 	new_ore.refreshOreDescription()
 	return new_ore
 
-mob/proc/tryMineOre()
-	if(!isMiningCave()) return
-	var/find_chance = min(28, 6 + mining_level * 0.4)
+proc/getIncidentalMiningOreYield(resource_yield)
+	return Clamp(round(sqrt(max(1, resource_yield)) * 3), 1, 20)
+
+mob/proc/tryMineOre(resource_yield = 1)
+	if(!isMiningCave()) return 0
+	var/find_chance = min(45, 15 + mining_level * 0.6)
 	if(getMilestoneRank("mining_expert")) find_chance *= 1.35
 	find_chance *= 1 + getMilestoneRank("ore_whisperer") * 0.15
 	find_chance *= 1 + getProgressionNodeRank("mining_ore_sense") * 0.15
-	if(!prob(find_chance)) return
+	if(!prob(find_chance)) return 0
 	var/ore_type = /obj/items/Ore/Copper
 	var/roll = rand(1, 1000)
 	if(mining_level >= 35 && hasMiningOreUnlock(/obj/items/Ore/HeartOfTheMountain) && roll <= 12 + (mining_level - 35) * 2)
@@ -86,15 +89,17 @@ mob/proc/tryMineOre()
 		ore_type = /obj/items/Ore/Iron
 	else if(mining_level >= 3 && hasMiningOreUnlock(/obj/items/Ore/Tin) && roll <= 720)
 		ore_type = /obj/items/Ore/Tin
-	var/obj/items/Ore/ore = addMinedOre(ore_type)
+	var/mined_ore_amount = getIncidentalMiningOreYield(resource_yield)
+	var/obj/items/Ore/ore = addMinedOre(ore_type, mined_ore_amount)
 	if(ore) src << "<font color=#d8b47c>You uncover [ore.ore_name]. You now carry [ore.stack_amount]."
+	return ore ? mined_ore_amount : 0
 
 mob/proc/performMiningTick(base_yield)
 	syncProfessionProgression()
 	var/resource_yield = max(1, round(base_yield * getMiningYieldMultiplier()))
 	if(isMiningCave())
-		gainProfessionExperience("Mining", max(1, resource_yield ** 0.25), "excavation")
-		tryMineOre()
+		var/mined_ore_amount = tryMineOre(resource_yield)
+		if(mined_ore_amount) gainProfessionExperience("Mining", getMiningExperienceForOreYield(mined_ore_amount), "ore excavation")
 	return resource_yield
 
 obj/items/Ore
@@ -167,10 +172,10 @@ mob/proc/consumeOre(ore_type, amount)
 
 var/list/world_ore_deposits = list()
 var/world_ore_target_count = 600
-var/world_ore_regular_deposit_min = 8
-var/world_ore_regular_deposit_max = 16
+var/world_ore_regular_deposit_min = 12
+var/world_ore_regular_deposit_max = 20
 var/world_ore_heart_deposit_amount = 3
-var/world_ore_base_extraction_yield = 3
+var/world_ore_base_extraction_yield = 5
 var/world_ore_generation_interval = 1800
 var/world_ore_generation_running = FALSE
 
@@ -209,9 +214,22 @@ proc/getWorldOreName(ore_type)
 	del(example)
 	return result
 
+proc/getWorldOreAbundanceMultiplier(ore_type)
+	switch(ore_type)
+		if(/obj/items/Ore/Copper) return 3
+		if(/obj/items/Ore/Tin) return 2.5
+		if(/obj/items/Ore/Iron) return 2
+		if(/obj/items/Ore/Silver) return 1.5
+		if(/obj/items/Ore/Mythril) return 1.25
+	return 1
+
 proc/getWorldOreDepositAmount(ore_type)
 	if(ore_type == /obj/items/Ore/HeartOfTheMountain) return world_ore_heart_deposit_amount
-	return rand(world_ore_regular_deposit_min, world_ore_regular_deposit_max)
+	var/abundance_multiplier = getWorldOreAbundanceMultiplier(ore_type)
+	return rand(round(world_ore_regular_deposit_min * abundance_multiplier), round(world_ore_regular_deposit_max * abundance_multiplier))
+
+proc/getMiningExperienceForOreYield(ore_yield)
+	return max(0, ore_yield)
 
 proc/isValidWorldOreTurf(turf/target)
 	if(!target || target.density || target.Water || istype(target, /turf/Other/Blank)) return FALSE
@@ -301,7 +319,7 @@ obj/WorldOreDeposit
 			var/yield_amount = max(1, round(world_ore_base_extraction_yield * miner.getMiningYieldMultiplier()))
 			yield_amount = min(yield_amount, ore_amount)
 			miner.addMinedOre(ore_type, yield_amount)
-			miner.gainProfessionExperience("Mining", max(2, required_mining_level * 1.5), "mining [src]", announce = TRUE)
+			miner.gainProfessionExperience("Mining", getMiningExperienceForOreYield(yield_amount), "extracting [yield_amount] ore from [src]", announce = TRUE)
 			ore_amount -= yield_amount
 			player_view(10, miner) << "[miner] extracts [yield_amount] ore from [src]."
 			if(ore_amount <= 0)
