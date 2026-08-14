@@ -164,6 +164,7 @@ proc/get_cached_blast()
 		b.pixel_x=0
 		b.pixel_y=0
 		b.overlays = new/list
+		b.underlays = new/list
 		b.startBlastLifecycle()
 
 		b.Owner=null

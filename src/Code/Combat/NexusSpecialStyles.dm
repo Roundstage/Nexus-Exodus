@@ -402,13 +402,14 @@ obj/Attacks/NexusAreaTechnique/Earthquake
 
 obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze
 	name = "Super Ghost Kamikaze Attack"
-	desc = "Create three homing ghosts that pursue one selected target. Their shared damage budget prevents the volley from multiplying without limit."
+	desc = "Create three copies of yourself that relentlessly pursue one selected target. Their shared damage budget prevents the volley from multiplying without limit."
 	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTHomingBlast.dmi'
 	var
 		energy_cost = 100
 		cooldown_ticks = 160
 		ghost_count = 3
 		ghost_damage_factor = 6
+		locked_homing = TRUE
 		tmp/next_use = 0
 
 	verb/Hotbar_use()
@@ -445,16 +446,14 @@ obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze
 			var/obj/Blast/ghost = get_cached_blast()
 			ghost.setStats(user, Percent = ghost_damage_factor, Off_Mult = 1.5, Explosion = 1, explosion_percent = 0, shared_budget = shared_budget)
 			ghost.from_attack = src
-			ghost.icon = icon
+			ghost.applyNexusCharacterCopyAppearance(user)
 			ghost.blast_homing_target = target
-			ghost.homing_chance = 140
-			ghost.Can_Home = 1
+			ghost.Can_Home = 0
 			ghost.Distance = 40
 			ghost.vector_speed = 32
 			ghost.Shockwave = 2
 			ghost.SafeTeleport(user.loc)
-			CenterIcon(ghost)
 			ghost.queueNexusProjectileGlowUpdate()
-			ghost.startKiProjectileWalk(get_dir(user, target))
+			ghost.followSelectedTarget(target)
 		if(user) user.attacking = 0
 		return TRUE

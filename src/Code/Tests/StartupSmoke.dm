@@ -426,6 +426,66 @@ proc/runNexusPlanetMapScannerSmokeTests()
 	del(planet_map_cache_viewer_b)
 	del(planet_map_raster_scan)
 
+proc/runNexusGhostCopySmoke()
+	var/mob/NexusSmokeTest/ghost_copy_source = new
+	ghost_copy_source.name = "Ghost Copy Source"
+	ghost_copy_source.icon = 'BaseHumanPale.dmi'
+	ghost_copy_source.pixel_x = 3
+	ghost_copy_source.pixel_y = -2
+	ghost_copy_source.overlays += image('RTIronSword.dmi')
+	var/obj/Blast/ghost_copy_contract = new
+	nexusSmokeAssert(ghost_copy_contract.applyNexusCharacterCopyAppearance(ghost_copy_source) && ghost_copy_contract.icon == ghost_copy_source.icon && ghost_copy_contract.pixel_x == 3 && ghost_copy_contract.pixel_y == -2 && ghost_copy_contract.overlays.len == ghost_copy_source.overlays.len, "Super Ghost Kamikaze projectile does not copy the caster body and equipped silhouette")
+	del(ghost_copy_contract)
+	del(ghost_copy_source)
+
+proc/runNexusAndroidGiantAppearanceSmoke()
+	var/mob/NexusSmokeTest/android_giant_scale_test = new
+	android_giant_scale_test.Android = 1
+	android_giant_scale_test.icon = 'BaseHumanPale.dmi'
+	android_giant_scale_test.pixel_x = 4
+	android_giant_scale_test.pixel_y = -3
+	var/matrix/android_giant_base_transform = matrix()
+	android_giant_base_transform.c = 6
+	android_giant_base_transform.f = -4
+	android_giant_scale_test.transform = android_giant_base_transform
+	var/obj/items/Clothes/ShortSleeveShirt/android_giant_shirt = new(android_giant_scale_test)
+	android_giant_shirt.suffix = "Equipped"
+	var/obj/items/Sword/Forged/android_giant_sword = new(android_giant_scale_test)
+	android_giant_sword.suffix = "Equipped"
+	var/obj/items/Armor/Forged/android_giant_armor = new(android_giant_scale_test)
+	android_giant_armor.suffix = "Equipped"
+	var/obj/items/Mask/Forged/android_giant_mask = new(android_giant_scale_test)
+	android_giant_mask.suffix = "Equipped"
+	android_giant_scale_test.rebuildPlayerAppearance("android giant setup")
+	var/datum/PlayerAppearanceManager/android_giant_manager = android_giant_scale_test.player_appearance_manager
+	nexusSmokeAssert(android_giant_manager.rendered_appearances.len == 4, "Android equipment setup did not compose clothing, sword, armor and mask")
+	var/obj/Module/Giant_Version_New/android_giant_module = new(android_giant_scale_test)
+	android_giant_module.suffix = "Installed"
+	android_giant_scale_test.syncNexusAndroidGiantAppearance()
+	var/matrix/android_giant_active_transform = matrix(android_giant_scale_test.transform)
+	nexusSmokeAssertNear(android_giant_active_transform.a, 42 / 32, 0.001, "Android Giant Version did not scale the complete character silhouette")
+	nexusSmokeAssertNear(android_giant_active_transform.c, 6, 0.001, "Android Giant Version moved the character's horizontal transform anchor")
+	nexusSmokeAssertNear(android_giant_active_transform.f, -4, 0.001, "Android Giant Version moved the character's vertical transform anchor")
+	nexusSmokeAssert(android_giant_scale_test.pixel_x == 4 && android_giant_scale_test.pixel_y == -3, "Android Giant Version changed the character's pixel anchor")
+	var/android_giant_scaled_equipment = 0
+	for(var/image/android_equipment_image in android_giant_manager.rendered_appearances)
+		var/matrix/android_equipment_transform = matrix(android_equipment_image.transform)
+		if((android_equipment_image.appearance_flags & RESET_TRANSFORM) && abs(android_equipment_transform.a - (42 / 32)) <= 0.001 && abs(android_equipment_transform.c - 6) <= 0.001 && abs(android_equipment_transform.f + 4) <= 0.001)
+			android_giant_scaled_equipment++
+	nexusSmokeAssert(android_giant_scaled_equipment == 4, "Android Giant Version did not resize clothing, sword, armor and mask with the body")
+	nexusSmokeAssert(android_giant_scale_test.getNexusCombatHitboxWidth() == 32 && android_giant_scale_test.getNexusCombatHitboxHeight() == 34, "Android Giant Version did not install its rectangular combat hitbox")
+	android_giant_scale_test.normalizeNexusCharacterVisualScale()
+	android_giant_scale_test.syncNexusAndroidGiantAppearance()
+	var/matrix/android_giant_relog_transform = matrix(android_giant_scale_test.transform)
+	nexusSmokeAssertNear(android_giant_relog_transform.a, 42 / 32, 0.001, "Android Giant Version visual scale multiplied again during relog normalization")
+	android_giant_module.suffix = null
+	android_giant_scale_test.syncNexusAndroidGiantAppearance()
+	var/matrix/android_giant_reverted_transform = matrix(android_giant_scale_test.transform)
+	nexusSmokeAssertNear(android_giant_reverted_transform.a, 1, 0.001, "Android Giant Version did not restore the base character scale")
+	nexusSmokeAssertNear(android_giant_reverted_transform.c, 6, 0.001, "Android Giant Version did not restore the horizontal transform anchor")
+	nexusSmokeAssertNear(android_giant_reverted_transform.f, -4, 0.001, "Android Giant Version did not restore the vertical transform anchor")
+	del(android_giant_scale_test)
+
 proc/runStartupSmokeTests(soul_contract_count_before)
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
 	var/normalized_description = normalizeNexusPlayerDescription(legacy_description)
@@ -1212,7 +1272,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(nexus_guard_break.requires_unarmed && nexus_wing_clip.requires_unarmed && nexus_sand_throw.requires_unarmed && nexus_critical_edge.requires_weapon && nexus_headbutt.getAccuracyBonus() == nexus_unarmed_technique_accuracy_bonus, "stance and Unarmed equipment requirements diverged from their authored trees")
 	nexusSmokeAssert(nexus_beam.hotbar_type == "Beam" && nexus_beam.damage_factor == 24, "Buster Cannon is not routed as a balanced beam")
 	nexusSmokeAssert(nexus_wind_howl.behavior == "radial" && nexus_wind_howl.damage_multiplier == 2.5 && nexus_wind_howl.splash_radius == 3 && nexus_wind_howl.splash_target_limit == 12, "Wind Howl is not a targetless three-tile area attack")
-	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 6, "Super Ghost Kamikaze Attack lost its bounded three-projectile profile")
+	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 6 && nexus_ghosts.locked_homing, "Super Ghost Kamikaze Attack lost its bounded character-copy homing profile")
+	runNexusGhostCopySmoke()
 	nexusSmokeAssert(istype(nexus_explosive_wave, /obj/Attacks/Shockwave) && istype(nexus_earthquake, /obj/Attacks/Shockwave), "the ported area techniques no longer derive from Shockwave")
 	nexusSmokeAssert(nexus_explosive_wave.radius == 4 && nexus_explosive_wave.area_damage_factor == 12 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
 	nexusSmokeAssert(nexus_earthquake.radius == 5 && nexus_earthquake.area_damage_factor == 10 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
@@ -3993,11 +4054,13 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	scaled_giant_form_test.rebuildPlayerAppearance("scaled giant setup")
 	var/datum/PlayerAppearanceManager/scaled_giant_manager = scaled_giant_form_test.player_appearance_manager
 	var/image/scaled_giant_clothing_image = scaled_giant_manager.rendered_appearances[1]
-	nexusSmokeAssert(scaled_giant_clothing_image && !(scaled_giant_clothing_image.appearance_flags & RESET_TRANSFORM), "equipped clothing opts out of character resize")
+	nexusSmokeAssert(scaled_giant_clothing_image && (scaled_giant_clothing_image.appearance_flags & RESET_TRANSFORM), "equipped clothing is not isolated from double character resize")
 	scaled_giant_form_test.Enable_giant_form()
 	sleep(7)
 	var/matrix/scaled_giant_active_transform = matrix(scaled_giant_form_test.transform)
+	var/matrix/scaled_giant_clothing_transform = matrix(scaled_giant_clothing_image.transform)
 	nexusSmokeAssertNear(scaled_giant_active_transform.a, 2, 0.001, "non-Makyo Giant Form did not scale the complete character silhouette")
+	nexusSmokeAssertNear(scaled_giant_clothing_transform.a, 2, 0.001, "equipped clothing did not receive the Giant Form body transform")
 	nexusSmokeAssert(scaled_giant_form_test.getNexusCombatHitboxWidth() == 48 && scaled_giant_form_test.getNexusCombatHitboxHeight() == 48, "Giant Form did not install its rectangular combat hitbox")
 	scaled_giant_form_test.normalizeNexusCharacterVisualScale()
 	var/matrix/scaled_giant_relog_transform = matrix(scaled_giant_form_test.transform)
@@ -4007,26 +4070,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/matrix/scaled_giant_reverted_transform = matrix(scaled_giant_form_test.transform)
 	nexusSmokeAssertNear(scaled_giant_reverted_transform.a, 1, 0.001, "Giant Form did not restore the base character scale")
 	nexusSmokeAssert(scaled_giant_form_test.getNexusCombatHitboxWidth() == scaled_giant_form_test.bound_width && scaled_giant_form_test.getNexusCombatHitboxHeight() == scaled_giant_form_test.bound_height, "Giant Form left an expanded combat hitbox after revert")
-	var/mob/NexusSmokeTest/android_giant_scale_test = new
-	android_giant_scale_test.Android = 1
-	android_giant_scale_test.icon = 'BaseHumanPale.dmi'
-	var/obj/items/Clothes/ShortSleeveShirt/android_giant_shirt = new(android_giant_scale_test)
-	android_giant_shirt.suffix = "Equipped"
-	android_giant_scale_test.rebuildPlayerAppearance("android giant setup")
-	var/obj/Module/Giant_Version_New/android_giant_module = new(android_giant_scale_test)
-	android_giant_module.suffix = "Installed"
-	android_giant_scale_test.syncNexusAndroidGiantAppearance()
-	var/matrix/android_giant_active_transform = matrix(android_giant_scale_test.transform)
-	nexusSmokeAssertNear(android_giant_active_transform.a, 42 / 32, 0.001, "Android Giant Version did not scale the complete character silhouette")
-	nexusSmokeAssert(android_giant_scale_test.getNexusCombatHitboxWidth() == 32 && android_giant_scale_test.getNexusCombatHitboxHeight() == 34, "Android Giant Version did not install its rectangular combat hitbox")
-	android_giant_scale_test.normalizeNexusCharacterVisualScale()
-	android_giant_scale_test.syncNexusAndroidGiantAppearance()
-	var/matrix/android_giant_relog_transform = matrix(android_giant_scale_test.transform)
-	nexusSmokeAssertNear(android_giant_relog_transform.a, 42 / 32, 0.001, "Android Giant Version visual scale multiplied again during relog normalization")
-	android_giant_module.suffix = null
-	android_giant_scale_test.syncNexusAndroidGiantAppearance()
-	var/matrix/android_giant_reverted_transform = matrix(android_giant_scale_test.transform)
-	nexusSmokeAssertNear(android_giant_reverted_transform.a, 1, 0.001, "Android Giant Version did not restore the base character scale")
+	runNexusAndroidGiantAppearanceSmoke()
 	var/mob/NexusSmokeTest/great_ape_appearance_test = new
 	great_ape_appearance_test.Race = "Saiyan"
 	great_ape_appearance_test.icon = 'BaseHumanPale.dmi'
@@ -4049,7 +4093,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(giant_say_contract)
 	del(giant_form_test)
 	del(great_ape_appearance_test)
-	del(android_giant_scale_test)
 	del(scaled_giant_form_test)
 	del(heran_transformation_test)
 	del(transformation_state_test)

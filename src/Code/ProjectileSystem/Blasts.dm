@@ -640,6 +640,9 @@ obj/Blast/proc/BlastVectorWalk(angle = 0)
 obj/Blast/proc/followSelectedTarget(mob/target)
 	set waitfor = 0
 	stopProjectileFlight()
+	// This path owns steering on every movement tick. Disable the probabilistic legacy
+	// homing hook so it cannot consume a second Move() or restore a stale heading.
+	Can_Home = 0
 	var/flight_id = projectile_flight_id
 	while(src && z && !deflected && Owner && target && flight_id == projectile_flight_id && Owner.getSelectedTarget(target, require_view = FALSE) == target)
 		var/move_speed = vector_speed
@@ -650,6 +653,22 @@ obj/Blast/proc/followSelectedTarget(mob/target)
 			return
 		sleep(TickMult(ki_projectile_step_delay))
 	if(src && z && !deflected && flight_id == projectile_flight_id) del(src)
+
+obj/Blast/proc/applyNexusCharacterCopyAppearance(mob/source)
+	if(!source) return FALSE
+	name = "[source]'s kamikaze ghost"
+	icon = source.icon
+	icon_state = source.icon_state
+	dir = source.dir
+	pixel_x = source.pixel_x
+	pixel_y = source.pixel_y
+	color = source.color
+	alpha = source.alpha
+	transform = matrix(source.transform)
+	overlays = source.overlays ? source.overlays.Copy() : list()
+	underlays = source.underlays ? source.underlays.Copy() : list()
+	appearance_flags |= PIXEL_SCALE
+	return TRUE
 
 //FR-style "lazy follow": track the target closely for ~0.5s, then lock the end point and only
 //let it drift slowly toward the enemy while steering toward that locked point on a limited curve.
