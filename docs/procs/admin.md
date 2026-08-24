@@ -10,6 +10,8 @@ Administrative commands and management flows. Administrators receive a searchabl
 - `src/Code/Admin/AdminPanel.dm`
 - `src/Code/Admin/ServerPanel.dm`
 - `src/Code/Admin/CombatTesting.dm`
+- `src/Code/Admin/EffectDiagnostics.dm`
+- `src/Code/Admin/TensDiagnostics.dm`
 
 ## Proc Reference
 

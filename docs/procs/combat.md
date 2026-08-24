@@ -37,6 +37,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - `src/Code/Application/Combat/SkillEngine.dm`
 - `src/Code/Combat/BleedDamage.dm`
 - `src/Code/Combat/Buffs.dm`
+- `src/Code/Combat/ChasePressure.dm`
 - `src/Code/Combat/CombatDummy.dm`
 - `src/Code/Combat/Evasion.dm`
 - `src/Code/Combat/HokutoShinken.dm`
@@ -52,6 +53,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - `src/Code/Combat/KiSkills/Supernova.dm`
 - `src/Code/Combat/Math/CombatMath.dm`
 - `src/Code/Combat/Melee.dm`
+- `src/Code/Combat/NoxianGuillotine.dm`
 - `src/Code/Combat/Stun.dm`
 - `src/Code/Combat/Melee/DragonRush.dm`
 - `src/Code/Combat/Melee/PressurePunch.dm`
@@ -60,7 +62,9 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - `src/Code/Combat/Melee/WolfFangFist.dm`
 - `src/Code/Combat/RareDeathEffects.dm`
 - `src/Code/Combat/RevengeSystem.dm`
+- `src/Code/Combat/ResourcePenalties.dm`
 - `src/Code/Combat/RockThrow.dm`
+- `src/Code/Combat/Shielding.dm`
 - `src/Code/Combat/Skills.dm`
 - `src/Code/Combat/SpeedDelay.dm`
 - `src/Code/Combat/SplitForms.dm`

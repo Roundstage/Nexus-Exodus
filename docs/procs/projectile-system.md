@@ -19,8 +19,10 @@ Configured Fire and Electric on-hit statuses are copied into cached projectiles 
 
 ## Files
 - `src/Code/ProjectileSystem/BeamCore.dm`
+- `src/Code/ProjectileSystem/BeamRedirector.dm`
 - `src/Code/ProjectileSystem/Beams.dm`
 - `src/Code/ProjectileSystem/Blasts.dm`
+- `src/Code/ProjectileSystem/ProjectileCombatModifiers.dm`
 - `src/Code/ProjectileSystem/ProjectileCore.dm`
 - `src/Code/ProjectileSystem/Projectiles.dm`
 

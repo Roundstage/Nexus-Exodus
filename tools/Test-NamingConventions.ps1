@@ -160,6 +160,12 @@ function Get-IndentLevel {
 	return $tabs + [Math]::Floor($spaces / 4)
 }
 
+function Test-CatchAllSourceFileName {
+	param([string]$FileName)
+
+	return $FileName -match '^(?:Unsorted\d*|Temp|Testing|Notes(?:\d{4})?|TensVerbs)\.dm$'
+}
+
 if(![IO.File]::Exists($environmentPath)) {
 	throw "Dream Maker environment not found: $environmentPath"
 }
@@ -183,6 +189,9 @@ foreach($line in [IO.File]::ReadAllLines($environmentPath)) {
 	$fileName = [IO.Path]::GetFileName($relativePath)
 	if($fileName -cnotmatch '^[A-Z][A-Za-z0-9]*\.dm$') {
 		Add-NamingIssue 'File' $relativePath 0 $fileName 'PascalCase.dm without spaces'
+	}
+	if(Test-CatchAllSourceFileName $fileName) {
+		Add-NamingIssue 'CatchAllFile' $relativePath 0 $fileName 'a responsibility-specific subsystem filename'
 	}
 
 	$directory = [IO.Path]::GetDirectoryName($relativePath).Replace('\', '/')
@@ -212,6 +221,9 @@ foreach($fullPath in [IO.Directory]::EnumerateFiles($codeRoot, '*.dm', [IO.Searc
 	$fileName = [IO.Path]::GetFileName($relativePath)
 	if($fileName -cnotmatch '^[A-Z][A-Za-z0-9]*\.dm$') {
 		Add-NamingIssue 'File' $relativePath 0 $fileName 'PascalCase.dm without spaces'
+	}
+	if(Test-CatchAllSourceFileName $fileName) {
+		Add-NamingIssue 'CatchAllFile' $relativePath 0 $fileName 'a responsibility-specific subsystem filename'
 	}
 }
 
@@ -323,7 +335,7 @@ foreach($sourceFile in $sourceFiles) {
 }
 
 Write-Host "Naming convention audit: $($sourceFiles.Count) compiled first-party DM files"
-foreach($category in @('Directory', 'File', 'AssetDirectory', 'AssetFile', 'AssetExtension', 'Type', 'Proc', 'Variable')) {
+foreach($category in @('Directory', 'File', 'CatchAllFile', 'AssetDirectory', 'AssetFile', 'AssetExtension', 'Type', 'Proc', 'Variable')) {
 	$count = @($issues | Where-Object Category -eq $category).Count
 	Write-Host ("{0,-10} {1,6}" -f ($category + ':'), $count)
 }
@@ -335,7 +347,7 @@ if($Detailed -and $issues.Count -gt 0) {
 		Format-Table Category, Path, Line, Name, Expected -AutoSize
 }
 
-$pathCategories = @('Directory', 'File', 'AssetDirectory', 'AssetFile', 'AssetExtension')
+$pathCategories = @('Directory', 'File', 'CatchAllFile', 'AssetDirectory', 'AssetFile', 'AssetExtension')
 $pathIssueCount = @($issues | Where-Object Category -in $pathCategories).Count
 if($PathStrict -and $pathIssueCount -gt 0) {
 	throw "Naming convention audit found $pathIssueCount path violations."
