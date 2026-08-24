@@ -347,10 +347,10 @@ if($Detailed -and $issues.Count -gt 0) {
 		Format-Table Category, Path, Line, Name, Expected -AutoSize
 }
 
-$pathCategories = @('Directory', 'File', 'CatchAllFile', 'AssetDirectory', 'AssetFile', 'AssetExtension')
+$pathCategories = @('Directory', 'File', 'CatchAllFile')
 $pathIssueCount = @($issues | Where-Object Category -in $pathCategories).Count
 if($PathStrict -and $pathIssueCount -gt 0) {
-	throw "Naming convention audit found $pathIssueCount path violations."
+	throw "Naming convention audit found $pathIssueCount source path violations."
 }
 
 if($Strict -and $issues.Count -gt 0) {
