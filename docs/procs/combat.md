@@ -29,6 +29,8 @@ Critical Edge, Guard Break, and Block are mutually exclusive timed Nexus stances
 
 `Cycle Target` is a universal configurable targeting action. It orders visible, attackable targets within 30 tiles by pixel distance and angle, skips the user, KO, Safezone and RP Mode targets, advances from the current selection, and wraps to the nearest valid target.
 
+Combat Teams are temporary groups of up to five players managed through the `Team` Combat verb. The leader can invite nearby players, inspect the roster, remove members, or disband the group; non-leaders can leave freely, and leadership transfers when necessary. Every member sees a client-local yellow downward arrow above all current teammates, including themselves. Marker images are synchronized only for the five-member roster, follow icon-height changes, disappear immediately on leave or disconnect, and are never serialized. Teams provide visual orientation only and do not change targeting, damage, or friendly-fire rules.
+
 ## Files
 - `src/Code/Application/Combat/SkillActors.dm`
 - `src/Code/Application/Combat/SkillControllers.dm`
@@ -64,6 +66,7 @@ Critical Edge, Guard Break, and Block are mutually exclusive timed Nexus stances
 - `src/Code/Combat/SplitForms.dm`
 - `src/Code/Combat/Targeting/Targeting.dm`
 - `src/Code/Combat/Targeting/TargetingWrappers.dm`
+- `src/Code/Combat/Teams.dm`
 - `src/Code/Domain/Combat/SkillBehaviors.dm`
 - `src/Code/Domain/Combat/SkillCategories.dm`
 
@@ -4487,6 +4490,57 @@ Critical Edge, Guard Break, and Block are mutually exclusive timed Nexus stances
 - Purpose: Handle bubble sort.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### src/Code/Combat/Teams.dm
+
+#### proc/getNexusCombatTeamMarkerIcon
+- Signature: `proc/getNexusCombatTeamMarkerIcon()`
+- Inputs: None.
+- Purpose: Lazily generate the compact yellow downward arrow used for teammate identification.
+- Returns: cached 32x32 icon.
+- Side effects: initializes the marker icon on first use.
+
+#### client/proc/syncCombatTeamMarkers
+- Signature: `client/proc/syncCombatTeamMarkers()`
+- Inputs: None.
+- Purpose: Reconcile only the current client's marker images against their team's bounded five-member roster and current icon heights.
+- Returns: none (implicit).
+- Side effects: adds, repositions, or removes client-local world images.
+
+#### datum/CombatTeam/proc/addMember
+- Signature: `datum/CombatTeam/proc/addMember(mob/member, announce = TRUE)`
+- Inputs: candidate member and announcement flag.
+- Purpose: Add an ungrouped mob without exceeding the five-player limit, then refresh the private team markers.
+- Returns: boolean success flag.
+- Side effects: updates reciprocal team state and optionally announces the roster change.
+
+#### datum/CombatTeam/proc/removeMember
+- Signature: `datum/CombatTeam/proc/removeMember(mob/member, reason, announce = TRUE)`
+- Inputs: departing member, optional reason and announcement flag.
+- Purpose: Remove a member, transfer leadership when necessary, and delete an empty team.
+- Returns: boolean success flag.
+- Side effects: clears reciprocal state and client-local markers.
+
+#### datum/CombatTeam/proc/disband
+- Signature: `datum/CombatTeam/proc/disband(mob/requester, announce = TRUE)`
+- Inputs: optional leader requester and announcement flag.
+- Purpose: Atomically dissolve the temporary roster for every member.
+- Returns: boolean success flag.
+- Side effects: clears team and marker references and deletes the team datum.
+
+#### mob/proc/inviteCombatTeamMember
+- Signature: `mob/proc/inviteCombatTeamMember()`
+- Inputs: player selection and invite response.
+- Purpose: Let the leader invite one available player within 30 tiles while revalidating leadership, capacity, connection, and membership after the prompt.
+- Returns: boolean success flag.
+- Side effects: may create a team, display a modal invitation, and add the accepting player.
+
+#### mob/verb/manageCombatTeam
+- Signature: `mob/verb/manageCombatTeam()`
+- Inputs: menu choice.
+- Purpose: Expose creation, roster inspection, invitation, removal, leaving, and disbanding through the `Team` Combat verb.
+- Returns: none (implicit).
+- Side effects: delegates to the temporary team lifecycle.
 
 ### src/Code/Combat/Targeting/TargetingWrappers.dm
 

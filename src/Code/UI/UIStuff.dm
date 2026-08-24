@@ -11,6 +11,7 @@ var/list/clients = new
 
 client/Del()
 	if(mob) mob.stopNexusPlayerMusicBroadcast(FALSE)
+	clearCombatTeamMarkers()
 	cancelNexusPlayerMusicValidation()
 	stopNexusPlayerMusic()
 	clients -= src

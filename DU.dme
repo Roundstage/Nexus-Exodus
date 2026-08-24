@@ -277,6 +277,7 @@
 #include "src\Code\Combat\SpeedDelay.dm"
 #include "src\Code\Combat\SplitForms.dm"
 #include "src\Code\Combat\Stun.dm"
+#include "src\Code\Combat\Teams.dm"
 #include "src\Code\Combat\KiSkills\DeathBall2017.dm"
 #include "src\Code\Combat\KiSkills\FinalExplosion.dm"
 #include "src\Code\Combat\KiSkills\FusionSystem.dm"

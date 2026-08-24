@@ -4239,6 +4239,29 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(text2path("/mob/verb/selectTarget") && text2path("/mob/verb/clearTarget") && text2path("/mob/verb/cycleTarget"), "player target selection verbs are missing")
 	var/icon/target_marker_icon = getSelectedTargetMarkerIcon()
 	nexusSmokeAssert(target_marker_icon.Width() == 32 && target_marker_icon.Height() == 32, "selected target marker has invalid dimensions")
+	nexusSmokeAssert(text2path("/mob/verb/manageCombatTeam"), "combat team management verb is missing")
+	var/icon/combat_team_marker_icon = getNexusCombatTeamMarkerIcon()
+	nexusSmokeAssert(combat_team_marker_icon.Width() == 32 && combat_team_marker_icon.Height() == 32 && combat_team_marker_icon.GetPixel(16, 3) && !combat_team_marker_icon.GetPixel(16, 24), "combat team marker is not a compact downward arrow")
+	var/mob/NexusSmokeTest/combat_team_leader = new
+	combat_team_leader.name = "Team Leader"
+	var/datum/CombatTeam/combat_team_contract = new(combat_team_leader)
+	var/list/combat_team_contract_members = list(combat_team_leader)
+	for(var/member_index = 1, member_index < NEXUS_COMBAT_TEAM_LIMIT, member_index++)
+		var/mob/NexusSmokeTest/combat_team_member = new
+		combat_team_member.name = "Team Member [member_index]"
+		combat_team_contract_members += combat_team_member
+		nexusSmokeAssert(combat_team_contract.addMember(combat_team_member, FALSE), "combat team rejected a member below its five-player limit")
+	var/mob/NexusSmokeTest/combat_team_overflow_member = new
+	nexusSmokeAssert(combat_team_contract.members.len == NEXUS_COMBAT_TEAM_LIMIT && !combat_team_contract.addMember(combat_team_overflow_member, FALSE), "combat team exceeded its five-player limit")
+	var/mob/NexusSmokeTest/combat_team_successor = combat_team_contract.members[2]
+	nexusSmokeAssert(combat_team_leader.isCombatTeammate(combat_team_successor), "combat team membership is not reciprocal")
+	combat_team_contract.removeMember(combat_team_leader, null, FALSE)
+	nexusSmokeAssert(combat_team_contract.leader == combat_team_successor && !combat_team_leader.combat_team, "combat team leadership did not transfer after the leader left")
+	combat_team_contract.disband(combat_team_successor, FALSE)
+	for(var/mob/NexusSmokeTest/combat_team_test_member in combat_team_contract_members)
+		nexusSmokeAssert(!combat_team_test_member.combat_team, "disbanded combat team retained a member reference")
+		del(combat_team_test_member)
+	del(combat_team_overflow_member)
 	var/mob/NexusSmokeTest/targeting_player = new
 	var/turf/targeting_turf = locate(445, 3, 2)
 	nexusSmokeAssert(targeting_turf, "targeting smoke test turf is missing")
