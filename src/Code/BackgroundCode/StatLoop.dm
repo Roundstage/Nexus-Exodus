@@ -1820,6 +1820,7 @@ mob/var/tmp/next_health_bar_update=0
 mob/proc/Update_health_bars()
 	if(client && client.selected_target_marker && !selected_target) setSelectedTarget(null, FALSE)
 	else if(selected_target) getSelectedTarget(selected_target, require_view = FALSE, allow_ko = TRUE)
+	if(client && (combat_team || client.combat_team_markers && client.combat_team_markers.len)) client.syncCombatTeamMarkers()
 	updateOverheadHealthHud()
 	if(!client || client.inactivity >= 450 || world.time < next_health_bar_update) return
 	next_health_bar_update = world.time + 10

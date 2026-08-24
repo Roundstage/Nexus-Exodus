@@ -164,6 +164,7 @@ proc/DeletePendingObjects()
 	pending_object_delete_list = new/list
 
 mob/Del()
+	leaveCombatTeam(null, FALSE)
 	if(current_area)
 		current_area.mob_list-=src
 		current_area.player_list-=src

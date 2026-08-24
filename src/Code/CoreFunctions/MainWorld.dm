@@ -66,6 +66,7 @@ var/list/players=new
 mob/Login() if(client)
 	StopMovement()
 	setSelectedTarget(null, FALSE)
+	client.syncCombatTeamMarkers()
 	client.Ban_Check()
 
 	//stops the streaming browser music
@@ -129,6 +130,7 @@ mob/var
 
 mob/Logout(body_swap_user)
 	StopMovement()
+	if(key) leaveCombatTeam("[html_encode(name)] left the combat team after disconnecting.")
 	if(nexus_reconnect_handoff)
 		players -= src
 		return
