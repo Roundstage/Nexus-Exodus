@@ -39,6 +39,8 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - `src/Code/CoreFunctions/SpatialQueries.dm`
 - `src/Code/CoreFunctions/Text.dm`
 - `src/Code/CoreFunctions/TextRelated.dm`
+- `src/Code/CoreFunctions/TickTiming.dm`
+- `src/Code/CoreFunctions/Vars/AtomCoreVars.dm`
 - `src/Code/CoreFunctions/Vars/GlobalCombatSettings.dm`
 - `src/Code/CoreFunctions/Vars/GlobalWorldSettings.dm`
 - `src/Code/CoreFunctions/Vars/MobCoreVars.dm`
@@ -46,6 +48,8 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - `src/Code/CoreFunctions/Vars/WorldConstants.dm`
 - `src/Code/CoreFunctions/Game/Effects/EffectsLoops.dm`
 - `src/Code/CoreFunctions/Game/Loop/MainGameLoop.dm`
+- `src/Code/Infrastructure/MobLifecycle.dm`
+- `src/Code/Infrastructure/ObjectLifecycle.dm`
 
 ## Proc Reference
 

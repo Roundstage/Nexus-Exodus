@@ -35,6 +35,7 @@ These references are intentional and must not be removed, renamed, replaced with
 - `src/Code/UI/HelperQuests.dm`
 - `src/Code/UI/Hotkeys.dm`
 - `src/Code/UI/HudLibrary.dm`
+- `src/Code/UI/LegacyTabs.dm`
 - `src/Code/UI/MusicLibrary.dm`
 - `src/Code/UI/PlanetMap.dm`
 - `src/Code/UI/PlanetMapScanner.dm`

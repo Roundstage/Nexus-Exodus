@@ -20,6 +20,7 @@
 - Functions/procs use `camelCase`, types/classes use `PascalCase`, and variables use `snake_case`.
 - File names use `PascalCase` with no spaces (e.g., `src/Code/Combat/SpeedDelay.dm`).
 - Directory names use `CamelCase` with no spaces; keep code grouped by subsystem.
+- Do not create catch-all source files such as `Unsorted*.dm`, `TEMP.dm`, `Testing.dm`, or compiled note/TODO files. Every runtime definition must live in a subsystem file whose name describes its responsibility.
 - If you add assets, mirror existing folder structure and update references in `.dm` or `.dmf`.
 
 ## Testing Guidelines

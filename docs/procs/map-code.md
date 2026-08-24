@@ -6,6 +6,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 ## Files
 - `src/Code/MapCode/AmbientOcclusion.dm`
 - `src/Code/MapCode/AutoEdge.dm`
+- `src/Code/MapCode/JaggedEdgeFillers.dm`
 - `src/Code/MapCode/QuadrantGenerator.dm`
 
 ## Proc Reference

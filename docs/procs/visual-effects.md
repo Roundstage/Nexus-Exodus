@@ -4,10 +4,15 @@
 Standalone visual effects such as rock debris, Harambe event visuals, rising rock animations, and the Alien Time Stop domain.
 
 ## Files
-- `src/Code/VisualEffects/Big Rocks.dm`
+- `src/Code/VisualEffects/AppearanceBounds.dm`
+- `src/Code/VisualEffects/BigRocks.dm`
+- `src/Code/VisualEffects/EffectCache.dm`
+- `src/Code/VisualEffects/ExplosionEffects.dm`
+- `src/Code/VisualEffects/FlipAnimation.dm`
 - `src/Code/VisualEffects/Harambe.dm`
+- `src/Code/VisualEffects/KiWater.dm`
 - `src/Code/VisualEffects/PlayerAppearanceManager.dm`
-- `src/Code/VisualEffects/rising rocks 2019.dm`
+- `src/Code/VisualEffects/RisingRocks2019.dm`
 - Time Stop domain helpers live beside the legacy Time Freeze type path in `src/Code/ProjectileSystem/Blasts.dm`, avoiding an additional Dream Maker include dependency.
 
 ## Proc Reference

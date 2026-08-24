@@ -1,0 +1,32 @@
+turf/Jagged_edge_fillers
+	Buildable=0
+	auto_gen_eligible = 0
+	Wall18
+		icon='JefCliff.dmi'
+		density=1
+		_1
+			icon_state="NE"
+		_2
+			icon_state="NW"
+		_3
+			icon_state="SW"
+		_4
+			icon_state="SE"
+	Grass10
+		icon='JefGreenGrass.dmi'
+		Grass10_1
+			icon_state="NE"
+		Grass10_2
+			icon_state="NW"
+		Grass10_3
+			icon_state="SW"
+		Grass10_4
+			icon_state="SE"
+		_5
+			icon_state="N"
+		_6
+			icon_state="S"
+		_7
+			icon_state="E"
+		_8
+			icon_state="W"

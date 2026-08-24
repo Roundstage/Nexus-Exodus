@@ -33,6 +33,7 @@ The initializer identities below reflect the current modular race source. The ex
 - `src/Code/Races/Tsujin/Tsujin.dm`
 - `src/Code/Races/UltraInstinct.dm`
 - `src/Code/Races/Shared/RaceProgression.dm`
+- `src/Code/Races/Shared/RaceStatsOnlyMode.dm`
 - `src/Code/Races/Yeet/Yeet.dm`
 
 ## Race Initializers
