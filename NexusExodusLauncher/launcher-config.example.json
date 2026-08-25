@@ -1,0 +1,9 @@
+{
+  "environment": "production",
+  "serverName": "Nexus Exodus",
+  "webClientUrl": "https://replace-with-approved-webclient-host.invalid/",
+  "allowedGameHosts": ["replace-with-approved-webclient-host.invalid"],
+  "externalBrowserFallback": true,
+  "diagnosticsEnabled": true,
+  "statusUrl": "https://replace-with-approved-webclient-host.invalid/status"
+}

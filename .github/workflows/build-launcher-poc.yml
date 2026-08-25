@@ -1,0 +1,55 @@
+name: Build launcher POC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "NexusExodusLauncher/**"
+      - ".github/workflows/build-launcher-poc.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: "--bundles nsis"
+          - os: ubuntu-24.04
+            args: "--bundles appimage,deb,rpm"
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: NexusExodusLauncher
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: NexusExodusLauncher/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf rpm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: cargo fmt --check --manifest-path src-tauri/Cargo.toml
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - run: npm run tauri build -- --no-sign ${{ matrix.args }}
+      - name: Generate checksums
+        shell: bash
+        run: find src-tauri/target/release/bundle -type f -print0 | sort -z | xargs -0 sha256sum > checksums-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: launcher-${{ runner.os }}
+          path: |
+            NexusExodusLauncher/src-tauri/target/release/bundle
+            NexusExodusLauncher/checksums-sha256.txt

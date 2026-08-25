@@ -11,6 +11,12 @@ services:
       # Traefik runs in host-network mode and proxies public TCP 50000 to this
       # loopback-only backend. Override these values only for isolated staging.
       - "${NEXUS_BIND_ADDRESS:-127.0.0.1}:${NEXUS_BACKEND_PORT:-50001}:50000/tcp"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; connection = socket.create_connection(('127.0.0.1', 50000), 3); connection.close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     volumes:
       - nexus_state:/srv/nexus
     read_only: true

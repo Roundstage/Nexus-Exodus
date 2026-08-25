@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+
+FROM node:22-bookworm AS build
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		build-essential \
+		ca-certificates \
+		curl \
+		file \
+		libappindicator3-dev \
+		librsvg2-dev \
+		libssl-dev \
+		libwebkit2gtk-4.1-dev \
+		patchelf \
+		rpm \
+		wget \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& curl --proto '=https' --tlsv1.2 -fsS https://sh.rustup.rs \
+		| sh -s -- -y --profile minimal --no-modify-path
+
+ENV PATH=/root/.cargo/bin:$PATH
+RUN rustup component add clippy
+WORKDIR /launcher
+
+COPY NexusExodusLauncher/package.json NexusExodusLauncher/package-lock.json ./
+RUN npm ci
+
+COPY NexusExodusLauncher/ ./
+
+RUN npm test \
+	&& npm run build \
+	&& cargo test --manifest-path src-tauri/Cargo.toml \
+	&& cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings \
+	&& npm run tauri build -- --ci --bundles appimage,deb,rpm
+
+FROM scratch AS artifacts
+COPY --from=build /launcher/src-tauri/target/release/bundle/ /

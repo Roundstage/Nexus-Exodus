@@ -77,4 +77,4 @@ WORKDIR /srv/nexus
 EXPOSE 50000/tcp
 
 ENTRYPOINT ["/usr/local/bin/nexus-entrypoint"]
-CMD ["50000", "-safe", "-home", "/srv/nexus", "-cd", "/srv/nexus", "-params", "nexus_environment=playtest&nexus_playtest_rewards=1"]
+CMD ["50000", "-safe", "-webclient", "-home", "/srv/nexus", "-cd", "/srv/nexus", "-params", "nexus_environment=playtest&nexus_playtest_rewards=1"]
