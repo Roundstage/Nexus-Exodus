@@ -9,3 +9,9 @@
 !deploy/docker/Dockerfile
 !deploy/docker/entrypoint.sh
 !deploy/docker/profile_media_inspector.py
+!NexusExodusLauncher/
+!NexusExodusLauncher/**
+NexusExodusLauncher/node_modules/
+NexusExodusLauncher/dist/
+NexusExodusLauncher/src-tauri/target/
+NexusExodusLauncher/src-tauri/gen/

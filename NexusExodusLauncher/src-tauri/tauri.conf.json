@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Nexus Exodus Launcher",
+  "version": "0.1.0",
+  "identifier": "com.nexusexodus.launcher",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' https: http://localhost:*; img-src 'self' asset: data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    },
+    "windows": [
+      {
+        "label": "launcher",
+        "title": "Nexus Exodus Launcher",
+        "width": 960,
+        "height": 680,
+        "minWidth": 720,
+        "minHeight": 520,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "appimage", "deb", "rpm"],
+    "icon": ["icons/icon.png", "icons/icon.ico"],
+    "resources": ["resources/launcher-config.json"],
+    "shortDescription": "Nexus Exodus WebClient launcher prototype"
+  }
+}

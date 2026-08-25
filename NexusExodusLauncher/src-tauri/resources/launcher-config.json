@@ -1,0 +1,9 @@
+{
+  "environment": "development",
+  "serverName": "Nexus Exodus Test",
+  "webClientUrl": "http://localhost:50000/play",
+  "allowedGameHosts": ["localhost"],
+  "externalBrowserFallback": true,
+  "diagnosticsEnabled": true,
+  "statusUrl": "http://localhost:50000/play"
+}

@@ -8,6 +8,29 @@ novo com um cache RSC antigo.
 O `DU.dmb` incorpora as credenciais do HUB. Mantenha o pacote e a imagem em
 armazenamento privado e recompile depois de qualquer rotação da senha.
 
+## Desenvolvimento local no Linux
+
+O modo local não precisa de Traefik. Instale Docker Engine com o plugin Compose
+e execute, a partir da raiz do repositório:
+
+```sh
+./tools/Invoke-NexusLocalDocker.sh up
+./tools/Invoke-NexusLocalDocker.sh logs
+```
+
+O comando publica somente no loopback do host:
+
+- protocolo BYOND e página WebClient: `127.0.0.1:50000`;
+- entrada do navegador/launcher: `http://localhost:50000/play`.
+
+O Dream Daemon é iniciado com `-webclient`. O launcher de desenvolvimento já
+aponta para essa URL e permite HTTP apenas por ser um endereço loopback no
+ambiente `development`. Nenhuma porta fica acessível na LAN ou na internet.
+
+Use `./tools/Invoke-NexusLocalDocker.sh status` para verificar o healthcheck e
+`./tools/Invoke-NexusLocalDocker.sh down` para encerrar. O volume
+`nexus-local_nexus_state` preserva os dados do playtest; `down` não o remove.
+
 ## Iniciar o playtest
 
 1. Configure `SECRETS.dm` localmente, sem registrar credenciais no Git.
