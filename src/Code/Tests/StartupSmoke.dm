@@ -2,12 +2,34 @@ mob/NexusSmokeTest
 	New()
 		return
 
+obj/Ships/Ship/NexusControlSmoke
+	New()
+		ships ||= list()
+		ships |= src
+
+	Del()
+		ships -= src
+		loc = null
+
+obj/Controls/NexusControlSmoke
+	New()
+		ship_controls ||= list()
+		ship_controls |= src
+
+	Del()
+		ship_controls -= src
+		loc = null
+
 mob/NexusSmokeTest/TradeHotbarProbe
 	var/trade_restore_calls
 
 	Restore_hotbar_from_IDs()
 		if(skip_restore_hotbar) return
 		trade_restore_calls++
+
+mob/NexusSmokeTest/AngerKoProbe
+	TryToKoNPC(mob/attacker, mob/victim)
+		return
 
 mob/NexusSmokeTest/DotKnockoutProbe
 	var/observed_combat_mode_override
@@ -74,6 +96,31 @@ mob/NexusSmokeTest/ForcedMovementProbe
 mob/NexusSmokeTest/ForcedMovementProbe/DashImpact
 	get_melee_accuracy(mob/target)
 		return 0
+
+mob/NexusSmokeTest/CometReversalProbe
+	var/comet_approach_calls = 0
+	var/atom/movable/comet_approach_target
+	var/comet_approach_max_distance_pixels = 0
+	var/comet_approach_stop_distance_pixels = 0
+	var/comet_approach_require_selected_target = TRUE
+	var/comet_approach_hold_ticks = 0
+	var/comet_approach_result = NEXUS_SKILL_MOTION_INTERRUPTED
+	var/comet_finisher_calls = 0
+	var/mob/comet_finisher_target
+
+	runNexusSkillApproach(atom/movable/target, maximum_distance_pixels, stop_distance_pixels = 32, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, require_selected_target = TRUE, datum/NexusSkillMotionResult/result_capture)
+		comet_approach_calls++
+		comet_approach_target = target
+		comet_approach_max_distance_pixels = maximum_distance_pixels
+		comet_approach_stop_distance_pixels = stop_distance_pixels
+		comet_approach_require_selected_target = require_selected_target
+		if(comet_approach_hold_ticks > 0) sleep(comet_approach_hold_ticks)
+		return comet_approach_result
+
+	resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/technique, damage_multiplier = 1, force_hit = FALSE, defensive_evasion_resolved = FALSE)
+		comet_finisher_calls++
+		comet_finisher_target = target
+		return TRUE
 
 mob/NexusSmokeTest/InertialTeleport
 	var/turf/nexus_smoke_teleport_destination
@@ -426,6 +473,310 @@ proc/runNexusPlanetMapScannerSmokeTests()
 	del(planet_map_cache_viewer_b)
 	del(planet_map_raster_scan)
 
+proc/runNexusPlanetaryControlSmokeTests()
+	set background = TRUE
+	var/turf/control_turf
+	var/turf/adjacent_turf
+	var/turf/remote_control_turf
+	var/turf/remote_adjacent_turf
+	var/turf/mining_cave_turf
+	var/turf/nonplanet_cave_entrance_turf
+	for(var/turf/candidate in world)
+		var/area/candidate_area = candidate.loc
+		if(!candidate_area) continue
+		if(!mining_cave_turf && istype(candidate_area, /area/Mining_Cave)) mining_cave_turf = candidate
+		if(!nonplanet_cave_entrance_turf && istype(candidate_area, /area/Hell)) nonplanet_cave_entrance_turf = candidate
+		if(!control_turf && candidate.z == Z_LEVEL_EARTH && candidate_area.type == /area/Earth)
+			for(var/direction in list(NORTH, SOUTH, EAST, WEST))
+				var/turf/neighbor = get_step(candidate, direction)
+				var/area/neighbor_area = neighbor ? neighbor.loc : null
+				if(neighbor && neighbor_area && neighbor_area.type == /area/Earth)
+					control_turf = candidate
+					adjacent_turf = neighbor
+					break
+		if(!remote_control_turf && candidate.z == Z_LEVEL_Namekian && candidate_area.type == /area/Namekian)
+			for(var/direction in list(NORTH, SOUTH, EAST, WEST))
+				var/turf/neighbor = get_step(candidate, direction)
+				var/area/neighbor_area = neighbor ? neighbor.loc : null
+				if(neighbor && neighbor_area && neighbor_area.type == /area/Namekian)
+					remote_control_turf = candidate
+					remote_adjacent_turf = neighbor
+					break
+		if(control_turf && remote_control_turf && mining_cave_turf && nonplanet_cave_entrance_turf) break
+	nexusSmokeAssert(control_turf && adjacent_turf && remote_control_turf && remote_adjacent_turf && mining_cave_turf && nonplanet_cave_entrance_turf, "planetary control smoke test could not find its Earth, Namekian, cave, or nonplanet test turfs")
+
+	var/list/original_controls = nexus_planet_controls
+	var/original_controls_dirty = nexus_planet_controls_dirty
+	var/original_king_of_braal = king_of_Braal
+	nexus_planet_controls = list()
+	initializeNexusPlanetControls()
+	var/datum/NexusPlanetControl/control = getNexusPlanetControl("earth", FALSE)
+
+	var/mob/NexusSmokeTest/ruler = new(control_turf)
+	ruler.playerCharacter = TRUE
+	ruler.displaykey = "Control Ruler"
+	ruler.active_character_slot = 1
+	ruler.character_made_time = 101
+	ruler.name = "Ruler"
+	var/obj/League/ruling_league = new
+	ruling_league.league_id = "nexus-control-ruling-id"
+	ruling_league.name = "Same Name League"
+	ruling_league.league_leader = "Control Ruler"
+	ruling_league.league_rank = 7
+	ruling_league.Move(ruler)
+	nexusSmokeAssert(control.setController(ruler, ruling_league), "a valid league ruler could not take an unclaimed control point")
+	control.resource_tax_rate = 20
+	control.essence_tax_rate = 25
+
+	var/mob/NexusSmokeTest/taxpayer = new(control_turf)
+	taxpayer.playerCharacter = TRUE
+	taxpayer.displaykey = "Control Taxpayer"
+	taxpayer.active_character_slot = 1
+	taxpayer.character_made_time = 202
+	taxpayer.name = "Taxpayer"
+	taxpayer.Race = "Human"
+	new /obj/Resources(taxpayer)
+	nexusSmokeAssert(taxpayer.gainNexusResources(100, "smoke income") == 80 && taxpayer.Res() == 80 && control.resource_treasury == 20, "resource income tax did not withhold the configured amount into the planetary treasury")
+	nexusSmokeAssert(taxpayer.gainArcaneEssence(10, "smoke essence") == 7.5 && taxpayer.arcane_essence == 7.5 && taxpayer.arcane_essence_lifetime == 10 && control.essence_treasury == 2.5, "Arcane Essence income tax changed lifetime gains or failed to withhold into the treasury")
+	var/list/unclaimed_fractional_income = taxpayer.applyNexusPlanetaryIncomeTax(resource_gross = 0.25, control_override = getNexusPlanetControl("namekian", FALSE))
+	nexusSmokeAssertNear(unclaimed_fractional_income["resource_net"], 0.25, 0.000001, "planetary tax quantized fractional Resource income on an unclaimed planet")
+	var/datum/NexusPlanetControl/expired_control = getNexusPlanetControl("namekian", FALSE)
+	nexusSmokeAssert(expired_control.setController(ruler, ruling_league), "the absence-expiration test could not create a held control point")
+	expired_control.resource_tax_rate = 25
+	expired_control.resource_treasury = 77.125
+	expired_control.captured_at = world.realtime - NEXUS_PLANET_CONTROL_ABANDONMENT_TICKS - 10
+	expired_control.holder_last_seen = expired_control.captured_at
+	var/expired_ownership_revision = expired_control.ownership_revision
+	nexusSmokeAssert(materializeExpiredNexusPlanetControls(persist = FALSE) && expired_control.isAbandoned() && !expired_control.holder_account_id && expired_control.ownership_revision == expired_ownership_revision + 1, "a 72-hour absence did not become an irreversible abandoned control point")
+	var/list/expired_tax_result = taxpayer.applyNexusPlanetaryIncomeTax(resource_gross = 100, control_override = expired_control)
+	nexusSmokeAssert(!expired_tax_result["resource_tax"] && expired_control.resource_treasury == 77.125, "a control point materialized as abandoned continued collecting tax or lost its treasury")
+	ruler.refreshNexusPlanetControlPresence(persist = FALSE)
+	nexusSmokeAssert(expired_control.isAbandoned() && !expired_control.holder_account_id, "an expired holder reactivated planetary control by returning online")
+	expired_control.clearController()
+	var/mob/NexusSmokeTest/micro_taxpayer = new(control_turf)
+	micro_taxpayer.playerCharacter = TRUE
+	micro_taxpayer.displaykey = "Control Micro Taxpayer"
+	micro_taxpayer.Race = "Human"
+	new /obj/Resources(micro_taxpayer)
+	var/resource_treasury_before_micro_income = control.resource_treasury
+	var/essence_treasury_before_micro_income = control.essence_treasury
+	for(var/resource_tick = 1, resource_tick <= 10, resource_tick++) micro_taxpayer.gainNexusResources(1, "micro resource income")
+	for(var/essence_tick = 1, essence_tick <= 40, essence_tick++) micro_taxpayer.gainArcaneEssence(0.1, "micro essence income")
+	nexusSmokeAssertNear(micro_taxpayer.Res(), 8, 0.000001, "fractional Resource tax remainders changed the expected net micro-income")
+	nexusSmokeAssertNear(control.resource_treasury, resource_treasury_before_micro_income + 2, 0.00001, "fractional Resource tax remainders let repeated micro-income evade the configured rate")
+	nexusSmokeAssertNear(micro_taxpayer.arcane_essence, 3, 0.001, "fractional Arcane Essence tax remainders changed the expected net micro-income")
+	nexusSmokeAssertNear(micro_taxpayer.arcane_essence_lifetime, 4, 0.001, "micro-income taxation reduced lifetime Arcane Essence progression")
+	nexusSmokeAssertNear(control.essence_treasury, essence_treasury_before_micro_income + 1, 0.001, "repeated micro Arcane Essence income evaded planetary tax")
+	nexusSmokeAssert(!micro_taxpayer.nexus_planet_resource_tax_remainders.len && !micro_taxpayer.nexus_planet_essence_tax_remainders.len, "settled fractional tax remainder keys were retained indefinitely")
+	micro_taxpayer.loc = mining_cave_turf
+	micro_taxpayer.last_cave_entered = null
+	micro_taxpayer.nexus_planet_control_context_id = "earth"
+	var/resource_treasury_before_cave_income = control.resource_treasury
+	nexusSmokeAssert(getNexusPlanetControlId(micro_taxpayer) == "earth", "a persisted cave origin no longer resolves to its surface planet after relog")
+	nexusSmokeAssertNear(micro_taxpayer.gainNexusResources(10, "cave income"), 8, 0.000001, "planetary tax changed the expected net cave income")
+	nexusSmokeAssertNear(control.resource_treasury, resource_treasury_before_cave_income + 2, 0.000001, "planetary tax could be bypassed by earning resources after relogging in a cave")
+	micro_taxpayer.rememberNexusCaveControlPlanet(control_turf, mining_cave_turf)
+	nexusSmokeAssert(micro_taxpayer.nexus_planet_control_context_id == "earth", "a controlled-planet cave entrance did not record its tax jurisdiction")
+	micro_taxpayer.rememberNexusCaveControlPlanet(nonplanet_cave_entrance_turf, mining_cave_turf)
+	nexusSmokeAssert(!micro_taxpayer.nexus_planet_control_context_id, "a nonplanet cave entrance reused stale planetary tax jurisdiction")
+	micro_taxpayer.nexus_planet_control_context_id = "earth"
+	var/mob/NexusSmokeTest/cave_anchor = new(mining_cave_turf)
+	cave_anchor.playerCharacter = TRUE
+	cave_anchor.nexus_planet_control_context_id = "earth"
+	micro_taxpayer.nexus_planet_control_context_id = "namekian"
+	micro_taxpayer.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(cave_anchor))
+	micro_taxpayer.SafeTeleport(cave_anchor.base_loc())
+	nexusSmokeAssert(micro_taxpayer.nexus_planet_control_context_id == "earth", "teleporting directly to a character in a cave did not propagate the target's planetary jurisdiction")
+	micro_taxpayer.SafeTeleport(control_turf)
+	del(cave_anchor)
+	var/obj/ArcanePortal/cave_portal_entry = new(control_turf)
+	var/obj/ArcanePortal/cave_portal_exit = new(mining_cave_turf)
+	var/obj/ArcanePortal/cave_portal_decoy = new(mining_cave_turf)
+	cave_portal_entry.partner = cave_portal_exit
+	cave_portal_exit.partner = cave_portal_entry
+	cave_portal_entry.nexus_planet_control_context_id = "earth"
+	cave_portal_exit.nexus_planet_control_context_id = "earth"
+	cave_portal_decoy.nexus_planet_control_context_id = "namekian"
+	micro_taxpayer.last_cave_entered = remote_control_turf
+	micro_taxpayer.nexus_planet_control_context_id = "namekian"
+	micro_taxpayer.last_arcane_portal_use = world.time - 100
+	cave_portal_entry.Crossed(micro_taxpayer)
+	nexusSmokeAssert(micro_taxpayer.base_loc() == mining_cave_turf && micro_taxpayer.nexus_planet_control_context_id == "earth" && getNexusPlanetControlId(micro_taxpayer) == "earth", "an exact arcane portal endpoint did not override a stacked endpoint or stale cave entrance with its bound planetary jurisdiction")
+	micro_taxpayer.SafeTeleport(control_turf)
+	micro_taxpayer.last_cave_entered = null
+	del(cave_portal_entry)
+	del(cave_portal_exit)
+	del(cave_portal_decoy)
+	micro_taxpayer.nexus_planet_control_context_id = "earth"
+	micro_taxpayer.SafeTeleport(mining_cave_turf)
+	var/obj/items/Transporter_Pad/cave_telepad = new(micro_taxpayer)
+	cave_telepad.Move(mining_cave_turf)
+	nexusSmokeAssert(cave_telepad.getNexusPlanetControlContextId() == "earth", "a telepad installed in a mining cave did not retain its installer's planetary jurisdiction")
+	micro_taxpayer.SafeTeleport(control_turf)
+	del(cave_telepad)
+	new /area/ship_area(mining_cave_turf)
+	var/obj/Ships/Ship/NexusControlSmoke/current_exterior_ship = new(control_turf)
+	var/obj/Ships/Ship/NexusControlSmoke/stale_exterior_ship = new(remote_control_turf)
+	var/obj/Controls/NexusControlSmoke/current_interior_controls = new(mining_cave_turf)
+	current_exterior_ship.Ship = 910001
+	stale_exterior_ship.Ship = 910002
+	current_interior_controls.Ship = current_exterior_ship.Ship
+	micro_taxpayer.Ship = stale_exterior_ship
+	micro_taxpayer.loc = mining_cave_turf
+	nexusSmokeAssert(getNexusPlanetControlId(micro_taxpayer) == "earth", "a stale piloted-ship pointer overrode the controls belonging to the current ship interior")
+	micro_taxpayer.Ship = null
+	micro_taxpayer.loc = control_turf
+	del(current_interior_controls)
+	del(current_exterior_ship)
+	del(stale_exterior_ship)
+	new /area/Mining_Cave(mining_cave_turf)
+	new /area/Inside(control_turf)
+	var/resource_treasury_before_inside_income = control.resource_treasury
+	nexusSmokeAssert(getNexusPlanetControlId(micro_taxpayer) == "earth", "a planet-local interior escaped its surface planet's control jurisdiction")
+	nexusSmokeAssertNear(micro_taxpayer.gainNexusResources(10, "interior income"), 8, 0.000001, "planetary tax changed the expected net interior income")
+	nexusSmokeAssertNear(control.resource_treasury, resource_treasury_before_inside_income + 2, 0.000001, "planetary tax could be bypassed by earning resources inside a building")
+	new /area/Earth(control_turf)
+	micro_taxpayer.Alter_Res(10)
+	var/resources_before_death_drop = micro_taxpayer.Res()
+	var/treasury_before_death_drop = control.resource_treasury
+	micro_taxpayer.Drop_Rsc(10)
+	var/obj/Resources/death_drop
+	for(var/obj/Resources/candidate_drop in control_turf)
+		if(candidate_drop.Value == 10 && candidate_drop.nexus_tax_exempt_value == 10)
+			death_drop = candidate_drop
+			break
+	nexusSmokeAssert(death_drop && micro_taxpayer.Res() == resources_before_death_drop - 10, "a death Resource drop lost its already-taxed provenance or failed to debit the balance")
+	micro_taxpayer.collectNexusResourceBag(death_drop, "recovered death resources")
+	nexusSmokeAssertNear(micro_taxpayer.Res(), resources_before_death_drop, 0.000001, "recollecting a death Resource drop changed the existing balance")
+	nexusSmokeAssertNear(control.resource_treasury, treasury_before_death_drop, 0.000001, "recollecting a death Resource drop taxed the same balance twice")
+	del(death_drop)
+	var/obj/Resources/transfer_bag = new(control_turf)
+	transfer_bag.Value = 10
+	transfer_bag.nexus_tax_exempt_value = 10
+	var/obj/Resources/taxable_bag = new(control_turf)
+	taxable_bag.Value = 10
+	nexusSmokeAssert(transfer_bag.absorbNexusResourceBag(taxable_bag), "resource bags with different tax provenance could not be merged")
+	var/micro_resources_before_transfer_pickup = micro_taxpayer.Res()
+	var/treasury_before_transfer_pickup = control.resource_treasury
+	micro_taxpayer.collectNexusResourceBag(transfer_bag, "transferred resources")
+	nexusSmokeAssertNear(micro_taxpayer.Res(), micro_resources_before_transfer_pickup + 18, 0.000001, "merged resource bags changed the expected net pickup")
+	nexusSmokeAssertNear(control.resource_treasury, treasury_before_transfer_pickup + 2, 0.000001, "merged resource bags lost taxable-versus-transfer provenance")
+	del(transfer_bag)
+	del(taxable_bag)
+
+	var/mob/NexusSmokeTest/member = new(control_turf)
+	member.playerCharacter = TRUE
+	member.displaykey = "Control Member"
+	member.Race = "Human"
+	new /obj/Resources(member)
+	var/obj/League/member_badge = new
+	member_badge.league_id = ruling_league.league_id
+	member_badge.name = ruling_league.name
+	member_badge.league_rank = 1
+	member_badge.Move(member)
+	var/resource_treasury_before_member = control.resource_treasury
+	var/essence_treasury_before_member = control.essence_treasury
+	member.gainNexusResources(100, "member income")
+	member.gainArcaneEssence(10, "member essence")
+	nexusSmokeAssert(member.Res() == 100 && member.arcane_essence == 10 && control.resource_treasury == resource_treasury_before_member && control.essence_treasury == essence_treasury_before_member, "a member of the ruling league was taxed")
+
+	var/obj/League/same_name_badge = new
+	same_name_badge.league_id = "nexus-control-unrelated-id"
+	same_name_badge.name = ruling_league.name
+	same_name_badge.Move(taxpayer)
+	var/list/same_name_tax = taxpayer.applyNexusPlanetaryIncomeTax(resource_gross = 50, control_override = control)
+	nexusSmokeAssert(same_name_tax["resource_tax"] == 10, "a different league with the same display name received the controller exemption")
+
+	taxpayer.Race = "Heran"
+	taxpayer.heran_refuses_planetary_taxes = FALSE
+	var/list/heran_default_tax = taxpayer.applyNexusPlanetaryIncomeTax(essence_gross = 10, control_override = control)
+	taxpayer.heran_refuses_planetary_taxes = TRUE
+	var/list/heran_refusal_tax = taxpayer.applyNexusPlanetaryIncomeTax(essence_gross = 10, control_override = control)
+	taxpayer.Race = "Human"
+	var/list/non_heran_refusal_tax = taxpayer.applyNexusPlanetaryIncomeTax(essence_gross = 10, control_override = control)
+	nexusSmokeAssert(heran_default_tax["essence_tax"] == 2.5 && !heran_refusal_tax["essence_tax"] && non_heran_refusal_tax["essence_tax"] == 2.5, "Heran tax refusal is automatic, ineffective, or honored by a non-Heran")
+
+	var/mob/NexusSmokeTest/conqueror = new(adjacent_turf)
+	conqueror.playerCharacter = TRUE
+	conqueror.displaykey = "Control Conqueror"
+	conqueror.active_character_slot = 2
+	conqueror.character_made_time = 303
+	conqueror.name = "Conqueror"
+	var/obj/League/conquering_league = new
+	conquering_league.league_id = "nexus-control-conquering-id"
+	conquering_league.name = "Conquering League"
+	conquering_league.league_rank = 1
+	conquering_league.Move(conqueror)
+	var/mob/NexusSmokeTest/wrong_slot_ruler = new(control_turf)
+	wrong_slot_ruler.playerCharacter = TRUE
+	wrong_slot_ruler.displaykey = ruler.displaykey
+	wrong_slot_ruler.active_character_slot = 2
+	wrong_slot_ruler.character_made_time = ruler.character_made_time
+	nexusSmokeAssert(!control.isHolder(wrong_slot_ruler), "another character slot on the ruler account was accepted as the control holder")
+
+	ruler.KO = TRUE
+	ruler.willpower = 5
+	ruler.loc = remote_control_turf
+	conqueror.loc = remote_adjacent_turf
+	var/list/ruler_control_points = getNexusPlanetControlsHeldBy(ruler)
+	nexusSmokeAssert((control in ruler_control_points) && getNexusPlanetControlId(ruler) == "namekian", "an off-world ruler did not continue carrying the original planet's control point")
+	var/ownership_revision_before_capture = control.ownership_revision
+	nexusSmokeAssert(conqueror.getNexusPlanetControlSeizureError(ruler, control, conquering_league, ownership_revision_before_capture), "a KO ruler with remaining Willpower could lose planetary control")
+	ruler.KO = FALSE
+	ruler.willpower = 0
+	nexusSmokeAssert(conqueror.getNexusPlanetControlSeizureError(ruler, control, conquering_league, ownership_revision_before_capture), "a conscious zero-Willpower ruler could lose planetary control")
+	ruler.KO = TRUE
+	var/original_tournament_state = Tournament
+	var/obj/Fighter_Spot/control_capture_tournament_spot = new(conqueror.loc)
+	Tournament = TRUE
+	nexusSmokeAssert(conqueror.getNexusPlanetControlSeizureError(ruler, control, conquering_league, ownership_revision_before_capture), "the final conquest validator allowed control capture after a tournament began")
+	Fighter_Spots -= control_capture_tournament_spot
+	del(control_capture_tournament_spot)
+	Tournament = original_tournament_state
+	var/captured_resource_treasury = control.resource_treasury
+	var/captured_essence_treasury = control.essence_treasury
+	nexusSmokeAssert(conqueror.seizeNexusPlanetControl(ruler, control, conquering_league, ownership_revision_before_capture, announce = FALSE, persist = FALSE), "a valid adjacent conqueror could not seize control from a KO zero-Willpower ruler")
+	nexusSmokeAssert(control.controller_league_id == conquering_league.league_id && control.isHolder(conqueror) && control.ownership_revision == ownership_revision_before_capture + 1 && !control.resource_tax_rate && !control.essence_tax_rate, "successful conquest did not atomically replace the faction and holder or reset tax policy")
+	nexusSmokeAssert(control.resource_treasury == captured_resource_treasury && control.essence_treasury == captured_essence_treasury, "conquest destroyed or duplicated the captured planetary treasury")
+	nexusSmokeAssert(!conqueror.seizeNexusPlanetControl(ruler, control, conquering_league, ownership_revision_before_capture, announce = FALSE, persist = FALSE), "the same ownership revision could be captured more than once")
+	conqueror.KO = TRUE
+	nexusSmokeAssert(!conqueror.canNexusPlanetControlHolderDepartLeague(conquering_league.league_id), "a knocked-out holder could leave or be expelled from its league to invalidate conquest")
+	conqueror.KO = FALSE
+	var/treasury_before_departure = control.resource_treasury
+	nexusSmokeAssert(conqueror.orphanNexusPlanetControlForLeagueDeparture(conquering_league.league_id, persist = FALSE, announce = FALSE), "a conscious departing holder could not abandon its control point")
+	nexusSmokeAssert(control.isClaimed() && control.isAbandoned() && control.resource_treasury == treasury_before_departure, "league departure erased ownership or treasury instead of preserving an immediately claimable abandoned point")
+	control.resource_tax_rate = 25
+	var/list/abandoned_tax_result = taxpayer.applyNexusPlanetaryIncomeTax(resource_gross = 100, control_override = control)
+	nexusSmokeAssert(!abandoned_tax_result["resource_tax"] && control.resource_treasury == treasury_before_departure && !conqueror.canManageNexusPlanetControl(control), "an abandoned point continued collecting tax or accepting treasury management")
+
+	var/smoke_control_save_path = "nexus-smoke-planet-control.sav"
+	if(fexists(smoke_control_save_path)) fdel(smoke_control_save_path)
+	control.resource_tax_rate = 12.5
+	control.essence_tax_rate = 7.5
+	control.resource_treasury = 54321
+	control.essence_treasury = 98.7
+	saveNexusPlanetControls(smoke_control_save_path)
+	control.controller_league_name = "Corrupted Runtime Value"
+	control.resource_treasury = 0
+	loadNexusPlanetControls(smoke_control_save_path)
+	var/datum/NexusPlanetControl/loaded_control = getNexusPlanetControl("earth", FALSE)
+	nexusSmokeAssert(loaded_control.controller_league_id == conquering_league.league_id, "planetary control league identity failed its persistence round trip ([loaded_control.controller_league_id])")
+	nexusSmokeAssert(loaded_control.controller_league_name == conquering_league.name, "planetary control league name failed its persistence round trip ([loaded_control.controller_league_name])")
+	nexusSmokeAssert(loaded_control.resource_tax_rate == 12.5 && loaded_control.essence_tax_rate == 7.5, "planetary control tax rates failed their persistence round trip ([loaded_control.resource_tax_rate]/[loaded_control.essence_tax_rate])")
+	nexusSmokeAssert(loaded_control.resource_treasury == 54321, "planetary control resource treasury failed its persistence round trip ([loaded_control.resource_treasury])")
+	nexusSmokeAssertNear(loaded_control.essence_treasury, 98.7, 0.001, "planetary control Arcane Essence treasury failed its persistence round trip")
+	if(fexists(smoke_control_save_path)) fdel(smoke_control_save_path)
+
+	del(wrong_slot_ruler)
+	del(conqueror)
+	del(member)
+	del(micro_taxpayer)
+	del(taxpayer)
+	del(ruler)
+	nexus_planet_controls = original_controls
+	nexus_planet_controls_dirty = original_controls_dirty
+	king_of_Braal = original_king_of_braal
+
 proc/runNexusGhostCopySmoke()
 	var/mob/NexusSmokeTest/ghost_copy_source = new
 	ghost_copy_source.name = "Ghost Copy Source"
@@ -485,6 +836,256 @@ proc/runNexusAndroidGiantAppearanceSmoke()
 	nexusSmokeAssertNear(android_giant_reverted_transform.c, 6, 0.001, "Android Giant Version did not restore the horizontal transform anchor")
 	nexusSmokeAssertNear(android_giant_reverted_transform.f, -4, 0.001, "Android Giant Version did not restore the vertical transform anchor")
 	del(android_giant_scale_test)
+
+proc/runNexusLargeBlastDamageCollisionSmoke(turf/blast_origin, turf/edge_target_turf, obj/Attacks/Genki_Dama/omega_bomb_balance, obj/Attacks/Genki_Dama/Supernova/supernova_balance)
+	var/mob/NexusSmokeTest/large_blast_owner = new(blast_origin)
+	large_blast_owner.BP = 100
+	large_blast_owner.Pow = 100
+	large_blast_owner.Off = 100
+	large_blast_owner.Spd = 100
+	large_blast_owner.BPpcnt = 100
+	var/mob/NexusSmokeTest/genki_edge_target = new(edge_target_turf)
+	genki_edge_target.BP = 100
+	genki_edge_target.Res = 100
+	genki_edge_target.Health = 100
+	var/obj/Blast/Genki_Dama/genki_edge_projectile = new(blast_origin)
+	genki_edge_projectile.setStats(large_blast_owner, Percent = omega_bomb_balance.sb_max_dmg, Off_Mult = 10, Explosion = omega_bomb_balance.sb_explosion_size, \
+		explosion_percent = omega_bomb_balance.sb_max_dmg, max_damage_factor = omega_bomb_balance.sb_max_dmg * 2)
+	genki_edge_projectile.from_attack = omega_bomb_balance
+	genki_edge_projectile.Size = omega_bomb_balance.max_dmg_range
+	var/genki_damage_radius = genki_edge_projectile.getNexusProjectileCollisionRadiusPixels()
+	genki_edge_projectile.Size = 0
+	var/genki_physical_radius = genki_edge_projectile.getNexusProjectileCollisionRadiusPixels()
+	genki_edge_projectile.Size = omega_bomb_balance.max_dmg_range
+	var/genki_center_x = genki_edge_projectile.nexusCollisionCenterXPixels()
+	var/genki_center_y = genki_edge_projectile.nexusCollisionCenterYPixels()
+	nexusSmokeAssert(!nexusCircleIntersectsHitbox(genki_center_x, genki_center_y, genki_physical_radius, genki_edge_target) && nexusCircleIntersectsHitbox(genki_center_x, genki_center_y, genki_damage_radius, genki_edge_target), "Genki Dama edge-contact fixture is not outside the physical bound and inside authored Size")
+	nexusSmokeAssert(genki_edge_projectile.explosion_damage_factor == 30 && genki_edge_projectile.damage_budget.max_factor_per_target == 60, "Genki Dama runtime projectile lost its 30 direct plus 30 splash budget")
+	genki_edge_projectile.Explosive = 0
+	genki_edge_projectile.Deflectable = 0
+	genki_edge_projectile.dir = EAST
+	genki_edge_projectile.nexus_collision_sweep_active = TRUE
+	genki_edge_projectile.nexus_collision_sweep_start_x = genki_center_x
+	genki_edge_projectile.nexus_collision_sweep_start_y = genki_center_y
+	genki_edge_projectile.nexus_collision_sweep_end_x = genki_center_x
+	genki_edge_projectile.nexus_collision_sweep_end_y = genki_center_y
+	genki_edge_projectile.BlastMobCross(genki_edge_target, override_delete = TRUE)
+	nexusSmokeAssertNear(genki_edge_target.Health, 70, 0.0001, "Genki Dama did not apply its full direct factor to a target inside Size but outside its physical bound")
+	nexusSmokeAssert(genki_edge_projectile.damage_budget.used_factor_by_target[genki_edge_target] == 30, "Genki Dama direct contact did not preserve the remaining 30-factor splash budget")
+	del(genki_edge_projectile)
+	del(genki_edge_target)
+	var/mob/NexusSmokeTest/supernova_edge_target = new(edge_target_turf)
+	supernova_edge_target.BP = 100
+	supernova_edge_target.Res = 100
+	supernova_edge_target.Health = 100
+	var/obj/Blast/Genki_Dama/supernova_edge_projectile = new(blast_origin)
+	supernova_edge_projectile.setStats(large_blast_owner, Percent = supernova_balance.sb_max_dmg, Off_Mult = 10, Explosion = supernova_balance.sb_explosion_size, \
+		explosion_percent = supernova_balance.sb_max_dmg, max_damage_factor = supernova_balance.sb_max_dmg * 2)
+	supernova_edge_projectile.from_attack = supernova_balance
+	supernova_edge_projectile.Size = supernova_balance.max_dmg_range
+	var/supernova_damage_radius = supernova_edge_projectile.getNexusProjectileCollisionRadiusPixels()
+	supernova_edge_projectile.Size = 0
+	var/supernova_physical_radius = supernova_edge_projectile.getNexusProjectileCollisionRadiusPixels()
+	supernova_edge_projectile.Size = supernova_balance.max_dmg_range
+	var/supernova_center_x = supernova_edge_projectile.nexusCollisionCenterXPixels()
+	var/supernova_center_y = supernova_edge_projectile.nexusCollisionCenterYPixels()
+	nexusSmokeAssert(!nexusCircleIntersectsHitbox(supernova_center_x, supernova_center_y, supernova_physical_radius, supernova_edge_target) && nexusCircleIntersectsHitbox(supernova_center_x, supernova_center_y, supernova_damage_radius, supernova_edge_target), "Supernova edge-contact fixture is not outside the physical bound and inside authored Size")
+	nexusSmokeAssert(supernova_edge_projectile.explosion_damage_factor == 18 && supernova_edge_projectile.damage_budget.max_factor_per_target == 36, "Supernova runtime projectile lost its 18 direct plus 18 splash budget")
+	supernova_edge_projectile.Explosive = 0
+	supernova_edge_projectile.Deflectable = 0
+	supernova_edge_projectile.dir = EAST
+	supernova_edge_projectile.nexus_collision_sweep_active = TRUE
+	supernova_edge_projectile.nexus_collision_sweep_start_x = supernova_center_x
+	supernova_edge_projectile.nexus_collision_sweep_start_y = supernova_center_y
+	supernova_edge_projectile.nexus_collision_sweep_end_x = supernova_center_x
+	supernova_edge_projectile.nexus_collision_sweep_end_y = supernova_center_y
+	supernova_edge_projectile.BlastMobCross(supernova_edge_target, override_delete = TRUE)
+	nexusSmokeAssertNear(supernova_edge_target.Health, 82, 0.0001, "Supernova did not apply its full direct factor to a target inside Size but outside its physical bound")
+	nexusSmokeAssert(supernova_edge_projectile.damage_budget.used_factor_by_target[supernova_edge_target] == 18, "Supernova direct contact did not preserve the remaining 18-factor splash budget")
+	del(supernova_edge_projectile)
+	del(supernova_edge_target)
+	del(large_blast_owner)
+
+proc/runNexusCometReversalMultiBeamSmoke(turf/counter_turf, turf/adjacent_source_turf)
+	var/mob/NexusSmokeTest/CometReversalProbe/counter_user = new(counter_turf)
+	counter_user.BP = 100
+	counter_user.Str = 100
+	counter_user.End = 100
+	counter_user.Res = 100
+	counter_user.Def = 100
+	counter_user.Off = 100
+	counter_user.Spd = 100
+	counter_user.BPpcnt = 100
+	counter_user.Health = 100
+	counter_user.dir = EAST
+	counter_user.comet_approach_hold_ticks = 4
+	counter_user.comet_approach_result = NEXUS_SKILL_MOTION_REACHED
+	var/obj/Attacks/NexusMeleeTechnique/CometReversal/comet_reversal = new(counter_user)
+	var/mob/NexusSmokeTest/beam_owner = new(adjacent_source_turf)
+	beam_owner.BP = 100
+	beam_owner.Pow = 100
+	beam_owner.Off = 100
+	beam_owner.Spd = 100
+	beam_owner.BPpcnt = 100
+	beam_owner.Health = 100
+	var/obj/Attacks/Beam/first_beam_attack = new(beam_owner)
+	first_beam_attack.streaming = TRUE
+	beam_owner.beaming = TRUE
+	beam_owner.current_beam = first_beam_attack
+	var/obj/Blast/first_beam_segment = new(counter_turf)
+	first_beam_segment.setStats(beam_owner, Percent = 10, Off_Mult = 1, Explosion = 0)
+	first_beam_segment.Beam = TRUE
+	first_beam_segment.Beam_Delay = 1
+	first_beam_segment.Deflectable = FALSE
+	first_beam_segment.beam_impact_mode = BEAM_IMPACT_LOCK
+	first_beam_segment.from_attack = first_beam_attack
+	first_beam_segment.dir = WEST
+	beam_owner.my_beam_objs += first_beam_segment
+	first_beam_attack.beam_objects += first_beam_segment
+	counter_user.setNexusStance("comet_reversal", comet_reversal.counter_window_ticks)
+	var/counter_health_before = counter_user.Health
+	first_beam_segment.Beam()
+	sleep(1)
+	var/rush_guard_until = counter_user.active_nexus_stance_until
+	nexusSmokeAssert(counter_user.Health == counter_health_before && counter_user.hasNexusStance("comet_reversal") && counter_user.nexus_comet_reversal_triggered && counter_user.comet_approach_calls == 1 && counter_user.comet_approach_target == beam_owner && !counter_user.comet_finisher_calls, "the first real beam did not start one protected Comet Reversal approach before damage")
+	nexusSmokeAssert(!first_beam_attack.streaming && !beam_owner.beaming && !beam_owner.current_beam && !beam_owner.my_beam_objs.len && !first_beam_attack.beam_objects.len && !first_beam_segment.z, "Comet Reversal did not tear down the first real beam through BeamStop")
+	var/obj/Attacks/Beam/second_beam_attack = new(beam_owner)
+	second_beam_attack.streaming = TRUE
+	beam_owner.beaming = TRUE
+	beam_owner.current_beam = second_beam_attack
+	var/obj/Blast/second_beam_segment = new(counter_turf)
+	second_beam_segment.setStats(beam_owner, Percent = 10, Off_Mult = 1, Explosion = 0)
+	second_beam_segment.Beam = TRUE
+	second_beam_segment.Beam_Delay = 1
+	second_beam_segment.Deflectable = FALSE
+	second_beam_segment.beam_impact_mode = BEAM_IMPACT_LOCK
+	second_beam_segment.from_attack = second_beam_attack
+	second_beam_segment.dir = WEST
+	beam_owner.my_beam_objs += second_beam_segment
+	second_beam_attack.beam_objects += second_beam_segment
+	second_beam_segment.Beam()
+	sleep(1)
+	nexusSmokeAssert(counter_user.Health == counter_health_before && counter_user.hasNexusStance("comet_reversal") && counter_user.active_nexus_stance_until == rush_guard_until, "a second real beam damaged through or extended the active Comet Reversal rush guard")
+	nexusSmokeAssert(!second_beam_attack.streaming && !beam_owner.beaming && !beam_owner.current_beam && !beam_owner.my_beam_objs.len && !second_beam_attack.beam_objects.len && !second_beam_segment.z, "Comet Reversal did not tear down the second real beam from the same enemy")
+	nexusSmokeAssert(counter_user.comet_approach_calls == 1 && counter_user.comet_approach_target == beam_owner && !counter_user.comet_finisher_calls, "a second beam retargeted Comet Reversal or launched an extra approach or finisher")
+	sleep(4)
+	nexusSmokeAssert(!counter_user.hasNexusStance("comet_reversal") && !counter_user.nexus_comet_reversal_triggered && counter_user.comet_approach_calls == 1 && counter_user.comet_finisher_calls == 1 && counter_user.comet_finisher_target == beam_owner, "Comet Reversal did not end its beam guard with exactly one finisher against the first owner")
+	var/obj/Attacks/Beam/post_rush_beam_attack = new(beam_owner)
+	post_rush_beam_attack.streaming = TRUE
+	beam_owner.beaming = TRUE
+	beam_owner.current_beam = post_rush_beam_attack
+	var/obj/Blast/post_rush_beam_segment = new(counter_turf)
+	post_rush_beam_segment.Beam = TRUE
+	post_rush_beam_segment.Owner = beam_owner
+	post_rush_beam_segment.from_attack = post_rush_beam_attack
+	nexusSmokeAssert(!counter_user.tryNexusCometReversal(post_rush_beam_segment) && counter_user.comet_approach_calls == 1 && counter_user.comet_finisher_calls == 1, "Comet Reversal still intercepts beams or repeats its offense after the rush guard ends")
+	counter_user.setNexusStance("comet_reversal", comet_reversal.counter_window_ticks)
+	counter_user.comet_approach_hold_ticks = 0
+	counter_user.comet_approach_result = NEXUS_SKILL_MOTION_INTERRUPTED
+	var/finisher_calls_before_interruption = counter_user.comet_finisher_calls
+	nexusSmokeAssert(counter_user.tryNexusCometReversal(post_rush_beam_segment), "Comet Reversal could not start its interrupted-approach regression case")
+	sleep(1)
+	nexusSmokeAssert(counter_user.comet_finisher_calls == finisher_calls_before_interruption && !counter_user.hasNexusStance("comet_reversal"), "an interrupted Comet Reversal approach granted an adjacency finisher")
+	beam_owner.current_beam = null
+	beam_owner.beaming = FALSE
+	post_rush_beam_attack.streaming = FALSE
+	del(post_rush_beam_segment)
+	del(second_beam_segment)
+	del(first_beam_segment)
+	del(beam_owner)
+	del(counter_user)
+
+proc/runNexusCometReversalSmoke(turf/counter_turf, turf/adjacent_source_turf, turf/distant_source_turf)
+	var/mob/NexusSmokeTest/CometReversalProbe/counter_user = new(counter_turf)
+	counter_user.BP = 100
+	counter_user.Str = 100
+	counter_user.End = 100
+	counter_user.Res = 100
+	counter_user.Def = 100
+	counter_user.Off = 100
+	counter_user.Spd = 100
+	counter_user.BPpcnt = 100
+	counter_user.Health = 100
+	counter_user.max_ki = 10000
+	counter_user.Ki = 10000
+	counter_user.dir = EAST
+	var/obj/Attacks/NexusMeleeTechnique/CometReversal/comet_reversal = new(counter_user)
+	nexusSmokeAssert(getNexusWeaponAttackTypes().len == 14 && getNexusUnarmedAttackTypes().len == 16, "Nexus physical attack catalog is incomplete")
+	nexusSmokeAssert(getProgressionUnarmedAttackTypes().len == 21, "the Unarmed progression catalog omits Comet Reversal, legacy physical attacks, or still duplicates foundational Dash Attack")
+	nexusSmokeAssert(comet_reversal.behavior == "beam_counter" && comet_reversal.requires_unarmed && comet_reversal.damage_multiplier == 2 && comet_reversal.energy_cost == 24 && comet_reversal.cooldown_ticks == 100 && comet_reversal.dash_range == 32 && comet_reversal.counter_window_ticks == 12 && comet_reversal.rush_guard_ticks == 35 && comet_reversal.hotbar_type == "Melee" && !comet_reversal.repeat_macro, "Comet Reversal lost its timing, cost, range, damage or unarmed hotbar contract")
+	var/mob/NexusSmokeTest/beam_owner = new(distant_source_turf)
+	beam_owner.BP = 100
+	beam_owner.Pow = 100
+	beam_owner.Off = 100
+	beam_owner.Spd = 100
+	beam_owner.BPpcnt = 100
+	var/obj/Attacks/Beam/beam_attack = new(beam_owner)
+	beam_attack.streaming = TRUE
+	beam_owner.beaming = TRUE
+	beam_owner.current_beam = beam_attack
+	var/obj/Blast/front_beam_segment = new(counter_turf)
+	front_beam_segment.Beam = TRUE
+	front_beam_segment.Owner = beam_owner
+	front_beam_segment.from_attack = beam_attack
+	front_beam_segment.dir = WEST
+	counter_user.setNexusStance("comet_reversal", comet_reversal.counter_window_ticks)
+	nexusSmokeAssert(counter_user.canTriggerNexusCometReversal(front_beam_segment), "Comet Reversal rejects a live hostile beam owner inside its frontal arc")
+	counter_user.dir = WEST
+	nexusSmokeAssert(!counter_user.canTriggerNexusCometReversal(front_beam_segment) && counter_user.hasNexusStance("comet_reversal"), "a beam owner behind Comet Reversal consumes or triggers its stance")
+	counter_user.dir = EAST
+	front_beam_segment.Beam = FALSE
+	nexusSmokeAssert(!counter_user.tryNexusCometReversal(front_beam_segment) && counter_user.hasNexusStance("comet_reversal"), "a non-beam projectile triggers or consumes Comet Reversal")
+	front_beam_segment.Beam = TRUE
+	var/obj/Attacks/Beam/self_beam_attack = new(counter_user)
+	self_beam_attack.streaming = TRUE
+	counter_user.current_beam = self_beam_attack
+	var/obj/Blast/self_beam_segment = new(counter_turf)
+	self_beam_segment.Beam = TRUE
+	self_beam_segment.Owner = counter_user
+	self_beam_segment.from_attack = self_beam_attack
+	nexusSmokeAssert(!counter_user.canTriggerNexusCometReversal(self_beam_segment) && counter_user.hasNexusStance("comet_reversal"), "a character's own beam can trigger or consume Comet Reversal")
+	counter_user.current_beam = null
+	del(self_beam_segment)
+	del(self_beam_attack)
+	var/mob/NexusSmokeTest/second_beam_owner = new(distant_source_turf)
+	var/obj/Attacks/Beam/second_beam_attack = new(second_beam_owner)
+	second_beam_attack.streaming = TRUE
+	second_beam_owner.beaming = TRUE
+	second_beam_owner.current_beam = second_beam_attack
+	var/obj/Blast/second_beam_segment = new(counter_turf)
+	second_beam_segment.Beam = TRUE
+	second_beam_segment.Owner = second_beam_owner
+	second_beam_segment.from_attack = second_beam_attack
+	second_beam_segment.dir = WEST
+	var/comet_trigger_time = world.time
+	nexusSmokeAssert(counter_user.tryNexusCometReversal(front_beam_segment) && counter_user.hasNexusStance("comet_reversal") && counter_user.nexus_comet_reversal_triggered && counter_user.active_nexus_stance_until == comet_trigger_time + comet_reversal.rush_guard_ticks, "Comet Reversal does not enter its bounded rush guard synchronously on the first valid beam")
+	var/comet_rush_guard_until = counter_user.active_nexus_stance_until
+	nexusSmokeAssert(counter_user.tryNexusCometReversal(second_beam_segment) && counter_user.hasNexusStance("comet_reversal") && counter_user.active_nexus_stance_until == comet_rush_guard_until, "one Comet Reversal rush failed to intercept a second frontal beam or let that beam extend its guard")
+	sleep(1)
+	nexusSmokeAssert(counter_user.comet_approach_calls == 1 && counter_user.comet_approach_target == beam_owner, "one Comet Reversal window launched more than one approach or pursued the wrong beam owner")
+	nexusSmokeAssert(counter_user.comet_approach_max_distance_pixels == 32 * world.icon_size && counter_user.comet_approach_stop_distance_pixels == world.icon_size && !counter_user.comet_approach_require_selected_target, "Comet Reversal lost its collision-valid thirty-two-tile unselected approach contract")
+	nexusSmokeAssert(!counter_user.comet_finisher_calls, "Comet Reversal granted a finisher without reaching adjacency")
+	nexusSmokeAssert(!counter_user.hasNexusStance("comet_reversal") && !counter_user.nexus_comet_reversal_triggered && !counter_user.tryNexusCometReversal(second_beam_segment) && counter_user.comet_approach_calls == 1, "Comet Reversal still intercepts beams or launches another approach after its rush ends")
+	counter_user.setNexusStance("comet_reversal", comet_reversal.counter_window_ticks)
+	var/obj/Blast/nonbeam_projectile = new(counter_turf)
+	nonbeam_projectile.setStats(beam_owner, Percent = 1, Off_Mult = 10, Explosion = 0)
+	nonbeam_projectile.Deflectable = FALSE
+	var/nonbeam_health_before = counter_user.Health
+	nonbeam_projectile.BlastMobCross(counter_user, override_delete = TRUE)
+	nexusSmokeAssert(counter_user.Health < nonbeam_health_before && counter_user.hasNexusStance("comet_reversal"), "ordinary projectiles no longer damage through or incorrectly consume Comet Reversal")
+	counter_user.clearNexusStance()
+	del(nonbeam_projectile)
+	del(second_beam_segment)
+	del(front_beam_segment)
+	del(second_beam_owner)
+	del(beam_owner)
+	del(counter_user)
+
+	runNexusCometReversalMultiBeamSmoke(counter_turf, adjacent_source_turf)
+	var/comet_reversal_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/CometReversal)
+	var/guard_break_progression_id = getProgressionNodeIdForType(/obj/Attacks/NexusMeleeTechnique/GuardBreak)
+	var/datum/ProgressionNode/comet_reversal_progression_node = progression_node_catalog[comet_reversal_progression_id]
+	nexusSmokeAssert(comet_reversal_progression_node && comet_reversal_progression_node.category == "Combat" && comet_reversal_progression_node.branch == "Unarmed" && comet_reversal_progression_node.tier == 4 && comet_reversal_progression_node.cost == getScaledProgressionExperience(20) && (guard_break_progression_id in comet_reversal_progression_node.prerequisites), "Comet Reversal is not a tier-four Unarmed purchase costing 20 after Guard Break")
 
 proc/runStartupSmokeTests(soul_contract_count_before)
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
@@ -949,6 +1550,13 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 3) == "data/Save/smokekey-slot3.sav", "slot-three save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 4) == getNexusCharacterSavePathForKey("Smoke Key", 3), "character slot clamping is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1, "playtest") == "data/Playtest/Save/smokekey-slot1.sav" && getNexusFeatSavePathForKey("Smoke Key", 2, "playtest") == "data/Playtest/Feats/smokekey-slot2.sav", "playtest character persistence is not namespaced away from live saves")
+	var/list/live_wipe_roots = getNexusWipePersistenceRoots(TRUE, "live")
+	var/list/playtest_wipe_roots = getNexusWipePersistenceRoots(TRUE, "playtest")
+	var/list/playtest_save_only_wipe_roots = getNexusWipePersistenceRoots(FALSE, "playtest")
+	nexusSmokeAssert(live_wipe_roots.len == 2 && ("data/Save/" in live_wipe_roots) && ("data/Feats/" in live_wipe_roots), "live pwipe does not target both active persistence roots")
+	nexusSmokeAssert(playtest_wipe_roots.len == 2 && ("data/Playtest/Save/" in playtest_wipe_roots) && ("data/Playtest/Feats/" in playtest_wipe_roots), "playtest pwipe targets live persistence or omits active playtest data")
+	nexusSmokeAssert(playtest_save_only_wipe_roots.len == 1 && ("data/Playtest/Save/" in playtest_save_only_wipe_roots), "pwipe cannot preserve Feats while deleting the active character root")
+	nexusSmokeAssert(text2path("/mob/Admin4/verb/pwipe"), "level-four pwipe verb is missing")
 	nexusSmokeAssert(isNexusSaveEnvironmentCompatible(null, "live") && !isNexusSaveEnvironmentCompatible(null, "playtest") && !isNexusSaveEnvironmentCompatible("playtest", "live") && isNexusSaveEnvironmentCompatible("playtest", "playtest"), "character save environment markers permit cross-environment loading")
 	nexusSmokeAssert(findtext(getNexusRpgBrowserCss(), "border-radius:0") && findtext(getNexusRpgBrowserCss(), "Courier New"), "shared rustic browser theme is missing")
 	var/rich_emote_test = renderNexusEmoteMarkup("<script>\[color=#ff667a]\[b]Hit\[/b]\[/color]")
@@ -1182,6 +1790,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(findtext(failed_planet_map_browser_html, ">SCAN</a>"), "a failed planet-map scan cannot be retried from the browser")
 	del(planet_map_browser_test)
 	runNexusPlanetMapScannerSmokeTests()
+	runNexusPlanetaryControlSmokeTests()
 	var/bronze_hud_browser_css = getNexusHudBrowserCss("bronze")
 	var/blue_hud_browser_css = getNexusHudBrowserCss("blue")
 	nexusSmokeAssert(findtext(bronze_hud_browser_css, "body.nexus-hud") && findtext(bronze_hud_browser_css, ".hud-frame:before") && findtext(bronze_hud_browser_css, "#c6a15c") && findtext(bronze_hud_browser_css, "#9a7440"), "player browsers lost the chat/action-button frame, bolt, or bronze edge contract")
@@ -1219,8 +1828,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(splitform_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveNexusAttacks") && text2path("/mob/Admin3/verb/testNexusCombatEffects"), "Nexus attack or audiovisual testing verb is missing")
-	nexusSmokeAssert(getNexusWeaponAttackTypes().len == 14 && getNexusUnarmedAttackTypes().len == 15, "Nexus physical attack catalog is incomplete")
-	nexusSmokeAssert(getProgressionUnarmedAttackTypes().len == 20, "the Unarmed progression catalog omits legacy physical attacks or still duplicates foundational Dash Attack")
 	nexusSmokeAssert(getNexusBeamAttackTypes().len == 12 && getNexusSpecialStyleAttackTypes().len == 8, "Nexus special-style catalog is incomplete")
 	nexusSmokeAssert(getNexusRockAttackTypes().len == 3, "Nexus rock-technique testing catalog is incomplete")
 	var/obj/Attacks/NexusMeleeTechnique/Slice/nexus_slice = new
@@ -2685,6 +3292,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(supernova_balance.sb_initial_dmg == 6 && supernova_balance.sb_max_dmg == 18, "Supernova charge curve diverged from the balance workbook")
 	nexusSmokeAssert(genki_projectile_lifecycle.in_use, "new Genki Dama projectiles are inactive and cannot enter guided movement")
 	nexusSmokeAssert(genki_projectile_lifecycle.getBlastCollisionRadiusPixels() == 4 * world.icon_size, "large blast collision radius no longer matches its authored Size in tiles")
+	nexusSmokeAssert(genki_projectile_lifecycle.getNexusProjectileCollisionRadiusPixels() == 4 * world.icon_size, "large blast damage resolution discarded its authored Size radius")
+	runNexusLargeBlastDamageCollisionSmoke(attack_movement_origin, attack_movement_pass_through, omega_bomb_balance, supernova_balance)
 	var/mob/NexusSmokeTest/combat_geometry_target = new(attack_movement_origin)
 	var/combat_geometry_center_x = combat_geometry_target.nexusCollisionCenterXPixels()
 	var/combat_geometry_center_y = combat_geometry_target.nexusCollisionCenterYPixels()
@@ -2749,7 +3358,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "damage application changed during gradual anger buildup")
 	nexusSmokeAssertNear(rp_combat_test.anger, 125, 0.01, "anger does not build proportionally as health is lost")
 	var/mob/NexusSmokeTest/anger_attacker = new
-	var/mob/NexusSmokeTest/normal_anger_test = new
+	var/mob/NexusSmokeTest/AngerKoProbe/normal_anger_test = new
 	normal_anger_test.Race = "Human"
 	normal_anger_test.Health = 0
 	normal_anger_test.max_ki = 1000
@@ -2759,7 +3368,23 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(normal_anger_test.Health == 100 && normal_anger_test.Ki == normal_anger_test.max_ki && normal_anger_test.anger == normal_anger_test.max_anger && normal_anger_test.has_angered_before_ko, "Anger second wind does not restore full Health and Energy or lock its one use")
 	normal_anger_test.Health = 0
 	normal_anger_test.Ki = 0
-	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0 && normal_anger_test.Ki == 0, "Anger second wind can trigger more than once before calming")
+	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0 && normal_anger_test.Ki == 0, "Anger second wind can trigger more than once in one combat cycle")
+	normal_anger_test.last_attacked_time = max(1, world.time)
+	normal_anger_test.Calm()
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(normal_anger_test.has_angered_before_ko && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "calming during active combat rearms the Anger second wind")
+	normal_anger_test.last_attacked_time = world.time - KO_SYSTEM_OUT_OF_COMBAT_TIMER - 1
+	normal_anger_test.Calm()
+	nexusSmokeAssert(!normal_anger_test.has_angered_before_ko && normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "leaving combat does not rearm the Anger second wind")
+	normal_anger_test.KO(anger_attacker, allow_anger = FALSE, combat_ko_handled = TRUE)
+	sleep(1)
+	nexusSmokeAssert(normal_anger_test.KO && !normal_anger_test.has_angered_before_ko, "a real KO does not reset the Anger second-wind cycle")
+	normal_anger_test.UnKO()
+	sleep(1)
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "Anger second wind remains locked after recovering from a real KO")
 	var/mob/NexusSmokeTest/android_anger_test = new
 	android_anger_test.Race = "Android"
 	android_anger_test.Android = TRUE
@@ -2905,6 +3530,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(fire_lord_target)
 	nexusSmokeAssert((locate(/obj/FireFist) in milestone_test) && (locate(/obj/MilestoneTechnique/BleedingEdge) in milestone_test) && (locate(/obj/MilestoneTechnique/ThunderingBlows) in milestone_test) && (locate(/obj/MilestoneTechnique/VenomousIntent) in milestone_test) && (locate(/obj/MilestoneTechnique/CrushingResolve) in milestone_test), "combat milestone techniques were not granted or restored")
 	initializeProgressionTreeCatalog()
+	runNexusCometReversalSmoke(attack_movement_origin, attack_movement_destination, attack_movement_pass_through)
 	var/list/progression_categories = list()
 	for(var/progression_node_id in progression_node_catalog)
 		var/datum/ProgressionNode/progression_node = progression_node_catalog[progression_node_id]
@@ -3435,7 +4061,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(/mob/AdminEssentials/verb/managePlayer in typesof(/mob/AdminEssentials/verb), "contextual Manage Player command is missing")
 	var/mob/NexusSmokeTest/admin_verb_test = new
 	admin_verb_test.grantAdminVerbsForLevel(4)
-	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs), "legacy admin verbs are not retained cumulatively for CMD and the Admin tab")
+	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs) && (/mob/Admin4/verb/pwipe in admin_verb_test.verbs), "legacy admin verbs, including pwipe, are not retained cumulatively for CMD and the Admin tab")
 	del(admin_verb_test)
 	var/list/server_setting_categories = getNexusServerSettingCategories()
 	nexusSmokeAssert(server_setting_categories.len == 6 && server_setting_categories["Progression"] == /upForm/admin_gains && server_setting_categories["Science"] == /upForm/admin_science, "HUD Server Panel categories are incomplete")

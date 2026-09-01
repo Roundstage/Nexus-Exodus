@@ -47,8 +47,8 @@ mob/KOV/verb
 
 mob/proc
 	CheckKingOfBraalVerbs()
-		if(!king_of_Braal) return
-		if(king_of_Braal == key)
+		var/datum/NexusPlanetControl/control = getNexusPlanetControl("braal", FALSE)
+		if(control && !control.isAbandoned() && control.isHolder(src))
 			verbs += typesof(/mob/KOV/verb)
 		else
 			verbs -= typesof(/mob/KOV/verb)
@@ -66,8 +66,7 @@ obj/King_of_Braal_Throne
 	icon = 'Throne2.dmi'
 	icon_state = "gold"
 
-	desc = "Whoever sits in this throne becomes King of Braal and gains control of the Saiyan Army. Get next to the throne \
-	and click it for commands."
+	desc = "Braal's planetary control throne. League leaders can use it to inspect or claim an available control point; an occupied point must be seized from its defeated ruler."
 
 	New()
 		kov_throne = src
@@ -89,7 +88,11 @@ obj/King_of_Braal_Throne
 		KOV_ThroneTellPeopleWhoKingLoop()
 			set waitfor=0
 			while(src)
-				var/mob/king = Get_by_key(king_of_Braal)
+				var/datum/NexusPlanetControl/control = getNexusPlanetControl("braal", FALSE)
+				var/mob/king
+				if(control && !control.isAbandoned()) for(var/mob/player in players) if(control.isHolder(player))
+					king = player
+					break
 				if(king)
 					PlanetBraalMsg("<font size=2><font color=red>[king] is King of Braal")
 				sleep(60 * 600)
@@ -101,17 +104,15 @@ mob/proc
 		BecomeKingBraal()
 
 	BecomeKingBraal()
-
-		//return //disabled to see if this is what crashes the server
-
-		if(!client || king_of_Braal == key) return
-
-		var/mob/old_king = Get_by_key(king_of_Braal)
-		king_of_Braal = key
-		if(old_king) old_king.CheckKingOfBraalVerbs()
-		PlanetBraalMsg("<font color=red><font size=3>[uppertext(name)] IS NOW KING OF BRAAL!! BOW TO YOUR KING OR DIE!!! \
-		MAY THEY REIGN FOR A THOUSAND YEARS!")
-		CheckKingOfBraalVerbs()
+		if(!client || !playerCharacter) return
+		var/datum/NexusPlanetControl/control = getNexusPlanetControl("braal")
+		if(control && control.isClaimed() && !control.isAbandoned())
+			if(control.isHolder(src))
+				src << "You already govern Braal for [control.controller_league_name]."
+			else
+				src << "[control.holder_name] governs Braal for [control.controller_league_name]. Defeat that ruler and exhaust their Willpower to seize the control point."
+			return
+		openNexusPlanetControlMenu()
 
 var/kov_guide = {"<html><head><title>King of Braal Guide</title><body><body bgcolor="#000000"><font size=2><font color="#CCCCCC">
 

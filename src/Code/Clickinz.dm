@@ -40,7 +40,7 @@ client/Click(obj/A, location, control, params)
 		if(istype(A,/obj/Resources))
 			var/obj/Resources/C=A
 			player_view(15,mob)<<"[mob] ([mob.displaykey]) steals [Commas(C.Value)] resources from [B]"
-			mob.Alter_Res(C.Value)
+			mob.gainNexusResources(C.Value, "stolen resources")
 			C.Value=0
 			C.Update_value()
 		else
@@ -177,6 +177,8 @@ turf/Click(turf/T) if(isturf(T))
 mob/var/tmp/can_zanzoken=1
 
 mob/Click()
+	if(src != usr && playerCharacter && (client || empty_player) && KO && (src in view(1, usr)))
+		if(usr.promptNexusPlanetControlSeizure(src)) return
 	if(client&&KO&&src!=usr&&(src in view(1)))
 		if(usr.tournament_override(fighters_can=0)) return
 		if(alignment_on&&both_good(src,usr))

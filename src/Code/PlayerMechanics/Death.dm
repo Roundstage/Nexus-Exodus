@@ -411,7 +411,7 @@ mob/proc/Calm()
 		player_view(15,src)<<"[src] becomes calm"
 		last_anger=world.time
 	anger=100
-	has_angered_before_ko = FALSE
+	if(is_out_of_combat()) has_angered_before_ko = FALSE
 	BP = get_bp()
 
 mob/var/Regenerate=0 //Like Majin and Bios regenerate instead of dying
@@ -420,9 +420,13 @@ mob/var/Death_Year=0
 mob/proc/Drop_Rsc(n=0) if(n)
 	var/obj/Resources/R = GetResourceObject()
 	if(!R) return
-	var/obj/Resources/Bag = GetCachedObject(/obj/Resources, loc)
-	Bag.Value=n
-	R.Value-=n
+	n = Clamp(n, 0, R.Value)
+	if(!n) return
+	var/obj/Resources/Bag = GetCachedObject(/obj/Resources)
+	Bag.SafeTeleport(loc)
+	Bag.Value = n
+	Bag.nexus_tax_exempt_value = n
+	R.Value -= n
 	Bag.Update_value()
 
 obj/var/drop_on_death = 1
@@ -632,6 +636,7 @@ mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)
 			//KeepsBody=0
 
 		if(!Rebuilt) //ACTUALLY DIED
+			orphanNexusPlanetControlsOnDeath()
 
 			GTA5WastedCheck()
 			ClearTFusion()

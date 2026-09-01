@@ -1,5 +1,7 @@
 # Clickinz
 
+Clicking the exact planetary governor while adjacent now checks the planetary-control conquest path before ordinary KO looting. The server revalidates KO, zero Willpower, holder identity, region, distance, League membership, and ownership revision after all prompts; logged-out KO bodies remain eligible during their normal world-body window.
+
 ## Overview
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 

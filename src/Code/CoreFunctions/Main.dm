@@ -51,6 +51,7 @@ mob/proc
 		if(!client) return
 		last_logon = world.time
 		playerCharacter = 1
+		refreshNexusPlanetControlPresence(persist = TRUE)
 		hideNexusLegacyInterface()
 		if(client) client.DeleteTitleScreen()
 		src << sound(0)

@@ -1631,7 +1631,9 @@ turf/Teleporter
 				return . = ..()
 			//if(ismob(M) && M.InBattleCantEnterCave()) return
 			//if(ismob(M) && world.time - M.last_cave_entered_time < 20 && M.last_cave_entered == src) return
-			M.SafeTeleport(locate(gotox,gotoy,gotoz))
+			var/turf/destination = locate(gotox,gotoy,gotoz)
+			if(ismob(M)) M.rememberNexusCaveControlPlanet(src, destination)
+			M.SafeTeleport(destination)
 			if(ismob(M))
 				M.last_cave_entered=src
 				M.last_cave_entered_time=world.time

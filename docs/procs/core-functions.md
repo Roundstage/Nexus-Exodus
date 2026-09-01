@@ -7,7 +7,7 @@ Core world, persistence, combat-recovery, and utility functions.
 
 `KoSystem.dm` now coordinates Casual/Lethal recovery through RP Mode and Willpower. `combat_ko_total` remains only as a save-compatibility field and is normalized to zero; it is no longer a three-KO health resource.
 
-Player persistence supports three independent character slots. Live character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; an explicitly isolated playtest runtime uses `data/Playtest/Save` and `data/Playtest/Feats`. Every newly written save carries its immutable runtime environment, and cross-environment loads fail closed. The old key-named live character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save.
+Player persistence supports three independent character slots. Live character and feat files use `data/Save/<ckey>-slotN.sav` and `data/Feats/<ckey>-slotN.sav`; an explicitly isolated playtest runtime uses `data/Playtest/Save` and `data/Playtest/Feats`. Every newly written save carries its immutable runtime environment, and cross-environment loads fail closed. The old key-named live character and feat files are copied into slot 1 once and retained as migration backups. A migration marker prevents a deliberately deleted final slot from resurrecting the legacy save. Planetary control is loaded and saved as independent world state, while character saves retain Heran tax preference, fractional tax carry, and the last valid planetary jurisdiction used inside a mining cave.
 
 NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds default all three to off. `ServerFeatureDefaults.dm` also performs a one-time migration for pre-versioned `Misc` settings, then preserves later administrator choices. Disabled NPC worlds neither load nor overwrite the persisted `data/NPCs` roster.
 
@@ -59,11 +59,13 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 ### src/Code/CoreFunctions/Saving.dm
 
 - `getNexusCharacterSaveRoot()`, `getNexusFeatSaveRoot()`, `getNexusCharacterSavePathForKey()`, and `getNexusFeatSavePathForKey()` produce environment-scoped, clamped slot paths for slots 1 through 3.
+- `getNexusWipePersistenceRoots()` returns only the active runtime's character root plus its Feat root when configured, preventing a playtest pwipe from targeting live persistence.
 - `isNexusSaveEnvironmentCompatible()` and `isNexusCharacterSavePathEnvironmentCompatible()` require playtest saves to carry the exact playtest marker and reject cross-environment loading. Markerless legacy saves remain live-only.
 - `ensureNexusCharacterSlots()` performs idempotent live-only legacy migration and creates the per-account migration marker without copying legacy characters or Feats into playtest storage.
 - `getNexusCharacterSlotInfo()` reads lightweight selector metadata without loading a character into the live mob.
-- `deleteNexusCharacterSlot()` removes only the selected character and its feat progression.
-- `save()`, `load()`, `hasSave()`, and `cantRemake()` operate on `active_character_slot`; normal mob serialization records the immutable runtime environment plus selector name, race, and last-used metadata.
+- `deleteNexusCharacterSlot()` first abandons any planetary title held by that exact account, slot, and creation identity, then removes only the selected character and its feat progression.
+- `save()`, `load()`, `hasSave()`, and `cantRemake()` operate on `active_character_slot`; normal mob serialization records the immutable runtime environment plus selector name, race, last-used metadata, planetary tax state, and cave jurisdiction.
+- `loadWorldSave()` and `saveNexusPlanetControls()` restore and persist planetary ownership, holder presence, tax policy, treasuries, and ownership revisions outside character files.
 
 ### Security boundaries
 
@@ -1343,11 +1345,11 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - Side effects: none expected.
 
 #### mob/proc/Alter_Res
-- Signature: `mob/proc/Alter_Res(Amount=0) if(resource_obj)`
+- Signature: `mob/proc/Alter_Res(Amount=0)`
 - Inputs: Amount=0
-- Purpose: Handle alter res.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Apply a raw Resource balance mutation after resolving the character's Resource object; taxable income uses `gainNexusResources()` instead.
+- Returns: The applied amount, or null when no Resource object exists.
+- Side effects: Mutates the Resource balance and suffix.
 
 #### mob/proc/SetRes
 - Signature: `mob/proc/SetRes(n = 0)`
@@ -3940,7 +3942,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### proc/saveWorld
 - Signature: `proc/saveWorld(save_map=1, allow_auto_reboot=1, delete_pending_objs=1)`
 - Inputs: save_map=1, allow_auto_reboot=1, delete_pending_objs=1
-- Purpose: Save World.
+- Purpose: Save global, map, item, character-adjacent, and planetary-control world state.
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 

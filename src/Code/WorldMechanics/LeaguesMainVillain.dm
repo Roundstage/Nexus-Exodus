@@ -73,11 +73,11 @@ proc/League_paychecks()
 					if(m.key==villain)
 						if(villain_league_unique_member_count)
 							var/villain_pay=500000*villain_league_unique_member_count
-							m.Alter_Res(villain_pay)
+							m.gainNexusResources(villain_pay, "league activity paycheck")
 							m<<"<font color=cyan>You have recieved [Commas(villain_pay)] resources for the activities of your league members"
 					else if(!(m.client.computer_id in CIDs))
 						CIDs+=m.client.computer_id
-						m.Alter_Res(paycheck)
+						m.gainNexusResources(paycheck, "henchman paycheck")
 						m<<"<font color=cyan>You have recieved a [Commas(paycheck)] resource paycheck from being a henchman in the \
 						main villain's empire"
 		sleep(villain_paycheck_loop_timer*600)

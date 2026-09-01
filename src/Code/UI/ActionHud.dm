@@ -729,6 +729,14 @@ datum/NexusPlayerMenu
 			data["factor"] = technique.getTotalDamageMultiplier()
 			data["model"] = "Physical"
 			data["preview_profile"] = "nexus_melee"
+			if(istype(technique, /obj/Attacks/NexusMeleeTechnique/CometReversal))
+				var/obj/Attacks/NexusMeleeTechnique/CometReversal/comet_reversal = technique
+				data["range"] = "Beam contact / emitter in frontal arc / advances up to [comet_reversal.dash_range] tiles"
+				data["mechanics"] = "A [round(comet_reversal.counter_window_ticks / 10, 0.1)]-second counter stance cancels the first hostile beam whose emitter is in the frontal arc and approaches its owner. Matching beam contacts are also canceled during that same rush, for at most [round(comet_reversal.rush_guard_ticks / 10, 0.1)] seconds, without retargeting or adding strikes. The final strike uses normal melee accuracy and occurs only if the approach reaches adjacency."
+				data["requirements"] = owner.using_sword() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
+				data["cost"] = "[comet_reversal.energy_cost] physical-technique drain units"
+				data["cooldown"] = "[round(comet_reversal.cooldown_ticks / 10, 0.1)] seconds"
+				return data
 			data["range"] = technique.dash_range > 1 ? "Up to [technique.dash_range] tiles" : "Adjacent target"
 			var/list/effects = list("[technique.extra_hits + 1] hit(s)", "[technique.knockback_multiplier]x knockback")
 			if(technique.stun_ticks) effects += "[round(technique.stun_ticks / 10, 0.1)]s stun"

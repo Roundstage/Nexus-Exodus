@@ -19,7 +19,7 @@ obj/Tournament_Controls
 				if("cancel") return
 				if("withdraw")
 					usr<<"You withdrew [Commas(rsc_value)]$"
-					usr.Alter_Res(rsc_value)
+					usr.gainNexusResources(rsc_value, "tournament owner income")
 					rsc_value=0
 				if("set amount of prize you take")
 					profit=input("set the percentage of the grand prize money that goes to you each tournament",\
@@ -229,7 +229,7 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 		else
 			P.Find_Tourny_Chair()
 			P<<"You have recieved [Commas(500*Resource_Multiplier*Tournament_Prize)] resources just for joining"
-			P.Alter_Res(500*Resource_Multiplier*Tournament_Prize)
+			P.gainNexusResources(500*Resource_Multiplier*Tournament_Prize, "tournament participation reward")
 			P.FullHeal()
 	var/Match=1
 	var/Stage=1
@@ -299,7 +299,7 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 						Fighter2.Calm()
 						Fighter2.Find_Tourny_Chair()
 						Fighter2.Destroy_Splitforms()
-						Fighter2.Alter_Res(3000*Resource_Multiplier*Tournament_Prize*Stage)
+						Fighter2.gainNexusResources(3000*Resource_Multiplier*Tournament_Prize*Stage, "tournament match reward")
 						if(skill_tournament&&skill_tournament_bp_boost)
 							Fighter2.Raise_BP(5000*skill_tournament_bp_boost)
 					if(Fighter1)
@@ -317,7 +317,7 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 						Fighter1.Calm()
 						Fighter1.Find_Tourny_Chair()
 						Fighter1.Destroy_Splitforms()
-						Fighter1.Alter_Res(3000*Resource_Multiplier*Tournament_Prize*Stage)
+						Fighter1.gainNexusResources(3000*Resource_Multiplier*Tournament_Prize*Stage, "tournament match reward")
 						if(skill_tournament&&skill_tournament_bp_boost)
 							Fighter1.Raise_BP(5000*skill_tournament_bp_boost)
 					if(Fighter2)
@@ -342,7 +342,7 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 				Prize-=profit
 				tc.rsc_value+=profit
 				break
-			Winner.Alter_Res(Prize)
+			Winner.gainNexusResources(Prize, "tournament grand prize")
 
 			Winner.tournaments_won_without_losing++
 			Winner.GiveFeat("Win Tournament")
@@ -362,7 +362,7 @@ proc/Tournament(Prize=0,Deathmatch) if(!Tournament)
 			if(Second)
 				var/Second_Prize=Prize*0.2
 				All_Entrants<<"<font color=yellow>[Second] was the runner-up and has recieved [Commas(Second_Prize)] resources"
-				Second.Alter_Res(Second_Prize)
+				Second.gainNexusResources(Second_Prize, "tournament runner-up prize")
 			else All_Entrants<<"<font color=yellow>Error: Runner up of tournament not found"
 	for(var/mob/P in players)
 		if(P.displaykey in Pre_Tourny_Locations)

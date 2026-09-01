@@ -809,17 +809,17 @@ Administrative commands and management flows. Administrators receive a searchabl
 
 #### mob/Admin4/verb/pwipe
 - Signature: `mob/Admin4/verb/pwipe()`
-- Inputs: None
-- Purpose: Handle pwipe.
+- Inputs: confirmed administrator action and the persisted pwipe settings.
+- Purpose: Delete player persistence from the active live or isolated playtest namespace, then schedule a server reboot.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: records the administrator action and invokes the destructive wipe workflow.
 
 #### proc/Wipe
 - Signature: `proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_feats=1)`
 - Inputs: delete_map=1, delete_items=1, cost_threshold=0, turf_health=20000, delete_feats=1
-- Purpose: Handle wipe.
+- Purpose: Reset configured world state and delete character persistence from the current runtime environment without crossing between live and playtest roots.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: disables player saving, resets planetary ownership, rates, and treasuries, removes configured map/item/Feat/profile/DBZ data, sends a non-blocking warning to connected players, and schedules a reboot after 30 seconds.
 
 #### obj/proc/Item_upgrade_reset_for_wipe
 - Signature: `obj/proc/Item_upgrade_reset_for_wipe()`

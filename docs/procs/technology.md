@@ -1,5 +1,7 @@
 # Technology
 
+`gainArcaneEssence()` records gross generated essence in lifetime progression, applies any current planetary Arcane Essence income tax, and credits the spendable balance with the net amount. Vault withdrawals, secure trades, costs, and refunds remain raw transfers and are not taxed again. Resource bags retain their tax-exempt transfer share through merges and CyberDrone transport so recollection cannot create a second income event. Arcane Portal anchors also retain their bound planet, allowing a portal endpoint inside a shared mining cave to propagate the correct tax jurisdiction.
+
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 

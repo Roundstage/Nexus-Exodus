@@ -488,7 +488,7 @@ obj/items/Dragon_Ball
 					Alter_wishes()
 					var/mob/a=input(usr,"Choose who to give the money to") in players
 					if(!DBs_Gathered()) return
-					a.Alter_Res(50000000 * Resource_Multiplier)
+					a.gainNexusResources(50000000 * Resource_Multiplier, "dragon wish")
 					player_view(15,usr)<<"[usr] wishes to give [a] money!"
 					usr.wish_count++
 				if("Progression XP") if(Wishes)

@@ -340,6 +340,12 @@ obj/Icer
 	C27 icon='Changeling5Kold.dmi'
 	C28 icon='ChangelingFriezaForm43.dmi'
 	C29 icon='ChangelingFriezaBe.dmi'
+	IcerChangelingOC
+		name="Icer Changeling OC"
+		icon='IcerChangelingOC.dmi'
+	IcerChangelingMaleOC
+		name="Male Icer Changeling OC"
+		icon='IcerChangelingMaleOC.dmi'
 
 mob/proc/Choose_Hair(force_hair)
 	if(force_hair)
