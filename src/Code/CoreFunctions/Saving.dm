@@ -10,6 +10,11 @@ proc/getNexusCharacterSaveRoot(environment = nexus_runtime_environment)
 proc/getNexusFeatSaveRoot(environment = nexus_runtime_environment)
 	return normalizeNexusRuntimeEnvironment(environment) == "playtest" ? "data/Playtest/Feats" : "data/Feats"
 
+proc/getNexusWipePersistenceRoots(delete_feats = TRUE, environment = nexus_runtime_environment)
+	var/list/roots = list("[getNexusCharacterSaveRoot(environment)]/")
+	if(delete_feats) roots += "[getNexusFeatSaveRoot(environment)]/"
+	return roots
+
 proc/getNexusCharacterSavePathForKey(character_key, slot = 1, environment = nexus_runtime_environment)
 	if(!character_key) return null
 	return "[getNexusCharacterSaveRoot(environment)]/[ckey(character_key)]-slot[clampNexusCharacterSlot(slot)].sav"
@@ -98,6 +103,7 @@ mob/proc/getNexusCharacterSlotInfo(slot)
 mob/proc/deleteNexusCharacterSlot(slot)
 	if(!key) return FALSE
 	slot = clampNexusCharacterSlot(slot)
+	releaseNexusPlanetControlsForCharacter(key, slot)
 	var/save_path = getNexusCharacterSavePath(slot)
 	var/feat_path = getNexusFeatSavePath(slot)
 	var/profile_art_deleted = deleteNexusPlayerProfileImageForKey(key, slot)
@@ -180,6 +186,8 @@ proc/initialize()
 	world<<"Voting loaded"
 	loadMisc()
 	world<<"Misc Loaded"
+	loadNexusPlanetControls()
+	world<<"Planetary control loaded"
 	if(npcs_enabled) enable_npcs()
 	else disable_npcs()
 	if(world.maxz<5) Map_Loaded=1
@@ -210,6 +218,7 @@ proc/initialize()
 	spawn Refresh_Stat_Record()
 	Years()
 	spawn saveWorldRepeat()
+	spawn nexusPlanetControlSaveLoop()
 	spawn Weather()
 	spawn saveLoop()
 	spawn Tech_BP()
@@ -332,6 +341,7 @@ proc/saveWorld(save_map=1, allow_auto_reboot=1, delete_pending_objs=1)
 	saveGain()
 	saveArea()
 	saveMisc()
+	saveNexusPlanetControls()
 	saveVote()
 	saveAdminObjects()
 	if(save_map)

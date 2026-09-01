@@ -507,6 +507,9 @@
 #include "src\Code\WorldMechanics\WeatherDayNight\Lighting.dm"
 // END_INCLUDE
 
+// Keep new source files outside Dream Maker's generated include block until the project environment registers them.
+#include "src\Code\WorldMechanics\PlanetaryControl.dm"
+
 // Keep required maps outside Dream Maker's generated include block.
 #include "src\Maps\Map2018.dmm"
 #include "src\Maps\Space2018.dmm"

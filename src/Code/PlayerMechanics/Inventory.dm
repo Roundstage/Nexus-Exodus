@@ -326,7 +326,7 @@ obj/items/Scrapper
 				if(o && o.current_scrapper == src) o.current_scrapper = null
 				return
 			o.current_scrapper = null
-			user.Alter_Res(res)
+			user.gainNexusResources(res, "salvage")
 			player_view(15,user)<<"[user] scraps the [o] and recieves [Commas(res)] resources"
 			if(istype(o,/obj/Drill))
 				var/obj/Drill/d = o
@@ -980,7 +980,7 @@ obj/Bounty_Computer
 								else player_view(15,bc)<<"[usr] just claimed the bounty on [L["Key"]]"
 
 							usr<<"Congratulations you just collected [Commas(L["Bounty"])]$!"
-							usr.Alter_Res(L["Bounty"])
+							usr.gainNexusResources(L["Bounty"], "bounty reward")
 							Bounties-=T
 				if("Retract Bounty")
 					while(usr)
@@ -1183,7 +1183,7 @@ obj/items/Pod_Race_Computer
 						for(var/O in Bets[M]) if(isnum(O)) Amount=O
 						var/Percentage=Winning_Bet_Total/Amount
 						var/Winnings=round(Winning_Bet_Total*Percentage)
-						user.Alter_Res(Winnings)
+						M.gainNexusResources(Winnings, "race winnings")
 						M<<"<font color=yellow>You won [Commas(Winnings)]$ from your bet on [OO]!"
 						Bets-=M
 				Racer_List=new/list
@@ -1383,8 +1383,7 @@ obj/items/Resource_Vaccuum
 					if(R.loc==Old_Loc) break
 					if(R in view(1,user))
 						if(!canUseAfterNexusTradeYield(user)) return
-						user.Alter_Res(R.Value)
-						R.Value = 0
+						user.collectNexusResourceBag(R, "vacuumed resources")
 						del(R)
 				sleep(2)
 
@@ -1822,9 +1821,45 @@ obj/items/Transporter_Pad
 	Stealable=1
 	Level=1
 	takes_gradual_damage=1
+	var/nexus_planet_control_context_id
 	New()
 		telepads+=src
 		. = ..()
+		updateNexusPlanetControlContext(ismob(loc) ? loc : null)
+
+	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		var/mob/context_holder = ismob(loc) ? loc : null
+		. = ..()
+		if(.) updateNexusPlanetControlContext(context_holder)
+
+	proc/getNexusPlanetControlContextId()
+		var/turf/pad_turf = base_loc()
+		var/area/pad_area = pad_turf ? pad_turf.loc : null
+		if(!pad_turf || !pad_area || !isarea(pad_area)) return null
+		var/list/region = resolveNexusPlanetMapRegion(pad_turf.z, pad_area.type, pad_turf.x, pad_turf.y)
+		if(!region && istype(pad_area, /area/Inside)) region = resolveNexusPlanetControlRegionByPosition(pad_turf.z, pad_turf.x, pad_turf.y)
+		if(!region && istype(pad_area, /area/ship_area)) region = getNexusPlanetControlShipRegion(pad_turf)
+		if(region) return region["region_id"]
+		if(istype(pad_area, /area/Mining_Cave) && getNexusPlanetMapRegion(nexus_planet_control_context_id)) return nexus_planet_control_context_id
+		return null
+
+	proc/updateNexusPlanetControlContext(mob/context_holder)
+		var/turf/pad_turf = base_loc()
+		var/area/pad_area = pad_turf ? pad_turf.loc : null
+		var/list/static_region
+		if(pad_turf && pad_area && isarea(pad_area))
+			static_region = resolveNexusPlanetMapRegion(pad_turf.z, pad_area.type, pad_turf.x, pad_turf.y)
+			if(!static_region && istype(pad_area, /area/Inside)) static_region = resolveNexusPlanetControlRegionByPosition(pad_turf.z, pad_turf.x, pad_turf.y)
+			if(!static_region && istype(pad_area, /area/ship_area)) static_region = getNexusPlanetControlShipRegion(pad_turf)
+		if(static_region)
+			nexus_planet_control_context_id = static_region["region_id"]
+			return TRUE
+		if(context_holder)
+			var/holder_context_id = getNexusPlanetControlId(context_holder)
+			nexus_planet_control_context_id = getNexusPlanetMapRegion(holder_context_id) ? holder_context_id : null
+			return !!nexus_planet_control_context_id
+		if(!istype(pad_area, /area/Mining_Cave) || !getNexusPlanetMapRegion(nexus_planet_control_context_id)) nexus_planet_control_context_id = null
+		return !!nexus_planet_control_context_id
 	verb/Hotbar_use()
 		set hidden=1
 		Set()
@@ -1840,6 +1875,7 @@ obj/items/Transporter_Pad
 	verb/Bolt()
 		set src in oview(1)
 		usr.Bolt(src)
+		updateNexusPlanetControlContext(usr)
 	proc/Transport()
 
 		return
@@ -1985,8 +2021,14 @@ obj/items/Transporter_Watch
 			if(usr.grabbedObject&&ismob(usr.grabbedObject)&&usr.grabbedObject.drone_module&&!usr.grabbedObject.client) usr.ReleaseGrab()
 
 			player_view(10,usr)<<sound('Teleport.ogg',volume=25)
-			if(usr.Ship&&usr.Ship.Small) usr.Ship.SafeTeleport(m.loc)
-			else usr.SafeTeleport(m.loc)
+			var/obj/items/Transporter_Pad/target_pad = istype(m, /obj/items/Transporter_Pad) ? m : null
+			var/target_planet_context_id = target_pad ? target_pad.getNexusPlanetControlContextId() : getNexusPlanetControlId(m)
+			if(usr.Ship&&usr.Ship.Small)
+				usr.nexus_planet_control_context_id = getNexusPlanetMapRegion(target_planet_context_id) ? target_planet_context_id : null
+				usr.Ship.SafeTeleport(m.loc)
+			else
+				usr.setNexusPlanetControlTeleportContext(target_planet_context_id)
+				usr.SafeTeleport(m.loc)
 
 	verb/Hotbar_use()
 		set hidden=1
@@ -3060,7 +3102,7 @@ mob/proc/Digging(Amount=1)
 	if(Amount<1) Amount=1
 	for(var/obj/items/Digging/D in item_list) if(D.suffix) Amount*=D.DigMult
 	Amount=round(Amount)
-	Alter_Res(performMiningTick(Amount))
+	gainNexusResources(performMiningTick(Amount), "mining")
 
 mob/verb/Dig_for_Resources()
 	set category="Skills"

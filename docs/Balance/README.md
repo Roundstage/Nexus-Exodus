@@ -12,6 +12,8 @@ The two workbooks have different roles:
 - The major `get_bp()` stages, including powerup, anger, cyber BP, and Overdrive.
 - Race profiles, modules, transformations, incoming damage modifiers, costs, cooldowns, and source references.
 - Formula-backed damage comparison and equal-stat validation sheets.
+- `UnarmedBeamCounterProposal.md` records the implemented Comet Reversal prototype, a timing-based unarmed answer that stops additional frontal beams during its single approach without changing Beam globally.
+- `PlanetaryControl.md` defines planetary ownership, KO/Willpower conquest, League authority, tax exemptions, and Resource/Arcane Essence treasury behavior.
 
 ## Regeneration
 

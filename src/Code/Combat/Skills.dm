@@ -273,9 +273,11 @@ obj/Contract_Soul //Appears in the Souls tab
 	var/presummon_x
 	var/presummon_y
 	var/presummon_z
+	var/presummon_planet_context_id
 	var/tpx //owners location before using temporary teleport
 	var/tpy
 	var/tpz
+	var/tp_planet_context_id
 	var/Max_BP=0 //The max base bp the soul ever had, used for lowering/raising their bp
 	var/tmp/Menu_Open
 	Duplicates_Allowed=1
@@ -405,6 +407,8 @@ obj/Contract_Soul //Appears in the Souls tab
 				tpx=0
 				tpy=0
 				tpz=0
+				tp_planet_context_id = null
+				usr.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(observed_mob))
 				usr.SafeTeleport(observed_mob.base_loc())
 				usr.StopBeaming()
 
@@ -436,6 +440,8 @@ obj/Contract_Soul //Appears in the Souls tab
 				tpx=usr.x
 				tpy=usr.y
 				tpz=usr.z
+				tp_planet_context_id = getNexusPlanetControlId(usr)
+				usr.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(observed_mob))
 				usr.SafeTeleport(observed_mob.base_loc())
 				usr.StopBeaming()
 
@@ -458,11 +464,13 @@ obj/Contract_Soul //Appears in the Souls tab
 						usr<<"Teleport canceled"
 						return
 					sleep(1)
+				usr.setNexusPlanetControlTeleportContext(tp_planet_context_id)
 				usr.SafeTeleport(locate(tpx,tpy,tpz))
 				usr.StopBeaming()
 				tpx=0
 				tpy=0
 				tpz=0
+				tp_planet_context_id = null
 
 			if("Permanent Summon")
 				if(ismob(usr.loc))
@@ -493,7 +501,9 @@ obj/Contract_Soul //Appears in the Souls tab
 				presummon_x=0
 				presummon_y=0
 				presummon_z=0
+				presummon_planet_context_id = null
 				player_view(15,observed_mob)<<"[observed_mob] is summoned away by [usr]'s soul contract"
+				observed_mob.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(usr))
 				observed_mob.SafeTeleport(usr.base_loc())
 				observed_mob.StopBeaming()
 				player_view(15,observed_mob)<<"[observed_mob] is summoned to [usr] by the soul contract"
@@ -562,7 +572,9 @@ obj/Contract_Soul //Appears in the Souls tab
 					usr<<"You used [observed_mob]'s life energy to bring yourself back to life"
 					usr.Revive()
 				observed_mob.Death("[usr]'s soul contract",1)
-				if(observed_mob && isturf(observed_mob.loc)) observed_mob.SafeTeleport(usr.base_loc())
+				if(observed_mob && isturf(observed_mob.loc))
+					observed_mob.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(usr))
+					observed_mob.SafeTeleport(usr.base_loc())
 
 			if("Temporary Summon")
 				if(observed_mob.Teleport_nulled())
@@ -596,6 +608,8 @@ obj/Contract_Soul //Appears in the Souls tab
 				presummon_x=observed_mob.x
 				presummon_y=observed_mob.y
 				presummon_z=observed_mob.z
+				presummon_planet_context_id = getNexusPlanetControlId(observed_mob)
+				observed_mob.setNexusPlanetControlTeleportContext(getNexusPlanetControlId(usr))
 				observed_mob.SafeTeleport(usr.base_loc())
 				observed_mob.StopBeaming()
 				player_view(15,observed_mob)<<"[observed_mob] was summoned by [usr]'s soul contract"
@@ -621,12 +635,14 @@ obj/Contract_Soul //Appears in the Souls tab
 						return
 					sleep(1)
 				player_view(15,observed_mob)<<"[observed_mob] was sent back to his last location by [usr]'s soul contract"
+				observed_mob.setNexusPlanetControlTeleportContext(presummon_planet_context_id)
 				observed_mob.SafeTeleport(locate(presummon_x,presummon_y,presummon_z))
 				observed_mob.StopBeaming()
 				player_view(15,observed_mob)<<"[observed_mob] was sent back by [usr]'s soul contract!"
 				presummon_x=0
 				presummon_y=0
 				presummon_z=0
+				presummon_planet_context_id = null
 
 	New()
 		soul_contracts+=src
@@ -1878,16 +1894,19 @@ obj/Shunkan_Ido
 			usr<<"You found their energy signature."
 			player_view(15,usr)<<"[usr] disappears in a flash!"
 			player_view(10,src)<<sound('Teleport.ogg',volume=30)
+			var/target_planet_context_id = getNexusPlanetControlId(A)
 			if(!usr.tournament_override(fighters_can=0,show_message=0))
 				for(var/mob/B in oview(1,usr))
 					if(B == usr) continue //2 calls to SafeTeleport in the same tick does not work
 					if(B.client && !B.Prisoner())
 						if(!B.Safezone)
 							player_view(15,B)<<"[B] disappears!"
+							B.setNexusPlanetControlTeleportContext(target_planet_context_id)
 							B.SafeTeleport(A.loc)
 							step_rand(B)
 							spawn(1) player_view(15,B)<<"[B] suddenly appears!"
 						else B<<"[usr] tried to teleport you, but it failed because you are in a safezone"
+			usr.setNexusPlanetControlTeleportContext(target_planet_context_id)
 			usr.SafeTeleport(A.loc)
 			usr.Update_SI_disadvantage(A)
 			step_rand(usr)

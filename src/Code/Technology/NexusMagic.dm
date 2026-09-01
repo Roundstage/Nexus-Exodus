@@ -13,6 +13,8 @@ mob/var
 	arcane_portal_anchor_x = 0
 	arcane_portal_anchor_y = 0
 	arcane_portal_anchor_z = 0
+	arcane_portal_anchor_planet_id
+	arcane_portal_anchor_context_version = 0
 
 obj/var/tmp/next_arcane_use = 0
 turf/var/tmp/arcane_gravity = 0
@@ -437,6 +439,8 @@ obj/ArcaneSpell/CreatePortal
 			caster.arcane_portal_anchor_x = caster.x
 			caster.arcane_portal_anchor_y = caster.y
 			caster.arcane_portal_anchor_z = caster.z
+			caster.arcane_portal_anchor_planet_id = getNexusPlanetControlId(caster)
+			caster.arcane_portal_anchor_context_version = 1
 			caster << "This location is now bound as your arcane portal anchor."
 			caster.showArcaneCastVfx()
 			return TRUE
@@ -447,11 +451,21 @@ obj/ArcaneSpell/CreatePortal
 		if(!destination || destination.density)
 			caster << "The bound location is no longer safe."
 			return FALSE
+		var/area/destination_area = destination.loc
+		if(istype(destination_area, /area/Mining_Cave) && caster.arcane_portal_anchor_context_version < 1)
+			caster.arcane_portal_anchor_x = 0
+			caster.arcane_portal_anchor_y = 0
+			caster.arcane_portal_anchor_z = 0
+			caster.arcane_portal_anchor_planet_id = null
+			caster << "This legacy cave anchor has no reliable planet context. Bind it again before opening a portal."
+			return FALSE
 		if(!caster.spendArcaneEssence(80, name, src, 600)) return FALSE
 		var/obj/ArcanePortal/entrance = new(caster.base_loc())
 		var/obj/ArcanePortal/exit_portal = new(destination)
 		entrance.partner = exit_portal
 		exit_portal.partner = entrance
+		entrance.nexus_planet_control_context_id = getNexusPlanetControlId(caster)
+		exit_portal.nexus_planet_control_context_id = caster.arcane_portal_anchor_context_version >= 1 && getNexusPlanetMapRegion(caster.arcane_portal_anchor_planet_id) ? caster.arcane_portal_anchor_planet_id : null
 		entrance.Builder = caster.key
 		exit_portal.Builder = caster.key
 		spawn(NEXUS_ARCANE_PORTAL_LIFETIME)
@@ -525,6 +539,7 @@ obj/ArcanePortal
 	Savable = 0
 	Grabbable = 0
 	var/tmp/obj/ArcanePortal/partner
+	var/nexus_planet_control_context_id
 
 	Crossed(atom/movable/traveler)
 		. = ..()
@@ -533,6 +548,7 @@ obj/ArcanePortal
 		if(character.Teleport_nulled() || character.Final_Realm() || character.Prisoner()) return
 		if(character.last_arcane_portal_use + 20 > world.time) return
 		character.last_arcane_portal_use = world.time
+		character.setNexusPlanetControlTeleportContext(partner.nexus_planet_control_context_id)
 		character.SafeTeleport(partner.loc)
 
 mob/var/tmp/last_arcane_portal_use = 0

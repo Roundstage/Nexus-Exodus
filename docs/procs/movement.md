@@ -556,9 +556,9 @@ Movement input, collision, environmental traversal, accelerated skill travel, an
 #### atom/movable/proc/SafeTeleport
 - Signature: `SafeTeleport(turf/t, allowSameTick)`
 - Inputs: turf/t, allowSameTick
-- Purpose: Handle safe teleport.
+- Purpose: Move an atom safely; for players, resolve, inherit, or clear planetary tax jurisdiction before entering a surface, local interior, landed ship, mining cave, or portal endpoint.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: changes location and may update the player's persistent cave-jurisdiction context.
 
 #### atom/movable/proc/LegitMove
 - Signature: `LegitMove(turf/prevLoc, turf/newLoc)`

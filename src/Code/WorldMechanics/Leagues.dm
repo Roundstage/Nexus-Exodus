@@ -271,7 +271,11 @@ obj/League
 				desc = normalizeNexusLeagueDescription(updated_description)
 				update_league()
 			if("leave league")
+				if(!usr.canNexusPlanetControlHolderDepartLeague(league_id))
+					usr << "You cannot leave the league while knocked out and carrying one of its planetary control points."
+					return
 				league_announce("[usr.key] has left the [name] league")
+				usr.orphanNexusPlanetControlForLeagueDeparture(league_id)
 				if(sagas&&villain_league_id&&league_id==villain_league_id)
 					usr.left_villain_league_time=world.realtime
 				del(src)
@@ -326,12 +330,16 @@ obj/League
 				var/mob/m=input("who do you want to expel from the league? only people with ranks lower than \
 				yours can be expelled.") in leaguers
 				if(!m||m=="cancel") return
+				if(!m.canNexusPlanetControlHolderDepartLeague(league_id))
+					usr << "[m] cannot be expelled while knocked out and carrying one of this league's planetary control points."
+					return
 				league_announce("[m] has been expelled from the [name] by [usr]")
 
 				if(sagas&&villain_league_id&&league_id==villain_league_id)
 					m.left_villain_league_time=world.realtime
 
 				var/obj/League/L=is_league_member(m)
+				m.orphanNexusPlanetControlForLeagueDeparture(league_id)
 				del(L)
 			if("league announce")
 				var/msg=input("what do you want to announce to the league?") as null|text

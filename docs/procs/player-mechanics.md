@@ -3,7 +3,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost for eligible races and grants one full-Health/full-Energy second wind on KO before the character must calm. Androids, Legendary Saiyans, and Jiren/Apex Aliens do not possess or gain Anger; stale saved values are normalized to the neutral `100` baseline and never provide an Anger multiplier or KO recovery. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost for eligible races and grants at most one full-Health/full-Energy second wind per continuous combat cycle. Scheduled calming removes the power boost without rearming that recovery; leaving combat or suffering a real KO starts a new cycle. Androids, Legendary Saiyans, and Jiren/Apex Aliens do not possess or gain Anger; stale saved values are normalized to the neutral `100` baseline and never provide an Anger multiplier or KO recovery. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
@@ -46,7 +46,7 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 
 - `gainAngerFromDamage(applied_damage)` converts actual health loss into proportional Anger without healing.
 - `canPossessAnger()` is the shared race gate; `disableAnger()` clears stale Anger state for Android, Legendary Saiyan, and Jiren/Apex Alien archetypes.
-- `hasAngerHealthRecovery()`, `canUseAngerHealthRecovery()`, and `triggerAngerHealthRecovery(reason)` are retained compatibility wrappers that always reject the removed Anger Health-bar recovery.
+- `hasAngerHealthRecovery()`, `canUseAngerHealthRecovery()`, and `triggerAngerHealthRecovery(reason)` gate and apply the one-use Anger second wind for eligible archetypes.
 - `setRPMode(enabled, announce)` blocks outgoing melee/ki plus incoming combat damage, stuns, displacement, and grab retention while active.
 - `forceWillpowerBreakKnockout()` converts zero Willpower into a lethal KO state before locking the character in RP Mode.
 - `tryDrainTechniqueWillpower(amount, technique_name, reserve)` lets sustained techniques spend Willpower without crossing their configured safe reserve.
@@ -834,23 +834,23 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 #### mob/proc/hasAngerHealthRecovery
 - Signature: `mob/proc/hasAngerHealthRecovery()`
 - Inputs: None
-- Purpose: Compatibility gate for the removed Anger Health-bar recovery.
-- Returns: always false.
+- Purpose: Return whether the mob's archetype supports the Anger second wind.
+- Returns: boolean flag from the shared Anger archetype gate.
 - Side effects: none expected.
 
 #### mob/proc/canUseAngerHealthRecovery
 - Signature: `mob/proc/canUseAngerHealthRecovery()`
 - Inputs: None
-- Purpose: Compatibility gate for the removed Anger Health-bar recovery.
-- Returns: always false.
+- Purpose: Return whether the mob may use its Anger second wind in the current combat cycle.
+- Returns: false for an ineligible archetype, an already-consumed cycle, power transfer, or an active Anger lockout; otherwise true.
 - Side effects: none expected.
 
 #### mob/proc/triggerAngerHealthRecovery
 - Signature: `mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")`
 - Inputs: recovery reason.
-- Purpose: Compatibility wrapper for the removed Anger Health-bar recovery.
-- Returns: always false.
-- Side effects: none.
+- Purpose: Apply the eligible mob's one-use Anger second wind.
+- Returns: true when recovery triggers; otherwise false.
+- Side effects: records the reason, fills Anger, Health, and Energy, refreshes combat state/HUD, and locks further recovery until combat ends or a real KO occurs.
 
 #### mob/proc/anger
 - Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
@@ -862,9 +862,9 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 #### mob/proc/Calm
 - Signature: `mob/proc/Calm()`
 - Inputs: None
-- Purpose: Handle calm.
+- Purpose: End the current Anger power boost without rearming a second wind during active combat.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: restores baseline Anger/BP and clears the second-wind lock only when the mob is out of combat.
 
 #### mob/proc/Drop_Rsc
 - Signature: `mob/proc/Drop_Rsc(n=0) if(n)`
@@ -890,9 +890,9 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 #### mob/proc/Death
 - Signature: `mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)`
 - Inputs: mob/Z, Force_Death=0, drone_sd=0, lose_hero=1, lose_immortality=1
-- Purpose: Handle death.
+- Purpose: Resolve death and immediately abandon every planetary title held by the exact character identity.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: applies the normal death flow and persists any planetary-control abandonment while preserving its treasury as spoils.
 
 #### mob/proc/Spam_kill_timer
 - Signature: `mob/proc/Spam_kill_timer()`
@@ -3353,9 +3353,9 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 #### mob/proc/KO
 - Signature: `mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victim = src, combat_mode_override)`
 - Inputs: attacker, Anger gate, already-handled flag, victim, and optional snapshotted Casual/Lethal disposition.
-- Purpose: Resolve the knockout and forward an explicit delayed-damage disposition when supplied.
+- Purpose: Resolve the knockout, start a new Anger second-wind cycle, and forward an explicit delayed-damage disposition when supplied.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: applies KO state, clears the consumed Anger recovery lock, stops active actions/transformations, and records Casual/Lethal combat recovery.
 
 #### mob/proc/UnKO
 - Signature: `mob/proc/UnKO() if(KO)`
@@ -4197,7 +4197,7 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - `isProgressionCombatSkillType()` and `isProgressionCombatTreeExcluded()` keep the Combat catalog limited to concrete attacks and approved buffs. Cyber Charge, Cyber Laser, Overdrive, and Combat Mathematics are module-only; Fire Fist, Bleeding Edge, and Thundering Blows are Milestone-only.
 - `configureProgressionBeamPaths()` owns the named wave specialization. `configureProgressionPhysicalPaths()` owns the Strength-scaled rock attacks, while Sky Break and Echoing Slash use the Weapon branch. Kaioken and Genki Dama are tier-ten purchases.
 - Combat -> Beam uses authored routes instead of registration order: Beam advances through Masenko, Kamehameha, and Double Sunday to the tier-eight Final Flash raw-damage capstone, while Ray advances through Dodompa and Tyrant Lancer to the tier-eight Makankosappo shield-piercing capstone. Photon Flash opens a third route through Galick Gun and Buster Cannon.
-- Combat -> Unarmed is also power-authored and contains all 15 integrated techniques plus Dash Attack, Pressure Punch, Roundhouse Kick, Dropkick, Wolf Fang Fist, and Hundred Crack Fist from legacy Nexus. Its integrated routes end in March of Fury, Texas Smash, and Exploding Heart Strike; the factor-8 Dropkick/Dash Attack and minimum-factor-6 Hundred Crack Fist join the other strongest attacks at tier five.
+- Combat -> Unarmed is also power-authored and contains all 16 integrated techniques plus Pressure Punch, Roundhouse Kick, Dropkick, Wolf Fang Fist, and Hundred Crack Fist from legacy Nexus; Dash Attack remains in Foundation. Tier-four Comet Reversal follows Guard Break as a conditional anti-beam approach. The integrated routes end in March of Fury, Texas Smash, and Exploding Heart Strike; factor-8 Dropkick and minimum-factor-6 Hundred Crack Fist join the other strongest attacks at tier five.
 - The Magic tree includes nine branches and covers 42 craft formulas plus the integrated Fireball, Frost Bolt, Lightning Bolt, Frost Nova, Earth Prison, Empowered Attacks/Defenses, Accelerate, Rejuvenate, Gravity Well, Create Portal, and Enchant spell set. Shikon Jewel belongs to level-nine Artifacts rather than Science; `migrateShikonResearch()` preserves a character's legacy unlock while removing its stale personal Science blueprint.
 - Magic Gauntlets and Orb of Mastery multiply `gainMagicExperience()` without editing the character's base potential. Elixir of Merriment multiplies only chat/roleplay awards inside `gainProgressionExperience()`.
 - `getRacialProgressionTrack()` maps each playable lineage to its spawn-world rank curriculum. `initializeProgressionRacialCatalog()` derives those nodes from the existing Earth Guardian, Braal Elite, Namekian, Arconian, Ice Master, Android Master, Kaioshin, and Daimao skill packages. `required_racial_track` is checked by `getProgressionNodeLockReason()` as server-side authorization, not only as a browser filter. Kaioshin and Daimao Hakai are tier-ten, 60-XP apex nodes requiring every final package route.

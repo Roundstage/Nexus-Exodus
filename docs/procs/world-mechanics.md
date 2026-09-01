@@ -7,6 +7,8 @@ League names, login descriptions, notes, chat, announcements, and resource amoun
 
 `normalizeNexusLeagueInlineText()`, `normalizeNexusLeagueDescription()`, `normalizeNexusLeagueNotes()`, and `renderNexusLeagueNotes()` own these storage and rendering contracts.
 
+Planetary control is persistent per canonical planet. A rank 7 League leader may claim a neutral or abandoned point, and another League may seize its portable title by clicking the exact adjacent governor anywhere after that governor is KO with zero Willpower. The controller may levy bounded Resource and Arcane Essence income taxes on nonmembers; Herans alone may opt out. Planet-local interiors, landed large ships, and caves share their surface jurisdiction, including after cave relog or direct portal travel. Death, character deletion, League departure, and prolonged absence cannot leave an inaccessible title; abandoned points preserve spoils but suspend taxes and management. Controller identity, holder identity, presence, rates, treasuries, and ownership revisions are stored in `data/PlanetControl`.
+
 ## Files
 - `src/Code/WorldMechanics/BPResets.dm`
 - `src/Code/WorldMechanics/BaseOrbs.dm`
@@ -17,6 +19,7 @@ League names, login descriptions, notes, chat, announcements, and resource amoun
 - `src/Code/WorldMechanics/Leagues.dm`
 - `src/Code/WorldMechanics/LeaguesMainVillain.dm`
 - `src/Code/WorldMechanics/OrbitingPlanet.dm`
+- `src/Code/WorldMechanics/PlanetaryControl.dm`
 - `src/Code/WorldMechanics/PlanetDestroy.dm`
 - `src/Code/WorldMechanics/Sagas.dm`
 - `src/Code/WorldMechanics/Space.dm`
@@ -29,6 +32,54 @@ League names, login descriptions, notes, chat, announcements, and resource amoun
 - `src/Code/WorldMechanics/Years.dm`
 
 ## Proc Reference
+
+### src/Code/WorldMechanics/PlanetaryControl.dm
+
+#### proc/getNexusPlanetControlRegion
+- Signature: `getNexusPlanetControlRegion(atom/source)`
+- Purpose: Resolve an atom to one of the nine canonical control regions, including planet-local interiors, landed ship interiors, and a player's persisted or propagated surface context while inside a mining cave.
+- Returns: A copied planet-region record, or null outside controlled planets.
+
+#### proc/getNexusPlanetControl
+- Signature: `getNexusPlanetControl(planet_id, create_if_missing = TRUE)`
+- Purpose: Return the persistent control datum for a canonical planet ID.
+
+#### mob/proc/applyNexusPlanetaryIncomeTax
+- Signature: `applyNexusPlanetaryIncomeTax(resource_gross = 0, essence_gross = 0, reason = "income", datum/NexusPlanetControl/control_override)`
+- Purpose: Apply exact-League, abandonment, and Heran exemptions; accumulate sub-unit remainders; withhold configured income taxes; and credit the planetary treasury.
+- Returns: Gross, tax, and net values for both currencies.
+
+#### mob/proc/gainNexusResources
+- Signature: `gainNexusResources(amount, reason = "resource income")`
+- Purpose: Grant taxable Resource income without changing the semantics of raw transfers or refunds.
+- Returns: Net Resources credited after any planetary tax.
+
+#### mob/proc/claimNexusPlanetControl
+- Signature: `claimNexusPlanetControl(obj/League/league, announce = TRUE, persist = TRUE, allow_abandoned = FALSE)`
+- Purpose: Claim an unruled or explicitly eligible abandoned current planet for an eligible rank 7 League badge.
+
+#### mob/proc/seizeNexusPlanetControl
+- Signature: `seizeNexusPlanetControl(mob/target, datum/NexusPlanetControl/control, obj/League/league, expected_ownership_revision, announce = TRUE, persist = TRUE)`
+- Purpose: Atomically revalidate and conquer a portable point from its exact adjacent KO, zero-Willpower holder, even when the holder is away from the ruled planet.
+
+#### mob/proc/collectNexusResourceBag
+- Signature: `collectNexusResourceBag(obj/Resources/resource_bag, reason = "collected resources")`
+- Purpose: Credit the transfer portion of a Resource bag without tax and pass only its newly generated portion through planetary income tax.
+
+#### mob/proc/updateNexusPlanetControlContextForTeleport
+- Signature: `updateNexusPlanetControlContextForTeleport(atom/destination)`
+- Purpose: Update, inherit, or clear planet jurisdiction when entering surfaces, interiors, ships, caves, portals, or nonplanet areas through `SafeTeleport()`.
+
+#### mob/proc/setNexusPlanetControlTax
+- Signature: `setNexusPlanetControlTax(datum/NexusPlanetControl/control, currency, rate)`
+- Purpose: Let the governor or a rank 6+ ruling-League officer configure a bounded planet-local income tax.
+
+#### mob/proc/withdrawNexusPlanetControlTreasury
+- Signature: `withdrawNexusPlanetControlTreasury(datum/NexusPlanetControl/control, currency, amount)`
+- Purpose: Let an authorized ruler withdraw collected Resources or Arcane Essence without taxing the transfer again.
+
+#### proc/saveNexusPlanetControls / proc/loadNexusPlanetControls
+- Purpose: Persist and normalize scalar planetary-control state independently from character and map saves.
 
 ### src/Code/WorldMechanics/BPResets.dm
 

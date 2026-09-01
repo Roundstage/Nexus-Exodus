@@ -1843,7 +1843,8 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 	Bounties=new/list
 	destroyed_planets=new/list
 	Year=1000
-	saveWorld(save_map=0)
+	saveWorld(save_map=0,allow_auto_reboot=0)
+	resetNexusPlanetControls()
 	fdel("data/NPCs")
 	if(delete_map)
 		var/Map=1
@@ -1867,8 +1868,6 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 				else o.Item_upgrade_reset_for_wipe()
 		saveItems()
 
-	if(delete_feats) fdel("data/Feats")
-
 	fdel("data/Areas")
 	fdel("data/Blueprint")
 	fdel("data/Roleplayers")
@@ -1881,12 +1880,18 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 	//for(var/mob/P in players) P.Savable=0
 	player_saving_on=0
 
-	fdel("data/Save/")
+	var/list/wipe_persistence_roots = getNexusWipePersistenceRoots(delete_feats)
+	var/persistence_root
+	for(persistence_root in wipe_persistence_roots)
+		fdel(persistence_root)
 	fdel("data/ProfileImages/")
+	fdel("data/DBZ Character Saves/")
 	fdel("DBZ Character Saves/")
 	sleep(10)
-	fdel("data/Save/")
+	for(persistence_root in wipe_persistence_roots)
+		fdel(persistence_root)
 	fdel("data/ProfileImages/")
+	fdel("data/DBZ Character Saves/")
 	fdel("DBZ Character Saves/")
 	var/list/profile_art_survivors = flist("data/ProfileImages/")
 	if(!islist(profile_art_survivors) || !profile_art_survivors.len)
@@ -1901,10 +1906,13 @@ proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_
 		saveNexusProfileArtBudget()
 		if(nexus_profile_art_global_stored_bytes > 0 || nexus_profile_art_cleanup_pending)
 			world.log << "PROFILE_ART_WIPE_CLEANUP_PENDING bytes=[nexus_profile_art_global_stored_bytes]"
+	world << "<font size=2><font color=#FFFF00>Player wipe complete. Rebooting in 30 seconds..."
+	spawn(300)
+		world.Reboot()
 	for(var/mob/player in players)
-		alert(player, "WIPE ALERT", "The server is wiping. Please save any work you have in progress and prepare yourself. You will be disconnected in 30 seconds.")
-	sleep(300)
-	world.Reboot()
+		var/message = "The player wipe is complete and character saving is disabled until restart. You will be disconnected in 30 seconds."
+		var/window_name = "PWIPE ALERT"
+		player << browse("<html><head><title>[window_name]</title></head><body>[message]</body></html>", "window=[window_name]")
 
 
 

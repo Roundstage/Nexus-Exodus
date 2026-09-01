@@ -39,6 +39,7 @@ atom/movable/proc
 			m.cancelNexusSkillMotion("teleport")
 			m.movement_teleport_generation++
 			m.resetMovementPhysics(clear_glide = FALSE)
+			m.updateNexusPlanetControlContextForTeleport(t)
 		//JUST DISABLE THE WHOLE SYSTEM IT HAS SOME BUGS I DONT FEEL LIKE FIXING LIKE WHEN PODS BLOW UP WITH YOU IN IT YOU GET SENT TO VOID FOR NO APPARENT REASON
 		oldLoc = t
 		newLoc = t

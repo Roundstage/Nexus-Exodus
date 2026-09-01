@@ -581,10 +581,8 @@ mob/proc/Collect_Resources(Max,mob/P)
 			if(P&&getdist(src,P.base_loc())<=4&&(P in player_range(4,src)))
 				Say("Objective completed")
 				player_view(15,src)<<"[src] drops [Commas(Res())]$"
-				var/obj/Resources/R = GetCachedObject(/obj/Resources, Get_step(src,dir))
-				R.name="[Commas(Res())]$"
-				R.Value=Res()
-				Alter_Res(-Res())
+				var/obj/Resources/R = dropNexusResourceBalance(Get_step(src,dir))
+				if(R) R.name="[Commas(R.Value)]$"
 				sleep(50)
 		else
 			var/list/Stealables
@@ -608,7 +606,7 @@ mob/proc/Collect_Resources(Max,mob/P)
 					if(istype(M,/obj/Resources))
 						player_view(15,src)<<"[src] picks up [M]"
 						var/obj/Resources/Resources=M
-						Alter_Res(Resources.Value)
+						absorbNexusResourceBagBalance(Resources)
 						del(M)
 					if(ismob(M))
 						Drone_Attack(M,lethal=1)
@@ -622,7 +620,7 @@ mob/proc/Vaccuum_resources(display_message=1)
 		while(R&&R.loc!=loc&&R.z)
 			step_towards(R,src)
 			if(R.loc==loc)
-				Alter_Res(R.Value)
+				absorbNexusResourceBagBalance(R)
 				del(R)
 			sleep(3)
 
@@ -651,10 +649,8 @@ mob/proc/Steal_Resources(Max,mob/P)
 			if(P in player_range(4,src))
 				Say("Objective completed")
 				player_view(15,src)<<"[src] drops [Commas(Res())]$"
-				var/obj/Resources/R = GetCachedObject(/obj/Resources, Get_step(src,dir))
-				R.name="[Commas(Res())]$"
-				R.Value=Res()
-				Alter_Res(-Res())
+				var/obj/Resources/R = dropNexusResourceBalance(Get_step(src,dir))
+				if(R) R.name="[Commas(R.Value)]$"
 		else
 			var/list/Stealables
 			for(var/obj/Drill/DD in drills) if(DD.z==z&&DD.Builder!=Pkey&&DD.get_area()==get_area())

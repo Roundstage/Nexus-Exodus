@@ -6,11 +6,13 @@ mob/var
 
 mob/proc/gainArcaneEssence(amount, reason = "arcane practice", announce = FALSE)
 	if(amount <= 0) return 0
-	var/gained = round(amount * getMagicPotential(), 0.1)
-	arcane_essence += gained
-	arcane_essence_lifetime += gained
-	if(announce) src << "<font color=#c88cff>You gathered [gained] Arcane Essence from [reason]."
-	return gained
+	var/gross_gain = round(amount * getMagicPotential(), 0.1)
+	var/list/tax_result = applyNexusPlanetaryIncomeTax(essence_gross = gross_gain, reason = reason)
+	var/net_gain = tax_result["essence_net"]
+	arcane_essence = round(arcane_essence + net_gain, 0.1)
+	arcane_essence_lifetime = round(arcane_essence_lifetime + gross_gain, 0.1)
+	if(announce) src << "<font color=#c88cff>You gathered [net_gain] Arcane Essence from [reason]."
+	return net_gain
 
 mob/proc/getArcaneCircleTier()
 	var/highest_tier = 0

@@ -427,6 +427,7 @@ obj/Resources
 	can_change_icon=0
 	Savable=1
 	var/Value=0
+	var/nexus_tax_exempt_value = 0
 	verb/Show_Resources() player_view(15,usr)<<"[usr] shows their bag containing [Commas(Value)] resources"
 
 	New()
@@ -446,12 +447,23 @@ obj/Resources
 		. = ..()
 
 	proc/Update_value()
+		if(!nexusIsFiniteNumber(nexus_tax_exempt_value)) nexus_tax_exempt_value = 0
+		nexus_tax_exempt_value = Clamp(nexus_tax_exempt_value, 0, max(0, Value))
 		if(ismob(loc))
 			suffix="[Commas(Value)]"
 			name="Resources"
 		else
 			suffix=null
 			name="[Commas(Value)] resources"
+
+	proc/absorbNexusResourceBag(obj/Resources/other_bag)
+		if(!other_bag || other_bag == src || !nexusIsFiniteNumber(other_bag.Value) || other_bag.Value <= 0) return FALSE
+		Value += other_bag.Value
+		nexus_tax_exempt_value += Clamp(other_bag.nexus_tax_exempt_value, 0, max(0, other_bag.Value))
+		other_bag.Value = 0
+		other_bag.nexus_tax_exempt_value = 0
+		Update_value()
+		return TRUE
 
 	verb/Drop()
 		var/mob/P
@@ -466,6 +478,7 @@ obj/Resources
 			var/obj/Resources/A = GetCachedObject(/obj/Resources)
 			A.SafeTeleport(usr.loc)
 			A.Value=Money
+			A.nexus_tax_exempt_value = Money
 			if(A.Value<250000) A.Savable=0
 			A.Update_value()
 			A.transform = matrix() * GetResourceBagSize(Money)
@@ -592,7 +605,7 @@ obj/Drill
 			//var/percent=drill_share(combined_drill_values)
 			//percent=round(percent,0.01)
 			//player_view(15,src)<<"This drill has a [percent]% share of the planet's resources"
-			usr.Alter_Res(Resources)
+			usr.gainNexusResources(Resources, "drill extraction")
 			Resources=0
 
 	verb/Upgrade()

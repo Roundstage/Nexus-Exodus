@@ -90,8 +90,7 @@ mob/verb/Grab()
 		for(var/obj/Resources/r2 in nearby_pickups)
 			if(!r) r=r2
 			else
-				r.Value+=r2.Value
-				r2.Value = 0
+				r.absorbNexusResourceBag(r2)
 				del(r2)
 		if(r) r.Update_value()
 
@@ -172,8 +171,7 @@ mob/verb/Grab()
 
 		if(istype(O,/obj/Resources))
 			var/obj/Resources/R=O
-			Alter_Res(R.Value)
-			R.Value = 0
+			collectNexusResourceBag(R, "collected resources")
 			player_view(15,src)<<"[src] picks up [O]"
 			del(O)
 

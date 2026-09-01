@@ -128,6 +128,7 @@ mob/var
 	logout_time=0 //realtime
 
 mob/Logout(body_swap_user)
+	refreshNexusPlanetControlPresence(persist = TRUE)
 	StopMovement()
 	if(nexus_reconnect_handoff)
 		players -= src
@@ -284,11 +285,12 @@ mob/proc/GetResourceObject()
 	if(!resource_obj) return 0
 	return resource_obj
 
-mob/proc/Alter_Res(Amount=0) if(resource_obj)
+mob/proc/Alter_Res(Amount=0)
 	var/obj/Resources/r = GetResourceObject()
 	if(!r) return
 	r.Value+=Amount
-	r.suffix="[Commas(resource_obj.Value)]"
+	r.suffix="[Commas(r.Value)]"
+	return Amount
 
 mob/proc/SetRes(n = 0)
 	var/obj/Resources/r = GetResourceObject()
