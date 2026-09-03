@@ -249,7 +249,7 @@ mob/proc/getMilestoneKiDamageStat()
 
 mob/proc/isMilestoneUnencumbered()
 	if(!getMilestoneRank("unencumbered_combatant")) return FALSE
-	if(using_sword()) return FALSE
+	if(usingMeleeWeapon()) return FALSE
 	for(var/obj/items/Gun/gun in src)
 		if(gun.Equipped) return FALSE
 	if(armor_obj && armor_obj.loc == src && armor_obj.suffix) return FALSE

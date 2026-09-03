@@ -1,4 +1,4 @@
-#define NEXUS_PROGRESSION_VERSION 3
+#define NEXUS_PROGRESSION_VERSION 4
 #define NEXUS_PROGRESSION_EXPERIENCE_SCALE 10
 #define NEXUS_PROGRESSION_EXPERIENCE_SCALE_VERSION 1
 #define NEXUS_PASSIVE_PROGRESSION_INTERVAL 36000
@@ -244,6 +244,8 @@ proc/getProgressionCombatExcludedSkillTypes()
 			/obj/Make_Holy_Pendant,
 			/obj/Buff/Preset/CombatMathematics,
 			/obj/Buff/Preset/BleedingEdge,
+			/obj/Buff/Preset/KiBlade,
+			/obj/Buff/Preset/KiFist,
 			/obj/Focusin_revert,
 			/obj/Overdrive,
 			/obj/Great_Ape,
@@ -283,6 +285,7 @@ proc/isProgressionCombatSkillType(skill_type)
 	if(skill_type in getNexusBeamAttackTypes()) return TRUE
 	if(skill_type in getNexusRockAttackTypes()) return TRUE
 	if(skill_type in getNexusSpecialStyleAttackTypes()) return TRUE
+	if(ispath(skill_type, /obj/KiWeaponTechnique)) return TRUE
 	if(skill_type in list(/obj/God_Fist, /obj/Attacks/Genki_Dama)) return TRUE
 	if(skill_type == /obj/Buff/Focus || ispath(skill_type, /obj/Buff/Preset) || ispath(skill_type, /obj/Buff/Ultimate)) return TRUE
 	if(ispath(skill_type, /obj/Attacks))
@@ -294,6 +297,7 @@ proc/getProgressionCombatBranchForType(skill_type, skill_name, hotbar_type)
 	if(skill_type in getNexusWeaponAttackTypes()) return "Weapon"
 	if(skill_type in getProgressionUnarmedAttackTypes()) return "Unarmed"
 	if(skill_type in getNexusRockAttackTypes()) return "Physical"
+	if(ispath(skill_type, /obj/KiWeaponTechnique)) return "Ki Weapons"
 	if(skill_type in getNexusBeamAttackTypes() || hotbar_type == "Beam") return "Beam"
 	if(skill_type == /obj/Buff || skill_type == /obj/God_Fist || skill_type == /obj/Buff/Focus || ispath(skill_type, /obj/Buff/Preset) || ispath(skill_type, /obj/Buff/Ultimate)) return "Buffs"
 	if(ispath(skill_type, /obj/Attacks) || hotbar_type == "Blast") return "Ki"
@@ -330,7 +334,7 @@ proc/registerProgressionSkillType(skill_type, forced_branch = null, forced_tier 
 	if(!branch) return
 	var/tier = forced_tier > 0 ? forced_tier : getProgressionSkillTier(base_cost)
 	var/cost = forced_cost > 0 ? forced_cost : getProgressionSkillCost(base_cost, student_cost, tier)
-	var/root_id = "combat_[lowertext(branch)]_root"
+	var/root_id = "combat_[replacetext(lowertext(branch), " ", "_")]_root"
 	var/node_id = getProgressionNodeIdForType(skill_type)
 	var/description = skill_description ? "[skill_description]" : "Learn [skill_name]."
 	var/datum/ProgressionNode/node = createProgressionNode(node_id, "[skill_name]", description, "Combat", branch, tier + 1, cost, list(root_id))
@@ -511,8 +515,8 @@ proc/disperseProgressionScienceTierFive()
 			technology.science_level = 5 + min(3, floor((index - 1) * 4 / max(1, candidates.len)))
 
 proc/initializeProgressionCombatCatalog()
-	for(var/branch in list("Foundation", "Buffs", "Ki", "Beam", "Physical", "Unarmed", "Weapon"))
-		var/branch_key = lowertext(branch)
+	for(var/branch in list("Foundation", "Buffs", "Ki", "Ki Weapons", "Beam", "Physical", "Unarmed", "Weapon"))
+		var/branch_key = replacetext(lowertext(branch), " ", "_")
 		var/datum/ProgressionNode/root = createProgressionNode("combat_[branch_key]_root", "[branch] Fundamentals", "Opens the first [branch] techniques.", "Combat", branch, 1, 3)
 		root.max_rank = 1
 
@@ -523,12 +527,10 @@ proc/initializeProgressionCombatCatalog()
 	var/list/preset_buffs = list(
 		/obj/Buff/Focus,
 		/obj/Buff/Preset/MuscleForce,
-		/obj/Buff/Preset/KiBlade,
 		/obj/Buff/Preset/MagicForce,
 		/obj/Buff/Preset/OffensiveStance,
 		/obj/Buff/Preset/DefensiveStance,
 		/obj/Buff/Preset/BurningFist,
-		/obj/Buff/Preset/KiFist,
 		/obj/Buff/Preset/DemonicFury,
 		/obj/Buff/Preset/AngelicGrace,
 		/obj/Buff/Preset/Channel)
@@ -548,6 +550,19 @@ proc/initializeProgressionCombatCatalog()
 		var/datum/ProgressionNode/ultimate_node = registerProgressionSkillType(buff_type, "Buffs", 4, 30)
 		ultimate_node.exclusive_group = "ultimate_buff"
 	registerProgressionSkillType(/obj/God_Fist, "Buffs", 9, 60)
+
+	for(var/ki_weapon_type in list(/obj/KiWeaponTechnique/KiFist, /obj/KiWeaponTechnique/KiSword, /obj/KiWeaponTechnique/KiHammer, /obj/KiWeaponTechnique/SpiritSword))
+		registerProgressionSkillType(ki_weapon_type, "Ki Weapons", 1, 8)
+	var/datum/ProgressionNode/ki_weapon_novice = createProgressionNode("ki_weapon_proficiency_novice", "Novice Proficiency", "Shapes Normal-tier Ki Weapons with +3% melee BP reinforcement.", "Combat", "Ki Weapons", 2, 5, list("combat_ki_weapons_root"))
+	ki_weapon_novice.icon_file = 'src/Icons/VFX/SaiyanPower.dmi'
+	var/datum/ProgressionNode/ki_weapon_basic = createProgressionNode("ki_weapon_proficiency_basic", "Basic Proficiency", "Raises every Ki Weapon to Copper-tier quality with +6% melee BP reinforcement.", "Combat", "Ki Weapons", 3, 10, list("ki_weapon_proficiency_novice"))
+	ki_weapon_basic.icon_file = 'src/Icons/VFX/SaiyanPower.dmi'
+	var/datum/ProgressionNode/ki_weapon_adept = createProgressionNode("ki_weapon_proficiency_adept", "Adept Proficiency", "Raises every Ki Weapon to Iron-tier quality with +14% melee BP reinforcement.", "Combat", "Ki Weapons", 4, 16, list("ki_weapon_proficiency_basic"))
+	ki_weapon_adept.icon_file = 'src/Icons/VFX/SaiyanPower.dmi'
+	var/datum/ProgressionNode/ki_weapon_advanced = createProgressionNode("ki_weapon_proficiency_advanced", "Advanced Proficiency", "Raises every Ki Weapon to Mythril-tier quality with +20% melee BP reinforcement.", "Combat", "Ki Weapons", 5, 24, list("ki_weapon_proficiency_adept"))
+	ki_weapon_advanced.icon_file = 'src/Icons/VFX/SaiyanPower.dmi'
+	var/datum/ProgressionNode/ki_weapon_master = createProgressionNode("ki_weapon_proficiency_master", "Master Proficiency", "Raises every Ki Weapon to Masterwork-tier quality with +26% melee BP reinforcement. Ki Weapons never gain Auracite criticals.", "Combat", "Ki Weapons", 6, 36, list("ki_weapon_proficiency_advanced"))
+	ki_weapon_master.icon_file = 'src/Icons/VFX/SaiyanPower.dmi'
 
 	var/weapon_index = 0
 	for(var/weapon_type in getNexusWeaponAttackTypes())
@@ -584,22 +599,24 @@ proc/initializeProgressionCombatCatalog()
 	configureProgressionAuthoredAttackPaths()
 	configureProgressionRewardPath(/obj/Buff/Focus, 2, 8, list("combat_buffs_root"))
 	configureProgressionRewardPath(/obj/Buff/Preset/MuscleForce, 2, 8, list("combat_buffs_root"))
-	configureProgressionRewardPath(/obj/Buff/Preset/KiBlade, 2, 8, list("combat_buffs_root"))
 	configureProgressionRewardPath(/obj/Buff/Preset/DefensiveStance, 3, 12, list(/obj/Buff/Focus))
 	configureProgressionRewardPath(/obj/Buff/Preset/OffensiveStance, 3, 12, list(/obj/Buff/Preset/MuscleForce))
-	configureProgressionRewardPath(/obj/Buff/Preset/MagicForce, 3, 12, list(/obj/Buff/Preset/KiBlade))
-	configureProgressionRewardPath(/obj/Buff/Preset/BurningFist, 3, 12, list(/obj/Buff/Preset/KiBlade))
+	configureProgressionRewardPath(/obj/Buff/Preset/MagicForce, 3, 12, list(/obj/Buff/Focus))
+	configureProgressionRewardPath(/obj/Buff/Preset/BurningFist, 3, 12, list(/obj/Buff/Preset/MuscleForce))
 	configureProgressionRewardPath(/obj/Buff/Preset/AngelicGrace, 4, 16, list(/obj/Buff/Preset/DefensiveStance))
 	configureProgressionRewardPath(/obj/Buff/Preset/DemonicFury, 4, 16, list(/obj/Buff/Preset/OffensiveStance))
-	configureProgressionRewardPath(/obj/Buff/Preset/KiFist, 4, 16, list(/obj/Buff/Preset/BurningFist))
 	configureProgressionRewardPath(/obj/Buff/Preset/Channel, 4, 16, list(/obj/Buff/Preset/MagicForce))
 	configureProgressionRewardPath(/obj/Buff/Ultimate/Godspeed, 5, 30, list(/obj/Buff/Preset/AngelicGrace), "ultimate_buff")
 	configureProgressionRewardPath(/obj/Buff/Ultimate/HighTension, 5, 30, list(/obj/Buff/Preset/DemonicFury), "ultimate_buff")
 	configureProgressionRewardPath(/obj/Buff/Ultimate/BestialWrath, 5, 30, list(/obj/Buff/Preset/DemonicFury), "ultimate_buff")
-	configureProgressionRewardPath(/obj/Buff/Ultimate/FistsOfFury, 5, 30, list(/obj/Buff/Preset/KiFist), "ultimate_buff")
+	configureProgressionRewardPath(/obj/Buff/Ultimate/FistsOfFury, 5, 30, list(/obj/Buff/Preset/BurningFist), "ultimate_buff")
 	configureProgressionRewardPath(/obj/Buff/Ultimate/ArcanePower, 5, 30, list(/obj/Buff/Preset/Channel), "ultimate_buff")
 	configureProgressionRewardPath(/obj/Buff/Ultimate/Bushido, 5, 30, list(/obj/Buff/Preset/OffensiveStance), "ultimate_buff")
 	configureProgressionRewardPath(/obj/God_Fist, 10, 60, list(/obj/Buff, "combat_buffs_root"))
+	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiFist, 2, 8, list("ki_weapon_proficiency_novice"))
+	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiSword, 3, 12, list("ki_weapon_proficiency_novice"))
+	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiHammer, 4, 20, list(/obj/KiWeaponTechnique/KiSword, "ki_weapon_proficiency_basic"))
+	configureProgressionRewardPath(/obj/KiWeaponTechnique/SpiritSword, 6, 40, list(/obj/KiWeaponTechnique/KiHammer, "ki_weapon_proficiency_advanced"))
 	configureProgressionFoundationPaths()
 
 proc/initializeProgressionMagicCatalog()
