@@ -795,6 +795,7 @@ obj/Blast
 			if(!br)
 				for(var/mob/A in beam_contact_targets) if(A != Owner || deflected)
 					if(A.rp_mode) continue
+					if(A.tryNexusCometReversal(src)) continue
 					if(A.ultra_instinct)
 						var/d = turn(dir,pick(135,-135))
 						A.tryNexusVectorDodge(d)

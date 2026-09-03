@@ -78,6 +78,12 @@ While enabled, six verbs appear in the **Playtest** category: the complete rewar
 - Returns: none (implicit).
 - Side effects: creates and deletes isolated counter users, beam owners, attacks and projectile segments; briefly yields for asynchronous follow-up dispatch.
 
+#### proc/runNexusActionCycleSmoke
+- Signature: `proc/runNexusActionCycleSmoke()`
+- Purpose: Pin bounded Speed-based vector movement, headless HUD throttling, natural Energy scheduling, and legacy text-list handling outside the size-limited main startup procedure.
+- Returns: none (implicit).
+- Side effects: creates and deletes one isolated smoke-test mob, Energy datum, and text-handling fixture.
+
 #### proc/runNexusPlanetaryControlSmokeTests
 - Signature: `proc/runNexusPlanetaryControlSmokeTests()`
 - Purpose: Pin exact holder and League identity, portable KO/zero-Willpower conquest, abandoned-point neutrality, Resource and Arcane Essence tax exemptions, fractional micro-income, bag provenance, surface/interior/cave jurisdiction, portal propagation, treasury preservation, and persistence round trips.
