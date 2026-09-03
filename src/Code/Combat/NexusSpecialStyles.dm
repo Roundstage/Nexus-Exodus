@@ -85,7 +85,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile
 		if(world.time < next_use)
 			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
 			return FALSE
-		if(requires_weapon && !user.using_sword())
+		if(requires_weapon && !user.usingMeleeWeapon())
 			user << "You must equip a weapon before using [src]."
 			return FALSE
 		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)

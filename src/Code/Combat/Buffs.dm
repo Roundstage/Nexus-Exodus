@@ -681,13 +681,11 @@ mob/Admin4/verb/testNexusBuffs(mob/character in players)
 		/obj/Buff/Focus,
 		/obj/Buff/Preset/MuscleForce,
 		/obj/Buff/Preset/CombatMathematics,
-		/obj/Buff/Preset/KiBlade,
 		/obj/Buff/Preset/MagicForce,
 		/obj/Buff/Preset/OffensiveStance,
 		/obj/Buff/Preset/DefensiveStance,
 		/obj/Buff/Preset/BleedingEdge,
 		/obj/Buff/Preset/BurningFist,
-		/obj/Buff/Preset/KiFist,
 		/obj/Buff/Preset/DemonicFury,
 		/obj/Buff/Preset/AngelicGrace,
 		/obj/Buff/Preset/Channel,
@@ -699,6 +697,8 @@ mob/Admin4/verb/testNexusBuffs(mob/character in players)
 		/obj/Buff/Ultimate/Bushido)
 	for(var/buff_type in buff_types)
 		if(!(locate(buff_type) in character)) character.contents += new buff_type(character)
+	for(var/ki_weapon_type in list(/obj/KiWeaponTechnique/KiFist, /obj/KiWeaponTechnique/KiSword, /obj/KiWeaponTechnique/KiHammer, /obj/KiWeaponTechnique/SpiritSword))
+		if(!(locate(ki_weapon_type) in character)) character.contents += new ki_weapon_type(character)
 	src << "[character] received every integrated Nexus preset and Ultimate Buff for testing."
 
 obj/Buff/proc/normalizeNexusCustomBuffStats()

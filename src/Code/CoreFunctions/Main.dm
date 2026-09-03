@@ -95,6 +95,7 @@ mob/proc
 		Calm() //because if they relog angry they can stay perma anger instead of just a short burst
 		Evil_overlay()
 		Delete_excess_buffs()
+		migrateLegacyKiWeapons()
 		if(last_anger>world.time) last_anger=0
 
 		if(Race=="Majin"&&Regenerate==2) Regenerate=majin_new_regen

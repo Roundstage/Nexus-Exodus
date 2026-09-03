@@ -3045,6 +3045,7 @@ obj/items
 			usr.Apply_Sword(src)
 mob/proc/Apply_Sword(obj/items/Sword/S)
 	if(S.loc==src)
+		if(!S.suffix) disableKiWeaponForPhysicalWeapon()
 		for(var/obj/items/Sword/A in item_list) if(A!=S&&A.suffix)
 			Apply_Sword(A)
 		Clothes_Equip(S)

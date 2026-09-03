@@ -1087,6 +1087,47 @@ proc/runNexusCometReversalSmoke(turf/counter_turf, turf/adjacent_source_turf, tu
 	var/datum/ProgressionNode/comet_reversal_progression_node = progression_node_catalog[comet_reversal_progression_id]
 	nexusSmokeAssert(comet_reversal_progression_node && comet_reversal_progression_node.category == "Combat" && comet_reversal_progression_node.branch == "Unarmed" && comet_reversal_progression_node.tier == 4 && comet_reversal_progression_node.cost == getScaledProgressionExperience(20) && (guard_break_progression_id in comet_reversal_progression_node.prerequisites), "Comet Reversal is not a tier-four Unarmed purchase costing 20 after Guard Break")
 
+proc/runNexusKiWeaponSmoke()
+	var/mob/NexusSmokeTest/ki_weapon_user = new
+	ki_weapon_user.BP = 100
+	ki_weapon_user.Str = 100
+	ki_weapon_user.Pow = 100
+	ki_weapon_user.max_ki = 100
+	ki_weapon_user.Ki = 100
+	ki_weapon_user.progression_nodes_owned = list("ki_weapon_proficiency_master" = 1)
+	var/obj/KiWeaponTechnique/KiFist/ki_fist_test = new(ki_weapon_user)
+	var/obj/KiWeaponTechnique/KiSword/ki_sword_test = new(ki_weapon_user)
+	var/obj/KiWeaponTechnique/KiHammer/ki_hammer_test = new(ki_weapon_user)
+	var/obj/KiWeaponTechnique/SpiritSword/spirit_sword_test = new(ki_weapon_user)
+	nexusSmokeAssert(ki_fist_test.force_share == 0.3 && !ki_fist_test.counts_as_weapon && ki_fist_test.allows_physical_weapon, "Ki Fist lost its glove-compatible 30% Force contract")
+	nexusSmokeAssert(ki_sword_test.force_share == 0.7 && !ki_sword_test.counts_as_weapon && !ki_sword_test.allows_physical_weapon && ki_sword_test.accuracy_multiplier < 1, "Ki Sword lost its non-weapon Force or accuracy contract")
+	nexusSmokeAssert(ki_hammer_test.force_share == 1 && ki_hammer_test.counts_as_weapon && ki_hammer_test.delay_multiplier > 1 && ki_hammer_test.accuracy_multiplier < 1, "Ki Hammer lost its weapon, Force, speed or accuracy contract")
+	nexusSmokeAssert(spirit_sword_test.force_share == 0.7 && spirit_sword_test.counts_as_weapon && spirit_sword_test.uses_energy_defense && spirit_sword_test.scales_with_energy, "Spirit Sword lost its high-tier energy-weapon contract")
+	initializeProgressionTreeCatalog()
+	var/datum/ProgressionNode/ki_fist_node = progression_node_catalog[getProgressionNodeIdForType(/obj/KiWeaponTechnique/KiFist)]
+	var/datum/ProgressionNode/spirit_sword_node = progression_node_catalog[getProgressionNodeIdForType(/obj/KiWeaponTechnique/SpiritSword)]
+	nexusSmokeAssert(ki_fist_node && ki_fist_node.branch == "Ki Weapons" && spirit_sword_node && spirit_sword_node.cost == getScaledProgressionExperience(40), "Ki Weapon type tree is missing or Spirit Sword is not its expensive capstone")
+	nexusSmokeAssert(progression_node_catalog["ki_weapon_proficiency_basic"]:prerequisites[1] == "ki_weapon_proficiency_novice" && progression_node_catalog["ki_weapon_proficiency_master"]:prerequisites[1] == "ki_weapon_proficiency_advanced", "Ki Weapon proficiency is not a separate sequential line")
+	nexusSmokeAssert(ki_weapon_user.getKiWeaponProficiency() == KI_WEAPON_PROFICIENCY_MASTER && ki_weapon_user.getKiWeaponBPBonus() == 0.26, "Ki Weapon Master proficiency does not map to sub-forged Masterwork reinforcement")
+	var/obj/items/Sword/physical_weapon = new(ki_weapon_user)
+	physical_weapon.suffix = "Active"
+	ki_weapon_user.equipped_sword = physical_weapon
+	nexusSmokeAssert(!ki_sword_test.toggle(ki_weapon_user), "Ki Sword can be combined with a physical weapon")
+	nexusSmokeAssert(ki_fist_test.toggle(ki_weapon_user), "Ki Fist cannot be combined with a physical weapon")
+	nexusSmokeAssert(ki_fist_test.isEmbue(ki_weapon_user) && ki_weapon_user.getKiWeaponCombatBP() == ki_weapon_user.getForgedWeaponAttackBP(), "Embue stacks Ki Weapon BP with its physical weapon")
+	ki_fist_test.deactivate(ki_weapon_user, TRUE)
+	physical_weapon.suffix = null
+	ki_weapon_user.equipped_sword = null
+	ki_hammer_test.suffix = "Active"
+	ki_weapon_user.active_ki_weapon = ki_hammer_test
+	nexusSmokeAssert(ki_weapon_user.usingMeleeWeapon() && ki_weapon_user.getKiWeaponSourceStat(ki_hammer_test) > ki_weapon_user.getMilestonePhysicalDamageStat(), "active Ki Hammer does not satisfy weapon techniques or add Force scaling")
+	ki_hammer_test.suffix = null
+	spirit_sword_test.suffix = "Active"
+	ki_weapon_user.active_ki_weapon = spirit_sword_test
+	ki_weapon_user.Ki = 0
+	nexusSmokeAssertNear(ki_weapon_user.getKiWeaponEnergyMultiplier(spirit_sword_test), 0.7, 0.001, "Spirit Sword does not weaken with an exhausted Energy reserve")
+	del(ki_weapon_user)
+
 proc/runNexusActionCycleSmoke()
 	var/mob/NexusSmokeTest/action_cycle_player = new
 	action_cycle_player.Spd = 10
@@ -3081,6 +3122,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(wolf_fang_hit_damage_mult == 3 && wolf_fang_knockback_distance == 3 && wolf_fang_accuracy_bonus == 15 && !getWolfFangFinisherKnockback(4, 5) && getWolfFangFinisherKnockback(5, 5) == 3, "Wolf Fang Fist does not preserve contact until its finisher")
 	nexusSmokeAssert(hundred_crack_min_hits == 24 && hundred_crack_hit_damage_mult == 0.75, "Hundred Crack Fist lost its sustained damage budget")
 	nexusSmokeAssert(base_melee_damage == 2.5 && combat_damage_bp_exponent == 1 && combat_damage_stat_exponent == 0.85, "central combat damage constants are invalid")
+	runNexusKiWeaponSmoke()
 	nexusSmokeAssert(skill_blast_total_factor == 0.6 && skill_big_bang_damage_factor == 28 && skill_charge_damage_factor == 8 && skill_cyber_charge_damage_factor == 6, "core projectile factors diverged from the balance workbook")
 	nexusSmokeAssert(basic_blast_base_refire_deciseconds == 0.75 && basic_blast_default_volley_size == 3 && basic_blast_max_volley_size == 3 && basic_blast_damage_scale == 0.3 && basic_blast_energy_scale == 0.2 && basic_blast_angle_spacing_degrees == 6 && basic_blast_angle_jitter_degrees == 2 && basic_blast_owner_active_limit == 24 && basic_blast_global_active_limit == 256 && basic_blast_volley_configuration_version == 1, "rapid basic-blast volley tuning is invalid")
 	nexusSmokeAssertNear(basic_blast_default_volley_size / basic_blast_base_refire_deciseconds, 4, 0.0001, "rapid basic blasts exceed the former maximum launch rate")

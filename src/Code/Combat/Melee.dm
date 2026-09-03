@@ -211,6 +211,8 @@ mob/proc/getNexusMeleeAttackName(obj/Attacks/NexusMeleeTechnique/technique)
 	if(technique) return "[technique]"
 	if(power_attacking) return "Power Attack"
 	if(lunge_attacking) return "Lunge Attack"
+	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
+	if(ki_weapon) return "[ki_weapon] Strike"
 	if(using_sword()) return "Sword Strike"
 	if(isFireFist) return "Fire Fist"
 	return "Melee Attack"
@@ -536,17 +538,21 @@ mob/proc/get_melee_damage(mob/m, count_sword = 1, for_strangle, allow_one_shot =
 		if(has_target && m.is_teamer) dmg*=teamer_dmg_mult
 		if(is_teamer) dmg/=teamer_dmg_mult
 
-		var/source_stat = getWeaponCombatSourceStat(s && count_sword ? s : null)
+		var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
+		var/source_stat = ki_weapon ? getKiWeaponSourceStat(ki_weapon) : getWeaponCombatSourceStat(s && count_sword ? s : null)
 		var/guard_stat = has_target ? m.getMilestoneScaledCombatStat(m.End) * getMilestoneGuardMultiplier() : 0
+		if(ki_weapon && ki_weapon.uses_energy_defense && has_target)
+			guard_stat = m.getMilestoneScaledCombatStat(m.Res) * getMilestoneGuardMultiplier()
 		if(s && count_sword)
 			dmg *= getSwordCombatDamageMultiplier(s, has_target ? m : null, swordMod)
 			if(s.Style=="Energy")
 				if(has_target) guard_stat = m.getMilestoneScaledCombatStat(m.Res) * getMilestoneGuardMultiplier()
 				if(has_target && FF) guard_stat = m.getMilestoneScaledCombatStat(Avg_Res())
-		var/attacker_combat_bp = s && count_sword ? getForgedWeaponAttackBP() : getForgedUnarmedAttackBP()
+		var/attacker_combat_bp = ki_weapon ? getKiWeaponCombatBP() : (s && count_sword ? getForgedWeaponAttackBP() : getForgedUnarmedAttackBP())
 		var/defender_combat_bp = has_target ? m.getForgedArmorEnduranceBP() : max(BP, 0.01)
 		dmg = calculateScaledCombatDamage(dmg, attacker_combat_bp, defender_combat_bp, source_stat, guard_stat)
-		dmg *= getMilestoneMeleeDamageMultiplier(has_target ? m : null, !!s)
+		dmg *= getKiWeaponEnergyMultiplier(ki_weapon)
+		dmg *= getMilestoneMeleeDamageMultiplier(has_target ? m : null, !!s || (ki_weapon && ki_weapon.counts_as_weapon))
 
 		if(has_target && m.dir==dir&&!for_strangle) dmg *= 1.25 //hit from behind
 		if(alignment=="Evil"&&alignment_on) dmg*=villain_damage_penalty
@@ -791,6 +797,7 @@ mob/proc/get_melee_accuracy(mob/m)
 
 		if(equipped_sword)
 			accuracy /= 1 + (equipped_sword.Damage - 1) * swordDodgeMod
+		accuracy *= getKiWeaponAccuracyMultiplier()
 		for(var/obj/Injuries/I in m.injury_list)
 			if(I.type==/obj/Injuries/Eye) accuracy*=2
 			if(I.type==/obj/Injuries/Arm) accuracy*=1.2
@@ -865,8 +872,10 @@ mob/proc/get_melee_knockback_distance(mob/m)
 			ultra_instinct_no_escape_triggered = 0
 
 		var/obj/items/Sword/s=using_sword()
+		var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
 		var/n
-		if(s&&s.Style=="Energy") n=((Swordless_strength()*0.5)+(Pow*0.5))/m.Res
+		if(ki_weapon) n=getKiWeaponSourceStat(ki_weapon)/(ki_weapon.uses_energy_defense ? m.Res : m.End)
+		else if(s&&s.Style=="Energy") n=((Swordless_strength()*0.5)+(Pow*0.5))/m.Res
 		else n=(Swordless_strength()/m.End)
 		if(n>1) n=n**kb_superior_scaling_mod
 		else n=n**kb_inferior_scaling_mod
@@ -879,7 +888,9 @@ mob/proc/get_melee_knockback_distance(mob/m)
 
 mob/proc/get_melee_sounds(knockback_dist=0)
 	var/list/l=list('Weakpunch.ogg','Weakkick.ogg','Mediumpunch.ogg','Mediumkick.ogg')
-	if(using_sword()) l=list('Swordhit.ogg')
+	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
+	if(using_sword() || (ki_weapon && ki_weapon.causes_bleed)) l=list('Swordhit.ogg')
+	else if(istype(ki_weapon, /obj/KiWeaponTechnique/KiHammer)) l=list('Strongpunch.ogg')
 	if(knockback_dist >= 12) l=list('Strongpunch.ogg','Strongkick.ogg')
 	if(hokuto_obj&&hokuto_obj.Attacking) l=list('Weakpunch.ogg')
 	return l
@@ -1045,7 +1056,8 @@ mob/proc/Get_melee_delay(mult=1,injuries_matter=1)
 	var/obj/items/Sword/s = using_sword()
 	if(s)
 		delay *= 1 + (s.Damage - 1) * sword_refire_mod
-	delay *= getMilestoneMeleeDelayMultiplier(!!s)
+	delay *= getKiWeaponDelayMultiplier()
+	delay *= getMilestoneMeleeDelayMultiplier(!!s || usingKiWeaponAsWeapon())
 
 	return TickMult(delay)
 
@@ -1310,7 +1322,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 			Play_Melee_Sound(sound_range=10,origin=src,sound_file=pick(sounds),sound_volume=20)
 		if(ismob(target) && Is_Darius()) target.Apply_Bleed()
 		zombie_melee_infection(target)
-		if(using_sword()&&ismob(target)) target.check_lose_tail(dmg,src)
+		if((using_sword() || usingCuttingKiWeapon()) && ismob(target)) target.check_lose_tail(dmg,src)
 		if(lunge_attacking) BigCrater(pos = target.base_loc(), minRangeFromOtherCraters = 3)
 
 		if(ismob(target))
@@ -1333,7 +1345,8 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				target.Death(src,Force_Death=1,lose_hero=0,lose_immortality=0)
 			else
 				var/obj/items/Sword/s = using_sword()
-				if(s)
+				var/obj/KiWeaponTechnique/hit_ki_weapon = usingKiWeapon()
+				if(s || (hit_ki_weapon && hit_ki_weapon.causes_bleed))
 					var/bleedDmg = dmg * swordBleedDmg
 					dmg -= bleedDmg
 					target.BleedDamage(bleedDmg, src, "[getNexusMeleeAttackName(nexus_technique)] Bleed")
@@ -1349,7 +1362,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				if(target && !nexus_technique)
 					applyMilestoneMeleeAreaDamage(target, dmg, melee_attack_name)
 					tryApplyMilestoneDoubleAttack(target, dmg, melee_attack_name)
-				if(target && s && milestone_thundering_blows_active && prob(50))
+				if(target && (s || (hit_ki_weapon && hit_ki_weapon.counts_as_weapon)) && milestone_thundering_blows_active && prob(50))
 					target.TakeDamage(dmg * 0.1, attacker = src, attack_name = "Thundering Blows")
 					if(target) target.ApplyStun(time = 2, stun_power = 1.25)
 				if(nexus_technique && target) nexus_technique.applyOnHit(src, target, dmg)

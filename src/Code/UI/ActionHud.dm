@@ -563,6 +563,17 @@ datum/NexusPlayerMenu
 	proc/getSkillEffectData(obj/skill)
 		var/list/data = list("heading" = null, "summary" = null, "state" = null, "stat_changes" = null, "attributes" = null, "upkeep" = null)
 		if(!skill) return data
+		if(istype(skill, /obj/KiWeaponTechnique))
+			var/obj/KiWeaponTechnique/ki_weapon = skill
+			data["heading"] = "KI WEAPON EFFECT"
+			data["summary"] = "[round(ki_weapon.force_share * 100)]% of Force is added to melee scaling at [owner.getKiWeaponProficiencyName()] proficiency."
+			if(ki_weapon.isEmbue(owner)) data["summary"] = "EMBUE: adds 30% of Force to the equipped physical weapon without stacking Ki Weapon BP reinforcement."
+			data["state"] = ki_weapon.suffix ? "ACTIVE" : "INACTIVE"
+			var/bp_description = ki_weapon.isEmbue(owner) ? "Physical weapon BP only" : "+[round(owner.getKiWeaponBPBonus() * 100)]% melee BP reinforcement"
+			data["stat_changes"] = "[bp_description]; [round(ki_weapon.accuracy_multiplier * 100)]% melee accuracy; [round(ki_weapon.delay_multiplier * 100)]% melee delay"
+			data["attributes"] = ki_weapon.counts_as_weapon ? "Counts as a weapon; enables Weapon techniques and blocks Unarmed techniques" : "Does not count as a weapon; leaves Unarmed techniques available"
+			data["upkeep"] = ki_weapon.scales_with_energy ? "Damage scales from 70% at empty Energy to 100% at full Energy" : "No Auracite tier or forged critical bonus"
+			return data
 		if(istype(skill, /obj/Buff))
 			var/obj/Buff/buff = skill
 			var/list/multipliers = list(
@@ -733,7 +744,7 @@ datum/NexusPlayerMenu
 				var/obj/Attacks/NexusMeleeTechnique/CometReversal/comet_reversal = technique
 				data["range"] = "Beam contact / emitter in frontal arc / advances up to [comet_reversal.dash_range] tiles"
 				data["mechanics"] = "A [round(comet_reversal.counter_window_ticks / 10, 0.1)]-second counter stance cancels the first hostile beam whose emitter is in the frontal arc and approaches its owner. Matching beam contacts are also canceled during that same rush, for at most [round(comet_reversal.rush_guard_ticks / 10, 0.1)] seconds, without retargeting or adding strikes. The final strike uses normal melee accuracy and occurs only if the approach reaches adjacency."
-				data["requirements"] = owner.using_sword() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
+				data["requirements"] = owner.usingMeleeWeapon() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
 				data["cost"] = "[comet_reversal.energy_cost] physical-technique drain units"
 				data["cooldown"] = "[round(comet_reversal.cooldown_ticks / 10, 0.1)] seconds"
 				return data
@@ -746,8 +757,8 @@ datum/NexusPlayerMenu
 			if(technique.splash_radius) effects += "[technique.splash_radius]-tile splash"
 			data["mechanics"] = "[technique.behavior]: [jointext(effects, ", ")]."
 			var/list/requirements = list()
-			if(technique.requires_weapon) requirements += owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING"
-			if(technique.requires_unarmed) requirements += owner.using_sword() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
+			if(technique.requires_weapon) requirements += owner.usingMeleeWeapon() ? "Weapon equipped: READY" : "Weapon equipped: MISSING"
+			if(technique.requires_unarmed) requirements += owner.usingMeleeWeapon() ? "Must be unarmed: BLOCKED" : "Must be unarmed: READY"
 			if(technique.behavior in list("grapple_throw", "grapple_slam")) requirements += owner.grabbedObject ? "Must hold a grabbed target: READY" : "Must hold a grabbed target: MISSING"
 			if(!requirements.len) requirements += "No weapon or grab requirement"
 			data["requirements"] = jointext(requirements, " / ")
@@ -773,7 +784,7 @@ datum/NexusPlayerMenu
 			data["projectile_budget_factor"] = data["factor"]
 			data["range"] = projectile_skill.explosion_size ? "40 tiles / [projectile_skill.explosion_size]-tile explosion" : "40 tiles / direct impact"
 			data["mechanics"] = projectile_skill.explosion_size ? "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then deals direct and splash damage within a shared maximum budget." : "Charges for [round(projectile_skill.charge_ticks / 10, 0.1)] seconds, then launches a cutting projectile with [projectile_skill.projectile_shockwave]-tile knockback."
-			data["requirements"] = projectile_skill.requires_weapon ? (owner.using_sword() ? "Weapon equipped: READY" : "Weapon equipped: MISSING") : "No weapon requirement"
+			data["requirements"] = projectile_skill.requires_weapon ? (owner.usingMeleeWeapon() ? "Weapon equipped: READY" : "Weapon equipped: MISSING") : "No weapon requirement"
 			data["cost"] = "[projectile_skill.energy_cost] energy-drain units"
 			data["cooldown"] = "[round(projectile_skill.cooldown_ticks / 10, 0.1)] seconds"
 			return data

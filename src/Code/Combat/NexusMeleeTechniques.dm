@@ -87,7 +87,7 @@ mob/proc/hasNexusStance(stance_id)
 	return TRUE
 
 mob/proc/getNexusStanceCriticalChanceBonus()
-	if(!hasNexusStance("critical_edge") || !using_sword()) return 0
+	if(!hasNexusStance("critical_edge") || !usingMeleeWeapon()) return 0
 	return 15
 
 mob/proc/getNexusBlockIncomingDamageMultiplier()
@@ -182,11 +182,11 @@ obj/Attacks/NexusStance
 		if(world.time < next_use)
 			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
 			return FALSE
-		var/obj/items/Sword/weapon = user.using_sword()
-		if(requires_weapon && !weapon)
+		var/has_weapon = user.usingMeleeWeapon()
+		if(requires_weapon && !has_weapon)
 			user << "You must equip a weapon before using [src]."
 			return FALSE
-		if(requires_unarmed && weapon)
+		if(requires_unarmed && has_weapon)
 			user << "You must unequip your weapon before using [src]."
 			return FALSE
 		var/stance_drain = user.GetSkillDrain(mod = energy_cost, is_energy = 0)
@@ -448,11 +448,11 @@ mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 		var/seconds_left = round((technique.next_use - world.time) / 10, 0.1)
 		src << "[technique] will be ready in [seconds_left] seconds."
 		return FALSE
-	var/obj/items/Sword/weapon = using_sword()
-	if(technique.requires_weapon && !weapon)
+	var/has_weapon = usingMeleeWeapon()
+	if(technique.requires_weapon && !has_weapon)
 		src << "You must equip a weapon before using [technique]."
 		return FALSE
-	if(technique.requires_unarmed && weapon)
+	if(technique.requires_unarmed && has_weapon)
 		src << "You must unequip your weapon before using [technique]."
 		return FALSE
 	if(technique.behavior == "grapple_throw" || technique.behavior == "grapple_slam") return castNexusGrappleTechnique(technique)
@@ -699,7 +699,7 @@ mob/proc/activateNexusRiposte(obj/Attacks/NexusMeleeTechnique/technique)
 	return TRUE
 
 mob/proc/tryNexusRiposte(mob/attacker)
-	if(!attacker || world.time > active_nexus_riposte_until || !using_sword()) return FALSE
+	if(!attacker || world.time > active_nexus_riposte_until || !usingMeleeWeapon()) return FALSE
 	var/obj/Attacks/NexusMeleeTechnique/Riposte/riposte = locate() in src
 	if(!riposte) return FALSE
 	active_nexus_riposte_until = 0

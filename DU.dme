@@ -265,6 +265,7 @@
 #include "src\Code\CharacterCreation\NexusCharacterCreation.dm"
 #include "src\Code\Combat\BleedDamage.dm"
 #include "src\Code\Combat\Buffs.dm"
+#include "src\Code\Combat\KiWeapons.dm"
 #include "src\Code\Combat\ChasePressure.dm"
 #include "src\Code\Combat\CombatAssetLibrary.dm"
 #include "src\Code\Combat\CombatDummy.dm"

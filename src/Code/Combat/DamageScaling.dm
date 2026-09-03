@@ -36,6 +36,11 @@ mob/proc/getSwordCombatDamageMultiplier(obj/items/Sword/weapon, mob/target, swor
 
 mob/proc/getWeaponCombatDamage(mob/target, factor = 0)
 	if(!target || factor <= 0) return 0
+	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
+	if(ki_weapon && ki_weapon.counts_as_weapon)
+		var/ki_guard_stat = target.getMilestoneScaledCombatStat(ki_weapon.uses_energy_defense ? target.Res : target.End) * getMilestoneGuardMultiplier()
+		var/ki_weapon_damage = calculateScaledCombatDamage(factor, getKiWeaponCombatBP(), target.getForgedArmorEnduranceBP(), getKiWeaponSourceStat(ki_weapon), ki_guard_stat)
+		return ki_weapon_damage * getKiWeaponEnergyMultiplier(ki_weapon) * getMilestoneMeleeDamageMultiplier(target, TRUE)
 	var/obj/items/Sword/weapon = using_sword()
 	if(!weapon) return getPhysicalCombatDamage(target, factor)
 	var/guard_stat = target.getMilestoneScaledCombatStat(target.End) * getMilestoneGuardMultiplier()
@@ -50,6 +55,10 @@ mob/proc/getWeaponCombatDamage(mob/target, factor = 0)
 
 mob/proc/getUnresistedWeaponCombatDamage(factor = 0)
 	if(factor <= 0) return 0
+	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
+	if(ki_weapon && ki_weapon.counts_as_weapon)
+		var/ki_weapon_damage = calculateScaledCombatDamage(factor, getKiWeaponCombatBP(), max(BP, 0.01), getKiWeaponSourceStat(ki_weapon), 0)
+		return ki_weapon_damage * getKiWeaponEnergyMultiplier(ki_weapon) * getMilestoneMeleeDamageMultiplier(null, TRUE)
 	var/obj/items/Sword/weapon = using_sword()
 	if(!weapon) return getUnresistedPhysicalCombatDamage(factor)
 	var/sword_modifier = Class == "Legendary Saiyan" ? 0.4 : 1
