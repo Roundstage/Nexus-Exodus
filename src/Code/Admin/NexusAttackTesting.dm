@@ -31,7 +31,8 @@ proc/getNexusUnarmedAttackTypes()
 		/obj/Attacks/NexusMeleeTechnique/WingClip,
 		/obj/Attacks/NexusMeleeTechnique/SandThrow,
 		/obj/Attacks/NexusMeleeTechnique/BurningShot,
-		/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial)
+		/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial,
+		/obj/Attacks/NexusMeleeTechnique/CometReversal)
 
 proc/getNexusBeamAttackTypes()
 	return list(

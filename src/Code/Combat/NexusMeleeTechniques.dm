@@ -10,6 +10,8 @@ mob
 	var/tmp/nexus_guard_break_until = 0
 	var/tmp/nexus_wing_clip_until = 0
 	var/tmp/nexus_sand_throw_until = 0
+	var/tmp/nexus_comet_reversal_triggered = FALSE
+	var/tmp/mob/nexus_comet_reversal_target
 
 var/list/nexus_sword_swing_light_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingLight2.ogg')
 var/list/nexus_sword_swing_heavy_sounds = list('src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy1.ogg', 'src/Sound/SoundEffects/Combat/Weapons/SwordSwingHeavy2.ogg')
@@ -64,6 +66,9 @@ mob/proc/clearNexusStance(announce = FALSE)
 	active_nexus_stance_id = null
 	active_nexus_stance_until = 0
 	active_nexus_stance_charges = 0
+	if(old_stance == "comet_reversal")
+		nexus_comet_reversal_triggered = FALSE
+		nexus_comet_reversal_target = null
 	if(announce) src << "You release your [old_stance] stance."
 	return TRUE
 
@@ -455,6 +460,7 @@ mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	if(technique.behavior == "march") return castNexusMarchOfFury(technique)
 	if(technique.behavior == "delayed_barrage") return castNexusDelayedBarrage(technique)
 	if(technique.behavior == "riposte") return activateNexusRiposte(technique)
+	if(technique.behavior == "beam_counter") return activateNexusCometReversal(technique)
 	if(technique.behavior == "radial") return castNexusRadialTechnique(technique)
 	if(!can_melee()) return FALSE
 	var/maximum_range = max(1, technique.dash_range)
@@ -486,6 +492,52 @@ mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	setNexusMeleeContext(technique, target)
 	Melee(target, from_auto_attack = 1)
 	return TRUE
+
+mob/proc/activateNexusCometReversal(obj/Attacks/NexusMeleeTechnique/CometReversal/technique)
+	if(!technique || !can_melee()) return FALSE
+	if(!payNexusTechniqueCost(technique)) return FALSE
+	setNexusStance("comet_reversal", technique.counter_window_ticks)
+	technique.playCastEffects(src)
+	src << "You brace to reverse the next hostile beam in front of you."
+	return TRUE
+
+mob/proc/canTriggerNexusCometReversal(obj/Blast/beam_segment)
+	if(!beam_segment || !beam_segment.Beam || !hasNexusStance("comet_reversal")) return FALSE
+	var/mob/beam_owner = beam_segment.Owner
+	if(!beam_owner || beam_owner == src || !beam_owner.z) return FALSE
+	if(!(get_dir(src, beam_owner) in list(dir, turn(dir, 45), turn(dir, -45)))) return FALSE
+	var/obj/Attacks/beam_attack = beam_segment.from_attack
+	if(!beam_attack || !beam_attack.streaming) return FALSE
+	return TRUE
+
+mob/proc/tryNexusCometReversal(obj/Blast/beam_segment)
+	if(!canTriggerNexusCometReversal(beam_segment)) return FALSE
+	var/mob/beam_owner = beam_segment.Owner
+	var/obj/Attacks/beam_attack = beam_segment.from_attack
+	beam_owner.BeamStop(beam_attack, immediate = TRUE, impact_segment = beam_segment)
+	beam_segment.SafeTeleport(null)
+	if(nexus_comet_reversal_triggered) return TRUE
+	var/obj/Attacks/NexusMeleeTechnique/CometReversal/technique = locate() in src
+	if(!technique)
+		clearNexusStance()
+		return FALSE
+	nexus_comet_reversal_triggered = TRUE
+	nexus_comet_reversal_target = beam_owner
+	active_nexus_stance_until = world.time + technique.rush_guard_ticks
+	spawn performNexusCometReversal(technique, beam_owner)
+	return TRUE
+
+mob/proc/performNexusCometReversal(obj/Attacks/NexusMeleeTechnique/CometReversal/technique, mob/beam_owner)
+	if(!technique || !beam_owner || nexus_comet_reversal_target != beam_owner)
+		clearNexusStance()
+		return FALSE
+	var/motion_result = runNexusSkillApproach(beam_owner, technique.dash_range * world.icon_size, world.icon_size, 115, 240, 300, 0.35, require_selected_target = FALSE)
+	var/reached_target = motion_result == NEXUS_SKILL_MOTION_REACHED && beam_owner && getdist(src, beam_owner) <= 1
+	clearNexusStance()
+	if(reached_target)
+		dir = get_dir(src, beam_owner)
+		return resolveNexusTechniqueHit(beam_owner, technique)
+	return FALSE
 
 mob/proc/castNexusRadialTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	if(!technique || !can_melee()) return FALSE
@@ -1114,6 +1166,25 @@ obj/Attacks/NexusMeleeTechnique/BlueCometSpecial
 	effect_icon_state = "blast_blue"
 	verb/Blue_Comet_Special()
 		set name = "Blue Comet Special"
+		set category = "Skills"
+		useTechnique(usr)
+
+obj/Attacks/NexusMeleeTechnique/CometReversal
+	name = "Comet Reversal"
+	desc = "Counter a hostile beam from the front, rush its owner and strike on reaching them."
+	requires_unarmed = TRUE
+	damage_multiplier = 2
+	energy_cost = 24
+	cooldown_ticks = 100
+	dash_range = 32
+	behavior = "beam_counter"
+	cast_text_color = "#43b9ff"
+	cast_sound_category = "flight"
+	impact_sound_category = "electric"
+	var/counter_window_ticks = 12
+	var/rush_guard_ticks = 35
+	verb/Comet_Reversal()
+		set name = "Comet Reversal"
 		set category = "Skills"
 		useTechnique(usr)
 

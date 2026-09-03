@@ -469,6 +469,7 @@ proc/configureProgressionUnarmedPaths()
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/ConsecutiveNormalPunches, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BurningShot, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/BlueCometSpecial, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
+	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/CometReversal, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/GuardBreak))
 	configureProgressionRewardPath(/obj/RoundhouseKick, 4, 20, list(/obj/Attacks/NexusMeleeTechnique/AxeKick))
 	configureProgressionRewardPath(/obj/WolfFangFist, 4, 22, list(/obj/Attacks/NexusMeleeTechnique/KickbackCombo))
 

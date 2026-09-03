@@ -1087,6 +1087,26 @@ proc/runNexusCometReversalSmoke(turf/counter_turf, turf/adjacent_source_turf, tu
 	var/datum/ProgressionNode/comet_reversal_progression_node = progression_node_catalog[comet_reversal_progression_id]
 	nexusSmokeAssert(comet_reversal_progression_node && comet_reversal_progression_node.category == "Combat" && comet_reversal_progression_node.branch == "Unarmed" && comet_reversal_progression_node.tier == 4 && comet_reversal_progression_node.cost == getScaledProgressionExperience(20) && (guard_break_progression_id in comet_reversal_progression_node.prerequisites), "Comet Reversal is not a tier-four Unarmed purchase costing 20 after Guard Break")
 
+proc/runNexusActionCycleSmoke()
+	var/mob/NexusSmokeTest/action_cycle_player = new
+	action_cycle_player.Spd = 10
+	var/low_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
+	action_cycle_player.Spd = 10000
+	var/high_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
+	nexusSmokeAssert(high_stat_move_pixels > low_stat_move_pixels && high_stat_move_pixels <= vector_move_base_pixels_per_second * vector_move_speed_stat_maximum * world.tick_lag, "vector movement does not apply its bounded Speed-stat multiplier")
+	action_cycle_player.next_health_bar_update = 25
+	action_cycle_player.process_player_action_cycle(FALSE)
+	nexusSmokeAssert(action_cycle_player.next_health_bar_update == 25, "headless player action cycle unexpectedly mutated the client HUD throttle")
+	var/Energy/action_cycle_energy = new /Energy("Action Cycle", 20)
+	action_cycle_energy.quantity = 10
+	action_cycle_player.energies = list("Action Cycle" = action_cycle_energy)
+	action_cycle_player.process_player_action_cycle(FALSE)
+	nexusSmokeAssert(action_cycle_energy.schedule.len == 1, "consolidated player action cycle did not schedule natural energy recovery")
+	del(action_cycle_player)
+	var/obj/test/texthandling/text_test = new
+	text_test.dd_list2text_test()
+	del(text_test)
+
 proc/runStartupSmokeTests(soul_contract_count_before)
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
 	var/normalized_description = normalizeNexusPlayerDescription(legacy_description)
@@ -4898,24 +4918,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		var/obj/Build/build_search_test = Builds[1]
 		nexusSmokeAssert(build_search_test in getBuildCatalogForCategory(build_search_test.build_category), "build category index omitted a registered recipe")
 		nexusSmokeAssert(build_search_test in searchBuildCatalog(build_search_test.name, build_search_test.build_category), "build prefix index cannot find a registered recipe")
-	var/mob/NexusSmokeTest/action_cycle_player = new
-	action_cycle_player.Spd = 10
-	var/low_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
-	action_cycle_player.Spd = 10000
-	var/high_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
-	nexusSmokeAssert(high_stat_move_pixels > low_stat_move_pixels && high_stat_move_pixels <= vector_move_base_pixels_per_second * vector_move_speed_stat_maximum * world.tick_lag, "vector movement does not apply its bounded Speed-stat multiplier")
-	action_cycle_player.next_health_bar_update = 25
-	action_cycle_player.process_player_action_cycle(FALSE)
-	nexusSmokeAssert(action_cycle_player.next_health_bar_update == 25, "headless player action cycle unexpectedly mutated the client HUD throttle")
-	var/Energy/action_cycle_energy = new /Energy("Action Cycle", 20)
-	action_cycle_energy.quantity = 10
-	action_cycle_player.energies = list("Action Cycle" = action_cycle_energy)
-	action_cycle_player.process_player_action_cycle(FALSE)
-	nexusSmokeAssert(action_cycle_energy.schedule.len == 1, "consolidated player action cycle did not schedule natural energy recovery")
-	del(action_cycle_player)
-	var/obj/test/texthandling/text_test = new
-	text_test.dd_list2text_test()
-	del(text_test)
+	runNexusActionCycleSmoke()
 
 	del(loaded_player)
 	del(player)

@@ -4364,6 +4364,12 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - Returns: boolean indicating that a charge and debuff were applied.
 - Side effects: updates the target's eight-second stack window and the attacker's remaining stance charges.
 
+#### mob/proc/activateNexusCometReversal, canTriggerNexusCometReversal, tryNexusCometReversal, performNexusCometReversal
+- Signatures: `activateNexusCometReversal(obj/Attacks/NexusMeleeTechnique/CometReversal/technique)`, `canTriggerNexusCometReversal(obj/Blast/beam_segment)`, `tryNexusCometReversal(obj/Blast/beam_segment)`, `performNexusCometReversal(obj/Attacks/NexusMeleeTechnique/CometReversal/technique, mob/beam_owner)`
+- Purpose: Arm the short unarmed counter stance, validate hostile beams inside the frontal arc, stop matching beam streams before damage, and approach the first emitter for one adjacency-validated melee finisher.
+- Returns: boolean activation, interception, or finisher result.
+- Side effects: spends Energy/cooldown, replaces the active stance, tears down intercepted beam segments, and briefly runs collision-valid skill movement.
+
 #### mob/proc/castNexusRadialTechnique
 - Signature: `castNexusRadialTechnique(obj/Attacks/NexusMeleeTechnique/technique)`
 - Inputs: configured radial technique.
