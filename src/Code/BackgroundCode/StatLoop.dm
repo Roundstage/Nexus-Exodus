@@ -302,6 +302,7 @@ mob/proc/Player_Loops(start_delay)
 	sleep(1) //just to break up this huge wall of procs from executing in 1 frame when someone logs in
 	LSD()
 	Zombie_Virus_Loop()
+	ScourgeVirusLoop()
 	Steroid_Loop()
 	update_radar_loop()
 	Start_Gravity_Loops()
@@ -1014,7 +1015,7 @@ proc/Recover_energy_loop()
 				if(m.ki_shield_on()) n*=0.15
 				if(m.arcane_replenishment_until > world.time) n *= 2
 
-				m.Ki+= 0.5 * n*Server_Recovery*(m.max_ki/100) * m.recov**1.1 * m.Recov_Mult/m.Gravity_Health_Ratio()
+				m.Ki+= 0.5 * n*Server_Recovery*(m.max_ki/100) * m.recov**1.1 * m.Recov_Mult/m.Gravity_Health_Ratio() * m.getViltrumiteEnergyRecoveryMultiplier()
 				if(m.Ki>m.max_ki) m.Ki=m.max_ki
 
 		sleep(5)
@@ -1105,7 +1106,7 @@ mob/proc/Makyo_Star()
 				var/mode_mod=2
 				if(race_stats_only_mode) mode_mod *= 2
 				if(Can_recover_health(health_limit=100)) applyRegenerationHealth(0.35 * RegenMod() * mode_mod)
-				if(Can_recover_ki(ki_limit=max_ki)) Ki += (max_ki / 160) * recov**0.5 * mode_mod
+				if(Can_recover_ki(ki_limit=max_ki)) Ki += (max_ki / 160) * recov**0.5 * mode_mod * getViltrumiteEnergyRecoveryMultiplier()
 				if(Ki > max_ki) Ki = max_ki
 			sleep(10)
 		else sleep(600)

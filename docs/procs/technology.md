@@ -2,6 +2,12 @@
 
 `gainArcaneEssence()` records gross generated essence in lifetime progression, applies any current planetary Arcane Essence income tax, and credits the spendable balance with the net amount. Vault withdrawals, secure trades, costs, and refunds remain raw transfers and are not taxed again. Resource bags retain their tax-exempt transfer share through merges and CyberDrone transport so recollection cannot create a second income event. Arcane Portal anchors also retain their bound planet, allowing a portal endpoint inside a shared mining cave to propagate the correct tax jurisdiction.
 
+## Scourge Virus
+
+`ScourgeVirus.dm` implements a persistent Viltrumite disease measured exclusively in accumulated logged-in ticks. Symptoms advance at 0, 10, 25, 45, and 60 online hours; the hidden genetic outcome is resolved only at 70 online hours. While an infected character is online, every susceptible full or Half-Viltrumite within three tiles is silently exposed once per second with guaranteed transmission; each newly infected character advances on their own online-time clock. Later stages cap current Health and Energy, intermittently stun the character, produce blood effects, and send sparse first-person symptom messages without exposing a stage, timer, resistance roll, or survival probability. Resistant and Royal lineages experience the full terminal stage before recovering and becoming reinfection-immune; other infected characters die at resolution.
+
+`obj/items/ScourgeVirus` uses the supplied green-vial artwork and exposes Viltrumites through the normal injection interaction. `obj/items/ExperimentalScourgeTreatment`, the ordinary `Antivirus`, and `Super_Antivirus` present reassuring treatment feedback but deliberately change no Scourge infection, timer, stage, or outcome state. The existing antiviruses retain their real effects against the older zombie and diarrhea systems, and Super Antivirus can now be administered directly to players. The dedicated Scourge items remain event-controlled and available to administrators through the item tools rather than ordinary Science manufacturing.
+
 ## Overview
 Technology objects, crafting rules, and item-specific systems.
 

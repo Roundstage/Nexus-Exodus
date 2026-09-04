@@ -15,6 +15,7 @@ mob/var
 	viltrumite_lineage
 	scourge_genetics_rolled
 	scourge_resistance
+	grand_regent_nonunique
 
 mob/proc/isViltrumiteRace()
 	return Race in list("Viltrumite", "Half-Viltrumite")
@@ -64,10 +65,11 @@ mob/proc/applyViltrumiteRoyalLineage(hybrid = FALSE)
 	scourge_resistance = TRUE
 	return TRUE
 
-mob/proc/applyGrandRegentLineage()
+mob/proc/applyGrandRegentLineage(nonunique = FALSE)
 	if(Race != "Viltrumite") return FALSE
 	Class = "Grand Regent"
 	viltrumite_lineage = "grand_regent"
+	grand_regent_nonunique = !!nonunique
 	scourge_genetics_rolled = TRUE
 	scourge_resistance = TRUE
 	normalizeCharacterMutations()
@@ -83,10 +85,11 @@ mob/proc/canSelectViltrumiteRoyal()
 	return royal_count < viltrumite_royal_online_limit
 
 mob/proc/canSelectGrandRegent()
-	return !viltrumite_grand_regent_account
+	return all_rare_races_common || hasNexusRareRaceGrant("Grand Regent") || !viltrumite_grand_regent_account
 
 mob/proc/registerGrandRegentIdentity()
 	if(Race != "Viltrumite" || Class != "Grand Regent" || !key || !character_made_time) return FALSE
+	if(grand_regent_nonunique) return TRUE
 	if(viltrumite_grand_regent_account) return isDesignatedGrandRegent()
 	viltrumite_grand_regent_account = ckey(key)
 	viltrumite_grand_regent_slot = clampNexusCharacterSlot(active_character_slot)
@@ -115,7 +118,7 @@ mob/proc/rollViltrumiteScourgeGenetics(forced_result = -1)
 	return !!scourge_resistance
 
 mob/proc/isScourgeImmune()
-	return isViltrumiteRoyalLineage() || !!scourge_resistance
+	return isViltrumiteRoyalLineage() || !!scourge_resistance || !!scourge_survivor
 
 mob/proc/isDesignatedGrandRegent()
 	if(!key || !character_made_time) return FALSE
@@ -134,7 +137,9 @@ mob/proc/normalizeViltrumiteLineage()
 			viltrumite_lineage = "hybrid"
 			Class = "Half-Viltrumite"
 		return
-	if(isDesignatedGrandRegent())
+	if(grand_regent_nonunique)
+		applyGrandRegentLineage(TRUE)
+	else if(isDesignatedGrandRegent())
 		applyGrandRegentLineage()
 	else if(Class == "Grand Regent")
 		Class = "Viltrumite"
@@ -162,13 +167,14 @@ mob/Admin4/verb/setGrandRegent(mob/character in players)
 		return
 	if(alert(src, "Transfer the permanent Grand Regent office to [character]?", "Grand Regent Succession", "Yes", "No") != "Yes") return
 	for(var/mob/player in players)
-		if(player != character && player.Class == "Grand Regent")
+		if(player != character && player.Class == "Grand Regent" && !player.grand_regent_nonunique)
 			player.Class = "Viltrumite"
 			player.viltrumite_lineage = "standard"
 			spawn() player.save()
 	viltrumite_grand_regent_account = ckey(character.key)
 	viltrumite_grand_regent_slot = clampNexusCharacterSlot(character.active_character_slot)
 	viltrumite_grand_regent_created_at = character.character_made_time
+	character.grand_regent_nonunique = FALSE
 	character.applyGrandRegentLineage()
 	saveMisc()
 	spawn() character.save()

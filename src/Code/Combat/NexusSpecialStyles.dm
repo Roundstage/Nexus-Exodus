@@ -66,6 +66,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile
 		projectile_damage_factor = 10
 		explosion_size = 2
 		projectile_shockwave = 2
+		launch_delay_ticks = 0
 		strength_scaled = FALSE
 		requires_weapon = FALSE
 		weapon_projectile = FALSE
@@ -137,7 +138,8 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile
 			flick("Blast", user)
 		user.attacking = 0
 		charging = FALSE
-		projectile.startKiProjectileWalk(user.dir)
+		if(launch_delay_ticks) sleep(launch_delay_ticks)
+		if(projectile && projectile.z) projectile.startKiProjectileWalk(user.dir)
 		return TRUE
 
 obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova
@@ -166,8 +168,9 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile/SkyBreak
 	cooldown_ticks = 130
 	charge_ticks = 16
 	projectile_damage_factor = 13
-	explosion_size = 2
+	explosion_size = 3
 	projectile_shockwave = 4
+	launch_delay_ticks = 1
 	strength_scaled = TRUE
 	requires_weapon = TRUE
 	weapon_projectile = TRUE
@@ -191,6 +194,7 @@ obj/Attacks/NexusSpecialStyle/ChargedProjectile/EchoingSlash
 	projectile_damage_factor = 14
 	explosion_size = 0
 	projectile_shockwave = 3
+	launch_delay_ticks = 1
 	strength_scaled = TRUE
 	requires_weapon = TRUE
 	weapon_projectile = TRUE

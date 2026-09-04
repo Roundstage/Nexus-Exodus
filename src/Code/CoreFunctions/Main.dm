@@ -339,14 +339,14 @@ mob/proc
 			for(var/mob/m in players) if(m.Race=="Frost Lord") Frost_Lords++
 			Frost_Lords /= Clamp(Player_Count(),1,1.#INF)
 			if(Frost_Lords > 5 / 100)
-				if(!icer_common_race)
+				if(!icer_common_race && !all_rare_races_common && !src.hasNexusRareRaceGrant("Frost Lord"))
 					Races-="Frost Lord"
 
 		Races = Check_Spawn(Races) //Removes the entry from the list if there is no spawn for it
 
 		for(var/mob/P in players)
 			if(P.Class == "Legendary Saiyan" || world.time < 10 * 600 || world.realtime < next_lssj)
-				if(!lssj_common_race)
+				if(!lssj_common_race && !all_rare_races_common && !src.hasNexusRareRaceGrant("Legendary Saiyan"))
 					Races-="Legendary Saiyan"
 		//if(key=="EXGenesis") Races+= "Yeet"
 		var/Saiyans=0
@@ -360,7 +360,7 @@ mob/proc
 			if(Saiyan_percent>max_Saiyan_percent)
 				Races-="Saiyan"
 				Races-="Half Saiyan"
-				Races-="Legendary Saiyan"
+				if(!all_rare_races_common && !src.hasNexusRareRaceGrant("Legendary Saiyan")) Races-="Legendary Saiyan"
 				if(show_cap_alert) alert(src,"The percentage of players playing Saiyan has exceeded the cap set by admins. Saiyan \
 				has been removed from the race selection. The max percent of Saiyan allowed is [max_Saiyan_percent]%")
 		return Races

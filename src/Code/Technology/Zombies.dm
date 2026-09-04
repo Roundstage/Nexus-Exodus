@@ -997,7 +997,7 @@ obj/items/T_Virus_Injection
 obj/items/Super_Antivirus
 	icon = 'Antivirus.dmi'
 	icon_state = "red"
-	desc = "If you inject this into a zombie it will spread across the entire planet killing all zombies rapidly. If you inject this into a player nothing will happen."
+	desc = "A concentrated broad-spectrum antiviral. Against highly aggressive infections, treatment success may depend on how quickly it is administered."
 	Stealable = 1
 	Level = 1
 	clonable = 0
@@ -1012,7 +1012,11 @@ obj/items/Super_Antivirus
 		var/mob/m = usr.get_inject()
 		if(!m) return
 		if(!istype(m,/mob/Enemy/Zombie))
-			usr << "You can only inject this into a zombie, otherwise it does nothing"
+			player_view(15,usr) << "[usr] injects [m] with a concentrated super antivirus"
+			m.Zombie_Virus = 0
+			m.Diarea = 0
+			m.receiveScourgeAntiviral(TRUE)
+			del(src)
 			return
 		var/turf/t = usr.base_loc()
 		if(t && isturf(t))
@@ -1083,6 +1087,7 @@ obj/items/Antivirus
 		player_view(15,usr)<<"[usr] uses the [src] on [A] and all infection disappears"
 		A.Zombie_Virus=0
 		A.Diarea=0
+		A.receiveScourgeAntiviral()
 		del(src)
 
 	verb/Synthesize()

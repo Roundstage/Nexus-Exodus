@@ -993,6 +993,7 @@ upForm
 			M << "Loading form variables. [src.type]"
 			initFormVar("admin", "lssj_common_race", lssj_common_race)
 			initFormVar("admin", "icer_common_race", icer_common_race)
+			initFormVar("admin", "all_rare_races_common", all_rare_races_common)
 			initFormVar("admin", "majin_auto_learn", majin_auto_learn)
 			initFormVar("admin", "imitate_allowed", imitate_allowed)
 			initFormVar("admin", "max_Saiyan_percent", max_Saiyan_percent)
@@ -1012,6 +1013,7 @@ upForm
 				switch(name)
 					if("lssj_common_race") setFormVar(fname, name, text2num(value))
 					if("icer_common_race") setFormVar(fname, name, text2num(value))
+					if("all_rare_races_common") setFormVar(fname, name, Clamp(text2num(value), 0, 1))
 					if("majin_auto_learn") setFormVar(fname, name, text2num(value))
 					if("imitate_allowed") setFormVar(fname, name, text2num(value))
 					if("max_Saiyan_percent") setFormVar(fname, name, text2num(value))
@@ -1030,6 +1032,7 @@ upForm
 				if(Admins[M.key]>=4)
 					lssj_common_race= getFormVar("admin", "lssj_common_race")
 					icer_common_race= getFormVar("admin", "icer_common_race")
+					all_rare_races_common = getFormVar("admin", "all_rare_races_common")
 					majin_auto_learn= getFormVar("admin", "majin_auto_learn")
 					imitate_allowed= getFormVar("admin", "imitate_allowed")
 					max_Saiyan_percent= getFormVar("admin", "max_Saiyan_percent")
@@ -1072,6 +1075,7 @@ upForm
 			  </tr></td>
 				<tr height="1em" valign="top"><td width="30%"><b>Make Legendary Saiyan Common: <td width="60%"><center>(0=Rare, 1=Common)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="lssj_common_race" value="[getFormVar("admin","lssj_common_race")]" size="3" maxlength="1"/><span class="error">[errors["lssj_common_race"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Make Icer Common: <td width="60%"><center>(0=Rare, 1=Common)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="icer_common_race" value="[getFormVar("admin","icer_common_race")]" size="3" maxlength="1"/><span class="error">[errors["icer_common_race"]]</span></td></tr>
+				<tr height="1em" valign="top"><td width="30%"><b>Make All Rare Races Common: <td width="60%"><center>(0=Rare, 1=Common; includes Legendary Saiyan, Frost Lord, Cooler, and Grand Regent)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="all_rare_races_common" value="[getFormVar("admin","all_rare_races_common")]" size="3" maxlength="1"/><span class="error">[errors["all_rare_races_common"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Enable Majin Auto-Learning: <td width="60%"><center>(0=Off, 1=On)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="majin_auto_learn" value="[getFormVar("admin","majin_auto_learn")]" size="3" maxlength="1"/><span class="error">[errors["majin_auto_learn"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Enable Imitate: <td width="60%"><center>(0=Off, 1=On)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="imitate_allowed" value="[getFormVar("admin","imitate_allowed")]" size="3" maxlength="1"/><span class="error">[errors["imitate_allowed"]]</span></td></tr>
 				<tr height="1em" valign="top"><td width="30%"><b>Max Saiyan Percentage: <td width="60%"><center>(Limit on Saiyan Population)</center></td></b></td><td width="10%" colspan="3"><input class="form" type="text" name="max_Saiyan_percent" value="[getFormVar("admin","max_Saiyan_percent")]" size="3" maxlength="20"/><span class="error">[errors["max_Saiyan_percent"]]</span></td></tr>
