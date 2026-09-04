@@ -90,8 +90,15 @@ mob/proc/getNexusStanceCriticalChanceBonus()
 	if(!hasNexusStance("critical_edge") || !usingMeleeWeapon()) return 0
 	return 15
 
-mob/proc/getNexusBlockIncomingDamageMultiplier()
-	return hasNexusStance("block") ? 0.7 : 1
+mob/proc/getNexusBlockIncomingDamageMultiplier(mob/attacker)
+	var/damage_multiplier = hasNexusStance("block") ? 0.7 : 1
+	if(hasNexusStance("viltrumite_guard") && attacker && attacker != src)
+		var/attack_direction = get_dir(src, attacker)
+		if(attack_direction in list(dir, turn(dir, 45), turn(dir, -45)))
+			damage_multiplier = min(damage_multiplier, 0.6)
+			attacker.applyViltrumiteOpening(src)
+			clearNexusStance()
+	return damage_multiplier
 
 mob/proc/getNexusBlockBlastEvasionBonus()
 	return hasNexusStance("block") ? 20 : 0
@@ -462,6 +469,7 @@ mob/proc/castNexusMeleeTechnique(obj/Attacks/NexusMeleeTechnique/technique)
 	if(technique.behavior == "riposte") return activateNexusRiposte(technique)
 	if(technique.behavior == "beam_counter") return activateNexusCometReversal(technique)
 	if(technique.behavior == "radial") return castNexusRadialTechnique(technique)
+	if(findtext(technique.behavior, "viltrumite_") == 1) return castViltrumiteTechnique(technique)
 	if(!can_melee()) return FALSE
 	var/maximum_range = max(1, technique.dash_range)
 	var/mob/target = getNexusTechniqueTarget(maximum_range)

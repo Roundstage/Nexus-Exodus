@@ -108,6 +108,7 @@ mob/proc/getRacialProgressionTrack()
 		if("Kai", "Demigod") return "Kaioshin"
 		if("Demon", "Majin", "Makyo") return "Daimao"
 		if("Android", "Bio-Android", "Spirit Doll", "Tsujin") return "Android Master"
+		if("Viltrumite", "Half-Viltrumite") return "Viltrumite Warfare"
 	return null
 
 proc/getRacialProgressionSkillPackages()
@@ -156,7 +157,23 @@ proc/getRacialProgressionSkillPackages()
 			/obj/Make_Fruit, /obj/Demon_Contract, /obj/Kaio_Revive, /obj/Attacks/Kienzan,
 			/obj/Attacks/Shockwave, /obj/Make_Holy_Pendant, /obj/Telepathy, /obj/Observe,
 			/obj/Attacks/Attack_Barrier, /obj/Reincarnation, /obj/Sense, /obj/Advanced_Sense,
-			/obj/Meditate_Level_2, /obj/Shadow_Spar, /obj/Giant_Form, /obj/Hakai))
+			/obj/Meditate_Level_2, /obj/Shadow_Spar, /obj/Giant_Form, /obj/Hakai),
+		"Viltrumite Warfare" = list())
+
+proc/registerViltrumiteProgressionPath(root_id)
+	var/racial_track = "Viltrumite Warfare"
+	var/datum/ProgressionNode/rush = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/ViltrumiteRush, 2, list(root_id))
+	var/datum/ProgressionNode/rib_breaker = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/RibBreaker, 3, list(rush.id))
+	var/datum/ProgressionNode/pursuit = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/RelentlessPursuit, 4, list(rib_breaker.id))
+	var/datum/ProgressionNode/grip = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/ConquerorsGrip, 5, list(pursuit.id))
+	var/datum/ProgressionNode/meteor_drop = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/MeteorDrop, 6, list(grip.id))
+
+	var/datum/ProgressionNode/spear_hand = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/SpearHand, 2, list(root_id))
+	var/datum/ProgressionNode/nolan_combo = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/NolansCombination, 5, list(spear_hand.id, rib_breaker.id))
+	registerRacialProgressionSkill(racial_track, /obj/ViltrumiteExecutionersHand, 6, list(nolan_combo.id, meteor_drop.id))
+
+	var/datum/ProgressionNode/guard = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusStance/ViltrumiteGuard, 2, list(root_id))
+	registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/PunishingReversal, 3, list(guard.id))
 
 proc/registerRacialProgressionSkill(racial_track, skill_type, tier, list/prerequisites)
 	if(!racial_track || !skill_type) return null
@@ -178,6 +195,11 @@ proc/initializeProgressionRacialCatalog()
 		var/root_id = getRacialProgressionRootId(racial_track)
 		var/datum/ProgressionNode/root = createProgressionNode(root_id, "[racial_track] Legacy", "Open the highest-rank skill curriculum associated with your race's spawn world.", "Racial", racial_track, 1, 3)
 		root.required_racial_track = racial_track
+		if(racial_track == "Viltrumite Warfare")
+			root.name = "Viltrumite Warfare"
+			root.description = "Begin the imperial combat discipline of aerial pursuit, brutal execution and timed retaliation."
+			registerViltrumiteProgressionPath(root_id)
+			continue
 		var/list/skill_types = packages[racial_track]
 		var/list/normal_skills = list()
 		var/has_hakai = FALSE

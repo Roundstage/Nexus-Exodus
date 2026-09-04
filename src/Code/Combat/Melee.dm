@@ -239,7 +239,7 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 		dmg  *= stun_damage_mod
 
 	dmg *= racialDamageTakenMult()
-	dmg *= getNexusBlockIncomingDamageMultiplier()
+	dmg *= getNexusBlockIncomingDamageMultiplier(damage_attacker)
 
 	if(Shielding())
 		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
@@ -1175,6 +1175,9 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 			return
 		defensive_dash_evaded = melee_target.isDefensiveDashEvading()
 		if(!defensive_dash_evaded && melee_target.tryNexusRiposte(src))
+			Reset_melee()
+			return
+		if(!defensive_dash_evaded && melee_target.tryViltrumitePunishingReversal(src))
 			Reset_melee()
 			return
 

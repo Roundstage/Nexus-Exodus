@@ -127,6 +127,7 @@ var/give_whisper_verb = 0
 var/anyone_can_enter_hbtc = 0
 var/lssj_common_race = 0
 var/icer_common_race = 0
+var/all_rare_races_common = 0
 var/old_age_on = 1
 var/allow_god_ki = 1
 var/stun_stops_movement

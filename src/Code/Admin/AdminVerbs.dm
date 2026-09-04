@@ -53,6 +53,23 @@ mob/Admin3/verb/rollMutations(mob/character in players)
 	src << "[character]'s mutation result ([rarity_result]): [result]."
 	character << "An administrator rerolled your mutations. Result: [result]."
 
+mob/Admin3/verb/giveRareRace(mob/player in players)
+	set name = "Give Rare Race"
+	set category = "Admin"
+	if(AdminLevel() < 3 || !player || !player.client) return
+	var/list/choices = list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent", "All Rares")
+	var/rare_choice = input(src, "Grant which rare character-creation option to [player]? The grant is consumed when that option is successfully created.", "Give Rare Race") as null|anything in choices
+	if(isnull(rare_choice)) return
+	var/list/granted = rare_choice == "All Rares" ? list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent") : list(rare_choice)
+	for(var/grant in granted) player.grantNexusRareRace(grant)
+	var/grant_text = jointext(granted, ", ")
+	admin_blame(src, "[key] granted [player.key] rare character creation access: [grant_text]")
+	src << "Granted [player] access to: [grant_text]."
+	player << "An administrator granted your account rare character creation access to: [grant_text]."
+	if(player.nexus_character_creator)
+		if("Cooler" in granted) player.nexus_character_creator.cooler_available = TRUE
+		player.nexus_character_creator.RefreshPage()
+
 mob/Admin2/verb/bugLogs()
 	set name = "Bug Logs"
 	set category="Admin"

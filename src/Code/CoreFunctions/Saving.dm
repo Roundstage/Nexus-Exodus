@@ -644,6 +644,7 @@ proc/saveMisc()
 	s["old_age_on"] << old_age_on
 	s["lssj_common_race"] << lssj_common_race
 	s["icer_common_race"] << icer_common_race
+	s["all_rare_races_common"] << all_rare_races_common
 	s["viltrumite_grand_regent_account"] << viltrumite_grand_regent_account
 	s["viltrumite_grand_regent_slot"] << viltrumite_grand_regent_slot
 	s["viltrumite_grand_regent_created_at"] << viltrumite_grand_regent_created_at
@@ -954,6 +955,7 @@ proc/loadMisc()
 	if("old_age_on" in s) s["old_age_on"] >> old_age_on
 	if("lssj_common_race" in s) s["lssj_common_race"] >> lssj_common_race
 	if("icer_common_race" in s) s["icer_common_race"] >> icer_common_race
+	if("all_rare_races_common" in s) s["all_rare_races_common"] >> all_rare_races_common
 	if("viltrumite_grand_regent_account" in s) s["viltrumite_grand_regent_account"] >> viltrumite_grand_regent_account
 	if("viltrumite_grand_regent_slot" in s) s["viltrumite_grand_regent_slot"] >> viltrumite_grand_regent_slot
 	if("viltrumite_grand_regent_created_at" in s) s["viltrumite_grand_regent_created_at"] >> viltrumite_grand_regent_created_at

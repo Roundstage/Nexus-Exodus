@@ -195,6 +195,38 @@ mob/var/tmp
 	character_creation_committing
 	upForm/NexusCharacterCreator/nexus_character_creator
 
+var/list/nexus_rare_race_grants = list()
+
+proc/getNexusRareRaceGrantKey(mob/player)
+	if(!player || !player.key) return
+	return ckey(player.key)
+
+mob/proc/hasNexusRareRaceGrant(rare_choice)
+	var/account_key = getNexusRareRaceGrantKey(src)
+	if(!account_key || !islist(nexus_rare_race_grants[account_key])) return FALSE
+	var/list/account_grants = nexus_rare_race_grants[account_key]
+	return rare_choice in account_grants
+
+mob/proc/grantNexusRareRace(rare_choice)
+	if(!(rare_choice in list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent"))) return FALSE
+	var/account_key = getNexusRareRaceGrantKey(src)
+	if(!account_key) return FALSE
+	var/list/account_grants = nexus_rare_race_grants[account_key]
+	if(!islist(account_grants))
+		account_grants = list()
+		nexus_rare_race_grants[account_key] = account_grants
+	account_grants |= rare_choice
+	return TRUE
+
+mob/proc/consumeNexusRareRaceGrant(rare_choice)
+	var/account_key = getNexusRareRaceGrantKey(src)
+	if(!account_key || !islist(nexus_rare_race_grants[account_key])) return FALSE
+	var/list/account_grants = nexus_rare_race_grants[account_key]
+	if(!(rare_choice in account_grants)) return FALSE
+	account_grants -= rare_choice
+	if(!account_grants.len) nexus_rare_race_grants -= account_key
+	return TRUE
+
 proc/nexusRaceIconOptions(race_name)
 	switch(race_name)
 		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin", "Viltrumite", "Half-Viltrumite")
@@ -258,7 +290,7 @@ proc/nexusRaceTraitOptions(race_name, mob/player, cooler_available = 0)
 		if("Viltrumite")
 			traits["viltrumite_warrior"] = nexusTrait("Viltrumite Warrior", "High natural power, strong regeneration, space survival, and tightly capped attributes.")
 			if(player && player.canSelectViltrumiteRoyal()) traits["viltrumite_royal"] = nexusTrait("Royal Blood (Rare)", "A scarce bloodline with substantially stronger innate attributes.")
-			if(player && player.canSelectGrandRegent()) traits["viltrumite_grand_regent"] = nexusTrait("Grand Regent (Unique)", "The single Angerless apex of Viltrum, matched to the Legendary Saiyan power tier.")
+			if(player && player.canSelectGrandRegent()) traits["viltrumite_grand_regent"] = nexusTrait("Grand Regent (Rare)", "An Angerless apex of Viltrum, matched to the Legendary Saiyan power tier.")
 		if("Half-Viltrumite")
 			if(player && player.getWaitingHalfViltrumiteClass() == "Royal Hybrid") traits["viltrumite_royal_hybrid"] = nexusTrait("Royal Hybrid", "A Human-Viltrumite descendant carrying inheritable Royal Blood.")
 			else traits["half_viltrumite_hybrid"] = nexusTrait("Human-Viltrumite Hybrid", "A post-launch descendant with stronger attributes and mixed heritage.")
@@ -309,7 +341,7 @@ mob/proc/initializeNexusRaceByTrait(race_name, trait_id)
 	if(trait_id == "android_progenitor") src.applyAncientProgenitorLineage()
 	if(trait_id == "viltrumite_royal") src.applyViltrumiteRoyalLineage()
 	if(trait_id == "viltrumite_royal_hybrid") src.applyViltrumiteRoyalLineage(TRUE)
-	if(trait_id == "viltrumite_grand_regent") src.applyGrandRegentLineage()
+	if(trait_id == "viltrumite_grand_regent") src.applyGrandRegentLineage(all_rare_races_common || src.hasNexusRareRaceGrant("Grand Regent"))
 
 mob/proc/raiseNexusCreationStat(stat_name, amount = 1)
 	switch(stat_name)
@@ -582,6 +614,7 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	if(Max_Players && Players_with_z() >= Max_Players) return FALSE
 	var/list/available_races = src.GetAvailableCharacterRaces()
 	if(!(selected_race in available_races)) return FALSE
+	cooler_available = cooler_available || all_rare_races_common || src.hasNexusRareRaceGrant("Cooler")
 	var/list/trait_options = nexusRaceTraitOptions(selected_race, src, cooler_available)
 	if(!trait_options[race_trait]) return FALSE
 	var/list/icon_options = nexusRaceIconOptions(selected_race)
@@ -644,6 +677,10 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	if(src.Race == "Android" || src.Race == "Majin")
 		src.max_ki = energy_cap * src.Eff
 		src.Ki = src.max_ki
+	if(selected_race == "Legendary Saiyan") src.consumeNexusRareRaceGrant("Legendary Saiyan")
+	if(selected_race == "Frost Lord") src.consumeNexusRareRaceGrant("Frost Lord")
+	if(race_trait == "frost_cooler") src.consumeNexusRareRaceGrant("Cooler")
+	if(race_trait == "viltrumite_grand_regent") src.consumeNexusRareRaceGrant("Grand Regent")
 	// StuffThatRunsIfYouClickNewOrLoad() is asynchronous. Mark the transition complete
 	// before the creator is deleted so its close fallback cannot reopen character selection.
 	src.playerCharacter = TRUE
@@ -691,8 +728,19 @@ upForm/NexusCharacterCreator
 		list/extracted_preview_resources
 		pending_custom_selection
 
+	InitSettings()
+		..()
+		// BYOND keeps named browser windows across reconnects. A form-reference-based
+		// name changes with every rebuilt form and leaves the previous creator visible.
+		window_params_text = "window=NexusCharacterCreator&size=[src.window_size]\
+			[src.window_params & UPFORM_CANNOT_CLOSE ? "&can_close=0" : ""]\
+			[src.window_params & UPFORM_CANNOT_RESIZE ? "&can_resize=0" : ""]\
+			[src.window_params & UPFORM_CANNOT_MINIMIZE ? "&can_minimize=0" : ""]\
+			[src.window_params & UPFORM_NO_TITLEBAR ? "&titlebar=0" : ""]"
+
 	New(client/owner, datum/host, list/viewers)
-		cooler_available = prob(1)
+		var/mob/player = host
+		cooler_available = all_rare_races_common || (player && player.hasNexusRareRaceGrant("Cooler")) || prob(1)
 		hair_options = list()
 		custom_clothing_icons = list(null, null, null, null)
 		custom_frost_icons = list(null, null, null, null, null)
@@ -703,7 +751,6 @@ upForm/NexusCharacterCreator
 			hair_index++
 			hair_options["hair_[hair_index]"] = hair
 			if(hair_index >= 24) break
-		var/mob/player = host
 		if(player) player.nexus_character_creator = src
 		..(owner, host, viewers)
 
@@ -803,6 +850,7 @@ upForm/NexusCharacterCreator
 	GenerateBody()
 		var/mob/player = src.getHost()
 		if(!player) return
+		cooler_available = cooler_available || all_rare_races_common || player.hasNexusRareRaceGrant("Cooler")
 		prepareNexusHudBrowserResources(player)
 		if(custom_body_icon) src.LoadResource(custom_body_icon)
 		for(var/custom_clothing_index in 1 to nexus_starter_clothing_limit)

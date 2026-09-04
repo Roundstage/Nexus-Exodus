@@ -1203,24 +1203,64 @@ proc/runViltrumiteStartupSmokeTests()
 
 	var/mob/NexusSmokeTest/standard = new
 	standard.Viltrumite()
+	nexusSmokeAssert(standard.getRacialProgressionTrack() == "Viltrumite Warfare", "Viltrumites do not resolve to their dedicated racial progression track")
 	nexusSmokeAssert(getRaceSpawnName("Viltrumite") == "Saiyan" && getRaceSpawnName("Half-Viltrumite") == "Saiyan", "Viltrumite races did not resolve to the temporary Saiyan spawn")
 	nexusSmokeAssert(!standard.old_age_on && standard.Lifespan() == 1.#INF, "standard Viltrumites retained a natural decline or lifespan limit")
 	nexusSmokeAssert(standard.Intelligence == 1, "standard Viltrumite Intelligence diverged from 1")
 	nexusSmokeAssertNear(standard.Get_race_starting_bp_mod() * standard.racialCombatBPMult(), 1.68, 0.0001, "standard Viltrumite creation BP escaped its balance target")
 	nexusSmokeAssert(!standard.rollViltrumiteScourgeGenetics(FALSE) && standard.scourge_genetics_rolled, "forced negative Scourge genetics did not persist")
+	standard.scourge_infected = TRUE
+	standard.scourge_online_ticks = 60 * 60 * 60 * 10
+	nexusSmokeAssert(standard.getScourgeStage() == 5 && !standard.scourge_outcome_resolved, "Scourge Virus does not reach its hidden terminal stage before the 70-hour outcome")
+	standard.scourge_online_ticks = 70 * 60 * 60 * 10
+	nexusSmokeAssert(standard.getScourgeStage() == 5 && SCOURGE_CONTAGION_RADIUS == 3 && text2path("/obj/items/ScourgeVirus") && text2path("/obj/items/ExperimentalScourgeTreatment"), "Scourge Virus duration, contagion, or treatment item contracts are missing")
+	var/scourge_ticks_before_placebos = standard.scourge_online_ticks
+	standard.receiveScourgeAntiviral()
+	standard.receiveScourgeAntiviral(TRUE)
+	nexusSmokeAssert(standard.scourge_infected && !standard.scourge_outcome_resolved && standard.scourge_online_ticks == scourge_ticks_before_placebos, "Antivirus placebos changed the hidden Scourge Virus state")
+	standard.scourge_infected = FALSE
 	var/mob/NexusSmokeTest/hybrid = new
 	hybrid.Half_Viltrumite()
 	nexusSmokeAssert(!hybrid.old_age_on && hybrid.Lifespan() == 1.#INF && hybrid.Intelligence == 1, "Half-Viltrumites retained aging limits or incorrect Intelligence")
+	nexusSmokeAssert(hybrid.getRacialProgressionTrack() == "Viltrumite Warfare" && hybrid.applyViltrumiteOpening(standard) && hybrid.hasViltrumiteOpeningFrom(standard), "Half-Viltrumites cannot participate in the Viltrumite Warfare opening system")
+	nexusSmokeAssert(hybrid.consumeViltrumiteOpening(standard) && !hybrid.hasViltrumiteOpeningFrom(standard), "Viltrumite combat openings are not consumed by their owning attacker")
+	hybrid.viltrumite_rib_break_until = world.time + 50
+	nexusSmokeAssert(hybrid.getViltrumiteEnergyRecoveryMultiplier() == 0.6, "Rib Breaker does not apply its temporary Energy recovery pressure")
+	hybrid.viltrumite_rib_break_until = 0
+	initializeProgressionTreeCatalog()
+	var/list/viltrumite_skill_types = list(
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/ViltrumiteRush,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/RibBreaker,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/RelentlessPursuit,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/ConquerorsGrip,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/MeteorDrop,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/SpearHand,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/NolansCombination,
+		/obj/Attacks/NexusMeleeTechnique/Viltrumite/PunishingReversal,
+		/obj/Attacks/NexusStance/ViltrumiteGuard,
+		/obj/ViltrumiteExecutionersHand)
+	for(var/viltrumite_skill_type in viltrumite_skill_types)
+		var/viltrumite_node_id = getRacialProgressionNodeId("Viltrumite Warfare", viltrumite_skill_type)
+		var/datum/ProgressionNode/viltrumite_node = progression_node_catalog[viltrumite_node_id]
+		nexusSmokeAssert(viltrumite_node && viltrumite_node.required_racial_track == "Viltrumite Warfare", "Viltrumite racial skill is missing from its restricted progression tree: [viltrumite_skill_type]")
+	var/spear_hand_type = /obj/Attacks/NexusMeleeTechnique/Viltrumite/SpearHand
+	var/nolan_combo_type = /obj/Attacks/NexusMeleeTechnique/Viltrumite/NolansCombination
+	var/guard_type = /obj/Attacks/NexusStance/ViltrumiteGuard
+	nexusSmokeAssert(initial(spear_hand_type:damage_multiplier) == 4.5 && initial(spear_hand_type:bleed_fraction) == 0.15 && initial(spear_hand_type:knockback_multiplier) == 0, "Spear Hand lost its precision execution profile")
+	nexusSmokeAssert(initial(nolan_combo_type:sequence_hits) == 4 && initial(nolan_combo_type:sequence_hit_multiplier) == 0.7 && initial(nolan_combo_type:dash_range) == 4, "Nolan's Combination lost its four-hit pursuit contract")
+	nexusSmokeAssert(initial(guard_type:duration_ticks) == 20 && VILTRUMITE_OPENING_DURATION == 30 && VILTRUMITE_STAGGER_WINDOW == 60, "Viltrumite defense, opening, or anti-stunlock timing diverged")
 	var/mob/NexusSmokeTest/royal = new
 	royal.Viltrumite()
 	royal.applyViltrumiteRoyalLineage()
 	nexusSmokeAssert(royal.Class == "Royal Blood" && royal.isScourgeImmune(), "Royal Blood is not Scourge-immune")
 	var/mob/NexusSmokeTest/regent = new
 	regent.Viltrumite()
-	regent.applyGrandRegentLineage()
+	regent.applyGrandRegentLineage(TRUE)
 	nexusSmokeAssertNear(regent.Get_race_starting_bp_mod() * regent.racialCombatBPMult(), 3.3, 0.0001, "Grand Regent creation BP does not match LSSJ")
 	nexusSmokeAssertNear(regent.racialDamageTakenMult(), 0.9, 0.0001, "Grand Regent damage resistance does not match LSSJ")
-	nexusSmokeAssert(!regent.canPossessAnger() && regent.isScourgeImmune(), "Grand Regent retained Anger or lost Scourge immunity")
+	nexusSmokeAssert(!regent.canPossessAnger() && regent.isScourgeImmune() && regent.grand_regent_nonunique, "rare Grand Regent retained Anger, lost Scourge immunity, or claimed the unique office")
+	regent.normalizeViltrumiteLineage()
+	nexusSmokeAssert(regent.Class == "Grand Regent" && regent.grand_regent_nonunique, "rare Grand Regent was demoted during lineage normalization")
 
 	var/mob/NexusSmokeTest/birth_candidate = new
 	nexusSmokeAssert(!birth_candidate.canCreateHalfViltrumite(), "Half-Viltrumite creation opened without a pending birth")
@@ -2118,9 +2158,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(nexus_stance_contract)
 	nexusSmokeAssert(nexus_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
 	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 18 && nexus_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
-	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'RTSkyBreak.dmi', "Sky Break is not a weapon-gated physical sword projectile")
+	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'RTSkyBreak.dmi' && nexus_sky_break.explosion_size == 3 && nexus_sky_break.launch_delay_ticks == 1, "Sky Break is missing its weapon scaling, caster-tile launch, or three-tile impact radius")
 	nexusSmokeAssert(nexus_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && nexus_echoing_slash.weapon_projectile && nexus_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
-	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 14, "Echoing Slash is missing its integrated projectile art or adapted balance")
+	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 14 && nexus_echoing_slash.launch_delay_ticks == 1, "Echoing Slash is missing its integrated projectile art, adapted balance, or caster-tile launch")
 	var/obj/ArcaneSpell/Projectile/Fireball/arcane_fireball_vfx = new
 	var/obj/ArcaneSpell/Projectile/FrostBolt/arcane_frost_vfx = new
 	var/obj/ArcaneSpell/Projectile/LightningBolt/arcane_lightning_vfx = new
@@ -4236,11 +4276,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/bronze_upgrades = getForgedMaterialUpgradeOptions("bronze")
 	nexusSmokeAssert(normal_upgrades.len == 1 && normal_upgrades[1]:id == "copper" && copper_upgrades.len == 1 && bronze_upgrades.len == 2, "Normal does not upgrade to Copper before the Nexus material branches")
 	initializeNexusAdminActions()
-	nexusSmokeAssert(nexus_admin_action_catalog.len >= 20 && nexus_admin_action_catalog["give_item"] && nexus_admin_action_catalog["reward"] && nexus_admin_action_catalog["legacy_command"], "Nexus Admin Panel command catalog is incomplete")
+	nexusSmokeAssert(nexus_admin_action_catalog.len >= 20 && nexus_admin_action_catalog["give_item"] && nexus_admin_action_catalog["reward"] && nexus_admin_action_catalog["give_rare_race"] && nexus_admin_action_catalog["legacy_command"], "Nexus Admin Panel command catalog is incomplete")
 	nexusSmokeAssert(/mob/AdminEssentials/verb/managePlayer in typesof(/mob/AdminEssentials/verb), "contextual Manage Player command is missing")
 	var/mob/NexusSmokeTest/admin_verb_test = new
 	admin_verb_test.grantAdminVerbsForLevel(4)
-	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs) && (/mob/Admin4/verb/pwipe in admin_verb_test.verbs), "legacy admin verbs, including pwipe, are not retained cumulatively for CMD and the Admin tab")
+	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin3/verb/giveRareRace in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs) && (/mob/Admin4/verb/pwipe in admin_verb_test.verbs), "legacy admin verbs, including rare-race grants and pwipe, are not retained cumulatively for CMD and the Admin tab")
 	del(admin_verb_test)
 	var/list/server_setting_categories = getNexusServerSettingCategories()
 	nexusSmokeAssert(server_setting_categories.len == 6 && server_setting_categories["Progression"] == /upForm/admin_gains && server_setting_categories["Science"] == /upForm/admin_science, "HUD Server Panel categories are incomplete")
@@ -4249,6 +4289,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(headless_server_settings.headless_mode && islist(headless_progression_settings) && headless_progression_settings.len >= 30, "HUD Server Panel could not load headless legacy setting bindings")
 	nexusSmokeAssert(("adapt_mod" in headless_progression_settings) && getNexusServerSettingNameDisplay("adapt_mod") == "adapt_mod", "HUD Server Panel rows do not preserve their editable variable names")
 	del(headless_server_settings)
+	var/upForm/headless_race_settings = new /upForm/admin_races(null, profession_test, list(), TRUE)
+	var/list/headless_race_setting_values = headless_race_settings.form_vars["admin"]
+	nexusSmokeAssert("all_rare_races_common" in headless_race_setting_values, "HUD Server Panel is missing the all-rares-common test setting")
+	del(headless_race_settings)
 	var/list/inspector_list_test = list(1000, list("nested"), "mode" = "test")
 	nexusSmokeAssert(findtext(getNexusAdminVariableDisplay(inspector_list_test), "3 entries"), "Admin Inspector could not preview mixed list values")
 	nexusSmokeAssert(!profession_test.canAccessTechnology(profession_test) && !profession_test.canAccessTechnology(profession_test.loc), "Technology access accepted a non-object click target")
