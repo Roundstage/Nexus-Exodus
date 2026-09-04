@@ -14,6 +14,7 @@ The two workbooks have different roles:
 - Formula-backed damage comparison and equal-stat validation sheets.
 - `UnarmedBeamCounterProposal.md` records the implemented Comet Reversal prototype, a timing-based unarmed answer that stops additional frontal beams during its single approach without changing Beam globally.
 - `PlanetaryControl.md` defines planetary ownership, KO/Willpower conquest, League authority, tax exemptions, and Resource/Arcane Essence treasury behavior.
+- `ViltrumiteWipePlan.md` defines the two-planet wipe, Viltrumite lineages, Grand Regent LSSJ/changeling benchmarks, the Scourge Virus, race-restricted creation clothing, map integration, and required validation.
 
 ## Regeneration
 

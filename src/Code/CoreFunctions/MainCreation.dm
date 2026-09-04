@@ -31,6 +31,7 @@ proc/getRaceSpawnName(race_name)
 	switch(race_name)
 		if("Kanassan") return "Alien"
 		if("Heran") return "Saiyan"
+		if("Viltrumite", "Half-Viltrumite") return "Saiyan"
 	return race_name
 
 mob/proc/Go_to_spawn(First_time = 0, butNotInShipArea, choose_random = 0)

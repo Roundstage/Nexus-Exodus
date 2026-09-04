@@ -13,6 +13,8 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 
 `StatpanelTabs.dm` now refreshes supplemental stat data only in Side + Tabs mode. Skills, Other, and Admin remain BYOND's single native verb-category tabs; no synthetic statpanel with a duplicate name is generated. Items and the admin-only World data retain native atom click and context-menu behavior.
 
+`MainCreation.dm` temporarily maps both `Viltrumite` and `Half-Viltrumite` to the existing Saiyan spawn. Replace that bridge with the Viltrum spawn when the dedicated planet map is added.
+
 ## Files
 - `src/Code/CoreFunctions/DBModeCharacters.dm`
 - `src/Code/CoreFunctions/DBModeCore.dm`

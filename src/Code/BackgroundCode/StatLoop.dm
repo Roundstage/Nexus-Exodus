@@ -73,11 +73,14 @@ mob/proc
 
 	racialCombatBPMult()
 		if(Class == "Legendary Saiyan") return lssj_combat_bp_mult
+		if(Class == "Grand Regent") return grand_regent_combat_bp_mult
 		if(jirenAlien) return jirenAlienBPMult
 		if(IsCooler) return cooler_combat_bp_mult
 		switch(Race)
 			if("Saiyan") return saiyan_combat_bp_mult
 			if("Half Saiyan") return half_saiyan_combat_bp_mult
+			if("Viltrumite") return viltrumite_combat_bp_mult
+			if("Half-Viltrumite") return half_viltrumite_combat_bp_mult
 			if("Android") return android_combat_bp_mult
 			if("Bio-Android") return bio_android_combat_bp_mult
 			if("Majin") return majin_combat_bp_mult
@@ -88,6 +91,7 @@ mob/proc
 
 	racialDamageTakenMult()
 		if(Class == "Legendary Saiyan") return lssjTakeDmgMult
+		if(Class == "Grand Regent") return grand_regent_damage_taken_mult
 		if(jirenAlien) return jirenTakeDmgMult
 		if(IsCooler) return cooler_dmg_taken_mult
 		switch(Race)
@@ -1030,7 +1034,7 @@ mob/proc
 		//if(strangling||Ki>=ki_limit||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
 		//Overdrive||Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
 		//Has_Active_Freezes()||buffed_with_bp()||God_Fist_level||recov<=0 || SplitformCount()) return
-		if(strangling||Ki>=ki_limit||attacking||KO||(Flying&&Class!="Spirit Doll")||Action=="Training"||Digging||Regen_Active()||\
+		if(strangling||Ki>=ki_limit||attacking||KO||Action=="Training"||Digging||Regen_Active()||\
 		Using_Focus||Giving_Power || !(!Dead || (Dead&&(Is_In_Afterlife(src)||istype(current_area,/area/Prison)))) || counterpart_died||\
 		Has_Active_Freezes()||God_Fist_level||recov<=0 || Peebagging() || SplitformCount()) return
 		return 1
@@ -1472,8 +1476,7 @@ mob/proc/Power_Control_Loop(obj/Power_Control/A)
 
 mob/proc/Charge_Drain()
 	if(BPpcnt<=100) return 0
-	//var/drain = 1.5 * Eff**0.5 * (BPpcnt/100)**3
-	var/drain = 1.5 * (BPpcnt / 150) ** 3
+	var/drain = 1.5 * (BPpcnt / 150) ** 3 * powerupDrainOvercapMult()
 	/*
 	4000 x 24 energy, 500% powerup = 918 drain per second (1% per second) = 100 total seconds = 40 useful seconds
 	4000 x 1 energy, 500% powerup = 187.5  drain per second (4.69% per second) = 21.3 total seconds = 8.5 useful seconds
@@ -1488,6 +1491,13 @@ mob/proc/Charge_Drain()
 	such as melee attacking, flying, blasting, etc
 	*/
 	return drain
+
+mob/proc/powerupDrainOvercapMult()
+	if(BPpcnt <= 100) return 1
+	var/efficiency_threshold = max(powerup_soft_cap(), 1)
+	var/powerup_excess = BPpcnt - 100
+	if(powerup_excess <= efficiency_threshold) return 1
+	return (powerup_excess / efficiency_threshold) ** powerup_drain_overcap_exponent
 
 mob/var/tmp/obj/Power_Control/powerup_obj
 

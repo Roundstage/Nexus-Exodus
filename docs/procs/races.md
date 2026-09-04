@@ -1,7 +1,7 @@
 # Races
 
 ## Overview
-The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics. Android, Legendary Saiyan, and the Jiren/Apex Alien specialization initialize without Anger; all other races retain the standard Anger system.
+The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics. Android, Legendary Saiyan, Grand Regent, and the Jiren/Apex Alien specialization initialize without Anger; all other races retain the standard Anger system.
 
 ## Files
 - `src/Code/Races/Alien/Alien.dm`
@@ -31,6 +31,8 @@ The initializer identities below reflect the current modular race source. The ex
 - `src/Code/Races/Saiyan/SsGodRed.dm`
 - `src/Code/Races/SpiritDoll/SpiritDoll.dm`
 - `src/Code/Races/Tsujin/Tsujin.dm`
+- `src/Code/Races/Viltrumite/Viltrumite.dm`
+- `src/Code/Races/Viltrumite/ViltrumiteClothing.dm`
 - `src/Code/Races/UltraInstinct.dm`
 - `src/Code/Races/Shared/RaceProgression.dm`
 - `src/Code/Races/Shared/RaceStatsOnlyMode.dm`
@@ -66,9 +68,17 @@ The shared dispatchers have these current signatures:
 | `Saiyan/Saiyan.dm` | `mob/proc/Saiyan(Can_Elite=1,force_elite,force_low_class,force_normal_class=0)` | `Saiyan` | Not assigned, `Low Class`, or `Elite` |
 | `SpiritDoll/SpiritDoll.dm` | `mob/proc/Doll(interactive_options=1)` | `Human` | `Spirit Doll` |
 | `Tsujin/Tsujin.dm` | `mob/proc/Tsujin(interactive_options=1)` | `Tsujin` | Not assigned |
+| `Viltrumite/Viltrumite.dm` | `mob/proc/Viltrumite()` | `Viltrumite` | `Viltrumite`, `Royal Blood`, or admin-designated `Grand Regent` |
+| `Viltrumite/Viltrumite.dm` | `mob/proc/Half_Viltrumite()` | `Half-Viltrumite` | `Half-Viltrumite` or inherited `Royal Hybrid` |
 | `Yeet/Yeet.dm` | `mob/proc/Yeet()` | `Yeet` | Not assigned |
 
 `Races/_Shared/RaceProgression.dm` owns `NewZenkaiMods()`, `GetNewZenkaiMod()`, `Get_race_starting_bp_mod()`, and `ApplyStartingBP()` plus shared race/stat version constants. These declarations were moved out of `Main.dm` without changing their persisted variable names or behavior.
+
+## Viltrumite lineage contract
+
+`viltrumite_lineage` is the saved rules identifier (`standard`, `royal`, `grand_regent`, `hybrid`, or `royal_hybrid`); `Class` remains the compatible display/admin value. Standard Viltrumites use `2.4 * 0.70 = 1.68` effective creation BP, while the Grand Regent uses `2.4 * 1.375 = 3.30`, takes `0.90` incoming damage, and cannot possess Anger. Full and Half-Viltrumites have Intelligence `1`; their per-character `old_age_on` flag is disabled, so they receive neither natural decline penalties nor old-age death. This is distinct from combat immortality and does not grant death regeneration. Royal Blood increases free attributes and caps rather than passive damage resistance. Before the office has a holder, creation exposes one unique Grand Regent choice and atomically binds a successful character to account, slot, and creation timestamp. Afterward, only the audit-logged `setGrandRegent()` admin succession can transfer it and demote an online predecessor. Logout, death, and deletion never clear or reopen the office.
+
+Half-Viltrumites appear in creation only while a matching pending family birth exists. Royal Blood, but not the Grand Regent office, can produce Royal Blood descendants or Royal Hybrids. Until the dedicated Viltrum map is added, both Viltrumite race names resolve through `getRaceSpawnName()` to the existing Saiyan spawn. The hidden `scourge_resistance` roll is made once at five percent; Royal Blood, Royal Hybrid, and Grand Regent lineages are unconditionally immune. Virus infection and forced-death progression are intentionally separate from this race foundation.
 
 ## Proc Reference
 

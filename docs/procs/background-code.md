@@ -179,14 +179,14 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/racialCombatBPMult
 - Signature: `racialCombatBPMult()`
 - Inputs: None
-- Purpose: Return the dynamic combat-BP multiplier for Standard and Exceptional race packages without modifying persisted BP data.
+- Purpose: Return the dynamic combat-BP multiplier for Standard and Exceptional race packages, including standard, hybrid, and Grand Regent Viltrumites, without modifying persisted BP data.
 - Returns: A positive BP multiplier.
 - Side effects: None.
 
 #### mob/proc/racialDamageTakenMult
 - Signature: `racialDamageTakenMult()`
 - Inputs: None
-- Purpose: Return the dynamic incoming-damage multiplier for Exceptional race packages and Alien Apex Genome.
+- Purpose: Return the dynamic incoming-damage multiplier for Exceptional race packages, Grand Regent, and Alien Apex Genome.
 - Returns: A positive incoming-damage multiplier.
 - Side effects: None.
 
@@ -486,7 +486,7 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/proc/Can_recover_ki
 - Signature: `Can_recover_ki(ki_limit=1.#INF)`
-- Active buffs and Power Up do not block passive Energy recovery; their independent upkeep drains continue to apply.
+- Active buffs, Power Up, and flight do not block passive Energy recovery; their independent upkeep drains continue to apply.
 - Inputs: ki_limit=1.#INF
 - Purpose: Return whether recover ki.
 - Returns: boolean flag.
@@ -677,9 +677,16 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 #### mob/proc/Charge_Drain
 - Signature: `mob/proc/Charge_Drain()`
 - Inputs: None
-- Purpose: Handle charge drain.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Calculate Power Up upkeep, including cubic escalation after the character exceeds the Efficiency-based soft cap.
+- Returns: Numeric Energy drain before the world-loop cadence multiplier.
+- Side effects: None.
+
+#### mob/proc/powerupDrainOvercapMult
+- Signature: `mob/proc/powerupDrainOvercapMult()`
+- Inputs: None
+- Purpose: Return `1` through the Efficiency powerup threshold, then a tunable cubic drain multiplier based on how far the current power exceeds that threshold.
+- Returns: Numeric upkeep multiplier.
+- Side effects: None.
 
 #### proc/Powerup_drain
 - Signature: `proc/Powerup_drain()`

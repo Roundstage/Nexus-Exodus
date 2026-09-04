@@ -5,6 +5,7 @@ mob/proc/GetNewZenkaiMod()
 	switch(Race)
 		if("Half Saiyan") return 1
 		if("Saiyan") return 1
+		if("Viltrumite", "Half-Viltrumite") return 0
 		if("Human") return 0
 		if("Tsujin") return 0
 		if("Majin") return 0
@@ -31,6 +32,8 @@ mob/proc/Get_race_starting_bp_mod()
 		if("Yeet") return 1
 		if("Half Saiyan") return 2.5
 		if("Saiyan") return 2
+		if("Viltrumite") return 2.4
+		if("Half-Viltrumite") return 2.2
 		if("Human") return human_bp_mod
 		if("Tsujin") return 1.28
 		if("Majin") return new_majin_bp_mod

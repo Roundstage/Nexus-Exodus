@@ -19,7 +19,7 @@ The 1180x760 window cannot be closed or minimized through `upForm`. Its five sta
 - **Attributes:** all eleven manual stats with race value, free lineage points, player allocation, final value, and server-derived point caps.
 - **Review:** normalized selection summary and the final `Begin Journey` submission.
 
-Race, body, and trait changes happen in the browser. Selecting a race shows only that race's body and trait panels, selects their first entries, updates the description and hair eligibility, and resets the allocation to zero. Changing a trait also resets the allocation because the cached budget and caps are keyed by both race and trait. The server does not trust any of this browser state and recomputes the allowed race, trait, body, and stat profile at commit time.
+Race, body, and trait changes happen in the browser. Selecting a race shows only that race's body and trait panels, selects their first entries, updates the description, hair eligibility, and starter-clothing scope, and resets the allocation to zero. Changing a trait also resets the allocation because the cached budget and caps are keyed by both race and trait. Viltrumite and Half-Viltrumite creation hides every general catalog outfit and exposes only clothing whose `nexus_starter_races` includes that race; imported custom layers remain available. The server does not trust any of this browser state and recomputes the allowed race, trait, body, clothing, and stat profile at commit time.
 
 The Alien specialization keeps a sticky `remaining / 100 AP` indicator visible while its perk catalog scrolls. It updates after every selection or preset change and enters an explicit red over-budget state before navigation is rejected.
 
@@ -61,7 +61,7 @@ Argument names, order, type annotations, and defaults below match the current de
 - `mob/proc/raiseNexusCreationStat(stat_name, amount = 1)` dispatches a creation stat name to its `Raise_*` proc.
 - `proc/nexusCreationStatStep(stat_id)` and `mob/proc/getNexusCreationStatValue(stat_id)` normalize how allocation points and current race values are displayed.
 - `proc/nexusCreationStatProfile(race_name, trait_id)` returns and caches the race/trait budget, point caps, post-lineage race values, free lineage-point deltas, and per-point increments.
-- `proc/nexusCustomIconIsValid(icon/icon_file)`, `nexusResolveFrostFormIcon(...)`, `nexusValidateFrostFormOptions(...)`, and `nexusValidateStarterClothing(...)` enforce the normal `IconTooBig()` policy and resolve only creator-owned custom slots.
+- `proc/nexusCustomIconIsValid(icon/icon_file)`, `nexusResolveFrostFormIcon(...)`, and `nexusValidateFrostFormOptions(...)` enforce the normal `IconTooBig()` policy and resolve only creator-owned custom slots. `nexusValidateStarterClothing(list/selected_ids, list/custom_clothing_icons, race_name)` additionally enforces each catalog item's server-owned race scope.
 - `proc/nexusValidateStatAllocation(list/profile, list/allocation)` validates all submitted amounts, caps, and the exact total.
 - `mob/proc/applyNexusStatAllocation(list/allocation)` spends a validated allocation against the initialized mob's `Points`.
 - `mob/proc/canBeginNexusCharacterCreation()` checks whether the creator may be opened.

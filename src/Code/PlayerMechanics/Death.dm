@@ -301,6 +301,7 @@ mob/proc/third_eye()
 mob/proc/canPossessAnger()
 	if(Android || Race == "Android") return FALSE
 	if(Class == "Legendary Saiyan") return FALSE
+	if(Class == "Grand Regent") return FALSE
 	if(jirenAlien) return FALSE
 	return TRUE
 
