@@ -30,13 +30,16 @@ mob/proc/getKiWeaponBPBonus()
 	return 0.03
 
 mob/proc/usingKiWeapon()
-	if(active_ki_weapon && active_ki_weapon.loc == src && active_ki_weapon.suffix) return active_ki_weapon
-	active_ki_weapon = null
+	if(!active_ki_weapon || active_ki_weapon.loc != src || !active_ki_weapon.suffix) active_ki_weapon = null
 	for(var/obj/KiWeaponTechnique/ki_weapon in src)
 		if(ki_weapon.suffix)
 			if(!active_ki_weapon) active_ki_weapon = ki_weapon
-			else ki_weapon.suffix = null
+			else if(ki_weapon != active_ki_weapon) ki_weapon.deactivate(src, TRUE)
 	return active_ki_weapon
+
+mob/proc/deactivateKiWeaponsExcept(obj/KiWeaponTechnique/exception)
+	for(var/obj/KiWeaponTechnique/ki_weapon in src)
+		if(ki_weapon != exception && ki_weapon.suffix) ki_weapon.deactivate(src, TRUE)
 
 mob/proc/usingKiWeaponAsWeapon()
 	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
@@ -51,9 +54,10 @@ mob/proc/usingMeleeWeapon()
 
 mob/proc/getKiWeaponCombatBP()
 	var/obj/KiWeaponTechnique/ki_weapon = usingKiWeapon()
-	var/effective_bp = using_sword() ? getForgedWeaponAttackBP() : BP
-	if(ki_weapon && ki_weapon.isEmbue(src)) return effective_bp
-	return effective_bp * (1 + getKiWeaponBPBonus())
+	if(ki_weapon && ki_weapon.isEmbue(src))
+		if(using_sword()) return getForgedWeaponAttackBP()
+		return getForgedUnarmedAttackBP()
+	return BP * (1 + getKiWeaponBPBonus())
 
 mob/proc/getKiWeaponSourceStat(obj/KiWeaponTechnique/ki_weapon)
 	if(!ki_weapon) return getMilestonePhysicalDamageStat()
@@ -108,7 +112,8 @@ obj/KiWeaponTechnique
 	Reteachable = 0
 	Relearnable = 0
 	Duplicates_Allowed = 0
-	icon = 'src/Icons/VFX/SaiyanPower.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiFist.dmi'
+	layer = MOB_LAYER + 1
 	var
 		force_share = 0
 		counts_as_weapon = FALSE
@@ -118,9 +123,15 @@ obj/KiWeaponTechnique
 		causes_bleed = FALSE
 		accuracy_multiplier = 1
 		delay_multiplier = 1
+		tmp/image/weapon_overlay
 
 	verb/Hotbar_use()
 		set hidden = 1
+		toggle(usr)
+
+	verb/Toggle_Ki_Weapon()
+		set name = "Toggle Ki Weapon"
+		set category = "Skills"
 		toggle(usr)
 
 	Click()
@@ -129,25 +140,40 @@ obj/KiWeaponTechnique
 	proc/toggle(mob/user)
 		if(!user || loc != user || user.KO || user.Redoing_Stats) return FALSE
 		if(suffix) return deactivate(user)
-		if(!allows_physical_weapon && user.using_sword())
-			user << "You must unequip your physical weapon before shaping [src]."
+		if(!allows_physical_weapon && (user.using_sword() || user.usingForgedGloves()))
+			user << "You must unequip your physical weapon or forged gloves before shaping [src]."
 			return FALSE
-		var/obj/KiWeaponTechnique/other = user.usingKiWeapon()
-		if(other && other != src) other.deactivate(user, TRUE)
+		user.deactivateKiWeaponsExcept(src)
 		suffix = "Active"
 		user.active_ki_weapon = src
+		showWeaponOverlay(user)
 		var/activation_name = isEmbue(user) ? "Embue" : name
 		user.showNexusTechniqueAnnouncement(activation_name, getActivationColor(), 'Kiplosion.ogg', 24)
-		if(isEmbue(user)) user << "You Embue your physical weapon with Ki, adding 30% of Force without adding Ki Weapon BP."
+		if(isEmbue(user))
+			var/embued_item = user.using_sword() ? "[user.using_sword()]" : "[user.usingForgedGloves()]"
+			user << "<b>Embue:</b> You imbue [embued_item] with Ki. Its equipment BP is preserved and Ki Fist adds 30% of Force to melee scaling."
 		else user << "You shape [src] at [user.getKiWeaponProficiencyName()] proficiency."
 		return TRUE
 
 	proc/deactivate(mob/user, quiet = FALSE)
 		if(!user || !suffix) return FALSE
 		suffix = null
+		hideWeaponOverlay(user)
 		if(user.active_ki_weapon == src) user.active_ki_weapon = null
 		if(!quiet) user << "You release [src]."
 		return TRUE
+
+	proc/showWeaponOverlay(mob/user)
+		if(!user) return
+		hideWeaponOverlay(user)
+		weapon_overlay = image(src)
+		user.overlays += weapon_overlay
+
+	proc/hideWeaponOverlay(mob/user)
+		if(!user) return
+		if(weapon_overlay) user.overlays -= weapon_overlay
+		user.overlays -= src
+		weapon_overlay = null
 
 	proc/getActivationColor()
 		return "#ffe75e"
@@ -161,14 +187,14 @@ obj/KiWeaponTechnique
 		force_share = 0.3
 		allows_physical_weapon = TRUE
 		isEmbue(mob/user)
-			return user && user.using_sword()
+			return user && (user.using_sword() || user.usingForgedGloves())
 
 	KiSword
 		name = "Ki Sword"
 		desc = "Shapes a light Ki blade. Adds 70% of Force to melee scaling and carries a sword accuracy penalty, but does not unlock weapon techniques."
 		force_share = 0.7
 		accuracy_multiplier = 0.85
-		icon = 'src/Icons/Ki/Blasts/BlastDestructoDisk.dmi'
+		icon = 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiSword.dmi'
 		getActivationColor()
 			return "#a7fff0"
 
@@ -179,6 +205,7 @@ obj/KiWeaponTechnique
 		counts_as_weapon = TRUE
 		accuracy_multiplier = 0.75
 		delay_multiplier = 1.25
+		icon = 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiHammer.dmi'
 		getActivationColor()
 			return "#70d8ff"
 
@@ -191,6 +218,6 @@ obj/KiWeaponTechnique
 		scales_with_energy = TRUE
 		causes_bleed = TRUE
 		accuracy_multiplier = 0.85
-		icon = 'src/Icons/Effects/CC0/SwordSlash.dmi'
+		icon = 'src/Icons/NexusIntegrated/Attacks/Weapons/RTSpiritSword.dmi'
 		getActivationColor()
 			return "#ca87ff"

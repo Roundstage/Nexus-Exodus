@@ -32,8 +32,8 @@ Administrative commands and management flows. Administrators receive a searchabl
 
 ### src/Code/Admin/ServerPanel.dm
 
-- `showNexusServerPanel()` opens the level-4 Server Control Panel as native `client.screen` HUD objects.
-- `datum/NexusServerPanel/render()` provides six category tabs, current-value search, pagination, and direct editing for every setting bound by the existing administration models. Each clickable row renders the variable name and current value in separate labeled columns so the edited setting is always identifiable.
+- `showNexusServerPanel()` opens the level-4 Server Control Panel in a large, resizable browser window.
+- `datum/NexusServerPanel/render()` provides six category tabs, a persistent text search input, pagination, and direct editing for every setting bound by the existing administration models. Each clickable row renders the variable name and current value in separate labeled columns so the edited setting is always identifiable. Combat settings include `speedDelayMultMod`, the global movement-speed delay multiplier; larger values make movement and speed-based combat actions slower.
 - `createSettingsModel()` uses a headless upForm model only for its complete setting bindings and validation; no legacy browser window is created.
 - Number and text settings retain their legacy conversion and validation. List settings use dedicated add/remove controls, and every mutation is written to the admin audit log.
 

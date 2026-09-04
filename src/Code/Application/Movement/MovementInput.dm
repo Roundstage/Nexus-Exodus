@@ -26,6 +26,7 @@ var/vector_glide_max = 0
 var/vector_glide_high_speed_scale = 1
 var/vector_move_base_pixels_per_second = 70
 var/vector_walk_speed_pixels_per_second = 16
+var/vector_move_speed_delay_baseline = 2.3
 var/vector_move_speed_stat_severity = 0.2
 var/vector_move_speed_stat_minimum = 0.7
 var/vector_move_speed_stat_maximum = 1.4
@@ -250,7 +251,7 @@ mob/proc
 	GetVectorMovementStatMultiplier()
 		var/speed_delay = Speed_delay_mult(severity = vector_move_speed_stat_severity)
 		if(!isnum(speed_delay) || speed_delay <= 0) return 1
-		var/speed_multiplier = speedDelayMultMod / speed_delay
+		var/speed_multiplier = vector_move_speed_delay_baseline / speed_delay
 		return Clamp(speed_multiplier, vector_move_speed_stat_minimum, vector_move_speed_stat_maximum)
 
 	getVectorMaximumVelocity(d = NORTH, apply_diagonal_penalty = FALSE)

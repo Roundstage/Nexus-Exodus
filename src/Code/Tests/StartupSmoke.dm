@@ -1099,6 +1099,14 @@ proc/runNexusKiWeaponSmoke()
 	var/obj/KiWeaponTechnique/KiSword/ki_sword_test = new(ki_weapon_user)
 	var/obj/KiWeaponTechnique/KiHammer/ki_hammer_test = new(ki_weapon_user)
 	var/obj/KiWeaponTechnique/SpiritSword/spirit_sword_test = new(ki_weapon_user)
+	nexusSmokeAssert(ki_weapon_user.nexus_interface_layout == "side_tabs", "Side + Tabs is not the default interface layout")
+	var/datum/NexusChatHud/chat_font_contract = new
+	chat_font_contract.owner = ki_weapon_user
+	ki_weapon_user.TextSize = 2
+	nexusSmokeAssert(findtext(chat_font_contract.buildHtml(), "font-size:13px!important"), "Nexus chat does not map the default text preference to a readable font size")
+	del(chat_font_contract)
+	nexusSmokeAssert(/obj/KiWeaponTechnique/verb/Toggle_Ki_Weapon in ki_fist_test.verbs, "Ki Weapons are not exposed as clickable commands in the native Skills tab")
+	nexusSmokeAssert(ki_fist_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiFist.dmi' && ki_sword_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiSword.dmi' && ki_hammer_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiHammer.dmi' && spirit_sword_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTSpiritSword.dmi', "Ki Weapons are not using their dedicated Roleplay Tenkaichi appearance assets")
 	nexusSmokeAssert(ki_fist_test.force_share == 0.3 && !ki_fist_test.counts_as_weapon && ki_fist_test.allows_physical_weapon, "Ki Fist lost its glove-compatible 30% Force contract")
 	nexusSmokeAssert(ki_sword_test.force_share == 0.7 && !ki_sword_test.counts_as_weapon && !ki_sword_test.allows_physical_weapon && ki_sword_test.accuracy_multiplier < 1, "Ki Sword lost its non-weapon Force or accuracy contract")
 	nexusSmokeAssert(ki_hammer_test.force_share == 1 && ki_hammer_test.counts_as_weapon && ki_hammer_test.delay_multiplier > 1 && ki_hammer_test.accuracy_multiplier < 1, "Ki Hammer lost its weapon, Force, speed or accuracy contract")
@@ -1109,15 +1117,35 @@ proc/runNexusKiWeaponSmoke()
 	nexusSmokeAssert(ki_fist_node && ki_fist_node.branch == "Ki Weapons" && spirit_sword_node && spirit_sword_node.cost == getScaledProgressionExperience(40), "Ki Weapon type tree is missing or Spirit Sword is not its expensive capstone")
 	nexusSmokeAssert(progression_node_catalog["ki_weapon_proficiency_basic"]:prerequisites[1] == "ki_weapon_proficiency_novice" && progression_node_catalog["ki_weapon_proficiency_master"]:prerequisites[1] == "ki_weapon_proficiency_advanced", "Ki Weapon proficiency is not a separate sequential line")
 	nexusSmokeAssert(ki_weapon_user.getKiWeaponProficiency() == KI_WEAPON_PROFICIENCY_MASTER && ki_weapon_user.getKiWeaponBPBonus() == 0.26, "Ki Weapon Master proficiency does not map to sub-forged Masterwork reinforcement")
+	nexusSmokeAssert(ki_fist_test.toggle(ki_weapon_user) && ki_sword_test.toggle(ki_weapon_user) && !ki_fist_test.suffix && !ki_fist_test.weapon_overlay && ki_sword_test.suffix, "switching from Ki Fist to Ki Sword did not enforce mutual exclusivity")
+	nexusSmokeAssert(ki_hammer_test.toggle(ki_weapon_user) && !ki_sword_test.suffix && !ki_sword_test.weapon_overlay && ki_hammer_test.suffix, "switching from Ki Sword to Ki Hammer did not enforce mutual exclusivity")
+	nexusSmokeAssert(spirit_sword_test.toggle(ki_weapon_user) && !ki_hammer_test.suffix && !ki_hammer_test.weapon_overlay && spirit_sword_test.suffix, "switching from Ki Hammer to Spirit Sword did not enforce mutual exclusivity")
+	spirit_sword_test.deactivate(ki_weapon_user, TRUE)
 	var/obj/items/Sword/physical_weapon = new(ki_weapon_user)
 	physical_weapon.suffix = "Active"
 	ki_weapon_user.equipped_sword = physical_weapon
 	nexusSmokeAssert(!ki_sword_test.toggle(ki_weapon_user), "Ki Sword can be combined with a physical weapon")
 	nexusSmokeAssert(ki_fist_test.toggle(ki_weapon_user), "Ki Fist cannot be combined with a physical weapon")
+	nexusSmokeAssert(ki_fist_test.weapon_overlay && ki_fist_test.weapon_overlay in ki_weapon_user.overlays, "active Ki Fist does not appear on its user")
 	nexusSmokeAssert(ki_fist_test.isEmbue(ki_weapon_user) && ki_weapon_user.getKiWeaponCombatBP() == ki_weapon_user.getForgedWeaponAttackBP(), "Embue stacks Ki Weapon BP with its physical weapon")
 	ki_fist_test.deactivate(ki_weapon_user, TRUE)
+	nexusSmokeAssert(!ki_fist_test.weapon_overlay, "deactivated Ki Fist retains its appearance overlay")
 	physical_weapon.suffix = null
 	ki_weapon_user.equipped_sword = null
+	var/obj/items/Gloves/Forged/Science/embued_gloves = new(ki_weapon_user)
+	embued_gloves.suffix = "Equipped"
+	embued_gloves.forged_attack_bp_bonus = 0.4
+	ki_weapon_user.equipped_gloves = embued_gloves
+	nexusSmokeAssert(!ki_sword_test.toggle(ki_weapon_user) && !ki_hammer_test.toggle(ki_weapon_user) && !spirit_sword_test.toggle(ki_weapon_user), "Ki Sword, Ki Hammer, or Spirit Sword can activate with forged gloves equipped")
+	nexusSmokeAssert(ki_fist_test.toggle(ki_weapon_user) && ki_fist_test.isEmbue(ki_weapon_user) && ki_weapon_user.getKiWeaponCombatBP() == ki_weapon_user.getForgedUnarmedAttackBP() && ki_weapon_user.getKiWeaponCombatBP() > ki_weapon_user.BP, "Ki Fist Embue does not preserve forged glove BP")
+	ki_fist_test.deactivate(ki_weapon_user, TRUE)
+	embued_gloves.suffix = null
+	ki_weapon_user.equipped_gloves = null
+	nexusSmokeAssert(ki_sword_test.toggle(ki_weapon_user), "Ki Sword cannot activate after forged gloves are unequipped")
+	embued_gloves.suffix = "Equipped"
+	ki_weapon_user.equipped_gloves = embued_gloves
+	ki_weapon_user.disableKiWeaponForPhysicalWeapon()
+	nexusSmokeAssert(!ki_sword_test.suffix && !ki_weapon_user.active_ki_weapon && !ki_sword_test.weapon_overlay, "equipping forged gloves does not deactivate an incompatible Ki Weapon")
 	ki_hammer_test.suffix = "Active"
 	ki_weapon_user.active_ki_weapon = ki_hammer_test
 	nexusSmokeAssert(ki_weapon_user.usingMeleeWeapon() && ki_weapon_user.getKiWeaponSourceStat(ki_hammer_test) > ki_weapon_user.getMilestonePhysicalDamageStat(), "active Ki Hammer does not satisfy weapon techniques or add Force scaling")
@@ -1135,6 +1163,14 @@ proc/runNexusActionCycleSmoke()
 	action_cycle_player.Spd = 10000
 	var/high_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
 	nexusSmokeAssert(high_stat_move_pixels > low_stat_move_pixels && high_stat_move_pixels <= vector_move_base_pixels_per_second * vector_move_speed_stat_maximum * world.tick_lag, "vector movement does not apply its bounded Speed-stat multiplier")
+	var/original_speed_delay_multiplier = speedDelayMultMod
+	action_cycle_player.Spd = 100
+	speedDelayMultMod = vector_move_speed_delay_baseline
+	var/default_server_move_speed = action_cycle_player.getVectorMaximumVelocity(NORTH)
+	speedDelayMultMod = vector_move_speed_delay_baseline * 2
+	var/slower_server_move_speed = action_cycle_player.getVectorMaximumVelocity(NORTH)
+	speedDelayMultMod = original_speed_delay_multiplier
+	nexusSmokeAssert(slower_server_move_speed < default_server_move_speed, "server speedDelayMultMod setting does not affect character movement speed")
 	action_cycle_player.next_health_bar_update = 25
 	action_cycle_player.process_player_action_cycle(FALSE)
 	nexusSmokeAssert(action_cycle_player.next_health_bar_update == 25, "headless player action cycle unexpectedly mutated the client HUD throttle")
@@ -1804,7 +1840,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(nexus_live_browser_refresh_ticks == 10 && nexus_live_browser_heartbeat_milliseconds == 1000 && nexus_live_browser_scroll_idle_ticks == 20 && findtext(live_browser_script_test, "action:'heartbeat'") && findtext(live_browser_script_test, "nexusLiveRestoreScrollY=37") && findtext(live_browser_script_test, "sessionStorage") && findtext(live_browser_script_test, "nexusLiveOnScroll") && findtext(live_browser_script_test, "setTimeout(nexusPublishLiveScroll,80)") && findtext(live_browser_script_test, "beforeunload") && findtext(getNexusLiveBrowserScript(null, nexus_live_browser_scroll_placeholder), nexus_live_browser_scroll_placeholder), "live browser refresh cadence, immediate scroll handoff, stateful restoration, or heartbeat is missing")
 	nexusSmokeAssert(text2path("/mob/verb/focusNexusCommand"), "Return-key CMD routing verb is missing")
 	nexusSmokeAssert(!text2path("/mob/proc/Stat_NexusSkills") && !text2path("/mob/proc/Stat_NexusOther") && !text2path("/mob/proc/Stat_NexusAdmin"), "synthetic statpanels duplicate native Skills, Other, or Admin tabs")
-	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("invalid") == "overlay", "interface layout normalization is invalid")
+	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("overlay") == "overlay" && normalizeNexusInterfaceLayout("invalid") == "side_tabs", "interface layout normalization is invalid")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
 	overhead_layout_test.icon = 'Healthbar.dmi'

@@ -747,6 +747,7 @@ mob/var/tmp/obj/items/Gloves/Forged/equipped_gloves
 
 mob/proc/applyForgedGloves(obj/items/Gloves/Forged/gloves)
 	if(!gloves || gloves.loc != src) return
+	if(!gloves.suffix) disableKiWeaponForPhysicalWeapon()
 	for(var/obj/items/Gloves/Forged/other_gloves in item_list)
 		if(other_gloves != gloves && other_gloves.suffix) Clothes_Equip(other_gloves)
 	Clothes_Equip(gloves)
