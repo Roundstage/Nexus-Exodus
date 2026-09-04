@@ -1126,7 +1126,12 @@ proc/runNexusKiWeaponSmoke()
 	ki_weapon_user.equipped_sword = physical_weapon
 	nexusSmokeAssert(!ki_sword_test.toggle(ki_weapon_user), "Ki Sword can be combined with a physical weapon")
 	nexusSmokeAssert(ki_fist_test.toggle(ki_weapon_user), "Ki Fist cannot be combined with a physical weapon")
-	nexusSmokeAssert(ki_fist_test.weapon_overlay && ki_fist_test.weapon_overlay in ki_weapon_user.overlays, "active Ki Fist does not appear on its user")
+	var/ki_fist_overlay_visible = FALSE
+	for(var/appearance_value in ki_weapon_user.overlays)
+		if(appearance_value && appearance_value:icon == ki_fist_test.icon && "[appearance_value:icon_state]" == "[ki_fist_test.icon_state]" && appearance_value:layer == ki_fist_test.layer)
+			ki_fist_overlay_visible = TRUE
+			break
+	nexusSmokeAssert(ki_fist_test.weapon_overlay && ki_fist_overlay_visible, "active Ki Fist does not appear on its user")
 	nexusSmokeAssert(ki_fist_test.isEmbue(ki_weapon_user) && ki_weapon_user.getKiWeaponCombatBP() == ki_weapon_user.getForgedWeaponAttackBP(), "Embue stacks Ki Weapon BP with its physical weapon")
 	ki_fist_test.deactivate(ki_weapon_user, TRUE)
 	nexusSmokeAssert(!ki_fist_test.weapon_overlay, "deactivated Ki Fist retains its appearance overlay")
@@ -3121,7 +3126,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() == 36 && findtext(chat_panel_html, "action=channel&id=all") && !findtext(chat_panel_html, "CMD BAR BELOW") && !findtext(chat_panel_html, "ENTER TO FOCUS OR RETURN TO MAP"), "side chat panel is missing paging/channels or retained the obsolete CMD hint")
 	var/chat_footer_source_position = findtext(chat_panel_html, "<nav class='footer'>")
 	var/chat_messages_source_position = findtext(chat_panel_html, "<section class='hud-panel messages'")
-	nexusSmokeAssert(findtext(chat_panel_html, ".footer{order:4}") && findtext(chat_panel_html, ".footer .hud-button{display:flex;flex:1 1 25%;width:25%") && findtext(chat_panel_html, ".messages{order:3;") && findtext(chat_panel_html, ".nexus-hud .messages,.nexus-hud .messages *{font-family:'Courier New',monospace!important;font-variant:normal!important;text-transform:none!important}") && findtext(chat_panel_html, ".chat-entry{display:block;width:100%") && chat_footer_source_position && chat_messages_source_position && chat_footer_source_position < chat_messages_source_position && findtext(chat_panel_html, "body.className='nexus-hud'") && findtext(chat_panel_html, "function updateMessages(payload)") && findtext(chat_panel_html, "JSON.parse(payload)") && !findtext(chat_panel_html, "<img"), "side chat controls are not isolated from message markup, safely updateable, lowercase-readable, or evenly distributed")
+	nexusSmokeAssert(findtext(chat_panel_html, ".footer{order:4}") && findtext(chat_panel_html, ".footer .hud-button{display:flex;flex:1 1 25%;width:25%") && findtext(chat_panel_html, ".messages{order:3;") && findtext(chat_panel_html, ".nexus-hud .messages,.nexus-hud .messages *{font-family:'Courier New',monospace!important;") && findtext(chat_panel_html, "font-variant:normal!important;text-transform:none!important}") && findtext(chat_panel_html, ".chat-entry{display:block;width:100%") && chat_footer_source_position && chat_messages_source_position && chat_footer_source_position < chat_messages_source_position && findtext(chat_panel_html, "body.className='nexus-hud'") && findtext(chat_panel_html, "function updateMessages(payload)") && findtext(chat_panel_html, "JSON.parse(payload)") && !findtext(chat_panel_html, "<img"), "side chat controls are not isolated from message markup, safely updateable, lowercase-readable, or evenly distributed")
 	chat_contract_owner.nexus_interface_layout = "overlay"
 	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() >= 4, "overlay chat visible message calculation is invalid")
 	del(chat_hud_contract)

@@ -160,6 +160,7 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 	give_tier(Attacker)
 
 	Victim.KO = TRUE
+	Victim.has_angered_before_ko = FALSE
 	Victim.icon_state = "KO"
 	Victim.CheckTriggerUltraInstinct()
 
