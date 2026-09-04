@@ -494,6 +494,7 @@ obj/Blast
 		return max(0, Size) * world.icon_size
 
 	proc/getNexusProjectileCollisionRadiusPixels()
+		if(Size) return getBlastCollisionRadiusPixels()
 		var/base_radius = min(max(1, bound_width), max(1, bound_height)) * 0.5
 		return Clamp(base_radius * max(0.25, transform_size), 3, world.icon_size * 3)
 
