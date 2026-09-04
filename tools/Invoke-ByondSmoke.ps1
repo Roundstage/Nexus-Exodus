@@ -14,7 +14,10 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ByondVersion = '516.1686'
-$ByondUrl = 'https://www.byond.com/download/build/516/516.1686_byond.zip'
+$ByondUrls = @(
+	'https://www.byond.com/download/build/516/516.1686_byond.zip',
+	'https://byond-builds.dm-lang.org/516/516.1686_byond.zip'
+)
 $ByondSha256 = '2e355847d2080f6ff83ffba2b62b66574a4939e110323669d843f8afb7b5ace3'
 
 function Repair-ProcessEnvironmentPath {
@@ -346,10 +349,29 @@ try {
 			}
 		}
 		if(![IO.File]::Exists($archivePath)) {
-			Write-Host "Downloading BYOND $ByondVersion..."
 			$downloadPath = "$archivePath.download"
-			Invoke-WebRequest -UseBasicParsing -Uri $ByondUrl -OutFile $downloadPath
-			[IO.File]::Move($downloadPath, $archivePath)
+			$downloadErrors = @()
+			foreach($byondUrl in $ByondUrls) {
+				try {
+					if([IO.File]::Exists($downloadPath)) {
+						[IO.File]::Delete($downloadPath)
+					}
+					Write-Host "Downloading BYOND $ByondVersion from $byondUrl..."
+					Invoke-WebRequest -UseBasicParsing -Uri $byondUrl -OutFile $downloadPath
+					$downloadHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $downloadPath).Hash.ToLowerInvariant()
+					if($downloadHash -ne $ByondSha256) {
+						throw "Archive hash mismatch. Expected $ByondSha256, received $downloadHash."
+					}
+					[IO.File]::Move($downloadPath, $archivePath)
+					break
+				}
+				catch {
+					$downloadErrors += "$byondUrl`: $($_.Exception.Message)"
+				}
+			}
+			if(![IO.File]::Exists($archivePath)) {
+				throw "Unable to download verified BYOND $ByondVersion. $($downloadErrors -join ' | ')"
+			}
 		}
 	}
 
