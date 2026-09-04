@@ -8,7 +8,7 @@ client/var/tmp/list/combat_team_markers
 
 proc/getNexusCombatTeamMarkerIcon()
 	if(nexus_combat_team_marker_icon) return nexus_combat_team_marker_icon
-	var/icon/marker_icon = icon('healthbar.dmi', "100")
+	var/icon/marker_icon = icon('Healthbar.dmi', "100")
 	marker_icon.Scale(32, 32)
 	marker_icon.DrawBox(null, 1, 1, 32, 32)
 	var/outline_color = "#2a2100"

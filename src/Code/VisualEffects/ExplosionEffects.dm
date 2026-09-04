@@ -73,7 +73,7 @@ turf/proc/Make_Damaged_Ground(Amount=1) if(!Water)
 	if(O>=1) return
 	while(Amount)
 		Amount-=1
-		var/image/I=image(icon='crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
+		var/image/I=image(icon='Crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
 		overlays+=I
 		Remove_Damaged_Ground(I)
 
