@@ -1179,6 +1179,7 @@ upForm
 
 			initFormVar("admin", "KO_SYSTEM_FULL_HEAL_IN_SPAR", 				KO_SYSTEM_FULL_HEAL_IN_SPAR)
 			initFormVar("admin", "melee_delay_severity", 						melee_delay_severity)
+			initFormVar("admin", "speedDelayMultMod", 							speedDelayMultMod)
 			initFormVar("admin", "GLOBAL_MELEE_SPEED_OFFSET", 					GLOBAL_MELEE_SPEED_OFFSET)
 			initFormVar("admin", "bp_exponent", 								bp_exponent)
 			initFormVar("admin", "one_shot_start", one_shot_start)
@@ -1252,6 +1253,10 @@ upForm
 
 					if("KO_SYSTEM_FULL_HEAL_IN_SPAR") 				setFormVar(fname, name, text2num(value))
 					if("melee_delay_severity") 						setFormVar(fname, name, text2num(value))
+					if("speedDelayMultMod")
+						var/move_speed_multiplier = text2num(value)
+						if(move_speed_multiplier <= 0) return "Movement speed multiplier must be greater than zero"
+						setFormVar(fname, name, move_speed_multiplier)
 					if("GLOBAL_MELEE_SPEED_OFFSET") 				setFormVar(fname, name, text2num(value))
 					if("global_beam_deflect_mod") 					setFormVar(fname, name, text2num(value))
 					if("bp_exponent") setFormVar(fname, name, text2num(value))
@@ -1325,6 +1330,7 @@ upForm
 					KO_SYSTEM_FULL_HEAL_IN_SPAR			= getFormVar("admin", "KO_SYSTEM_FULL_HEAL_IN_SPAR")
 
 					melee_delay_severity = getFormVar("admin", "melee_delay_severity")
+					speedDelayMultMod = getFormVar("admin", "speedDelayMultMod")
 					GLOBAL_MELEE_SPEED_OFFSET = getFormVar("admin", "GLOBAL_MELEE_SPEED_OFFSET")
 					bp_exponent = getFormVar("admin", "bp_exponent")
 					one_shot_start = getFormVar("admin", "one_shot_start")

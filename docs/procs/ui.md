@@ -112,7 +112,8 @@ These references are intentional and must not be removed, renamed, replaced with
 
 ### src/Code/UI/SavePlayerSettings.dm
 
-- `save_player_settings()` and `load_player_settings()` persist the selected interface layout, all five native-tab category switches, the overhead-vitals offsets, and the main-panel screen position.
+- `side_tabs` is the default interface layout for new players and invalid/missing layout values; an explicitly saved `overlay` choice remains supported. `save_player_settings()` and `load_player_settings()` persist the selected interface layout, all five native-tab category switches, the overhead-vitals offsets, and the main-panel screen position.
+- Nexus chat maps the legacy `TextSize` preference to a readable 12–21px range in both Side + Tabs and overlay layouts; the default value renders at 13px and inline legacy message markup cannot shrink it below the selected size.
 
 ### src/Code/UI/UIStuff.dm
 

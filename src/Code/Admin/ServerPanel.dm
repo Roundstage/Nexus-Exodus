@@ -27,8 +27,12 @@ datum/NexusServerPanel
 	var/tmp/category = "Progression"
 	var/tmp/search_query = ""
 	var/tmp/page = 1
-	var/tmp/page_size = 8
+	var/tmp/page_size = 14
 	var/tmp/list/visible_setting_names = list()
+
+	Del()
+		if(owner) owner << browse(null, "window=nexus_server_panel")
+		. = ..()
 
 	proc/createSettingsModel(category_name = category)
 		var/list/categories = getNexusServerSettingCategories()
@@ -63,42 +67,39 @@ datum/NexusServerPanel
 		var/list/current_settings = getCurrentSettings()
 		refreshVisibleSettings(current_settings)
 		var/max_page = max(1, round((visible_setting_names.len + page_size - 1) / page_size))
-
-		addElement("", null, 12, 12, 620, 430, "#080d14", "#587087", "", "#ffffff", "left", 9, FALSE)
-		addElement("SERVER CONTROL PANEL", null, 24, 22, 430, 30, "#101c28", "#395168", "#72c6eb", "#f2f7fb", "left", 13, FALSE)
-		addElement("CLOSE", "close", 528, 22, 92, 30, "#241718", "#7e4646", "#e26767", "#ffd8d4", "center", 9)
-
+		var/source_ref = "\ref[src]"
+		var/html = {"
+		<!doctype html><html><head><meta charset='UTF-8'><style>
+		*{box-sizing:border-box;border-radius:0}html,body{margin:0;min-height:100%;background:#080d14;color:#edf3fa;font-family:'Courier New',monospace;font-size:15px}body{padding:18px}.panel{max-width:1100px;min-height:680px;margin:auto;border:2px solid #587087;background:#0d151e;box-shadow:inset 0 0 0 2px #263b4d;padding:14px}.header{display:flex;align-items:center;justify-content:space-between;background:#101c28;border:1px solid #395168;padding:12px 14px;color:#72c6eb;font-size:21px;font-weight:bold}.close,.tab,.pager,.setting{color:inherit;text-decoration:none}.close{padding:8px 18px;background:#241718;border:1px solid #7e4646;color:#ffd8d4;font-size:13px}.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:14px 0}.tab{padding:10px 6px;text-align:center;background:#101923;border:1px solid #40556b;color:#9fb1c3;font-weight:bold}.tab.active{background:#193044;border-color:#74c8ec;color:#fff;box-shadow:inset 4px 0 #74c8ec}.search{display:flex;gap:8px;margin-bottom:14px}.search input{flex:1;min-width:0;padding:12px;background:#080d14;border:2px inset #405a70;color:#edf3fa;font:16px 'Courier New',monospace}.search button{width:130px;background:#193044;border:1px solid #74c8ec;color:#fff;font-weight:bold}.table{border:1px solid #405a70}.row{display:grid;grid-template-columns:minmax(0,2fr) minmax(220px,1fr);min-height:34px}.row>*{padding:8px 12px;border-bottom:1px solid #304456;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row>*+*{border-left:1px solid #304456}.labels{background:#172330;color:#72c6eb;font-size:12px;font-weight:bold}.setting:hover>*{background:#193044;color:#fff}.empty{padding:24px;text-align:center;color:#bbaeb0}.footer{display:grid;grid-template-columns:150px 1fr 150px;gap:10px;margin-top:14px}.pager,.page-info{padding:10px;text-align:center;border:1px solid #40556b;background:#101923}.page-info{color:#9fb5c8}.disabled{color:#607080;pointer-events:none}@media(max-width:760px){.tabs{grid-template-columns:repeat(3,1fr)}body{padding:8px}.panel{min-height:0}.footer{grid-template-columns:100px 1fr 100px}}
+		</style></head><body><main class='panel'><header class='header'><span>SERVER CONTROL PANEL</span><a class='close' href='byond://?src=[source_ref]&action=close'>CLOSE</a></header><nav class='tabs'>"}
 		var/list/categories = getNexusServerSettingCategories()
 		var/category_index = 0
 		for(var/category_name in categories)
 			category_index++
 			var/is_active = category_name == category
-			var/button_x = 24 + (category_index - 1) * 98
-			addElement(uppertext(category_name), "category:[category_index]", button_x, 60, 92, 25, is_active ? "#193044" : "#101923", is_active ? "#74c8ec" : "#364a5c", is_active ? "#74c8ec" : "", is_active ? "#ffffff" : "#9fb1c3", "center", 8)
-
-		var/search_label = search_query ? "FILTER: [html_encode(search_query)]" : "SEARCH ALL SETTINGS IN [uppertext(category)]"
-		addElement(search_label, "search", 24, 93, 596, 27, "#0d1721", "#405a70", "#72c6eb", "#bcd2e3", "left", 9)
-
+			html += "<a class='tab[is_active ? " active" : ""]' href='byond://?src=[source_ref]&action=category:[category_index]'>[uppertext(category_name)]</a>"
+		html += "</nav><form class='search' action='byond://' method='get'><input type='hidden' name='src' value='[source_ref]'><input type='hidden' name='action' value='search'><input type='search' name='query' value='[html_encode(search_query)]' placeholder='Search names or values in [html_encode(category)]...' autofocus><button type='submit'>SEARCH</button></form><section class='table'><div class='row labels'><span>VARIABLE</span><span>CURRENT VALUE</span></div>"
 		var/start_index = (page - 1) * page_size + 1
 		var/end_index = min(visible_setting_names.len, start_index + page_size - 1)
-		var/row_number = 0
-		addElement("VARIABLE", null, 24, 126, 390, 21, "#172330", "#405a70", "#72c6eb", "#bcd2e3", "left", 8, FALSE)
-		addElement("CURRENT VALUE", null, 414, 126, 206, 21, "#172330", "#405a70", "#72c6eb", "#bcd2e3", "left", 8, FALSE)
 		if(!visible_setting_names.len)
-			addElement("NO SETTINGS MATCH THIS FILTER", null, 24, 151, 596, 28, "#15191e", "#493f41", "#8e6262", "#bbaeb0", "center", 9, FALSE)
+			html += "<div class='empty'>NO SETTINGS MATCH THIS FILTER</div>"
 		else
 			for(var/index = start_index, index <= end_index, index++)
-				row_number++
 				var/setting_name = visible_setting_names[index]
 				var/current_value = getNexusServerSettingDisplay(current_settings[setting_name])
-				var/row_y = 151 + (row_number - 1) * 28
-				var/row_color = row_number % 2 ? "#101923" : "#0d151e"
-				addElement(getNexusServerSettingNameDisplay(setting_name), "setting:[index]", 24, row_y, 390, 23, row_color, "#304456", "#4e829d", "#f2f7fb", "left", 9)
-				addElement(html_encode(current_value), "setting:[index]", 414, row_y, 206, 23, row_color, "#304456", "", "#bcd2e3", "left", 9)
+				html += "<a class='setting row' href='byond://?src=[source_ref]&action=setting:[index]'><span>[getNexusServerSettingNameDisplay(setting_name)]</span><span>[html_encode(current_value)]</span></a>"
+		html += "</section><footer class='footer'><a class='pager[page > 1 ? "" : " disabled"]' href='byond://?src=[source_ref]&action=previous'>PREVIOUS</a><div class='page-info'>PAGE [page] / [max_page] &nbsp;-&nbsp; [visible_setting_names.len] SETTINGS</div><a class='pager[page < max_page ? "" : " disabled"]' href='byond://?src=[source_ref]&action=next'>NEXT</a></footer></main></body></html>"
+		owner << browse(html, "window=nexus_server_panel;size=1000x760;can_resize=1")
 
-		addElement("PREVIOUS", "previous", 24, 390, 104, 28, "#101923", "#40556b", "", page > 1 ? "#edf3fa" : "#607080", "center", 8)
-		addElement("PAGE [page] / [max_page]   -   [visible_setting_names.len] SETTINGS", null, 136, 390, 372, 28, "#0d151e", "#304456", "", "#9fb5c8", "center", 8, FALSE)
-		addElement("NEXT", "next", 516, 390, 104, 28, "#101923", "#40556b", "", page < max_page ? "#edf3fa" : "#607080", "center", 8)
+	Topic(href, list/href_list)
+		if(!canInteract() || owner.AdminLevel() < 4) return
+		var/action_id = href_list["action"]
+		if(action_id == "search")
+			search_query = href_list["query"] || ""
+			page = 1
+			render()
+			return
+		handleAction(action_id)
 
 	proc/editListSetting(setting_name, list/current_list)
 		var/choice = alert(owner, "[setting_name] contains [current_list.len] entries.", "Server Setting", "Add", "Remove", "Cancel")
@@ -149,13 +150,6 @@ datum/NexusServerPanel
 		if(!canInteract() || owner.AdminLevel() < 4) return
 		if(action_id == "close")
 			del(src)
-			return
-		if(action_id == "search")
-			var/new_query = input(owner, "Search setting names or current values in [category]. Leave blank to clear.", "Server Control Panel", search_query) as null|text
-			if(!isnull(new_query))
-				search_query = new_query
-				page = 1
-			render()
 			return
 		if(action_id == "previous") page--
 		else if(action_id == "next") page++
