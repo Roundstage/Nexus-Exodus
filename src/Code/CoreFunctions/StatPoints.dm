@@ -133,6 +133,7 @@ mob/proc
 			if("Frost Lord") cap = 2.5
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Energy")
 		if(Eff >= cap) return 1
 
 	StrengthBeyondRaceCap()
@@ -161,6 +162,7 @@ mob/proc
 			if("Frost Lord") cap = 1.9
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Strength")
 		if(strmod >= cap) return 1
 
 	NexusGeneralCombatStatCap()
@@ -183,6 +185,7 @@ mob/proc
 			if("Majin") cap = 3
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Offense")
 		return cap
 
 	DuraBeyondRaceCap()
@@ -211,6 +214,7 @@ mob/proc
 			if("Frost Lord") cap = 1.9
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Endurance")
 		if(endmod >= cap) return 1
 
 	SpeedBeyondRaceCap()
@@ -239,6 +243,7 @@ mob/proc
 			if("Frost Lord") cap = 1.9
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Speed")
 		if(spdmod >= cap) return 1
 
 	ForceBeyondRaceCap()
@@ -267,6 +272,7 @@ mob/proc
 			if("Frost Lord") cap = 1.9
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Force")
 		if(formod >= cap) return 1
 
 	ResBeyondRaceCap()
@@ -295,6 +301,7 @@ mob/proc
 			if("Frost Lord") cap = 1.9
 			if("Demon") cap = 2
 			if("Tsujin") cap = 2.5
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Resistance")
 		if(resmod >= cap) return 1
 
 	RegenBeyondRaceCap()
@@ -323,6 +330,7 @@ mob/proc
 			if("Frost Lord") cap = 1
 			if("Demon") cap = 4
 			if("Tsujin") cap = 1
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Regeneration")
 		if(regen >= cap) return 1
 
 	RecovBeyondRaceCap()
@@ -351,6 +359,7 @@ mob/proc
 			if("Frost Lord") cap = 1.4
 			if("Demon") cap = 1.6
 			if("Tsujin") cap = 2
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Recovery")
 		if(recov >= cap) return 1
 
 	AngerBeyondRaceCap()
@@ -380,6 +389,7 @@ mob/proc
 			if("Frost Lord") cap = 130
 			if("Demon") cap = 200
 			if("Tsujin") cap = 150
+		if(Race in list("Viltrumite", "Half-Viltrumite")) cap = getViltrumiteCreationStatCap("Anger")
 		if(max_anger >= cap) return 1
 
 
@@ -489,6 +499,8 @@ mob/proc/RaceBonusStatPoints()
 	if(Race == "Kanassan") return 12
 	if(Race == "Heran") return 8
 	if(Race == "Saiyan") return 6
+	if(Race == "Viltrumite") return Class == "Royal Blood" ? 14 : 0
+	if(Race == "Half-Viltrumite") return Class == "Royal Hybrid" ? 14 : 4
 	
 	return 0
 
@@ -605,6 +617,28 @@ mob/proc/ApplyRaceBuild()
 			"Points" = -16
 		)
 	)
+	var/list/Viltrumite_builds = list(
+		"Viltrumite" = list(
+			"Regeneration" = 5, "Recovery" = 1,
+			"Points" = -6
+		),
+		"Royal Blood" = list(
+			"Strength" = 4, "Durability" = 4, "Speed" = 4, "Force" = 2, "Resist" = 4, "Offense" = 3, "Defense" = 3, "Regeneration" = 5, "Recovery" = 2,
+			"Points" = -6
+		),
+		"Grand Regent" = list(
+			"Regeneration" = 8, "Recovery" = 2,
+			"Points" = -10
+		),
+		"Half-Viltrumite" = list(
+			"Strength" = 2, "Durability" = 2, "Speed" = 2, "Force" = 2, "Resist" = 2, "Offense" = 2, "Defense" = 2, "Regeneration" = 4, "Recovery" = 2,
+			"Points" = -8
+		),
+		"Royal Hybrid" = list(
+			"Strength" = 4, "Durability" = 4, "Speed" = 4, "Force" = 3, "Resist" = 4, "Offense" = 4, "Defense" = 4, "Regeneration" = 5, "Recovery" = 3,
+			"Points" = -8
+		)
+	)
 
 	var/list/valid_stats = list("Strength","Force","Energy","Durability","Resist","Recovery","Regeneration","Offense","Defense","Speed")
 	var/list/build
@@ -618,6 +652,14 @@ mob/proc/ApplyRaceBuild()
 		
 		if(!src.stat_build_unlocked)
 			ApplyBuildStats(build, valid_stats)
+		return
+
+	if(src.Race in list("Viltrumite", "Half-Viltrumite"))
+		var/viltrumite_build_id = src.Class
+		if(!(viltrumite_build_id in Viltrumite_builds)) viltrumite_build_id = src.Race
+		build = Viltrumite_builds[viltrumite_build_id]
+		if(!build) return
+		if(!src.stat_build_unlocked) ApplyBuildStats(build, valid_stats)
 		return
 
 	// Outras raças

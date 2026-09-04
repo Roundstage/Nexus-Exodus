@@ -107,6 +107,7 @@ var
 	recovery_powerup_exponent = 1.3
 	energy_mod_powerup_exponent = 0.90 //was .84, determines max powerup % before massive slowdown begins, a soft cap
 	powerup_softcap_scaledown_exponent = 3 //how fast powerup slows down past the soft cap. this is not the soft cap itself
+	powerup_drain_overcap_exponent = 3 //how sharply upkeep rises after exceeding the Efficiency-based powerup soft cap
 	health_regen_exponent = 1
 
 	android_extra_cyber_bp_mult = 1.8

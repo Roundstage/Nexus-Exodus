@@ -1184,6 +1184,100 @@ proc/runNexusActionCycleSmoke()
 	text_test.dd_list2text_test()
 	del(text_test)
 
+proc/runViltrumiteStartupSmokeTests()
+	var/list/expected_budgets = list(
+		"Viltrumite|viltrumite_warrior" = 38,
+		"Viltrumite|viltrumite_royal" = 52,
+		"Viltrumite|viltrumite_grand_regent" = 34,
+		"Half-Viltrumite|half_viltrumite_hybrid" = 40,
+		"Half-Viltrumite|viltrumite_royal_hybrid" = 50)
+	for(var/profile_id in expected_budgets)
+		var/list/profile_parts = splittext(profile_id, "|")
+		var/list/profile = nexusCreationStatProfile(profile_parts[1], profile_parts[2])
+		nexusSmokeAssert(profile["budget"] == expected_budgets[profile_id], "Viltrumite creation budget diverged: [profile_id]")
+	var/list/standard_profile = nexusCreationStatProfile("Viltrumite", "viltrumite_warrior")
+	var/list/royal_profile = nexusCreationStatProfile("Viltrumite", "viltrumite_royal")
+	var/list/standard_points = standard_profile["racial_points"]
+	var/list/royal_points = royal_profile["racial_points"]
+	nexusSmokeAssert(standard_points["regeneration"] == 5 && royal_points["strength"] == 4 && royal_points["defense"] == 3, "Viltrumite lineage stats are missing")
+
+	var/mob/NexusSmokeTest/standard = new
+	standard.Viltrumite()
+	nexusSmokeAssert(getRaceSpawnName("Viltrumite") == "Saiyan" && getRaceSpawnName("Half-Viltrumite") == "Saiyan", "Viltrumite races did not resolve to the temporary Saiyan spawn")
+	nexusSmokeAssert(!standard.old_age_on && standard.Lifespan() == 1.#INF, "standard Viltrumites retained a natural decline or lifespan limit")
+	nexusSmokeAssert(standard.Intelligence == 1, "standard Viltrumite Intelligence diverged from 1")
+	nexusSmokeAssertNear(standard.Get_race_starting_bp_mod() * standard.racialCombatBPMult(), 1.68, 0.0001, "standard Viltrumite creation BP escaped its balance target")
+	nexusSmokeAssert(!standard.rollViltrumiteScourgeGenetics(FALSE) && standard.scourge_genetics_rolled, "forced negative Scourge genetics did not persist")
+	var/mob/NexusSmokeTest/hybrid = new
+	hybrid.Half_Viltrumite()
+	nexusSmokeAssert(!hybrid.old_age_on && hybrid.Lifespan() == 1.#INF && hybrid.Intelligence == 1, "Half-Viltrumites retained aging limits or incorrect Intelligence")
+	var/mob/NexusSmokeTest/royal = new
+	royal.Viltrumite()
+	royal.applyViltrumiteRoyalLineage()
+	nexusSmokeAssert(royal.Class == "Royal Blood" && royal.isScourgeImmune(), "Royal Blood is not Scourge-immune")
+	var/mob/NexusSmokeTest/regent = new
+	regent.Viltrumite()
+	regent.applyGrandRegentLineage()
+	nexusSmokeAssertNear(regent.Get_race_starting_bp_mod() * regent.racialCombatBPMult(), 3.3, 0.0001, "Grand Regent creation BP does not match LSSJ")
+	nexusSmokeAssertNear(regent.racialDamageTakenMult(), 0.9, 0.0001, "Grand Regent damage resistance does not match LSSJ")
+	nexusSmokeAssert(!regent.canPossessAnger() && regent.isScourgeImmune(), "Grand Regent retained Anger or lost Scourge immunity")
+
+	var/mob/NexusSmokeTest/birth_candidate = new
+	nexusSmokeAssert(!birth_candidate.canCreateHalfViltrumite(), "Half-Viltrumite creation opened without a pending birth")
+	var/mob/NexusSmokeTest/parent = new
+	var/obj/Mate/pending_birth = new(parent)
+	pending_birth.Waiting = TRUE
+	pending_birth.Race = "Half-Viltrumite"
+	pending_birth.Class = "Royal Hybrid"
+	players += parent
+	nexusSmokeAssert(birth_candidate.canCreateHalfViltrumite() && birth_candidate.getWaitingHalfViltrumiteClass() == "Royal Hybrid", "pending Royal Hybrid birth did not open its lineage")
+	players -= parent
+	del(parent)
+	del(birth_candidate)
+
+	var/list/starter_options = nexusStarterClothingOptions()
+	var/viltrumite_clothing_id
+	var/general_clothing_id
+	for(var/clothing_id in starter_options)
+		var/clothing_type = starter_options[clothing_id]
+		if(clothing_type == /obj/items/Clothes/ViltrumiteSoldierRobe) viltrumite_clothing_id = clothing_id
+		else if(!general_clothing_id)
+			var/obj/items/Clothes/clothing = new clothing_type
+			if(clothing.canUseAsNexusStarter("Human")) general_clothing_id = clothing_id
+			del(clothing)
+	var/list/viltrumite_ids = list()
+	viltrumite_ids[viltrumite_clothing_id] = TRUE
+	var/list/general_ids = list()
+	general_ids[general_clothing_id] = TRUE
+	nexusSmokeAssert(viltrumite_clothing_id && nexusValidateStarterClothing(viltrumite_ids, null, "Viltrumite") && !nexusValidateStarterClothing(viltrumite_ids, null, "Human"), "Viltrumite starter clothing scope is not enforced")
+	nexusSmokeAssert(general_clothing_id && nexusValidateStarterClothing(general_ids, null, "Human") && !nexusValidateStarterClothing(general_ids, null, "Viltrumite"), "general clothing leaked into Viltrumite creation")
+	del(regent)
+	del(royal)
+	del(hybrid)
+	del(standard)
+
+proc/runEnergyRecoveryStartupSmokeTests()
+	var/mob/NexusSmokeTest/energy_recovery_test = new
+	energy_recovery_test.Ki = 50
+	energy_recovery_test.max_ki = 100
+	energy_recovery_test.Eff = 1
+	energy_recovery_test.BPpcnt = 127
+	nexusSmokeAssertNear(energy_recovery_test.powerupDrainOvercapMult(), 1, 0.0001, "Power Up drain increased before the Efficiency threshold")
+	energy_recovery_test.BPpcnt = 154
+	nexusSmokeAssertNear(energy_recovery_test.powerupDrainOvercapMult(), 8, 0.0001, "Power Up drain did not rise cubically past the Efficiency threshold")
+	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "Power Up still blocks passive Energy recovery")
+	energy_recovery_test.Flying = TRUE
+	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "Flight still blocks passive Energy recovery")
+	energy_recovery_test.Flying = FALSE
+	var/obj/Buff/energy_recovery_buff = new(energy_recovery_test)
+	energy_recovery_buff.suffix = "Active"
+	energy_recovery_buff.buff_bp = 1.5
+	energy_recovery_test.current_buff = energy_recovery_buff
+	energy_recovery_test.buff_transform_bp = 100
+	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "an active BP buff still blocks passive Energy recovery instead of relying on its drain")
+	del(energy_recovery_buff)
+	del(energy_recovery_test)
+
 proc/runStartupSmokeTests(soul_contract_count_before)
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
 	var/normalized_description = normalizeNexusPlayerDescription(legacy_description)
@@ -2301,19 +2395,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(targeted_dash_skill)
 	del(targeted_dash_target)
 	del(targeted_dash_user)
-	var/mob/NexusSmokeTest/energy_recovery_test = new
-	energy_recovery_test.Ki = 50
-	energy_recovery_test.max_ki = 100
-	energy_recovery_test.BPpcnt = 200
-	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "Power Up still blocks passive Energy recovery")
-	var/obj/Buff/energy_recovery_buff = new(energy_recovery_test)
-	energy_recovery_buff.suffix = "Active"
-	energy_recovery_buff.buff_bp = 1.5
-	energy_recovery_test.current_buff = energy_recovery_buff
-	energy_recovery_test.buff_transform_bp = 100
-	nexusSmokeAssert(energy_recovery_test.Can_recover_ki(energy_recovery_test.max_ki), "an active BP buff still blocks passive Energy recovery instead of relying on its drain")
-	del(energy_recovery_buff)
-	del(energy_recovery_test)
 	var/mob/NexusSmokeTest/technique_targeting_test = new
 	var/mob/NexusSmokeTest/technique_target = new
 	technique_targeting_test.SafeTeleport(attack_movement_origin)

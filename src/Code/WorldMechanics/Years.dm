@@ -129,6 +129,8 @@ obj/Mate
 	desc="Children will inherit some attributes of the parent(s) such as base power and energy and possibly some \
 	others."
 	var/Race
+	var/Class
+	var/ViltrumiteLineage
 	var/bp_mod
 	var/Energy
 	var/base_bp
@@ -157,6 +159,8 @@ obj/Egg
 	icon='Egg.dmi'
 	var/Parent
 	var/Race
+	var/Class
+	var/ViltrumiteLineage
 	var/bp_mod
 	var/Energy
 	var/base_bp
@@ -169,6 +173,8 @@ mob/proc/Mate(obj/Mate/M)
 		var/obj/Egg/E=new(loc)
 		E.Parent=src
 		E.Race=Race
+		E.Class=Class in list("Royal Blood", "Royal Hybrid") ? Class : null
+		E.ViltrumiteLineage=viltrumite_lineage in list("royal", "royal_hybrid") ? viltrumite_lineage : null
 		E.bp_mod=bp_mod
 		E.Energy=max_ki/Eff
 		E.base_bp=base_bp
@@ -196,11 +202,14 @@ mob/proc/Mate(obj/Mate/M)
 			M=locate(/obj/Mate) in Mother
 			if(M && Race==P.Race)
 				M.Race=Race
+				if(Race == "Viltrumite" && (Class == "Royal Blood" || P.Class == "Royal Blood")) M.Class = "Royal Blood"
+				if(M.Class == "Royal Blood") M.ViltrumiteLineage = "royal"
 				M.bp_mod=max(bp_mod,P.bp_mod)
 				if(!M.bp_mod) M.bp_mod=bp_mod
 			else
 				var/list/parent_races=list(Race,P.Race)
 				if(("Saiyan" in parent_races)&&("Human" in parent_races)) parent_races+="Half Saiyan"
+				if(("Viltrumite" in parent_races)&&("Human" in parent_races)) parent_races+="Half-Viltrumite"
 				var/mRace = input(Mother,"What race will the child be?") in parent_races
 				if(!M) return
 				M.Race = mRace
@@ -208,6 +217,10 @@ mob/proc/Mate(obj/Mate/M)
 				if(M.Race==Race) M.bp_mod=bp_mod
 				else if(M.Race==P.Race) M.bp_mod=P.bp_mod
 				if(Race == "Half Saiyan") M.bp_mod = min(bp_mod,P.bp_mod)
+				if(M.Race == "Half-Viltrumite")
+					M.bp_mod = min(bp_mod,P.bp_mod)
+					if(Class == "Royal Blood" || P.Class == "Royal Blood") M.Class = "Royal Hybrid"
+					if(M.Class == "Royal Hybrid") M.ViltrumiteLineage = "royal_hybrid"
 			if(M)
 				M.base_bp=max((base_bp/bp_mod)*0.7,(P.base_bp/P.bp_mod)*0.7)
 				if(!M.base_bp) M.base_bp=base_bp/bp_mod
@@ -250,8 +263,13 @@ mob/proc/Mate_Check()
 	for(var/mob/P in players) for(var/obj/Mate/M in P) if(M.Waiting&&M.Race==Race)
 		M.Waiting=0
 		src<<"You are the child of [P]"
-		SafeTeleport(P.loc)
+		if(Race != "Half-Viltrumite") SafeTeleport(P.loc)
 		P<<"[src] is your child"
+		if(M.Class in list("Royal Blood", "Royal Hybrid"))
+			Class = M.Class
+			viltrumite_lineage = M.ViltrumiteLineage || (M.Class == "Royal Blood" ? "royal" : "royal_hybrid")
+			scourge_genetics_rolled = TRUE
+			scourge_resistance = TRUE
 		if(M.bp_mod) bp_mod=M.bp_mod
 		max_ki=M.Energy*Eff
 		if(M.base_bp) base_bp=M.base_bp*M.bp_mod
@@ -267,6 +285,11 @@ mob/proc/Mate_Check()
 		SafeTeleport(E.loc)
 		src<<"You hatched from the egg of [E.Parent]"
 		bp_mod=E.bp_mod
+		if(E.Class in list("Royal Blood", "Royal Hybrid"))
+			Class = E.Class
+			viltrumite_lineage = E.ViltrumiteLineage || (E.Class == "Royal Blood" ? "royal" : "royal_hybrid")
+			scourge_genetics_rolled = TRUE
+			scourge_resistance = TRUE
 		max_ki=E.Energy*Eff
 		base_bp=E.base_bp
 		available_potential=0.5

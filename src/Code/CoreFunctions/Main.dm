@@ -196,6 +196,7 @@ mob/proc
 		TrainingTimeLogin()
 		if(client) client.DeleteTitleScreen()
 		if(jirenAlien) stun_resistance_mod = jirenStunResist
+		normalizeViltrumiteLineage()
 		normalizePrimaryTransformation()
 
 proc/get_mob_id() return rand(1,999999999)
@@ -206,6 +207,7 @@ mob/proc
 		Race(force_race=force_race,force_elite=force_elite,force_low_class=force_low_class)
 		if(!reincarnating && !dbz_character) rollCharacterMutations()
 		else normalizeCharacterMutations()
+		rollViltrumiteScourgeGenetics()
 		//Race(force_race = "Saiyan", force_elite=force_elite,force_low_class=force_low_class)
 
 		bp_loss_from_low_ki=Get_bp_loss_from_low_ki()
@@ -330,6 +332,7 @@ mob/proc
 	GetAvailableCharacterRaces(show_cap_alert = 0)
 		var/list/Races=Race_List()
 		for(var/V in Illegal_Races) if(V in Races) Races-=V
+		if(!canCreateHalfViltrumite()) Races -= "Half-Viltrumite"
 
 		if(!SSj_Online())
 			var/Frost_Lords = 0
@@ -379,6 +382,8 @@ mob/proc
 			if("Namekian") Namekian(interactive_options)
 			if("Saiyan") Saiyan(Can_Elite=interactive_options,force_elite=force_elite,force_low_class=force_low_class,force_normal_class=force_normal_class)
 			if("Half Saiyan") Half_Saiyan()
+			if("Viltrumite") Viltrumite()
+			if("Half-Viltrumite") Half_Viltrumite()
 			if("Frost Lord") Icer(interactive_options,force_cooler)
 			if("Demon") Demon(interactive_options)
 			if("Demigod") Demigod(interactive_options)

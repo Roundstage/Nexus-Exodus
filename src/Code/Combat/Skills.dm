@@ -2110,8 +2110,8 @@ obj/Power_Control
 	desc="This allows you to power up and power down. Also, for certain forms, such as those of \
 	Saiyans and Frost Lords, powering up twice will cause them to go into their next form, powering \
 	down twice will cause them to revert. Powering up will increase your Battle Power, but drain your \
-	energy the higher you go. The more energy you have the higher you can power up without worrying \
-	about the drain sucking you back down again."
+	energy the higher you go. Energy Efficiency determines how far above 100% you can go before the \
+	upkeep begins increasing sharply."
 	var/Powerup=0
 	var/tmp/PC_Loop_Active
 

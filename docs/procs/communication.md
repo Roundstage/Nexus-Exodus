@@ -32,6 +32,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 
 ## integrated language adaptation
 
+- Viltrumite and Half-Viltrumite characters begin with Viltrumite; hybrids also begin with Earthling.
 - `syncNexusLanguages(silent)` migrates racial languages and validates the currently spoken language.
 - `renderSpokenLanguageFor(listener, raw_text, allow_learning)` calculates speaker/listener fluency, translation items, exposure gains, and the listener-specific rendered text.
 - `renderNexusLanguageText(raw_text, language_id, understanding)` deterministically replaces unknown words with language-specific syllables while preserving fully understood words.

@@ -212,6 +212,8 @@ proc/initialize()
 	Add_Technology()
 	world<<"Technology added"
 	if(world.params["nexus_smoke_tests"])
+		runViltrumiteStartupSmokeTests()
+		runEnergyRecoveryStartupSmokeTests()
 		runStartupSmokeTests(smoke_soul_contract_count)
 	Fill_Hair_List()
 	world<<"Hair added"
@@ -642,6 +644,9 @@ proc/saveMisc()
 	s["old_age_on"] << old_age_on
 	s["lssj_common_race"] << lssj_common_race
 	s["icer_common_race"] << icer_common_race
+	s["viltrumite_grand_regent_account"] << viltrumite_grand_regent_account
+	s["viltrumite_grand_regent_slot"] << viltrumite_grand_regent_slot
+	s["viltrumite_grand_regent_created_at"] << viltrumite_grand_regent_created_at
 	s["helperQuestsOn"] << helperQuestsOn
 	s["hakai_bp_advantage_needed"] << hakai_bp_advantage_needed
 	s["hakai_wipes_character"] << hakai_wipes_character
@@ -949,6 +954,9 @@ proc/loadMisc()
 	if("old_age_on" in s) s["old_age_on"] >> old_age_on
 	if("lssj_common_race" in s) s["lssj_common_race"] >> lssj_common_race
 	if("icer_common_race" in s) s["icer_common_race"] >> icer_common_race
+	if("viltrumite_grand_regent_account" in s) s["viltrumite_grand_regent_account"] >> viltrumite_grand_regent_account
+	if("viltrumite_grand_regent_slot" in s) s["viltrumite_grand_regent_slot"] >> viltrumite_grand_regent_slot
+	if("viltrumite_grand_regent_created_at" in s) s["viltrumite_grand_regent_created_at"] >> viltrumite_grand_regent_created_at
 	if("helperQuestsOn" in s) s["helperQuestsOn"] >> helperQuestsOn
 	if("hakai_bp_advantage_needed" in s) s["hakai_bp_advantage_needed"] >> hakai_bp_advantage_needed
 	if("hakai_wipes_character" in s) s["hakai_wipes_character"] >> hakai_wipes_character

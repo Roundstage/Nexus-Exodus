@@ -311,8 +311,8 @@ proc/Average_BP()
 		return Total
 
 proc/Race_List()
-	var/list/L=list("Half Saiyan","Legendary Saiyan","Alien","Android","Bio-Android",\
-	"Demigod","Demon","Frost Lord","Heran","Human","Kai","Kanassan","Makyo","Majin","Namekian","Spirit Doll","Tsujin","Saiyan")
+	var/list/L=list("Half Saiyan","Half-Viltrumite","Legendary Saiyan","Alien","Android","Bio-Android",\
+	"Demigod","Demon","Frost Lord","Heran","Human","Kai","Kanassan","Makyo","Majin","Namekian","Spirit Doll","Tsujin","Saiyan","Viltrumite")
 	for(var/V in L)
 		L[V]=0
 		for(var/mob/P in players) if(P.Race==V) L[V]++

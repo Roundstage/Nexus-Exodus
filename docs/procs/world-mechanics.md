@@ -1823,6 +1823,8 @@ Automatic tournaments are opt-in: `Tournament_Timer` defaults to `0`, so `Tourna
 
 ### src/Code/WorldMechanics/Years.dm
 
+The family records preserve Viltrumite lineage separately from display class. Human plus Viltrumite parentage can produce a birth-gated `Half-Viltrumite`; a `Royal Blood` parent passes `Royal Hybrid`, while `Grand Regent` never counts as inheritable Royal Blood. `Mate_Check()` leaves Half-Viltrumites at their race spawn instead of teleporting them to an Earth parent.
+
 #### mob/Admin4/verb/yearSpeed
 - Signature: `mob/Admin4/verb/yearSpeed()`
 - Inputs: None

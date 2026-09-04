@@ -171,11 +171,17 @@ proc/nexusValidateFrostFormOptions(list/form_ids, cooler, list/custom_form_icons
 		if(!nexusResolveFrostFormIcon(form_ids[form_index], form_index, custom_form_icons)) return FALSE
 	return TRUE
 
-proc/nexusValidateStarterClothing(list/selected_ids, list/custom_clothing_icons)
+proc/nexusValidateStarterClothing(list/selected_ids, list/custom_clothing_icons, race_name)
 	if(!islist(selected_ids) || selected_ids.len > nexus_starter_clothing_limit) return FALSE
 	var/list/options = nexusStarterClothingOptions()
 	for(var/clothing_id in selected_ids)
-		if(options[clothing_id]) continue
+		var/clothing_type = options[clothing_id]
+		if(clothing_type)
+			var/obj/items/Clothes/clothing = new clothing_type
+			var/allowed = clothing.canUseAsNexusStarter(race_name)
+			del(clothing)
+			if(!allowed) return FALSE
+			continue
 		var/custom_index = round(text2num(copytext("[clothing_id]", length("custom_clothing_") + 1)))
 		if(findtext("[clothing_id]", "custom_clothing_") != 1 || custom_index < 1 || custom_index > nexus_starter_clothing_limit) return FALSE
 		if(!islist(custom_clothing_icons) || !nexusCustomIconIsValid(custom_clothing_icons[custom_index])) return FALSE
@@ -191,7 +197,7 @@ mob/var/tmp
 
 proc/nexusRaceIconOptions(race_name)
 	switch(race_name)
-		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin")
+		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin", "Viltrumite", "Half-Viltrumite")
 			return list(
 				"human_m_pale" = 'BaseHumanPale.dmi', "human_m_tan" = 'BaseHumanTan.dmi', "human_m_dark" = 'BaseHumanDark.dmi',
 				"human_f_pale" = 'NewPaleFemale.dmi', "human_f_tan" = 'NewTanFemale.dmi', "human_f_dark" = 'NewBlackFemale.dmi'
@@ -249,6 +255,13 @@ proc/nexusRaceTraitOptions(race_name, mob/player, cooler_available = 0)
 			traits["saiyan_low_class"] = nexusTrait("Low Class", "Lower starting power with a more accessible transformation path.")
 			if(player && player.canSelectEliteSaiyan()) traits["saiyan_elite"] = nexusTrait("Elite", "Rare high-class lineage with stronger starting techniques.")
 		if("Half Saiyan") traits["half_saiyan_hybrid"] = nexusTrait("Hybrid Potential", "Human adaptability combined with Saiyan transformations and anger.")
+		if("Viltrumite")
+			traits["viltrumite_warrior"] = nexusTrait("Viltrumite Warrior", "High natural power, strong regeneration, space survival, and tightly capped attributes.")
+			if(player && player.canSelectViltrumiteRoyal()) traits["viltrumite_royal"] = nexusTrait("Royal Blood (Rare)", "A scarce bloodline with substantially stronger innate attributes.")
+			if(player && player.canSelectGrandRegent()) traits["viltrumite_grand_regent"] = nexusTrait("Grand Regent (Unique)", "The single Angerless apex of Viltrum, matched to the Legendary Saiyan power tier.")
+		if("Half-Viltrumite")
+			if(player && player.getWaitingHalfViltrumiteClass() == "Royal Hybrid") traits["viltrumite_royal_hybrid"] = nexusTrait("Royal Hybrid", "A Human-Viltrumite descendant carrying inheritable Royal Blood.")
+			else traits["half_viltrumite_hybrid"] = nexusTrait("Human-Viltrumite Hybrid", "A post-launch descendant with stronger attributes and mixed heritage.")
 		if("Legendary Saiyan") traits["legendary_berserker"] = nexusTrait("Legendary Berserker", "Extremely rare lineage with overwhelming latent power.")
 		if("Alien")
 			traits["alien_scholar"] = nexusTrait("Scholar", "Technology, mastery, materialization, and control abilities.")
@@ -294,6 +307,9 @@ mob/proc/initializeNexusRaceByTrait(race_name, trait_id)
 	src.InitializeRaceTemplate(race_name, force_elite, force_low_class, 0, force_cooler, force_normal_class)
 	if(trait_id == "namek_ancient") src.applyAncientNamekianLineage()
 	if(trait_id == "android_progenitor") src.applyAncientProgenitorLineage()
+	if(trait_id == "viltrumite_royal") src.applyViltrumiteRoyalLineage()
+	if(trait_id == "viltrumite_royal_hybrid") src.applyViltrumiteRoyalLineage(TRUE)
+	if(trait_id == "viltrumite_grand_regent") src.applyGrandRegentLineage()
 
 mob/proc/raiseNexusCreationStat(stat_name, amount = 1)
 	switch(stat_name)
@@ -583,7 +599,7 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 			if(!islist(custom_frost_icons)) custom_frost_icons = list(null, null, null, null, null)
 			custom_frost_icons[1] = custom_body_icon
 		if(!nexusValidateFrostFormOptions(frost_form_ids, race_trait == "frost_cooler", custom_frost_icons)) return FALSE
-	if(!nexusValidateStarterClothing(starter_clothing, custom_clothing_icons)) return FALSE
+	if(!nexusValidateStarterClothing(starter_clothing, custom_clothing_icons, selected_race)) return FALSE
 	var/safe_name = html_encode(copytext("[requested_name]", 1, 50))
 	if(InvalidPlayerName(safe_name)) return FALSE
 	if(!(gender_choice in list("male", "female"))) gender_choice = "male"
@@ -598,6 +614,7 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 		src.jirenAlien = TRUE
 		src.disableAnger()
 	src.rollCharacterMutations()
+	src.rollViltrumiteScourgeGenetics()
 	src.bp_loss_from_low_ki = src.Get_bp_loss_from_low_ki()
 	src.bp_loss_from_low_hp = src.Get_bp_loss_from_low_hp()
 	if(!src.Racial_Stats(Start_Redo_Stats = 0, stat_allocation = stat_allocation))
@@ -621,6 +638,9 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	src.stat_version = cur_stat_ver
 	src.LoadFeats()
 	src.character_made_time = world.realtime
+	if(race_trait == "viltrumite_grand_regent" && !src.registerGrandRegentIdentity())
+		src.character_creation_committing = FALSE
+		return FALSE
 	if(src.Race == "Android" || src.Race == "Majin")
 		src.max_ki = energy_cap * src.Eff
 		src.Ki = src.max_ki
@@ -652,6 +672,8 @@ proc/nexusRaceDescription(race_name)
 		if("Namekian") return "Spiritual warriors with regeneration and fusion."
 		if("Spirit Doll") return "Constructed bodies awakened by focused souls."
 		if("Tsujin") return "Technical specialists with advanced knowledge."
+		if("Viltrumite") return "Ageless conquerors with high natural power, regeneration, and survival in space."
+		if("Half-Viltrumite") return "Ageless post-launch Human-Viltrumite descendants destined for Viltrum."
 	return "A distinct lineage within the Nexus."
 
 upForm/NexusCharacterCreator
@@ -938,7 +960,8 @@ upForm/NexusCharacterCreator
 					direction_entries += "[direction_name]_flight:'[nexusJsString(clothing_flight_alias)]'"
 			clothing_preview_entries += "\"[nexusJsString(clothing_id)]\":{[dd_list2text(direction_entries, ",")]}"
 			var/clothing_alias = src.getClothingPreviewUrl(clothing.icon, clothing.icon_state, SOUTH)
-			clothing_html += "<label class=\"clothing-choice\"><input type=\"checkbox\" data-clothing-id=\"[clothing_id]\" onchange=\"updateClothing(this)\"><span><img src=\"[html_encode(clothing_alias)]\"><small>[html_encode(clothing.name)]</small></span></label>"
+			var/starter_race_scope = islist(clothing.nexus_starter_races) ? dd_list2text(clothing.nexus_starter_races, ",") : ""
+			clothing_html += "<label class=\"clothing-choice\"><input type=\"checkbox\" data-clothing-id=\"[clothing_id]\" data-starter-races=\"[html_encode(starter_race_scope)]\" onchange=\"updateClothing(this)\"><span><img src=\"[html_encode(clothing_alias)]\"><small>[html_encode(clothing.name)]</small></span></label>"
 			del(clothing)
 		for(var/custom_index in 1 to nexus_starter_clothing_limit)
 			clothing_upload_html += "<a class=\"hud-button upload-button\" href=\"byond://?src=\ref[src]&action=upload_clothing&slot=[custom_index]\" onclick=\"saveCreatorState()\">IMPORT LAYER [custom_index]</a>"
@@ -952,7 +975,7 @@ upForm/NexusCharacterCreator
 				custom_clothing_directions += "[direction_name]:'[nexusJsString(custom_clothing_direction_alias)]'"
 			clothing_preview_entries += "\"[custom_clothing_id]\":{[dd_list2text(custom_clothing_directions, ",")]}"
 			var/custom_clothing_alias = src.getClothingPreviewUrl(custom_clothing_icon, "", SOUTH)
-			clothing_html = "<label class=\"clothing-choice custom-choice\"><input type=\"checkbox\" data-clothing-id=\"[custom_clothing_id]\" onchange=\"updateClothing(this)\"><span><img src=\"[html_encode(custom_clothing_alias)]\"><small>Custom Layer [custom_index]</small></span></label>[clothing_html]"
+			clothing_html = "<label class=\"clothing-choice custom-choice\"><input type=\"checkbox\" data-clothing-id=\"[custom_clothing_id]\" data-starter-races=\"*\" onchange=\"updateClothing(this)\"><span><img src=\"[html_encode(custom_clothing_alias)]\"><small>Custom Layer [custom_index]</small></span></label>[clothing_html]"
 
 		var/stats_html = ""
 		for(var/stat_id in NEXUS_CREATION_STATS)
@@ -1012,7 +1035,7 @@ upForm/NexusCharacterCreator
 			function checkedValue(name){var nodes=document.getElementsByName(name);for(var i=0;i<nodes.length;i++){if(nodes\[i\].checked)return nodes\[i\].value;}return '';}
 			function setVisible(selector,race){var nodes=document.querySelectorAll(selector);for(var i=0;i<nodes.length;i++){nodes\[i\].style.display=nodes\[i\].getAttribute('data-race')==race?'block':'none';}}
 			function selectFirst(selector,race){var box=document.querySelector(selector+'\[data-race="'+race+'"\]');if(!box)return;var input=box.querySelector('input');if(input)input.checked=true;}
-			function selectRace(race){setVisible('.icon-panel',race);setVisible('.trait-panel',race);var allIcons=document.getElementsByName('body_icon_id');for(var i=0;i<allIcons.length;i++)allIcons\[i\].checked=false;var allTraits=document.getElementsByName('race_trait');for(var j=0;j<allTraits.length;j++)allTraits\[j\].checked=false;selectFirst('.icon-panel',race);selectFirst('.trait-panel',race);document.getElementById('raceDescription').textContent=descriptions\[race\]||'';document.getElementById('alienOptionPanel').style.display=race=='Alien'?'block':'none';document.getElementById('frostOptionPanel').style.display=race=='Frost Lord'?'block':'none';document.getElementById('genericRaceOptions').style.display=(race!='Alien'&&race!='Frost Lord')?'block':'none';traitChanged();}
+			function selectRace(race){setVisible('.icon-panel',race);setVisible('.trait-panel',race);var allIcons=document.getElementsByName('body_icon_id');for(var i=0;i<allIcons.length;i++)allIcons\[i\].checked=false;var allTraits=document.getElementsByName('race_trait');for(var j=0;j<allTraits.length;j++)allTraits\[j\].checked=false;selectFirst('.icon-panel',race);selectFirst('.trait-panel',race);document.getElementById('raceDescription').textContent=descriptions\[race\]||'';document.getElementById('alienOptionPanel').style.display=race=='Alien'?'block':'none';document.getElementById('frostOptionPanel').style.display=race=='Frost Lord'?'block':'none';document.getElementById('genericRaceOptions').style.display=(race!='Alien'&&race!='Frost Lord')?'block':'none';updateClothingAvailability();updateClothing();traitChanged();}
 			function currentProfile(){return profiles\[checkedValue('selected_race')+'|'+checkedValue('race_trait')\];}
 			function traitChanged(){var race=checkedValue('selected_race'),trait=checkedValue('race_trait');if(race=='Android'){var panel=document.querySelector('.icon-panel\[data-race="Android"\]'),icons=panel?panel.getElementsByTagName('input'):null,wantHuman=trait=='android_infiltrator';if(icons){for(var i=0;i<icons.length;i++){var isHuman=icons\[i\].value.indexOf('android_human_')===0;if((wantHuman&&isHuman)||(!wantHuman&&!isHuman)){icons\[i\].checked=true;break;}}}}if(race=='Alien')applyAlienPreset(trait);document.getElementById('frostFifthOption').style.display=trait=='frost_cooler'?'grid':'none';resetStats();updateAppearance();updateFrostPreviews();}
 			function updateHairVisibility(){var race=checkedValue('selected_race'),icon=checkedValue('body_icon_id'),hidden='|Majin|Bio-Android|Namekian|Frost Lord|'.indexOf('|'+race+'|')>=0||(race=='Android'&&icon!='custom_body'&&icon.indexOf('android_human_')!==0);document.getElementById('hairSection').style.display=hidden?'none':'block';if(hidden){var none=document.querySelector('input\[name="hair_id"\]\[value="none"\]');if(none)none.checked=true;}}
@@ -1026,6 +1049,7 @@ upForm/NexusCharacterCreator
 			function applyAlienPreset(trait){var wanted=alienPresets\[trait\]||\[\],nodes=document.querySelectorAll('\[data-alien-option\]');for(var i=0;i<nodes.length;i++)nodes\[i\].checked=wanted.indexOf(nodes\[i\].getAttribute('data-alien-option'))>=0;updateAlienPoints();}
 			function updateAlienPoints(){var nodes=document.querySelectorAll('\[data-alien-option\]'),used=0,ids=\[\];for(var i=0;i<nodes.length;i++){if(nodes\[i\].checked){used+=parseInt(nodes\[i\].getAttribute('data-cost')||0);ids.push(nodes\[i\].getAttribute('data-alien-option'));}}var remaining=100-used,indicator=document.getElementById('alienPointsIndicator'),angerInput=document.getElementById('stat_anger');if(ids.indexOf('apex_genome')>=0&&angerInput)angerInput.value=0;document.getElementById('alienPoints').textContent=remaining;if(indicator)indicator.className='hud-panel level-strip alien-points-indicator'+(remaining<0?' over-budget':'');document.getElementById('alienOptions').value=ids.join(',');updatePoints();}
 			function selectedClothing(){var nodes=document.querySelectorAll('\[data-clothing-id\]'),ids=\[\];for(var i=0;i<nodes.length;i++)if(nodes\[i\].checked)ids.push(nodes\[i\].getAttribute('data-clothing-id'));return ids;}
+			function updateClothingAvailability(){var race=checkedValue('selected_race'),isViltrumite=race=='Viltrumite'||race=='Half-Viltrumite',labels=document.querySelectorAll('.clothing-choice');for(var i=0;i<labels.length;i++){var input=labels\[i\].querySelector('\[data-clothing-id\]'),scope=input?input.getAttribute('data-starter-races')||'':'';var allowed=scope=='*'||(scope?(','+scope+',').indexOf(','+race+',')>=0:!isViltrumite);labels\[i\].style.display=allowed?'':'none';if(input&&!allowed)input.checked=false;}}
 			function updateClothing(changed){var grid=document.querySelector('.clothing-grid'),savedScroll=grid?grid.scrollTop:0,ids=selectedClothing();if(ids.length>[nexus_starter_clothing_limit]){var remove=changed;if(!remove){var nodes=document.querySelectorAll('\[data-clothing-id\]');for(var i=0;i<nodes.length;i++)if(nodes\[i\].checked&&nodes\[i\].getAttribute('data-clothing-id').indexOf('custom_clothing_')!==0){remove=nodes\[i\];break;}if(!remove)for(var j=0;j<nodes.length;j++)if(nodes\[j\].checked){remove=nodes\[j\];break;}}if(remove)remove.checked=false;ids=selectedClothing();}document.getElementById('clothingIds').value=ids.join(',');document.getElementById('clothingCount').textContent=ids.length+' / [nexus_starter_clothing_limit]';updatePreview();if(grid){grid.scrollTop=savedScroll;setTimeout(function(){grid.scrollTop=savedScroll;},0);}}
 			function updateAppearance(){updateHairVisibility();updatePreview();}
 			function loadPreviewImage(url,done){if(!url){done(null);return;}var cached=previewImageCache\[url\];if(cached&&cached.complete){done(cached);return;}var image=new Image();previewImageCache\[url\]=image;image.onload=function(){done(image);};image.onerror=function(){done(null);};image.src=url;}
@@ -1041,7 +1065,7 @@ upForm/NexusCharacterCreator
 			function saveCreatorState(){try{var controls=document.querySelectorAll('#creatorForm input,#creatorForm select'),state={stage:currentStage,direction:previewDirection,flight:previewFlight,controls:\[\]};for(var i=0;i<controls.length;i++){var control=controls\[i\];if(control.name=='src'||control.name=='action')continue;state.controls.push({name:control.name||'',clothing:control.getAttribute('data-clothing-id')||'',owner:control.getAttribute('data-owner-race')||'',type:control.type||'',value:control.value,checked:!!control.checked});}sessionStorage.setItem(creatorStorageKey,JSON.stringify(state));}catch(error){}}
 			function restoreCreatorState(){try{var raw=sessionStorage.getItem(creatorStorageKey);if(!raw)return false;var state=JSON.parse(raw),controls=document.querySelectorAll('#creatorForm input,#creatorForm select');for(var i=0;i<controls.length;i++){var control=controls\[i\],controlOwner=control.getAttribute('data-owner-race')||'';for(var j=0;j<state.controls.length;j++){var saved=state.controls\[j\],sameOwner=(saved.owner||'')==controlOwner,matches=sameOwner&&((saved.clothing&&saved.clothing==control.getAttribute('data-clothing-id'))||(!saved.clothing&&saved.name&&saved.name==control.name&&((control.type!='radio'&&control.type!='checkbox')||saved.value==control.value)));if(!matches)continue;if(control.type=='radio'||control.type=='checkbox')control.checked=!!saved.checked;else control.value=saved.value;break;}}currentStage=Math.max(0,Math.min(4,parseInt(state.stage||0)));previewDirection=Math.max(0,Math.min(3,parseInt(state.direction||0)));previewFlight=!!state.flight;return true;}catch(error){return false;}}
 			function applyPendingCustomSelection(){if(!pendingCustomSelection)return;if(pendingCustomSelection=='body'){var bodies=document.getElementsByName('body_icon_id'),race=checkedValue('selected_race');for(var i=0;i<bodies.length;i++)if(bodies\[i\].value=='custom_body'&&bodies\[i\].getAttribute('data-owner-race')==race){bodies\[i\].checked=true;break;}}else if(pendingCustomSelection.indexOf('clothing_')==0){var clothing=document.querySelector('input\[data-clothing-id="custom_'+pendingCustomSelection+'"\]');if(clothing)clothing.checked=true;}else if(pendingCustomSelection.indexOf('frost_')==0){var form=pendingCustomSelection.split('_')\[1\],select=document.getElementsByName('frost_form_'+form)\[0\];if(select)select.value='custom_frost_'+form;}}
-			function syncCreatorUi(){var race=checkedValue('selected_race'),trait=checkedValue('race_trait');setVisible('.icon-panel',race);setVisible('.trait-panel',race);document.getElementById('raceDescription').textContent=descriptions\[race\]||'';document.getElementById('alienOptionPanel').style.display=race=='Alien'?'block':'none';document.getElementById('frostOptionPanel').style.display=race=='Frost Lord'?'block':'none';document.getElementById('genericRaceOptions').style.display=(race!='Alien'&&race!='Frost Lord')?'block':'none';document.getElementById('frostFifthOption').style.display=trait=='frost_cooler'?'grid':'none';updateHairVisibility();updateAlienPoints();updateClothing();updatePoints();updateFrostPreviews();updatePreview();showStage();}
+			function syncCreatorUi(){var race=checkedValue('selected_race'),trait=checkedValue('race_trait');setVisible('.icon-panel',race);setVisible('.trait-panel',race);document.getElementById('raceDescription').textContent=descriptions\[race\]||'';document.getElementById('alienOptionPanel').style.display=race=='Alien'?'block':'none';document.getElementById('frostOptionPanel').style.display=race=='Frost Lord'?'block':'none';document.getElementById('genericRaceOptions').style.display=(race!='Alien'&&race!='Frost Lord')?'block':'none';document.getElementById('frostFifthOption').style.display=trait=='frost_cooler'?'grid':'none';updateHairVisibility();updateAlienPoints();updateClothingAvailability();updateClothing();updatePoints();updateFrostPreviews();updatePreview();showStage();}
 			window.onload=function(){document.body.className='nexus-hud';var races=document.getElementsByName('selected_race');if(races.length){races\[0\].checked=true;selectRace(races\[0\].value);}restoreCreatorState();applyPendingCustomSelection();syncCreatorUi();var form=document.getElementById('creatorForm');if(form)form.onchange=saveCreatorState;};
 		"}
 		var/hud_css = getNexusHudBrowserCss("bronze")
