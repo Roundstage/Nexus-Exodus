@@ -430,8 +430,6 @@ mob/proc/Drop_Rsc(n=0) if(n)
 	R.Value -= n
 	Bag.Update_value()
 
-obj/var/drop_on_death = 1
-
 mob/proc/Drop_Stealables()
 	set waitfor=0
 	var/turf/t = loc

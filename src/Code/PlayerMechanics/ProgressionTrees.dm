@@ -457,6 +457,7 @@ proc/configureProgressionBeamPaths()
 	if(makankosappo) makankosappo.description = "A peak piercing beam that grows over distance and deals 2.3x damage to shields."
 
 proc/configureProgressionKiPaths()
+	configureProgressionRewardPath(/obj/Attacks/Big_Bang_Attack, 3, 10, list(/obj/Attacks/Kienzan))
 	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Shockwave))
 	if(explosive_wave) explosive_wave.description = "Release a defensive four-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
 	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))

@@ -1169,10 +1169,10 @@ obj/Trees
 			overlays=null
 			overlays.Add(A,B,C,D)
 	Nice_Tree
-		overlays=newlist(/image{icon='Turfs66.dmi' icon_state="treeleftbot2" pixel_x=-16 pixel_y=0},\
-		/image{icon='Turfs66.dmi' icon_state="treerightbot2" pixel_x=16 pixel_y=0},\
-		/image{icon='Turfs66.dmi' icon_state="treelefttop2" pixel_x=-16 pixel_y=32 layer=MOB_LAYER+1},\
-		/image{icon='Turfs66.dmi' icon_state="treerighttop2" pixel_x=16 pixel_y=32 layer=MOB_LAYER+1})
+		overlays=newlist(/image{icon='Turfs66.dmi'; icon_state="treeleftbot2"; pixel_x=-16; pixel_y=0},\
+		/image{icon='Turfs66.dmi'; icon_state="treerightbot2"; pixel_x=16; pixel_y=0},\
+		/image{icon='Turfs66.dmi'; icon_state="treelefttop2"; pixel_x=-16; pixel_y=32; layer=MOB_LAYER+1},\
+		/image{icon='Turfs66.dmi'; icon_state="treerighttop2"; pixel_x=16; pixel_y=32; layer=MOB_LAYER+1})
 	SmallPine
 		icon='Turf58.dmi'
 		icon_state="2"
@@ -3143,8 +3143,8 @@ obj/Sacrificial_Altar
 	can_blueprint=0
 	icon='Lab.dmi'
 	icon_state="Strap2"
-	overlays=newlist(/image{icon='Lab.dmi' icon_state="Strap1" pixel_x=-32},\
-		/image{icon='Lab.dmi' icon_state="Strap3" pixel_x=32})
+	overlays=newlist(/image{icon='Lab.dmi'; icon_state="Strap1"; pixel_x=-32},\
+		/image{icon='Lab.dmi'; icon_state="Strap3"; pixel_x=32})
 	Click() if(usr in view(1,src)) usr.Altar_Options(src)
 
 mob/var
