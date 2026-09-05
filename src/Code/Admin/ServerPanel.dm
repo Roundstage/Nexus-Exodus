@@ -22,6 +22,9 @@ proc/getNexusServerSettingNameDisplay(setting_name)
 	if(!length(name_text)) return "(unnamed setting)"
 	return html_encode(name_text)
 
+// Forward declaration for external DM parsers; the implementation is in UI/HudLibrary.dm.
+datum/NexusHudWindow
+
 datum/NexusServerPanel
 	parent_type = /datum/NexusHudWindow
 	var/tmp/category = "Progression"

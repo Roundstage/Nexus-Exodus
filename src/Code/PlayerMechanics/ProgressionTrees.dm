@@ -170,7 +170,7 @@ proc/registerViltrumiteProgressionPath(root_id)
 
 	var/datum/ProgressionNode/spear_hand = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/SpearHand, 2, list(root_id))
 	var/datum/ProgressionNode/nolan_combo = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/NolansCombination, 5, list(spear_hand.id, rib_breaker.id))
-	registerRacialProgressionSkill(racial_track, /obj/ViltrumiteExecutionersHand, 6, list(nolan_combo.id, meteor_drop.id))
+	registerRacialProgressionSkill(racial_track, /obj/ViltrumiteExecutionersHand, 7, list(nolan_combo.id, meteor_drop.id))
 
 	var/datum/ProgressionNode/guard = registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusStance/ViltrumiteGuard, 2, list(root_id))
 	registerRacialProgressionSkill(racial_track, /obj/Attacks/NexusMeleeTechnique/Viltrumite/PunishingReversal, 3, list(guard.id))
@@ -457,6 +457,7 @@ proc/configureProgressionBeamPaths()
 	if(makankosappo) makankosappo.description = "A peak piercing beam that grows over distance and deals 2.3x damage to shields."
 
 proc/configureProgressionKiPaths()
+	configureProgressionRewardPath(/obj/Attacks/Big_Bang_Attack, 3, 10, list(/obj/Attacks/Kienzan))
 	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Shockwave))
 	if(explosive_wave) explosive_wave.description = "Release a defensive four-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
 	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))
@@ -635,7 +636,7 @@ proc/initializeProgressionCombatCatalog()
 	configureProgressionRewardPath(/obj/Buff/Ultimate/ArcanePower, 5, 30, list(/obj/Buff/Preset/Channel), "ultimate_buff")
 	configureProgressionRewardPath(/obj/Buff/Ultimate/Bushido, 5, 30, list(/obj/Buff/Preset/OffensiveStance), "ultimate_buff")
 	configureProgressionRewardPath(/obj/God_Fist, 10, 60, list(/obj/Buff, "combat_buffs_root"))
-	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiFist, 2, 8, list("ki_weapon_proficiency_novice"))
+	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiFist, 3, 8, list("ki_weapon_proficiency_novice"))
 	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiSword, 3, 12, list("ki_weapon_proficiency_novice"))
 	configureProgressionRewardPath(/obj/KiWeaponTechnique/KiHammer, 4, 20, list(/obj/KiWeaponTechnique/KiSword, "ki_weapon_proficiency_basic"))
 	configureProgressionRewardPath(/obj/KiWeaponTechnique/SpiritSword, 6, 40, list(/obj/KiWeaponTechnique/KiHammer, "ki_weapon_proficiency_advanced"))
