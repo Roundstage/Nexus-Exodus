@@ -39,7 +39,6 @@ mob/proc/TrollRespawn()
 
 mob/var
 	provokedByWords = 1 //whether certain words will make it angry
-	canMindSwapWith = 1
 	doesTalk = 1 //some trolls are just silent afkers always and never talk
 	baseName //their name without any prefixes or suffixes that were attached afterward
 

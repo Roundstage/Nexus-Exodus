@@ -167,8 +167,10 @@
 #define DEBUG
 // END_PREFERENCES
 
+#ifndef SPACEMAN_DMM
 #if DM_VERSION != 516 || DM_BUILD != 1686
 #error Nexus Exodus requires BYOND 516.1686.
+#endif
 #endif
 
 #define AI_PATHNODE_LIMIT 300
@@ -199,6 +201,8 @@
 // BEGIN_INCLUDE
 #include "SECRETS.dm"
 #include "UI.dmf"
+#include "src\Code\CoreFunctions\Vars\AtomCoreVars.dm"
+#include "src\Code\CoreFunctions\Vars\MobCoreVars.dm"
 #include "src\Code\Clickinz.dm"
 #include "src\Code\_libs\absolutepositions\AbsolutePositions.dm"
 #include "src\Code\_libs\callback\Callback.dm"
@@ -341,10 +345,8 @@
 #include "src\Code\CoreFunctions\Game\Effects\EffectsLoops.dm"
 #include "src\Code\CoreFunctions\Game\Effects\PlayerEffects.dm"
 #include "src\Code\CoreFunctions\Game\Loop\MainGameLoop.dm"
-#include "src\Code\CoreFunctions\Vars\AtomCoreVars.dm"
 #include "src\Code\CoreFunctions\Vars\GlobalCombatSettings.dm"
 #include "src\Code\CoreFunctions\Vars\GlobalWorldSettings.dm"
-#include "src\Code\CoreFunctions\Vars\MobCoreVars.dm"
 #include "src\Code\CoreFunctions\Vars\MobSubsystemVars.dm"
 #include "src\Code\CoreFunctions\Vars\WorldConstants.dm"
 #include "src\Code\Domain\Combat\SkillBehaviors.dm"

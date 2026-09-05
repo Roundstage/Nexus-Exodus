@@ -19,8 +19,6 @@ but it is a massive area with a start and end point, and the start point is easi
 	they more often have a trap tell, and if you set off the trap it is also more damaging
 */
 
-turf/var/destroy_blast_anyway
-
 turf/Mining_Rock
 	Buildable = 0
 	Health = 1

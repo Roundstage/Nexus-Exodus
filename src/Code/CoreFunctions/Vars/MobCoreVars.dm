@@ -1,4 +1,5 @@
 mob/var
+	tmp/move = 1
 	stamina = 100
 	max_stamina = 100
 	base_bp=1
@@ -59,3 +60,5 @@ mob/var
 	is_alt_down 		= 0
 	is_shift_down 		= 0
 	last_music_stream_time
+	Savable_NPC
+	canMindSwapWith = 1

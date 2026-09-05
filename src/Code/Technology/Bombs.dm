@@ -31,10 +31,6 @@ turf/proc/Nuke(BP,Force,Range,Amount)
 		Amount-=1
 		sleep(0.2)
 
-obj/var/Nukable=1
-
-obj/Blast/var/tmp/blast_caches = 1 //whether this blast is allowed to be cached when it deletes
-
 obj/Blast/Fireball
 	icon='Explosion.dmi'
 	density=1
@@ -105,8 +101,6 @@ obj/Blast/Fireball
 
 	Move()
 		. = ..()
-
-obj/var/makes_toxic_waste
 
 obj/items/Nuke
 	icon='Lab.dmi'

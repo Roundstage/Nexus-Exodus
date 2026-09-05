@@ -225,7 +225,6 @@ mob/proc/Other_Load_Stuff()
 	LoginResetBP()
 
 mob/var
-	tmp/move=1
 	undelayed
 
 mob/proc/Percent(A) return "[round(100*(A/(Str+End+Pow+Res+Off+Def)),0.1)]%"

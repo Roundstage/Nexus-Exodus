@@ -1164,7 +1164,6 @@ atom/var
 	saved_x=1
 	saved_y=1
 	saved_z=1
-mob/var/Savable_NPC
 proc/saveNpcs()
 	if(!npcs_enabled) return
 	var/savefile/f=new("data/NPCs")

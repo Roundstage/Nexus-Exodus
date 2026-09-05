@@ -262,6 +262,9 @@ obj/Effect/NexusFlameField
 
 // Restored integrated techniques live beside the other special styles so Dream Maker project saves
 // cannot orphan their type definitions by dropping a newly-added include from DU.dme.
+// The full Shockwave definition is loaded later from ProjectileSystem/Blasts.dm.
+obj/Attacks/Shockwave
+
 obj/Attacks/NexusAreaTechnique
 	parent_type = /obj/Attacks/Shockwave
 	name = "Nexus Area Technique"

@@ -4,9 +4,6 @@ proc/Get_ship_interior()
 		for(s in ships) if(s.Ship==c.Ship) break
 		if(!s) return c.Ship
 
-obj/var/Can_Move=1
-atom/var/takes_gradual_damage
-
 mob/Admin4/verb/planets()
 	set name = "Planets"
 	set category="Admin"
