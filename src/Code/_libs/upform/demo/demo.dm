@@ -12,7 +12,7 @@ world
 		..()
 
 mob
-	icon = 'stickman.dmi'
+	icon = 'src/Code/_libs/upform/demo/stickman.dmi'
 	desc = "I have not entered a description"
 	var
 		age = 18

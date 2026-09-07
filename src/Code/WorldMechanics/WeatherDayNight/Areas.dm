@@ -75,7 +75,7 @@ area
 
 	proc/Poison_gas_loop()
 		set waitfor=0
-		icon = 'Weather.dmi'
+		icon = 'src/Icons/Effects/Weather/Weather.dmi'
 		while(src)
 			if(icon_state!="Smog")
 				icon_state="Smog"

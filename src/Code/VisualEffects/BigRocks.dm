@@ -24,7 +24,7 @@ proc
 
 		var/obj/Effect/e = GetEffect()
 		e.SafeTeleport(t)
-		e.icon = 'RockExplosion.dmi'
+		e.icon = 'src/Icons/Effects/RockExplosion.dmi'
 
 		//all off merely due to lag concerns of overusing animate() lagging the client
 		//e.transform *= 1.1
@@ -36,7 +36,7 @@ proc
 		e.pixel_y = -60
 		e.layer = 5
 		e.blend_mode = 0
-		flick('RockExplosion.dmi',e)
+		flick('src/Icons/Effects/RockExplosion.dmi',e)
 		sleep(18)
 		del(e)
 
@@ -115,7 +115,7 @@ obj
 				if(bound_height < 32) bound_height = 32
 
 		Big_Rock1
-			icon = 'BigRockTest.dmi'
+			icon = 'src/Icons/Objects/Scenery/BigRockTest.dmi'
 			min_rock_size = 0.5
 			max_rock_size = 0.85
 

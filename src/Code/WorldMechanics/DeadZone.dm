@@ -1,5 +1,5 @@
 obj/Portal_Graphic
-	icon='DarkPortal100x100.dmi'
+	icon='src/Icons/Unsorted/DarkPortal100x100.dmi'
 	Grabbable=0
 	Health=1.#INF
 	Savable=0
@@ -12,7 +12,7 @@ obj/Portal_Graphic
 		GiveLightSource(size = 4, max_alpha = 40, light_color = rgb(200,100,255))
 
 obj/Kaioshin_Portal
-	icon='DarkPortal100x100.dmi'
+	icon='src/Icons/Unsorted/DarkPortal100x100.dmi'
 	name = "Watcher Portal"
 	desc="This is a portal to the Watcher planet. After someone uses it it will disappear for some time, \
 	but appear again later"
@@ -37,7 +37,7 @@ obj/Kaioshin_Portal
 		GiveLightSource(size = 4, max_alpha = 40)
 
 obj/Final_Realm_Portal
-	icon='Portal.dmi'
+	icon='src/Icons/Effects/Portal.dmi'
 	icon_state="center"
 	Grabbable=0
 	Health=1.#INF
@@ -46,15 +46,15 @@ obj/Final_Realm_Portal
 	Dead_Zone_Immune=1
 	Bolted=1
 	New()
-		var/image/A=image(icon='Portal.dmi',icon_state="1",pixel_x=-32,pixel_y=-32)
-		var/image/B=image(icon='Portal.dmi',icon_state="2",pixel_x=0,pixel_y=-32)
-		var/image/C=image(icon='Portal.dmi',icon_state="3",pixel_x=32,pixel_y=-32)
-		var/image/D=image(icon='Portal.dmi',icon_state="4",pixel_x=-32,pixel_y=0)
-		var/image/E=image(icon='Portal.dmi',icon_state="5",pixel_x=0,pixel_y=0)
-		var/image/F=image(icon='Portal.dmi',icon_state="6",pixel_x=32,pixel_y=0)
-		var/image/G=image(icon='Portal.dmi',icon_state="7",pixel_x=-32,pixel_y=32)
-		var/image/H=image(icon='Portal.dmi',icon_state="8",pixel_x=0,pixel_y=32)
-		var/image/I=image(icon='Portal.dmi',icon_state="9",pixel_x=32,pixel_y=32)
+		var/image/A=image(icon='src/Icons/Effects/Portal.dmi',icon_state="1",pixel_x=-32,pixel_y=-32)
+		var/image/B=image(icon='src/Icons/Effects/Portal.dmi',icon_state="2",pixel_x=0,pixel_y=-32)
+		var/image/C=image(icon='src/Icons/Effects/Portal.dmi',icon_state="3",pixel_x=32,pixel_y=-32)
+		var/image/D=image(icon='src/Icons/Effects/Portal.dmi',icon_state="4",pixel_x=-32,pixel_y=0)
+		var/image/E=image(icon='src/Icons/Effects/Portal.dmi',icon_state="5",pixel_x=0,pixel_y=0)
+		var/image/F=image(icon='src/Icons/Effects/Portal.dmi',icon_state="6",pixel_x=32,pixel_y=0)
+		var/image/G=image(icon='src/Icons/Effects/Portal.dmi',icon_state="7",pixel_x=-32,pixel_y=32)
+		var/image/H=image(icon='src/Icons/Effects/Portal.dmi',icon_state="8",pixel_x=0,pixel_y=32)
+		var/image/I=image(icon='src/Icons/Effects/Portal.dmi',icon_state="9",pixel_x=32,pixel_y=32)
 		overlays=null
 		overlays.Add(A,B,C,D,E,F,G,H,I)
 		spawn Final_Realm_Portal()
@@ -65,7 +65,7 @@ obj/Final_Realm_Portal
 		sleep(300)
 
 obj/DeadZone
-	icon='Portal.dmi'
+	icon='src/Icons/Effects/Portal.dmi'
 	icon_state="center"
 	Grabbable=0
 	Knockable=0
@@ -73,15 +73,15 @@ obj/DeadZone
 	Dead_Zone_Immune=1
 	Bolted=1
 	New()
-		var/image/A=image(icon='Portal.dmi',icon_state="1",pixel_x=-32,pixel_y=-32)
-		var/image/B=image(icon='Portal.dmi',icon_state="2",pixel_x=0,pixel_y=-32)
-		var/image/C=image(icon='Portal.dmi',icon_state="3",pixel_x=32,pixel_y=-32)
-		var/image/D=image(icon='Portal.dmi',icon_state="4",pixel_x=-32,pixel_y=0)
-		var/image/E=image(icon='Portal.dmi',icon_state="5",pixel_x=0,pixel_y=0)
-		var/image/F=image(icon='Portal.dmi',icon_state="6",pixel_x=32,pixel_y=0)
-		var/image/G=image(icon='Portal.dmi',icon_state="7",pixel_x=-32,pixel_y=32)
-		var/image/H=image(icon='Portal.dmi',icon_state="8",pixel_x=0,pixel_y=32)
-		var/image/I=image(icon='Portal.dmi',icon_state="9",pixel_x=32,pixel_y=32)
+		var/image/A=image(icon='src/Icons/Effects/Portal.dmi',icon_state="1",pixel_x=-32,pixel_y=-32)
+		var/image/B=image(icon='src/Icons/Effects/Portal.dmi',icon_state="2",pixel_x=0,pixel_y=-32)
+		var/image/C=image(icon='src/Icons/Effects/Portal.dmi',icon_state="3",pixel_x=32,pixel_y=-32)
+		var/image/D=image(icon='src/Icons/Effects/Portal.dmi',icon_state="4",pixel_x=-32,pixel_y=0)
+		var/image/E=image(icon='src/Icons/Effects/Portal.dmi',icon_state="5",pixel_x=0,pixel_y=0)
+		var/image/F=image(icon='src/Icons/Effects/Portal.dmi',icon_state="6",pixel_x=32,pixel_y=0)
+		var/image/G=image(icon='src/Icons/Effects/Portal.dmi',icon_state="7",pixel_x=-32,pixel_y=32)
+		var/image/H=image(icon='src/Icons/Effects/Portal.dmi',icon_state="8",pixel_x=0,pixel_y=32)
+		var/image/I=image(icon='src/Icons/Effects/Portal.dmi',icon_state="9",pixel_x=32,pixel_y=32)
 		overlays=null
 		overlays.Add(A,B,C,D,E,F,G,H,I)
 		spawn(300) if(src) del(src)
@@ -131,7 +131,7 @@ obj/MakeAmulet
 var/amulet_cooldown=45 //seconds
 
 obj/items/Amulet
-	icon='DeadZone.dmi'
+	icon='src/Icons/Effects/DeadZone.dmi'
 	clonable = 0
 	desc="Opens a portal to the dead zone, sucking anything nearby in"
 	Stealable=1

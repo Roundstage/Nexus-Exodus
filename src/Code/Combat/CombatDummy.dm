@@ -1,6 +1,6 @@
 mob/CombatDummy
 	name = "Combat Dummy"
-	icon = 'BaseHumanPale.dmi'
+	icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	Race = "Human"
 	Health = 100
 	base_bp = 1000

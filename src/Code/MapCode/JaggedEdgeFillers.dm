@@ -2,7 +2,7 @@ turf/Jagged_edge_fillers
 	Buildable=0
 	auto_gen_eligible = 0
 	Wall18
-		icon='JefCliff.dmi'
+		icon='src/Icons/Turfs/JaggedEdgeFillers/JefCliff.dmi'
 		density=1
 		_1
 			icon_state="NE"
@@ -13,7 +13,7 @@ turf/Jagged_edge_fillers
 		_4
 			icon_state="SE"
 	Grass10
-		icon='JefGreenGrass.dmi'
+		icon='src/Icons/Turfs/JaggedEdgeFillers/JefGreenGrass.dmi'
 		Grass10_1
 			icon_state="NE"
 		Grass10_2

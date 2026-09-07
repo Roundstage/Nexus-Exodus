@@ -26,7 +26,7 @@ proc/drawNexusCriticalSparkLine(icon/canvas, x1, y1, x2, y2, line_color, thickne
 
 proc/getNexusCriticalSparkIcon()
 	if(nexus_critical_spark_icon) return nexus_critical_spark_icon
-	var/icon/spark_icon = icon('Healthbar.dmi', "100")
+	var/icon/spark_icon = icon('src/Icons/UI/Healthbar.dmi', "100")
 	spark_icon.Scale(96, 96)
 	spark_icon.DrawBox(null, 1, 1, 96, 96)
 	var/list/segments = list(
@@ -318,7 +318,7 @@ obj/Lunge_Graphic
 	Savable=0
 	attackable=0
 	layer=5
-	icon='AttackSpark.dmi'
+	icon='src/Icons/Unsorted/AttackSpark.dmi'
 	icon_state="1"
 
 	New()
@@ -960,7 +960,7 @@ mob/proc/combo_teleport(mob/m)
 		Ki-=Zanzoken_Drain()
 		Zanzoken_Mastery(0.2)
 		player_view(7,src)<<sound('Teleport.ogg',volume=10)
-		flick('Zanzoken.dmi',src)
+		flick('src/Icons/Effects/Zanzoken.dmi',src)
 		SafeTeleport(t)
 		last_combo_teleport=world.time
 		m.last_combo_teleport=world.time
@@ -993,7 +993,7 @@ mob/var
 	tmp/strangling
 	tmp/can_strangle_timer=0
 
-var/image/grab_absorb_overlay = image(icon = 'AbsorbSparks.dmi', layer = 6)
+var/image/grab_absorb_overlay = image(icon = 'src/Icons/Ki/Electricity/AbsorbSparks.dmi', layer = 6)
 
 mob/proc/Toggle_strangling()
 	if(can_strangle_timer) return
@@ -1090,7 +1090,7 @@ mob/proc/MeleeFollowupAttackCheck()
 				if(t && isturf(t))
 					SafeTeleport(t)
 					player_view(15,src)<<sound('Teleport.ogg',volume=15)
-					flick('Zanzoken.dmi',src)
+					flick('src/Icons/Effects/Zanzoken.dmi',src)
 					dir = get_dir(src,m)
 					Melee(m)
 					return 1
@@ -1459,11 +1459,11 @@ mob/proc/CanBlastDeflect(mob/attacker)
 
 mob/proc/Dodge_animation()
 
-	flick('Zanzoken.dmi',src)
+	flick('src/Icons/Effects/Zanzoken.dmi',src)
 	return
 
 	if(!dodge_gfx)
-		flick('Zanzoken.dmi',src)
+		flick('src/Icons/Effects/Zanzoken.dmi',src)
 	else if(icon_state!="Dodge")
 		icon_state="Dodge"
 		spawn(2) if(icon_state=="Dodge") icon_state=""

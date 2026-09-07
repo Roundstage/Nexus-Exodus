@@ -1,0 +1,6713 @@
+{
+  "origin": "Original image_gen materials; native Aseprite matching edge/corner transitions.",
+  "maskBits": [
+    "north",
+    "east",
+    "south",
+    "west",
+    "northeast",
+    "southeast",
+    "southwest",
+    "northwest"
+  ],
+  "sourceHashes": {
+    "ArtSource/Earth/EarthRiverTerrain.aseprite": "8840dc4583b9cad22e8cc8f0760bf78c713b5736130e174db63b782e5197b152"
+  },
+  "states": [
+    {
+      "state": "bank_0",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_1",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_2",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_3",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_4",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 4,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_5",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 5,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_6",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 6,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_7",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 7,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_8",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 8,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_9",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 9,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_10",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 10,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_11",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 11,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_12",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 12,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_13",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 13,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_14",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 14,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_15",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 15,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_16",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 16,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_17",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 17,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_18",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 18,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_19",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 19,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_20",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 20,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_21",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 21,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_22",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 22,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_23",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 23,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_24",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 24,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_25",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 25,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_26",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 26,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_27",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 27,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_28",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 28,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_29",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 29,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_30",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 30,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_31",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 31,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_32",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 32,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_33",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 33,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_34",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 34,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_35",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 35,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_36",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 36,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_37",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 37,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_38",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 38,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_39",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 39,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_40",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 40,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_41",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 41,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_42",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 42,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_43",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 43,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_44",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 44,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_45",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 45,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_46",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 46,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_47",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 47,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_48",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 48,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_49",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 49,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_50",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 50,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_51",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 51,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_52",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 52,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_53",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 53,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_54",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 54,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_55",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 55,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_56",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 56,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_57",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 57,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_58",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 58,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_59",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 59,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_60",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 60,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_61",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 61,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_62",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 62,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_63",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 63,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_64",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 64,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_65",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 65,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_66",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 66,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_67",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 67,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_68",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 68,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_69",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 69,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_70",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 70,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_71",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 71,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_72",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 72,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_73",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 73,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_74",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 74,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_75",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 75,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_76",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 76,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_77",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 77,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_78",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 78,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_79",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 79,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_80",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 80,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_81",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 81,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_82",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 82,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_83",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 83,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_84",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 84,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_85",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 85,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_86",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 86,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_87",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 87,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_88",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 88,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_89",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 89,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_90",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 90,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_91",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 91,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_92",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 92,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_93",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 93,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_94",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 94,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_95",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 95,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_96",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 96,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_97",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 97,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_98",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 98,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_99",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 99,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_100",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 100,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_101",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 101,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_102",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 102,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_103",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 103,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_104",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 104,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_105",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 105,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_106",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 106,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_107",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 107,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_108",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 108,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_109",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 109,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_110",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 110,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_111",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 111,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_112",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 112,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_113",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 113,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_114",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 114,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_115",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 115,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_116",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 116,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_117",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 117,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_118",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 118,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_119",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 119,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_120",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 120,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_121",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 121,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_122",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 122,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_123",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 123,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_124",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 124,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_125",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 125,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_126",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 126,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_127",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 127,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_128",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 128,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_129",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 129,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_130",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 130,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_131",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 131,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_132",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 132,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_133",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 133,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_134",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 134,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_135",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 135,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_136",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 136,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_137",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 137,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_138",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 138,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_139",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 139,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_140",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 140,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_141",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 141,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_142",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 142,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_143",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 143,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_144",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 144,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_145",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 145,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_146",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 146,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_147",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 147,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_148",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 148,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_149",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 149,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_150",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 150,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_151",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 151,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_152",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 152,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_153",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 153,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_154",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 154,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_155",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 155,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_156",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 156,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_157",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 157,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_158",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 158,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_159",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 159,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_160",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 160,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_161",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 161,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_162",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 162,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_163",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 163,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_164",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 164,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_165",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 165,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_166",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 166,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_167",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 167,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_168",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 168,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_169",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 169,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_170",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 170,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_171",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 171,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_172",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 172,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_173",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 173,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_174",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 174,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_175",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 175,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_176",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 176,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_177",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 177,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_178",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 178,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_179",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 179,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_180",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 180,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_181",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 181,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_182",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 182,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_183",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 183,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_184",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 184,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_185",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 185,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_186",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 186,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_187",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 187,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_188",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 188,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_189",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 189,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_190",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 190,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_191",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 191,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_192",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 192,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_193",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 193,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_194",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 194,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_195",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 195,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_196",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 196,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_197",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 197,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_198",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 198,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_199",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 199,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_200",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 200,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_201",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 201,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_202",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 202,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_203",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 203,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_204",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 204,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_205",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 205,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_206",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 206,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_207",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 207,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_208",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 208,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_209",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 209,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_210",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 210,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_211",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 211,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_212",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 212,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_213",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 213,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_214",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 214,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_215",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 215,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_216",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 216,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_217",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 217,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_218",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 218,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_219",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 219,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_220",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 220,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_221",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 221,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_222",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 222,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_223",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 223,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_224",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 224,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_225",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 225,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_226",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 226,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_227",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 227,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_228",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 228,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_229",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 229,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_230",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 230,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_231",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 231,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_232",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 232,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_233",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 233,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_234",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 234,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_235",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 235,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_236",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 236,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_237",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 237,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_238",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 238,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_239",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 239,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_240",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 240,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_241",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 241,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_242",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 242,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_243",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 243,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_244",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 244,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_245",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 245,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_246",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 246,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_247",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 247,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_248",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 248,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_249",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 249,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_250",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 250,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_251",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 251,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_252",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 252,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_253",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 253,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_254",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 254,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bank_255",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 255,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_0",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 256,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_1",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 257,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_2",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 258,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_3",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 259,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_4",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 260,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_5",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 261,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_6",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 262,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_7",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 263,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_8",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 264,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_9",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 265,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_10",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 266,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_11",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 267,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_12",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 268,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_13",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 269,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_14",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 270,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_15",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 271,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_16",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 272,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_17",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 273,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_18",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 274,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_19",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 275,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_20",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 276,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_21",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 277,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_22",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 278,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_23",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 279,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_24",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 280,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_25",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 281,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_26",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 282,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_27",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 283,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_28",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 284,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_29",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 285,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_30",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 286,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_31",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 287,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_32",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 288,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_33",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 289,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_34",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 290,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_35",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 291,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_36",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 292,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_37",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 293,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_38",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 294,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_39",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 295,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_40",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 296,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_41",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 297,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_42",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 298,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_43",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 299,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_44",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 300,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_45",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 301,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_46",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 302,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_47",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 303,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_48",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 304,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_49",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 305,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_50",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 306,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_51",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 307,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_52",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 308,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_53",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 309,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_54",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 310,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_55",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 311,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_56",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 312,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_57",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 313,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_58",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 314,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_59",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 315,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_60",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 316,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_61",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 317,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_62",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 318,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_63",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 319,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_64",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 320,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_65",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 321,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_66",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 322,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_67",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 323,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_68",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 324,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_69",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 325,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_70",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 326,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_71",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 327,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_72",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 328,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_73",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 329,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_74",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 330,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_75",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 331,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_76",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 332,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_77",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 333,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_78",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 334,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_79",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 335,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_80",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 336,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_81",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 337,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_82",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 338,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_83",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 339,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_84",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 340,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_85",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 341,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_86",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 342,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_87",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 343,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_88",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 344,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_89",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 345,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_90",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 346,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_91",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 347,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_92",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 348,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_93",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 349,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_94",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 350,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_95",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 351,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_96",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 352,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_97",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 353,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_98",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 354,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_99",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 355,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_100",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 356,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_101",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 357,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_102",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 358,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_103",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 359,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_104",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 360,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_105",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 361,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_106",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 362,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_107",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 363,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_108",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 364,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_109",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 365,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_110",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 366,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_111",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 367,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_112",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 368,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_113",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 369,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_114",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 370,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_115",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 371,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_116",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 372,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_117",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 373,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_118",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 374,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_119",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 375,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_120",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 376,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_121",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 377,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_122",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 378,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_123",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 379,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_124",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 380,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_125",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 381,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_126",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 382,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_127",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 383,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_128",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 384,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_129",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 385,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_130",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 386,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_131",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 387,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_132",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 388,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_133",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 389,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_134",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 390,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_135",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 391,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_136",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 392,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_137",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 393,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_138",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 394,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_139",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 395,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_140",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 396,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_141",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 397,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_142",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 398,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_143",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 399,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_144",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 400,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_145",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 401,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_146",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 402,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_147",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 403,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_148",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 404,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_149",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 405,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_150",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 406,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_151",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 407,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_152",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 408,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_153",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 409,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_154",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 410,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_155",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 411,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_156",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 412,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_157",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 413,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_158",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 414,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_159",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 415,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_160",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 416,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_161",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 417,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_162",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 418,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_163",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 419,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_164",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 420,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_165",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 421,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_166",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 422,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_167",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 423,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_168",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 424,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_169",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 425,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_170",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 426,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_171",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 427,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_172",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 428,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_173",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 429,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_174",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 430,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_175",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 431,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_176",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 432,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_177",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 433,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_178",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 434,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_179",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 435,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_180",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 436,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_181",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 437,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_182",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 438,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_183",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 439,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_184",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 440,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_185",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 441,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_186",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 442,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_187",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 443,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_188",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 444,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_189",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 445,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_190",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 446,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_191",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 447,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_192",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 448,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_193",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 449,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_194",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 450,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_195",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 451,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_196",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 452,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_197",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 453,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_198",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 454,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_199",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 455,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_200",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 456,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_201",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 457,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_202",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 458,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_203",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 459,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_204",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 460,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_205",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 461,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_206",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 462,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_207",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 463,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_208",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 464,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_209",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 465,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_210",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 466,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_211",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 467,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_212",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 468,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_213",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 469,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_214",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 470,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_215",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 471,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_216",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 472,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_217",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 473,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_218",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 474,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_219",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 475,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_220",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 476,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_221",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 477,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_222",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 478,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_223",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 479,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_224",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 480,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_225",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 481,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_226",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 482,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_227",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 483,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_228",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 484,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_229",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 485,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_230",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 486,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_231",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 487,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_232",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 488,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_233",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 489,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_234",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 490,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_235",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 491,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_236",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 492,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_237",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 493,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_238",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 494,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_239",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 495,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_240",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 496,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_241",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 497,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_242",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 498,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_243",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 499,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_244",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 500,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_245",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 501,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_246",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 502,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_247",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 503,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_248",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 504,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_249",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 505,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_250",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 506,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_251",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 507,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_252",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 508,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_253",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 509,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_254",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 510,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "water_255",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 511,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "waterfall",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 512,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "steps",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 513,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "rock_lip",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthRiverTerrain.dmi",
+      "source": "ArtSource/Earth/EarthRiverTerrain.aseprite",
+      "sourceCell": 514,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    }
+  ]
+}

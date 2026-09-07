@@ -17,7 +17,9 @@ Sense tracking is persistent while Sense or a compatible scanner is owned. Clien
 
 Dragon Rush accepts collisions between any two active Lunge, Wolf Fang Fist, or Dropkick approaches. Its original instant warp/input cadence is preserved, with a larger centered `UP`, `DOWN`, `LEFT`, or `RIGHT` prompt identifying the required key for each fighter. Combat dummies expose `Dummy Lunge At Me` for deterministic clash testing.
 
-Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its integrated effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles; moving rocks shed small fragments, impacts raise ground rocks, and heavy hits scatter larger debris.
+Wolf Fang Fist calls `WolfFangFistVFX(victim, finisher)` after each successful accuracy check. It plays the existing WolfFang3.dmi Attack animation in blue, aligned to the caster collision center and facing the victim, with a larger fifth-hit wolf and a blue impact flash on the victim. The wolf fades after five ticks and returns to the effect cache after seven. Misses and canceled approaches produce no hit VFX; damage, cadence, cooldown and finisher knockback remain unchanged.
+
+Weapon techniques use separate CC0 light/heavy swing and randomized blade-impact profiles instead of sharing the legacy two-sound pair. Each hit layers its integrated effect with a nine-frame pixel slash whose runtime tint identifies the technique. Rock Throw, Rock Slide, and Rock Tomb use CC0 launch, rumble, stone-impact, boulder-impact, and fracture profiles. Their Strength-scaled projectiles travel on a fixed heading like Echoing Slash and Sky Break rather than homing; Rock Slide fires a Makosen-style barrage, while Rock Tomb launches a distinctly oversized boulder. Impacts scatter debris and heavy hits use the larger presentation.
 
 Confirmed melee critical hits use the original `showNexusCriticalImpact()` presentation: a dark impact core, three independently rotated black/crimson spark ruptures generated at runtime, a short crimson light pulse, shockwave, screen shake, floating `BLACK FLASH` title, and layered physical/energy impact audio. `Test Combat Effects > Critical - Black Flash` previews the complete presentation without dealing damage.
 
@@ -2742,7 +2744,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 #### mob/proc/RockSlide
 - Signature: `RockSlide()`
 - Inputs: None
-- Purpose: Search the forward spread and launch up to five original animated Nexus boulders with victim-relative Strength-based hits.
+- Purpose: Launch 7-to-15 original animated Nexus boulders as a fixed-heading, Makosen-style barrage with Strength-based hits.
 - Returns: none (implicit).
 - Side effects: shows cast text, earth audio, impact art, damage and knockback.
 
@@ -2774,12 +2776,12 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - Returns: none (implicit).
 - Side effects: see implementation.
 
-#### mob/proc/showRockSkillProjectile
-- Signature: `showRockSkillProjectile(mob/target, visual_icon, visual_state, visual_scale)`
-- Inputs: target and visual configuration.
-- Purpose: Accelerate a visible rock actor toward the target with continuous vector steering, solid-world collision, and explicit overlap permission only for its intended target.
-- Returns: the reached impact turf, or null if the visual is blocked, loses its target, or exhausts its travel budget.
-- Side effects: creates and deletes a temporary visual actor and emits a restrained fragment trail; callers apply damage only after a real impact.
+#### mob/proc/launchRockSkillProjectile
+- Signature: `launchRockSkillProjectile(obj/skill, visual_icon, damage_factor, move_dir, visual_scale, max_distance, explosion_size, explosion_factor, datum/CombatDamageBudget/shared_budget)`
+- Inputs: skill source, visual and damage configuration, locked direction, range, and optional explosion/budget configuration.
+- Purpose: Launch a Strength-scaled rock projectile on a fixed heading without homing.
+- Returns: the configured rock projectile, or null when its launch configuration is invalid.
+- Side effects: uses normal blast collision and deflection, rock impact audiovisuals, debris, knockback, and optional mastered Rock Tomb splash damage.
 
 ### src/Code/Combat/Skills.dm
 
@@ -4482,6 +4484,36 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 
 ### src/Code/Combat/NexusSpecialStyles.dm
 
+#### obj/Attacks/NexusSpecialStyle/DefensiveBlasting/proc/useStyle
+- Purpose: Retreat 8–12 tiles along the precise vector away from the target, retaining the initial firing direction while releasing eight pursuing blasts.
+- Side effects: uses a 48 px/decisecond speed cap with gradual acceleration/braking and less frequent afterimages; interrupts firing on knockout or knockback.
+
+#### obj/Attacks/NexusSpecialStyle/SphereOfDestruction/proc/useStyle
+- Purpose: Launch a one-tile pursuing sphere using the animated purple destruction core, cropped before scaling to remove transparent padding.
+- Side effects: retains the existing damage, tracking duration and collision bounds.
+
+#### obj/Attacks/NexusSpecialStyle/AuraOfDestruction/proc/showAura
+- Signature: `showAura(mob/user)`
+- Purpose: Attach continuous purple flames and a sharp two-pixel range ring centered on the caster's collision bounds. The ring marks the four-tile circle used by damage and suppression; targets are affected when their hitbox intersects that circle.
+
+#### proc/getNexusDestructionRangeIcon
+- Signature: `getNexusDestructionRangeIcon(radius_pixels)`
+- Purpose: Cache a geometric range icon with a bright rim inside the requested radius and a faint interior fill; padding remains transparent.
+
+#### obj/Attacks/NexusAreaTechnique/proc/showAreaEffect
+- Signature: `showAreaEffect(mob/user)`
+- Purpose: Render the area technique's cast effect. Super Explosive Wave overrides this with a white-blue explosion core, rapidly expanding pressure fronts and brief screen shake.
+- Side effects: Super Explosive Wave now requests twelve tiles of knockback; area knockbacks start asynchronously so all struck opponents are thrown together. Existing knockback resistance and terrain collisions still apply.
+
+#### obj/Attacks/NexusSpecialStyle/AuraOfDestruction/proc/stopAura
+- Signature: `stopAura()`
+- Purpose: Remove owned visual layers, clear the active flag and invalidate the previous upkeep loop, including on skill deletion.
+
+#### obj/Attacks/NexusSpecialStyle/AuraOfDestruction/proc/processAura
+- Signature: `processAura(mob/user, generation)`
+- Purpose: Apply upkeep, damage and movement suppression once per second while this activation owns the aura; stale loops cannot affect a newer activation.
+- Side effects: upkeep uses an energy drain modifier of 150 per pulse (six times the previous 25), with activation cost unchanged.
+
 #### obj/Attacks/NexusSpecialStyle/WallOfFlame/proc/useStyle
 - Signature: `useStyle(mob/user)`
 - Inputs: attack owner.
@@ -4622,7 +4654,10 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 
 ### Restored integrated area techniques
 
-- `obj/Attacks/NexusAreaTechnique` derives from the native `obj/Attacks/Shockwave` while retaining its saved type paths. `useAreaTechnique(user)` owns targetless cooldown, Energy payment, AoE dodge, radial falloff, target cap and Nexus damage scaling. Super Explosive Wave is a defensive four-tile wave that destroys hostile non-beam blasts and repels enemies; Earthquake is a ground-only physical five-tile wave that pulls enemies inward through collision-valid steps.
+- `obj/Attacks/NexusAreaTechnique` derives from the native `obj/Attacks/Shockwave` while retaining its saved type paths. `useAreaTechnique(user)` owns targetless cooldown, Energy payment, AoE dodge, radial falloff, target cap and Nexus damage scaling. Super Explosive Wave is a defensive eight-tile wave that destroys hostile non-beam blasts and repels enemies; Earthquake is a ground-only physical eight-tile wave that pulls enemies inward through collision-valid steps.
+- Earthquake's `showAreaEffect(user)` calls `showNexusEarthquakeEffect(user, radius)` in `VisualEffects/EarthquakeEffects.dm`. It plays the authored 24-frame DMI once for 12 ticks, preserves the earth palette with normal blending, aligns its ground anchor to the caster's collision center and scales the outer pressure front to the attack radius. The visual remains at the cast location beneath mobs and returns to the effect cache after playback.
+- Super Explosive Wave's `showAreaEffect(user)` calls `showNexusExplosiveWaveEffect(user, radius)` in `VisualEffects/ExplosiveWaveEffects.dm`, retaining screen shake. The Aseprite-authored pink energy sphere plays 20 frames at 25 fps with normal blending and a translucent interior, centered at the cast location and scaled to the skill radius. It returns to the effect cache after eight ticks. Source provenance and repeatable DMI conversion are in `artifacts/ExplosiveWave/README.md`.
+- Viltrumite Rush, Pursuit and Nolan's Combination use `runViltrumiteVisualApproach` for bounded silhouette trails around the original collision-aware motion. Viltrumite `showImpact` adds `showViltrumitePressureImpact` on successful hits, with an additional heavy burst on Nolan's finisher. Pursuit emits only an arrival ring. See `docs/assets/MeleeVfxAudit.md` for coverage and lifecycle details.
 - `obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze/proc/useStyle(user)` requires a selected target within 20 tiles, creates three cached homing blasts, and shares one `CombatDamageBudget` equal to the complete 7.5-factor volley.
 - `mob/proc/castNexusRadialTechnique()` lets Wind Howl fire without a selected primary target. It force-resolves valid enemies within three tiles after normal equipment, cost, cooldown, and AoE-dodge checks.
 - Pressure Punch uses `pressure_punch_charge_ticks = 10` and `pressure_punch_cooldown_ticks = 90`, halving its charge and reducing its old twelve-second cooldown to nine seconds.
@@ -4636,3 +4671,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - `showNexusOpenCombatEffect(target, library_name, effect_state, ...)` checks the registered DMI, creates a centered pooled effect actor, plays the requested state and fades it without leaving overlays behind.
 - Raw beam impacts use randomized `PixelSimulations64.dmi` explosions and the `explosions` sound category while retaining native lighting, screen shake, stream teardown and knockback.
 - Headbutt, Axe Kick, March of Fury, Consecutive Normal Punches, Guard Break, Wing Clip and Blue Comet Special assign explicit Aim impact states. Unarmed casts and impacts draw randomized semantic sounds from `swings`, `melee`, `flight` or `electric`.
+
+New `obj/Auras` instances use the Aseprite-authored `GoldenAura.dmi` for SSJ1 at native 96×128 size. `Aura_Overlays` anchors that resource to the visible body center and feet. Existing saved and customized aura fields retain their selected assets.
+
+SSJ1 aura rendering scales both the new flame resource and saved SSJ1 aura resources down with mastery. The new flame resource retains its feet anchor; legacy resources retain their bottom anchor. `Aura_Overlays` refreshes the independently rendered daylight halo, including when the normal power-up aura is hidden.

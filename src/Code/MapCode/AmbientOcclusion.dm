@@ -1,8 +1,8 @@
 var
 	image
-		ambient_occlusion = image(icon = 'AmbientOcclusion.dmi', pixel_y = 7, layer = 2.5)
-		ambient_occlusion_right = image(icon = 'AmbientOcclusion.dmi', layer = 2.5, icon_state = "right")
-		ambient_occlusion_left = image(icon = 'AmbientOcclusion.dmi', layer = 2.5, icon_state = "left")
+		ambient_occlusion = image(icon = 'src/Icons/Unsorted/Other/AmbientOcclusion.dmi', pixel_y = 7, layer = 2.5)
+		ambient_occlusion_right = image(icon = 'src/Icons/Unsorted/Other/AmbientOcclusion.dmi', layer = 2.5, icon_state = "right")
+		ambient_occlusion_left = image(icon = 'src/Icons/Unsorted/Other/AmbientOcclusion.dmi', layer = 2.5, icon_state = "left")
 
 turf/proc
 	IsAOCaster()

@@ -58,13 +58,13 @@ obj/Planet_Destroy
 				if(!usr.can_planet_destroy()) return
 				planet_destroy_uses[usr.client.computer_id]=world.realtime
 				player_view(10,usr)<<sound('BasicbeamCharge.ogg',volume=40)
-				var/image/A=image(icon='Asset14.dmi',pixel_y=32)
+				var/image/A=image(icon='src/Icons/Ki/Blasts/Asset14.dmi',pixel_y=32)
 				usr.overlays+=A
 				sleep(70*usr.Speed_delay_mult(severity=0.3))
 				player_view(10,usr)<<sound('BasicbeamFire.ogg',volume=20)
 				usr.overlays-=A
 				var/obj/Blast/B=new(usr.loc)
-				B.icon='Asset14.dmi'
+				B.icon='src/Icons/Ki/Blasts/Asset14.dmi'
 				B.vector_speed = 8
 				walk(B, SOUTH, 0, B.vector_speed)
 				sleep(25)
@@ -106,10 +106,10 @@ obj/Lightning_Strike
 			sleep(1)
 		del(src)
 	New()
-		var/image/A=image(icon='LightningStrike.dmi',icon_state="Front",layer=99)
-		var/image/B=image(icon='LightningStrike.dmi',pixel_y=32,layer=99)
-		var/image/C=image(icon='LightningStrike.dmi',pixel_y=64,layer=99)
-		var/image/D=image(icon='LightningStrike.dmi',pixel_y=96,icon_state="End",layer=99)
+		var/image/A=image(icon='src/Icons/Ki/Electricity/LightningStrike.dmi',icon_state="Front",layer=99)
+		var/image/B=image(icon='src/Icons/Ki/Electricity/LightningStrike.dmi',pixel_y=32,layer=99)
+		var/image/C=image(icon='src/Icons/Ki/Electricity/LightningStrike.dmi',pixel_y=64,layer=99)
+		var/image/D=image(icon='src/Icons/Ki/Electricity/LightningStrike.dmi',pixel_y=96,icon_state="End",layer=99)
 		overlays.Add(A,B,C,D)
 	Del()
 		SafeTeleport(null)
@@ -244,7 +244,7 @@ proc/destroy_planet(planet, power = 1, force = 1)
 			if(L.len)
 				while(prob(70))
 					var/turf/t=pick(L)
-					var/image/I=image(icon='Weather.dmi',icon_state="Rising Rocks",pixel_x=rand(-32,32),pixel_y=rand(-32,32))
+					var/image/I=image(icon='src/Icons/Effects/Weather/Weather.dmi',icon_state="Rising Rocks",pixel_x=rand(-32,32),pixel_y=rand(-32,32))
 					t.overlays+=I
 					spawn(rand(0,1200)) t.overlays-=I
 		sleep(10)
@@ -292,7 +292,7 @@ proc/destroy_planet(planet, power = 1, force = 1)
 		if(L.len)
 			var/turf/t1=pick(L)
 			for(var/turf/t in view(20,t1))
-				var/image/i=image(icon='Misc.dmi',icon_state=get_space_state(),layer=MOB_LAYER-0.1)
+				var/image/i=image(icon='src/Icons/Unsorted/Other/Misc.dmi',icon_state=get_space_state(),layer=MOB_LAYER-0.1)
 				t.overlays+=i
 				spawn(rand(200,1200)) t.overlays-=i
 				if(prob(5)) sleep(1)

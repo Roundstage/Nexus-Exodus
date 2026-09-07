@@ -1,0 +1,226 @@
+{
+  "outputHash": "f91752413c14eb0d1f23793e954a5ae5d7215e375195a06b63c766ba92b22c80",
+  "recoveredTiles": 2152,
+  "changedChunks": [
+    "ViltrumC3.dmm",
+    "ViltrumD4.dmm",
+    "ViltrumD5.dmm",
+    "ViltrumE2.dmm",
+    "ViltrumE3.dmm",
+    "ViltrumE4.dmm"
+  ],
+  "conflicts": [
+    {
+      "x": 365,
+      "y": 162,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/TileStone,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 162,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/TileStone,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 162,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/TileStone,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 162,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/TileStone,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 162,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/TileStone,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 365,
+      "y": 161,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 161,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 161,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 161,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 161,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 365,
+      "y": 160,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 160,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 160,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 160,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 160,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Wall21,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 365,
+      "y": 159,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 159,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 159,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 159,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 159,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 365,
+      "y": 158,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 158,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 158,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 158,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 158,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 365,
+      "y": 157,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 366,
+      "y": 157,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 367,
+      "y": 157,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 368,
+      "y": 157,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    },
+    {
+      "x": 369,
+      "y": 157,
+      "before": "/turf/Ground_Wasteland,/area/Viltrum",
+      "output": "/turf/Tile38,/area/Viltrum",
+      "capital": "/turf/ViltrumFloor/Structural,/area/Viltrum"
+    }
+  ],
+  "resolution": "Manual output tiles preserved exactly; capital floor conflicts retain user edits.",
+  "backup": "docs/Maps/RebuildBaseline/ManualOutputRecovery"
+}

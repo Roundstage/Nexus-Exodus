@@ -18,13 +18,20 @@ mob/Admin5/verb
 	testAlpha(atom/t in world)
 		set name = "TestAlpha"
 		var/icon/i = icon(t.icon)
-		i.Blend('TransparentScribbles.dmi',ICON_SUBTRACT)
+		i.Blend('src/Icons/Unsorted/TransparentScribbles.dmi',ICON_SUBTRACT)
 		t.icon = i
 
+// Authored maps can keep their waterline instead of letting the legacy
+// decorator replace terrain or paint a second shoreline over authored banks.
+area/var
+	auto_cliffs = TRUE
+	auto_edges = TRUE
+	auto_waves = TRUE
+
 turf/var
-	edge_icon = 'Edges6.dmi'
+	edge_icon = 'src/Icons/Turfs/Edges/Edges6.dmi'
 	cliff_type = /turf/Wall7
-	wave_icon = 'Surf2.dmi'
+	wave_icon = 'src/Icons/Turfs/Surf/Surf2.dmi'
 
 	auto_edge = 1
 	auto_cliff = 1
@@ -34,7 +41,7 @@ turf/var
 
 	wave_icon_applied = null //becomes the icon applied if any
 
-var/image/edge_image = image(icon = 'Edges6.dmi')
+var/image/edge_image = image(icon = 'src/Icons/Turfs/Edges/Edges6.dmi')
 
 turf/proc
 	GenerateFeatures(ao_skip_side_checks = 0, do_cliff_check = 1, do_edge_check = 1, do_wave_check = 1, do_ao_check = 1)
@@ -47,7 +54,7 @@ turf/proc
 	GenerateEdges()
 		set waitfor=0
 
-		if(Water || density || !auto_edge || !edge_icon) return
+		if(Water || density || !auto_edge || !edge_icon || !allowsAutomaticEdges()) return
 
 		var/list/ts = list(get_step(src,NORTH), get_step(src,EAST), get_step(src,WEST))
 		if(do_south_edge) ts += get_step(src,SOUTH)
@@ -76,22 +83,37 @@ turf/proc
 
 	GenerateShoreWaves()
 		set waitfor=0
-		if(Water || !auto_wave || !wave_icon) return
+		if(Water || !auto_wave || !wave_icon || !allowsAutomaticWaves()) return
 		var/turf/t = get_step(src,SOUTH)
-		if(t && t.Water && t.wave_icon)
+		if(t && t.Water && t.wave_icon && t.allowsAutomaticWaves())
 			overlays += t.wave_icon
 			t.wave_icon_applied = t.wave_icon
 
 	GenerateCliffs()
 		set waitfor=0
-		if(Water || density || !auto_cliff || !cliff_type) return
+		if(Water || density || !auto_cliff || !cliff_type || !allowsAutomaticCliffs()) return
 		var/turf/t = get_step(src,SOUTH)
 		if(t && t.Water)
+			if(!t.allowsAutomaticCliffs()) return
 
 			//think about it like this, if there is some ground, then below that some water, then below that more ground, and we replace
 			//the water with a cliff, its gonna look funny to have a cliff between 2 grounds, so to make it not look funny we make the bottom
 			//ground into water
 			var/turf/t2 = get_step(t,SOUTH)
+			// Check both destinations before either write, including area borders.
+			if(t2 && !t2.allowsAutomaticCliffs()) return
 			if(t2 && t2.type != t.type) new t.type(t2)
 
 			new cliff_type(t)
+
+	allowsAutomaticCliffs()
+		var/area/region = loc
+		return region && region.auto_cliffs
+
+	allowsAutomaticEdges()
+		var/area/region = loc
+		return region && region.auto_edges
+
+	allowsAutomaticWaves()
+		var/area/region = loc
+		return region && region.auto_waves

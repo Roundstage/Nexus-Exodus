@@ -45,7 +45,7 @@ mob/var
 	ssj_god_idle_aura
 	ssjg_bp_mult=1.25
 	ssjg_bp_add=0
-	base_ssj_god_idle_aura = 'SSjBlueIdleAura.dmi' //icon
+	base_ssj_god_idle_aura = 'src/Icons/Ki/Auras/SSjBlueIdleAura.dmi' //icon
 
 var
 	ssjg_god_ki_req=15
@@ -130,7 +130,7 @@ mob/proc
 		if(!ssj_god_aura)
 			//ssj_blue_aura = 'SsBlueAura2017.dmi' + rgb(0,0,0,170)
 			//ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 48, 64)
-			ssj_god_aura = 'LightRedAuraXenoverseColorScheme.dmi'
+			ssj_god_aura = 'src/Icons/Ki/Auras/LightRedAuraXenoverseColorScheme.dmi'
 			ssj_god_aura = Scaled_Icon(ssj_god_aura, 96, 96)
 		if(!ssj_god_idle_aura)
 			ssj_god_idle_aura = image(icon = base_ssj_god_idle_aura + rgb(0,0,0,213), pixel_x = -32, pixel_y = -28)

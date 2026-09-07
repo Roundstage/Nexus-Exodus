@@ -7,9 +7,9 @@ mob/proc/Diarea(Contagious=1,Other_Chance=0,Invis=0) if(prob(Diarea+Other_Chance
 		Diarea=0
 		if(!Other_Chance) return
 	if(!Invis)
-		overlays-='Shitspray.dmi'
-		overlays+='Shitspray.dmi'
-		spawn(50) overlays-='Shitspray.dmi'
+		overlays-='src/Icons/Effects/Shitspray.dmi'
+		overlays+='src/Icons/Effects/Shitspray.dmi'
+		spawn(50) overlays-='src/Icons/Effects/Shitspray.dmi'
 	for(var/mob/A in player_view(7,src)) if(A.see_invisible>=Invis)
 		if(A.client)
 			A<<sound(pick('Fart1.wav','Fart2.wav','Fart3.wav','Fart3.wav','Fart4.wav','Fart5.wav','Fart6.wav',\
@@ -33,7 +33,7 @@ mob/proc/Diarea(Contagious=1,Other_Chance=0,Invis=0) if(prob(Diarea+Other_Chance
 			if(prob(0.01))
 				var/mob/Enemy/Core_Demon/cd=new(T.loc)
 				cd.name="Shitbeast"
-				cd.icon='Shitbeast.dmi'
+				cd.icon='src/Icons/Effects/Shitbeast.dmi'
 				cd.pixel_x=0
 				cd.pixel_y=0
 		Turds--
@@ -84,10 +84,10 @@ obj/Turd
 		if(!icon)
 			//icon=pick('SwarmOfFlies.dmi','Poop1.dmi','Poop2.dmi','Poop3.dmi','Poop4.dmi')
 			//icon = pick('Poop2.dmi','Poop3.dmi','Poop4.dmi','HorsePoop.png')
-			icon = 'HorsePoop.png'
+			icon = 'src/Icons/Effects/Poops/HorsePoop.png'
 			CenterIcon(src)
 		transform = turn(transform, rand(1,360))
-		if(icon == 'HorsePoop.png')
+		if(icon == 'src/Icons/Effects/Poops/HorsePoop.png')
 			color = rgb(rand(211,255), rand(160,200), rand(211,255)) //horse poop icon has too much green anyway
 			HorsePoop()
 		else

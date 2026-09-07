@@ -1,0 +1,13 @@
+warning: unable to access 'C:\Users\allis/.config/git/ignore': Permission denied
+DM compiler version 516.1686
+loading DU.dme
+loading UI.dmf
+loading src/Code/_libs/kii_maptext_inputs/skin.dmf
+loading src/Code/UI/DU.dmf
+loading src/Maps/Map2018.dmm
+loading src/Maps/Space2018.dmm
+loading src/Maps/Viltrum.dmm
+loading src/Maps/SuperEarth.dmm
+saving DU.dmb (DEBUG mode)
+DU.dmb - 0 errors, 0 warnings (9/6/26 12:46 pm)
+Total time: 0:08

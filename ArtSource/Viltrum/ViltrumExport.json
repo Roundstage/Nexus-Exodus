@@ -1,0 +1,151 @@
+{
+  "cellSize": [
+    32,
+    32
+  ],
+  "anchor": "single turf; southwest pixel (0,0); no offsets or overhang",
+  "lighting": "baked accents; no active light sources",
+  "states": [
+    {
+      "state": "teal_stone",
+      "type": "/turf/ViltrumGround",
+      "source": "ArtSource/Viltrum/ViltrumGround.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumGround.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "civic_white",
+      "type": "/turf/ViltrumFloor",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumFloors.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "road",
+      "type": "/turf/ViltrumFloor/Road",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 1,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumFloors.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "structural",
+      "type": "/turf/ViltrumFloor/Structural",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 2,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumFloors.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "wall",
+      "type": "/turf/ViltrumWall",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 3,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumWalls.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "glass",
+      "type": "/turf/ViltrumWall/Glass",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 4,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumWalls.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "column",
+      "type": "/turf/ViltrumWall/Column",
+      "source": "ArtSource/Viltrum/ViltrumArchitecture.aseprite",
+      "sourceCell": 5,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumWalls.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "planter",
+      "type": "/turf/ViltrumFurnishing",
+      "source": "ArtSource/Viltrum/ViltrumProps.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumProps.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "bench",
+      "type": "/turf/ViltrumFurnishing/Bench",
+      "source": "ArtSource/Viltrum/ViltrumProps.aseprite",
+      "sourceCell": 1,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumProps.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "banner",
+      "type": "/turf/ViltrumFurnishing/Banner",
+      "source": "ArtSource/Viltrum/ViltrumProps.aseprite",
+      "sourceCell": 2,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumProps.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "memorial",
+      "type": "/turf/ViltrumFurnishing/Memorial",
+      "source": "ArtSource/Viltrum/ViltrumProps.aseprite",
+      "sourceCell": 3,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumProps.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "console",
+      "type": "/obj/ViltrumConsole",
+      "source": "ArtSource/Viltrum/ViltrumTechnology.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumTechnology.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "reactor",
+      "type": "/obj/ViltrumConsole/Reactor",
+      "source": "ArtSource/Viltrum/ViltrumTechnology.aseprite",
+      "sourceCell": 1,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumTechnology.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "beacon",
+      "type": "/turf/ViltrumFloor/Beacon",
+      "source": "ArtSource/Viltrum/ViltrumTechnology.aseprite",
+      "sourceCell": 2,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumTechnology.dmi",
+      "dirs": 1,
+      "frames": 1
+    },
+    {
+      "state": "archive_table",
+      "type": "/turf/ViltrumFurnishing/ArchiveTable",
+      "source": "ArtSource/Viltrum/ViltrumTechnology.aseprite",
+      "sourceCell": 3,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumTechnology.dmi",
+      "dirs": 1,
+      "frames": 1
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource\\Viltrum\\ViltrumGround.aseprite": "4a5593c1e26d60a6ed3969d03da270fe8cf2f0c15ba12cb4adbee40ca025f5a0",
+    "ArtSource\\Viltrum\\ViltrumArchitecture.aseprite": "e397ef848e1133d8a23b4bbcf4b0ef923fca7c804f6d71bf79bfa5c4411388ee",
+    "ArtSource\\Viltrum\\ViltrumProps.aseprite": "c84951082d7a009a1890c8404c43938329ece4456d31eafb4637c353bc8a35f6",
+    "ArtSource\\Viltrum\\ViltrumTechnology.aseprite": "0cb61aececc3197163379e5a54d4e116d393d855f1e807d13fc9c1a998f5f033"
+  }
+}

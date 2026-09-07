@@ -40,6 +40,8 @@ proc/getNexusPlanetMapRegionManifest()
 	regions["earth"] = makeNexusPlanetMapRegion("earth", "Earth", /area/Earth, 1, 1, 1, world.maxx, world.maxy)
 	regions["namekian"] = makeNexusPlanetMapRegion("namekian", "Namekian", /area/Namekian, 3, 1, 1, world.maxx, world.maxy)
 	regions["braal"] = makeNexusPlanetMapRegion("braal", "Braal", /area/Braal, 4, 1, 1, world.maxx, world.maxy)
+	regions["viltrum"] = makeNexusPlanetMapRegion("viltrum", "Viltrum", /area/Viltrum, Z_LEVEL_VILTRUM, 1, 1, 500, 500)
+	regions["super_earth"] = makeNexusPlanetMapRegion("super_earth", "Super Terra", /area/SuperEarth, Z_LEVEL_SUPER_EARTH, 1, 1, 500, 500)
 	regions["atlantis"] = makeNexusPlanetMapRegion("atlantis", "Atlantis", /area/Atlantis, 11, 1, 1, 250, 250)
 	regions["arconia"] = makeNexusPlanetMapRegion("arconia", "Arconia", /area/Arconia, 8, 1, 1, world.maxx, world.maxy)
 	regions["ice"] = makeNexusPlanetMapRegion("ice", "Ice", /area/Ice, 12, 1, 1, world.maxx, world.maxy)
@@ -267,7 +269,7 @@ datum/NexusPlanetMapScan
 
 	proc/renderMap()
 		phase = NEXUS_PLANET_MAP_PHASE_RENDER
-		var/icon/canvas = icon('UserNamesBarsUi.png')
+		var/icon/canvas = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 		canvas.Scale(max_x - min_x + 1, max_y - min_y + 1)
 		canvas.DrawBox("#07090d", 1, 1, max_x - min_x + 1, max_y - min_y + 1)
 		var/rows_since_yield = 0

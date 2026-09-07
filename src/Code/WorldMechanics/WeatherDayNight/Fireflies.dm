@@ -12,7 +12,7 @@ proc
 		//generate set of sizes
 		var/size = 66
 		for(var/v in 1 to 4)
-			var/icon/i = icon('Fireflies.dmi')
+			var/icon/i = icon('src/Icons/Unsorted/Fireflies.dmi')
 			i.Scale(size,size)
 			var/image/i2 = image(icon = i, pixel_x = -((size - 32) * 0.5), pixel_y = -((size - 32) * 0.5))
 			firefly_icons.Insert(1,i2)

@@ -1,0 +1,216 @@
+"aa" = (/obj/CityBuildingDoor/Earth{building_id = "earth_039"; name = "Enter Regional transit office"; target_x = 336; target_y = 98; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ab" = (/obj/CityBuildingDoor/Earth{building_id = "earth_041"; name = "Enter Neighborhood pharmacy"; target_x = 16; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ac" = (/obj/CityBuildingDoor/Earth{building_id = "earth_042"; name = "Enter Community school and dojo"; target_x = 56; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ad" = (/obj/CityBuildingDoor/Earth{building_id = "earth_044"; name = "Enter Corner apartment"; target_x = 132; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ae" = (/obj/CityBuildingDoor/Earth{building_id = "earth_046"; name = "Enter East terrace home"; target_x = 212; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"af" = (/obj/CityBuildingDoor/Earth{building_id = "earth_047"; name = "Enter Neighborhood supermarket"; target_x = 256; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ag" = (/obj/CityBuildingDoor/Earth{building_id = "earth_048"; name = "Enter School library"; target_x = 296; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ah" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_007"; name = "Enter RiverNorth townhouse 2"; target_x = 212; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ai" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_008"; name = "Enter RiverClinic townhouse 2"; target_x = 252; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"aj" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_009"; name = "Enter RiverTerrace townhouse 2"; target_x = 292; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ak" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_012"; name = "Enter MarketRow townhouse 2"; target_x = 12; target_y = 278; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"al" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_013"; name = "Enter TransitRow townhouse 2"; target_x = 52; target_y = 278; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"am" = (/obj/EarthHouse/Blue{building_id = "earth_facade_TransitRow_182_320"; name = "TransitRow townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"an" = (/obj/EarthHouse/Blue{building_id = "earth_home_007"; name = "RiverNorth townhouse 2"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"ao" = (/obj/EarthHouse/Brick{building_id = "earth_044"; name = "Corner apartment"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"ap" = (/obj/EarthHouse/Brick{building_id = "earth_facade_LibraryRow_184_360"; name = "LibraryRow townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aq" = (/obj/EarthHouse/Brick{building_id = "earth_facade_RiverTerrace_113_320"; name = "RiverTerrace townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"ar" = (/obj/EarthHouse/Brick{building_id = "earth_home_013"; name = "TransitRow townhouse 2"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"as" = (/obj/EarthHouse/Civic{building_id = "earth_039"; name = "Regional transit office"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"at" = (/obj/EarthHouse/Civic{building_id = "earth_042"; name = "Community school and dojo"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"au" = (/obj/EarthHouse/Civic{building_id = "earth_048"; name = "School library"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"av" = (/obj/EarthHouse/Hospital{building_id = "earth_041"; name = "Neighborhood pharmacy"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aw" = (/obj/EarthHouse/Sage{building_id = "earth_facade_MarketRow_182_380"; name = "MarketRow townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"ax" = (/obj/EarthHouse/Sage{building_id = "earth_facade_RiverClinic_115_340"; name = "RiverClinic townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"ay" = (/obj/EarthHouse/Sage{building_id = "earth_home_009"; name = "RiverTerrace townhouse 2"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"az" = (/obj/EarthHouse/Shop{building_id = "earth_047"; name = "Neighborhood supermarket"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aA" = (/obj/EarthHouse{building_id = "earth_046"; name = "East terrace home"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aB" = (/obj/EarthHouse{building_id = "earth_facade_RiverNorth_113_380"; name = "RiverNorth townhouse 3"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aC" = (/obj/EarthHouse{building_id = "earth_home_008"; name = "RiverClinic townhouse 2"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aD" = (/obj/EarthHouse{building_id = "earth_home_012"; name = "MarketRow townhouse 2"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aE" = (/obj/EarthStreetFixture/Bench,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aF" = (/obj/EarthStreetFixture/Bin,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aG" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aH" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aI" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"aJ" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aK" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_136"},/area/SuperEarth)
+"aL" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_137"},/area/SuperEarth)
+"aM" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aN" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_36"},/area/SuperEarth)
+"aO" = (/obj/EarthStreetFixture/Lamp,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aP" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aQ" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_128"},/area/SuperEarth)
+"aR" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aS" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_32"},/area/SuperEarth)
+"aT" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"aU" = (/obj/Spawn{desc = "Super Terra - Ancient Namekian"; name = "Ancient Namekian"},/turf/EarthFloor/Road,/area/SuperEarth)
+"aV" = (/obj/Spawn{desc = "Super Terra - Demigod"; name = "Demigod"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aW" = (/obj/Spawn{desc = "Super Terra - Kai"; name = "Kai"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aX" = (/turf/EarthBridge,/area/SuperEarth)
+"aY" = (/turf/EarthBuildingStructure{icon_state = "cream_2_4"},/area/SuperEarth)
+"aZ" = (/turf/EarthFloor,/area/SuperEarth)
+"ba" = (/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"bb" = (/turf/EarthRiverBank{icon_state = "bank_118"},/area/SuperEarth)
+"bc" = (/turf/EarthRiverBank{icon_state = "bank_128"},/area/SuperEarth)
+"bd" = (/turf/EarthRiverBank{icon_state = "bank_129"},/area/SuperEarth)
+"be" = (/turf/EarthRiverBank{icon_state = "bank_136"},/area/SuperEarth)
+"bf" = (/turf/EarthRiverBank{icon_state = "bank_137"},/area/SuperEarth)
+"bg" = (/turf/EarthRiverBank{icon_state = "bank_153"},/area/SuperEarth)
+"bh" = (/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"bi" = (/turf/EarthRiverBank{icon_state = "bank_18"},/area/SuperEarth)
+"bj" = (/turf/EarthRiverBank{icon_state = "bank_19"},/area/SuperEarth)
+"bk" = (/turf/EarthRiverBank{icon_state = "bank_200"},/area/SuperEarth)
+"bl" = (/turf/EarthRiverBank{icon_state = "bank_201"},/area/SuperEarth)
+"bm" = (/turf/EarthRiverBank{icon_state = "bank_204"},/area/SuperEarth)
+"bn" = (/turf/EarthRiverBank{icon_state = "bank_32"},/area/SuperEarth)
+"bo" = (/turf/EarthRiverBank{icon_state = "bank_34"},/area/SuperEarth)
+"bp" = (/turf/EarthRiverBank{icon_state = "bank_50"},/area/SuperEarth)
+"bq" = (/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"br" = (/turf/EarthRiverBank{icon_state = "bank_54"},/area/SuperEarth)
+"bs" = (/turf/EarthRiverBank{icon_state = "bank_64"},/area/SuperEarth)
+"bt" = (/turf/EarthRiverBank{icon_state = "bank_72"},/area/SuperEarth)
+"bu" = (/turf/EarthRiverBank{icon_state = "bank_76"},/area/SuperEarth)
+"bv" = (/turf/EarthRiverFall,/area/SuperEarth)
+"bw" = (/turf/EarthRiverRock,/area/SuperEarth)
+"bx" = (/turf/EarthRiverSteps,/area/SuperEarth)
+"by" = (/turf/EarthRiver{icon_state = "water_119"},/area/SuperEarth)
+"bz" = (/turf/EarthRiver{icon_state = "water_126"},/area/SuperEarth)
+"bA" = (/turf/EarthRiver{icon_state = "water_127"},/area/SuperEarth)
+"bB" = (/turf/EarthRiver{icon_state = "water_153"},/area/SuperEarth)
+"bC" = (/turf/EarthRiver{icon_state = "water_179"},/area/SuperEarth)
+"bD" = (/turf/EarthRiver{icon_state = "water_183"},/area/SuperEarth)
+"bE" = (/turf/EarthRiver{icon_state = "water_191"},/area/SuperEarth)
+"bF" = (/turf/EarthRiver{icon_state = "water_201"},/area/SuperEarth)
+"bG" = (/turf/EarthRiver{icon_state = "water_204"},/area/SuperEarth)
+"bH" = (/turf/EarthRiver{icon_state = "water_205"},/area/SuperEarth)
+"bI" = (/turf/EarthRiver{icon_state = "water_217"},/area/SuperEarth)
+"bJ" = (/turf/EarthRiver{icon_state = "water_219"},/area/SuperEarth)
+"bK" = (/turf/EarthRiver{icon_state = "water_221"},/area/SuperEarth)
+"bL" = (/turf/EarthRiver{icon_state = "water_223"},/area/SuperEarth)
+"bM" = (/turf/EarthRiver{icon_state = "water_236"},/area/SuperEarth)
+"bN" = (/turf/EarthRiver{icon_state = "water_237"},/area/SuperEarth)
+"bO" = (/turf/EarthRiver{icon_state = "water_239"},/area/SuperEarth)
+"bP" = (/turf/EarthRiver{icon_state = "water_255"},/area/SuperEarth)
+"bQ" = (/turf/EarthRiver{icon_state = "water_38"},/area/SuperEarth)
+"bR" = (/turf/EarthRiver{icon_state = "water_51"},/area/SuperEarth)
+"bS" = (/turf/EarthRiver{icon_state = "water_54"},/area/SuperEarth)
+"bT" = (/turf/EarthRiver{icon_state = "water_55"},/area/SuperEarth)
+"bU" = (/turf/EarthStreet,/area/SuperEarth)
+"bV" = (/turf/EarthStreet/Bridge,/area/SuperEarth)
+"bW" = (/turf/EarthStreet/Bridge/Lane,/area/SuperEarth)
+"bX" = (/turf/EarthStreet/Bridge/North,/area/SuperEarth)
+"bY" = (/turf/EarthStreet/Bridge/Sidewalk,/area/SuperEarth)
+"bZ" = (/turf/EarthStreet/Bridge/South,/area/SuperEarth)
+"ca" = (/turf/EarthStreet/CrossingHorizontal,/area/SuperEarth)
+"cb" = (/turf/EarthStreet/CurbEast,/area/SuperEarth)
+"cc" = (/turf/EarthStreet/CurbNorth,/area/SuperEarth)
+"cd" = (/turf/EarthStreet/CurbSouth,/area/SuperEarth)
+"ce" = (/turf/EarthStreet/CurbWest,/area/SuperEarth)
+"cf" = (/turf/EarthStreet/GardenPath,/area/SuperEarth)
+"cg" = (/turf/EarthStreet/LaneHorizontal,/area/SuperEarth)
+"ch" = (/turf/EarthStreet/LaneVertical,/area/SuperEarth)
+"ci" = (/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+
+(1,1,1) = {"
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+cgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUbUbUbUbUcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUaXaXaXaXaXaXaXaXaXaXaXaXaXaXaXaX
+cccccccccccccccccccccccccccccccccccccccfcfbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYccccccccccccccccccccccccccccccccccccccccbUbUbUchbUbUbUccccccccccccccccccccccccccccccccccccccbDbPbPbPbPbPbPbPbPbPbPbPbPbPbP
+cicicicicicicicicicicicicicicicicicicicfcfbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYcecicicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicibTbPbPbPbPbPbPbPbPbPbPbPbPbPbP
+cibabababababababababababababababababacfcfbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbabababababababababababababababababacicbcacacacacacacacecibababababababababababababababababibRbEbPbPbPbPbPbPbPbPbPbPbPbPbP
+cibaaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGbabacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibaaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaHaIbDbPbPbPbPbPbPbPbPbPbPbPbPbP
+cibabababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababpbTbPbPbPbPbPbPbPbPbPbPbPbPbP
+cibababaaPbababababababababaaPbabababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibababaaPbababababababababaaPbabababibRbEbPbPbPbPbPbPbPbPbPbPbPbP
+cibabababababababababababababababababacfcfcfbaaPbpbTbPbPbPbPbPbHbkaJbacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababhaTbDbPbPbPbPbPbPbPbPbPbPbPbP
+cibababababaaJbababababababababaaJbabacfcfcfbaaJbpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibababababaaJbababababababababaaJbababibRbEbPbPbPbPbPbPbPbPbPbPbP
+cibabababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababhbqbDbPbPbPbPbPbPbPbPbPbPbP
+cibabababababababababababababababababacfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababpbTbPbPbPbPbPbPbPbPbPbPbP
+cibababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababibRbEbPbPbPbPbPbPbPbPbPbP
+cibababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkaPbacfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababhbqbDbPbPbPbPbPbPbPbPbPbP
+cibababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababababibRbEbPbPbPbPbPbPbPbPbP
+cibababababababababababababababababaaFbacfcfcfbababpbTbPbPbPbPbPbHbkaJbacfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababaaFbhbqbDbPbPbPbPbPbPbPbPbP
+cibaaobabababaanbabababaaBbababababababacfcfcfcfaJbibRbEbPbPbPbPbNbmbsbacfcfcfcfbababababababababababababababababacicbcacacacacacacacecibaazbabababababaaDbabababaawbabababababababibRbEbPbPbPbPbPbPbPbP
+ciciciciadciciciciahcicicicicicicicicicicicfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUceciciciciciafciciciciciakcicicicicicicicicicicicibDbPbPbPbPbPbPbPbP
+cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcicfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcibRbEbPbPbPbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbaaPbpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibCbEbPbPbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibqbDbPbPbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibibRbEbPbPbPbPbP
+cgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUcecfcfcfbababpbTbPbPbPbPbPbHbkaJbacfcfcfbababababababababababababababababacicbbUbUbUbUbUbUbUcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUcecibhbqbDbPbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbaaJbpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibabibRbEbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbabababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibabhbqbDbPbPbPbP
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecicfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibababpbTbPbPbPbP
+cccccccccccccccccccccccccccccccccccccccccicicfcfcfbababpbTbPbPbPbPbPbHbkaPbacfcfcfbabababababababababababababababacicbbUbUbUchbUbUbUcccccccccccccccccccccccccccccccccccccccccccccccccicibababibRbEbPbPbP
+cicicicicicicicicicicicicicicicicicicicicicicfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbababababababababababababababacicbbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicicicicicicicicibababhbqbDbPbPbP
+bababababababababababababababababababababababacfcfcfcfbhbjbCbEbPbPbPbObMbubsbacfcfcfcfbabababababababababababababacicbcacacacacacacacecibabababababababababababababababababaaPbababababababababibRbEbPbP
+babababababababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtaJbacfcfcfbabababababababababababababacicbbUbUbUchbUbUbUcecibababababaaJbababababababababaaJbabababababababababababhbqbDbPbP
+babababababababababababababababababababababababacfcfcfcfaPbibRbEbPbPbPbPbNbmbsbacfcfcfcfbababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababababababababababababpbTbPbP
+bababababababababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababababababababababababibRbEbP
+bababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababababababababababababhbqbDbP
+bababababababababababababababababababababababababacfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababababababababababababibRbE
+babababababababababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababababababababababababhbqbD
+babababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababababaaFbababababababababpbT
+babababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkaJbacfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibaaubabababababaatbabababababaapbababababababababababababababpbT
+babababababababababababababababababababababababababacfcfcfbaaJbpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababababacicbbUbUbUchbUbUbUceciciciciciagciciciciciciaccicicicicicicicicicicicicicicicicicicibR
+babababababababababababababababababababababababababacfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbababababababababababacicbbUbUbUchbUbUbUcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcicibq
+bababababababababababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtaPbacfcfcfbababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibp
+bababababababababababababababababababababababababababacfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbabababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibp
+babababababababababababababababababababababababababababacfcfcfbaaRbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecibi
+babababababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababacicbbUbUbUbUbUbUbUcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUcecibh
+bababababababababababababababababababababababababababacfcfcfcfbababibRbEbPbPbPbPbNbmbsaJcfcfcfcfcfcfcfcfcfcfcfbxbxbxbxbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bababababababababababababababababababababababababababacfcfcfbababaaMbqbDbPbPbPbPbObGbtbababababababababababababxbxbxbxbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+babaaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGbabababababababacfcfcfbababababpbTbPbPbPbPbPbHbkbababababababababababababxbxbxbxbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bababababababababababababababababababababababababababacfcfcfbwbwbwbwbwbvbvbvbvbvbvbvbwbwbwbwbwbwbwbababababababxbxbxbxbUbUbUchbUbUbUccccccccccccccccccccccccccccccccccccccccccccccccbUbUbUchbUbUbUceciba
+babababaaPbababababababababaaPbabababababababababababacfcfcfbababababpbTbPbPbPbPbPbHbkbababababababababababababxbxbxbxbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUceciba
+bababababababababababababababababababababababababababacfcfcfcfcfbababpbTbPbPbPbPbPbNbmbsbabacfcfcfcfcfcfcfcfcfbxbxbxbxbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+babababababaaJbababababababababaaJbabababababababababababacfcfcfbababpbTbPbPbPbPbPbObGbtbabacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababaaPbacicbbUbUbUchbUbUbUceciba
+bababababababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbPbHbkaJbacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+bababababababababababababababababababababababababababababacfcfcfbaaJbpbTbPbPbPbPbPbPbHbkbabacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+babababababababababababababababababababababababababababacfcfcfcfbaaSbrbybPbPbPbPbPbPbHbkaPbacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+babababababababababababababababababababababababababababacfcfcfbababobSbAbPbPbPbPbPbPbHbkbabacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababaaEbacicbbUbUbUchbUbUbUceciba
+babababababababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbPbPbHbkbabacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+aObababababababababababababababababababaaFbababababababacfcfcfbababpbTbPbPbPbPbPbPbPbHbkbabacfcfcfbabababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+babaavbabababababaaCbabababaaxbabababababababababababacfcfcfcfbabnbrbybPbPbPbPbPbPbLbFbebacfcfcfcfbabababababababacicbcacacacacacacacecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+ciciciciciabciciciciciaicicicicicicicicicicicicicibabacfcfcfbababobSbAbPbPbPbPbPbLbIaLbccfcfcfcfbababababababababacicbbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUceciba
+cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcicicfcfcfcfcfbnaNbbbybPbPbPbPbLbJbBbfcfcfcfcfcfbabababababababababacicbbUbUbUchbUbUbUcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdbUbUbUchbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecicfcfcfbababobQbzbAbPbPbPbLbIbgbdcfcfcfcfbabababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfcfbabnbrbybPbPbPbPbLbIbfbccfcfcfcfbababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbababobSbAbPbPbPbPbKblbcbacfcfcfbabababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+cgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUcecfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababababababacicbbUbUbUbUbUbUbUcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcecfcfcfbaaPbpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcfcfcfcfbabnbrbybPbPbPbPbLbFaKbacfcfcfcfbabababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUcfcfcfbaaJbobSbAbPbPbPbPbKblaQbacfcfcfbababababababababababababababacicbbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+cccccccccccccccccccccccccccccccccccccccccccccfcfcfcfbabnbrbybPbPbPbPbLbFbebacfcfcfcfbababababababababababababababacicbbUbUbUchbUbUbUccccccccccccccccccccccccccccccccccccccccccccccccbUbUbUchbUbUbUceciba
+cicicicicicicicicicicicicicicicicicicicicicicfcfcfbababobSbAbPbPbPbPbKblbcbacfcfcfbababababababababababaaUbabababacicbbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababacfcfcfcfbabnbrbybPbPbPbPbLbFbebacfcfcfcfbabababababababababababababababacicbcacacacacacacacecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababababaaJbababababababababaaJbabababacfcfcfaPbabobSbAbPbPbPbPbKblbcbacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUcecibababababaaJbababababababababaaJbabababacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbabababababababababaaVbabaaZbababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkaJbacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababacfcfcfbaaJbpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkbabacfcfcfbababababababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababababababababababababababababababacfcfcfcfbaaSbrbybPbPbPbPbLbFbebacfcfcfcfbababababababababababababaaWbababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababababababababababababababababaaFbacfcfcfbababobSbAbPbPbPbPbKblbcbacfcfcfbabababababababababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababababababaaFcicbbUbUbUchbUbUbUceciba
+cibaaAbabababaaybabababaaqbababababababacfbXbXbXbXbXbXbXbXbXbXbXbXbXbXbXbXbXbXbXbababababababababababababababababacicbcacacacacacacacecibaasbabababababaarbabababaambabababababacicbbUbUbUchbUbUbUceciba
+ciciciciaeciciciciajcicicicicicicicicicicfbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYcicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUceciciciciciaacicicicicialcicicicicicicicicicicbbUbUbUchbUbUbUceciba
+cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcfcfbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdbUbUbUchbUbUbUcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdbUbUbUchbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+cgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWbWcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUbUbUbUbUcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgcgbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+bUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbVbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUbUceciba
+ccccccccccccccccccccccccccccccccccccccccccbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYcfccccccccccccccccccccccccccccccccccccbUbUbUchbUbUbUccccccccccccccccccccccccccccccccccccccccccccccccbUbUbUchbUbUbUceciba
+cicicicicicicicicicicicicicicicicicicicibYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYbYcfcfcicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUcecicicicicicicicicicicicicicicicicicicicicicicbbUbUbUchbUbUbUceciba
+cibaaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGbababZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZbZcfcfbababababababababababababababacicbcacacacacacacacecibaaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGaGbabacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababababacfcfcfcfbabibRbEbPbPbPbPbNbmbsbacfcfcfcfbabababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababaaPbababababababababaaPbababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababababababacicbbUbUbUchbUbUbUcecibababaaPbababababababababaaPbabababababacicbbUbUbUchbUbUbUceciba
+cibababababababababababababababababababababababacfcfcfbababpbTbPbPbPbPbPbHbkaPbacfcfcfbabababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababababaaJbababababababababaaJbababababababacfcfcfbababpbTbPbPbPbPbPbHbkaJbacfcfcfbabababababababababababababacicbbUbUbUchbUbUbUcecibababababaaJbababababababababaaJbabababacicbbUbUbUchbUbUbUceciba
+cibababababababababababababababababababababababacfcfcfcfaJbibRbEbPbPbPbPbNbmbsbacfcfcfcfbababababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibabababababababababababababababababababababababacfcfcfcfbhbjbCbEbPbPbPbObMbubsbacfcfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibabababababababababababababababababababacicbbUbUbUchbUbUbUceciba
+cibababababababababababababababababababababababababacfcfcfbabhbqbDbPbPbPbPbObGbtbabacfcfcfbabababababababababababacicbbUbUbUchbUbUbUcecibababababababababababababababaaYbabababacicbbUbUbUchbUbUbUceciba
+"}

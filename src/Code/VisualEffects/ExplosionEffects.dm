@@ -40,7 +40,7 @@ proc/Initialize_explosion_icons()
 	if(explosion_icons) return
 	explosion_icons=new/list
 	for(var/v in 1 to 5)
-		var/icon/i='Explosion12013.dmi'
+		var/icon/i='src/Icons/Unsorted/Explosion12013.dmi'
 		var/size = 1.3
 		i=Scaled_Icon(i, GetWidth(i) * (1.5 ** v) * size, GetHeight(i) * (1.5 ** v) * size)
 		explosion_icons+=i
@@ -73,7 +73,7 @@ turf/proc/Make_Damaged_Ground(Amount=1) if(!Water)
 	if(O>=1) return
 	while(Amount)
 		Amount-=1
-		var/image/I=image(icon='Crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
+		var/image/I=image(icon='src/Icons/Unsorted/Crack.dmi',pixel_x=rand(-0,0),pixel_y=rand(-0,0),layer=3.1)
 		overlays+=I
 		Remove_Damaged_Ground(I)
 

@@ -22,7 +22,7 @@ obj/Screen_Indicator
 	mouse_opacity = 0 //i switched it off of 2 because clicking your char would often instead click a sense arrow and it was annoying so this was the easiest
 	//way, not like clicking sense arrows is very important anyway
 
-	icon = 'ScreenArrow.dmi'
+	icon = 'src/Code/Combat/KiSkills/Sense2017/ScreenArrow.dmi'
 	icon_state = "arrow"
 	screen_loc = "CENTER"
 

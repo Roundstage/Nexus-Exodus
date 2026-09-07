@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-06",
+  "reviewed": [
+    "ViltrumChunkAtlas.png: all 25 chunks together",
+    "SuperEarthChunkAtlas.png: all 25 chunks together",
+    "ViltrumChunks/ViltrumB3.png: palace and door group",
+    "SuperEarthChunks/SuperEarthB2.png: revised asphalt, public entries, river/fall and domestic floors",
+    "ViltrumMaterialProof.png: transparent objects over three floors",
+    "ViltrumCapitalMaterialProof.png: eight additional objects over three floors"
+  ],
+  "observations": [
+    "Cold ordered Viltrum layout and warmer continental Earth are visually distinct.",
+    "Both layouts intentionally retain sparse furnishings and wide combat floors.",
+    "Earth roads now use quiet asphalt instead of the ribbed legacy material.",
+    "Offline atlas omits some legacy vegetation/overlays and does not simulate lighting."
+  ],
+  "deferred": [
+    "Every chunk individually at player scale",
+    "Day/night and animation seams",
+    "High-speed combat and all-direction door gameplay",
+    "Full in-game scanner visual readability"
+  ],
+  "earthAtlasDecision": "User explicitly approved preserving continents and adapting atlas."
+}

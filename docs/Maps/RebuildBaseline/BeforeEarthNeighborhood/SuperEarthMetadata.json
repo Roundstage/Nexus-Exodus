@@ -1,0 +1,45 @@
+{
+  "generatorVersion": "1.0.0",
+  "manifestHash": "3f9fdd20223d8f7218b62dd14841ecd6e449e6a54c08d07a88572dc90ca7f6a9",
+  "chunkHashes": {
+    "SuperEarthA1.dmm": "bef7bc2aa2246f8e2903ce781cdf9d4df409d7c417015cb13e5326f3644c7474",
+    "SuperEarthA2.dmm": "2b749287739089d6f69434641e4322af20bbc9613d5e877e33b1c7bad8fa19b1",
+    "SuperEarthA3.dmm": "33eade2981e05de07743f526fdddfbb8a50ac447dbebc7a77ea0533b178acebf",
+    "SuperEarthA4.dmm": "55ca863fd32ae934d8702fe68909148c435072d0ef4c6a38bedc880a1be48e7c",
+    "SuperEarthA5.dmm": "058787df2f29b346aba7814404e99823e1eacdb2e11a30438d4b561913f0014d",
+    "SuperEarthB1.dmm": "a5a43ca17d11beb98e586c5e635b255f1d13d9b1d29483de2b89a329c66711f0",
+    "SuperEarthB2.dmm": "6eb47741733afcdc8e75702e0b4eadb8145a2fc6e4324f518cdb8dd802980a1b",
+    "SuperEarthB3.dmm": "d7330cc3d599eb9b7f485f370ba0e414235ffe912b6c06aa22ab13c7b4ca1a33",
+    "SuperEarthB4.dmm": "aca3d02f4c2d43b43ce8b00f23d1a0e4c8a2333cf99d0adeeb0f23e356401911",
+    "SuperEarthB5.dmm": "4400af2b646f41fbafb4e47571ed2f59d5aec8af56f6a5991fae811a24956d4a",
+    "SuperEarthC1.dmm": "531a8bcdd29a1b07c878564faa547ca41d4d81d18db956708d9aee3a676f3b8c",
+    "SuperEarthC2.dmm": "64dbe0d4add3f189100e048cadef55fd2bd6444e8df93787eac3cb5d0dea030b",
+    "SuperEarthC3.dmm": "15e7cb432e62acad427049a2cf39a2830af79b67eecfee92904043f370d2f8b9",
+    "SuperEarthC4.dmm": "5cf65f13db98ae58cefb427d55ba44d94d72dd556d8a70084ae28a4d15700eff",
+    "SuperEarthC5.dmm": "1a28ead341b9017373d7d420428ccee273d26cd3eb2875051c985e8aa3bbcb8c",
+    "SuperEarthD1.dmm": "8d699bd9259f19b0203e0382c9f744c29ca15f4be601c273a1da6ccac95d4756",
+    "SuperEarthD2.dmm": "379713f3328a9656c78911a2d38bcdd59d6b8532b6b29a29bd7bb74b5e6e8546",
+    "SuperEarthD3.dmm": "8a09b771babe467fc84e6ff82b1ecad66c5132d1222bdf6b357b34dc37515fcc",
+    "SuperEarthD4.dmm": "e03c15434b67c3e65c654fb9917c10b622190e3a731260b1ef5ea3ba0a07deda",
+    "SuperEarthD5.dmm": "83ced5eec4a01e9ead1969234c44e9906062aad084713003d0bbf74626f347e7",
+    "SuperEarthE1.dmm": "9e3149b395afd508f0ad15c6feec39fc6514d32f0222e4c40923083c748d91a9",
+    "SuperEarthE2.dmm": "cb17888e49539f842d3b1907a68a0b7996e8404b53e8edc261f08126d88c25ff",
+    "SuperEarthE3.dmm": "0f948c252a14ea27e57f02d6d123d7b7e4914c407aadc128dddbc00705ffd6c2",
+    "SuperEarthE4.dmm": "f3b1a05016d9003577b6a8091eaecdedf2830bf2c32afdb35e0f3d57a5105cc4",
+    "SuperEarthE5.dmm": "53282ef9494d9097dd712970c1ca3a6635cf506bce9da048dae4ad91636d7a80"
+  },
+  "outputHash": "fcdf1b3acd3af5cc7a74614f85935b7c2538142ac7978ee723474fb438e4ad17",
+  "dimensions": [
+    500,
+    500,
+    1
+  ],
+  "paletteKeyCount": 133,
+  "atomCounts": {
+    "turfs": 250000,
+    "areas": 250000,
+    "objects": 446,
+    "mobs": 0
+  },
+  "generatedAt": "2026-09-06T19:17:44.778Z"
+}

@@ -1,0 +1,5 @@
+parsing DU.dme
+src/Maps/PlanetChunks/Viltrum/ViltrumC3.dmm
+    rendering from 1,1,1 to 1,1,1
+    generating z=1
+    saving .codex-tmp/SpacemanDmm/Probe/ViltrumC3-1.png

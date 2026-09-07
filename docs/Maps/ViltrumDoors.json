@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "name": "civic_dining",
+      "x": 169,
+      "y": 321,
+      "type": "/obj/ViltrumDoor"
+    },
+    {
+      "name": "palace_audience",
+      "x": 250,
+      "y": 351,
+      "type": "/obj/ViltrumDoor/Palace"
+    },
+    {
+      "name": "research_hall",
+      "x": 331,
+      "y": 359,
+      "type": "/obj/ViltrumDoor/Laboratory"
+    },
+    {
+      "name": "transit_hangar",
+      "x": 130,
+      "y": 145,
+      "type": "/obj/ViltrumDoor/Hangar"
+    },
+    {
+      "name": "grid_service",
+      "x": 450,
+      "y": 222,
+      "type": "/obj/ViltrumDoor/ForceField"
+    }
+  ],
+  "panels": 25,
+  "animationTicks": 3,
+  "changedChunks": [
+    "ViltrumB2.dmm",
+    "ViltrumB3.dmm",
+    "ViltrumB4.dmm",
+    "ViltrumC5.dmm",
+    "ViltrumD2.dmm"
+  ],
+  "collision": "Dense through opening; passable when fully open. Closing rechecks occupancy before enabling collision.",
+  "publicAccess": "No passwords; grouped five-tile entrances; all buildings retain other open arches."
+}

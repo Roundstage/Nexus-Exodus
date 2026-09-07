@@ -26,13 +26,13 @@ mob/proc/Mutate(A)
 	//RP_Power, Str, Dur, Res, Spd, Off, Def
 	if(A==2)
 		name="Zombie Dog"
-		icon='ZombieDog.dmi'
+		icon='src/Icons/NPC/ZombieDog.dmi'
 		BP*=1.2
 		Spd*=1.2
 		spdmod*=1.2
 	if(A==3)
 		name="Licker"
-		icon='ZombieLicker.dmi'
+		icon='src/Icons/NPC/ZombieLicker.dmi'
 		Zombie_Virus=5
 		BP*=1.5
 		Spd*=1.5
@@ -45,7 +45,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==4)
 		name="Hunter"
-		icon='ZombieHunter.dmi'
+		icon='src/Icons/NPC/ZombieHunter.dmi'
 		Zombie_Virus=1
 		BP*=1.5
 		Str*=2
@@ -59,7 +59,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==5)
 		name="Tyrant"
-		icon='ZombieTyrant.dmi'
+		icon='src/Icons/NPC/ZombieTyrant.dmi'
 		Zombie_Virus=20
 		BP*=2
 		End*=1.5
@@ -68,7 +68,7 @@ mob/proc/Mutate(A)
 		spdmod*=1.5
 	if(A==6)
 		name="Nemesis"
-		icon='ZombieNemesis.dmi'
+		icon='src/Icons/NPC/ZombieNemesis.dmi'
 		Zombie_Virus=1
 		BP*=2
 		End*=3
@@ -83,7 +83,7 @@ mob/proc/Mutate(A)
 			CenterIcon(src)
 	if(A==7)
 		name="Mr X"
-		icon='ZombieX.dmi'
+		icon='src/Icons/NPC/ZombieX.dmi'
 		Zombie_Virus=10
 		BP*=3
 		spdmod*=2
@@ -92,7 +92,7 @@ mob/proc/Mutate(A)
 		offmod*=2
 	if(A==8)
 		name="Thanatos"
-		icon='ZombieThanatos.dmi'
+		icon='src/Icons/NPC/ZombieThanatos.dmi'
 		Zombie_Virus=10
 		BP*=3
 		Str*=2
@@ -102,7 +102,7 @@ mob/proc/Mutate(A)
 		npc_move_delay=4
 	if(A==9)
 		name="Gargoyle"
-		icon='Gargoyle.dmi'
+		icon='src/Icons/NPC/Gargoyle.dmi'
 		Zombie_Virus=1
 		endmod*=0.5
 		End*=0.5
@@ -113,7 +113,7 @@ mob/proc/Mutate(A)
 		Flyer=1
 	if(A==10)
 		name="Reptile Zombie"
-		icon='NPCReptileMonster.dmi'
+		icon='src/Icons/NPC/NPCReptileMonster.dmi'
 		Zombie_Virus=1
 		BP*=1.3
 		Spd*=2
@@ -122,13 +122,13 @@ mob/proc/Mutate(A)
 		resmod*=0.5
 	if(A==11)
 		name="Snake Zombie"
-		icon='NPCSnake.dmi'
+		icon='src/Icons/NPC/NPCSnake.dmi'
 		Zombie_Virus=0.5
 		Spd*=3
 		spdmod*=3
 	if(A==12)
 		name="Scorpion Zombie"
-		icon='NPCScorpion2.dmi'
+		icon='src/Icons/NPC/NPCScorpion2.dmi'
 		Zombie_Virus*=0.5
 		End*=3
 		endmod*=3
@@ -136,7 +136,7 @@ mob/proc/Mutate(A)
 		CenterIcon(src)
 	if(A==13)
 		name="Spider Zombie"
-		icon='NPCSpider3.dmi'
+		icon='src/Icons/NPC/NPCSpider3.dmi'
 		Zombie_Virus=2
 		Spd*=3
 		spdmod*=3
@@ -151,7 +151,7 @@ mob/var/Has_DNA=1
 
 obj/items/DNA_Container
 	Cost=20000000
-	icon='ItemDNAExtractor.dmi'
+	icon='src/Icons/Objects/Items/ItemDNAExtractor.dmi'
 	desc="This can be used to store DNA from whoever you use it on. Which can be used to clone them. You can \
 	only use this on someone who is knocked out or paralyzed. After it has DNA in it, you can go to a Genetics \
 	Computer and use it to make a clone, and possibly more."
@@ -372,7 +372,7 @@ obj/items/T_Spider
 	Stealable=1
 	desc="x1.2 Strength. 1.2x Accuracy. /1.44 Resistance. Get the advantage and disadvantage of a spider! \
 	Also gives a BP boost roughly worth 20 minutes of sparring."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -395,7 +395,7 @@ obj/items/T_Scorpion
 	Stealable=1
 	desc="x1.2 Accuracy. /1.2 Reflex. Get the advantage and disadvantage of a scorpion! Also gives a BP boost \
 	roughly worth 20 minutes of sparring."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -415,7 +415,7 @@ obj/items/T_Snake
 	Stealable=1
 	desc="x1.2 Speed. /1.2 Reflex. Get the advantage and disadvantage of a snake! Also gives a BP boost roughly \
 	worth 20 minutes of sparring."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -434,7 +434,7 @@ obj/items/T_Snake
 obj/items/T_Recovery
 	Stealable=1
 	desc="Doubles recovery but halves energy."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -456,7 +456,7 @@ obj/items/T_Recovery
 obj/items/T_Regeneration
 	Stealable=1
 	desc="Doubles regeneration and divides force by 4 permanently making energy almost useless."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -475,7 +475,7 @@ obj/items/T_Regeneration
 obj/items/T_Energy
 	Stealable=1
 	desc="Raises energy to a certain level if it is below that level."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -496,7 +496,7 @@ obj/items/T_Energy
 obj/items/T_Vitality
 	Stealable=1
 	desc="Raises durability and resistance immensely."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -520,7 +520,7 @@ obj/items/T_Vitality
 obj/items/T_Heal
 	Stealable=1
 	desc="Temporarily speeds up regeneration when used."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	var/tmp/injecting
 
 	verb/Hotbar_use()
@@ -597,7 +597,7 @@ obj/items/T_Fusion
 	this is active. No amount of damage you take will slow you down. The downside is that a bio field generator \
 	will kill you like it would a zombie, and there is a 10% chance that injecting this will kill you."
 
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 
 	verb/Hotbar_use()
 		set waitfor=0
@@ -616,21 +616,21 @@ obj/items/T_Fusion
 		var/bp=highest_base_and_hbtc_bp**0.6 * 50
 		bp=Clamp(bp,highest_base_and_hbtc_bp*0.1,highest_base_and_hbtc_bp*0.2)
 		if(A.Zombie_Power<bp) A.Zombie_Power=bp
-		A.overlays-='RedEyes.dmi'
-		A.overlays+='RedEyes.dmi'
+		A.overlays-='src/Icons/Unsorted/Other/RedEyes.dmi'
+		A.overlays+='src/Icons/Unsorted/Other/RedEyes.dmi'
 		player_view(15,usr)<<"[usr] injects [A] with a mysterious needle!"
 		if(prob(10)) usr.Death("???",Force_Death=1)
 		del(src)
 
 mob/proc/ClearTFusion()
 	if(!Zombie_Power) return
-	overlays -= 'RedEyes.dmi'
+	overlays -= 'src/Icons/Unsorted/Other/RedEyes.dmi'
 	Zombie_Power = 0
 
 obj/items/T_Strength
 	Stealable=1
 	desc="This will greatly increase strength and speed if they are under certain levels."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -653,7 +653,7 @@ obj/items/T_Strength
 obj/items/T_Undying
 	Stealable=1
 	desc="This will boost your death regeneration by 1.3 points (which is a lot), but result in a 25% loss of resistance."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set hidden=1
 		Use()
@@ -674,7 +674,7 @@ obj/items/T_Undying
 obj/items/T_Life
 	Stealable=1
 	desc="This will slow your decline IMMENSELY. Extending your lifespan nearly 4x its normal amount."
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -737,8 +737,8 @@ mob/proc/Zombies(Can_Mutate=1,timer=150)
 	if(src && Zombie_Virus)
 		if(!z) return
 		var/mob/Enemy/Zombie/Z=Zombie_Copy()
-		Z.overlays+='Zombie.dmi'
-		Z.underlays-='PoolOfBlood.dmi'
+		Z.overlays+='src/Icons/NPC/Zombie.dmi'
+		Z.underlays-='src/Icons/Effects/PoolOfBlood.dmi'
 		Z.name="Zombie"
 		Z.Level=1
 		del(src)
@@ -967,7 +967,7 @@ obj/items/T_Virus_Injection
 	science = 1
 	science_level = 6
 	science_path = "Genetics"
-	icon='TVirus.dmi'
+	icon='src/Icons/Objects/Technology/TVirus.dmi'
 	Level=1
 	Stealable=1
 	Injection=1
@@ -995,7 +995,7 @@ obj/items/T_Virus_Injection
 		del(src)
 
 obj/items/Super_Antivirus
-	icon = 'Antivirus.dmi'
+	icon = 'src/Icons/Objects/Items/Antivirus.dmi'
 	icon_state = "red"
 	desc = "A concentrated broad-spectrum antiviral. Against highly aggressive infections, treatment success may depend on how quickly it is administered."
 	Stealable = 1
@@ -1044,11 +1044,11 @@ mob/Enemy/Zombie/var/tmp/super_antivirused
 mob/Enemy/Zombie/proc/InfectWithSuperAntivirus(delay = 0)
 	set waitfor=0
 	if(delay) sleep(delay)
-	overlays += 'Flies.dmi'
+	overlays += 'src/Icons/NPC/Flies.dmi'
 	super_antivirused = 1
 	sleep(150)
 	if(z) Death("???")
-	overlays -= 'Flies.dmi'
+	overlays -= 'src/Icons/NPC/Flies.dmi'
 	super_antivirused = 0
 
 proc/DestroyAllInfectedBodiesOnPlanet(area/a)
@@ -1067,7 +1067,7 @@ proc/GetZombiesOnPlanet(area/a)
 	return l
 
 obj/items/Antivirus
-	icon='Antivirus.dmi'
+	icon='src/Icons/Objects/Items/Antivirus.dmi'
 	Stealable=1
 	Level=1
 	clonable = 0

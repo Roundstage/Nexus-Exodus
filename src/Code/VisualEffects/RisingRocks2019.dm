@@ -71,7 +71,7 @@ proc
 		if(user && user.risingRockIcon)
 			r.icon = user.risingRockIcon
 			r.icon_state = pick(icon_states(user.risingRockIcon))
-		else r.icon = pick('GrayRock52019.png', 'GrayRock62019.png', 'GrayRock72019.png')
+		else r.icon = pick('src/Icons/Objects/Scenery/MatchingRocksSet1/GrayRock52019.png', 'src/Icons/Objects/Scenery/MatchingRocksSet1/GrayRock62019.png', 'src/Icons/Objects/Scenery/MatchingRocksSet1/GrayRock72019.png')
 		CenterIcon(r)
 		var/xOffset = r.pixel_x
 		var/yOffset = r.pixel_y
@@ -86,7 +86,7 @@ proc
 		//blob shadow
 		var/randomSize = rand(80,120) * 0.6
 		var/obj/shadow = GetEffect()
-		shadow.icon = 'Defaultblobshadow.png'
+		shadow.icon = 'src/Images/Defaultblobshadow.png'
 		CenterIcon(shadow)
 		shadow.loc = pos
 		shadow.pixel_x += abs(xOffset)

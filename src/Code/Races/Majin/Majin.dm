@@ -12,7 +12,7 @@ mob/proc/Majin(interactive_options=1)
 	strongest creatures in existance, and very evil. They would wreak havoc far and wide, and would cause more \
 	destruction in numbers than the original ever did.")
 	arm_stretch=1
-	arm_stretch_icon='GenericArm.dmi'
+	arm_stretch_icon='src/Icons/Unsorted/GenericArm.dmi'
 	arm_stretch_range=150
 	Gravity_Mod=1
 	sp_mod=3

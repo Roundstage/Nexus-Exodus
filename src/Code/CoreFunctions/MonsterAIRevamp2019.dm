@@ -349,7 +349,7 @@ mob/Enemy
 		. = ..()
 
 	Namekian_Amphibian
-		icon='NamekAmphibian.dmi'
+		icon='src/Icons/NPC/NamekAmphibian.dmi'
 		bp_mod = 1.5
 		enemyCanFly = 0
 		New()
@@ -366,7 +366,7 @@ mob/Enemy
 			. = ..()
 
 	Namekian_Dino
-		icon='NamekDino.dmi'
+		icon='src/Icons/NPC/NamekDino.dmi'
 		bp_mod = 3
 		enemyCanFly = 0
 		New()
@@ -383,7 +383,7 @@ mob/Enemy
 			. = ..()
 
 	Namekian_Frog
-		icon='NamekFrog.dmi'
+		icon='src/Icons/NPC/NamekFrog.dmi'
 		bp_mod = 1
 		enemyCanFly = 0
 		New()
@@ -400,7 +400,7 @@ mob/Enemy
 			. = ..()
 
 	Bio_Monster
-		icon='BioBroly.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/BioBroly.dmi'
 		bp_mod = 3
 		enemyCanFly = 0
 		New()
@@ -417,7 +417,7 @@ mob/Enemy
 
 	Eevee
 		Race="Pokemon"
-		icon='Eevee.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/Eevee.dmi'
 		bp_mod=1
 		Docile = 1
 		enemyCanFly = 0
@@ -433,7 +433,7 @@ mob/Enemy
 
 	Bear
 		Race="Pokemon"
-		icon='Bear.dmi'
+		icon='src/Icons/NPC/Bear.dmi'
 		bp_mod=1.5
 		enemyCanFly = 0
 		New()
@@ -452,7 +452,7 @@ mob/Enemy
 
 	Pupa_Cell
 		Race="Abomination"
-		icon='PupaCell.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/PupaCell.dmi'
 		bp_mod=1.5
 		New()
 			Docile = 0
@@ -466,7 +466,7 @@ mob/Enemy
 			. = ..()
 
 	Core_Demon
-		icon='KillasIconBlack.dmi'
+		icon='src/Icons/Unsorted/KillasIconBlack.dmi'
 		bp_mod=4.1
 		npc_money_mod=8
 		Spawn_Timer=0
@@ -488,7 +488,7 @@ mob/Enemy
 			npc_move_delay *= 1
 			. = ..()
 	Spider_Small
-		icon='SpiderSmall.dmi'
+		icon='src/Icons/NPC/SpiderSmall.dmi'
 		bp_mod=0.15
 		enemyCanFly = 0
 		New()
@@ -502,7 +502,7 @@ mob/Enemy
 			npc_move_delay*=0.5
 			. = ..()
 	Squirrel
-		icon='NPCSquirrel.dmi'
+		icon='src/Icons/NPC/NPCSquirrel.dmi'
 		Docile=1
 		bp_mod=0.01
 		enemyCanFly = 0
@@ -516,7 +516,7 @@ mob/Enemy
 			Raise_Defense(17)
 			. = ..()
 	Jungle_Spider
-		icon='Spider322014.dmi'
+		icon='src/Icons/Unsorted/Spider322014.dmi'
 		bp_mod=3
 		Enlargement_Chance=33
 		enemyCanFly = 0
@@ -532,7 +532,7 @@ mob/Enemy
 			CenterIcon(src)
 			. = ..()
 	Spider3
-		icon='NPCSpider3.dmi'
+		icon='src/Icons/NPC/NPCSpider3.dmi'
 		bp_mod=2
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -546,7 +546,7 @@ mob/Enemy
 			Raise_Defense(10)
 			. = ..()
 	Spider2
-		icon='NPCSpider2.dmi'
+		icon='src/Icons/NPC/NPCSpider2.dmi'
 		bp_mod=1
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -560,7 +560,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Spider1
-		icon='NPCSpider.dmi'
+		icon='src/Icons/NPC/NPCSpider.dmi'
 		bp_mod=0.6
 		enemyCanFly = 0
 		New()
@@ -573,7 +573,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Big_Scorpion
-		icon='NPCScorpion2.dmi'
+		icon='src/Icons/NPC/NPCScorpion2.dmi'
 		bp_mod=1.7
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -587,7 +587,7 @@ mob/Enemy
 			Raise_Defense(5)
 			. = ..()
 	Red_Scorpion
-		icon='NPCScorpion.dmi'
+		icon='src/Icons/NPC/NPCScorpion.dmi'
 		bp_mod=0.75
 		enemyCanFly = 0
 		New()
@@ -600,7 +600,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Reptilian
-		icon='NPCReptileMonster.dmi'
+		icon='src/Icons/NPC/NPCReptileMonster.dmi'
 		bp_mod=1.5
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -615,7 +615,7 @@ mob/Enemy
 			npc_move_delay*=0.75
 			. = ..()
 	Chicken
-		icon='NPCChicken.dmi'
+		icon='src/Icons/NPC/NPCChicken.dmi'
 		Docile=1
 		bp_mod=0.01
 		New()
@@ -629,7 +629,7 @@ mob/Enemy
 			. = ..()
 	Dragon1
 		name="Dragon"
-		icon='NPCDragon1.dmi'
+		icon='src/Icons/NPC/NPCDragon1.dmi'
 		bp_mod=0.9
 		Enlargement_Chance=20
 		New()
@@ -642,7 +642,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Ground_Dragon
-		icon='NPCDragon2.dmi'
+		icon='src/Icons/NPC/NPCDragon2.dmi'
 		Docile=1
 		bp_mod=0.5
 		Enlargement_Chance=20
@@ -657,7 +657,7 @@ mob/Enemy
 			Raise_Defense(10)
 			. = ..()
 	Skeleton_Captain
-		icon='NPCSkeleton.dmi'
+		icon='src/Icons/NPC/NPCSkeleton.dmi'
 		bp_mod=0.65
 		enemyCanFly = 0
 		New()
@@ -670,7 +670,7 @@ mob/Enemy
 			Raise_Defense(10)
 			. = ..()
 	Giant_Snake
-		icon='NPCSnake.dmi'
+		icon='src/Icons/NPC/NPCSnake.dmi'
 		bp_mod=1.1
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -684,7 +684,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Virus_Android
-		icon='NPCVirusAndroid.dmi'
+		icon='src/Icons/NPC/NPCVirusAndroid.dmi'
 		bp_mod=1
 		enemyCanFly = 0
 		New()
@@ -697,7 +697,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Little_Demon
-		icon='NPCLittleDemon.dmi'
+		icon='src/Icons/NPC/NPCLittleDemon.dmi'
 		bp_mod=0.45
 		New()
 			Raise_Speed(25)
@@ -710,7 +710,7 @@ mob/Enemy
 			. = ..()
 	Dino_Munky
 		name="Dino Munky"
-		icon='DinoMunky.dmi'
+		icon='src/Icons/Unsorted/Other/DinoMunky.dmi'
 		bp_mod=1.2
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -725,7 +725,7 @@ mob/Enemy
 			. = ..()
 	Robot
 		Race="Robot"
-		icon='Gochekbots.dmi'
+		icon='src/Icons/NPC/Gochekbots.dmi'
 		Docile=1
 		icon_state="3"
 		bp_mod=0.75
@@ -741,7 +741,7 @@ mob/Enemy
 			. = ..()
 	Big_Robot
 		Race="Robot"
-		icon='Gochekbots.dmi'
+		icon='src/Icons/NPC/Gochekbots.dmi'
 		icon_state="4"
 		bp_mod=0.95
 		enemyCanFly = 0
@@ -756,7 +756,7 @@ mob/Enemy
 			. = ..()
 	Hover_Robot
 		Race="Robot"
-		icon='Gochekbots.dmi'
+		icon='src/Icons/NPC/Gochekbots.dmi'
 		Docile=1
 		Flyer=1
 		icon_state="5"
@@ -773,7 +773,7 @@ mob/Enemy
 			. = ..()
 	Gremlin
 		Race="Gremlin!"
-		icon='GochekMonster.dmi'
+		icon='src/Icons/NPC/GochekMonster.dmi'
 		icon_state="1"
 		bp_mod=0.35
 		enemyCanFly = 0
@@ -787,7 +787,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Baiman
-		icon='Baiman.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/Baiman.dmi'
 		bp_mod = 0.6
 		enemyCanFly = 0
 		New()
@@ -803,7 +803,7 @@ mob/Enemy
 			. = ..()
 	Greenster
 		Race="Greenster"
-		icon='Saibaman.dmi'
+		icon='src/Icons/NPC/Saibaman.dmi'
 		bp_mod=1.2
 		enemyCanFly = 0
 		New()
@@ -817,7 +817,7 @@ mob/Enemy
 			. = ..()
 	Small_Greenster
 		Race="Greenster"
-		icon='SmallSaiba.dmi'
+		icon='src/Icons/NPC/SmallSaiba.dmi'
 		bp_mod=0.8
 		enemyCanFly = 0
 		New()
@@ -831,7 +831,7 @@ mob/Enemy
 			. = ..()
 	Black_Greenster
 		Race="Greenster"
-		icon='BlackSaiba.dmi'
+		icon='src/Icons/NPC/BlackSaiba.dmi'
 		bp_mod=1.45
 		enemyCanFly = 0
 		New()
@@ -845,7 +845,7 @@ mob/Enemy
 			. = ..()
 	Mutated_Greenster
 		Race="Greenster"
-		icon='GreenSaibaman.dmi'
+		icon='src/Icons/NPC/GreenSaibaman.dmi'
 		bp_mod=1.65
 		enemyCanFly = 0
 		New()
@@ -859,7 +859,7 @@ mob/Enemy
 			. = ..()
 	Evil_Entity
 		Race="???"
-		icon='EvilMan.dmi'
+		icon='src/Icons/NPC/EvilMan.dmi'
 		bp_mod=1.7
 		New()
 			Raise_Speed(10)
@@ -873,7 +873,7 @@ mob/Enemy
 			. = ..()
 	Bandit
 		Race="Human"
-		icon='BaseHumanTan.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi'
 		bp_mod=0.5
 		enemyCanFly = 0
 		New()
@@ -888,7 +888,7 @@ mob/Enemy
 			. = ..()
 	Tiger_Bandit
 		Race="Tiger Man"
-		icon='TigerMan.dmi'
+		icon='src/Icons/NPC/TigerMan.dmi'
 		bp_mod=0.65
 		enemyCanFly = 0
 		New()
@@ -902,7 +902,7 @@ mob/Enemy
 			. = ..()
 	Night_Wolf
 		Race="Night Wolf"
-		icon='Wolf.dmi'
+		icon='src/Icons/NPC/Wolf.dmi'
 		Docile=1
 		bp_mod=0.75
 		enemyCanFly = 0
@@ -917,7 +917,7 @@ mob/Enemy
 			. = ..()
 	Giant_Robot
 		Race="Robot"
-		icon='GiantRobot2.dmi'
+		icon='src/Icons/NPC/GiantRobot2.dmi'
 		bp_mod=1.4
 		enemyCanFly = 0
 		New()
@@ -931,7 +931,7 @@ mob/Enemy
 			. = ..()
 	Ice_Dragon
 		Race="Robot"
-		icon='IceRobot.dmi'
+		icon='src/Icons/NPC/IceRobot.dmi'
 		bp_mod=2
 		Enlargement_Chance=20
 		enemyCanFly = 0
@@ -946,7 +946,7 @@ mob/Enemy
 			. = ..()
 	Ice_Flame
 		Race="Creature"
-		icon='IceMonster.dmi'
+		icon='src/Icons/NPC/IceMonster.dmi'
 		bp_mod=1.8
 		enemyCanFly = 0
 		New()
@@ -959,7 +959,7 @@ mob/Enemy
 			Raise_Defense(20)
 			. = ..()
 	Frog
-		icon='AnimalFrog.dmi'
+		icon='src/Icons/NPC/AnimalFrog.dmi'
 		Docile=1
 		bp_mod=0.01
 		enemyCanFly = 0
@@ -973,7 +973,7 @@ mob/Enemy
 			Raise_Defense(30)
 			. = ..()
 	Sheep
-		icon='NPCSheep.dmi'
+		icon='src/Icons/NPC/NPCSheep.dmi'
 		Docile=1
 		bp_mod=0.4
 		enemyCanFly = 0
@@ -987,7 +987,7 @@ mob/Enemy
 			Raise_Defense(10)
 			. = ..()
 	Dino_Bird
-		icon='AnimalDinoBird.dmi'
+		icon='src/Icons/NPC/AnimalDinoBird.dmi'
 		Docile=1
 		bp_mod=0.35
 		New()
@@ -1000,7 +1000,7 @@ mob/Enemy
 			Raise_Defense(35)
 			. = ..()
 	Cat
-		icon='Cat.dmi'
+		icon='src/Icons/NPC/Cat.dmi'
 		Docile=1
 		bp_mod=0.35
 		enemyCanFly = 0
@@ -1027,7 +1027,7 @@ mob/Enemy
 					Frozen=0
 				sleep(rand(2000,4000))
 	Bat
-		icon='AnimalBat.dmi'
+		icon='src/Icons/NPC/AnimalBat.dmi'
 		Docile=1
 		density=0
 		bp_mod=0.2
@@ -1041,7 +1041,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Cow
-		icon='AnimalCow.dmi'
+		icon='src/Icons/NPC/AnimalCow.dmi'
 		Docile=1
 		bp_mod=0.7
 		enemyCanFly = 0
@@ -1055,7 +1055,7 @@ mob/Enemy
 			Raise_Defense(0)
 			. = ..()
 	Turtle
-		icon='Turtle.dmi'
+		icon='src/Icons/NPC/Turtle.dmi'
 		Docile=1
 		bp_mod=1.5
 		enemyCanFly = 0
@@ -1071,7 +1071,7 @@ mob/Enemy
 		Del()
 			if(prob(10))
 				var/obj/items/Weights/A=new
-				A.icon='TurtleShell.dmi'
+				A.icon='src/Icons/PlayerIcons/Clothes/TurtleShell.dmi'
 				A.SafeTeleport(loc)
 				A.dir=NORTH
 			. = ..()

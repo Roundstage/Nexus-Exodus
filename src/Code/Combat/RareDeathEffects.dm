@@ -51,5 +51,5 @@ mob/proc/Blood_splatter_effects()
 	l<<sound('Squished.ogg',volume=100)
 
 	var/obj/Door_kill_blood/dkb = GetCachedObject(/obj/Door_kill_blood, t)
-	dkb.icon='FloorBlood.dmi'
+	dkb.icon='src/Icons/Effects/NewBloodSplatters/FloorBlood.dmi'
 	CenterIcon(dkb)

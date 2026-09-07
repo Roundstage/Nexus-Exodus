@@ -1,11 +1,11 @@
-var/list/Saiyan_armor_icons = list('ArmorBardock.dmi','Armor2.dmi','Armor3.dmi','Armor4.dmi','Armor5.dmi',
-	'Armor7.dmi','ArmorElite.dmi','ArmorRit1.dmi','ArmorRit2.dmi','NappaArmor.dmi','RaditzArmorTobiUchiha.dmi',\
-	'TurlesArmorTobiUchiha.dmi','WtfArmor.dmi','RedArmor.dmi','BlueArmor.dmi')
+var/list/Saiyan_armor_icons = list('src/Icons/PlayerIcons/Clothes/Armor/ArmorBardock.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor2.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor3.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor4.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor5.dmi',
+	'src/Icons/PlayerIcons/Clothes/Armor/Armor7.dmi','src/Icons/PlayerIcons/Clothes/Armor/ArmorElite.dmi','src/Icons/PlayerIcons/Clothes/Armor/ArmorRit1.dmi','src/Icons/PlayerIcons/Clothes/Armor/ArmorRit2.dmi','src/Icons/PlayerIcons/Clothes/Armor/NappaArmor.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/RaditzArmorTobiUchiha.dmi',\
+	'src/Icons/PlayerIcons/TobiUchihaIcons/TurlesArmorTobiUchiha.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/WtfArmor.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/RedArmor.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/BlueArmor.dmi')
 
 proc
 	RandomHumanIcon()
-		return pick('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi',\
-		'NewPaleFemale.dmi','NewTanFemale.dmi','NewBlackFemale.dmi')
+		return pick('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi',\
+		'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi')
 
 	RandomHairIcon()
 		var/obj/h = pick(Hairs)

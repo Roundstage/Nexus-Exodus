@@ -653,7 +653,7 @@ mob/proc/Train_Gain(Amount=1)
 
 obj/Peebag
 	desc="Punching this only gives BP nothing else"
-	icon='PunchingBag.dmi'
+	icon='src/Icons/Unsorted/Other/PunchingBag.dmi'
 	Cost=3000
 	science = 1
 	science_level = 1
@@ -695,7 +695,7 @@ mob/var/tmp/shadow_spar_loop_running
 mob/var/last_ss_time
 
 obj/Shadow_Spar_Overlay
-	icon = 'White.dmi'
+	icon = 'src/Icons/Turfs/White.dmi'
 	layer = 7
 	plane = NEXUS_FIXED_HUD_PLANE
 

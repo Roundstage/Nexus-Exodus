@@ -439,7 +439,7 @@ mob/proc/learn_new_buff_attribute()
 
 
 mob/Prison_Bot
-	icon='Android.dmi'
+	icon='src/Icons/PlayerIcons/BaseIcons/Android.dmi'
 	Click()
 		dir=get_dir(src,usr)
 		player_view(15,src)<<"[src]: Greetings. This is the prison hub where visitors can enter the prison. \

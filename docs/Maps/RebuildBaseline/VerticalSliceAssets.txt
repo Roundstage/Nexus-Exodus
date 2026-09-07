@@ -1,0 +1,4 @@
+
+Category Path                   Line Resource            Detail
+-------- ----                   ---- --------            ------
+BarePath src/Code/UI/UIStuff.dm   91 NexusExodusLogo.png Expected src/Icons/UI/NexusExodusLogo.png

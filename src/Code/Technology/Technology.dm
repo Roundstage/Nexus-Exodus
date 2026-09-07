@@ -48,10 +48,10 @@ mob/proc/TryCreateScienceItem(obj/A)
 				gainTechnologyExperience(getTechnologyCraftExperience(A), "crafting [A]", announce = TRUE)
 
 				if(istype(O,/obj/Ships/Ship)&&Race=="Namekian")
-					O.icon='PuranShip.dmi'
+					O.icon='src/Icons/Objects/Technology/PuranShip.dmi'
 					CenterIcon(O)
 				if(istype(O,/obj/items/Scouter)&&Race=="Human")
-					O.icon='ItemSunGlassess.dmi'
+					O.icon='src/Icons/Objects/Items/ItemSunGlassess.dmi'
 					O.name="Scanner"
 				if(istype(O,/obj/Spawn))
 					O.Health=100000
@@ -94,7 +94,7 @@ mob/proc/Store_item_check(obj/o)
 		return
 
 obj/Bank
-	icon='Tech.dmi'
+	icon='src/Icons/Objects/Technology/Tech.dmi'
 	icon_state="compdown"
 	Dead_Zone_Immune=1
 	Grabbable=0
@@ -234,7 +234,7 @@ proc/Random_resource_drops()
 				r.Savable=0
 				r.Value = rand(300000) * Resource_Multiplier
 				if(map_restriction_on) r.Value *= 2
-				r.icon = 'ResourceRocks.dmi'
+				r.icon = 'src/Icons/Effects/ResourceRocks.dmi'
 				r.icon_state = "[rand(1,4)]"
 				r.density = 1
 
@@ -422,7 +422,7 @@ var/list/resources_list=new
 mob/var/tmp/obj/Resources/resource_obj
 
 obj/Resources
-	icon='Misc.dmi'
+	icon='src/Icons/Unsorted/Other/Misc.dmi'
 	icon_state="ZenniBag"
 	can_change_icon=0
 	Savable=1
@@ -546,7 +546,7 @@ obj/Drill
 	var/DrillRate=1000
 	var
 		drill_drop_res_on_delete = 1
-	icon='DrillGiant.dmi'
+	icon='src/Icons/Objects/Technology/DrillGiant.dmi'
 	desc="Place this at a location and it will automatically drill resources from within the planet. It can not \
 	drill if you have it on player built turfs. The more you upgrade this the faster it will drill. Click on it \
 	to withdraw what it has drilled."

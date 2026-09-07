@@ -39,12 +39,27 @@ mob
 
 mob
 	proc
-		WolfFangFistVFX()
-			set waitfor=0
+		WolfFangFistVFX(mob/victim, finisher = FALSE)
+			if(!isturf(base_loc())) return
+			var/turf/origin = base_loc()
 			var/obj/Effect/e = GetEffect()
-			e.icon = 'WolfFang3.dmi'
-			sleep(1)
-			del(e)
+			e.icon = 'src/Icons/VFX/WolfFangFist/WolfFang3.dmi'
+			e.icon_state = "Attack"
+			e.dir = victim ? get_dir(src, victim) : dir
+			e.color = "#48bfff"
+			e.blend_mode = BLEND_ADD
+			e.layer = MOB_LAYER + 0.2
+			e.appearance_flags |= PIXEL_SCALE
+			e.SafeTeleport(origin)
+			e.pixel_x = nexusCollisionCenterXPixels() - (origin.x - 1) * world.icon_size - 82
+			e.pixel_y = nexusCollisionCenterYPixels() - (origin.y - 1) * world.icon_size - 82
+			e.transform = matrix() * (finisher ? 2.4 : 1.6)
+			flick("Attack", e)
+			spawn(5)
+				if(e) animate(e, alpha = 0, time = 1)
+			spawn(7)
+				if(e) del(e)
+			return e
 
 		WolfFangFist()
 			if(skill_engine) return skill_engine.castWolfFangFist(src)

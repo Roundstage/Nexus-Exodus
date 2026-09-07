@@ -31,9 +31,9 @@ obj/Tournament_Controls
 	New()
 		if(!init)
 			init=1
-			var/image/a=image(icon='Lab2.dmi',icon_state="Walldisplay1",pixel_x=-32)
-			var/image/b=image(icon='Lab2.dmi',icon_state="Walldisplay2",pixel_x=0)
-			var/image/c=image(icon='Lab2.dmi',icon_state="Walldisplay3",pixel_x=32)
+			var/image/a=image(icon='src/Icons/Objects/Technology/Lab2.dmi',icon_state="Walldisplay1",pixel_x=-32)
+			var/image/b=image(icon='src/Icons/Objects/Technology/Lab2.dmi',icon_state="Walldisplay2",pixel_x=0)
+			var/image/c=image(icon='src/Icons/Objects/Technology/Lab2.dmi',icon_state="Walldisplay3",pixel_x=32)
 			overlays.Add(a,b,c)
 		spawn if(src) for(var/obj/Tournament_Controls/tc in view(0,src)) if(tc!=src) del(tc)
 
@@ -113,7 +113,7 @@ proc/Get_Fighter_Locations(list/L)
 obj/Tournament_Chair //Put many of these all around the arena, other contestants are warped there while they wait
 	Health=1.#INF
 	Grabbable=0
-	icon='Turfs.dmi'
+	icon='src/Icons/Turfs/Turfs.dmi'
 	icon_state="Chair"
 	Dead_Zone_Immune=1
 	Savable=0

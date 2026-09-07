@@ -53,7 +53,7 @@ atom/movable/proc
 		if(a && a.type == /area/God_Ki_Realm) return 1
 
 obj/God_Realm_Portal
-	icon='BlueOrb96x96.dmi'
+	icon='src/Icons/Objects/OrbIcons/BlueOrb96x96.dmi'
 	Grabbable=0
 	Health=1.#INF
 	Savable=0

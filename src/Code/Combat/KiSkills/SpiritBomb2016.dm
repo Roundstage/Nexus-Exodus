@@ -13,9 +13,9 @@ obj/Attacks/Genki_Dama
 			sb_rotation = 0
 			next_use = 0
 		has_particles = 1
-		Genki_Dama_particle_icon = 'SpiritBombParticle.dmi'
+		Genki_Dama_particle_icon = 'src/Icons/Ki/Big/SpiritBombParticle.dmi'
 		//Genki_Dama_icon = 'SpiritBomb2016.png'
-		Genki_Dama_icon = 'SpiritBomb22017.png'
+		Genki_Dama_icon = 'src/Icons/Ki/Big/SpiritBomb22017.png'
 		spin_animation = 1
 		usable_if_cybered = 0
 		y_offset = 6

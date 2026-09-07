@@ -215,7 +215,7 @@ proc
 		loser.ApplyStun(time = stun, no_immunity = 1, stun_power = 10)
 		winner.AfterImage(25)
 		winner.SafeTeleport(loser.loc)
-		flick('Zanzoken.dmi',winner)
+		flick('src/Icons/Effects/Zanzoken.dmi',winner)
 		player_view(20,winner) << sound('Teleport.ogg',volume = 20)
 		step_away(winner,loser)
 		winner.dir = get_dir(winner,loser)

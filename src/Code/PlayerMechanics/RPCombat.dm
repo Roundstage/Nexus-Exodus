@@ -16,14 +16,14 @@ mob/var/tmp
 mob/proc/refreshCombatStatusOverlays()
 	if(sparring_mode == LETHAL_COMBAT)
 		if(!lethal_intent_status_overlay)
-			lethal_intent_status_overlay = image('LethalHud.dmi', layer = 25)
+			lethal_intent_status_overlay = image('src/Icons/UI/LethalHud.dmi', layer = 25)
 			overlays += lethal_intent_status_overlay
 	else if(lethal_intent_status_overlay)
 		overlays -= lethal_intent_status_overlay
 		lethal_intent_status_overlay = null
 	if(rp_mode)
 		if(!rp_mode_status_overlay)
-			rp_mode_status_overlay = image('RPModeHud.dmi', layer = 25)
+			rp_mode_status_overlay = image('src/Icons/UI/RPModeHud.dmi', layer = 25)
 			overlays += rp_mode_status_overlay
 	else if(rp_mode_status_overlay)
 		overlays -= rp_mode_status_overlay

@@ -374,3 +374,7 @@ When rarity is missing or invalid, normalization infers it from the migrated dat
 Unknown IDs and nonpositive values are removed; excess entries are truncated in list order; valid percentages are rounded and clamped. An unrecognized tier with no inferable valid state clears both the list and rarity. An empty final list clears rarity. Every path records version 2. Repeating normalization after the first sanitized result leaves that result unchanged, and old characters with no entries remain empty rather than receiving a retroactive roll.
 
 Normal `load()` performs `Read()` and then `Other_Load_Stuff()`, which calls normalization. Normal mob `Write()` serialization preserves the version, rarity, and associative ID/percentage list. The legacy `New_Character()` path rolls only for fresh non-reincarnating, non-DB characters; reincarnation and DB compatibility paths normalize instead. Spirit Doll continues to persist as `Race = "Human"`, `Class = "Spirit Doll"`; Cooler as `Race = "Frost Lord"`, `Class = "Cooler"`; and Saiyan variants as classes under `Race = "Saiyan"`.
+
+### Transformation hair catalog
+
+`CharacterCreation/HairCatalog.dm` owns the existing `/obj/Hairs` paths. Each style declares its base icon and optional `variant_overrides`; `initializeHairVariants()` resolves base/SSJ references in order and applies the shared legacy tints. The existing SSj_Hair/USSj_Hair/SSjFP_Hair/SSj2_Hair/SSj3_Hair fields remain compatible with Apply_Hair and saved characters. Add new styles as data, without a constructor or Click override.

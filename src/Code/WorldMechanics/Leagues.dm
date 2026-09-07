@@ -74,7 +74,7 @@ mob/proc/Get_league_nully_IDs()
 	return IDs
 
 obj/League
-	icon='FactionBadge.dmi'
+	icon='src/Icons/Objects/Technology/FactionBadge.dmi'
 	can_blueprint=0
 	Duplicates_Allowed=1
 	clonable=0

@@ -19,7 +19,7 @@ var/Gun_Power=1
 var/list/Turrets=new
 
 obj/Turret
-	icon='Turret.dmi'
+	icon='src/Icons/Objects/Technology/Turret.dmi'
 	desc="Turrets fire on anything in the area. To set up a turret, place it where you want it. Then click it while \
 	next to it and it will ask you to set a password. After setting the password the turret will fire on anyone who \
 	does not have a Key (keys are made in science) with a matching password, including you."
@@ -229,7 +229,7 @@ obj/Turret
 			B.density=0
 			B.Owner=src
 			B.Fatal = 1
-			B.icon='MissileSmall.dmi'
+			B.icon='src/Icons/Projectiles/Bullets/MissileSmall.dmi'
 			B.BP=Turret_Power
 			B.Force=Turret_Force*2
 			B.percent_damage=5*Gun_Power
@@ -250,7 +250,7 @@ obj/proc/Turret_Missile_Is_On_Target(mob/P)
 		sleep(1)
 
 obj/items/Gun_Manual
-	icon='PDA.dmi'
+	icon='src/Icons/Objects/Technology/PDA.dmi'
 	Cost=0
 	Stealable=1
 	clonable = 0
@@ -310,14 +310,14 @@ obj/items/Gun
 	Stun=0
 	Bullet=1
 	//=============
-	icon='GUNS.dmi'
+	icon='src/Icons/Objects/Technology/GUNS.dmi'
 	icon_state="Handgun"
 	Cost=0
 	Tech=10
 	Can_Drop_With_Suffix=1
 	var/Deviation=16
 	var/Ammo=0
-	var/Bullet_Icon='Bullet.dmi'
+	var/Bullet_Icon='src/Icons/Projectiles/Bullets/Bullet.dmi'
 	var/tmp/Firing
 	var/nexus_customization_pending
 	Stealable=1
@@ -521,7 +521,7 @@ obj/items/Ammo
 	Cost=0
 	clonable = 0
 	desc="Click this to reload whichever gun you want."
-	icon='GunAccessories.dmi'
+	icon='src/Icons/Objects/Technology/GunAccessories.dmi'
 	icon_state="Ammo Box"
 	Stealable=1
 	var/Ammo=10

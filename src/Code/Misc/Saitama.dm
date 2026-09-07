@@ -75,10 +75,10 @@ mob/proc
 			Pow=1
 			Zombie_Virus=0
 			Regenerate=0
-			if(!(icon in list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi','NewBlackFemale.dmi')))
-				icon='BaseHumanPale.dmi'
+			if(!(icon in list('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi')))
+				icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 			overlays=null
-			overlays.Add('OpmGloves.dmi','OpmBoots.dmi','OpmUnitard.dmi','OpmBelt.dmi','OpmCape.dmi','OpmCollar.dmi')
+			overlays.Add('src/Icons/PlayerIcons/Saitama/OpmGloves.dmi','src/Icons/PlayerIcons/Saitama/OpmBoots.dmi','src/Icons/PlayerIcons/Saitama/OpmUnitard.dmi','src/Icons/PlayerIcons/Saitama/OpmBelt.dmi','src/Icons/PlayerIcons/Saitama/OpmCape.dmi','src/Icons/PlayerIcons/Saitama/OpmCollar.dmi')
 			for(var/obj/o in src) if(o.Cost_To_Learn)
 				if(!(o.type in list(/obj/Fly,/obj/Flash_Step,/obj/Sense,/obj/Advanced_Sense,/obj/Sense3,/obj/Zanzoken)))
 					del(o)
@@ -132,5 +132,5 @@ mob/proc/SaitamaBloodEffect(blood_range = 4, blood_chance = 67)
 					sleep(TickMult(0.8))
 
 		var/obj/Door_kill_blood/dkb = GetCachedObject(/obj/Door_kill_blood, t)
-		dkb.icon='FloorBlood.dmi'
+		dkb.icon='src/Icons/Effects/NewBloodSplatters/FloorBlood.dmi'
 		CenterIcon(dkb)

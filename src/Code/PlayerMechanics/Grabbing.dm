@@ -208,7 +208,7 @@ proc/remove_nulls(list/l)
 
 mob/var
 	arm_stretch
-	arm_stretch_icon='NamekArm.dmi'
+	arm_stretch_icon='src/Icons/Unsorted/NamekArm.dmi'
 	arm_stretch_range=100
 
 mob/proc
@@ -335,7 +335,7 @@ mob/proc
 		if(Extendo_module())
 			grab_dist=Extendo_module_range()
 			arm_velocity=1
-			arm_icon='DroidArm.dmi'
+			arm_icon='src/Icons/Unsorted/DroidArm.dmi'
 		grab_dist = armStretchRangeTiles(grab_dist)
 
 		var/turf/starting_loc=loc
@@ -400,7 +400,7 @@ mob/proc
 		if(m && is_grabbing) return m
 
 obj/stretch_arm
-	icon='NamekArm.dmi'
+	icon='src/Icons/Unsorted/NamekArm.dmi'
 	Grabbable=0
 	Bolted=1
 	layer=6

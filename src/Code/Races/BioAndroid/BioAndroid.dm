@@ -20,7 +20,7 @@ mob/proc/Bio(interactive_options=1)
 	zenkai_mod=2
 	gravity_mastered=25
 	arm_stretch=1
-	arm_stretch_icon='GenericArm.dmi'
+	arm_stretch_icon='src/Icons/Unsorted/GenericArm.dmi'
 	arm_stretch_range=500
 	if(START_WITH_RACIAL_SKILLS)
 		contents.Add(new/obj/Attacks/Genki_Dama/Death_Ball,new/obj/Attacks/Blast,new/obj/Attacks/Charge,\

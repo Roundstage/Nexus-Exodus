@@ -110,11 +110,11 @@ mob/proc/USSj()
 		endmod*=ussj_dur
 		Res*=ussj_res
 		resmod*=ussj_res
-		overlays+='YellowLightningAura.dmi'
+		overlays+='src/Icons/Ki/Electricity/YellowLightningAura.dmi'
 		switch(icon)
-			if('BaseHumanPale.dmi') icon='WhiteMaleMuscular3.dmi'
-			if('BaseHumanTan.dmi') icon='TanMaleMuscular3.dmi'
-			if('BaseHumanDark.dmi') icon='BlackMaleMuscular3.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi') icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/WhiteMaleMuscular3.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi') icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/TanMaleMuscular3.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi') icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/BlackMaleMuscular3.dmi'
 	else
 		is_ussj=0
 		bp_mult-=ussj_bp
@@ -129,11 +129,11 @@ mob/proc/USSj()
 		endmod/=ussj_dur
 		Res/=ussj_res
 		resmod/=ussj_res
-		overlays-='YellowLightningAura.dmi'
+		overlays-='src/Icons/Ki/Electricity/YellowLightningAura.dmi'
 		switch(icon)
-			if('WhiteMaleMuscular3.dmi') icon='BaseHumanPale.dmi'
-			if('TanMaleMuscular3.dmi') icon='BaseHumanTan.dmi'
-			if('BlackMaleMuscular3.dmi') icon='BaseHumanDark.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/WhiteMaleMuscular3.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/TanMaleMuscular3.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi'
+			if('src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/BlackMaleMuscular3.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi'
 	SSj_Hair()
 
 
@@ -240,7 +240,7 @@ mob/proc/Old_Trans_Graphics()
 			T.Make_Damaged_Ground(1)
 			if(prob(10 * fxSpeedMult)) sleep(1)
 	player_view(10,src)<<sound('Aura3.ogg',volume=20)
-	var/I='ElectricYellowLegacy.dmi'
+	var/I='src/Icons/Ki/Electricity/ElectricYellowLegacy.dmi'
 	I+=rgb(0,0,0,100)
 	Make_Shockwave(src,7,I,sw_icon_size=256)
 	if(epicTrans)
@@ -297,7 +297,7 @@ obj/Shockwave_Graphic
 	Savable=0
 	attackable=0
 	layer=5
-	icon = 'Shockwave2016.png'
+	icon = 'src/Icons/Unsorted/Shockwave2016.png'
 
 	New()
 		CenterIcon(src)
@@ -324,10 +324,10 @@ obj/Shockwave_Graphic
 	proc/Shockwave_go(sw_size=256)
 		var/icon/i
 		switch(sw_size)
-			if(64) i='ShockwaveCustom64.dmi'
-			if(128) i='ShockwaveCustom128.dmi'
-			if(256) i='ShockwaveCustom256.dmi'
-			if(512) i='ShockwaveCustom512.dmi'
+			if(64) i='src/Icons/Unsorted/ShockwaveCustom64.dmi'
+			if(128) i='src/Icons/Unsorted/ShockwaveCustom128.dmi'
+			if(256) i='src/Icons/Unsorted/ShockwaveCustom256.dmi'
+			if(512) i='src/Icons/Unsorted/ShockwaveCustom512.dmi'
 		pixel_x=Icon_Center_X(i)
 		pixel_y=Icon_Center_Y(i)
 		spawn if(src&&i) flick(i,src)
@@ -472,7 +472,7 @@ var
 proc/getSsjEyeOverlay(mastered)
 	if(mastered && ssj_mastered_eye_overlay) return ssj_mastered_eye_overlay
 	if(!mastered && ssj_unmastered_eye_overlay) return ssj_unmastered_eye_overlay
-	var/icon/eyes = icon('RedEyes.dmi')
+	var/icon/eyes = icon('src/Icons/Unsorted/Other/RedEyes.dmi')
 	if(mastered)
 		eyes.MapColors("#39d56f", "#d8ffe5", "#07170d")
 		ssj_mastered_eye_overlay = eyes
@@ -519,7 +519,7 @@ mob/proc/Revert()
 		ssj=0
 		SSj_Hair()
 		Aura_Overlays()
-		overlays-='SSj4Overlay.dmi'
+		overlays-='src/Icons/Effects/SSj4Overlay.dmi'
 		if(powerup_obj && powerup_obj.Powerup==-1) powerup_obj.Powerup=0
 		last_ssj_revert_or_retrans = world.realtime
 	syncActivePrimaryTransformation("revert")
@@ -527,24 +527,13 @@ mob/proc/Revert()
 mob/proc/SSj_Hair()
 	overlays.Remove(hair,ssjhair,ussjhair,ssjfphair,ssj2hair,ssj3hair,ssj4hair, ssj_blue_hair,ssj_god_hair)
 	overlays.Remove(ssj_unmastered_eye_overlay, ssj_mastered_eye_overlay)
-	overlays-='Ssj3Mastered.dmi'
-	if(ultra_instinct) overlays += hair
-	else if(is_ssj_blue) overlays += ssj_blue_hair
-	else if(is_ssg) overlays+= ssj_god_hair
-	else
-		if(!ssj||ismystic) overlays+=hair
-		else if(ssj>0&&ssj<3&&is_ussj) overlays+=ussjhair
-		else if(ssj==1 && !has_ss_full_power) overlays+=ssjhair
-		else if(ssj==1) overlays+=ssjfphair
-		else if(ssj==2) overlays+=ssj2hair
-		else if(ssj==3)
-			if(ssj3hair=='HairGokuSSj3.dmi'&&ssj3drain>=300) overlays+='Ssj3Mastered.dmi'
-			else overlays+=ssj3hair
-		else if(ssj==4) overlays+=ssj4hair
-	var/T=Tail
-	T+=rgb(120,120,60)
-	overlays-=T
-	if(Tail&&ssj&&ssj<4&&!ismystic) overlays+=T
+	overlays-='src/Icons/PlayerIcons/Hair/Ssj3Mastered.dmi'
+	var/selected_hair = getActiveTransformationHair()
+	if(selected_hair) overlays += selected_hair
+	if(Tail)
+		var/golden_tail = Tail + rgb(120,120,60)
+		overlays -= golden_tail
+		if(ssj && ssj < 4 && !ismystic) overlays += golden_tail
 	if(ssj && !ismystic && Race in list("Saiyan", "Half Saiyan")) overlays += getSsjEyeOverlay(currentSsjFormMastered())
 
 mob/var/tmp/transing
@@ -564,7 +553,13 @@ mob/proc/SSj() if(!transing&&!ssj&&!IsGreatApe())
 	if(!SSjAble) SSjAble=Year
 	if(!ismystic && !ultra_instinct)
 		if(ssj_opening) Trans_Graphics(ssj_opening)
-		else Old_Trans_Graphics()
+		else
+			var/datum/NexusSsjAwakening/awakening = new
+			if(!awakening.playSequence(src, getNexusAwakeningDuration()))
+				ssj = 0
+				transing = 0
+				SSj_Hair()
+				return
 	SSj_Hair()
 	ssj_bp_mult *= form1x
 	ssj_power += ssjadd
@@ -639,7 +634,7 @@ mob/proc/SSj4() if(!IsGreatApe() && !transing && !ssj && !ismystic)
 	overlays-=hair
 	Old_Overlays.Add(overlays)
 	overlays-=overlays
-	overlays+='SSj4Overlay.dmi'
+	overlays+='src/Icons/Effects/SSj4Overlay.dmi'
 	overlays+=Old_Overlays
 	SSj_Hair()
 	syncActivePrimaryTransformation("ssj4")
@@ -815,7 +810,7 @@ mob/proc/Third_Eye()
 	med_mod*=2
 	mastery_mod*=thirdEyeMasteryMult
 	zenkai_mod/=5
-	overlays+='ThirdEye.dmi'
+	overlays+='src/Icons/Effects/ThirdEye.dmi'
 	src<<"You concentrate on the power of your mind and unlock your third eye chakra, increasing your \
 	power significantly."
 	if(gravity_mastered<5) gravity_mastered=5
@@ -827,12 +822,12 @@ mob/proc/Third_Eye_Revert()
 	med_mod /= 2
 	mastery_mod/=thirdEyeMasteryMult
 	zenkai_mod*=5
-	overlays-='ThirdEye.dmi'
+	overlays-='src/Icons/Effects/ThirdEye.dmi'
 	src<<"You repress the power of your third eye chakra."
 
 area/proc/SSj_Darkness()
 	var/A=icon
-	icon='Weather.dmi'
+	icon='src/Icons/Effects/Weather/Weather.dmi'
 	icon_state="Super Darkness"
 	spawn(600) if(src)
 		icon=A

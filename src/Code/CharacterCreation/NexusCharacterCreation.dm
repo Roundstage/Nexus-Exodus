@@ -231,49 +231,49 @@ proc/nexusRaceIconOptions(race_name)
 	switch(race_name)
 		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin", "Viltrumite", "Half-Viltrumite")
 			return list(
-				"human_m_pale" = 'BaseHumanPale.dmi', "human_m_tan" = 'BaseHumanTan.dmi', "human_m_dark" = 'BaseHumanDark.dmi',
-				"human_f_pale" = 'NewPaleFemale.dmi', "human_f_tan" = 'NewTanFemale.dmi', "human_f_dark" = 'NewBlackFemale.dmi'
+				"human_m_pale" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi', "human_m_tan" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi', "human_m_dark" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi',
+				"human_f_pale" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi', "human_f_tan" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi', "human_f_dark" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi'
 			)
 		if("Spirit Doll")
-			return list("doll_white" = 'WhiteKaio.dmi', "doll_possessed" = 'PossessedSpiritDoll.dmi', "doll_makai" = 'MakaioshinBase.dmi')
+			return list("doll_white" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/WhiteKaio.dmi', "doll_possessed" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/PossessedSpiritDoll.dmi', "doll_makai" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/MakaioshinBase.dmi')
 		if("Alien")
 			return list(
-				"alien_1" = 'Alien1.dmi', "alien_2" = 'Alien2.dmi', "alien_3" = 'Alien3.dmi', "alien_beetle" = 'AlienBeetle.dmi',
-				"alien_pikkon" = 'AlienPikkon.dmi', "alien_kanassa" = 'AlienKanassa.dmi', "alien_guldo" = 'AlienGuldo.dmi', "alien_bass" = 'AlienBass.dmi',
-				"alien_burter" = 'AlienBurter.dmi', "alien_ginyu" = 'RaceGinyu.dmi', "alien_kui" = 'RaceKui.dmi', "alien_jiren" = 'Jiren23.dmi'
+				"alien_1" = 'src/Icons/PlayerIcons/BaseIcons/Alien1.dmi', "alien_2" = 'src/Icons/PlayerIcons/BaseIcons/Alien2.dmi', "alien_3" = 'src/Icons/PlayerIcons/BaseIcons/Alien3.dmi', "alien_beetle" = 'src/Icons/PlayerIcons/BaseIcons/AlienBeetle.dmi',
+				"alien_pikkon" = 'src/Icons/PlayerIcons/BaseIcons/AlienPikkon.dmi', "alien_kanassa" = 'src/Icons/PlayerIcons/BaseIcons/AlienKanassa.dmi', "alien_guldo" = 'src/Icons/PlayerIcons/BaseIcons/AlienGuldo.dmi', "alien_bass" = 'src/Icons/PlayerIcons/BaseIcons/AlienBass.dmi',
+				"alien_burter" = 'src/Icons/PlayerIcons/BaseIcons/AlienBurter.dmi', "alien_ginyu" = 'src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi', "alien_kui" = 'src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi', "alien_jiren" = 'src/Icons/PlayerIcons/BaseIcons/Jiren23.dmi'
 			)
 		if("Android")
 			return list(
-				"android_standard" = 'Android.dmi', "android_blackout" = 'AndroidBlackout.dmi', "android_skeleton" = 'AndroidSkeletor.dmi',
-				"android_spider" = 'AndroidSpider.dmi', "android_base_1" = 'BaseAndroid1.dmi', "android_base_2" = 'BaseAndroid2.dmi',
-				"android_proxy" = 'AndroidProxy.dmi', "android_human_pale" = 'BaseHumanPale.dmi', "android_human_tan" = 'BaseHumanTan.dmi'
+				"android_standard" = 'src/Icons/PlayerIcons/BaseIcons/Android.dmi', "android_blackout" = 'src/Icons/PlayerIcons/BaseIcons/Androids/AndroidBlackout.dmi', "android_skeleton" = 'src/Icons/PlayerIcons/BaseIcons/Androids/AndroidSkeletor.dmi',
+				"android_spider" = 'src/Icons/PlayerIcons/BaseIcons/Androids/AndroidSpider.dmi', "android_base_1" = 'src/Icons/PlayerIcons/BaseIcons/Androids/BaseAndroid1.dmi', "android_base_2" = 'src/Icons/PlayerIcons/BaseIcons/Androids/BaseAndroid2.dmi',
+				"android_proxy" = 'src/Icons/PlayerIcons/BaseIcons/Androids/AndroidProxy.dmi', "android_human_pale" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi', "android_human_tan" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi'
 			)
 		if("Bio-Android")
-			return list("bio_green" = 'CellLarva.dmi', "bio_blue" = 'CellLarvaBlue.dmi')
+			return list("bio_green" = 'src/Icons/PlayerIcons/BaseIcons/CellLarva.dmi', "bio_blue" = 'src/Icons/PlayerIcons/BaseIcons/CellLarvaBlue.dmi')
 		if("Demon")
 			return list(
-				"demon_1" = 'Demon1.dmi', "demon_2" = 'Demon2.dmi', "demon_hades" = 'Hades.dmi', "demon_4" = 'Demon4.dmi',
-				"demon_5" = 'Demon5.dmi', "demon_6" = 'Demon6.dmi', "demon_female" = 'Demon6Female.dmi', "demon_janemba" = 'DemonJanemba.dmi',
-				"demon_ifrit" = 'DemonIfrit.dmi', "demon_lucifer" = 'Lucifer.dmi', "demon_satan" = 'Satan.dmi', "demon_wolf" = 'DemonWolf.dmi'
+				"demon_1" = 'src/Icons/PlayerIcons/BaseIcons/Demon1.dmi', "demon_2" = 'src/Icons/PlayerIcons/BaseIcons/Demon2.dmi', "demon_hades" = 'src/Icons/PlayerIcons/BaseIcons/Hades.dmi', "demon_4" = 'src/Icons/PlayerIcons/BaseIcons/Demon4.dmi',
+				"demon_5" = 'src/Icons/PlayerIcons/BaseIcons/Demon5.dmi', "demon_6" = 'src/Icons/PlayerIcons/BaseIcons/Demon6.dmi', "demon_female" = 'src/Icons/PlayerIcons/BaseIcons/Demon6Female.dmi', "demon_janemba" = 'src/Icons/PlayerIcons/BaseIcons/DemonJanemba.dmi',
+				"demon_ifrit" = 'src/Icons/PlayerIcons/BaseIcons/DemonIfrit.dmi', "demon_lucifer" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/Lucifer.dmi', "demon_satan" = 'src/Icons/PlayerIcons/BaseIcons/Satan.dmi', "demon_wolf" = 'src/Icons/PlayerIcons/BaseIcons/DemonWolf.dmi'
 			)
 		if("Frost Lord")
 			return nexusFrostIconOptions()
 		if("Kai")
-			return list("kai_male" = 'CustomMale.dmi', "kai_female" = 'CustomFemale.dmi', "kai_avatar" = 'Avatar.dmi', "kai_white" = 'WhiteKaio.dmi')
+			return list("kai_male" = 'src/Icons/PlayerIcons/BaseIcons/CustomMale.dmi', "kai_female" = 'src/Icons/PlayerIcons/BaseIcons/CustomFemale.dmi', "kai_avatar" = 'src/Icons/PlayerIcons/BaseIcons/Avatar.dmi', "kai_white" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/WhiteKaio.dmi')
 		if("Kanassan")
-			return list("kanassan_native" = 'Kanassan.dmi', "kanassan_alien" = 'AlienKanassa.dmi')
+			return list("kanassan_native" = 'src/Icons/PlayerIcons/BaseIcons/Kanassan.dmi', "kanassan_alien" = 'src/Icons/PlayerIcons/BaseIcons/AlienKanassa.dmi')
 		if("Heran")
 			return list(
 				"heran_pirate" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranSpacePirate.dmi',
 				"heran_female" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranFemale.dmi',
 				"heran_female_blue" = 'src/Icons/PlayerIcons/BaseIcons/Heran/HeranFemaleBlue.dmi')
 		if("Makyo")
-			return list("makyo_1" = 'Makyojin2.dmi', "makyo_2" = 'Konatsu.dmi', "makyo_3" = 'KidAlien.dmi', "makyo_4" = 'Alien4.dmi')
+			return list("makyo_1" = 'src/Icons/PlayerIcons/BaseIcons/Makyojin2.dmi', "makyo_2" = 'src/Icons/PlayerIcons/BaseIcons/Konatsu.dmi', "makyo_3" = 'src/Icons/PlayerIcons/BaseIcons/KidAlien.dmi', "makyo_4" = 'src/Icons/PlayerIcons/BaseIcons/Alien4.dmi')
 		if("Majin")
-			return list("majin_male" = 'Majin.dmi', "majin_female" = 'FemaleMajin.dmi')
+			return list("majin_male" = 'src/Icons/PlayerIcons/BaseIcons/Majin.dmi', "majin_female" = 'src/Icons/PlayerIcons/BaseIcons/FemaleMajin.dmi')
 		if("Namekian")
-			return list("namek_young" = 'NamekYoung.dmi', "namek_adult" = 'NamekAdult.dmi', "namek_old" = 'NamekOld.dmi', "namek_foreign" = 'Namek2.dmi')
-	return list("fallback" = 'BaseHumanPale.dmi')
+			return list("namek_young" = 'src/Icons/PlayerIcons/BaseIcons/NamekYoung.dmi', "namek_adult" = 'src/Icons/PlayerIcons/BaseIcons/NamekAdult.dmi', "namek_old" = 'src/Icons/PlayerIcons/BaseIcons/NamekOld.dmi', "namek_foreign" = 'src/Icons/PlayerIcons/BaseIcons/Namek2.dmi')
+	return list("fallback" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi')
 
 proc/nexusTrait(name, description)
 	return list("name" = name, "description" = description)
@@ -509,7 +509,7 @@ mob/proc/applyNexusAlienOptions(list/selected_options)
 				transformation.name = "Alien transform"
 				transformation.desc = "This transformation increases BP but drains energy"
 				transformation.buff_attributes += "transformation"
-				transformation.buff_overlays += 'AuraElectric.dmi' + rgb(80,180,80)
+				transformation.buff_overlays += 'src/Icons/Ki/Electricity/AuraElectric.dmi' + rgb(80,180,80)
 			if("time_freeze") src.contents += new /obj/Attacks/Time_Freeze
 			if("limit_breaker") src.contents += new /obj/Limit_Breaker
 			if("absorb") src.contents += new /obj/Absorb
@@ -527,7 +527,7 @@ mob/proc/applyNexusAlienOptions(list/selected_options)
 			if("elite_bp") src.hbtc_bp += starting_bp
 			if("stretchy_arms")
 				src.arm_stretch = 1
-				src.arm_stretch_icon = 'GenericArm.dmi'
+				src.arm_stretch_icon = 'src/Icons/Unsorted/GenericArm.dmi'
 				src.arm_stretch_range = 150
 			if("blast_homing") src.blast_homing_mod *= 1.5
 			if("low_ki_resistance") src.bp_loss_from_low_ki /= 3
@@ -564,7 +564,7 @@ mob/proc/applyNexusAppearance(selected_race, gender_choice, body_icon_id, obj/Ha
 			src.Form4Icon = nexusResolveFrostFormIcon(frost_form_ids[4], 4, custom_frost_icons)
 			if(src.IsCooler) src.Form5Icon = nexusResolveFrostFormIcon(frost_form_ids[5], 5, custom_frost_icons)
 	if(selected_race == "Demigod") src.icon += rgb(60,60,60)
-	if(src.arm_stretch && src.arm_stretch_icon == 'GenericArm.dmi') src.Auto_color_arm_stretch_icon()
+	if(src.arm_stretch && src.arm_stretch_icon == 'src/Icons/Unsorted/GenericArm.dmi') src.Auto_color_arm_stretch_icon()
 
 	var/can_have_hair = !(selected_race in list("Majin", "Bio-Android", "Namekian", "Frost Lord"))
 	if(selected_race == "Android" && body_icon_id != "custom_body" && findtext(body_icon_id, "android_human_") != 1) can_have_hair = FALSE

@@ -1,0 +1,133 @@
+{
+  "cellSize": [
+    32,
+    32
+  ],
+  "anchor": "One 32x32 cell at pixel (0,0), no overhang. Roofs carry structural collision/opacity; wall faces are decorative. Furnishings use alpha and preserve underlying turf.",
+  "states": [
+    {
+      "state": "wall_face",
+      "type": "/turf/ViltrumWall",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumEnvelope.dmi",
+      "source": "ArtSource/Viltrum/ViltrumEnvelope.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "roof",
+      "type": "/turf/ViltrumRoof",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumEnvelope.dmi",
+      "source": "ArtSource/Viltrum/ViltrumEnvelope.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "glass_face",
+      "type": "/turf/ViltrumWall/Glass",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumEnvelope.dmi",
+      "source": "ArtSource/Viltrum/ViltrumEnvelope.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "roof_dark",
+      "type": "/turf/ViltrumRoof/Dark",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumEnvelope.dmi",
+      "source": "ArtSource/Viltrum/ViltrumEnvelope.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "planter",
+      "type": "/obj/ViltrumFurnishing",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "bench",
+      "type": "/obj/ViltrumFurnishing/Bench",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "banner",
+      "type": "/obj/ViltrumFurnishing/Banner",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "memorial",
+      "type": "/obj/ViltrumFurnishing/Memorial",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "console",
+      "type": "/obj/ViltrumConsole",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 4,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "reactor",
+      "type": "/obj/ViltrumConsole/Reactor",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 5,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "beacon",
+      "type": "/obj/ViltrumFurnishing/LandingBeacon",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 6,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "archive_table",
+      "type": "/obj/ViltrumFurnishing/ArchiveTable",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumObjects.dmi",
+      "source": "ArtSource/Viltrum/ViltrumObjects.aseprite",
+      "sourceCell": 7,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource/Viltrum/ViltrumEnvelope.aseprite": "f308f3430cc815c748d8e9f1b071f48c0736cddc0890a6d9ab16d08bd2924c8b",
+    "ArtSource/Viltrum/ViltrumObjects.aseprite": "05b1b72c1f2602953e3a8db6c1119c275d49efce2cd16aafe0c7d7666de558b3"
+  }
+}

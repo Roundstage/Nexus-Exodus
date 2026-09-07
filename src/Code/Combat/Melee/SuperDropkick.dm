@@ -37,7 +37,7 @@ mob
 		DropkickFX()
 			set waitfor=0
 			var/obj/Effect/e = GetEffect()
-			e.icon = 'SwirlingWhiteEnergy.png'
+			e.icon = 'src/Icons/Effects/SwirlingWhiteEnergy.png'
 			CenterIcon(e)
 			e.SafeTeleport(loc)
 			e.transform *= 2

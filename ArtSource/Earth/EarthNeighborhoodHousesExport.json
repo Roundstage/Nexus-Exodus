@@ -1,0 +1,76 @@
+{
+  "origin": "Original built-in OpenAI image_gen atlas; transparent source retained.",
+  "sourceHashes": {
+    "ArtSource/Earth/EarthNeighborhoodHouses.aseprite": "59bf0010685988e3f6b9e1366c4496522e0bb2f0019f95d82e9d7731792f58b6"
+  },
+  "states": [
+    {
+      "state": "cream",
+      "cellSize": [
+        160,
+        192
+      ],
+      "footprint": [
+        5,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodHouses.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodHouses.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "sage",
+      "cellSize": [
+        160,
+        192
+      ],
+      "footprint": [
+        5,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodHouses.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodHouses.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "brick",
+      "cellSize": [
+        160,
+        192
+      ],
+      "footprint": [
+        5,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodHouses.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodHouses.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "blue",
+      "cellSize": [
+        160,
+        192
+      ],
+      "footprint": [
+        5,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodHouses.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodHouses.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ]
+}

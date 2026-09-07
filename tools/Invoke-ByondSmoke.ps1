@@ -429,10 +429,10 @@ try {
 	if($compilerOutput -notmatch '0 errors, 0 warnings') {
 		throw 'Compilation did not finish with 0 errors and 0 warnings.'
 	}
-	foreach($requiredMap in @('src/Maps/Map2018.dmm', 'src/Maps/Space2018.dmm')) {
-		if($compilerOutput.Replace('\', '/') -notmatch [regex]::Escape("loading $requiredMap")) {
-			throw "Compilation did not load required map: $requiredMap"
-		}
+	$requiredMaps = @('src/Maps/Map2018.dmm', 'src/Maps/Space2018.dmm', 'src/Maps/Viltrum.dmm', 'src/Maps/SuperEarth.dmm', 'src/Maps/CityInteriors.dmm')
+	$loadedMaps = @([regex]::Matches($compilerOutput.Replace('\', '/'), '(?m)^loading (.+\.dmm)\s*$') | ForEach-Object { $_.Groups[1].Value.Trim() })
+	if(($loadedMaps -join '|') -cne ($requiredMaps -join '|')) {
+		throw "Runtime map load order changed. Expected $($requiredMaps -join ', '); received $($loadedMaps -join ', '). Keep canonical map includes above BEGIN_INCLUDE in DU.dme."
 	}
 
 	$dmbPath = Join-Path $worldDirectory 'DU.dmb'

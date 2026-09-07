@@ -25,6 +25,7 @@ mob/proc
 		if(dir in list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)) return dir
 
 	canDefensiveDash(direction_override)
+		if(destruction_aura_suppressed_until > world.time) return FALSE
 		if(!getDefensiveDashDirection(direction_override)) return FALSE
 		if(!isturf(loc) || !CanInputMove() || !Can_Move()) return FALSE
 		if(defensive_dashing || active_skill_motion || movementPhysicsHardLocked()) return FALSE

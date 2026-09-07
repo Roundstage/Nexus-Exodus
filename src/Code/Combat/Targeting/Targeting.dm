@@ -17,7 +17,7 @@ var/nexus_cycle_target_range = 30
 
 proc/getSelectedTargetMarkerIcon()
 	if(selected_target_marker_icon) return selected_target_marker_icon
-	selected_target_marker_icon = icon('Healthbar.dmi', "100")
+	selected_target_marker_icon = icon('src/Icons/UI/Healthbar.dmi', "100")
 	selected_target_marker_icon.Scale(32, 32)
 	selected_target_marker_icon.DrawBox(null, 1, 1, 32, 32)
 	var/marker_color = "#28d7ff"

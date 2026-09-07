@@ -1,0 +1,171 @@
+{
+  "cellSize": [
+    32,
+    32
+  ],
+  "states": [
+    {
+      "state": "deep_sea",
+      "type": "/turf/ViltrumOcean",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "shallow_sea",
+      "type": "/turf/ViltrumOcean/Shallow",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 1,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "pale_shore",
+      "type": "/turf/ViltrumLandscape/Shore",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 2,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "plateau",
+      "type": "/turf/ViltrumLandscape",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 3,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "snow",
+      "type": "/turf/ViltrumLandscape/Snow",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 4,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "ice",
+      "type": "/turf/ViltrumLandscape/Ice",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 5,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "crater",
+      "type": "/turf/ViltrumLandscape/Crater",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 6,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "garden",
+      "type": "/turf/ViltrumLandscape/Garden",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 7,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "palace",
+      "type": "/turf/ViltrumDistrictFloor/Palace",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 8,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "laboratory",
+      "type": "/turf/ViltrumDistrictFloor/Laboratory",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 9,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "grate",
+      "type": "/turf/ViltrumDistrictFloor/Grate",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 10,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "arena",
+      "type": "/turf/ViltrumDistrictFloor/Arena",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 11,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "rough_stone",
+      "type": "/turf/ViltrumLandscape/Rough",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 12,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "ruins",
+      "type": "/turf/ViltrumLandscape/Ruins",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 13,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "cyan_stone",
+      "type": "/turf/ViltrumLandscape/Cyan",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 14,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "storm_sea",
+      "type": "/turf/ViltrumOcean/Boundary",
+      "source": "ArtSource/Viltrum/ViltrumLandscape.aseprite",
+      "sourceCell": 15,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumLandscape.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource/Viltrum/ViltrumLandscape.aseprite": "7ecdf328dbd66325c02bd070ee1ef764051ae1fe9b7974333f01322cf8d1cea9"
+  }
+}

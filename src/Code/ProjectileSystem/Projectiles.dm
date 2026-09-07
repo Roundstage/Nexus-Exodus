@@ -661,7 +661,7 @@ obj/Blast
 				F.Disable_Module(A)
 				A<<"Your cybernetic force field has been damaged. You must re-install it to make it active again."
 			for(var/obj/Blast/B in Get_step(src,turn(dir,180))) if(B.Beam) B.icon_state="struggle"
-			A.Force_Field('ElectroShield.dmi')
+			A.Force_Field('src/Icons/Ki/Big/ElectroShield.dmi')
 			return
 
 		//natural energy shield

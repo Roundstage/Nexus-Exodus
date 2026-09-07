@@ -1,7 +1,7 @@
 var/toxic_waste_on=1
 
 obj/Toxic_Waste_Barrel
-	icon='ToxicWasteBarrel.dmi'
+	icon='src/Icons/Unsorted/ToxicWasteBarrel.dmi'
 	Savable=1
 	takes_gradual_damage=1
 	Cost=1000000
@@ -52,7 +52,7 @@ obj/Toxic_Cloud
 			if(sleep_time<0) sleep_time=0
 			spawn(sleep_time) if(src) del(src)
 			if(!toxic_cloud_icon)
-				var/icon/i='FogCloud.dmi'-rgb(120,0,255)
+				var/icon/i='src/Icons/Unsorted/FogCloud.dmi'-rgb(120,0,255)
 				var/obj/o=new
 				o.icon=i
 				o.Enlarge_Icon(GetWidth(o.icon)*2,GetHeight(o.icon)*2)

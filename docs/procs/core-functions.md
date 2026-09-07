@@ -5263,3 +5263,5 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - Purpose: Start the consolidated action loop for active players that do not already have one and process the global Nexus status registry for players and NPCs once per ten ticks.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+Hair catalog definitions moved from MainCreation.dm to CharacterCreation/HairCatalog.dm. Apply_Hair now removes previous transformation hair overlays, clears derived Blue/God/Royal Blue hair before rebuilding, and refreshes the active transformation appearance after selection. Bald explicitly has a null icon.

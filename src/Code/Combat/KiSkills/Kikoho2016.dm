@@ -185,7 +185,7 @@ obj/Kikoho_Effects
 	Nukable=0
 
 	Kikoho_Crater
-		icon = 'KikohoCrater.dmi'
+		icon = 'src/Icons/Effects/KikohoCrater.dmi'
 
 		var
 			delete_time = 0 //the world.time it will delete itself
@@ -211,7 +211,7 @@ obj/Kikoho_Effects
 					sleep(100)
 
 	Kikoho_Flash
-		icon = 'Sunfield.dmi'
+		icon = 'src/Icons/Effects/Sunfield.dmi'
 		layer = MOB_LAYER+2
 		blend_mode = BLEND_ADD
 
@@ -220,7 +220,7 @@ obj/Kikoho_Effects
 			transform = matrix() * 0.01
 
 	Kikoho_Rock
-		icon='Turf50.dmi'
+		icon='src/Icons/Turfs/Turf50.dmi'
 		icon_state="1.9"
 
 		New()
@@ -255,7 +255,7 @@ obj/Kikoho_Effects
 						sleep(TickMult(sleep_delay * spd))
 
 	Kikoho_Dust
-		icon = 'KikohoDust.dmi'
+		icon = 'src/Icons/Effects/KikohoDust.dmi'
 		//blend_mode = BLEND_ADD
 		layer = MOB_LAYER+1
 
@@ -274,7 +274,7 @@ obj/Kikoho_Effects
 
 	Kikoho_Explosion
 		blend_mode = BLEND_ADD
-		icon = 'KikohoExplosion.dmi'
+		icon = 'src/Icons/Effects/KikohoExplosion.dmi'
 		layer = MOB_LAYER+1
 
 		New()
@@ -287,6 +287,6 @@ obj/Kikoho_Effects
 		proc
 			KikohoExplosion()
 				set waitfor=0
-				flick('KikohoExplosion.dmi',src)
+				flick('src/Icons/Effects/KikohoExplosion.dmi',src)
 				sleep(14)
 				del(src)

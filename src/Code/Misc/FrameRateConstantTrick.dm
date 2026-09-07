@@ -19,7 +19,7 @@ client
 
 			if(!maxFPSobj)
 				maxFPSobj = new/obj
-				maxFPSobj.icon = 'Asset100FPSIcon.dmi'
+				maxFPSobj.icon = 'src/Icons/Misc/Asset100FPSIcon.dmi'
 				maxFPSobj.screen_loc = "1,1"
 				maxFPSobj.plane = NEXUS_FIXED_HUD_PLANE
 				maxFPSobj.mouse_opacity = 0

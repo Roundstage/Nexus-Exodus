@@ -64,3 +64,8 @@ Thumbs.db
 /SECRETS.local.dm
 /.env
 /.env.*
+
+# Local dependency caches, scratch work and launcher builds #
+/.pnpm-store/
+/tmp/
+/artifacts/launcher/

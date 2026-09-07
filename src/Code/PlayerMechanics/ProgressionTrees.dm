@@ -459,7 +459,11 @@ proc/configureProgressionBeamPaths()
 proc/configureProgressionKiPaths()
 	configureProgressionRewardPath(/obj/Attacks/Big_Bang_Attack, 3, 10, list(/obj/Attacks/Kienzan))
 	var/datum/ProgressionNode/explosive_wave = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, 6, 22, list(/obj/Attacks/Shockwave))
-	if(explosive_wave) explosive_wave.description = "Release a defensive four-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
+	if(explosive_wave) explosive_wave.description = "Release a defensive eight-tile shockwave that destroys hostile blasts, damages nearby enemies and repels them."
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/DefensiveBlasting, 5, 18, list(/obj/Attacks/Scatter_Shot))
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SphereOfDestruction, 8, 38, list(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova, /obj/Attacks/Sokidan))
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/AuraOfDestruction, 7, 32, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave))
+	configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/DeathLaser, 6, 24, list(/obj/Attacks/Ray))
 	var/datum/ProgressionNode/ghost_attack = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze, 8, 36, list(/obj/Attacks/NexusAreaTechnique/SuperExplosiveWave, /obj/Attacks/Scatter_Shot))
 	if(ghost_attack) ghost_attack.description = "Launch three homing ghosts at one selected target; the volley uses a shared damage budget."
 	var/datum/ProgressionNode/dragon_nova = configureProgressionRewardPath(/obj/Attacks/NexusSpecialStyle/ChargedProjectile/DragonNova, 7, 34, list(/obj/Attacks/Big_Bang_Attack))
@@ -474,7 +478,7 @@ proc/configureProgressionPhysicalPaths()
 	configureProgressionRewardPath(/obj/RockSlide, 3, 12, list(/obj/RockThrow))
 	configureProgressionRewardPath(/obj/RockTomb, 4, 18, list(/obj/RockSlide))
 	var/datum/ProgressionNode/earthquake = configureProgressionRewardPath(/obj/Attacks/NexusAreaTechnique/Earthquake, 5, 24, list(/obj/RockTomb))
-	if(earthquake) earthquake.description = "Collapse a five-tile physical shockwave inward, damaging and pulling grounded enemies toward you; flying targets are unaffected."
+	if(earthquake) earthquake.description = "Collapse an eight-tile physical shockwave inward, damaging and pulling grounded enemies toward you; flying targets are unaffected."
 
 proc/configureProgressionWeaponPaths()
 	configureProgressionRewardPath(/obj/Attacks/NexusMeleeTechnique/CriticalEdge, 4, 18, list(/obj/Attacks/NexusMeleeTechnique/Riposte))
@@ -709,12 +713,12 @@ proc/initializeProgressionProfessionCatalog()
 	mining_root.required_track = "Mining"
 	mining_root.required_level = 1
 	var/list/ore_nodes = list(
-		list("mining_tin", "Tin Prospecting", 3, "mining_prospector", 'RTTinOre.dmi', 2),
-		list("mining_iron", "Iron Prospecting", 7, "mining_tin", 'RTIronOre.dmi', 3),
-		list("mining_silver", "Silver Prospecting", 14, "mining_iron", 'RTSilverOre.dmi', 4),
-		list("mining_mythril", "Mythril Prospecting", 20, "mining_iron", 'RTMythrilOre.dmi', 4),
-		list("mining_auracite", "Auracite Prospecting", 30, "mining_silver", 'RTAuraciteOre.dmi', 5),
-		list("mining_heart", "Heart of the Mountain", 35, "mining_mythril", 'RTMythrilOre.dmi', 5))
+		list("mining_tin", "Tin Prospecting", 3, "mining_prospector", 'src/Icons/Objects/Technology/RTTinOre.dmi', 2),
+		list("mining_iron", "Iron Prospecting", 7, "mining_tin", 'src/Icons/Objects/Technology/RTIronOre.dmi', 3),
+		list("mining_silver", "Silver Prospecting", 14, "mining_iron", 'src/Icons/Objects/Technology/RTSilverOre.dmi', 4),
+		list("mining_mythril", "Mythril Prospecting", 20, "mining_iron", 'src/Icons/Objects/Technology/RTMythrilOre.dmi', 4),
+		list("mining_auracite", "Auracite Prospecting", 30, "mining_silver", 'src/Icons/Objects/Technology/RTAuraciteOre.dmi', 5),
+		list("mining_heart", "Heart of the Mountain", 35, "mining_mythril", 'src/Icons/Objects/Technology/RTMythrilOre.dmi', 5))
 	for(var/list/ore_data in ore_nodes)
 		var/datum/ProgressionNode/ore_node = createProgressionNode(ore_data[1], ore_data[2], "Unlocks discovery and extraction of this ore.", "Mining", "Prospecting", ore_data[6], 3 + round(ore_data[3] / 3), list(ore_data[4]))
 		ore_node.required_track = "Mining"
@@ -729,12 +733,12 @@ proc/initializeProgressionProfessionCatalog()
 	smith_root.required_track = "Smithing"
 	smith_root.required_level = 1
 	var/list/material_nodes = list(
-		list("smithing_bronze", "Bronze Working", 4, "smithing_apprentice", 'RTCopperOre.dmi', 2),
-		list("smithing_iron", "Iron Working", 8, "smithing_bronze", 'RTIronOre.dmi', 3),
-		list("smithing_silver", "Silversmith", 14, "smithing_bronze", 'RTSilverOre.dmi', 3),
-		list("smithing_mythril", "Mythril Working", 20, "smithing_iron", 'RTMythrilOre.dmi', 4),
-		list("smithing_auracite", "Auracite Conduction", 30, "smithing_silver", 'RTAuraciteOre.dmi', 4),
-		list("smithing_masterwork", "Masterwork Alloy", 35, "smithing_mythril", 'RTMythrilOre.dmi', 5))
+		list("smithing_bronze", "Bronze Working", 4, "smithing_apprentice", 'src/Icons/Objects/Technology/RTCopperOre.dmi', 2),
+		list("smithing_iron", "Iron Working", 8, "smithing_bronze", 'src/Icons/Objects/Technology/RTIronOre.dmi', 3),
+		list("smithing_silver", "Silversmith", 14, "smithing_bronze", 'src/Icons/Objects/Technology/RTSilverOre.dmi', 3),
+		list("smithing_mythril", "Mythril Working", 20, "smithing_iron", 'src/Icons/Objects/Technology/RTMythrilOre.dmi', 4),
+		list("smithing_auracite", "Auracite Conduction", 30, "smithing_silver", 'src/Icons/Objects/Technology/RTAuraciteOre.dmi', 4),
+		list("smithing_masterwork", "Masterwork Alloy", 35, "smithing_mythril", 'src/Icons/Objects/Technology/RTMythrilOre.dmi', 5))
 	for(var/list/material_data in material_nodes)
 		var/datum/ProgressionNode/material_node = createProgressionNode(material_data[1], material_data[2], "Unlocks this material module at the Nexus Forge.", "Smithing", "Materials", material_data[6], 3 + round(material_data[3] / 3), list(material_data[4]))
 		material_node.required_track = "Smithing"

@@ -76,7 +76,7 @@ mob/proc/Generator_reduction(is_melee)
 mob/var/has_body_swap
 
 obj/Module
-	icon='Modules.dmi'
+	icon='src/Icons/Objects/Technology/Modules.dmi'
 	icon_state="2"
 	science = 1
 	science_level = 5
@@ -109,7 +109,7 @@ obj/Module
 		makes_toxic_waste=1
 		desc="This gives you the ability that Bebi had, to jump into other people's bodies. It will decrease \
 		durability, resistance, and defense by 5%"
-		Icon_Change='BioExperiment.dmi'
+		Icon_Change='src/Icons/PlayerIcons/BaseIcons/Androids/BioExperiment.dmi'
 		//BPx=0.5
 		Abilities=list(new/obj/Body_Swap)
 		Endx=0.95
@@ -482,7 +482,7 @@ var/list/cybernetics_computers=new
 obj/Cybernetics_Computer
 	New()
 		cybernetics_computers+=src
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Lab2"
 	Makeable=1
 	density=1
@@ -533,7 +533,7 @@ obj/Cybernetics_Computer
 						usr.Alter_Res(-res_cost)
 						var/mob/P=new
 						P.name="Android"
-						P.icon='Android.dmi'
+						P.icon='src/Icons/PlayerIcons/BaseIcons/Android.dmi'
 						P.Android()
 						P.contents += GetCachedObject(/obj/Resources)
 						P.Savable=1
@@ -607,7 +607,7 @@ obj/items/DNA_Container/proc/canUseCloneAfterNexusTradeYield(mob/user, mob/expec
 	return !expected_clone || Clone == expected_clone
 
 obj/Genetics_Computer
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Lab1"
 	Makeable=1
 	density=1
@@ -1012,7 +1012,7 @@ proc/DroneCount()
 
 obj/items/Android_Blueprint
 	name="Blueprint"
-	icon='Modules.dmi'
+	icon='src/Icons/Objects/Technology/Modules.dmi'
 	desc="This can hold the design schematics for an Android Body or other science items, so that they can \
 	be mass produced. Just face the item you want to have blueprinted, or have the item in your contents, and hit \
 	the 'Use' verb to assign the item to be blueprinted, once that is done hitting Use \
@@ -1182,7 +1182,7 @@ obj/items/Robotics_Tools
 	Stealable=1
 	Makeable=1
 	Givable=1
-	icon='PDA.dmi'
+	icon='src/Icons/Objects/Technology/PDA.dmi'
 	var/Upgrade_Power=1 //Can be edited by admins to create better cyborgs.
 	Level=0
 	New()
@@ -1465,7 +1465,7 @@ mob/proc/Absorb_Blast(obj/Blast/B)
 		src << "Your blast absorber has been overloaded! It will re-activate in [timer] minutes"
 		blast_absorb_next_use = world.realtime + (timer * 60 * 10)
 		return
-	Force_Field('BlackHole.dmi',rgb(0,0,0),"full2")
+	Force_Field('src/Icons/Effects/BlackHole.dmi',rgb(0,0,0),"full2")
 	return 1
 
 obj/Overdrive
@@ -1557,7 +1557,7 @@ obj/Scrap_Absorb
 				Using=1
 				Stored_Icon=usr.icon
 				Old_cyber_bp=usr.cyber_bp
-				usr.icon='Android13.dmi'
+				usr.icon='src/Icons/PlayerIcons/BaseIcons/Android13.dmi'
 				usr.Scrap_Absorb_Revert_Timer(src)
 				usr.scrap_absorb_mode = 1
 				if(usr.Ki<usr.max_ki) usr.Ki=usr.max_ki
@@ -1567,7 +1567,7 @@ obj/Scrap_Absorb
 				break
 
 obj/Android_Scraps
-	icon='AndroidScraps.dmi'
+	icon='src/Icons/Effects/AndroidScraps.dmi'
 	density=1
 	Savable=0
 	takes_gradual_damage=1
@@ -1648,7 +1648,7 @@ mob/proc/Scraps_Exist()
 
 proc/Scraps_Assemble(obj/T)
 	if(!T) return
-	var/image/I=image(icon='BlackHole.dmi',icon_state="full2")
+	var/image/I=image(icon='src/Icons/Effects/BlackHole.dmi',icon_state="full2")
 	T.overlays+=I
 	for(var/obj/Android_Scraps/A in range(10,T))
 		A.density=0

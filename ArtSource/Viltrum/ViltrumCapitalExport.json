@@ -1,0 +1,92 @@
+{
+  "cellSize": [
+    32,
+    32
+  ],
+  "anchor": "Single 32x32 object, zero offsets. Opaque silhouette on real alpha; density is independent of floor.",
+  "states": [
+    {
+      "state": "bed",
+      "type": "/obj/ViltrumCapitalFurnishing/Bed",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 0,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "medical_bed",
+      "type": "/obj/ViltrumCapitalFurnishing/MedicalBed",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 1,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "locker",
+      "type": "/obj/ViltrumCapitalFurnishing/Locker",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 2,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "freight_crate",
+      "type": "/obj/ViltrumCapitalFurnishing/FreightCrate",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 3,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "throne",
+      "type": "/obj/ViltrumCapitalFurnishing/Throne",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 4,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "serving_counter",
+      "type": "/obj/ViltrumCapitalFurnishing/ServingCounter",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 5,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "workbench",
+      "type": "/obj/ViltrumCapitalFurnishing/Workbench",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 6,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "communications_mast",
+      "type": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
+      "source": "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite",
+      "sourceCell": 7,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumCapitalObjects.dmi",
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource/Viltrum/ViltrumCapitalObjects.aseprite": "f7aa7b32cf1307916a81850002dd496667abf26cb9e277de3c655ed02bdb7a8b"
+  }
+}

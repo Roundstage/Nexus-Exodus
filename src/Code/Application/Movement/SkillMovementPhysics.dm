@@ -63,6 +63,7 @@ datum/NexusSkillMotion
 	var/velocity_transfer = 0
 	var/pass_mobs = FALSE
 	var/require_selected_target = FALSE
+	var/facing_direction = 0
 	var/list/contacted_mobs = list()
 	var/list/evaded_contacts = list()
 	var/generation = 0
@@ -166,6 +167,7 @@ datum/NexusSkillMotion
 			direction_x = sin(angle)
 			direction_y = cos(angle)
 			if(movement_direction) subject.dir = movement_direction
+		if(facing_direction) subject.dir = facing_direction
 		var/direction_magnitude = sqrt(direction_x ** 2 + direction_y ** 2)
 		if(!direction_magnitude)
 			reached_goal = TRUE
@@ -323,8 +325,9 @@ mob/proc
 		movement_last_frame_pixels = 0
 		if(reason) clearNexusGapNudgeTarget()
 
-	runNexusSkillMotion(atom/movable/target, movement_direction, max_distance_pixels, stop_distance_pixels = 0, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, require_selected_target = FALSE, datum/NexusSkillMotionResult/result_capture, movement_vector_x = 0, movement_vector_y = 0)
+	runNexusSkillMotion(atom/movable/target, movement_direction, max_distance_pixels, stop_distance_pixels = 0, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, require_selected_target = FALSE, datum/NexusSkillMotionResult/result_capture, movement_vector_x = 0, movement_vector_y = 0, facing_direction = 0)
 		if(result_capture) result_capture.reset()
+		if(destruction_aura_suppressed_until > world.time) return NEXUS_SKILL_MOTION_INTERRUPTED
 		cancelNexusSkillMotion()
 		resetMovementPhysics(clear_glide = FALSE)
 		skill_motion_generation++
@@ -332,6 +335,7 @@ mob/proc
 		last_skill_motion_evaded_contacts = list()
 		var/datum/NexusSkillMotion/motion = new(src, target, movement_direction, max_distance_pixels, stop_distance_pixels, max_velocity, acceleration, deceleration, afterimage_interval, velocity_transfer, pass_mobs, require_selected_target, movement_vector_x, movement_vector_y)
 		active_skill_motion = motion
+		motion.facing_direction = facing_direction
 		var/result = motion.executeMotion()
 		var/owns_motion = ownsNexusSkillMotion(motion)
 		if(!owns_motion)

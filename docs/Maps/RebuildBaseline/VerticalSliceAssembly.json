@@ -1,0 +1,45 @@
+{
+  "generatorVersion": "1.0.0",
+  "manifestHash": "27ca34de14a55148795b508db4aa25932510aeb7916b52b69791952bb2720c8c",
+  "chunkHashes": {
+    "ViltrumA1.dmm": "84b5d374520e62a28c7bcfa2139dad99a989d5d4027dc3c4fb9cfa6d7e4f8d10",
+    "ViltrumA2.dmm": "eaa50d4d8bdf6c9d0260fbf1074082ff43859083d817ba67476a91bdbcbc5973",
+    "ViltrumA3.dmm": "3c4df305b1eaef4619bd137aa0cd2ea2d10c5397f3bda9b06a57e97dc58b15ea",
+    "ViltrumA4.dmm": "5a0707677832cadaba04aa1799a0f40274f2a9cdce2cc8d1efe3eb9af7919330",
+    "ViltrumA5.dmm": "40709840b875ba807eb7dea7960d47fbea5e64ef693eff51860401a7c270e50c",
+    "ViltrumB1.dmm": "ea86f831424b4baff83c09f6077c9b3358c740d671495e9e0c650a0a24df6252",
+    "ViltrumB2.dmm": "b44b25f93771a55b3e4114026cb016f766549700c8c2953c0156836f0b4779a8",
+    "ViltrumB3.dmm": "fb990ee56cb19710ac357a34602ed9bc05fe95f1a8476f265652038281421fe2",
+    "ViltrumB4.dmm": "e302a6db0e1edad82689eb7a57d47798c37df4756d1aee2472e95868b9d4e3b5",
+    "ViltrumB5.dmm": "de48d976634095be3ce6505903401bdee1f9b3d5f7272c80f7488835df347864",
+    "ViltrumC1.dmm": "34a8dd6012b3b80c4949891056ea9f52c4b21930fdfdeb365a01fdc928a9017e",
+    "ViltrumC2.dmm": "c09e2c2835de8d300fd757ac53f71303f151296cf65794eaf4be4908498615af",
+    "ViltrumC3.dmm": "f37d6d5d73429dd193ccf3c12f4ff6f091673caa30b2da613f48efec4557e660",
+    "ViltrumC4.dmm": "0e0cdb57beb96715a222deea9575a761222ad9aa2b861577a806fd344dba32b7",
+    "ViltrumC5.dmm": "31090d9b9301e87d0448b3b3c5f0999cee4b74b971096959de5d0de3494d6139",
+    "ViltrumD1.dmm": "add54352033c0fc6f4ad13b9b7833b00d8033692ecfd55ff3b4b5b2ba83083f3",
+    "ViltrumD2.dmm": "b367922fc28e69e8b1f52491eb6d2398bb6195b120f9790f2e7ed6e9ef4c8424",
+    "ViltrumD3.dmm": "a8803954eb109014f449174e2bed17a933fa8cce202eab99d7ba67be46cc1dc6",
+    "ViltrumD4.dmm": "7e04e1de413011789383468ebad8412b1eeb57d6f126eedc8cd6a32f70cba96e",
+    "ViltrumD5.dmm": "34eac94b15a2f7dd46dd841848cf4e67ed655e58a230679d3c6ad722ce7efae0",
+    "ViltrumE1.dmm": "e6613e2fb4de57207cf48a3499fab64568e05268874d49289a324e68ab62e313",
+    "ViltrumE2.dmm": "da5ebc190502695376e71e8eca65d69e9899aded8e78576086d29b55dac84eca",
+    "ViltrumE3.dmm": "2fe601e0af695e5eede1ec057187bdc9bd91e95e903390c817bea455c885b377",
+    "ViltrumE4.dmm": "bde4e191754ff26a43b188f20c2c02d2b3952f164188ee3c405a459e9f9b0fcc",
+    "ViltrumE5.dmm": "3b55e7ecc155d2ff4ca0aae22a241f7ec64ed27f399c5000a1e571d038d37791"
+  },
+  "outputHash": "900a58176370fb1f544b3744ba803ede665d1acb6d8c00e71a1a6b688577a515",
+  "dimensions": [
+    500,
+    500,
+    1
+  ],
+  "paletteKeyCount": 30,
+  "atomCounts": {
+    "turfs": 250000,
+    "areas": 250000,
+    "objects": 2284,
+    "mobs": 0
+  },
+  "generatedAt": "2026-09-06T15:44:50.413Z"
+}

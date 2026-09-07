@@ -1,7 +1,7 @@
 // Apply all injuries from a car wreck to the person hit.
 obj/Car
 	Health=1.#INF
-	icon='Car.dmi'
+	icon='src/Icons/Unsorted/Car.dmi'
 	density=1
 	var/mob/tmp/car_target
 	Savable=0
@@ -89,7 +89,7 @@ obj/Drivable_Car
 	science = 1
 	science_level = 6
 	science_path = "Engineering"
-	icon='Car.dmi'
+	icon='src/Icons/Unsorted/Car.dmi'
 	density=1
 	verb/Use()
 		set src in oview(1)

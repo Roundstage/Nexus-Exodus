@@ -8,7 +8,7 @@ obj/Attacks/Genki_Dama/Supernova
 
 	Genki_Dama_particle_icon = null
 
-	Genki_Dama_icon = 'SupernovaGreat.png'
+	Genki_Dama_icon = 'src/Icons/Ki/Big/SupernovaGreat.png'
 	//Genki_Dama_icon = 'MegaSupernova2018.dmi'
 
 	spin_animation = 1

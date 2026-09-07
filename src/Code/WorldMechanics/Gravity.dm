@@ -91,7 +91,7 @@ obj/items/Gravity
 	desc="Place this anywhere on the ground to use it, it will affect anything within its radius."
 	var/Max=5
 	var/Range=10
-	icon='ScanMachine.dmi'
+	icon='src/Icons/Objects/Technology/ScanMachine.dmi'
 	takes_gradual_damage=1
 	verb/Upgrade_health()
 		set name="Repair/Upgrade health"
@@ -139,9 +139,9 @@ obj/items/Gravity
 			name="[round(Max,0.1)]x Gravity"
 			return
 	proc/Deactivate()
-		var/image/I=image(icon='GravityField.dmi',layer=MOB_LAYER+5)
+		var/image/I=image(icon='src/Icons/Effects/GravityField.dmi',layer=MOB_LAYER+5)
 		for(var/turf/G in view(Range,src))
-			G.overlays.Remove(I,'GravityField.dmi',I)
+			G.overlays.Remove(I,'src/Icons/Effects/GravityField.dmi',I)
 			G.gravity=0
 	Click() if(usr in range(1,src))
 		var/mob/user = usr
@@ -156,9 +156,9 @@ obj/items/Gravity
 		if(Grav<0) Grav=0
 		if(!Grav) player_view(15,src)<<"<center>[user] sets the Gravity multiplier set to normal."
 		else player_view(15,src)<<"<center>[user] sets the Gravity multiplier set to [Grav]x"
-		var/image/I=image(icon='GravityField.dmi',layer=MOB_LAYER+5)
+		var/image/I=image(icon='src/Icons/Effects/GravityField.dmi',layer=MOB_LAYER+5)
 		for(var/turf/G in view(Range,src))
-			G.overlays.Remove(I,'GravityField.dmi',I)
+			G.overlays.Remove(I,'src/Icons/Effects/GravityField.dmi',I)
 			if(Grav>1) G.overlays+=I
 			G.gravity=Grav
 			for(var/mob/m in G) m.Gravity_Update()

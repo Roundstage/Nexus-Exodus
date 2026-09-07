@@ -55,7 +55,7 @@ mob/proc
 		using_giant_form=1
 		setNexusCombatHitboxSource("giant_form", 48, 48)
 		if(Race=="Makyo")
-			icon='BigGarlic.dmi'
+			icon='src/Icons/PlayerIcons/BaseIcons/BigGarlic.dmi'
 			if(player_appearance_manager) player_appearance_manager.removeRenderedAppearances()
 			giant_form_overlays=new/list
 			giant_form_overlays.Add(overlays)
@@ -84,8 +84,8 @@ mob/proc
 		using_giant_form=0
 		setNexusCombatHitboxSource("giant_form")
 		if(Race=="Makyo")
-			if(icon=='BigGarlic.dmi')
-				icon='Makyojin2.dmi'
+			if(icon=='src/Icons/PlayerIcons/BaseIcons/BigGarlic.dmi')
+				icon='src/Icons/PlayerIcons/BaseIcons/Makyojin2.dmi'
 				overlays.Add(giant_form_overlays)
 				giant_form_overlays = new/list
 				bp_mult-=0.3
@@ -212,7 +212,7 @@ obj/Dash_Attack
 	Teach_Timer=1
 	student_point_cost = 25
 	desc="A targeted melee finisher that rushes directly through the selected opponent. Its damage increases with the distance crossed."
-	icon = 'RTDashAura.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTDashAura.dmi'
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
@@ -769,7 +769,7 @@ mob/proc/Soul_Weapon(obj/Soul_Weapon/soul_weapon)
 
 	A.name = "Soul [A.name]"
 	A.desc = "A weapon made from the soul of [player]."
-	A.icon = 'Sword2.dmi' + rgb(200, 60, 60)
+	A.icon = 'src/Icons/Objects/Swords/Sword2.dmi' + rgb(200, 60, 60)
 
 	soul_weapon.weapon 		= A
 	player.contents 		+= soul_weapon.weapon
@@ -879,11 +879,11 @@ mob/proc/Soul_Attack(obj/Soul_Attack/Soul_Attack, range_y, range_x, duration)
 
 
 	for(var/turf/T in adjascent_tiles)
-		T.overlays += 'LightningFlash.dmi' + rgb(91, 102, 226, 255)
+		T.overlays += 'src/Icons/Effects/LightningFlash.dmi' + rgb(91, 102, 226, 255)
 
 	spawn(duration * 10)
 		for(var/turf/T in adjascent_tiles)
-			T.overlays -= 'LightningFlash.dmi' + rgb(91, 102, 226, 255)
+			T.overlays -= 'src/Icons/Effects/LightningFlash.dmi' + rgb(91, 102, 226, 255)
 		Soul_Attack.is_active = FALSE
 	return
 
@@ -966,7 +966,7 @@ proc/Rising_Aura(obj/T,N=50)
 	while(T&&T.z&&N)
 		N--
 		var/obj/Rising_Aura/A=new(T.loc)
-		A.icon=image(icon='AuraBig.dmi',icon_state="2")
+		A.icon=image(icon='src/Icons/Ki/Auras/AuraBig.dmi',icon_state="2")
 		A.icon+=rgb(100,200,255)
 		sleep(2)
 
@@ -1090,7 +1090,7 @@ mob/proc/Give_Power(obj/Give_Power/G)
 	M.gp_list+=src			 //track list of people giving power to M
 	player_view(15,src) << "[src] is sending their power to [M]!"
 	var/obj/O=new
-	O.icon='GivePower.dmi'
+	O.icon='src/Icons/Effects/GivePower.dmi'
 	O.layer=layer+1
 
 	spawn while(src&&Giving_Power&&M)
@@ -1302,7 +1302,7 @@ obj/Shield
 	desc="You can toggle this on and off. A ki shield will surround you to protect you from all \
 	attacks. Each attack will drain your energy instead of health. The shield will also protect you \
 	from dying in space but it will drain energy heavily."
-	icon='ShieldBlue.dmi'
+	icon='src/Icons/Ki/Shield/ShieldBlue.dmi'
 	New()
 		spawn if(ismob(loc))
 			var/mob/M=loc
@@ -2002,7 +2002,7 @@ obj/Teleport
 			//Planets.Remove("Arconia", "Ice", "Desert", "Jungle", "Android", "Kaioshin")
 
 		for(var/obj/Planets/p in planets) if((p.name in disabled_planets)||(p.name in destroyed_planets)) Planets-=p.name
-		var/image/I=image(icon='BlackHole.dmi',icon_state="full")
+		var/image/I=image(icon='src/Icons/Effects/BlackHole.dmi',icon_state="full")
 		I.icon+=rgb(rand(0,255),rand(0,255),rand(0,255))
 		var/turf/T
 		var/n=input("Choose a realm") in Planets
@@ -2049,7 +2049,7 @@ mob/proc/IncreaseGod_FistLevel()
 
 	if(old_God_Fist_level == 20) PowerUpGoNextForm()
 	CheckSuperGod_Fist()
-	setNexusGlow(super_God_Fist ? "#ff5570" : "#ff293d", 2.8 + min(God_Fist_level, 20) * 0.04, 175 + min(God_Fist_level, 20) * 3, 'NexusLightGradient.dmi', 8, "aura")
+	setNexusGlow(super_God_Fist ? "#ff5570" : "#ff293d", 2.8 + min(God_Fist_level, 20) * 0.04, 175 + min(God_Fist_level, 20) * 3, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, "aura")
 
 mob/var/tmp/obj/Ultra_Super_Saiyan/ussj_obj
 
@@ -2193,13 +2193,13 @@ obj/Auras
 	can_change_icon=1
 	var/tmp/image/Old
 	var/God_Fist='src/Icons/Ki/Auras/AuraKaiokenBig.dmi'
-	var/SSj='src/Icons/Ki/Auras/AuraSSjBig.dmi'
-	var/USSj='USSjAura.dmi'
-	var/SSj2='AuraSSjBig.dmi'
-	var/SSj3='Ssj3Aura.dmi'
-	var/SSj4='AuraBig.dmi'
-	var/Legend='AuraLSSjBig.dmi'
-	var/LSSj='AuraLSSjBig.dmi'
+	var/SSj='src/Icons/Ki/GoldenAura.dmi'
+	var/USSj='src/Icons/Ki/Auras/USSjAura.dmi'
+	var/SSj2='src/Icons/Ki/Auras/AuraSSjBig.dmi'
+	var/SSj3='src/Icons/Ki/Auras/Ssj3Aura.dmi'
+	var/SSj4='src/Icons/Ki/Auras/AuraBig.dmi'
+	var/Legend='src/Icons/Ki/Auras/AuraLSSjBig.dmi'
+	var/LSSj='src/Icons/Ki/Auras/AuraLSSjBig.dmi'
 	var/Init
 	var/auraYoffset = 0
 	New()
@@ -2207,7 +2207,7 @@ obj/Auras
 			Init=1
 			icon=Scaled_Icon(icon,74,74)
 			God_Fist=Scaled_Icon(God_Fist,84,84)
-			SSj=Scaled_Icon(SSj,90,90)
+			if(SSj != 'src/Icons/Ki/GoldenAura.dmi') SSj=Scaled_Icon(SSj,90,90)
 			SSj2=Scaled_Icon(SSj2,95,95)
 			SSj3=Scaled_Icon(SSj3,100,100)
 			SSj4=Scaled_Icon(SSj4,100,100)
@@ -2229,7 +2229,7 @@ var/image/super_God_Fist_aura
 
 proc/InitSuperGod_FistAura()
 	if(!super_God_Fist_aura)
-		super_God_Fist_aura = image(icon = 'AuraSuperKaioken.dmi')
+		super_God_Fist_aura = image(icon = 'src/Icons/Ki/Auras/AuraSuperKaioken.dmi')
 		super_God_Fist_aura.pixel_x = Icon_Center_X(super_God_Fist_aura.icon)
 
 mob/proc/ShouldUseSuperGod_Fist()
@@ -2244,6 +2244,7 @@ mob/proc/CheckSuperGod_Fist()
 
 
 mob/proc/Aura_Overlays(remove_only)
+	updateNexusSsjDaylightGlow()
 	InitSuperGod_FistAura()
 
 	if(!Auras) for(var/obj/Auras/A in src) Auras=A
@@ -2294,6 +2295,18 @@ mob/proc/Aura_Overlays(remove_only)
 			if(IsGod()) I.icon_state = "2"
 
 		I.pixel_x=Icon_Center_X(I.icon)
+		if(I.icon == 'src/Icons/Ki/GoldenAura.dmi')
+			var/list/aura_anchor = getNexusAwakeningAnchor(src)
+			I.pixel_x = aura_anchor[1] - 48
+			I.pixel_y = aura_anchor[2] - 12
+			var/aura_scale = 1 - getNexusSsjVisualMastery(src) * 0.55
+			I.transform = matrix(aura_scale, 0, 0, 0, aura_scale, -52 * (1 - aura_scale))
+			I.alpha = 255 - getNexusSsjVisualMastery(src) * 110
+		if(ssj == 1 && I.icon == Auras.SSj && I.icon != 'src/Icons/Ki/GoldenAura.dmi')
+			var/saved_aura_scale = 1 - getNexusSsjVisualMastery(src) * 0.55
+			var/icon/saved_aura_frame = icon(I.icon)
+			I.transform = matrix(saved_aura_scale, 0, 0, 0, saved_aura_scale, -saved_aura_frame.Height() / 2 * (1 - saved_aura_scale))
+			I.alpha = 255 - getNexusSsjVisualMastery(src) * 110
 		if(is_gold_form) I.pixel_y = -6
 		if(I.icon == Auras.icon) I.pixel_y += Auras.auraYoffset
 		overlays-=Auras.Old
@@ -2313,19 +2326,19 @@ mob/proc/Aura_Overlays(remove_only)
 		Auras.Old=I
 		Add_Sparks()
 
-mob/proc/Remove_Sparks() overlays.Remove('SparksLSSj.dmi','ElectricMystic.dmi','Elec.dmi',\
-'ElectricBlue.dmi','DemonVampireMajinByTobiUchiha.dmi','LssjPowerz.dmi','SSj2ElectricTobiUchiha.dmi',\
-'Ssj3ElectricTobiUchiha.dmi','USSjElectricTobiUchiha.dmi')
+mob/proc/Remove_Sparks() overlays.Remove('src/Icons/Ki/Electricity/SparksLSSj.dmi','src/Icons/Ki/Electricity/ElectricMystic.dmi','src/Icons/Ki/Electricity/Elec.dmi',\
+'src/Icons/Ki/Electricity/ElectricBlue.dmi','src/Icons/Ki/Electricity/DemonVampireMajinByTobiUchiha.dmi','src/Icons/Ki/Electricity/LssjPowerz.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/SSj2ElectricTobiUchiha.dmi',\
+'src/Icons/PlayerIcons/TobiUchihaIcons/Ssj3ElectricTobiUchiha.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/USSjElectricTobiUchiha.dmi')
 
 mob/proc/Add_Sparks()
 	Remove_Sparks()
 
-	if(BPpcnt>100&&(ismajin||Vampire||Race=="Demon")) overlays+='DemonVampireMajinByTobiUchiha.dmi'
+	if(BPpcnt>100&&(ismajin||Vampire||Race=="Demon")) overlays+='src/Icons/Ki/Electricity/DemonVampireMajinByTobiUchiha.dmi'
 	if(BPpcnt>100)
-		if(Class=="Legendary Saiyan") overlays+='LssjPowerz.dmi' //overlays+='SparksLSSj.dmi'
-		if(ismystic) overlays+='ElectricMystic.dmi'
-	if(ssj==2) overlays+='SSj2ElectricTobiUchiha.dmi'
-	if(ssj==3) overlays+='Ssj3ElectricTobiUchiha.dmi'
+		if(Class=="Legendary Saiyan") overlays+='src/Icons/Ki/Electricity/LssjPowerz.dmi' //overlays+='SparksLSSj.dmi'
+		if(ismystic) overlays+='src/Icons/Ki/Electricity/ElectricMystic.dmi'
+	if(ssj==2) overlays+='src/Icons/PlayerIcons/TobiUchihaIcons/SSj2ElectricTobiUchiha.dmi'
+	if(ssj==3) overlays+='src/Icons/PlayerIcons/TobiUchihaIcons/Ssj3ElectricTobiUchiha.dmi'
 
 obj/Fly
 	teachable=1
@@ -2371,7 +2384,7 @@ mob/proc/Fly(obj/Fly/F)
 		pixel_y += 3
 		Layer_Update()
 		Fly_loop()
-		if(icon=='Demon6.dmi'||icon=='Demon6Female.dmi')
+		if(icon=='src/Icons/PlayerIcons/BaseIcons/Demon6.dmi'||icon=='src/Icons/PlayerIcons/BaseIcons/Demon6Female.dmi')
 			F.overlays-=F.overlays
 			F.overlays=overlays
 			overlays-=overlays
@@ -2399,7 +2412,7 @@ proc/Random_Fart()
 	'Fart16.wav','Fart17.wav','Fart18.wav','Fart19.wav')
 	return S
 
-var/image/Self_Destruct_Fire=image(icon='LightningFlash.dmi',layer=99)
+var/image/Self_Destruct_Fire=image(icon='src/Icons/Effects/LightningFlash.dmi',layer=99)
 
 turf/proc/Self_Destruct_Lightning(B) if(B)
 	overlays-=Self_Destruct_Fire
@@ -2527,7 +2540,7 @@ mob/proc/AOE_auto_dodge(mob/attacker,turf/origin,min_dist=7,max_dist=10)
 		if(safe_turfs.len)
 			var/turf/safe_turf=pick(safe_turfs)
 			SafeTeleport(safe_turf)
-			flick('Zanzoken.dmi',src)
+			flick('src/Icons/Effects/Zanzoken.dmi',src)
 			player_view(10,src)<<sound('Teleport.ogg',volume=15)
 			if(ultra_instinct)
 				SafeTeleport(attacker.loc)
@@ -2836,7 +2849,7 @@ mob/proc/Taiyoken_Blindness_Timer()
 obj/Rift_Teleport
 	verb/Rift_Teleport()
 		set category="Skills"
-		var/image/I=image(icon='BlackHole.dmi',icon_state="full")
+		var/image/I=image(icon='src/Icons/Effects/BlackHole.dmi',icon_state="full")
 		switch(input("Person or Location?") in list("Person","Location",))
 			if("Location")
 				var/xx=input("X Location?") as num
@@ -3120,10 +3133,10 @@ obj/Mystic
 			usr.ismystic=1
 			usr.Spd*=1.1
 			usr.spdmod*=1.1
-			usr.overlays-='SSjAura.dmi'
-			usr.overlays-='Elec.dmi'
-			usr.overlays-='ElectricBlue.dmi'
-			usr.overlays-='ElectricMajin.dmi'
+			usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
+			usr.overlays-='src/Icons/Ki/Electricity/Elec.dmi'
+			usr.overlays-='src/Icons/Ki/Electricity/ElectricBlue.dmi'
+			usr.overlays-='src/Icons/Ki/Electricity/ElectricMajin.dmi'
 			usr.overlays-=usr.ssjhair
 			usr.overlays-=usr.ussjhair
 			usr.overlays-=usr.ssjfphair
@@ -3177,7 +3190,7 @@ obj/FireFist
 		if(!usr.isFireFist)
 			Last_Use=Year
 			usr.isFireFist=1
-			usr.overlays+='FlamingFists.dmi'
+			usr.overlays+='src/Icons/VFX/FlamingFists.dmi'
 			player_view(10,usr) << sound('FogoNaMao.mp3',volume=100)
 			usr << "You are now using the FireFist buff"
 			usr.FireFistLoop();
@@ -3186,7 +3199,7 @@ obj/FireFist
 mob/proc/FireFist_Revert()
 	if(isFireFist)
 		isFireFist=0
-		overlays-='FlamingFists.dmi'
+		overlays-='src/Icons/VFX/FlamingFists.dmi'
 		src << "You have stopped using Fire Fist"
 		rebuildPlayerAppearance("Fire Fist revert")
 
@@ -3253,7 +3266,7 @@ obj/SaiyanPower
 			usr.Eff *= 1.5
 			usr.max_ki *= 1.5
 			usr.Ki *= 1.5
-			usr.overlays+='SaiyanPower.dmi'
+			usr.overlays+='src/Icons/VFX/SaiyanPower.dmi'
 			usr << "You are now using the Saiyan Power"
 		else usr.SaiyanPower_Revert()
 
@@ -3265,7 +3278,7 @@ mob/proc/SaiyanPower_Revert()
 		Eff /= 1.5
 		max_ki /= 1.5
 		Ki /= 1.5
-		overlays-='SaiyanPower.dmi'
+		overlays-='src/Icons/VFX/SaiyanPower.dmi'
 		src << "You have stopped using Saiyan Power"
 		rebuildPlayerAppearance("Saiyan Power revert")
 
@@ -3274,7 +3287,7 @@ mob/proc/SaiyanPower_Revert()
 obj/Majin
 
 	New()
-		if(!icon) icon='AuraElectric.dmi'+rgb(150,0,0)
+		if(!icon) icon='src/Icons/Ki/Electricity/AuraElectric.dmi'+rgb(150,0,0)
 
 	teachable=1
 	Skill=1
@@ -3310,9 +3323,9 @@ obj/Majin
 				usr.ismajin=1
 				usr.bp_mult += majin_skill_bp_add
 				usr.max_anger *= majin_skill_anger_mult
-				usr.overlays-='SSjAura.dmi'
-				usr.overlays-='Elec.dmi'
-				usr.overlays-='ElectricBlue.dmi'
+				usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
+				usr.overlays-='src/Icons/Ki/Electricity/Elec.dmi'
+				usr.overlays-='src/Icons/Ki/Electricity/ElectricBlue.dmi'
 				usr.overlays+=icon
 				usr << desc
 				usr<<"You are now using the Majin buff"
@@ -3389,7 +3402,7 @@ obj/Restore_Youth
 			player_view(15,M)<<"[usr] brings [M]'s age from [round(Previous_Age,0.1)] to [round(M.Age,0.1)] years old"
 			M.Restore_Youth++
 obj/Sacred_Water
-	icon='Props.dmi'
+	icon='src/Icons/MapObjects/Props.dmi'
 	icon_state="Closed"
 	desc="This will give you a small power boost if your static BP is under a certain amount, and fully refill your health and energy, \
 	and can be used as many times as wanted"

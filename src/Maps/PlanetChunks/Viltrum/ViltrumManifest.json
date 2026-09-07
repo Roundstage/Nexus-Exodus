@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "planet": "Viltrum",
+  "chunkSize": 100,
+  "rows": "ABCDE",
+  "columns": 5,
+  "seedHash": "b3e059e4e2939644beca2bf6d44cfb558ceff9d7afc9dface769b597f68e807c",
+  "orientation": "A is north; local (1,1) is southwest; global y = (4-rowIndex)*100 + localY",
+  "chunks": [
+    {
+      "file": "ViltrumA1.dmm",
+      "row": "A",
+      "column": 1
+    },
+    {
+      "file": "ViltrumA2.dmm",
+      "row": "A",
+      "column": 2
+    },
+    {
+      "file": "ViltrumA3.dmm",
+      "row": "A",
+      "column": 3
+    },
+    {
+      "file": "ViltrumA4.dmm",
+      "row": "A",
+      "column": 4
+    },
+    {
+      "file": "ViltrumA5.dmm",
+      "row": "A",
+      "column": 5
+    },
+    {
+      "file": "ViltrumB1.dmm",
+      "row": "B",
+      "column": 1
+    },
+    {
+      "file": "ViltrumB2.dmm",
+      "row": "B",
+      "column": 2
+    },
+    {
+      "file": "ViltrumB3.dmm",
+      "row": "B",
+      "column": 3
+    },
+    {
+      "file": "ViltrumB4.dmm",
+      "row": "B",
+      "column": 4
+    },
+    {
+      "file": "ViltrumB5.dmm",
+      "row": "B",
+      "column": 5
+    },
+    {
+      "file": "ViltrumC1.dmm",
+      "row": "C",
+      "column": 1
+    },
+    {
+      "file": "ViltrumC2.dmm",
+      "row": "C",
+      "column": 2
+    },
+    {
+      "file": "ViltrumC3.dmm",
+      "row": "C",
+      "column": 3
+    },
+    {
+      "file": "ViltrumC4.dmm",
+      "row": "C",
+      "column": 4
+    },
+    {
+      "file": "ViltrumC5.dmm",
+      "row": "C",
+      "column": 5
+    },
+    {
+      "file": "ViltrumD1.dmm",
+      "row": "D",
+      "column": 1
+    },
+    {
+      "file": "ViltrumD2.dmm",
+      "row": "D",
+      "column": 2
+    },
+    {
+      "file": "ViltrumD3.dmm",
+      "row": "D",
+      "column": 3
+    },
+    {
+      "file": "ViltrumD4.dmm",
+      "row": "D",
+      "column": 4
+    },
+    {
+      "file": "ViltrumD5.dmm",
+      "row": "D",
+      "column": 5
+    },
+    {
+      "file": "ViltrumE1.dmm",
+      "row": "E",
+      "column": 1
+    },
+    {
+      "file": "ViltrumE2.dmm",
+      "row": "E",
+      "column": 2
+    },
+    {
+      "file": "ViltrumE3.dmm",
+      "row": "E",
+      "column": 3
+    },
+    {
+      "file": "ViltrumE4.dmm",
+      "row": "E",
+      "column": 4
+    },
+    {
+      "file": "ViltrumE5.dmm",
+      "row": "E",
+      "column": 5
+    }
+  ]
+}

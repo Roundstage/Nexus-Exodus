@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-06",
+  "planets": {
+    "Viltrum": {
+      "outputHash": "236fb1f81f19b8dc4cab564d51385462cc9ca8ef2b39fa60ce064fe586003fe4",
+      "dimensions": [
+        500,
+        500,
+        1
+      ],
+      "atomCounts": {
+        "turfs": 250000,
+        "areas": 250000,
+        "objects": 231,
+        "mobs": 0
+      },
+      "chunks": 25
+    },
+    "SuperEarth": {
+      "outputHash": "26c7756ca62e793b5814c50e8e536f0bb7c0e5b5f1f4bdd307f75efc2065adb8",
+      "dimensions": [
+        500,
+        500,
+        1
+      ],
+      "atomCounts": {
+        "turfs": 250000,
+        "areas": 250000,
+        "objects": 499,
+        "mobs": 0
+      },
+      "chunks": 25
+    }
+  },
+  "byond": {
+    "version": "516.1686",
+    "errors": 0,
+    "warnings": 0,
+    "versionedStartup": "passed",
+    "cleanStartup": "passed",
+    "evidence": "Full Invoke-ByondSmoke.ps1 output observed in execution session 26099; no DM/map/production-asset changes after that run."
+  },
+  "chunkSuite": {
+    "Viltrum": 10,
+    "SuperEarth": 10
+  },
+  "assetAudit": {
+    "manifests": 7,
+    "nativeSources": 11,
+    "dmiFiles": 12,
+    "states": 103,
+    "frames": 113,
+    "frameSize": [
+      32,
+      32
+    ],
+    "binaryAlpha": true,
+    "nativeSourceHashesMatch": true
+  },
+  "headlessParser": {
+    "Viltrum": [
+      "A1",
+      "A3",
+      "B3",
+      "C3",
+      "C4",
+      "D3"
+    ],
+    "SuperEarth": [
+      "A3",
+      "B1",
+      "B2",
+      "C2",
+      "C4",
+      "E2"
+    ]
+  },
+  "naming": {
+    "sourceAndAssetPathIssues": 0,
+    "legacyIdentifierIssues": 6179
+  },
+  "strictAssetReferences": {
+    "passed": false,
+    "missing": 0,
+    "ambiguous": 0,
+    "case": 0,
+    "barePath": 1,
+    "knownExistingIssue": "src/Code/UI/UIStuff.dm:91 NexusExodusLogo.png"
+  },
+  "retiredEarthGeneratorGuards": "All three reject --force without modifying output",
+  "manualReview": "Deferred by user; do not certify interactive gameplay, day/night seams or full scanner visual output."
+}

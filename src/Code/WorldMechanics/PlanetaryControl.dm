@@ -213,6 +213,7 @@ mob/proc/updateNexusPlanetControlContextForTeleport(atom/destination)
 			nexus_planet_control_context_id = null
 			return FALSE
 	var/list/region = resolveNexusPlanetMapRegion(destination_turf.z, destination_area.type, destination_turf.x, destination_turf.y)
+	if(!region) region = getCityInteriorRegion(destination_turf)
 	if(!region && istype(destination_area, /area/Inside)) region = resolveNexusPlanetControlRegionByPosition(destination_turf.z, destination_turf.x, destination_turf.y)
 	if(!region && istype(destination_area, /area/ship_area)) region = getNexusPlanetControlShipRegion(destination_turf)
 	if(region)
@@ -247,6 +248,7 @@ proc/getNexusPlanetControlRegion(atom/source)
 	var/area/source_area = source_turf.loc
 	if(!source_area || !isarea(source_area)) return null
 	var/list/region = resolveNexusPlanetMapRegion(source_turf.z, source_area.type, source_turf.x, source_turf.y)
+	if(!region) region = getCityInteriorRegion(source_turf)
 	var/mob/player = ismob(source) ? source : null
 	if(region)
 		if(player) player.nexus_planet_control_context_id = region["region_id"]

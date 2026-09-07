@@ -131,7 +131,7 @@ Map-zoom coverage verifies bounded wheel direction, the fixed render-envelope sc
 ## Progression and Milestone coverage
 
 - Verifies all six Progression categories, every racial node's lower-tier prerequisite, owner-only Kaioshin rendering, server-side rejection of Daimao nodes for a Kai, and tier-ten/60-XP Hakai apex nodes for both Kaioshin and Daimao.
-- Verifies targetless three-tile Wind Howl, accelerated Pressure Punch, three budgeted Super Ghost projectiles, defensive four-tile Super Explosive Wave blast interception/repulsion, and ground-only five-tile Earthquake inward pull configuration. It also verifies Shockwave inheritance and that the restored skills are registered in their authored Ki or Physical branches.
+- Verifies targetless three-tile Wind Howl, accelerated Pressure Punch, three budgeted Super Ghost projectiles, defensive eight-tile Super Explosive Wave blast interception/repulsion, and ground-only eight-tile Earthquake inward pull configuration. Both area VFX exercise their DMI state and cell dimensions, normal blending, cast placement and effect cleanup after playback; Earthquake also checks its ground layer. It also verifies Shockwave inheritance and that the restored skills are registered in their authored Ki or Physical branches.
 - Verifies explicit Open Combat impact states and semantic sound banks for the repaginated Unarmed skills, plus elemental Foozle icons/impact states for Fireball, Frost Bolt and Lightning Bolt.
 - Verifies Versatile Training stat multiplication, mutually exclusive Momentum damage scaling, conditional weaponless/armorless Offense and Defense, three-tile melee area, double-attack chance, critical chance, and Fire Lord's target Burn-stack calculation.
 - Verifies zero-argument Skill-menu dispatch, same-area Sense examination authorization, equal-BP/zero-defense parity for canonical melee, physical, Ki, hybrid, weapon, and projectile previews, runtime-ordered direct/splash reservation through shared projectile budgets, custom raw damage profiles, concrete Great Ape effects, 50% effective Empowered Defense stats, Frost Nova damage/stun against clientless targets, Earth Prison's complete 40-wall perimeter, Gravity Well turf application/restoration, and visible masterwork enchantment results.
@@ -139,3 +139,146 @@ Map-zoom coverage verifies bounded wheel direction, the fixed render-envelope sc
 ## Alien Time Stop coverage
 
 - Verifies the renderable 512x512 Time Stop domain DMI and its explicit `void` state, dedicated above-lighting visual actor, eight-tile radius, eight-tick windup, equal-stat six-second pre-modifier stun, 75% Time Normalizer mitigation, and rejection of RP Mode and Safezone targets.
+
+`runTransformationHairSmokeTests()` verifies catalog completeness, Bald and Caulifla exceptions, authored Goku variants, transformation priorities, mastery and restoration of original colored hair. Runs in both startup smoke modes.
+
+`runSsjAwakeningSmokeTests` verifies overlapping ambient modifiers, restoration, idempotent visual cleanup, preservation of form state and the exported aura frame dimensions.
+
+Awakening coverage also checks an asymmetric synthetic body (horizontal center and lowest visible pixel), the minimum twenty-second duration, 192-pixel lightning frames, and an interrupted sequence after it has created its attached aura and hair objects. The smoke workspace exports sample body/hair frames used by the offline Aseprite preview.
+
+Mastery regressions assert 22-second initial, intermediate, and 0.6-second mastered durations, Full Power handling, simultaneous SSJ emitter/daylight halo, smaller mastered halo and removal of both on reversion.
+
+Day/night regressions verify that the halo selects an existing, non-empty gradient state, peak day dimming stays at 22%, and the nighttime base color is neither brightened nor lost when dimmers are removed.
+
+The daylight halo regression inspects every pixel on all four borders of `GoldenGlow.png` and verifies a nontransparent center, preventing an opaque lighting mask from being reused as the visible overlay.
+
+Regression coverage for the isolated dimmer checks its 22% alpha cap, concurrent ownership, complete release, solid black pixels and placement below the lighting plane. The transformation source contains no calls to set/refresh/sync the ambient lighting.
+
+### Viltrum chunk slice
+
+`runViltrumPlanetStartupSmokeTests()` calls `runViltrumSliceStartupSmokeTests()` in both startup modes. It verifies the 21x21 arrival region, actual roof density/opacity, decorative wall behavior, floor-preserving alpha furniture, the civic spawn, energy regulator and unobstructed 38x30 combat floor. `TestPlanetChunks.cjs` covers DMM grammar, orientation, safe deterministic assembly and unchanged baseline chunks. `TestViltrumSlice.cjs` covers cardinal routes, public interiors, alternate approaches and coverage. `TestPlanetParser.ps1` checks A1/C3/D3 environments without opening StrongDMM. See `docs/Maps/Viltrum.md` for deferred gameplay gates and the unrelated pre-existing asset-reference failure.
+
+Viltrum expansion: `runViltrumCapitalStartupSmokeTests` checks the arena/training/
+agora floor collision, four arena exits, palace throne and eight transparent
+furnishing states. `runViltrumBoundaryStartupSmokeTests` exercises eight storm-belt
+edge/corner positions for walking, flight, knockback and SafeTeleport destination resolution.
+The original slice checks additionally protect roofs from the global flight
+bypass. Headless graph checks cover all public rooms, alternate entrances, forty
+chunk seams and exact preservation of 2,152 recovered manual tile edits.
+
+Expanded door smoke exercises a five-panel laboratory entrance, opening density,
+occupied-close deferral and subsequent closure. EarthCityStartupSmoke checks the
+unchanged 441-tile arrival, public combat floors, transparent fixtures, structural
+roofs under flight, waterfall landmarks, 20 bridge Enter probes and eight boundary
+positions with walking/flight/knockback and SafeTeleport destination resolution.
+Planet smoke retains discovery, spawn fallback, liftoff, disable/restore and
+scanner registration checks. Existing scanner smoke covers region isolation,
+bounded raster construction and progress; full 500x500 visual review is deferred.
+
+TestEarthLayout.cjs --regions compares all 20 spawn stacks and original water,
+waterfall/stair tiles, verifies public floor connectivity and alternate entrances,
+and measures land-only collision density. Natural land seams require redundant
+three-tile crossings; ocean bridge seams are counted separately. All outer
+boundary cells are asserted. AuditPlanetAssets.py validates 32x32 DMI metadata,
+animation/frame accounting, binary alpha and native source hashes.
+
+### Earth neighborhood / separate interiors (2026-09-06)
+
+`runCityBuildingStartupSmokeTests()` is called by EarthCityStartupSmoke in both
+startup modes. It walks through all 56 actual mapped Earth thresholds using
+engine Crossed dispatch, walks out through matching exit doors, verifies exact
+street return and Earth planet context, and rejects remote, KO and knockback
+entry. It also checks walkable bridge decks and dense nonopaque parapets.
+
+The hospital structure assertion now uses the applied house at 54,340,Z21 and
+checks a 32x32 structural art cell. The Viltrum throne assertion uses its retained
+interior coordinate 10,12,Z22. The animated Viltrum door unit probe constructs
+and removes a temporary five-panel group inside a clear laboratory aisle rather
+than relying on the removed original surface building.
+
+TestEarthNeighborhood.cjs checks applied or --preview map data: exact spawn
+atoms, clear arrival terrain, continuous minimum-width river, complete decks
+with land abutments, no overlapping footprints, all clear/reachable front
+sidewalks, sealed interiors and exact return coordinates. It permits only the
+290 declared river terrain corrections; the remainder of original water and
+all waterfall/stair positions stay protected. Grass art may change without
+changing arrival safety. TestEarthLayout.cjs --regions retains whole-planet
+biome, boundary, combat, destination and seam checks with those same semantics.
+
+CityBuildingChecks.cjs now reads the actual interior height (300) and accepts
+explicit street return positions. It validates 93 rooms, including 37 unchanged
+Viltrum rooms. AuditEarthNeighborhoodAssets.py validates variable-sized native
+exports, genuine object alpha, padded DMI rows and all 288 lossless structural
+crops. Evidence is under docs/Maps; EarthCityRebuild.md identifies current checks
+and distinguishes native DMI previews from deferred interactive visual review.
+
+### Earth wilderness refinement (2026-09-06)
+
+Current Earth smoke expects 38 accessible buildings, verifies the actual hospital
+object, and constructs its structural-turf probe in an unused Z22 slot. This
+preserves the user's manual replacement of generated roof footprints under city
+house objects. It asserts there are no legacy EarthBridge causeways and probes
+four restored ocean crossings and eight river junction/source tiles. Water2
+uses swimming/flight entry hooks; water density is not asserted.
+
+TestEarthWilderness.cjs supersedes the old whole-planet walking-road requirement.
+It checks the exact latest house footprints and twenty edited spawn positions,
+zero asphalt outside the city, distinct continental dry-land components, local
+door accessibility, two complete city bridges and all three source-to-ocean water
+paths. TestEarthLayout and TestEarthNeighborhood dispatch to this current suite.
+The interior suite now validates 75 retained rooms; removed regional rooms have
+no active entrance/exit objects. EarthWilderness.md records the backup and the
+4,397 editor changes recovered before this refinement.
+
+### Earth natural landmarks — current revision, 2026-09-06
+
+TestEarthNaturalLandmarks.cjs now receives dispatch from TestEarthLayout and
+TestEarthNeighborhood. It reuses the wilderness river/road/spawn checks, verifies
+every recorded walkable terrace is reachable, forbids landform object anchors
+and terrain stairs, checks all dune turfs and cave floors, and preserves the
+entire approved city except its 24 rejected stair turfs. Current counts are 61
+city exteriors, 29 Earth building entrances, 66 retained building interiors and
+one separate cave. Nine remote buildings and their rooms were retired.
+
+runEarthNaturalLandmarkStartupSmokeTests walks engine routes to all four natural
+landmarks, checks solid opaque rock, rejects unconscious cave entry, crosses the
+real cave entrance and exit, and checks Earth planet context and waterfall water
+classification. The retained building-door suite exercises 29 city entrances.
+The full BYOND 516.1686 compile and both clean/versioned startup runs passed with
+zero compiler errors or warnings. Interactive review remains deferred.
+
+### Interior teleport regression — 2026-09-07
+
+CityBuildingSmoke temporarily redirects each real Earth door to the walkable
+Viltrum landing and requires travel to fail without moving the player. It then
+restores the authored destination and exercises normal entry, return and planet
+context. Earth exits also reject Viltrum surface destinations. The existing
+cave round-trip test covers the shared validation with its Earth region override.
+
+TestRuntimeMapOrder.cjs checks the protected map preamble, simulates Dream Maker
+adding alphabetically sorted duplicate map registrations, rejects removal of
+the preamble, and verifies global map spans Z1-15, Z16-19, Z20, Z21 and Z22.
+Invoke-ByondSmoke now rejects any different actual compiler map load sequence,
+including a missing CityInteriors map, even when CompileOnly is selected.
+
+### Runtime cliff regression — 2026-09-07
+
+EarthTerrainGenerationSmoke snapshots type, base icon/state/direction, collision,
+opacity, water flag and area type for all 250,000 loaded Earth cells. It directly
+invokes GenerateCliffs at real shorelines, visits all 16 runtime zones through
+GenerateZone, and requires the entire terrain snapshot to match afterward.
+Existing building, bridge, river and climb tests run after this decoration pass.
+Small restored fixtures also check protected water and protected southern land
+beside an unprotected source, plus unchanged cliff generation in legacy areas.
+
+The same runtime pass now snapshots shoreline edge/surf overlays and
+wave_icon_applied, and directly calls GenerateEdges/GenerateShoreWaves across
+the surface before visiting the zones. Overlay fixtures check that protected
+ground receives neither effect, existing unrelated overlays survive, protected
+water is not marked by an adjacent legacy wave source, and enabled legacy areas
+still generate both effects. Ambient-occlusion changes are outside the shoreline
+snapshot because those shadows are still enabled.
+
+TestRuntimeMapOrder also rejects a reserved BEGIN_INCLUDE marker in an earlier
+explanatory comment; an editor save treated that comment as the block boundary
+and removed the protected map includes.

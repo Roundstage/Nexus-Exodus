@@ -1,0 +1,13 @@
+{
+  "manifests": 7,
+  "nativeSources": 11,
+  "dmiFiles": 12,
+  "states": 103,
+  "frames": 113,
+  "frameSize": [
+    32,
+    32
+  ],
+  "binaryAlpha": true,
+  "nativeSourceHashesMatch": true
+}

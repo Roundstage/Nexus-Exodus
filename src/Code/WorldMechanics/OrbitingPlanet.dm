@@ -1,5 +1,5 @@
 obj/Orbiter
-	icon = 'AwesomePlanets.dmi'
+	icon = 'src/Icons/MapObjects/AwesomePlanets.dmi'
 	icon_state = "Desert"
 	density = 0
 

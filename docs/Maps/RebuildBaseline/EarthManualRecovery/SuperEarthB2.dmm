@@ -1,0 +1,454 @@
+"aa" = (/obj/CityBuildingDoor/Earth{building_id = "earth_039"; name = "Enter Regional transit office"; target_x = 336; target_y = 98; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ab" = (/obj/CityBuildingDoor/Earth{building_id = "earth_041"; name = "Enter Neighborhood pharmacy"; target_x = 16; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ac" = (/obj/CityBuildingDoor/Earth{building_id = "earth_042"; name = "Enter Community school and dojo"; target_x = 56; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ad" = (/obj/CityBuildingDoor/Earth{building_id = "earth_044"; name = "Enter Corner apartment"; target_x = 132; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ae" = (/obj/CityBuildingDoor/Earth{building_id = "earth_046"; name = "Enter East terrace home"; target_x = 212; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"af" = (/obj/CityBuildingDoor/Earth{building_id = "earth_047"; name = "Enter Neighborhood supermarket"; target_x = 256; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ag" = (/obj/CityBuildingDoor/Earth{building_id = "earth_048"; name = "Enter School library"; target_x = 296; target_y = 128; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ah" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_007"; name = "Enter RiverNorth townhouse 2"; target_x = 212; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ai" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_008"; name = "Enter RiverClinic townhouse 2"; target_x = 252; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"aj" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_009"; name = "Enter RiverTerrace townhouse 2"; target_x = 292; target_y = 248; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"ak" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_012"; name = "Enter MarketRow townhouse 2"; target_x = 12; target_y = 278; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"al" = (/obj/CityBuildingDoor/Earth{building_id = "earth_home_013"; name = "Enter TransitRow townhouse 2"; target_x = 52; target_y = 278; target_z = 22},/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+"am" = (/obj/EarthHouse/Blue{building_id = "earth_facade_TransitRow_182_320"; name = "TransitRow townhouse 3"},/turf/EarthBuildingStructure{icon_state = "blue_0_0"},/area/SuperEarth)
+"an" = (/obj/EarthHouse/Blue{building_id = "earth_home_007"; name = "RiverNorth townhouse 2"},/turf/EarthBuildingStructure{icon_state = "blue_0_0"},/area/SuperEarth)
+"ao" = (/obj/EarthHouse/Brick{building_id = "earth_044"; name = "Corner apartment"},/turf/EarthBuildingStructure{icon_state = "brick_0_0"},/area/SuperEarth)
+"ap" = (/obj/EarthHouse/Brick{building_id = "earth_facade_LibraryRow_184_360"; name = "LibraryRow townhouse 3"},/turf/EarthBuildingStructure{icon_state = "brick_0_0"},/area/SuperEarth)
+"aq" = (/obj/EarthHouse/Brick{building_id = "earth_facade_RiverTerrace_113_320"; name = "RiverTerrace townhouse 3"},/turf/EarthBuildingStructure{icon_state = "brick_0_0"},/area/SuperEarth)
+"ar" = (/obj/EarthHouse/Brick{building_id = "earth_home_013"; name = "TransitRow townhouse 2"},/turf/EarthBuildingStructure{icon_state = "brick_0_0"},/area/SuperEarth)
+"as" = (/obj/EarthHouse/Civic{building_id = "earth_039"; name = "Regional transit office"},/turf/EarthBuildingStructure{icon_state = "civic_0_0"},/area/SuperEarth)
+"at" = (/obj/EarthHouse/Civic{building_id = "earth_042"; name = "Community school and dojo"},/turf/EarthBuildingStructure{icon_state = "civic_0_0"},/area/SuperEarth)
+"au" = (/obj/EarthHouse/Civic{building_id = "earth_048"; name = "School library"},/turf/EarthBuildingStructure{icon_state = "civic_0_0"},/area/SuperEarth)
+"av" = (/obj/EarthHouse/Hospital{building_id = "earth_041"; name = "Neighborhood pharmacy"},/turf/EarthBuildingStructure{icon_state = "hospital_0_0"},/area/SuperEarth)
+"aw" = (/obj/EarthHouse/Sage{building_id = "earth_facade_MarketRow_182_380"; name = "MarketRow townhouse 3"},/turf/EarthBuildingStructure{icon_state = "sage_0_0"},/area/SuperEarth)
+"ax" = (/obj/EarthHouse/Sage{building_id = "earth_facade_RiverClinic_115_340"; name = "RiverClinic townhouse 3"},/turf/EarthBuildingStructure{icon_state = "sage_0_0"},/area/SuperEarth)
+"ay" = (/obj/EarthHouse/Sage{building_id = "earth_home_009"; name = "RiverTerrace townhouse 2"},/turf/EarthBuildingStructure{icon_state = "sage_0_0"},/area/SuperEarth)
+"az" = (/obj/EarthHouse/Shop{building_id = "earth_047"; name = "Neighborhood supermarket"},/turf/EarthBuildingStructure{icon_state = "shop_0_0"},/area/SuperEarth)
+"aA" = (/obj/EarthHouse{building_id = "earth_046"; name = "East terrace home"},/turf/EarthBuildingStructure{icon_state = "cream_0_0"},/area/SuperEarth)
+"aB" = (/obj/EarthHouse{building_id = "earth_facade_RiverNorth_113_380"; name = "RiverNorth townhouse 3"},/turf/EarthBuildingStructure{icon_state = "cream_0_0"},/area/SuperEarth)
+"aC" = (/obj/EarthHouse{building_id = "earth_home_008"; name = "RiverClinic townhouse 2"},/turf/EarthBuildingStructure{icon_state = "cream_0_0"},/area/SuperEarth)
+"aD" = (/obj/EarthHouse{building_id = "earth_home_012"; name = "MarketRow townhouse 2"},/turf/EarthBuildingStructure{icon_state = "cream_0_0"},/area/SuperEarth)
+"aE" = (/obj/EarthStreetFixture/Bench,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aF" = (/obj/EarthStreetFixture/Bench,/turf/EarthRiverBank{icon_state = "bank_50"},/area/SuperEarth)
+"aG" = (/obj/EarthStreetFixture/Bin,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aH" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aI" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aJ" = (/obj/EarthStreetFixture/Fence,/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"aK" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aL" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_136"},/area/SuperEarth)
+"aM" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_137"},/area/SuperEarth)
+"aN" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aO" = (/obj/EarthStreetFixture/Flowers,/turf/EarthRiverBank{icon_state = "bank_36"},/area/SuperEarth)
+"aP" = (/obj/EarthStreetFixture/Lamp,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aQ" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aR" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_128"},/area/SuperEarth)
+"aS" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"aT" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_32"},/area/SuperEarth)
+"aU" = (/obj/EarthStreetFixture/Tree,/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"aV" = (/obj/Spawn{desc = "Super Terra - Ancient Namekian"; name = "Ancient Namekian"},/turf/EarthFloor/Road,/area/SuperEarth)
+"aW" = (/obj/Spawn{desc = "Super Terra - Demigod"; name = "Demigod"},/turf/EarthFloor,/area/SuperEarth)
+"aX" = (/obj/Spawn{desc = "Super Terra - Kai"; name = "Kai"},/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"aY" = (/turf/EarthBridge,/area/SuperEarth)
+"aZ" = (/turf/EarthBuildingStructure{icon_state = "blue_0_1"},/area/SuperEarth)
+"ba" = (/turf/EarthBuildingStructure{icon_state = "blue_0_2"},/area/SuperEarth)
+"bb" = (/turf/EarthBuildingStructure{icon_state = "blue_0_3"},/area/SuperEarth)
+"bc" = (/turf/EarthBuildingStructure{icon_state = "blue_0_4"},/area/SuperEarth)
+"bd" = (/turf/EarthBuildingStructure{icon_state = "blue_0_5"},/area/SuperEarth)
+"be" = (/turf/EarthBuildingStructure{icon_state = "blue_1_0"},/area/SuperEarth)
+"bf" = (/turf/EarthBuildingStructure{icon_state = "blue_1_1"},/area/SuperEarth)
+"bg" = (/turf/EarthBuildingStructure{icon_state = "blue_1_2"},/area/SuperEarth)
+"bh" = (/turf/EarthBuildingStructure{icon_state = "blue_1_3"},/area/SuperEarth)
+"bi" = (/turf/EarthBuildingStructure{icon_state = "blue_1_4"},/area/SuperEarth)
+"bj" = (/turf/EarthBuildingStructure{icon_state = "blue_1_5"},/area/SuperEarth)
+"bk" = (/turf/EarthBuildingStructure{icon_state = "blue_2_0"},/area/SuperEarth)
+"bl" = (/turf/EarthBuildingStructure{icon_state = "blue_2_1"},/area/SuperEarth)
+"bm" = (/turf/EarthBuildingStructure{icon_state = "blue_2_2"},/area/SuperEarth)
+"bn" = (/turf/EarthBuildingStructure{icon_state = "blue_2_3"},/area/SuperEarth)
+"bo" = (/turf/EarthBuildingStructure{icon_state = "blue_2_4"},/area/SuperEarth)
+"bp" = (/turf/EarthBuildingStructure{icon_state = "blue_2_5"},/area/SuperEarth)
+"bq" = (/turf/EarthBuildingStructure{icon_state = "blue_3_0"},/area/SuperEarth)
+"br" = (/turf/EarthBuildingStructure{icon_state = "blue_3_1"},/area/SuperEarth)
+"bs" = (/turf/EarthBuildingStructure{icon_state = "blue_3_2"},/area/SuperEarth)
+"bt" = (/turf/EarthBuildingStructure{icon_state = "blue_3_3"},/area/SuperEarth)
+"bu" = (/turf/EarthBuildingStructure{icon_state = "blue_3_4"},/area/SuperEarth)
+"bv" = (/turf/EarthBuildingStructure{icon_state = "blue_3_5"},/area/SuperEarth)
+"bw" = (/turf/EarthBuildingStructure{icon_state = "blue_4_0"},/area/SuperEarth)
+"bx" = (/turf/EarthBuildingStructure{icon_state = "blue_4_1"},/area/SuperEarth)
+"by" = (/turf/EarthBuildingStructure{icon_state = "blue_4_2"},/area/SuperEarth)
+"bz" = (/turf/EarthBuildingStructure{icon_state = "blue_4_3"},/area/SuperEarth)
+"bA" = (/turf/EarthBuildingStructure{icon_state = "blue_4_4"},/area/SuperEarth)
+"bB" = (/turf/EarthBuildingStructure{icon_state = "blue_4_5"},/area/SuperEarth)
+"bC" = (/turf/EarthBuildingStructure{icon_state = "brick_0_1"},/area/SuperEarth)
+"bD" = (/turf/EarthBuildingStructure{icon_state = "brick_0_2"},/area/SuperEarth)
+"bE" = (/turf/EarthBuildingStructure{icon_state = "brick_0_3"},/area/SuperEarth)
+"bF" = (/turf/EarthBuildingStructure{icon_state = "brick_0_4"},/area/SuperEarth)
+"bG" = (/turf/EarthBuildingStructure{icon_state = "brick_0_5"},/area/SuperEarth)
+"bH" = (/turf/EarthBuildingStructure{icon_state = "brick_1_0"},/area/SuperEarth)
+"bI" = (/turf/EarthBuildingStructure{icon_state = "brick_1_1"},/area/SuperEarth)
+"bJ" = (/turf/EarthBuildingStructure{icon_state = "brick_1_2"},/area/SuperEarth)
+"bK" = (/turf/EarthBuildingStructure{icon_state = "brick_1_3"},/area/SuperEarth)
+"bL" = (/turf/EarthBuildingStructure{icon_state = "brick_1_4"},/area/SuperEarth)
+"bM" = (/turf/EarthBuildingStructure{icon_state = "brick_1_5"},/area/SuperEarth)
+"bN" = (/turf/EarthBuildingStructure{icon_state = "brick_2_0"},/area/SuperEarth)
+"bO" = (/turf/EarthBuildingStructure{icon_state = "brick_2_1"},/area/SuperEarth)
+"bP" = (/turf/EarthBuildingStructure{icon_state = "brick_2_2"},/area/SuperEarth)
+"bQ" = (/turf/EarthBuildingStructure{icon_state = "brick_2_3"},/area/SuperEarth)
+"bR" = (/turf/EarthBuildingStructure{icon_state = "brick_2_4"},/area/SuperEarth)
+"bS" = (/turf/EarthBuildingStructure{icon_state = "brick_2_5"},/area/SuperEarth)
+"bT" = (/turf/EarthBuildingStructure{icon_state = "brick_3_0"},/area/SuperEarth)
+"bU" = (/turf/EarthBuildingStructure{icon_state = "brick_3_1"},/area/SuperEarth)
+"bV" = (/turf/EarthBuildingStructure{icon_state = "brick_3_2"},/area/SuperEarth)
+"bW" = (/turf/EarthBuildingStructure{icon_state = "brick_3_3"},/area/SuperEarth)
+"bX" = (/turf/EarthBuildingStructure{icon_state = "brick_3_4"},/area/SuperEarth)
+"bY" = (/turf/EarthBuildingStructure{icon_state = "brick_3_5"},/area/SuperEarth)
+"bZ" = (/turf/EarthBuildingStructure{icon_state = "brick_4_0"},/area/SuperEarth)
+"ca" = (/turf/EarthBuildingStructure{icon_state = "brick_4_1"},/area/SuperEarth)
+"cb" = (/turf/EarthBuildingStructure{icon_state = "brick_4_2"},/area/SuperEarth)
+"cc" = (/turf/EarthBuildingStructure{icon_state = "brick_4_3"},/area/SuperEarth)
+"cd" = (/turf/EarthBuildingStructure{icon_state = "brick_4_4"},/area/SuperEarth)
+"ce" = (/turf/EarthBuildingStructure{icon_state = "brick_4_5"},/area/SuperEarth)
+"cf" = (/turf/EarthBuildingStructure{icon_state = "civic_0_1"},/area/SuperEarth)
+"cg" = (/turf/EarthBuildingStructure{icon_state = "civic_0_2"},/area/SuperEarth)
+"ch" = (/turf/EarthBuildingStructure{icon_state = "civic_0_3"},/area/SuperEarth)
+"ci" = (/turf/EarthBuildingStructure{icon_state = "civic_0_4"},/area/SuperEarth)
+"cj" = (/turf/EarthBuildingStructure{icon_state = "civic_0_5"},/area/SuperEarth)
+"ck" = (/turf/EarthBuildingStructure{icon_state = "civic_1_0"},/area/SuperEarth)
+"cl" = (/turf/EarthBuildingStructure{icon_state = "civic_1_1"},/area/SuperEarth)
+"cm" = (/turf/EarthBuildingStructure{icon_state = "civic_1_2"},/area/SuperEarth)
+"cn" = (/turf/EarthBuildingStructure{icon_state = "civic_1_3"},/area/SuperEarth)
+"co" = (/turf/EarthBuildingStructure{icon_state = "civic_1_4"},/area/SuperEarth)
+"cp" = (/turf/EarthBuildingStructure{icon_state = "civic_1_5"},/area/SuperEarth)
+"cq" = (/turf/EarthBuildingStructure{icon_state = "civic_2_0"},/area/SuperEarth)
+"cr" = (/turf/EarthBuildingStructure{icon_state = "civic_2_1"},/area/SuperEarth)
+"cs" = (/turf/EarthBuildingStructure{icon_state = "civic_2_2"},/area/SuperEarth)
+"ct" = (/turf/EarthBuildingStructure{icon_state = "civic_2_3"},/area/SuperEarth)
+"cu" = (/turf/EarthBuildingStructure{icon_state = "civic_2_4"},/area/SuperEarth)
+"cv" = (/turf/EarthBuildingStructure{icon_state = "civic_2_5"},/area/SuperEarth)
+"cw" = (/turf/EarthBuildingStructure{icon_state = "civic_3_0"},/area/SuperEarth)
+"cx" = (/turf/EarthBuildingStructure{icon_state = "civic_3_1"},/area/SuperEarth)
+"cy" = (/turf/EarthBuildingStructure{icon_state = "civic_3_2"},/area/SuperEarth)
+"cz" = (/turf/EarthBuildingStructure{icon_state = "civic_3_3"},/area/SuperEarth)
+"cA" = (/turf/EarthBuildingStructure{icon_state = "civic_3_4"},/area/SuperEarth)
+"cB" = (/turf/EarthBuildingStructure{icon_state = "civic_3_5"},/area/SuperEarth)
+"cC" = (/turf/EarthBuildingStructure{icon_state = "civic_4_0"},/area/SuperEarth)
+"cD" = (/turf/EarthBuildingStructure{icon_state = "civic_4_1"},/area/SuperEarth)
+"cE" = (/turf/EarthBuildingStructure{icon_state = "civic_4_2"},/area/SuperEarth)
+"cF" = (/turf/EarthBuildingStructure{icon_state = "civic_4_3"},/area/SuperEarth)
+"cG" = (/turf/EarthBuildingStructure{icon_state = "civic_4_4"},/area/SuperEarth)
+"cH" = (/turf/EarthBuildingStructure{icon_state = "civic_4_5"},/area/SuperEarth)
+"cI" = (/turf/EarthBuildingStructure{icon_state = "civic_5_0"},/area/SuperEarth)
+"cJ" = (/turf/EarthBuildingStructure{icon_state = "civic_5_1"},/area/SuperEarth)
+"cK" = (/turf/EarthBuildingStructure{icon_state = "civic_5_2"},/area/SuperEarth)
+"cL" = (/turf/EarthBuildingStructure{icon_state = "civic_5_3"},/area/SuperEarth)
+"cM" = (/turf/EarthBuildingStructure{icon_state = "civic_5_4"},/area/SuperEarth)
+"cN" = (/turf/EarthBuildingStructure{icon_state = "civic_5_5"},/area/SuperEarth)
+"cO" = (/turf/EarthBuildingStructure{icon_state = "civic_6_0"},/area/SuperEarth)
+"cP" = (/turf/EarthBuildingStructure{icon_state = "civic_6_1"},/area/SuperEarth)
+"cQ" = (/turf/EarthBuildingStructure{icon_state = "civic_6_2"},/area/SuperEarth)
+"cR" = (/turf/EarthBuildingStructure{icon_state = "civic_6_3"},/area/SuperEarth)
+"cS" = (/turf/EarthBuildingStructure{icon_state = "civic_6_4"},/area/SuperEarth)
+"cT" = (/turf/EarthBuildingStructure{icon_state = "civic_6_5"},/area/SuperEarth)
+"cU" = (/turf/EarthBuildingStructure{icon_state = "cream_0_1"},/area/SuperEarth)
+"cV" = (/turf/EarthBuildingStructure{icon_state = "cream_0_2"},/area/SuperEarth)
+"cW" = (/turf/EarthBuildingStructure{icon_state = "cream_0_3"},/area/SuperEarth)
+"cX" = (/turf/EarthBuildingStructure{icon_state = "cream_0_4"},/area/SuperEarth)
+"cY" = (/turf/EarthBuildingStructure{icon_state = "cream_0_5"},/area/SuperEarth)
+"cZ" = (/turf/EarthBuildingStructure{icon_state = "cream_1_0"},/area/SuperEarth)
+"da" = (/turf/EarthBuildingStructure{icon_state = "cream_1_1"},/area/SuperEarth)
+"db" = (/turf/EarthBuildingStructure{icon_state = "cream_1_2"},/area/SuperEarth)
+"dc" = (/turf/EarthBuildingStructure{icon_state = "cream_1_3"},/area/SuperEarth)
+"dd" = (/turf/EarthBuildingStructure{icon_state = "cream_1_4"},/area/SuperEarth)
+"de" = (/turf/EarthBuildingStructure{icon_state = "cream_1_5"},/area/SuperEarth)
+"df" = (/turf/EarthBuildingStructure{icon_state = "cream_2_0"},/area/SuperEarth)
+"dg" = (/turf/EarthBuildingStructure{icon_state = "cream_2_1"},/area/SuperEarth)
+"dh" = (/turf/EarthBuildingStructure{icon_state = "cream_2_2"},/area/SuperEarth)
+"di" = (/turf/EarthBuildingStructure{icon_state = "cream_2_3"},/area/SuperEarth)
+"dj" = (/turf/EarthBuildingStructure{icon_state = "cream_2_4"},/area/SuperEarth)
+"dk" = (/turf/EarthBuildingStructure{icon_state = "cream_2_5"},/area/SuperEarth)
+"dl" = (/turf/EarthBuildingStructure{icon_state = "cream_3_0"},/area/SuperEarth)
+"dm" = (/turf/EarthBuildingStructure{icon_state = "cream_3_1"},/area/SuperEarth)
+"dn" = (/turf/EarthBuildingStructure{icon_state = "cream_3_2"},/area/SuperEarth)
+"do" = (/turf/EarthBuildingStructure{icon_state = "cream_3_3"},/area/SuperEarth)
+"dp" = (/turf/EarthBuildingStructure{icon_state = "cream_3_4"},/area/SuperEarth)
+"dq" = (/turf/EarthBuildingStructure{icon_state = "cream_3_5"},/area/SuperEarth)
+"dr" = (/turf/EarthBuildingStructure{icon_state = "cream_4_0"},/area/SuperEarth)
+"ds" = (/turf/EarthBuildingStructure{icon_state = "cream_4_1"},/area/SuperEarth)
+"dt" = (/turf/EarthBuildingStructure{icon_state = "cream_4_2"},/area/SuperEarth)
+"du" = (/turf/EarthBuildingStructure{icon_state = "cream_4_3"},/area/SuperEarth)
+"dv" = (/turf/EarthBuildingStructure{icon_state = "cream_4_4"},/area/SuperEarth)
+"dw" = (/turf/EarthBuildingStructure{icon_state = "cream_4_5"},/area/SuperEarth)
+"dx" = (/turf/EarthBuildingStructure{icon_state = "hospital_0_1"},/area/SuperEarth)
+"dy" = (/turf/EarthBuildingStructure{icon_state = "hospital_0_2"},/area/SuperEarth)
+"dz" = (/turf/EarthBuildingStructure{icon_state = "hospital_0_3"},/area/SuperEarth)
+"dA" = (/turf/EarthBuildingStructure{icon_state = "hospital_0_4"},/area/SuperEarth)
+"dB" = (/turf/EarthBuildingStructure{icon_state = "hospital_0_5"},/area/SuperEarth)
+"dC" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_0"},/area/SuperEarth)
+"dD" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_1"},/area/SuperEarth)
+"dE" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_2"},/area/SuperEarth)
+"dF" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_3"},/area/SuperEarth)
+"dG" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_4"},/area/SuperEarth)
+"dH" = (/turf/EarthBuildingStructure{icon_state = "hospital_1_5"},/area/SuperEarth)
+"dI" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_0"},/area/SuperEarth)
+"dJ" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_1"},/area/SuperEarth)
+"dK" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_2"},/area/SuperEarth)
+"dL" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_3"},/area/SuperEarth)
+"dM" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_4"},/area/SuperEarth)
+"dN" = (/turf/EarthBuildingStructure{icon_state = "hospital_2_5"},/area/SuperEarth)
+"dO" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_0"},/area/SuperEarth)
+"dP" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_1"},/area/SuperEarth)
+"dQ" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_2"},/area/SuperEarth)
+"dR" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_3"},/area/SuperEarth)
+"dS" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_4"},/area/SuperEarth)
+"dT" = (/turf/EarthBuildingStructure{icon_state = "hospital_3_5"},/area/SuperEarth)
+"dU" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_0"},/area/SuperEarth)
+"dV" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_1"},/area/SuperEarth)
+"dW" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_2"},/area/SuperEarth)
+"dX" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_3"},/area/SuperEarth)
+"dY" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_4"},/area/SuperEarth)
+"dZ" = (/turf/EarthBuildingStructure{icon_state = "hospital_4_5"},/area/SuperEarth)
+"ea" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_0"},/area/SuperEarth)
+"eb" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_1"},/area/SuperEarth)
+"ec" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_2"},/area/SuperEarth)
+"ed" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_3"},/area/SuperEarth)
+"ee" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_4"},/area/SuperEarth)
+"ef" = (/turf/EarthBuildingStructure{icon_state = "hospital_5_5"},/area/SuperEarth)
+"eg" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_0"},/area/SuperEarth)
+"eh" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_1"},/area/SuperEarth)
+"ei" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_2"},/area/SuperEarth)
+"ej" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_3"},/area/SuperEarth)
+"ek" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_4"},/area/SuperEarth)
+"el" = (/turf/EarthBuildingStructure{icon_state = "hospital_6_5"},/area/SuperEarth)
+"em" = (/turf/EarthBuildingStructure{icon_state = "sage_0_1"},/area/SuperEarth)
+"en" = (/turf/EarthBuildingStructure{icon_state = "sage_0_2"},/area/SuperEarth)
+"eo" = (/turf/EarthBuildingStructure{icon_state = "sage_0_3"},/area/SuperEarth)
+"ep" = (/turf/EarthBuildingStructure{icon_state = "sage_0_4"},/area/SuperEarth)
+"eq" = (/turf/EarthBuildingStructure{icon_state = "sage_0_5"},/area/SuperEarth)
+"er" = (/turf/EarthBuildingStructure{icon_state = "sage_1_0"},/area/SuperEarth)
+"es" = (/turf/EarthBuildingStructure{icon_state = "sage_1_1"},/area/SuperEarth)
+"et" = (/turf/EarthBuildingStructure{icon_state = "sage_1_2"},/area/SuperEarth)
+"eu" = (/turf/EarthBuildingStructure{icon_state = "sage_1_3"},/area/SuperEarth)
+"ev" = (/turf/EarthBuildingStructure{icon_state = "sage_1_4"},/area/SuperEarth)
+"ew" = (/turf/EarthBuildingStructure{icon_state = "sage_1_5"},/area/SuperEarth)
+"ex" = (/turf/EarthBuildingStructure{icon_state = "sage_2_0"},/area/SuperEarth)
+"ey" = (/turf/EarthBuildingStructure{icon_state = "sage_2_1"},/area/SuperEarth)
+"ez" = (/turf/EarthBuildingStructure{icon_state = "sage_2_2"},/area/SuperEarth)
+"eA" = (/turf/EarthBuildingStructure{icon_state = "sage_2_3"},/area/SuperEarth)
+"eB" = (/turf/EarthBuildingStructure{icon_state = "sage_2_4"},/area/SuperEarth)
+"eC" = (/turf/EarthBuildingStructure{icon_state = "sage_2_5"},/area/SuperEarth)
+"eD" = (/turf/EarthBuildingStructure{icon_state = "sage_3_0"},/area/SuperEarth)
+"eE" = (/turf/EarthBuildingStructure{icon_state = "sage_3_1"},/area/SuperEarth)
+"eF" = (/turf/EarthBuildingStructure{icon_state = "sage_3_2"},/area/SuperEarth)
+"eG" = (/turf/EarthBuildingStructure{icon_state = "sage_3_3"},/area/SuperEarth)
+"eH" = (/turf/EarthBuildingStructure{icon_state = "sage_3_4"},/area/SuperEarth)
+"eI" = (/turf/EarthBuildingStructure{icon_state = "sage_3_5"},/area/SuperEarth)
+"eJ" = (/turf/EarthBuildingStructure{icon_state = "sage_4_0"},/area/SuperEarth)
+"eK" = (/turf/EarthBuildingStructure{icon_state = "sage_4_1"},/area/SuperEarth)
+"eL" = (/turf/EarthBuildingStructure{icon_state = "sage_4_2"},/area/SuperEarth)
+"eM" = (/turf/EarthBuildingStructure{icon_state = "sage_4_3"},/area/SuperEarth)
+"eN" = (/turf/EarthBuildingStructure{icon_state = "sage_4_4"},/area/SuperEarth)
+"eO" = (/turf/EarthBuildingStructure{icon_state = "sage_4_5"},/area/SuperEarth)
+"eP" = (/turf/EarthBuildingStructure{icon_state = "shop_0_1"},/area/SuperEarth)
+"eQ" = (/turf/EarthBuildingStructure{icon_state = "shop_0_2"},/area/SuperEarth)
+"eR" = (/turf/EarthBuildingStructure{icon_state = "shop_0_3"},/area/SuperEarth)
+"eS" = (/turf/EarthBuildingStructure{icon_state = "shop_0_4"},/area/SuperEarth)
+"eT" = (/turf/EarthBuildingStructure{icon_state = "shop_0_5"},/area/SuperEarth)
+"eU" = (/turf/EarthBuildingStructure{icon_state = "shop_1_0"},/area/SuperEarth)
+"eV" = (/turf/EarthBuildingStructure{icon_state = "shop_1_1"},/area/SuperEarth)
+"eW" = (/turf/EarthBuildingStructure{icon_state = "shop_1_2"},/area/SuperEarth)
+"eX" = (/turf/EarthBuildingStructure{icon_state = "shop_1_3"},/area/SuperEarth)
+"eY" = (/turf/EarthBuildingStructure{icon_state = "shop_1_4"},/area/SuperEarth)
+"eZ" = (/turf/EarthBuildingStructure{icon_state = "shop_1_5"},/area/SuperEarth)
+"fa" = (/turf/EarthBuildingStructure{icon_state = "shop_2_0"},/area/SuperEarth)
+"fb" = (/turf/EarthBuildingStructure{icon_state = "shop_2_1"},/area/SuperEarth)
+"fc" = (/turf/EarthBuildingStructure{icon_state = "shop_2_2"},/area/SuperEarth)
+"fd" = (/turf/EarthBuildingStructure{icon_state = "shop_2_3"},/area/SuperEarth)
+"fe" = (/turf/EarthBuildingStructure{icon_state = "shop_2_4"},/area/SuperEarth)
+"ff" = (/turf/EarthBuildingStructure{icon_state = "shop_2_5"},/area/SuperEarth)
+"fg" = (/turf/EarthBuildingStructure{icon_state = "shop_3_0"},/area/SuperEarth)
+"fh" = (/turf/EarthBuildingStructure{icon_state = "shop_3_1"},/area/SuperEarth)
+"fi" = (/turf/EarthBuildingStructure{icon_state = "shop_3_2"},/area/SuperEarth)
+"fj" = (/turf/EarthBuildingStructure{icon_state = "shop_3_3"},/area/SuperEarth)
+"fk" = (/turf/EarthBuildingStructure{icon_state = "shop_3_4"},/area/SuperEarth)
+"fl" = (/turf/EarthBuildingStructure{icon_state = "shop_3_5"},/area/SuperEarth)
+"fm" = (/turf/EarthBuildingStructure{icon_state = "shop_4_0"},/area/SuperEarth)
+"fn" = (/turf/EarthBuildingStructure{icon_state = "shop_4_1"},/area/SuperEarth)
+"fo" = (/turf/EarthBuildingStructure{icon_state = "shop_4_2"},/area/SuperEarth)
+"fp" = (/turf/EarthBuildingStructure{icon_state = "shop_4_3"},/area/SuperEarth)
+"fq" = (/turf/EarthBuildingStructure{icon_state = "shop_4_4"},/area/SuperEarth)
+"fr" = (/turf/EarthBuildingStructure{icon_state = "shop_4_5"},/area/SuperEarth)
+"fs" = (/turf/EarthBuildingStructure{icon_state = "shop_5_0"},/area/SuperEarth)
+"ft" = (/turf/EarthBuildingStructure{icon_state = "shop_5_1"},/area/SuperEarth)
+"fu" = (/turf/EarthBuildingStructure{icon_state = "shop_5_2"},/area/SuperEarth)
+"fv" = (/turf/EarthBuildingStructure{icon_state = "shop_5_3"},/area/SuperEarth)
+"fw" = (/turf/EarthBuildingStructure{icon_state = "shop_5_4"},/area/SuperEarth)
+"fx" = (/turf/EarthBuildingStructure{icon_state = "shop_5_5"},/area/SuperEarth)
+"fy" = (/turf/EarthBuildingStructure{icon_state = "shop_6_0"},/area/SuperEarth)
+"fz" = (/turf/EarthBuildingStructure{icon_state = "shop_6_1"},/area/SuperEarth)
+"fA" = (/turf/EarthBuildingStructure{icon_state = "shop_6_2"},/area/SuperEarth)
+"fB" = (/turf/EarthBuildingStructure{icon_state = "shop_6_3"},/area/SuperEarth)
+"fC" = (/turf/EarthBuildingStructure{icon_state = "shop_6_4"},/area/SuperEarth)
+"fD" = (/turf/EarthBuildingStructure{icon_state = "shop_6_5"},/area/SuperEarth)
+"fE" = (/turf/EarthRiverBank{icon_state = "bank_0"},/area/SuperEarth)
+"fF" = (/turf/EarthRiverBank{icon_state = "bank_118"},/area/SuperEarth)
+"fG" = (/turf/EarthRiverBank{icon_state = "bank_128"},/area/SuperEarth)
+"fH" = (/turf/EarthRiverBank{icon_state = "bank_129"},/area/SuperEarth)
+"fI" = (/turf/EarthRiverBank{icon_state = "bank_136"},/area/SuperEarth)
+"fJ" = (/turf/EarthRiverBank{icon_state = "bank_137"},/area/SuperEarth)
+"fK" = (/turf/EarthRiverBank{icon_state = "bank_153"},/area/SuperEarth)
+"fL" = (/turf/EarthRiverBank{icon_state = "bank_16"},/area/SuperEarth)
+"fM" = (/turf/EarthRiverBank{icon_state = "bank_18"},/area/SuperEarth)
+"fN" = (/turf/EarthRiverBank{icon_state = "bank_19"},/area/SuperEarth)
+"fO" = (/turf/EarthRiverBank{icon_state = "bank_200"},/area/SuperEarth)
+"fP" = (/turf/EarthRiverBank{icon_state = "bank_201"},/area/SuperEarth)
+"fQ" = (/turf/EarthRiverBank{icon_state = "bank_204"},/area/SuperEarth)
+"fR" = (/turf/EarthRiverBank{icon_state = "bank_32"},/area/SuperEarth)
+"fS" = (/turf/EarthRiverBank{icon_state = "bank_34"},/area/SuperEarth)
+"fT" = (/turf/EarthRiverBank{icon_state = "bank_50"},/area/SuperEarth)
+"fU" = (/turf/EarthRiverBank{icon_state = "bank_51"},/area/SuperEarth)
+"fV" = (/turf/EarthRiverBank{icon_state = "bank_54"},/area/SuperEarth)
+"fW" = (/turf/EarthRiverBank{icon_state = "bank_64"},/area/SuperEarth)
+"fX" = (/turf/EarthRiverBank{icon_state = "bank_72"},/area/SuperEarth)
+"fY" = (/turf/EarthRiverBank{icon_state = "bank_76"},/area/SuperEarth)
+"fZ" = (/turf/EarthRiverFall,/area/SuperEarth)
+"ga" = (/turf/EarthRiverRock,/area/SuperEarth)
+"gb" = (/turf/EarthRiverSteps,/area/SuperEarth)
+"gc" = (/turf/EarthRiver{icon_state = "water_119"},/area/SuperEarth)
+"gd" = (/turf/EarthRiver{icon_state = "water_126"},/area/SuperEarth)
+"ge" = (/turf/EarthRiver{icon_state = "water_127"},/area/SuperEarth)
+"gf" = (/turf/EarthRiver{icon_state = "water_153"},/area/SuperEarth)
+"gg" = (/turf/EarthRiver{icon_state = "water_179"},/area/SuperEarth)
+"gh" = (/turf/EarthRiver{icon_state = "water_183"},/area/SuperEarth)
+"gi" = (/turf/EarthRiver{icon_state = "water_191"},/area/SuperEarth)
+"gj" = (/turf/EarthRiver{icon_state = "water_201"},/area/SuperEarth)
+"gk" = (/turf/EarthRiver{icon_state = "water_204"},/area/SuperEarth)
+"gl" = (/turf/EarthRiver{icon_state = "water_205"},/area/SuperEarth)
+"gm" = (/turf/EarthRiver{icon_state = "water_217"},/area/SuperEarth)
+"gn" = (/turf/EarthRiver{icon_state = "water_219"},/area/SuperEarth)
+"go" = (/turf/EarthRiver{icon_state = "water_221"},/area/SuperEarth)
+"gp" = (/turf/EarthRiver{icon_state = "water_223"},/area/SuperEarth)
+"gq" = (/turf/EarthRiver{icon_state = "water_236"},/area/SuperEarth)
+"gr" = (/turf/EarthRiver{icon_state = "water_237"},/area/SuperEarth)
+"gs" = (/turf/EarthRiver{icon_state = "water_239"},/area/SuperEarth)
+"gt" = (/turf/EarthRiver{icon_state = "water_255"},/area/SuperEarth)
+"gu" = (/turf/EarthRiver{icon_state = "water_38"},/area/SuperEarth)
+"gv" = (/turf/EarthRiver{icon_state = "water_51"},/area/SuperEarth)
+"gw" = (/turf/EarthRiver{icon_state = "water_54"},/area/SuperEarth)
+"gx" = (/turf/EarthRiver{icon_state = "water_55"},/area/SuperEarth)
+"gy" = (/turf/EarthStreet,/area/SuperEarth)
+"gz" = (/turf/EarthStreet/Bridge,/area/SuperEarth)
+"gA" = (/turf/EarthStreet/Bridge/Lane,/area/SuperEarth)
+"gB" = (/turf/EarthStreet/Bridge/North,/area/SuperEarth)
+"gC" = (/turf/EarthStreet/Bridge/Sidewalk,/area/SuperEarth)
+"gD" = (/turf/EarthStreet/Bridge/South,/area/SuperEarth)
+"gE" = (/turf/EarthStreet/CrossingHorizontal,/area/SuperEarth)
+"gF" = (/turf/EarthStreet/CurbEast,/area/SuperEarth)
+"gG" = (/turf/EarthStreet/CurbNorth,/area/SuperEarth)
+"gH" = (/turf/EarthStreet/CurbSouth,/area/SuperEarth)
+"gI" = (/turf/EarthStreet/CurbWest,/area/SuperEarth)
+"gJ" = (/turf/EarthStreet/GardenPath,/area/SuperEarth)
+"gK" = (/turf/EarthStreet/LaneHorizontal,/area/SuperEarth)
+"gL" = (/turf/EarthStreet/LaneVertical,/area/SuperEarth)
+"gM" = (/turf/EarthStreet/Sidewalk,/area/SuperEarth)
+
+(1,1,1) = {"
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygyaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygyaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygygygygygKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygyaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygyaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygyaYaYaYaYaYaYaYaYaYaYaYaYaYaYaYaY
+gGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgJgJgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgygygygLgygygygGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGghgtgtgtgtgtgtgtgtgtgtgtgtgtgt
+gMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgJgJgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgxgtgtgtgtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfMgvgigtgtgtgtgtgtgtgtgtgtgtgtgt
+gMfEaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaIaJghgtgtgtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfTgxgtgtgtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEaQfEfEfEfEfEfEfEfEfEaQfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEaQfEfEfEfEfEfEfEfEfEaQfEfEfEfMgvgigtgtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEaQfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfLaUghgtgtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEgJgJgJfEaKfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfMgvgigtgtgtgtgtgtgtgtgtgtgt
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfLfUghgtgtgtgtgtgtgtgtgtgtgt
+gMfEbGbMbSbYcebdbjbpbvbBcYdedkdqdwfEfEgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEeTeZffflfrfxfDcYdedkdqdweqeweCeIeOfEfTgxgtgtgtgtgtgtgtgtgtgtgt
+gMfEbFbLbRbXcdbcbibobubAcXdddjdpdvfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEeSeYfefkfqfwfCcXdddjdpdvepeveBeHeNaEfMgvgigtgtgtgtgtgtgtgtgtgt
+gMfEbEbKbQbWccbbbhbnbtbzcWdcdidodufEfEfEgJgJgJfEfEaFgxgtgtgtgtgtglfOaQfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEeReXfdfjfpfvfBcWdcdidodueoeueAeGeMfEfLfUghgtgtgtgtgtgtgtgtgtgt
+gMfEbDbJbPbVcbbabgbmbsbycVdbdhdndtfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEeQeWfcfifofufAcVdbdhdndtenetezeFeLfEfEfMgvgigtgtgtgtgtgtgtgtgt
+gMfEbCbIbObUcaaZbfblbrbxcUdadgdmdsfEaGfEgJgJgJfEfEfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEePeVfbfhfnftfzcUdadgdmdsemeseyeEeKfEaGfLfUghgtgtgtgtgtgtgtgtgt
+gMfEaobHbNbTbZanbebkbqbwaBcZdfdldrfEfEfEgJgJgJgJaKfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEazeUfafgfmfsfyaDcZdfdldrawerexeDeJfEfEfEfMgvgigtgtgtgtgtgtgtgt
+gMgMgMgMadgMgMgMgMahgMgMgMgMgMgMgMgMgMgMgMgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMgMgMgMgMafgMgMgMgMgMakgMgMgMgMgMgMgMgMgMgMgMgMghgtgtgtgtgtgtgtgt
+gHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgMgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgMgvgigtgtgtgtgtgtgt
+gygygygygygygygygygygygygygygygygygygygygIgJgJgJfEaQfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMgggigtgtgtgtgtgt
+gygygygygygygygygygygygygygygygygygygygygIgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfUghgtgtgtgtgtgt
+gygygygygygygygygygygygygygygygygygygygygIgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfMgvgigtgtgtgtgt
+gKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgJgJgJfEfEfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgMfLfUghgtgtgtgtgt
+gygygygygygygygygygygygygygygygygygygygygIgJgJgJfEaKfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfEfMgvgigtgtgtgt
+fEfEfEfEfEfEfEfEfEfEfEgygygygygygygygygygIgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfEfLfUghgtgtgtgt
+fEfEfEfEfEfEfEfEfEfEfEgygygygygygygygygygIgMgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfEfEfTgxgtgtgtgt
+fEfEfEfEfEfEfEfEfEfEfEgGgGgGgGgGgGgGgGgGgMgMgJgJgJfEfEfTgxgtgtgtgtgtglfOaQfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgMgMfEfEfMgvgigtgtgt
+fEfEfEfEfEfEfEfEfEfEfEgMgMgMgMgMgMgMgMgMgMgMgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMfEfEfLfUghgtgtgt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfLfNgggigtgtgtgsgqfYfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEaQfEfEfEfEfEfEfEfEfMgvgigtgt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEfEfEfLfUghgtgt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJaQfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfTgxgtgt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcjcpcvcBcHcNcTcjcpcvcBcHcNcTbGbMbSbYcefEfEfEfEfEfEfEfEfMgvgigt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcicocucAcGcMcScicocucAcGcMcSbFbLbRbXcdfEfEfEfEfEfEfEfEfLfUghgt
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEchcnctczcFcLcRchcnctczcFcLcRbEbKbQbWccfEfEfEfEfEfEfEfEfEfMgvgi
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcgcmcscycEcKcQcgcmcscycEcKcQbDbJbPbVcbfEfEfEfEfEfEfEfEfEfLfUgh
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcfclcrcxcDcJcPcfclcrcxcDcJcPbCbIbObUcafEaGfEfEfEfEfEfEfEfEfTgx
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEauckcqcwcCcIcOatckcqcwcCcIcOapbHbNbTbZfEfEfEfEfEfEfEfEfEfEfTgx
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEaKfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMgMgMgMgMaggMgMgMgMgMgMacgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgv
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgMgMfU
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXaQfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfT
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfT
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEaSfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfM
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEgMgFgygygygKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgMfL
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfEfMgvgigtgtgtgtgrfQfWaKgJgJgJgJgJgJgJgJgJgJgJgbgbgbgbgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfEaNfUghgtgtgtgtgsgkfXfEfEfEfEfEfEfEfEfEfEfEfEgbgbgbgbgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+fEfEaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHfEfEfEfEfEfEfEfEgJgJgJfEfEfEfEfTgxgtgtgtgtgtglfOfEfEfEfEfEfEfEfEfEfEfEfEgbgbgbgbgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgagagagagafZfZfZfZfZfZfZgagagagagagagafEfEfEfEfEfEgbgbgbgbgygygygLgygygygGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgygygygLgygygygIgMfE
+fEfEfEfEaQfEfEfEfEfEfEfEfEfEaQfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfEfEfTgxgtgtgtgtgtglfOfEfEfEfEfEfEfEfEfEfEfEfEgbgbgbgbgygygygLgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMfE
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJgJfEfEfTgxgtgtgtgtgtgrfQfWfEfEgJgJgJgJgJgJgJgJgJgbgbgbgbgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+fEfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEaQfEgMgFgygygygLgygygygIgMfE
+fEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+fEfEdBdHdNdTdZefelcYdedkdqdweqeweCeIeOfEfEfEfEfEfEfEfEfEfEgJgJgJfEaKfTgxgtgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+fEfEdAdGdMdSdYeeekcXdddjdpdvepeveBeHeNfEfEfEfEfEfEfEfEfEgJgJgJgJfEaTfVgcgtgtgtgtgtgtglfOaQfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+fEfEdzdFdLdRdXedejcWdcdidodueoeueAeGeMfEfEfEfEfEfEfEfEfEgJgJgJfEfEfSgwgegtgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEaEfEgMgFgygygygLgygygygIgMfE
+fEfEdydEdKdQdWeceicVdbdhdndtenetezeFeLfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+aPfEdxdDdJdPdVebehcUdadgdmdsemeseyeEeKfEaGfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+fEfEavdCdIdOdUeaegaCcZdfdldraxerexeDeJfEfEfEfEfEfEfEfEgJgJgJgJfEfRfVgcgtgtgtgtgtgtgpgjfIfEgJgJgJgJfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMgMgMgMgMabgMgMgMgMgMaigMgMgMgMgMgMgMgMgMgMgMgMgMfEfEgJgJgJfEfEfSgwgegtgtgtgtgtgpgmaMfGgJgJgJgJfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMfE
+gHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgMgMgJgJgJgJgJfRaOfFgcgtgtgtgtgpgngffJgJgJgJgJgJfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgygygygLgygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygIgMgJgJgJfEfEfSgugdgegtgtgtgpgmfKfHgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygIgJgJgJgJfEfRfVgcgtgtgtgtgpgmfJfGgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygIgJgJgJfEfEfSgwgegtgtgtgtgofPfGfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygIgJgJgJfEaQfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygJgJgJgJfEfRfVgcgtgtgtgtgpgjaLfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygygygJgJgJfEaKfSgwgegtgtgtgtgofPaRfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgJgJgJgJfEfRfVgcgtgtgtgtgpgjfIfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgygygygLgygygygIgMfE
+gMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgJgJgJfEfEfSgwgegtgtgtgtgofPfGfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEaVfEfEfEfEgMgFgygygyaWgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfRfVgcgtgtgtgtgpgjfIfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEgJgJgJaQfEfSgwgegtgtgtgtgofPfGfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEcYdedkdqdweqeweCeIeObGbMbSbYcefEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcjcpcvcBcHcNcTbGbMbSbYcebdbjbpbvbBfEfEgMgFgygygygLgygygygIgMfE
+gMfEcXdddjdpdvepeveBeHeNbFbLbRbXcdfEfEfEfEgJgJgJfEaKfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcicocucAcGcMcSbFbLbRbXcdbcbibobubAfEfEgMgFgygygygLgygygygIgMfE
+gMfEcWdcdidodueoeueAeGeMbEbKbQbWccfEfEfEfEgJgJgJaEfEfTgxgtgtgtgtgtglfOfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEchcnctczcFcLcRbEbKbQbWccbbbhbnbtbzfEfEgMgFgygygygLgygygygIgMfE
+gMfEcVdbdhdndtenetezeFeLbDbJbPbVcbfEfEfEgJgJgJgJfEaTfVgcgtgtgtgtgpgjfIfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcgcmcscycEcKcQbDbJbPbVcbbabgbmbsbyfEfEgMgFgygygygLgygygygIgMfE
+gMfEcUdadgdmdsemeseyeEeKbCbIbObUcafEaGfEgJgJgJfEfEfSgwgegtgtgtgtgofPfGfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcfclcrcxcDcJcPbCbIbObUcaaZbfblbrbxfEaGgMgFgygygygLgygygygIgMfE
+gMfEaAcZdfdldrayerexeDeJaqbHbNbTbZfEfEfEgJgBgBgBgBgBgBgBgBgBgBgBgBgBgBgBgBgBgBgBfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEasckcqcwcCcIcOarbHbNbTbZambebkbqbwfEfEgMgFgygygygLgygygygIgMfE
+gMgMgMgMaegMgMgMgMajgMgMgMgMgMgMgMgMgMgMgJgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygyaXgygygygIgMgMgMgMgMaagMgMgMgMgMalgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMfE
+gHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgJgJgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgygygygLgygygygHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgHgygygygLgygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgAgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygygygygygKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgKgygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gygygygygygygygygygygygygygygygygygygygygygzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgzgygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygygIgMfE
+gGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgJgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgygygygLgygygygGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgGgygygygLgygygygIgMfE
+gMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgCgJgJgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgMgFgygygygLgygygygIgMfE
+gMfEaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHfEfEgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgDgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgEgEgEgEgEgEgEgIgMfEaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHaHfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJfEfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEaQfEfEfEfEfEfEfEfEfEaQfEfEfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEaQfEfEfEfEfEfEfEfEfEaQfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOaQfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEfEfEfEgJgJgJfEfEfTgxgtgtgtgtgtglfOaKfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEaKfEfEfEfEfEfEfEfEfEaKfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgJgJgJgJaKfMgvgigtgtgtgtgrfQfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfE
+gMfEeTeZffflfrfxfDbGbMbSbYcebdbjbpbvbBfEfEfEfEfEfEgJgJgJgJfLfNgggigtgtgtgsgqfYfWfEgJgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcjcpcvcBcHcNcTbdbjbpbvbBcYdedkdqdwfEfEgMgFgygygygLgygygygIgMfE
+gMfEeSeYfefkfqfwfCbFbLbRbXcdbcbibobubAfEfEfEfEfEfEfEgJgJgJfEfLfUghgtgtgtgtgsgkfXfEfEgJgJgJfEfEfEfEfEfEfEfEfEfEfEfEgMgFgygygygLgygygygIgMfEcicocucAcGcMcSbcbibobubAcXdddjdpdvfEfEgMgFgygygygLgygygygIgMfE
+"}

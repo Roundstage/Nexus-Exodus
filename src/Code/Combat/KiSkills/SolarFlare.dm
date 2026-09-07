@@ -1,4 +1,4 @@
-var/image/fireOverlay = image(icon = 'FireAura.dmi', pixel_y = -19, pixel_x = -16)
+var/image/fireOverlay = image(icon = 'src/Icons/Ki/Auras/FireAura.dmi', pixel_y = -19, pixel_x = -16)
 
 var
 	//bonus for humans
@@ -65,7 +65,7 @@ mob
 			var/sizeMod = 13
 			var/obj/o = GetEffect()
 			o.mouse_opacity = 0
-			o.icon = 'SolarFlare.dmi'
+			o.icon = 'src/Icons/Effects/SolarFlare.dmi'
 			o.alpha = 0
 			o.layer = 20
 			o.plane = NEXUS_FIXED_HUD_PLANE
@@ -88,7 +88,7 @@ mob
 			set waitfor=0
 			var/obj/o = GetEffect()
 			o.mouse_opacity = 0
-			o.icon = 'SolarFlare.dmi'
+			o.icon = 'src/Icons/Effects/SolarFlare.dmi'
 			o.alpha = 0
 			o.transform *= 0.01
 			o.layer = 20

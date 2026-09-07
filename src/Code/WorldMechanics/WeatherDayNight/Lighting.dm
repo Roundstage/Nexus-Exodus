@@ -68,7 +68,7 @@ proc/getNexusLightOcclusionMask(turf/source_turf, size_tiles, cache_key)
 	var/radius = max(1, round(mask_size / 2 + 0.5))
 	var/tile_pixel_size = NEXUS_GLOW_MASK_DIAMETER / mask_size
 	var/pixel_center = (NEXUS_GLOW_MASK_DIAMETER + 1) / 2
-	var/icon/occlusion_mask = icon('NexusLightGradient.dmi', "10")
+	var/icon/occlusion_mask = icon('src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', "10")
 	occlusion_mask.DrawBox(null, 1, 1, NEXUS_GLOW_MASK_DIAMETER, NEXUS_GLOW_MASK_DIAMETER)
 	for(var/y_offset = -radius, y_offset <= radius, y_offset++)
 		for(var/x_offset = -radius, x_offset <= radius, x_offset++)
@@ -263,6 +263,7 @@ client
 	var
 		nexus_lighting_enabled = TRUE
 		tmp/obj/NexusLighting/PlaneMaster/nexus_lighting_plane
+		tmp/nexus_base_ambient = "#ffffffff"
 
 	proc
 		initializeNexusLighting()
@@ -280,7 +281,15 @@ client
 			nexus_lighting_plane = null
 
 		setNexusAmbient(ambient_color, fade_time = 0)
-			if(!nexus_lighting_plane) initializeNexusLighting()
+			nexus_base_ambient = ambient_color ? ambient_color : "#ffffffff"
+			refreshNexusAmbient(fade_time)
+
+		refreshNexusAmbient(fade_time = 0)
+			var/ambient_color = nexus_base_ambient
+			if(!nexus_lighting_plane)
+				var/saved_base_ambient = nexus_base_ambient
+				initializeNexusLighting()
+				nexus_base_ambient = saved_base_ambient
 			if(!nexus_lighting_plane) return
 			if(!nexus_lighting_enabled) ambient_color = rgb(255, 255, 255, 255)
 			var/list/ambient_matrix = getNexusAmbientMatrix(ambient_color)
@@ -311,7 +320,7 @@ obj/NexusLighting
 		color = list(null, null, null, null, "#ffffffff")
 
 	Emitter
-		icon = 'NexusLightGradient.dmi'
+		icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi'
 		plane = NEXUS_LIGHTING_PLANE
 		layer = FLOAT_LAYER
 		blend_mode = BLEND_ADD
@@ -388,7 +397,7 @@ obj/NexusLighting
 				core_visual.filters = core_mask ? list(filter(type = "alpha", icon = core_mask)) : null
 				core_occlusion_mask_key = new_core_mask_key
 
-		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)
+		proc/configureNexusEmitter(light_color = "#ffffff", new_range_tiles = 2, new_intensity = 180, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', enable_variation = TRUE, new_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, new_variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			animate(src)
 			if(core_visual) animate(core_visual)
 			range_tiles = Clamp(new_range_tiles, 0.25, 12)
@@ -397,7 +406,7 @@ obj/NexusLighting
 			variation_style = new_variation_style || NEXUS_LIGHT_VARIATION_STEADY
 			gradient_offset = round(Clamp(new_gradient_offset, 1, 10))
 			icon = light_icon
-			icon_state = light_icon == 'NexusLightGradient.dmi' ? "[gradient_offset]" : ""
+			icon_state = light_icon == 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi' ? "[gradient_offset]" : ""
 			color = light_color
 			base_range_scale = getNexusGlowRangeScale(range_tiles)
 			base_core_scale = base_range_scale * 0.42
@@ -411,7 +420,7 @@ obj/NexusLighting
 			transform = matrix() * base_range_scale
 			if(core_visual)
 				core_visual.icon = light_icon
-				core_visual.icon_state = light_icon == 'NexusLightGradient.dmi' ? "1" : ""
+				core_visual.icon_state = light_icon == 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi' ? "1" : ""
 				core_visual.color = light_color
 				core_visual.alpha = base_core_alpha
 				core_visual.transform = matrix() * base_core_scale
@@ -478,7 +487,7 @@ obj/NexusLighting
 			SafeTeleport(light_turf)
 			light_origin = src
 			var/list/profile = getNexusExplosionLightProfile(explosion_size, light_color)
-			configureNexusEmitter(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', TRUE, profile["offset"], profile["variation"])
+			configureNexusEmitter(profile["color"], profile["size"], profile["alpha"], 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', TRUE, profile["offset"], profile["variation"])
 			CenterIcon(src)
 			spawn() fadeExplosionLight(profile["duration"])
 
@@ -541,7 +550,7 @@ atom/movable
 			nexus_light_occlusion_tracking = FALSE
 			nexus_light_occlusion_last_turf = null
 
-		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
+		setNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			if(!nexus_glow)
 				nexus_glow = new
 				vis_contents += nexus_glow
@@ -557,7 +566,7 @@ atom/movable
 			del(nexus_glow)
 			nexus_glow = null
 
-		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
+		setNexusActionGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_STEADY)
 			nexus_action_glow_generation++
 			if(!nexus_action_glow)
 				nexus_action_glow = new
@@ -575,7 +584,7 @@ atom/movable
 			del(nexus_action_glow)
 			nexus_action_glow = null
 
-		setNexusAuraGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_AURA)
+		setNexusAuraGlow(light_color = "#ffffff", size = 2, light_alpha = 180, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET, variation_style = NEXUS_LIGHT_VARIATION_AURA)
 			nexus_aura_glow_generation++
 			if(!nexus_aura_glow)
 				nexus_aura_glow = new
@@ -593,7 +602,7 @@ atom/movable
 			del(nexus_aura_glow)
 			nexus_aura_glow = null
 
-		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
+		pulseNexusGlow(light_color = "#ffffff", size = 2, light_alpha = 180, duration = 8, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor = 0
 			var/obj/NexusLighting/Emitter/pulse = new
 			pulse.light_origin = src
@@ -609,11 +618,13 @@ atom/movable
 				del(pulse)
 
 mob/proc/updateTransformationGlow()
+	updateNexusSsjDaylightGlow()
 	var/list/profile = getNexusTransformationGlowProfile(detectPrimaryTransformation())
 	if(!profile)
 		clearNexusGlow()
 		return
-	setNexusGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
+	var/ssj_visual_scale = ssj == 1 ? 1 - getNexusSsjVisualMastery(src) * 0.5 : 1
+	setNexusGlow(profile["color"], profile["size"] * ssj_visual_scale, profile["alpha"] * ssj_visual_scale, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
 
 obj/Blast/proc/updateNexusProjectileGlow()
 	var/list/profile = getNexusProjectileLightProfile(src)
@@ -622,22 +633,22 @@ obj/Blast/proc/updateNexusProjectileGlow()
 		return
 	if(nexus_glow && nexus_glow.color == profile["color"] && abs(nexus_glow.range_tiles - profile["size"]) < 0.01 && nexus_glow.light_intensity == profile["alpha"] && nexus_glow.gradient_offset == profile["offset"] && nexus_glow.variation_style == profile["variation"])
 		return nexus_glow
-	return setNexusGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', profile["offset"], profile["variation"])
+	return setNexusGlow(profile["color"], profile["size"], profile["alpha"], 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', profile["offset"], profile["variation"])
 
 mob/proc/startNexusKiCharge(obj/attack, charge_scale = 1)
 	charge_scale = Clamp(charge_scale, 0.5, 2.5)
 	var/obj/Attacks/ki_attack = istype(attack, /obj/Attacks) ? attack : null
-	return setNexusActionGlow(getNexusAttackGlowColor(ki_attack), 1.9 + charge_scale * 0.85, 175 + round(charge_scale * 25), 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
+	return setNexusActionGlow(getNexusAttackGlowColor(ki_attack), 1.9 + charge_scale * 0.85, 175 + round(charge_scale * 25), 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
 
 mob/proc/startNexusBeamGlow(obj/Attacks/attack)
-	return setNexusActionGlow(getNexusAttackGlowColor(attack), 3.5, 225, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
+	return setNexusActionGlow(getNexusAttackGlowColor(attack), 3.5, 225, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
 
 mob/proc/updateNexusAuraGlow()
 	var/list/profile = getNexusAuraGlowProfile(src)
 	if(!profile)
 		clearNexusAuraGlow()
 		return
-	return setNexusAuraGlow(profile["color"], profile["size"], profile["alpha"], 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
+	return setNexusAuraGlow(profile["color"], profile["size"], profile["alpha"], 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
 
 mob/verb/toggleNexusLighting()
 	set name = "Toggle Lighting"
@@ -650,7 +661,7 @@ mob/verb/toggleNexusLighting()
 
 obj/Effect/NexusLightingTestBlast
 	name = "lighting test blast"
-	icon = 'Blast11.dmi'
+	icon = 'src/Icons/Ki/Blasts/Blast11.dmi'
 	density = 0
 	mouse_opacity = 0
 	Grabbable = 0
@@ -667,7 +678,7 @@ mob/proc/launchNexusLightingTestBlast(light_size = 2.3, light_alpha = 215, varia
 	test_blast.dir = dir
 	test_blast.pixel_x = pixel_x
 	test_blast.pixel_y = pixel_y
-	test_blast.setNexusGlow("#59d8ff", light_size, light_alpha, 'NexusLightGradient.dmi', variation_style == NEXUS_LIGHT_VARIATION_SMALL_BLAST ? 4 : 8, variation_style)
+	test_blast.setNexusGlow("#59d8ff", light_size, light_alpha, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', variation_style == NEXUS_LIGHT_VARIATION_SMALL_BLAST ? 4 : 8, variation_style)
 	player_view(10, src) << sound('Blast.wav', volume = 20)
 	for(var/flight_step = 1, flight_step <= 14 && test_blast, flight_step++)
 		if(!step(test_blast, test_blast.dir)) break
@@ -686,7 +697,7 @@ mob/proc/launchNexusLightingTestBeam()
 		if(!beam_loc || beam_loc.density) break
 		var/obj/Effect/NexusLightingTestBlast/segment = new(beam_loc)
 		segment.dir = dir
-		segment.setNexusGlow("#59d8ff", 1.25, 135, 'NexusLightGradient.dmi', 6, NEXUS_LIGHT_VARIATION_BEAM)
+		segment.setNexusGlow("#59d8ff", 1.25, 135, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 6, NEXUS_LIGHT_VARIATION_BEAM)
 		spawn(45) if(segment) del(segment)
 		sleep(1)
 
@@ -713,7 +724,7 @@ mob/Admin2/verb/testNexusGlow()
 	var/gradient_offset = input(src, "Choose the gradient offset (1 to 10). 1 is a tight falloff; 10 fades slowly across the selected size.", "Test Glow", 10) as num|null
 	if(isnull(gradient_offset)) return
 	gradient_offset = round(Clamp(gradient_offset, 1, 10))
-	setNexusActionGlow("#ffffff", light_size, 255, 'NexusLightGradient.dmi', gradient_offset)
+	setNexusActionGlow("#ffffff", light_size, 255, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset)
 	var/test_generation = nexus_action_glow_generation
 	src << "A maximum-intensity white glow with a [light_size]-tile diameter and gradient offset [gradient_offset] will remain attached to you for 10 seconds."
 	spawn(100) if(src && nexus_action_glow_generation == test_generation) clearNexusActionGlow()
@@ -736,9 +747,9 @@ mob/Admin2/verb/testNexusLightVariations()
 		if("Small Blast") launchNexusLightingTestBlast(1.05, 145, NEXUS_LIGHT_VARIATION_SMALL_BLAST)
 		if("Standard Blast") launchNexusLightingTestBlast()
 		if("Beam Trail") launchNexusLightingTestBeam()
-		if("Beam Source") setNexusActionGlow("#59d8ff", 3.5, 225, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
-		if("Aura") setNexusAuraGlow("#76dfff", 3, 190, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
-		if("Ki Charge") setNexusActionGlow("#59d8ff", 2.75, 210, 'NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
+		if("Beam Source") setNexusActionGlow("#59d8ff", 3.5, 225, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_BEAM_SOURCE)
+		if("Aura") setNexusAuraGlow("#76dfff", 3, 190, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_AURA)
+		if("Ki Charge") setNexusActionGlow("#59d8ff", 2.75, 210, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, NEXUS_LIGHT_VARIATION_CHARGE)
 	if(choice in list("Beam Source", "Ki Charge"))
 		var/action_generation = nexus_action_glow_generation
 		spawn(100) if(src && nexus_action_glow_generation == action_generation) clearNexusActionGlow()
@@ -754,7 +765,7 @@ mob/Admin2/verb/testNexusTurfOcclusion()
 		return
 	nexus_light_turf_occlusion_enabled = TRUE
 	setMaximumDarkness()
-	setNexusActionGlow("#fff4cf", 7, 255, 'NexusLightGradient.dmi', 10, NEXUS_LIGHT_VARIATION_CHARGE)
+	setNexusActionGlow("#fff4cf", 7, 255, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 10, NEXUS_LIGHT_VARIATION_CHARGE)
 	var/test_generation = nexus_action_glow_generation
 	src << "A seven-tile test light will follow you for 20 seconds. Walk beside walls and closed opaque doors: their visible face is lit, but tiles behind them remain dark."
 	spawn(200) if(src && nexus_action_glow_generation == test_generation) clearNexusActionGlow()
@@ -812,7 +823,7 @@ atom
 obj
 	LightSource
 		parent_type = /obj/NexusLighting/Emitter
-		icon = 'NexusLightGradient.dmi'
+		icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi'
 		density = 0
 		Savable = 0
 		plane = NEXUS_LIGHTING_PLANE
@@ -826,7 +837,7 @@ obj
 			max_alpha = 70
 			fade_with_day = 1
 			light_range = 1
-			light_icon_resource = 'NexusLightGradient.dmi'
+			light_icon_resource = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi'
 			light_gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET
 			tmp/light_transition_generation = 0
 
@@ -881,7 +892,7 @@ obj
 			del(light_obj)
 			light_obj = null
 
-		GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
+		GiveLightSource(size = 1, max_alpha = 60, light_color = rgb(255,255,255), auto_fade = 1, light_icon = 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', gradient_offset = NEXUS_GLOW_DEFAULT_OFFSET)
 			set waitfor=0
 
 			//too many lights on screen can crash people. so dont add a light if too many nearby objects already have lights

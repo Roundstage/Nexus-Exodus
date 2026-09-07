@@ -73,7 +73,7 @@ HUD
 	parent_type = /obj
 	plane = NEXUS_FIXED_HUD_PLANE
 	charBubble
-		icon = 'CharBubble.dmi'
+		icon = 'src/Icons/UI/CharBubble.dmi'
 		layer = OBJ_LAYER + EFFECTS_LAYER + MOB_LAYER + 1
 
 	screenAnchor
@@ -117,15 +117,15 @@ HUD
 			spawn(1) Update(U, t)
 
 		healthBar
-			icon = 'Healthbar.dmi'
+			icon = 'src/Icons/UI/Healthbar.dmi'
 			icon_state = "100"
 			getStat = "health"
 		stamBar
-			icon = 'Stambar.dmi'
+			icon = 'src/Icons/UI/Stambar.dmi'
 			icon_state = "100"
 			getStat = "stamina"
 		kiBar
-			icon = 'Kibar.dmi'
+			icon = 'src/Icons/UI/Kibar.dmi'
 			icon_state = "100"
 			getStat = "Ki"
 
@@ -171,7 +171,7 @@ proc/getOverheadVitalIcon(percent, accent_color)
 	var/fill_width = round(percent * 0.32)
 	var/cache_key = "[accent_color]-[fill_width]"
 	if(overhead_vital_icon_cache[cache_key]) return overhead_vital_icon_cache[cache_key]
-	var/icon/vital_icon = icon('Healthbar.dmi', "100")
+	var/icon/vital_icon = icon('src/Icons/UI/Healthbar.dmi', "100")
 	vital_icon.Scale(32, 3)
 	vital_icon.DrawBox("#21170f", 1, 1, 32, 3)
 	if(fill_width) vital_icon.DrawBox(accent_color, 1, 1, fill_width, 3)
@@ -180,7 +180,7 @@ proc/getOverheadVitalIcon(percent, accent_color)
 
 proc/getVitalsPanelIcon()
 	if(vitals_panel_icon) return vitals_panel_icon
-	vitals_panel_icon = icon('UserNamesBarsUi.png')
+	vitals_panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	vitals_panel_icon.Scale(296, 136)
 	vitals_panel_icon.DrawBox(rgb(31, 23, 15, 232), 1, 1, 296, 136)
 	vitals_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)
@@ -199,7 +199,7 @@ proc/getVitalsBarIcon(percent, accent_color)
 	var/fill_width = round(percent * 1.6)
 	var/cache_key = "[accent_color]-[fill_width]"
 	if(vitals_bar_icon_cache[cache_key]) return vitals_bar_icon_cache[cache_key]
-	var/icon/bar_icon = icon('UserNamesBarsUi.png')
+	var/icon/bar_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	bar_icon.Scale(168, 19)
 	bar_icon.DrawBox("#1a120c", 1, 1, 168, 19)
 	bar_icon.DrawBox("#46321f", 5, 3, 164, 16)
@@ -215,7 +215,7 @@ proc/getPowerGaugeIcon(percent, over_limit)
 	var/cache_key = "[over_limit]-[fill_height]"
 	if(power_gauge_icon_cache[cache_key]) return power_gauge_icon_cache[cache_key]
 	var/gauge_color = over_limit ? "#ff5c45" : "#b983ff"
-	var/icon/gauge_icon = icon('UserNamesBarsUi.png')
+	var/icon/gauge_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	gauge_icon.Scale(7, 72)
 	gauge_icon.DrawBox("#1a120c", 1, 1, 7, 72)
 	gauge_icon.DrawBox("#5b4227", 3, 3, 5, 68)
@@ -226,7 +226,7 @@ proc/getPowerGaugeIcon(percent, over_limit)
 
 proc/getActiveModifiersPanelIcon()
 	if(active_modifiers_panel_icon) return active_modifiers_panel_icon
-	active_modifiers_panel_icon = icon('UserNamesBarsUi.png')
+	active_modifiers_panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	active_modifiers_panel_icon.Scale(296, 38)
 	active_modifiers_panel_icon.DrawBox(rgb(31, 23, 15, 242), 1, 1, 296, 38)
 	active_modifiers_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)

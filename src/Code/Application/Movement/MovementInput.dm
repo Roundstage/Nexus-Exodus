@@ -261,6 +261,7 @@ mob/proc
 		if(apply_diagonal_penalty && isMovementDiagonal(d)) delay_mult = _GetInputMoveDelay_diagonal_mult(delay_mult)
 		if(delay_mult) speed /= delay_mult
 		if(walking_mode) speed = min(speed, vector_walk_speed_pixels_per_second)
+		if(destruction_aura_active) speed *= 0.7
 		return max(0, speed)
 
 	setWalkingMode(enabled, announce = TRUE)

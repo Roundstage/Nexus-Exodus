@@ -100,7 +100,7 @@ proc/HakaiOverlay(mob/m, hakai_time = 50)
 	set waitfor=0
 	var/obj/Effect/hakai_ball = GetEffect()
 	hakai_ball.loc = m.base_loc()
-	hakai_ball.icon = 'HakaiBall.dmi'
+	hakai_ball.icon = 'src/Icons/Ki/Effects/HakaiBall.dmi'
 	CenterIcon(hakai_ball)
 	hakai_ball.alpha = 0
 	hakai_ball.layer = 3.9

@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "phase": 2,
+  "landing": {
+    "x": 250,
+    "y": 78,
+    "radius": 10
+  },
+  "spawn": {
+    "x": 250,
+    "y": 250
+  },
+  "combatClear": {
+    "x1": 232,
+    "y1": 219,
+    "x2": 269,
+    "y2": 248
+  },
+  "points": [
+    {
+      "name": "Planet landing",
+      "x": 250,
+      "y": 78
+    },
+    {
+      "name": "Capital forum spawn",
+      "x": 250,
+      "y": 250
+    },
+    {
+      "name": "Archive",
+      "x": 230,
+      "y": 277
+    },
+    {
+      "name": "Energy pavilion",
+      "x": 270,
+      "y": 280
+    },
+    {
+      "name": "Arrival concourse",
+      "x": 230,
+      "y": 143
+    },
+    {
+      "name": "Departure concourse",
+      "x": 270,
+      "y": 143
+    }
+  ],
+  "publicRooms": [
+    [
+      220,
+      129,
+      239,
+      157
+    ],
+    [
+      261,
+      129,
+      280,
+      157
+    ],
+    [
+      220,
+      264,
+      241,
+      290
+    ],
+    [
+      261,
+      270,
+      280,
+      289
+    ]
+  ],
+  "changedChunks": [
+    "ViltrumB3.dmm",
+    "ViltrumC3.dmm",
+    "ViltrumD3.dmm",
+    "ViltrumE3.dmm"
+  ],
+  "status": "Revised style approved by user on 2026-09-06; capital and wilderness expanded; interactive review deferred.",
+  "revision": 2,
+  "architecture": "Solid opaque roof perimeter, decorative wall facade, walkable interior floors; furnishings are transparent objects."
+}

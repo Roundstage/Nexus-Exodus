@@ -26,12 +26,12 @@ mob/proc
 		set waitfor=0
 		if(stun_loop) return
 		stun_loop = 1
-		overlays -= 'StunOverlay.dmi'
-		overlays += 'StunOverlay.dmi'
+		overlays -= 'src/Icons/Unsorted/StunOverlay.dmi'
+		overlays += 'src/Icons/Unsorted/StunOverlay.dmi'
 		while(stun_time > 0)
 			stun_time -= world.tick_lag
 			sleep(world.tick_lag)
 			stun_immunity = world.time + 13
-		overlays -= 'StunOverlay.dmi'
+		overlays -= 'src/Icons/Unsorted/StunOverlay.dmi'
 		stun_level = 0
 		stun_loop = 0

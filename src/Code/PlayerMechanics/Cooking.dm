@@ -10,13 +10,13 @@ proc/Cook_Check(mob/A) //Checks if a fire is nearby to make A cook
 	for(var/obj/Turfs/Stove/B in view(1,A)) return 1
 proc/Cook(mob/Body/A) if(!A.Cooked)
 	A.Level*=6
-	A.icon='FoodLeg.dmi'
+	A.icon='src/Icons/Objects/Food/FoodLeg.dmi'
 	A.name="Food Leg"
 	A.overlays=null
 	A.Cooked=1
 mob/var/Poisoned=0
 obj/Grave
-	icon='Graves.dmi'
+	icon='src/Icons/MapObjects/Graves.dmi'
 	icon_state="5"
 	Savable=1
 	density=1
@@ -62,6 +62,6 @@ mob/Body
 	New()
 		all_bodies += src
 		spawn(9000) if(src)
-			overlays+='Flies.dmi'
+			overlays+='src/Icons/NPC/Flies.dmi'
 			Level=0
 		//. = ..()

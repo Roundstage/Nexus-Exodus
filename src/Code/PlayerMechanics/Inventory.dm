@@ -3,7 +3,7 @@ obj/var/can_radar = 1
 var/list/brain_scramblers=new
 obj/Brain_Scrambler
 	can_change_icon=0
-	icon='SmallDish.dmi'
+	icon='src/Icons/Objects/SmallDish.dmi'
 	icon_state="green"
 	Cost=25000000
 	science = 1
@@ -38,7 +38,7 @@ mob/proc/Brain_scrambled()
 		var/area/o_area=locate(/area) in range(0,o)
 		if(get_area()==o_area) return 1
 obj/items/Brain_Scrambler_Blocker
-	icon='ScrambleProtector.dmi'
+	icon='src/Icons/Objects/Items/ScrambleProtector.dmi'
 	Cost=2000000
 	science = 1
 	science_level = 5
@@ -58,7 +58,7 @@ mob/proc/EMP_mine_loop()
 
 var/list/emp_mine_list=new
 obj/items/EMP_Mine
-	icon='Weapons.dmi'
+	icon='src/Icons/Objects/Technology/Weapons.dmi'
 	icon_state="EMP Mine"
 	Cost=500000
 	hotbar_type="Combat item"
@@ -106,7 +106,7 @@ obj/items/EMP_Mine
 				m.Ki-=25
 				if(m.Health<15) m.KO("electromagnetic pulse")
 		for(var/v in 1 to 3)
-			Make_Shockwave(src,5,'Electricgroundbeam2.dmi')
+			Make_Shockwave(src,5,'src/Icons/Ki/Electricity/Electricgroundbeam2.dmi')
 			sleep(5)
 		del(src)
 
@@ -116,7 +116,7 @@ obj/items/EMP_Mine
 var/list/teleport_nullifiers=new
 obj/Giant_Teleport_Nullifier
 	can_change_icon=0
-	icon='SmallDish.dmi'
+	icon='src/Icons/Objects/SmallDish.dmi'
 	icon_state="purple"
 	Cost=25000000
 	makes_toxic_waste=1
@@ -199,7 +199,7 @@ obj/items/Teleport_Nullifier
 	science = 1
 	science_level = 5
 	science_path = "Engineering"
-	icon='Weapons.dmi'
+	icon='src/Icons/Objects/Technology/Weapons.dmi'
 	icon_state="Teleport Nullifier"
 	desc="Simply having this on you will prevent anyone within a certain range from being able to use \
 	form of teleportation. It is great for stopping runners from teleporting away."
@@ -224,7 +224,7 @@ obj/Wall_upgrader_bot
 	science_level = 5
 	science_path = "Engineering"
 	makes_toxic_waste=0
-	icon='Modules.dmi'
+	icon='src/Icons/Objects/Technology/Modules.dmi'
 	icon_state="3"
 	New()
 		wall_bots+=src
@@ -263,7 +263,7 @@ obj/Resource_Destroyer
 	science_level = 7
 	science_path = "Engineering"
 	makes_toxic_waste=1
-	icon='DrillRig.dmi'
+	icon='src/Icons/Objects/Technology/DrillRig.dmi'
 	New()
 		resource_destroyers+=src
 	desc="Somehow this device stops a planet from generating any resources. Just place it anywhere."
@@ -286,7 +286,7 @@ obj/items/Scrapper
 	Cost=10000
 	science = 1
 	science_level = 3
-	icon='DrillHand.dmi'
+	icon='src/Icons/Objects/Technology/DrillHand.dmi'
 	desc="Use this on any technology in front of you to scrap it and recieve any resources that can be \
 	salvaged. The better your speed, the faster you will scrap things."
 	Stealable=1
@@ -345,7 +345,7 @@ obj/proc/Scrap_value()
 obj/Spawn_Redirector
 	can_change_icon=0
 	Cost=0
-	icon='FactionBadge.dmi'
+	icon='src/Icons/Objects/Technology/FactionBadge.dmi'
 	desc="Use the 'Set spawn' command on this to set which spawn it will redirect to. Then place it on \
 	an existing spawn. Anyone who spawns on it will then be instantly redirected to the spawn you chose. \
 	This will not work if there is a teleport nullifier disrupting it"
@@ -388,7 +388,7 @@ obj/Spawn_Redirector
 
 mob/var/blood_bags=0
 obj/items/Blood_bag
-	icon='BloodBag.dmi'
+	icon='src/Icons/Unsorted/BloodBag.dmi'
 	icon_state="empty"
 	Cost=30000
 	science = 1
@@ -429,7 +429,7 @@ obj/Orbital_Cannon
 	up ships/pods it spots on the surface. It is expensive and somewhat easily destroyed if someone \
 	in space attacks it. Right click it for settings. Nanites within the orbital cannon will gradually \
 	repair any damage taken to the cannon"
-	icon='Satellite.dmi'
+	icon='src/Icons/Unsorted/Satellite.dmi'
 	Cost=10000000
 	science = 1
 	science_level = 7
@@ -481,7 +481,7 @@ obj/Orbital_Cannon
 	proc/orbital_strike(obj/target,obj/Orbital_Cannon/self)
 		var/obj/o=new
 		o.Health=self.orbital_strike_power*3
-		o.icon='Blast0.dmi'
+		o.icon='src/Icons/Ki/Blasts/Blast0.dmi'
 		o.SafeTeleport(target.base_loc())
 		if(o.y+15<world.maxy) o.y+=15
 		while(o&&target&&target.z)
@@ -539,7 +539,7 @@ obj/Orbital_Cannon
 
 obj/items/Call_bounty_drone
 	Cost=150000
-	icon='Cloak.dmi'
+	icon='src/Icons/Objects/Technology/Cloak.dmi'
 	science = 1
 	science_level = 3
 	clonable = 0
@@ -580,7 +580,7 @@ var/list/ki_field_generators=new
 obj/Ki_Field_Generator
 	name="Ki Jammer"
 	can_change_icon=0
-	icon='SmallDish.dmi'
+	icon='src/Icons/Objects/SmallDish.dmi'
 	Cost=50000000
 	makes_toxic_waste=1
 	science = 1
@@ -602,7 +602,7 @@ obj/Ki_Field_Generator
 obj/var/clonable=1
 
 obj/items/Radar
-	icon='Misc2.dmi'
+	icon='src/Icons/Unsorted/Other/Misc2.dmi'
 	icon_state="Radar"
 	Cost=1000000
 	science = 1
@@ -652,7 +652,7 @@ obj/items/Radar
 obj/items/Door_Hacker
 	Can_Drop_With_Suffix=1
 	Stealable=1
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="GBA"
 	makes_toxic_waste=1
 	clonable = 0
@@ -711,7 +711,7 @@ obj/items/Devil_Mat
 	desc="Meditating on this mat will actually DECREASE the stat you are focused on. This can be useful if \
 	you are at the stat cap but you don't like how you trained your stats, so you want to lower yourself below \
 	the stat cap and train a different stat. This will have no effect if you are focused on energy or balanced."
-	icon='HellTurf.dmi'
+	icon='src/Icons/Turfs/HellTurf.dmi'
 	icon_state="h4"
 	Cost=0 //3000
 	takes_gradual_damage=1
@@ -736,7 +736,7 @@ obj/items/Devil_Mat
 
 	New()
 		overlays-=overlays
-		var/image/I=image(icon='ElectricYellow.dmi',layer=5)
+		var/image/I=image(icon='src/Icons/Ki/Electricity/ElectricYellow.dmi',layer=5)
 		overlays-=I
 		overlays+=I
 
@@ -859,7 +859,7 @@ proc/Auto_bounty_evil()
 var/list/bounty_computers=new
 obj/Bounty_Computer
 	pixel_y=-10
-	icon='Lab2.dmi'
+	icon='src/Icons/Objects/Technology/Lab2.dmi'
 	icon_state="ControlTypeA"
 	Cost=20000
 	science = 1
@@ -998,7 +998,7 @@ obj/Bounty_Computer
 						Bounties-=T
 obj/items/Medical_Scan
 	Stealable=1
-	icon='Lab2.dmi'
+	icon='src/Icons/Objects/Technology/Lab2.dmi'
 	icon_state="WallDisplayA"
 	desc="This displays information about your character's health. Just click it while next to it or have it on you \
 	and click it."
@@ -1036,7 +1036,7 @@ obj/items/Medical_Scan
 var/list/biogens = new
 
 obj/Bio_Field_Generator
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Tower 1"
 	density=1
 	Savable=1
@@ -1060,8 +1060,8 @@ obj/Bio_Field_Generator
 	New()
 		biogens += src
 		Bio_Field_Generator()
-		var/image/A=image(icon='Lab.dmi',icon_state="Tower 2",pixel_y=32)
-		var/image/B=image(icon='Lab.dmi',icon_state="Tower 3",pixel_y=64)
+		var/image/A=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Tower 2",pixel_y=32)
+		var/image/B=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Tower 3",pixel_y=64)
 		overlays=null
 		if(icon) overlays.Add(A,B)
 
@@ -1110,7 +1110,7 @@ obj/Punch_Machine
 	desc="This tells you how hard you punch. Just punch the correct side of it."
 	Cost=1000
 	density=1
-	icon='Turf1.dmi'
+	icon='src/Icons/Turfs/Turf1.dmi'
 	icon_state="Strength Machine"
 	Health=5000
 	takes_gradual_damage=1
@@ -1130,7 +1130,7 @@ obj/Punch_Machine
 			else usr<<"The [src] is beyond your upgrading abilities"
 obj/items/Pod_Race_Computer
 	Cost=1000
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="ATM"
 	var/list/Racer_List=new
 	var/Racers=0
@@ -1282,7 +1282,7 @@ obj/items/Pod_Race_Computer
 obj/items/Nav_System
 	Cost=100000
 	Stealable=1
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Labtop"
 	desc="This upgradeable navigation system allows you to find planets in space. The only thing you need to do \
 	is have it on you when in space and a navigation tab will open up. It will only show planets that it has \
@@ -1359,7 +1359,7 @@ obj/items/Nav_System
 			player_view(15,usr)<<"The [src] now has autopilot"
 obj/var/Creator
 obj/items/Resource_Vaccuum
-	icon='ItemVaccuum.dmi'
+	icon='src/Icons/Objects/Items/ItemVaccuum.dmi'
 	desc="Click this when it is in your items and it will suck up all resource bags lying around you."
 	var/tmp/Vaccuuming
 	Cost=3000
@@ -1394,7 +1394,7 @@ obj/items/Door_Pass
 	Cost=2000
 	clonable = 0
 	name="Key"
-	icon='DoorPass.dmi'
+	icon='src/Icons/Objects/Technology/DoorPass.dmi'
 	Stealable = 0
 	drop_on_death = 0
 	desc="Click this to set it's password. Door's will check if it is correct and only let you in if it is."
@@ -1440,9 +1440,9 @@ obj/items/Cloning_Tank
 	science_level = 5
 	science_path = "Genetics"
 	New()
-		var/image/A=image(icon='Lab.dmi',icon_state="Tube2",layer=layer-0.1,pixel_y=0,pixel_x=0)
-		var/image/B=image(icon='Lab.dmi',icon_state="Tube2Top",layer=layer+1,pixel_y=32,pixel_x=0)
-		var/image/C=image(icon='Lab.dmi',icon_state="Lab2",layer=layer,pixel_y=12,pixel_x=28)
+		var/image/A=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Tube2",layer=layer-0.1,pixel_y=0,pixel_x=0)
+		var/image/B=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Tube2Top",layer=layer+1,pixel_y=32,pixel_x=0)
+		var/image/C=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Lab2",layer=layer,pixel_y=12,pixel_x=28)
 		overlays=null
 		overlays.Add(A,B,C)
 		cloning_tanks+=src
@@ -1460,7 +1460,7 @@ obj/items/Cloning_Tank
 		usr<<"[src] has been set to clone [usr] if they die."
 		Password=usr.key
 obj/items/Hacking_Console
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Labtop"
 	Stealable=1
 	desc="If this is upgraded past the upgrade level of a door, it can open the door for you."
@@ -1490,7 +1490,7 @@ obj/items/Force_Field
 	Each shot it deflects drains the battery. Having this on you will reduce the rate you leech power \
 	from others because you are not using your own power to defend yourself, but the power of the \
 	force field. If the force field reaches 0 it will cause an explosion strong enough to knock you out."
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Computer 1"
 	Stealable=1
 	proc/Force_Field_Desc()
@@ -1535,7 +1535,7 @@ obj/items/Force_Field
 			Level=Max_Upgrade*(Amount/100)
 			player_view(15,user)<<"[user] upgraded [src] from [Percent]% to [Amount]% ([Commas(Level)] BP)"
 			Force_Field_Desc()
-mob/proc/Force_Field(Icon='ForceField.dmi',C=rgb(100,200,250,120),State="")
+mob/proc/Force_Field(Icon='src/Icons/Objects/Technology/ForceField.dmi',C=rgb(100,200,250,120),State="")
 	set waitfor=0
 	var/obj/O=new
 	O.icon=Icon
@@ -1547,7 +1547,7 @@ mob/proc/Force_Field(Icon='ForceField.dmi',C=rgb(100,200,250,120),State="")
 	spawn(50) overlays-=I
 obj/items/Detonator
 	Cost=30000
-	icon='CellPhone.dmi'
+	icon='src/Icons/Objects/Technology/CellPhone.dmi'
 	clonable = 0
 	Stealable=1
 	science = 1
@@ -1585,7 +1585,7 @@ obj/items/Detonator
 						spawn if(A) A.Remote_Detonation()
 obj/items/Cloak_Controls
 	Cost=10000000
-	icon='Cloak.dmi'
+	icon='src/Icons/Objects/Technology/Cloak.dmi'
 	science = 1
 	science_level = 5
 	science_path = "Engineering"
@@ -1640,7 +1640,7 @@ obj/items/Cloak
 	science = 1
 	science_level = 5
 	science_path = "Engineering"
-	icon='Cloak.dmi'
+	icon='src/Icons/Objects/Technology/Cloak.dmi'
 	desc="You can install this on any object to cloak it using cloak controls. First you must set the \
 	password so that it matches the password of your cloak controls or it cannot be activated by those \
 	controls."
@@ -1666,7 +1666,7 @@ obj/items/Communicator
 	Cost=1000
 	science = 1
 	science_level = 2
-	icon='CellPhone.dmi'
+	icon='src/Icons/Objects/Technology/CellPhone.dmi'
 	desc="Use this to call somebody who also has a cell phone. Just use Say or Whisper and you can \
 	talk to them til the call has ended. You end a call by hitting Use again. Anyone within 1 space \
 	of you can hear your conversation and also be heard on the cell phone"
@@ -1696,7 +1696,7 @@ obj/items/Stun_Chip
 	science = 1
 	science_level = 5
 	science_path = "Robotics"
-	icon='ControlChip.dmi'
+	icon='src/Icons/Objects/Technology/ControlChip.dmi'
 	Stealable=1
 	desc="You can install this on someone and use the Stun Remote to stun them temporarily. To use the \
 	remote to stun them your remote must share the same remote access code as the installed chip. \
@@ -1738,7 +1738,7 @@ obj/Stun_Chip
 	remote to stun them your remote must share the same remote access code as the installed chip. \
 	You can also use this to remove chips from somebody using the Remove command, both chips will be \
 	destroyed in the process."
-	icon='ControlChip.dmi'
+	icon='src/Icons/Objects/Technology/ControlChip.dmi'
 	New()
 		stun_chips+=src
 	Del()
@@ -1749,7 +1749,7 @@ obj/items/Stun_Controls
 	science = 1
 	science_level = 5
 	science_path = "Robotics"
-	icon='StunControls.dmi'
+	icon='src/Icons/Objects/Technology/StunControls.dmi'
 	desc="You can use this to activate a stun chip you have installed on somebody. It only works \
 	on people within range."
 	Stealable=1
@@ -1816,7 +1816,7 @@ obj/items/Transporter_Pad
 	science_path = "Engineering"
 	name="Telepad"
 	era_reset_immune=1
-	icon='TransporterPad.dmi'
+	icon='src/Icons/Objects/Technology/TransporterPad.dmi'
 	desc="You can use this to teleport yourself between other pads sharing the same remote access code"
 	Stealable=1
 	Level=1
@@ -1890,11 +1890,11 @@ obj/items/Transporter_Pad
 		var/obj/items/Transporter_Pad/C=input("Go to which telepad?") in A
 		if(C=="Cancel") return
 		if(!(src in usr.loc)) return
-		usr.overlays+='SBombGivePower.dmi'
+		usr.overlays+='src/Icons/Ki/Effects/SBombGivePower.dmi'
 		sleep(30)
 		if(usr)
-			usr.overlays-='SBombGivePower.dmi'
-			usr.overlays-='SBombGivePower.dmi'
+			usr.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
+			usr.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
 			usr.ReleaseGrab()
 			player_view(10,usr)<<sound('Teleport.ogg',volume=25)
 			if(C&&C.z) usr.SafeTeleport(C.loc)
@@ -1920,7 +1920,7 @@ obj/items/Transporter_Watch
 	science_level = 5
 	science_path = "Engineering"
 	name="Telewatch"
-	icon='TransporterWatch.dmi'
+	icon='src/Icons/Objects/Technology/TransporterWatch.dmi'
 	desc="You can use this to teleport yourself to any telepad that matches your watch's \
 	remote access code. Or to any player who has a telewatch with a matching code."
 	Level=2
@@ -1985,7 +1985,7 @@ obj/items/Transporter_Watch
 		if(usr.Teleport_nulled(Password))
 			usr<<"The telewatch will not work because there is a teleport nullifier somewhere disrupting it"
 			return
-		usr.overlays+='SBombGivePower.dmi'
+		usr.overlays+='src/Icons/Ki/Effects/SBombGivePower.dmi'
 		var/timer=40
 		var/turf/old_loc=usr.loc
 		var/teleport_failed
@@ -2008,10 +2008,10 @@ obj/items/Transporter_Watch
 
 			sleep(TickMult(1))
 			if(!canContinueNexusTradeInteraction(user, original_location))
-				user.overlays-='SBombGivePower.dmi'
+				user.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
 				return
-		usr.overlays-='SBombGivePower.dmi'
-		usr.overlays-='SBombGivePower.dmi'
+		usr.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
+		usr.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
 		if(ismob(usr.loc)) return
 		if(usr.BodySwapVictim()) return
 		if(teleport_failed) return
@@ -2047,7 +2047,7 @@ obj/var/Injection
 mob/var/Intelligence_Booster
 
 obj/items/Intelligence_Booster
-	icon='PoisonInjection.dmi'
+	icon='src/Icons/Objects/Technology/PoisonInjection.dmi'
 	Cost=10000000
 	science = 1
 	science_level = 5
@@ -2076,7 +2076,7 @@ obj/items/Diarea_Injection
 	Injection=1
 	Cost=8000000
 	clonable = 0
-	icon='DiareaInjection.dmi'
+	icon='src/Icons/Objects/Technology/DiareaInjection.dmi'
 	Level=200
 	Stealable=1
 	verb/Hotbar_use()
@@ -2093,7 +2093,7 @@ obj/items/Diarea_Injection
 mob/var/Youthenasia=1
 obj/items/Youthenasia
 	Cost=1000000
-	icon='Roids.dmi'
+	icon='src/Icons/Objects/Technology/Roids.dmi'
 	science = 1
 	science_level = 5
 	science_path = "Genetics"
@@ -2113,7 +2113,7 @@ obj/items/Youthenasia
 		del(src)
 mob/var/LSD=0
 obj/items/LSD
-	icon='LSD.dmi'
+	icon='src/Icons/Objects/Items/LSD.dmi'
 	Level=40
 	Stealable=1
 	Injection=1
@@ -2158,7 +2158,7 @@ mob/proc/LSD()
 				var/obj/O=new(T)
 				O.Savable=0
 				O.invisibility=2
-				O.icon=pick('BodyParts.dmi','ExplodedHead.dmi','PoolOfBlood.dmi')
+				O.icon=pick('src/Icons/Effects/BodyParts.dmi','src/Icons/Effects/ExplodedHead.dmi','src/Icons/Effects/PoolOfBlood.dmi')
 				O.pixel_x=rand(-10,10)
 				O.pixel_y=rand(-10,10)
 				Timed_Delete(O,rand(0,1200))
@@ -2194,11 +2194,11 @@ mob/proc/LSD()
 			Timed_Delete(O,300)
 			switch(rand(1,2))
 				if(1)
-					O.icon='Bunchie.dmi'
+					O.icon='src/Icons/NPC/Bunchie.dmi'
 					O.name="Bunchie"
 					O.LSD_Monster(src)
 				if(2)
-					O.icon='MichaelJackson.dmi'
+					O.icon='src/Icons/NPC/MichaelJackson.dmi'
 					O.name="Michael Jackson"
 					O.LSD_Monster(src)
 		sleep(rand(0,1200/sqrt(LSD)))
@@ -2212,7 +2212,7 @@ obj/items/layer=4
 mob/var/Fruits_Eaten=0
 
 obj/items/Fruit
-	icon='YemmaFruit.dmi'
+	icon='src/Icons/Objects/Items/YemmaFruit.dmi'
 	Stealable=1
 	clonable = 0
 	desc="Eating this will increase your power. Each one you eat gives you less."
@@ -2241,7 +2241,7 @@ obj/items/Fruit
 
 obj/items/Moon
 	Cost=8000
-	icon='Moon.dmi'
+	icon='src/Icons/Objects/Items/Moon.dmi'
 	hotbar_type="Combat item"
 	can_hotbar=1
 	Stealable=1
@@ -2285,13 +2285,13 @@ obj/items/Moon
 			A.Value-=Res_Cost
 			Total_Cost+=Res_Cost
 			Emitter=1
-			icon='Moon2.dmi'
+			icon='src/Icons/Objects/Items/Moon2.dmi'
 		Tech+=1
 
 obj/var/Stealable
 obj/items/PDA
 	Cost=5000
-	icon='PDA.dmi'
+	icon='src/Icons/Objects/Technology/PDA.dmi'
 	desc="This can be used to store information, even youtube videos."
 	Stealable=1
 	var/tmp/initial_reference_check_pending = TRUE
@@ -2318,7 +2318,7 @@ obj/items/PDA
 
 obj/Well
 	Health=1.#INF
-	icon='Props.dmi'
+	icon='src/Icons/MapObjects/Props.dmi'
 	icon_state="well 2013"
 	Dead_Zone_Immune=1
 	density=1
@@ -2399,7 +2399,7 @@ obj/items
 		Savable=0
 		var
 			weight=5
-		icon='ClothesShortSleeveShirt.dmi'
+		icon='src/Icons/PlayerIcons/Clothes/ClothesShortSleeveShirt.dmi'
 		Stealable=1
 		desc="Wearing these will greatly increase BP gain and how fast you will catch up while fighting a stronger opponent. \
 		Attacks will take much more energy than normal, and your \
@@ -2475,8 +2475,8 @@ obj/items
 					Health=max_health
 				else usr<<"The [src] is beyond your upgrading abilities"
 		New()
-			var/image/A=image(icon='Lab.dmi',icon_state="Tube",pixel_y=-32)
-			var/image/B=image(icon='Lab.dmi',icon_state="TubeTop",pixel_y=0)
+			var/image/A=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="Tube",pixel_y=-32)
+			var/image/B=image(icon='src/Icons/Objects/Technology/Lab.dmi',icon_state="TubeTop",pixel_y=0)
 			overlays=null
 			overlays.Add(A,B)
 			. = ..()
@@ -2659,7 +2659,7 @@ obj/items/Armor
 	hotbar_type="Combat item"
 	can_hotbar=1
 	can_change_icon=1
-	icon='Armor1.dmi'
+	icon='src/Icons/PlayerIcons/Clothes/Armor/Armor1.dmi'
 	var/Armor=0
 	var/heaviness=1
 	var/tmp/Choosing_Icon
@@ -2741,11 +2741,11 @@ obj/items/Armor
 						heaviness=n
 var/list/Armor_Icons //this is actually list of objects
 
-var/list/armor_icon_list = list('Armor1.dmi','NappaArmor.dmi','Armor2.dmi','Armor3.dmi','Armor4.dmi','Armor5.dmi',\
-	'Armor6.dmi','Armor7.dmi','WhiteMaleArmor.dmi','ArmorBardock.dmi','TurlesArmor.dmi',\
-	'GinsDynastyArmorRed.dmi','PhoenixFullMakyo.dmi','PhoenixFullMoonlight.dmi',\
-	'PhoenixFullNegativeMakyo.dmi','PhoenixFullNegative.dmi','PhoenixFull.dmi','WtfArmor.dmi',\
-	'BlueArmor.dmi','RedArmor.dmi','RaditzArmorTobiUchiha.dmi','TurlesArmorTobiUchiha.dmi')
+var/list/armor_icon_list = list('src/Icons/PlayerIcons/Clothes/Armor/Armor1.dmi','src/Icons/PlayerIcons/Clothes/Armor/NappaArmor.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor2.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor3.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor4.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor5.dmi',\
+	'src/Icons/PlayerIcons/Clothes/Armor/Armor6.dmi','src/Icons/PlayerIcons/Clothes/Armor/Armor7.dmi','src/Icons/PlayerIcons/Clothes/Armor/WhiteMaleArmor.dmi','src/Icons/PlayerIcons/Clothes/Armor/ArmorBardock.dmi','src/Icons/PlayerIcons/Clothes/TurlesArmor.dmi',\
+	'src/Icons/PlayerIcons/Clothes/Armor/GinsDynastyArmorRed.dmi','src/Icons/PlayerIcons/Clothes/Exgenesis1212012/PhoenixArmour/PhoenixFullMakyo.dmi','src/Icons/PlayerIcons/Clothes/Exgenesis1212012/PhoenixArmour/PhoenixFullMoonlight.dmi',\
+	'src/Icons/PlayerIcons/Clothes/Exgenesis1212012/PhoenixArmour/PhoenixFullNegativeMakyo.dmi','src/Icons/PlayerIcons/Clothes/Exgenesis1212012/PhoenixArmour/PhoenixFullNegative.dmi','src/Icons/PlayerIcons/Clothes/Exgenesis1212012/PhoenixArmour/PhoenixFull.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/WtfArmor.dmi',\
+	'src/Icons/PlayerIcons/TobiUchihaIcons/BlueArmor.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/RedArmor.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/RaditzArmorTobiUchiha.dmi','src/Icons/PlayerIcons/TobiUchihaIcons/TurlesArmorTobiUchiha.dmi')
 
 proc/Armor_Icons()
 	if(!Armor_Icons) Armor_Icons=new/list
@@ -2822,7 +2822,7 @@ mob/var/tmp/skip_restore_hotbar
 obj/items
 	Scouter
 		Cost=15000
-		icon='Scouter.dmi'
+		icon='src/Icons/Objects/Technology/Scouter.dmi'
 		science = 1
 		science_level = 4
 		var/Scan=1000
@@ -2912,10 +2912,10 @@ obj/items
 var/list/Sword_Icons
 proc/Sword_Icons()
 	if(!Sword_Icons) Sword_Icons=new/list
-	for(var/V in list('Sword2.dmi','Sword1.dmi','ItemKatana2.dmi','ItemKatana.dmi','ShortSword.dmi',\
-	'ItemSword1.dmi','ItemBusterSword.dmi','ItemDualBlazeSword.dmi','ItemDualElectricSword.dmi',\
-	'ItemGreatSword.dmi','SwordFlameComplete.dmi','Sword2Katanas.dmi','SwordSamurai.dmi',\
-	'SwordTrunks.dmi','Falseneoblade.dmi','KingdomKey.dmi','KiSword.dmi','YinYang.dmi'))
+	for(var/V in list('src/Icons/Objects/Swords/Sword2.dmi','src/Icons/Objects/Swords/Sword1.dmi','src/Icons/Objects/Items/ItemKatana2.dmi','src/Icons/Objects/Items/ItemKatana.dmi','src/Icons/Objects/Swords/ShortSword.dmi',\
+	'src/Icons/Objects/Items/ItemSword1.dmi','src/Icons/Objects/Items/ItemBusterSword.dmi','src/Icons/Objects/Items/ItemDualBlazeSword.dmi','src/Icons/Objects/Items/ItemDualElectricSword.dmi',\
+	'src/Icons/Objects/Items/ItemGreatSword.dmi','src/Icons/Objects/Swords/SwordFlameComplete.dmi','src/Icons/Objects/Swords/Sword2Katanas.dmi','src/Icons/Objects/Swords/SwordSamurai.dmi',\
+	'src/Icons/Objects/Swords/SwordTrunks.dmi','src/Icons/Objects/Swords/Falseneoblade.dmi','src/Icons/Objects/Swords/KingdomKey.dmi','src/Icons/Objects/Swords/KiSword.dmi','src/Icons/Objects/Swords/YinYang.dmi'))
 		var/obj/Sword_Icon/O=new
 		O.icon=V
 		Sword_Icons+=O
@@ -2939,7 +2939,7 @@ obj/items
 		can_change_icon=1
 		var/tmp/Choosing_Icon
 		Cost=50000
-		icon='SwordTrunks.dmi'
+		icon='src/Icons/Objects/Swords/SwordTrunks.dmi'
 		Health=10000000
 		Stealable=0
 		clonable=1
@@ -3063,7 +3063,7 @@ obj/items
 		Stealable=1
 		Savable=0
 		Shovel
-			icon='Shovel.dmi'
+			icon='src/Icons/Unsorted/Other/Shovel.dmi'
 			desc="This will help increase the speed at which you can dig up resources."
 			DigMult=2
 			Cost=3000
@@ -3077,7 +3077,7 @@ obj/items
 				if(!suffix) suffix="Equipped"
 				else suffix=null
 		Hand_Drill
-			icon='DrillHand2.dmi'
+			icon='src/Icons/Objects/Technology/DrillHand2.dmi'
 			desc="This will help increase the speed at which you can dig up resources."
 			DigMult=8
 			Cost=10000
@@ -3118,7 +3118,7 @@ obj/items/Hover_Chair
 	science = 1
 	science_level = 3
 	desc="This will let you have fully functional flying abilities."
-	icon='ItemHoverChair.dmi'
+	icon='src/Icons/Objects/Items/ItemHoverChair.dmi'
 	icon_state="base"
 	density=1
 	layer=MOB_LAYER+10
@@ -3136,11 +3136,11 @@ obj/items/Hover_Chair
 				Health=max_health
 			else usr<<"The [src] is beyond your upgrading abilities"
 	New()
-		var/image/A=image(icon='ItemHoverChair.dmi',icon_state="side1",pixel_y=0,pixel_x=-32,layer=10)
-		var/image/B=image(icon='ItemHoverChair.dmi',icon_state="side2",pixel_y=0,pixel_x=32,layer=10)
-		var/image/C=image(icon='ItemHoverChair.dmi',icon_state="back",pixel_y=0,pixel_x=-0,layer=MOB_LAYER-1)
-		var/image/D=image(icon='ItemHoverChair.dmi',icon_state="front",pixel_y=0,pixel_x=0,layer=MOB_LAYER+10)
-		var/image/E=image(icon='ItemHoverChair.dmi',icon_state="bottom",pixel_y=-32,pixel_x=0,layer=10)
+		var/image/A=image(icon='src/Icons/Objects/Items/ItemHoverChair.dmi',icon_state="side1",pixel_y=0,pixel_x=-32,layer=10)
+		var/image/B=image(icon='src/Icons/Objects/Items/ItemHoverChair.dmi',icon_state="side2",pixel_y=0,pixel_x=32,layer=10)
+		var/image/C=image(icon='src/Icons/Objects/Items/ItemHoverChair.dmi',icon_state="back",pixel_y=0,pixel_x=-0,layer=MOB_LAYER-1)
+		var/image/D=image(icon='src/Icons/Objects/Items/ItemHoverChair.dmi',icon_state="front",pixel_y=0,pixel_x=0,layer=MOB_LAYER+10)
+		var/image/E=image(icon='src/Icons/Objects/Items/ItemHoverChair.dmi',icon_state="bottom",pixel_y=-32,pixel_x=0,layer=10)
 		overlays=null
 		overlays.Add(A,B,C,D,E)
 		. = ..()
@@ -3202,7 +3202,7 @@ obj/items/Senzu
 	Stealable=1
 	hotbar_type="Combat item"
 	can_hotbar=1
-	icon='SenzuBean.dmi'
+	icon='src/Icons/Objects/Items/SenzuBean.dmi'
 	name = "Sensu Bean"
 
 	New()
@@ -3337,7 +3337,7 @@ mob/proc
 		set waitfor=0
 		sleep(world.tick_lag * 2)
 		if(!shikon_aura)
-			var/icon/i = 'SsRedIdleAura.dmi'
+			var/icon/i = 'src/Icons/Ki/Auras/SsRedIdleAura.dmi'
 			i += rgb(0,0,0,203)
 			shikon_aura = image(icon = i, pixel_x = -32, pixel_y = -28)
 		overlays -= shikon_aura
@@ -3354,7 +3354,7 @@ obj/items/Shikon_Jewel
 	Cost=1000000000
 	science = 0
 	science_level = 0
-	icon='ShikonJewel.dmi'
+	icon='src/Icons/Objects/Items/ShikonJewel.dmi'
 	Stealable = 1
 	Health=1.#INF
 	can_be_renamed=0
@@ -3466,7 +3466,7 @@ var
 	focusin_decline_add = 8
 
 obj/items/Focusin
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	desc="Injecting yourself with this will decrease your decline age by 8 years. But for 5 minutes you \
 	will rapidly leech power from those around you. You must inject it into your eyes. \
 	There is a 10% chance you will immediately die. You can only leech up to 85% of a person's BP \
@@ -3521,7 +3521,7 @@ mob/proc/focusin_loop()
 
 mob/var/next_rage_heal=0
 obj/items/RAGE
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	desc="Using this will immediately send you into a drug induced rage, raising your battle power by \
 	half of what your normal anger usually gives. Decreases you decline by only 2 months. You can only get the \
 	full heal from this once every 10 minutes"
@@ -3557,7 +3557,7 @@ obj/items/RAGE
 
 mob/var/Roid_Power=0
 obj/items/Steroids
-	icon='ItemNeedle.dmi'
+	icon='src/Icons/Objects/Items/ItemNeedle.dmi'
 	Cost=4000
 	science = 1
 	science_level = 5

@@ -309,7 +309,7 @@ mob/proc
 		A.KB_On = KB_On
 		A.icon = icon
 		if(Race == "Bio-Android")
-			A.icon = 'Bio3.dmi'
+			A.icon = 'src/Icons/PlayerIcons/BaseIcons/Bio3.dmi'
 			A.Enlarge_Icon(24,24)
 			CenterIcon(A)
 			A.pixel_y = 0
@@ -358,7 +358,7 @@ mob/proc/Sim_Destroy_Loop()
 	del(src)
 
 obj/items/Simulator
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	Can_Drop_With_Suffix=1
 	icon_state="terminal"
 	Stealable=1

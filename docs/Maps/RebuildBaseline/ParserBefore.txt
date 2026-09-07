@@ -1,0 +1,30 @@
+parsing DU.dme
+src/Code/WorldMechanics/SuperEarth.dm, line 15, column 11:
+error: undefined var 'Planet_X' on type '/obj/Planets/SuperEarth'
+
+src/Code/WorldMechanics/SuperEarth.dm, line 16, column 11:
+error: undefined var 'Planet_Y' on type '/obj/Planets/SuperEarth'
+
+src/Code/WorldMechanics/SuperEarth.dm, line 17, column 11:
+error: undefined var 'Planet_Z' on type '/obj/Planets/SuperEarth'
+
+src/Code/WorldMechanics/SuperEarth.dm, line 18, column 12:
+error: undefined var 'Nav_Level' on type '/obj/Planets/SuperEarth'
+
+src/Code/WorldMechanics/Viltrum.dm, line 13, column 11:
+error: undefined var 'Planet_X' on type '/obj/Planets/Viltrum'
+
+src/Code/WorldMechanics/Viltrum.dm, line 14, column 11:
+error: undefined var 'Planet_Y' on type '/obj/Planets/Viltrum'
+
+src/Code/WorldMechanics/Viltrum.dm, line 15, column 11:
+error: undefined var 'Planet_Z' on type '/obj/Planets/Viltrum'
+
+src/Code/WorldMechanics/Viltrum.dm, line 16, column 12:
+error: undefined var 'Nav_Level' on type '/obj/Planets/Viltrum'
+
+there were some parsing errors; render may be inaccurate
+src/Maps/PlanetChunks/Viltrum/ViltrumC3.dmm
+    rendering from 1,1,1 to 1,1,1
+    generating z=1
+    saving .codex-tmp/SpacemanDmm/Probe/ViltrumC3-1.png

@@ -9,19 +9,20 @@ mob/Admin4/verb/planets()
 	set category="Admin"
 	for(var/obj/Planets/P) if(!(P in Make_List)) src<<"[P] exists ([P.x], [P.y], [P.z])"
 
-obj/Planets
-	icon='AwesomePlanets.dmi'
+/obj/Planets
+	icon='src/Icons/MapObjects/AwesomePlanets.dmi'
 	Dead_Zone_Immune=1
 	Givable=0
 	density=1
-	var/Planet_X
-	var/Planet_Y
-	var/Planet_Z
+	var
+		Planet_X
+		Planet_Y
+		Planet_Z
+		Nav_Level = 0
 	Savable=0
 	Grabbable=0
 	Knockable=0
 	Health=1.#INF
-	var/Nav_Level=0
 	Spawn_Timer=6000
 	var/tmp/turf/planet_turf
 	New()
@@ -101,7 +102,7 @@ obj/Planets
 			walk_rand(src,100)
 			. = ..()
 	Android
-		icon='Planets.dmi'
+		icon='src/Icons/MapObjects/Planets.dmi'
 		icon_state="Android"
 		Planet_X=290
 		Planet_Y=270
@@ -123,7 +124,7 @@ obj/items/Spacesuit
 	Cost=100000
 	science = 1
 	science_level = 4
-	icon='Mask.dmi'
+	icon='src/Icons/PlayerIcons/Clothes/Mask.dmi'
 	name="Air Mask"
 	density=0
 	desc="You can survive in space if you equip this"
@@ -161,7 +162,7 @@ var/list/ships=new
 var/list/ship_exits=new
 
 obj/Ship_exit
-	icon='BigTeleporter2013.dmi'
+	icon='src/Icons/Unsorted/BigTeleporter2013.dmi'
 	pixel_x=-19
 	pixel_y=-10
 	density=1
@@ -179,7 +180,7 @@ obj/Ship_exit
 var/list/ship_controls=new
 
 obj/Controls
-	icon='ScanMachine.dmi'
+	icon='src/Icons/Objects/Technology/ScanMachine.dmi'
 	Dead_Zone_Immune=1
 	icon_state="2"
 	density=1
@@ -658,7 +659,7 @@ obj/Ships
 		science_path = "Engineering"
 		Grabbable=0
 		Launchable=1
-		icon='Ship.dmi'
+		icon='src/Icons/Objects/Technology/Ship.dmi'
 		var/Last_Entry
 		layer=3
 		pixel_x=-48
@@ -694,7 +695,7 @@ obj/Ships
 								player_view(15,src)<<"There are no more ship interiors available"
 								del(src)
 	Spacepod
-		icon='Spacepod.dmi'
+		icon='src/Icons/Objects/Technology/Spacepod.dmi'
 		Cost = 500000
 		science = 1
 		science_level = 4
@@ -708,7 +709,7 @@ obj/Ships
 			ships ||= list()
 			ships |= src
 			CenterIcon(src)
-			overlays-='GochekPods.dmi'
+			overlays-='src/Icons/Objects/Technology/GochekPods.dmi'
 
 		Move()
 			. = ..()
@@ -784,14 +785,14 @@ obj/Ships
 					return
 				else if(!Launching)
 					if(z==16) return
-					overlays+='GochekPods.dmi'
+					overlays+='src/Icons/Objects/Technology/GochekPods.dmi'
 					icon_state="Launching"
 					Launching=1
 					usr<<"Launching in 20 seconds..."
 					sleep(140)
 					icon_state=""
 					Launching=0
-					overlays-='GochekPods.dmi'
+					overlays-='src/Icons/Objects/Technology/GochekPods.dmi'
 					Liftoff(src)
 
 
@@ -821,13 +822,15 @@ turf/proc/Pod_Trail()
 	return
 
 	//var/image/I=image(icon='GochekPods.dmi',pixel_x=rand(-12,12),pixel_y=rand(-12,12),layer=6)
-	if(!pod_trail) pod_trail=image(icon='BeamAxis.dmi',pixel_x=-32,pixel_y=-32,layer=6)
+	if(!pod_trail) pod_trail=image(icon='src/Icons/Unsorted/BeamAxis.dmi',pixel_x=-32,pixel_y=-32,layer=6)
 	overlays+=pod_trail
 	spawn(15) overlays-=pod_trail
 proc/Liftoff(obj/Ships/O) for(var/area/B in range(0,O))
 	if(B.type==/area/Earth) for(var/obj/Planets/Earth/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Namekian) for(var/obj/Planets/Namekian/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Braal) for(var/obj/Planets/Braal/A) if(A.z) O.loc=A.loc
+	else if(B.type==/area/Viltrum) for(var/obj/Planets/Viltrum/A) if(A.z) O.loc=A.loc
+	else if(B.type==/area/SuperEarth) for(var/obj/Planets/SuperEarth/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Arconia) for(var/obj/Planets/Arconia/A) if(A.z)O.loc=A.loc
 	else if(B.type==/area/Ice) for(var/obj/Planets/Ice/A) if(A.z) O.loc=A.loc
 	else if(B.type==/area/Desert) for(var/obj/Planets/Desert/A) if(A.z) O.loc=A.loc
@@ -873,7 +876,7 @@ obj/SpaceDebris
 			sleep(TickMult(move_delay))
 
 	Asteroid
-		icon='Asteroid5112013.dmi'
+		icon='src/Icons/Unsorted/Asteroid5112013.dmi'
 		Health=25000
 		meteor_damage=2
 
@@ -889,7 +892,7 @@ obj/SpaceDebris
 					break
 			. = ..()
 	Meteor
-		icon='SmallAsteroid.dmi'
+		icon='src/Icons/Unsorted/SmallAsteroid.dmi'
 		Health=5000
 		meteor_damage=1
 

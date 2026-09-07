@@ -29,7 +29,7 @@ obj/Base_Orb
 		. = ..()
 
 	BP_Orb
-		icon = 'BlueOrb64x64.dmi'
+		icon = 'src/Icons/Objects/OrbIcons/BlueOrb64x64.dmi'
 		name = "Power Orb"
 
 		New()

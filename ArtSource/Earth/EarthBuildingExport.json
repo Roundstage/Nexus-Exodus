@@ -1,0 +1,109 @@
+{
+  "sourceHashes": {
+    "ArtSource/Earth/EarthBuildings.aseprite": "5967c1a4f7e750fe72431c94b32b56a2eeacc4d50b1f7bb3e9feea21d88f564f"
+  },
+  "states": [
+    {
+      "state": "residence",
+      "type": "/obj/CityHouse/Earth",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hospital",
+      "type": "/obj/CityHouse/Earth/Hospital",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "civic",
+      "type": "/obj/CityHouse/Earth/Civic",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "shop",
+      "type": "/obj/CityHouse/Earth/Shop",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "workshop",
+      "type": "/obj/CityHouse/Earth/Workshop",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "apartment",
+      "type": "/obj/CityHouse/Earth/Apartment",
+      "dmi": "src/Icons/Turfs/Earth/EarthBuildings.dmi",
+      "source": "ArtSource/Earth/EarthBuildings.aseprite",
+      "cellSize": [
+        256,
+        256
+      ],
+      "footprint": [
+        8,
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ]
+}

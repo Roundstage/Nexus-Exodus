@@ -186,6 +186,8 @@ proc/initialize()
 	world<<"Voting loaded"
 	loadMisc()
 	world<<"Misc Loaded"
+	initializeViltrumPlanet()
+	initializeSuperEarthPlanet()
 	loadNexusPlanetControls()
 	world<<"Planetary control loaded"
 	if(npcs_enabled) enable_npcs()
@@ -380,7 +382,7 @@ mob/proc/removeOverlaysThatDontSaveCorrectly()
 	Aura_Overlays(remove_only=1)
 	overlays-=BlastCharge
 	overlays-=block_shield
-	overlays-='SBombGivePower.dmi'
+	overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
 	overlays -= ssj_blue_idle_aura
 	overlays -= ultra_instinct_idle_aura
 	overlays -= gold_form_idle_aura
@@ -1057,6 +1059,14 @@ proc/saveArea()
 		f["Braal"]<<a.icon_state
 		f["Braal Value"]<<a.Value
 		break
+	for(var/area/Viltrum/a in all_areas)
+		f["Viltrum"] << a.icon_state
+		f["Viltrum Value"] << a.Value
+		break
+	for(var/area/SuperEarth/a in all_areas)
+		f["Super Terra"] << a.icon_state
+		f["Super Terra Value"] << a.Value
+		break
 	for(var/area/Arconia/a in all_areas)
 		f["Arconia"]<<a.icon_state
 		f["Arconia Value"]<<a.Value
@@ -1094,6 +1104,12 @@ proc/loadArea() if(fexists("data/Areas"))
 	for(var/area/Braal/a in all_areas)
 		f["Braal"]>>a.icon_state
 		f["Braal Value"]>>a.Value
+	for(var/area/Viltrum/a in all_areas)
+		if("Viltrum" in f) f["Viltrum"] >> a.icon_state
+		if("Viltrum Value" in f) f["Viltrum Value"] >> a.Value
+	for(var/area/SuperEarth/a in all_areas)
+		if("Super Terra" in f) f["Super Terra"] >> a.icon_state
+		if("Super Terra Value" in f) f["Super Terra Value"] >> a.Value
 	for(var/area/Arconia/a in all_areas)
 		f["Arconia"]>>a.icon_state
 		f["Arconia Value"]>>a.Value

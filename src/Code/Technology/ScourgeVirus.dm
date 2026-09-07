@@ -142,7 +142,7 @@ obj/items/ScourgeVirus
 
 obj/items/ExperimentalScourgeTreatment
 	name = "Experimental Scourge Treatment"
-	icon = 'Antivirus.dmi'
+	icon = 'src/Icons/Objects/Items/Antivirus.dmi'
 	icon_state = "red"
 	desc = "An experimental antiviral treatment intended to suppress aggressive Viltrumite pathogens."
 	Cost = 0

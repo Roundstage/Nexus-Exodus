@@ -31,7 +31,7 @@ mob
 			set waitfor=0
 			var/obj/Effect/e = GetEffect()
 			e.loc = loc
-			e.icon = 'PressureKick.dmi'
+			e.icon = 'src/Icons/VFX/PressureKick.dmi'
 			CenterIcon(e)
 			var/anim_time = 10
 			animate(e, transform * 3, alpha = 235, time = anim_time)

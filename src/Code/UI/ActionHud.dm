@@ -33,7 +33,7 @@ proc/isNexusTechniqueObject(obj/candidate)
 proc/getNexusActionButtonIcon(active, accent_color)
 	var/cache_key = "[active]-[accent_color]"
 	if(nexus_action_button_icon_cache[cache_key]) return nexus_action_button_icon_cache[cache_key]
-	var/icon/button_icon = icon('UserNamesBarsUi.png')
+	var/icon/button_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	button_icon.Scale(108, 20)
 	button_icon.DrawBox(active ? "#51391f" : "#251c13", 1, 1, 108, 20)
 	button_icon.DrawBox("#140e09", 1, 1, 108, 2)
@@ -53,7 +53,7 @@ proc/getNexusShortcutBarIcon(button_count)
 	var/cache_key = "buttons-[button_count]"
 	if(nexus_shortcut_bar_icon_cache[cache_key]) return nexus_shortcut_bar_icon_cache[cache_key]
 	var/bar_width = button_count * 28 + 8
-	var/icon/bar_icon = icon('UserNamesBarsUi.png')
+	var/icon/bar_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	bar_icon.Scale(bar_width, 34)
 	bar_icon.DrawBox(rgb(29, 22, 14, 236), 1, 1, bar_width, 34)
 	bar_icon.DrawBox("#130d08", 1, 1, bar_width, 3)
@@ -141,7 +141,7 @@ proc/drawNexusShortcutGlyph(icon/button_icon, action_id, glyph_color)
 proc/getNexusShortcutButtonIcon(action_id, active = FALSE, accent_color = "#7bcf68")
 	var/cache_key = "[action_id]-[active]-[accent_color]"
 	if(nexus_shortcut_button_icon_cache[cache_key]) return nexus_shortcut_button_icon_cache[cache_key]
-	var/icon/button_icon = icon('UserNamesBarsUi.png')
+	var/icon/button_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	button_icon.Scale(26, 26)
 	button_icon.DrawBox(active ? "#4d3a20" : "#2b2116", 1, 1, 26, 26)
 	button_icon.DrawBox("#130d08", 1, 1, 26, 2)
