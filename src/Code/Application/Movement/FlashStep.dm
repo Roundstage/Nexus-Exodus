@@ -65,7 +65,7 @@ mob/proc
 		last_tap_warp = world.time
 		AfterImage(50, loc_override = old_loc)
 		player_view(15,src)<<sound('Teleport.ogg',volume=15)
-		flick('Zanzoken.dmi',src)
+		flick('src/Icons/Effects/Zanzoken.dmi',src)
 		dir=get_dir(src,flash_step_mob)
 		var/defend_chance=66 * (flash_step_mob.Def / Def)
 		if(prob(defend_chance)) flash_step_mob.dir=get_dir(flash_step_mob,src)

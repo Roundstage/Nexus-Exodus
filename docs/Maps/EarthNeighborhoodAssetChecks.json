@@ -1,0 +1,27 @@
+{
+  "manifests": 6,
+  "nativeSources": 5,
+  "dmiFiles": 6,
+  "states": 837,
+  "frameSizes": [
+    [
+      32,
+      32
+    ],
+    [
+      64,
+      96
+    ],
+    [
+      160,
+      192
+    ],
+    [
+      224,
+      192
+    ]
+  ],
+  "binaryAlpha": true,
+  "nativeSourceHashesMatch": true,
+  "losslessBuildingTiles": 288
+}

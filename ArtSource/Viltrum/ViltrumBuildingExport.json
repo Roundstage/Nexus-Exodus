@@ -1,0 +1,109 @@
+{
+  "sourceHashes": {
+    "ArtSource/Viltrum/ViltrumBuildings.aseprite": "c3f3a2469903d7b03c5b15a227568f123b0cd039be7e4e00c3625db84ad6442f"
+  },
+  "states": [
+    {
+      "state": "residence",
+      "type": "/obj/CityHouse",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hospital",
+      "type": "/obj/CityHouse/Hospital",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "civic",
+      "type": "/obj/CityHouse/Civic",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "terrace",
+      "type": "/obj/CityHouse/Terrace",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "science",
+      "type": "/obj/CityHouse/Science",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hangar",
+      "type": "/obj/CityHouse/Hangar",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumBuildings.dmi",
+      "source": "ArtSource/Viltrum/ViltrumBuildings.aseprite",
+      "cellSize": [
+        256,
+        320
+      ],
+      "footprint": [
+        8,
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ]
+}

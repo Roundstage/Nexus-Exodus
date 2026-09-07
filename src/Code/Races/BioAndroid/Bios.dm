@@ -52,14 +52,14 @@ mob/proc
 
 		switch(bio_form)
 			if(1)
-				if(icon == 'CellLarva.dmi') icon = 'BioAndroid1.dmi'
-				else icon = 'Bio1.dmi'
+				if(icon == 'src/Icons/PlayerIcons/BaseIcons/CellLarva.dmi') icon = 'src/Icons/PlayerIcons/BaseIcons/BioAndroid1.dmi'
+				else icon = 'src/Icons/PlayerIcons/BaseIcons/Bio1.dmi'
 			if(2)
-				if(icon == 'Bio1.dmi') icon = 'Bio2.dmi'
-				else icon = 'BioAndroid2.dmi'
+				if(icon == 'src/Icons/PlayerIcons/BaseIcons/Bio1.dmi') icon = 'src/Icons/PlayerIcons/BaseIcons/Bio2.dmi'
+				else icon = 'src/Icons/PlayerIcons/BaseIcons/BioAndroid2.dmi'
 			if(3)
-				if(icon == 'Bio2.dmi') icon = 'Bio3.dmi'
-				else icon = 'BioAndroid3.dmi'
+				if(icon == 'src/Icons/PlayerIcons/BaseIcons/Bio2.dmi') icon = 'src/Icons/PlayerIcons/BaseIcons/Bio3.dmi'
+				else icon = 'src/Icons/PlayerIcons/BaseIcons/BioAndroid3.dmi'
 
 	CanBioRevert()
 		if(Race != "Bio-Android") return
@@ -78,12 +78,12 @@ mob/proc
 		//hbtc_bp = 0 //this is necessary or it will cause a bug where bios can stack their special era static boost over and over
 		BioEggGfx()
 		LarvaEvolveLoop()
-		if(icon in list('Bio1.dmi', 'Bio2.dmi', 'Bio3.dmi')) icon = 'CellLarvaBlue.dmi'
-		else icon = 'CellLarva.dmi'
+		if(icon in list('src/Icons/PlayerIcons/BaseIcons/Bio1.dmi', 'src/Icons/PlayerIcons/BaseIcons/Bio2.dmi', 'src/Icons/PlayerIcons/BaseIcons/Bio3.dmi')) icon = 'src/Icons/PlayerIcons/BaseIcons/CellLarvaBlue.dmi'
+		else icon = 'src/Icons/PlayerIcons/BaseIcons/CellLarva.dmi'
 
 	BioEggGfx()
 		var/o_icon = icon
-		icon = 'CellEgg.dmi'
+		icon = 'src/Icons/PlayerIcons/BaseIcons/CellEgg.dmi'
 		icon_state = ""
 		sleep(35)
 		icon_state = "open"
@@ -103,7 +103,7 @@ mob/proc
 
 	BioAndroidLogon()
 		if(Race != "Bio-Android") return
-		if(icon == 'CellEgg.dmi') icon = 'Bio1.dmi'
+		if(icon == 'src/Icons/PlayerIcons/BaseIcons/CellEgg.dmi') icon = 'src/Icons/PlayerIcons/BaseIcons/Bio1.dmi'
 		verbs+=typesof(/mob/Bio_Android/verb)
 		if(bio_form == 0 && world.realtime - character_made_time < 5 * 600)
 			transform = matrix() * start_bio_transform_size

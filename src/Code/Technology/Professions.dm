@@ -124,31 +124,31 @@ obj/items/Ore
 
 	Copper
 		ore_name = "Copper"
-		icon = 'RTCopperOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTCopperOre.dmi'
 
 	Tin
 		ore_name = "Tin"
-		icon = 'RTTinOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTTinOre.dmi'
 
 	Iron
 		ore_name = "Iron"
-		icon = 'RTIronOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTIronOre.dmi'
 
 	Silver
 		ore_name = "Silver"
-		icon = 'RTSilverOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTSilverOre.dmi'
 
 	Mythril
 		ore_name = "Mythril"
-		icon = 'RTMythrilOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTMythrilOre.dmi'
 
 	Auracite
 		ore_name = "Auracite"
-		icon = 'RTAuraciteOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTAuraciteOre.dmi'
 
 	HeartOfTheMountain
 		ore_name = "Heart of the Mountain"
-		icon = 'RTMythrilOre.dmi'
+		icon = 'src/Icons/Objects/Technology/RTMythrilOre.dmi'
 		color = rgb(255, 164, 72)
 
 mob/proc/countOre(ore_type)
@@ -200,13 +200,13 @@ proc/getWorldOreRequirement(ore_type)
 
 proc/getWorldOreIcon(ore_type)
 	switch(ore_type)
-		if(/obj/items/Ore/Tin) return 'RTTinOre.dmi'
-		if(/obj/items/Ore/Iron) return 'RTIronOre.dmi'
-		if(/obj/items/Ore/Silver) return 'RTSilverOre.dmi'
-		if(/obj/items/Ore/Mythril) return 'RTMythrilOre.dmi'
-		if(/obj/items/Ore/Auracite) return 'RTAuraciteOre.dmi'
-		if(/obj/items/Ore/HeartOfTheMountain) return 'RTMythrilOre.dmi'
-	return 'RTCopperOre.dmi'
+		if(/obj/items/Ore/Tin) return 'src/Icons/Objects/Technology/RTTinOre.dmi'
+		if(/obj/items/Ore/Iron) return 'src/Icons/Objects/Technology/RTIronOre.dmi'
+		if(/obj/items/Ore/Silver) return 'src/Icons/Objects/Technology/RTSilverOre.dmi'
+		if(/obj/items/Ore/Mythril) return 'src/Icons/Objects/Technology/RTMythrilOre.dmi'
+		if(/obj/items/Ore/Auracite) return 'src/Icons/Objects/Technology/RTAuraciteOre.dmi'
+		if(/obj/items/Ore/HeartOfTheMountain) return 'src/Icons/Objects/Technology/RTMythrilOre.dmi'
+	return 'src/Icons/Objects/Technology/RTCopperOre.dmi'
 
 proc/getWorldOreName(ore_type)
 	var/obj/items/Ore/example = new ore_type

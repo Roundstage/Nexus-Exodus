@@ -17,7 +17,7 @@ obj/Attacks/Noob_Ray
 	//Teach_Timer=0.3
 	teachable=0
 	Wave=1
-	icon='Makkankosappo.dmi'
+	icon='src/Icons/Ki/Beams/Makkankosappo.dmi'
 	Drain=0.1
 	WaveMult=10
 	damage_factor = 52
@@ -94,7 +94,7 @@ obj/Attacks/Laser_Beam
 	Teach_Timer=0.3
 	student_point_cost = 20
 	Wave=1
-	icon='EnergyWave1.dmi'
+	icon='src/Icons/Ki/Beams/EnergyWave1.dmi'
 	Drain=4.5
 	WaveMult=1.1
 	damage_factor = 12
@@ -116,7 +116,7 @@ obj/Attacks/Beam
 	hotbar_type="Beam"
 	can_hotbar=1
 	Wave=1
-	icon='Beam3.dmi'
+	icon='src/Icons/Ki/Beams/Beam3.dmi'
 	say_name_when_fired=1
 	Drain=3.55
 	WaveMult=1
@@ -141,7 +141,7 @@ obj/Attacks/Ray
 	Teach_Timer=1
 	student_point_cost = 20
 	Cost_To_Learn=3
-	icon='Beam8.dmi'
+	icon='src/Icons/Ki/Beams/Beam8.dmi'
 	Drain=4.3
 	WaveMult=1
 	damage_factor = 12
@@ -166,7 +166,7 @@ obj/Attacks/Piercer
 	Teach_Timer=2
 	student_point_cost = 30
 	say_name_when_fired=1
-	icon='Makkankosappo.dmi'
+	icon='src/Icons/Ki/Beams/Makkankosappo.dmi'
 	Beam_Sound='BigbangFire.ogg'
 	Drain=127
 	gain_power_with_range=1
@@ -194,7 +194,7 @@ obj/Attacks/Kamehameha
 	can_hotbar=1
 	Teach_Timer=1
 	student_point_cost = 25
-	icon='Beam6.dmi'
+	icon='src/Icons/Ki/Beams/Beam6.dmi'
 	say_name_when_fired=1
 	Drain=16
 	WaveMult=1.7
@@ -221,7 +221,7 @@ obj/Attacks/Dodompa
 	Wave=1
 	hotbar_type="Beam"
 	can_hotbar=1
-	icon='Beam4.dmi'
+	icon='src/Icons/Ki/Beams/Beam4.dmi'
 	Drain=26.1
 	WaveMult=1.5
 	damage_factor = 13
@@ -248,7 +248,7 @@ obj/Attacks/Final_Flash
 	can_hotbar=1
 	Teach_Timer=1
 	student_point_cost = 35
-	icon='BeamBigFire.dmi'
+	icon='src/Icons/Ki/Big/BeamBigFire.dmi'
 	Beam_Sound='BasicbeamFire.ogg'
 	Drain=91.4
 	WaveMult=2
@@ -277,7 +277,7 @@ obj/Attacks/Garlic_Gun
 	can_hotbar=1
 	Teach_Timer=1
 	student_point_cost = 30
-	icon='Beam1.dmi'
+	icon='src/Icons/Ki/Beams/Beam1.dmi'
 	Beam_Sound='BasicbeamFire.ogg'
 	Drain=36.7
 	WaveMult=1.4
@@ -302,7 +302,7 @@ obj/Attacks/Masenko
 	can_hotbar=1
 	Teach_Timer=1
 	student_point_cost = 30
-	icon='Beam5.dmi'
+	icon='src/Icons/Ki/Beams/Beam5.dmi'
 	Drain=17.6
 	WaveMult=1.6
 	damage_factor = 15

@@ -4210,3 +4210,9 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - `getMilestonePhysicalDamageStat()` and `getMilestoneKiDamageStat()` add exactly one mutually exclusive secondary scaling choice: 25% Speed, 25% Offense, or 20% Endurance/Resistance. Damage scaling, weapon energy hybrids, blasts, accuracy, evasion, critical chance, and melee speed consume the effective helpers.
 - `applyMilestoneMeleeAreaDamage()` applies Sweeping Impact to up to eight valid enemies within three tiles of the primary target. `tryApplyMilestoneDoubleAttack()` gives Echoing Assault an 8% chance per rank to repeat an ordinary melee hit for 60% damage. Technique-specific multi-hit attacks do not trigger these ordinary-hit follow-ups.
 - `getMilestoneFireLordBonus(target, attack_name)` grants 5% fire damage per target Burn stack, capped at 25%, and never modifies non-fire or incoming damage.
+
+SSj_Hair delegates variant selection to VisualEffects/TransformationHair.dm. Tail tinting is guarded by the presence of a tail, including when Apply_Hair refreshes a tailless character.
+
+SSJ1 uses `NexusSsjAwakening.playSequence` for its default opening (220 deciseconds at zero mastery, shortening to 6 deciseconds at full mastery). Configured custom openings remain supported. Interrupted default openings reset `ssj` and `transing` before applying SSJ1 multipliers.
+
+The default SSJ1 opening is now mastery-dependent: 22 seconds on first awakening, shortening towards a quiet 0.6-second transition at full mastery. Both `ssjdrain >= max_ss_mastery` and the Full Power unlock select the mastered visual treatment.

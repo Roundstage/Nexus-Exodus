@@ -34,7 +34,7 @@ proc/EnableDragonBallsLoop()
 			if(world.realtime > db.next_enable && db.invisibility)
 				db.Wishes = 1
 				db.invisibility = 0
-				db.overlays -= 'DragonBallAura.dmi'
+				db.overlays -= 'src/Icons/Effects/DragonBallAura.dmi'
 				if(db.name == "Wish Orbs 1")
 					if(announce_dragon_balls)
 						var/area/a = db.get_area()
@@ -98,14 +98,14 @@ obj/Dragons
 
 obj/Dragons/Shenron
 	//icon='Shenron320x222.dmi'
-	icon = 'UgandanKnucklesDragonBalls.dmi'
+	icon = 'src/Icons/UgandanKnucklesDragonBalls.dmi'
 	layer=5
 	pixel_x=-144
 	pixel_y=0
 
 obj/Dragons/Porunga
 	//icon='Porunga200x307.dmi'
-	icon = 'UgandanKnucklesDragonBalls.dmi'
+	icon = 'src/Icons/UgandanKnucklesDragonBalls.dmi'
 	layer=5
 	pixel_x=-84
 	pixel_y=0
@@ -189,7 +189,7 @@ obj/items/Dragon_Ball
 	clonable=0
 	can_blueprint=0
 	//icon='Dragonball.dmi'
-	icon = 'WishOrbs.dmi'
+	icon = 'src/Icons/Objects/DragonBalls/WishOrbs.dmi'
 	desc="One of the seven Wish Orbs. When all seven are gathered you will be granted a wish"
 	Health=1.#INF
 	Stealable=1
@@ -249,7 +249,7 @@ obj/items/Dragon_Ball
 		set waitfor=0
 		if(name=="Wish Orbs 1") view(10,src)<<'BigbangFire.ogg'
 		for(var/obj/Dragons/D in range(15,src)) del(D)
-		overlays+='DragonBallAura.dmi'
+		overlays+='src/Icons/Effects/DragonBallAura.dmi'
 		switch(name)
 			if("Wish Orbs 1") dir=SOUTHWEST
 			if("Wish Orbs 2") dir=WEST
@@ -263,7 +263,7 @@ obj/items/Dragon_Ball
 			step(src,dir)
 			if(loc==old_loc||(v>20&&prob(4))) dir=pick(NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHEAST,SOUTHWEST)
 			sleep(1)
-		overlays-='DragonBallAura.dmi'
+		overlays-='src/Icons/Effects/DragonBallAura.dmi'
 		Land()
 
 	proc/Inert(t=1)

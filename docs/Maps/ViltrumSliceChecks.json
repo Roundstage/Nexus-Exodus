@@ -1,0 +1,43 @@
+{
+  "landingClearTiles": 441,
+  "spawn": [
+    250,
+    250
+  ],
+  "requiredPois": 6,
+  "cardinalReachable": 189016,
+  "alternateRouteAfterAxisBlockage": true,
+  "publicRooms": 4,
+  "combatDimensions": [
+    38,
+    30
+  ],
+  "seams": [
+    {
+      "y": 100,
+      "walkableRuns": 1,
+      "wideApproaches": 3
+    },
+    {
+      "y": 200,
+      "walkableRuns": 1,
+      "wideApproaches": 3
+    },
+    {
+      "y": 300,
+      "walkableRuns": 1,
+      "wideApproaches": 3
+    }
+  ],
+  "coverage": [
+    {
+      "chunk": "C3",
+      "densePercent": 1.86
+    },
+    {
+      "chunk": "D3",
+      "densePercent": 1.92
+    }
+  ],
+  "manualReview": "Deferred by user; flight, combat, lighting and boundaries not certified."
+}

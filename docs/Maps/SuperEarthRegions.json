@@ -1,0 +1,1389 @@
+{
+  "phase": 6,
+  "layout": "Existing continents retained; western city near original Human spawn, replacing the brief ocean-based C3 placement.",
+  "landing": {
+    "x": 101,
+    "y": 362,
+    "radius": 10
+  },
+  "spawn": {
+    "x": 95,
+    "y": 362
+  },
+  "points": [
+    {
+      "name": "Northwest lighthouse",
+      "x": 60,
+      "y": 427
+    },
+    {
+      "name": "Northern woodland cabin",
+      "x": 99,
+      "y": 437
+    },
+    {
+      "name": "Northern farmhouse",
+      "x": 168,
+      "y": 424
+    },
+    {
+      "name": "Northern farm fields",
+      "x": 165,
+      "y": 440
+    },
+    {
+      "name": "Arctic research outpost",
+      "x": 275,
+      "y": 439
+    },
+    {
+      "name": "Northern geological station",
+      "x": 391,
+      "y": 423
+    },
+    {
+      "name": "Alpine survey shelter",
+      "x": 351,
+      "y": 442
+    },
+    {
+      "name": "Eastern lake shore",
+      "x": 381,
+      "y": 405
+    },
+    {
+      "name": "East suburb family home",
+      "x": 331,
+      "y": 377
+    },
+    {
+      "name": "East suburb courtyard home",
+      "x": 346,
+      "y": 362
+    },
+    {
+      "name": "East suburb community school",
+      "x": 396,
+      "y": 366
+    },
+    {
+      "name": "Eastern neighborhood grocery",
+      "x": 409,
+      "y": 325
+    },
+    {
+      "name": "Harbor freight warehouse",
+      "x": 435,
+      "y": 329
+    },
+    {
+      "name": "North harbor pier",
+      "x": 470,
+      "y": 350
+    },
+    {
+      "name": "South harbor pier",
+      "x": 470,
+      "y": 330
+    },
+    {
+      "name": "Eastern community training park",
+      "x": 335,
+      "y": 284
+    },
+    {
+      "name": "Eastern manufacturing hall",
+      "x": 335,
+      "y": 242
+    },
+    {
+      "name": "Regional technical college",
+      "x": 430,
+      "y": 279
+    },
+    {
+      "name": "Eastern fishing house",
+      "x": 434,
+      "y": 239
+    },
+    {
+      "name": "Jungle field laboratory",
+      "x": 345,
+      "y": 217
+    },
+    {
+      "name": "Jungle lookout lodge",
+      "x": 354,
+      "y": 172
+    },
+    {
+      "name": "Southern delta field station",
+      "x": 408,
+      "y": 180
+    },
+    {
+      "name": "Eastern delta viewpoint",
+      "x": 397,
+      "y": 190
+    },
+    {
+      "name": "Island nature lodge",
+      "x": 275,
+      "y": 205
+    },
+    {
+      "name": "Oasis courtyard house",
+      "x": 119,
+      "y": 94
+    },
+    {
+      "name": "Oasis trading hall",
+      "x": 144,
+      "y": 109
+    },
+    {
+      "name": "Southern travelers inn",
+      "x": 149,
+      "y": 72
+    },
+    {
+      "name": "Southern farmstead",
+      "x": 150,
+      "y": 143
+    },
+    {
+      "name": "Oasis farm plots",
+      "x": 128,
+      "y": 127
+    },
+    {
+      "name": "Canyon repair workshop",
+      "x": 234,
+      "y": 99
+    },
+    {
+      "name": "Southern dune shelter",
+      "x": 233,
+      "y": 58
+    }
+  ],
+  "publicRooms": [
+    [
+      55,
+      420,
+      66,
+      434
+    ],
+    [
+      92,
+      432,
+      106,
+      443
+    ],
+    [
+      161,
+      419,
+      175,
+      430
+    ],
+    [
+      269,
+      434,
+      281,
+      445
+    ],
+    [
+      385,
+      417,
+      398,
+      430
+    ],
+    [
+      345,
+      437,
+      357,
+      447
+    ],
+    [
+      325,
+      371,
+      337,
+      383
+    ],
+    [
+      341,
+      357,
+      352,
+      368
+    ],
+    [
+      390,
+      358,
+      403,
+      374
+    ],
+    [
+      399,
+      317,
+      419,
+      333
+    ],
+    [
+      429,
+      320,
+      442,
+      338
+    ],
+    [
+      325,
+      235,
+      345,
+      250
+    ],
+    [
+      421,
+      271,
+      440,
+      288
+    ],
+    [
+      428,
+      234,
+      441,
+      245
+    ],
+    [
+      337,
+      211,
+      353,
+      224
+    ],
+    [
+      347,
+      165,
+      361,
+      180
+    ],
+    [
+      401,
+      174,
+      415,
+      187
+    ],
+    [
+      270,
+      200,
+      281,
+      211
+    ],
+    [
+      112,
+      89,
+      127,
+      100
+    ],
+    [
+      136,
+      103,
+      153,
+      116
+    ],
+    [
+      142,
+      67,
+      156,
+      78
+    ],
+    [
+      144,
+      137,
+      157,
+      149
+    ],
+    [
+      226,
+      91,
+      242,
+      107
+    ],
+    [
+      228,
+      55,
+      239,
+      62
+    ]
+  ],
+  "buildings": [
+    {
+      "name": "Northwest lighthouse",
+      "bounds": [
+        54,
+        419,
+        67,
+        435
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          60,
+          419
+        ],
+        [
+          60,
+          435
+        ],
+        [
+          54,
+          427
+        ],
+        [
+          67,
+          427
+        ]
+      ]
+    },
+    {
+      "name": "Northern woodland cabin",
+      "bounds": [
+        91,
+        431,
+        107,
+        444
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          99,
+          431
+        ],
+        [
+          99,
+          444
+        ],
+        [
+          91,
+          437
+        ],
+        [
+          107,
+          437
+        ]
+      ]
+    },
+    {
+      "name": "Northern farmhouse",
+      "bounds": [
+        160,
+        418,
+        176,
+        431
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          168,
+          418
+        ],
+        [
+          168,
+          431
+        ],
+        [
+          160,
+          424
+        ],
+        [
+          176,
+          424
+        ]
+      ]
+    },
+    {
+      "name": "Arctic research outpost",
+      "bounds": [
+        268,
+        433,
+        282,
+        446
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          275,
+          433
+        ],
+        [
+          275,
+          446
+        ],
+        [
+          268,
+          439
+        ],
+        [
+          282,
+          439
+        ]
+      ]
+    },
+    {
+      "name": "Northern geological station",
+      "bounds": [
+        384,
+        416,
+        399,
+        431
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          391,
+          416
+        ],
+        [
+          391,
+          431
+        ],
+        [
+          384,
+          423
+        ],
+        [
+          399,
+          423
+        ]
+      ]
+    },
+    {
+      "name": "Alpine survey shelter",
+      "bounds": [
+        344,
+        436,
+        358,
+        448
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          351,
+          436
+        ],
+        [
+          351,
+          448
+        ],
+        [
+          344,
+          442
+        ],
+        [
+          358,
+          442
+        ]
+      ]
+    },
+    {
+      "name": "East suburb family home",
+      "bounds": [
+        324,
+        370,
+        338,
+        384
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          331,
+          370
+        ],
+        [
+          331,
+          384
+        ],
+        [
+          324,
+          377
+        ],
+        [
+          338,
+          377
+        ]
+      ]
+    },
+    {
+      "name": "East suburb courtyard home",
+      "bounds": [
+        340,
+        356,
+        353,
+        369
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          346,
+          356
+        ],
+        [
+          346,
+          369
+        ],
+        [
+          340,
+          362
+        ],
+        [
+          353,
+          362
+        ]
+      ]
+    },
+    {
+      "name": "East suburb community school",
+      "bounds": [
+        389,
+        357,
+        404,
+        375
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          396,
+          357
+        ],
+        [
+          396,
+          375
+        ],
+        [
+          389,
+          366
+        ],
+        [
+          404,
+          366
+        ]
+      ]
+    },
+    {
+      "name": "Eastern neighborhood grocery",
+      "bounds": [
+        398,
+        316,
+        420,
+        334
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          409,
+          316
+        ],
+        [
+          409,
+          334
+        ],
+        [
+          398,
+          325
+        ],
+        [
+          420,
+          325
+        ]
+      ]
+    },
+    {
+      "name": "Harbor freight warehouse",
+      "bounds": [
+        428,
+        319,
+        443,
+        339
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          435,
+          319
+        ],
+        [
+          435,
+          339
+        ],
+        [
+          428,
+          329
+        ],
+        [
+          443,
+          329
+        ]
+      ]
+    },
+    {
+      "name": "Eastern manufacturing hall",
+      "bounds": [
+        324,
+        234,
+        346,
+        251
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          335,
+          234
+        ],
+        [
+          335,
+          251
+        ],
+        [
+          324,
+          242
+        ],
+        [
+          346,
+          242
+        ]
+      ]
+    },
+    {
+      "name": "Regional technical college",
+      "bounds": [
+        420,
+        270,
+        441,
+        289
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          430,
+          270
+        ],
+        [
+          430,
+          289
+        ],
+        [
+          420,
+          279
+        ],
+        [
+          441,
+          279
+        ]
+      ]
+    },
+    {
+      "name": "Eastern fishing house",
+      "bounds": [
+        427,
+        233,
+        442,
+        246
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          434,
+          233
+        ],
+        [
+          434,
+          246
+        ],
+        [
+          427,
+          239
+        ],
+        [
+          442,
+          239
+        ]
+      ]
+    },
+    {
+      "name": "Jungle field laboratory",
+      "bounds": [
+        336,
+        210,
+        354,
+        225
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          345,
+          210
+        ],
+        [
+          345,
+          225
+        ],
+        [
+          336,
+          217
+        ],
+        [
+          354,
+          217
+        ]
+      ]
+    },
+    {
+      "name": "Jungle lookout lodge",
+      "bounds": [
+        346,
+        164,
+        362,
+        181
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          354,
+          164
+        ],
+        [
+          354,
+          181
+        ],
+        [
+          346,
+          172
+        ],
+        [
+          362,
+          172
+        ]
+      ]
+    },
+    {
+      "name": "Southern delta field station",
+      "bounds": [
+        400,
+        173,
+        416,
+        188
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          408,
+          173
+        ],
+        [
+          408,
+          188
+        ],
+        [
+          400,
+          180
+        ],
+        [
+          416,
+          180
+        ]
+      ]
+    },
+    {
+      "name": "Island nature lodge",
+      "bounds": [
+        269,
+        199,
+        282,
+        212
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          275,
+          199
+        ],
+        [
+          275,
+          212
+        ],
+        [
+          269,
+          205
+        ],
+        [
+          282,
+          205
+        ]
+      ]
+    },
+    {
+      "name": "Oasis courtyard house",
+      "bounds": [
+        111,
+        88,
+        128,
+        101
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          119,
+          88
+        ],
+        [
+          119,
+          101
+        ],
+        [
+          111,
+          94
+        ],
+        [
+          128,
+          94
+        ]
+      ]
+    },
+    {
+      "name": "Oasis trading hall",
+      "bounds": [
+        135,
+        102,
+        154,
+        117
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          144,
+          102
+        ],
+        [
+          144,
+          117
+        ],
+        [
+          135,
+          109
+        ],
+        [
+          154,
+          109
+        ]
+      ]
+    },
+    {
+      "name": "Southern travelers inn",
+      "bounds": [
+        141,
+        66,
+        157,
+        79
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          149,
+          66
+        ],
+        [
+          149,
+          79
+        ],
+        [
+          141,
+          72
+        ],
+        [
+          157,
+          72
+        ]
+      ]
+    },
+    {
+      "name": "Southern farmstead",
+      "bounds": [
+        143,
+        136,
+        158,
+        150
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          150,
+          136
+        ],
+        [
+          150,
+          150
+        ],
+        [
+          143,
+          143
+        ],
+        [
+          158,
+          143
+        ]
+      ]
+    },
+    {
+      "name": "Canyon repair workshop",
+      "bounds": [
+        225,
+        90,
+        243,
+        108
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          234,
+          90
+        ],
+        [
+          234,
+          108
+        ],
+        [
+          225,
+          99
+        ],
+        [
+          243,
+          99
+        ]
+      ]
+    },
+    {
+      "name": "Southern dune shelter",
+      "bounds": [
+        227,
+        54,
+        240,
+        63
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          233,
+          54
+        ],
+        [
+          233,
+          63
+        ],
+        [
+          227,
+          58
+        ],
+        [
+          240,
+          58
+        ]
+      ]
+    }
+  ],
+  "combatSpaces": [
+    {
+      "name": "Eastern community training park",
+      "bounds": [
+        320,
+        269,
+        349,
+        298
+      ],
+      "minimum": 28
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          194,
+          398
+        ],
+        [
+          312,
+          398
+        ],
+        [
+          312,
+          374
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          194,
+          414
+        ],
+        [
+          312,
+          414
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          267,
+          398
+        ],
+        [
+          267,
+          430
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          290,
+          414
+        ],
+        [
+          290,
+          452
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          96,
+          414
+        ],
+        [
+          180,
+          414
+        ],
+        [
+          180,
+          446
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          96,
+          412
+        ],
+        [
+          96,
+          449
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          45,
+          398
+        ],
+        [
+          60,
+          398
+        ],
+        [
+          60,
+          439
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          110,
+          210
+        ],
+        [
+          110,
+          142
+        ],
+        [
+          140,
+          142
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          160,
+          220
+        ],
+        [
+          160,
+          150
+        ],
+        [
+          140,
+          150
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          110,
+          142
+        ],
+        [
+          110,
+          65
+        ],
+        [
+          245,
+          65
+        ],
+        [
+          245,
+          135
+        ],
+        [
+          110,
+          135
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          110,
+          115
+        ],
+        [
+          245,
+          115
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          110,
+          80
+        ],
+        [
+          245,
+          80
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          170
+        ],
+        [
+          315,
+          433
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          410,
+          160
+        ],
+        [
+          410,
+          440
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          450,
+          190
+        ],
+        [
+          450,
+          390
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          190
+        ],
+        [
+          450,
+          190
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          230
+        ],
+        [
+          450,
+          230
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          300
+        ],
+        [
+          450,
+          300
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          350
+        ],
+        [
+          450,
+          350
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          315,
+          390
+        ],
+        [
+          450,
+          390
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          278,
+          197
+        ],
+        [
+          330,
+          197
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          278,
+          217
+        ],
+        [
+          330,
+          217
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          278,
+          197
+        ],
+        [
+          278,
+          217
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          450,
+          350
+        ],
+        [
+          476,
+          350
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          450,
+          330
+        ],
+        [
+          476,
+          330
+        ]
+      ],
+      "width": 7
+    }
+  ],
+  "changedChunks": [
+    "SuperEarthA1.dmm",
+    "SuperEarthA2.dmm",
+    "SuperEarthA3.dmm",
+    "SuperEarthA4.dmm",
+    "SuperEarthA5.dmm",
+    "SuperEarthB1.dmm",
+    "SuperEarthB2.dmm",
+    "SuperEarthB3.dmm",
+    "SuperEarthB4.dmm",
+    "SuperEarthB5.dmm",
+    "SuperEarthC1.dmm",
+    "SuperEarthC2.dmm",
+    "SuperEarthC3.dmm",
+    "SuperEarthC4.dmm",
+    "SuperEarthC5.dmm",
+    "SuperEarthD1.dmm",
+    "SuperEarthD2.dmm",
+    "SuperEarthD3.dmm",
+    "SuperEarthD4.dmm",
+    "SuperEarthD5.dmm",
+    "SuperEarthE1.dmm",
+    "SuperEarthE2.dmm",
+    "SuperEarthE3.dmm",
+    "SuperEarthE4.dmm",
+    "SuperEarthE5.dmm"
+  ],
+  "review": "Interactive review deferred by user; script and headless verification only."
+}

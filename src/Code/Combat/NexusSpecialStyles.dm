@@ -229,7 +229,7 @@ obj/Effect/NexusFlameField
 		if(new_location) SafeTeleport(new_location)
 		alpha = 0
 		transform = matrix() * 0.65
-		setNexusGlow("#ff632e", 3.2, 205, 'NexusLightGradient.dmi', 8, "aura")
+		setNexusGlow("#ff632e", 3.2, 205, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, "aura")
 		animate(src, alpha = 255, transform = matrix(), time = 5, easing = CUBIC_EASING)
 		spawn() processField()
 
@@ -300,6 +300,9 @@ obj/Attacks/NexusAreaTechnique
 		var/open_sound = getNexusShonenSound(cast_sound_category)
 		return open_sound ? open_sound : cast_sound
 
+	proc/showAreaEffect(mob/user)
+		showNexusOpenCombatEffect(user, "smoke_shockwaves_128", shockwave_effect_state, radius / 2, cast_text_color, 225, BLEND_ADD, 18, 0.25)
+
 	proc/interceptAreaBlasts(mob/user)
 		if(!user || !intercepts_blasts) return 0
 		var/intercepted = 0
@@ -334,7 +337,7 @@ obj/Attacks/NexusAreaTechnique
 		user.attacking = 3
 		user.showNexusTechniqueAnnouncement(name, cast_text_color, getAreaCastSound(), 55)
 		flick(physical_damage ? "Attack" : "Blast", user)
-		showNexusOpenCombatEffect(user, "smoke_shockwaves_128", shockwave_effect_state, radius / 2, cast_text_color, 225, BLEND_ADD, 18, 0.25)
+		showAreaEffect(user)
 		interceptAreaBlasts(user)
 		var/hit_count = 0
 		for(var/mob/target in nexusMobsInCircle(user, radius * world.icon_size))
@@ -350,7 +353,7 @@ obj/Attacks/NexusAreaTechnique
 			if(!user.applyNexusTechniqueDamage(target, damage, name)) continue
 			hit_count++
 			if(target && pull_distance > 0) target.pullTowardNexusSource(user, pull_distance)
-			else if(target && knockback_distance > 0) target.Knockback(user, knockback_distance, bypass_immunity = 1)
+			else if(target && knockback_distance > 0) target.KnockbackNoWait(user, knockback_distance, override_dir = get_dir(user, target) || user.dir, bypass_immunity = 1)
 		user.attacking = 0
 		return TRUE
 
@@ -366,19 +369,25 @@ mob/proc/pullTowardNexusSource(mob/source, distance = 1)
 
 obj/Attacks/NexusAreaTechnique/SuperExplosiveWave
 	name = "Super Explosive Wave"
-	desc = "Detonate a defensive shockwave that destroys hostile blasts and repels every valid enemy within four tiles."
+	desc = "Detonate a violent eight-tile shockwave that destroys hostile blasts and hurls enemies up to twelve tiles away."
 	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTMegaBurst.dmi'
 	hotbar_type = "Defensive"
 	energy_cost = 80
 	cooldown_ticks = 140
-	radius = 4
+	radius = 8
 	area_damage_factor = 12
-	knockback_distance = 4
+	knockback_distance = 12
 	intercepts_blasts = TRUE
-	blast_intercept_limit = 24
+	blast_intercept_limit = 40
 	cast_text_color = "#75e6ff"
-	cast_sound_category = "ability_release"
+	cast_sound_category = "explosions"
 	shockwave_effect_state = "big"
+
+	showAreaEffect(mob/user)
+		var/obj/Effect/effect = showNexusExplosiveWaveEffect(user, radius)
+		for(var/mob/viewer in player_view(radius + 2, user))
+			if(viewer.client) viewer.ScreenShake(Amount = 6, Offset = 5)
+		return effect
 
 	verb/Super_Explosive_Wave()
 		set name = "Super Explosive Wave"
@@ -387,11 +396,11 @@ obj/Attacks/NexusAreaTechnique/SuperExplosiveWave
 
 obj/Attacks/NexusAreaTechnique/Earthquake
 	name = "Earthquake"
-	desc = "Collapse the ground inward, damaging and pulling nearby grounded enemies toward you. Flying targets are unaffected."
+	desc = "Collapse the ground inward across an eight-tile radius, damaging and pulling grounded enemies toward you. Flying targets are unaffected."
 	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTShockwave.dmi'
 	energy_cost = 60
 	cooldown_ticks = 160
-	radius = 5
+	radius = 8
 	area_damage_factor = 10
 	knockback_distance = 0
 	pull_distance = 3
@@ -402,6 +411,9 @@ obj/Attacks/NexusAreaTechnique/Earthquake
 	shockwave_effect_state = "middle"
 	// Use the tracked short rumble by resource name; DU.dme already indexes its containing directory.
 	cast_sound = 'Earthquakeshort.ogg'
+
+	showAreaEffect(mob/user)
+		return showNexusEarthquakeEffect(user, radius)
 
 	verb/Earthquake()
 		set category = "Skills"
@@ -463,4 +475,355 @@ obj/Attacks/NexusSpecialStyle/SuperGhostKamikaze
 			ghost.queueNexusProjectileGlowUpdate()
 			ghost.followSelectedTarget(target)
 		if(user) user.attacking = 0
+		return TRUE
+
+obj/Attacks/NexusSpecialStyle/DefensiveBlasting
+	name = "Evasive Barrage"
+	desc = "Leap 8 to 12 tiles backward based on Speed while releasing eight independently paced pursuing blasts from your leading side."
+	icon = 'src/Icons/NexusIntegrated/Attacks/Blasts/RTHomingBlast.dmi'
+	hotbar_type = "Defensive"
+	Cost_To_Learn = 18
+	student_point_cost = 30
+	var
+		energy_cost = 70
+		cooldown_ticks = 100
+		blast_count = 8
+		blast_damage_factor = 2.5
+		tmp/next_use = 0
+
+	proc/getRetreatTiles(mob/user)
+		if(!user) return 8
+		var/speed_delay = max(0.01, user.Speed_delay_mult(severity = 0.5))
+		return 8 + Clamp(round((1 / speed_delay - 0.4) * 4), 0, 4)
+
+	verb/Hotbar_use()
+		set hidden = 1
+		useStyle(usr)
+
+	verb/Defensive_Blasting()
+		set name = "Evasive Barrage"
+		set category = "Skills"
+		useStyle(usr)
+
+	proc/useStyle(mob/user)
+		set waitfor = 0
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/mob/target = user.getSelectedTarget(max_dist = 18)
+		if(!user.canHitNexusTechniqueTarget(target))
+			user << "Select a valid target within 18 tiles."
+			return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
+		if(user.Ki < drain) return FALSE
+		user.Ki -= drain
+		next_use = world.time + cooldown_ticks
+		user.attacking = 3
+		user.showNexusTechniqueAnnouncement(name, "#8ed8ff", 'Blast.wav', 40)
+		var/datum/CombatDamageBudget/shared_budget = new(blast_damage_factor * blast_count)
+		var/aim_direction = get_dir(user, target) || user.dir
+		var/retreat_direction = turn(aim_direction, 180)
+		var/retreat_x = user.bound_center_x() - target.bound_center_x()
+		var/retreat_y = user.bound_center_y() - target.bound_center_y()
+		var/retreat_pixels = getRetreatTiles(user) * world.icon_size
+		// Begin the retreat first. Shots are emitted during the motion instead of
+		// appearing as one stationary formation at its starting point.
+		spawn() if(user && target && target.z == user.z)
+			user.runNexusSkillMotion(null, retreat_direction, retreat_pixels, max_velocity = 48, acceleration = 96, deceleration = 72, afterimage_interval = 1.5, pass_mobs = TRUE, movement_vector_x = retreat_x, movement_vector_y = retreat_y, facing_direction = aim_direction)
+		for(var/shot_index = 1, shot_index <= blast_count, shot_index++)
+			if(!user || user.KO || user.KB || !target || target.z != user.z || target.KO) break
+			var/obj/Blast/projectile = get_cached_blast()
+			projectile.setStats(user, Percent = blast_damage_factor, Off_Mult = 1, Explosion = 0, owner_immunity = 1, shared_budget = shared_budget)
+			projectile.from_attack = src
+			projectile.icon = icon
+			// The custom flight controller owns a minimum forty-tile path budget.
+			projectile.Distance = 999
+			projectile.vector_speed = rand(8, 16)
+			projectile.Shockwave = 1
+			var/launch_direction = get_dir(user, target)
+			var/turf/launch_turf = get_step(user, launch_direction)
+			if(!launch_turf || launch_turf.density) launch_turf = user.loc
+			projectile.SafeTeleport(launch_turf)
+			projectile.pixel_x += rand(-3, 3)
+			projectile.pixel_y += rand(-3, 3)
+			projectile.dir = launch_direction
+			projectile.blast_homing_target = target
+			projectile.queueNexusProjectileGlowUpdate()
+			projectile.followNexusTargetFor(target, 20, 0, 40)
+			sleep(TickMult(0.5))
+		if(user) user.attacking = 0
+		return TRUE
+
+obj/Attacks/NexusSpecialStyle/SphereOfDestruction
+	name = "Sphere of Destruction"
+	desc = "Launch a concentrated one-tile sphere with very high tracking accuracy. It slowly pursues for 10 to 40 seconds, or 60 seconds at overwhelming Energy efficiency; multiple spheres may coexist."
+	icon = 'src/Icons/Ki/Big/DeathBall2017Purple.dmi'
+	Cost_To_Learn = 35
+	student_point_cost = 50
+	var
+		energy_cost = 160
+		cooldown_ticks = 220
+		sphere_damage_factor = 16
+		tmp/next_use = 0
+
+	proc/getChaseDuration(mob/user)
+		if(!user) return 100
+		if(user.Eff >= 6) return 600
+		return Clamp(round(user.Eff * 100), 100, 400)
+
+	verb/Hotbar_use()
+		set hidden = 1
+		useStyle(usr)
+
+	verb/Sphere_of_Destruction()
+		set name = "Sphere of Destruction"
+		set category = "Skills"
+		useStyle(usr)
+
+	proc/useStyle(mob/user)
+		set waitfor = 0
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/mob/target = user.getSelectedTarget(max_dist = 25)
+		if(!user.canHitNexusTechniqueTarget(target)) return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
+		if(user.Ki < drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		user.Ki -= drain
+		next_use = world.time + cooldown_ticks
+		user.showNexusTechniqueAnnouncement(name, "#b56cff", 'BasicbeamCharge.ogg', 55)
+		var/obj/Blast/projectile = get_cached_blast()
+		projectile.setStats(user, Percent = sphere_damage_factor, Off_Mult = 4, Explosion = 2, explosion_percent = sphere_damage_factor, max_damage_factor = sphere_damage_factor * 2, owner_immunity = 1)
+		projectile.from_attack = src
+		// Crop transparent padding before scaling so the animated core fills one tile.
+		var/icon/sphere_icon = new(icon)
+		sphere_icon.Crop(65, 65, 236, 236)
+		sphere_icon.Scale(world.icon_size, world.icon_size)
+		projectile.icon = sphere_icon
+		projectile.color = null
+		// Size is a radius in tiles. Zero uses the physical 32x32 bounds, producing
+		// the requested one-tile diameter instead of the old two-tile diameter.
+		projectile.Size = 0
+		projectile.bound_width = world.icon_size
+		projectile.bound_height = world.icon_size
+		projectile.Distance = 999
+		projectile.vector_speed = 5
+		projectile.Shockwave = 4
+		projectile.SafeTeleport(user.loc)
+		CenterIcon(projectile)
+		projectile.blast_homing_target = target
+		projectile.queueNexusProjectileGlowUpdate()
+		projectile.followNexusTargetFor(target, getChaseDuration(user))
+		return TRUE
+
+obj/Blast/proc/followNexusTargetFor(mob/target, duration_ticks, startup_delay = 0, minimum_distance_tiles = 0)
+	set waitfor = 0
+	stopProjectileFlight()
+	Can_Home = 0
+	var/flight_id = projectile_flight_id
+	if(startup_delay > 0) sleep(startup_delay)
+	var/expires_at = world.time + max(1, duration_ticks)
+	var/travelled_pixels = 0
+	while(src && z && !deflected && Owner && target && target.z == z && !target.KO && world.time < expires_at && flight_id == projectile_flight_id)
+		var/move_speed = vector_speed
+		if(!move_speed) move_speed = 20
+		var/old_x = Px(0)
+		var/old_y = Py(0)
+		vector_step_toward(src, target, move_speed)
+		if(src && z)
+			var/moved_x = Px(0) - old_x
+			var/moved_y = Py(0) - old_y
+			travelled_pixels += sqrt(moved_x ** 2 + moved_y ** 2)
+		if(target in loc && !target.isDefensiveDashEvading(src))
+			Bump(target)
+			return
+		sleep(TickMult(ki_projectile_step_delay))
+	// Evasive Barrage stops steering after two seconds but retains its final
+	// heading until its total path reaches the requested minimum distance.
+	var/minimum_distance_pixels = max(0, minimum_distance_tiles) * world.icon_size
+	while(src && z && !deflected && Owner && travelled_pixels < minimum_distance_pixels && flight_id == projectile_flight_id)
+		var/move_speed = vector_speed
+		if(!move_speed) move_speed = 20
+		var/old_x = Px(0)
+		var/old_y = Py(0)
+		vector_step_dir(src, dir, move_speed)
+		if(src && z)
+			var/moved_x = Px(0) - old_x
+			var/moved_y = Py(0) - old_y
+			var/moved_distance = sqrt(moved_x ** 2 + moved_y ** 2)
+			travelled_pixels += moved_distance
+			if(moved_distance <= 0) break
+		sleep(TickMult(ki_projectile_step_delay))
+	if(src && z && !deflected && flight_id == projectile_flight_id) del(src)
+
+mob/var/tmp
+	destruction_aura_suppressed_until = 0
+	destruction_aura_active = FALSE
+
+var/list/nexus_destruction_range_icons = list()
+
+proc/getNexusDestructionRangeIcon(radius_pixels)
+	radius_pixels = max(2, round(radius_pixels))
+	var/cache_key = "[radius_pixels]"
+	if(nexus_destruction_range_icons[cache_key]) return nexus_destruction_range_icons[cache_key]
+	var/diameter = radius_pixels * 2 + 2
+	var/icon/range_icon = icon('src/Icons/UI/Healthbar.dmi', "100")
+	range_icon.Scale(diameter, diameter)
+	range_icon.DrawBox(null, 1, 1, diameter, diameter)
+	var/center = (diameter + 1) / 2
+	var/inner_radius = radius_pixels - 2
+	for(var/row = 1, row <= diameter, row++)
+		var/delta_y = row - center
+		if(abs(delta_y) > radius_pixels) continue
+		var/outer_span = sqrt(radius_pixels ** 2 - delta_y ** 2)
+		range_icon.DrawBox("#edb5ff", round(center - outer_span) + 1, row, round(center + outer_span), row)
+		if(abs(delta_y) < inner_radius)
+			var/inner_span = sqrt(inner_radius ** 2 - delta_y ** 2)
+			range_icon.DrawBox("#7020a018", round(center - inner_span) + 1, row, round(center + inner_span), row)
+	nexus_destruction_range_icons[cache_key] = range_icon
+	return range_icon
+
+obj/Attacks/NexusSpecialStyle/AuraOfDestruction
+	name = "Aura of Destruction"
+	desc = "Surround yourself with a damaging four-tile aura that suppresses enemy teleports and dashes. While active, it stops your Energy recovery, drains heavy Energy and reduces movement speed by 30%."
+	icon = 'src/Icons/Ki/Auras/BlackDemonflame.dmi'
+	hotbar_type = "Ability"
+	Cost_To_Learn = 30
+	student_point_cost = 45
+	var
+		activation_cost = 80
+		upkeep_cost = 150
+		radius = 4
+		pulse_damage_factor = 2
+		tmp/active = FALSE
+		tmp/aura_generation = 0
+		tmp/mob/aura_owner
+		tmp/image/aura_flames
+		tmp/image/aura_field
+
+	Del()
+		stopAura()
+		return ..()
+
+	proc/stopAura()
+		active = FALSE
+		aura_generation++
+		if(aura_owner)
+			aura_owner.overlays -= aura_flames
+			aura_owner.underlays -= aura_field
+			aura_owner.destruction_aura_active = FALSE
+			aura_owner.clearNexusActionGlow()
+		aura_owner = null
+		aura_flames = null
+		aura_field = null
+
+	proc/showAura(mob/user)
+		aura_owner = user
+		aura_flames = image(icon = icon)
+		aura_flames.color = "#c078ff"
+		aura_flames.alpha = 180
+		aura_flames.blend_mode = BLEND_ADD
+		user.overlays += aura_flames
+		var/field_size = radius * 2 * world.icon_size + 2
+		aura_field = image(icon = getNexusDestructionRangeIcon(radius * world.icon_size))
+		// Match the collision center, including the caster's non-default density bounds.
+		aura_field.pixel_x = user.bound_x + user.bound_width / 2 - field_size / 2
+		aura_field.pixel_y = user.bound_y + user.bound_height / 2 - field_size / 2
+		aura_field.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM
+		aura_field.alpha = 230
+		aura_field.blend_mode = BLEND_DEFAULT
+		user.underlays += aura_field
+
+	verb/Hotbar_use()
+		set hidden = 1
+		toggleAura(usr)
+
+	verb/Aura_of_Destruction()
+		set name = "Aura of Destruction"
+		set category = "Skills"
+		toggleAura(usr)
+
+	proc/toggleAura(mob/user)
+		if(!user || loc != user) return FALSE
+		if(active)
+			stopAura()
+			user << "[src] fades."
+			return TRUE
+		if(user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		var/drain = user.GetSkillDrain(mod = activation_cost, is_energy = 1)
+		if(user.Ki < drain)
+			user << "You do not have enough energy to use [src]."
+			return FALSE
+		user.Ki -= drain
+		active = TRUE
+		aura_generation++
+		showAura(user)
+		user.destruction_aura_active = TRUE
+		user.setNexusActionGlow("#9d4edd", 8, 220, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, "aura")
+		user.showNexusTechniqueAnnouncement(name, "#d66cff", 'Aura.ogg', 45)
+		processAura(user, aura_generation)
+		return TRUE
+
+	proc/processAura(mob/user, generation)
+		set waitfor = 0
+		while(active && generation == aura_generation && user && loc == user && user.z && !user.KO)
+			var/upkeep = user.GetSkillDrain(mod = upkeep_cost, is_energy = 1)
+			if(user.Ki < upkeep) break
+			user.Ki -= upkeep
+			for(var/mob/target in nexusMobsInCircle(user, radius * world.icon_size))
+				if(!user.canHitNexusTechniqueTarget(target)) continue
+				target.destruction_aura_suppressed_until = world.time + 15
+				if(target.active_skill_motion) target.cancelNexusSkillMotion("Aura of Destruction")
+				user.applyNexusTechniqueDamage(target, user.getKiCombatDamage(target, pulse_damage_factor), name)
+			sleep(10)
+		if(generation == aura_generation) stopAura()
+
+obj/Attacks/NexusSpecialStyle/DeathLaser
+	name = "Death Laser"
+	desc = "Fire an instantaneous, needle-thin laser that pierces every valid target in a thirty-tile line without charging or becoming a beam struggle."
+	icon = 'src/Icons/Ki/Beams/FreezaDeathRay.dmi'
+	hotbar_type = "Blast"
+	Cost_To_Learn = 28
+	student_point_cost = 40
+	var
+		energy_cost = 70
+		cooldown_ticks = 100
+		laser_damage_factor = 14
+		line_range = 30
+		tmp/next_use = 0
+
+	verb/Hotbar_use()
+		set hidden = 1
+		fireLaser(usr)
+
+	verb/Death_Laser()
+		set name = "Death Laser"
+		set category = "Skills"
+		fireLaser(usr)
+
+	proc/fireLaser(mob/user)
+		if(!user || loc != user || user.KO || user.rp_mode || user.cant_blast()) return FALSE
+		if(world.time < next_use)
+			user << "[src] will be ready in [round((next_use - world.time) / 10, 0.1)] seconds."
+			return FALSE
+		var/drain = user.GetSkillDrain(mod = energy_cost, is_energy = 1)
+		if(user.Ki < drain) return FALSE
+		user.Ki -= drain
+		next_use = world.time + cooldown_ticks
+		flick("Blast", user)
+		user.showNexusTechniqueAnnouncement(name, "#d66cff", 'Blast.wav', 52)
+		var/list/hit_targets = list()
+		var/turf/line_turf = user.loc
+		for(var/line_step = 1, line_step <= line_range, line_step++)
+			line_turf = get_step(line_turf, user.dir)
+			if(!line_turf || line_turf.density) break
+			showNexusOpenCombatEffect(line_turf, "aim_32", "blast_blue", 0.45, "#d66cff", 235, BLEND_ADD, 3, 0)
+			for(var/mob/target in line_turf)
+				if(target in hit_targets || !user.canHitNexusTechniqueTarget(target)) continue
+				hit_targets += target
+				user.applyNexusTechniqueDamage(target, user.getKiCombatDamage(target, laser_damage_factor), name)
 		return TRUE

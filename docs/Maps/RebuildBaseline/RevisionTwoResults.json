@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-06",
+  "scope": "Revised Viltrum vertical slice; not the complete two-world rebuild",
+  "fullSmoke": {
+    "command": "tools/Invoke-ByondSmoke.ps1",
+    "byond": "516.1686",
+    "compilerErrors": 0,
+    "compilerWarnings": 0,
+    "versionedStartup": "passed",
+    "cleanStartup": "passed",
+    "exitCode": 0,
+    "evidence": "Observed tool process output, session 50749. RevisionTwoFullSmoke.txt captures compiler output; startup status was emitted on PowerShell's host stream."
+  },
+  "pipelineTestGroups": 10,
+  "layoutResults": "../ViltrumSliceChecks.json",
+  "parserEnvironments": ["A1", "C3", "D3"],
+  "parserErrors": 0,
+  "newMissingOrAmbiguousOrCaseInvalidAssetReferences": 0,
+  "strictAssetAudit": "One pre-existing bare-path failure: src/Code/UI/UIStuff.dm:91",
+  "earthMapBytesPreserved": true,
+  "interactiveReview": "Deferred by user",
+  "visualApproval": "Awaiting approval of the revised roof/wall/alpha-object treatment"
+}

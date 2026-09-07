@@ -1,7 +1,7 @@
 turf/var/tmp/ki_water
 
-var/image/kwns=image(icon = 'KiWater.dmi',icon_state="NS")
-var/image/kwew=image(icon = 'KiWater.dmi',icon_state="EW")
+var/image/kwns=image(icon = 'src/Icons/Effects/KiWater.dmi',icon_state="NS")
+var/image/kwew=image(icon = 'src/Icons/Effects/KiWater.dmi',icon_state="EW")
 
 turf/proc/ki_water(d)
 	set waitfor=0

@@ -18,7 +18,7 @@ obj
 		Knockable = 0
 		Bolted = 1
 		desc = "Never forget"
-		icon = 'GorillaHalo.png'
+		icon = 'src/Images/GorillaHalo.png'
 		layer = 4.1
 
 		New()
@@ -40,7 +40,7 @@ obj
 		//Grabbable = 0
 		//Knockable = 0
 		//Bolted = 1
-		icon = 'GorillaNoHead.png'
+		icon = 'src/Images/GorillaNoHead.png'
 		layer = 3.9
 
 	Harambe
@@ -53,7 +53,7 @@ obj
 		Grabbable = 0
 		Knockable = 0
 		Bolted = 1
-		icon = 'Gorilla.png'
+		icon = 'src/Images/Gorilla.png'
 		layer = 3.9
 
 		New()

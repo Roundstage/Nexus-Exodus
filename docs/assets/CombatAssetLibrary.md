@@ -58,7 +58,7 @@ The helper returns one random compiled resource from the requested category. Kee
 ## Current gameplay mappings
 
 - Beam raw-damage impacts: randomized `pixel_simulations_64` states `explosion1` through `explosion5`, with `explosions` audio.
-- Super Explosive Wave and Earthquake: `smoke_shockwaves_128` states `big` and `middle`; intercepted hostile blasts use `aim_32` state `blast_blue`.
+- Super Explosive Wave: `src/Icons/Effects/ExplosiveWave.dmi`, an Aseprite-authored expanding pink energy sphere (20 frames at 25 fps), scaled to the eight-tile radius, with `explosions` audio. Editable source and conversion provenance are documented in `artifacts/ExplosiveWave/README.md`. Earthquake uses the authored `src/Icons/Effects/Earthquake.dmi` animation (24 frames, 1.2 seconds), scaled to its eight-tile radius and anchored beneath characters; intercepted hostile blasts use `aim_32` state `blast_blue`.
 - Headbutt, Axe Kick, March of Fury, Consecutive Normal Punches, Guard Break, Wing Clip and Blue Comet Special: explicit `aim_32` orange/blue impact states with semantic Shonen cast and impact categories.
 - Arcane spells: `foozle_magic_64` for menu icons, casting actors and projectile impacts. Do not substitute unrelated item sprites for these spell icons.
 

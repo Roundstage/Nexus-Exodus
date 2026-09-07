@@ -20,18 +20,23 @@ mob/proc/Get_spawns(excludeShips = 0)
 				var/area/a = s.get_area()
 				if(excludeShips && a && a.type == /area/ship_area) continue
 				L+=s
+		if(!L.len) L = getSuperEarthRacialSpawns(Race)
 		if(!L.len)
 			for(var/obj/Spawn/s in Spawn_List) if(s.z&&!s.is_on_destroyed_planet())
 				var/area/a = s.get_area()
 				if(excludeShips && a && a.type == /area/ship_area) continue
 				if(s.name == getRaceSpawnName(Race)) L+=s
+		// Disabled homeworlds must not send new Viltrumites back to Saiyan spawns.
+		if(!L.len && isViltrumiteSpawnRace(Race) && ("Viltrum" in disabled_planets))
+			for(var/obj/Spawn/s in Spawn_List)
+				if(s.z == Z_LEVEL_EARTH && s.name == "Human" && !s.is_on_destroyed_planet()) L += s
 	return L
 
 proc/getRaceSpawnName(race_name)
 	switch(race_name)
 		if("Kanassan") return "Alien"
 		if("Heran") return "Saiyan"
-		if("Viltrumite", "Half-Viltrumite") return "Saiyan"
+		if("Viltrumite", "Half-Viltrumite") return "Viltrumite"
 	return race_name
 
 mob/proc/Go_to_spawn(First_time = 0, butNotInShipArea, choose_random = 0)
@@ -113,13 +118,13 @@ mob/proc
 		//if(gender == "female") icon = pick('NewPaleFemale.dmi', 'NewTanFemale.dmi', 'NewBlackFemale.dmi')
 		//return
 		if(gender=="male") switch(alert(src,"Choose your skin color","Options","Pale","Tan","Dark"))
-			if("Pale") icon='BaseHumanPale.dmi'
-			if("Tan") icon='BaseHumanTan.dmi'
-			if("Dark") icon='BaseHumanDark.dmi'
+			if("Pale") icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
+			if("Tan") icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi'
+			if("Dark") icon='src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi'
 		else switch(alert(src,"Choose your skin color","Options","Pale","Tan","Dark"))
-			if("Pale") icon='NewPaleFemale.dmi'
-			if("Tan") icon='NewTanFemale.dmi'
-			if("Dark") icon='NewBlackFemale.dmi'
+			if("Pale") icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi'
+			if("Tan") icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi'
+			if("Dark") icon='src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi'
 	Skin()
 		var/Colorable
 		Gender()
@@ -127,8 +132,8 @@ mob/proc
 		else if(Race=="Frost Lord") icer_Icons()
 		else if(Race=="Bio-Android")
 			switch(input(src,"What color body?") in list("Green","Blue"))
-				if("Green") icon='CellLarva.dmi'
-				if("Blue") icon='CellLarvaBlue.dmi'
+				if("Green") icon='src/Icons/PlayerIcons/BaseIcons/CellLarva.dmi'
+				if("Blue") icon='src/Icons/PlayerIcons/BaseIcons/CellLarvaBlue.dmi'
 		else if(Race=="Android")
 			switch(input(src,"Android or Human icon?") in list("Android","Human"))
 				if("Android")
@@ -139,27 +144,27 @@ mob/proc
 					Colorable=0
 		else if(Class=="Spirit Doll")
 			//icon='SpiritDoll.dmi'
-			icon='WhiteKaio.dmi'
-		else if(Race=="Makyo") icon='Makyojin2.dmi'
+			icon='src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/WhiteKaio.dmi'
+		else if(Race=="Makyo") icon='src/Icons/PlayerIcons/BaseIcons/Makyojin2.dmi'
 		else if(Race in list("Phrexian","Kai"))
-			if(gender=="male") icon='CustomMale.dmi'
-			else icon='CustomFemale.dmi'
+			if(gender=="male") icon='src/Icons/PlayerIcons/BaseIcons/CustomMale.dmi'
+			else icon='src/Icons/PlayerIcons/BaseIcons/CustomFemale.dmi'
 			Colorable=1
 			switch(input(src,"What icon do you want?") in list("Custom","Human","Avatar"))
 				if("Human")
 					Human_Skins()
 					Colorable=0
-				if("Avatar") icon='Avatar.dmi'
+				if("Avatar") icon='src/Icons/PlayerIcons/BaseIcons/Avatar.dmi'
 		else if(Race=="Demon")
 			Grid(Demon_Icons)
 			Colorable=1
 		else if(Race=="Majin")
 			if(gender == "male")
-				icon='Majin.dmi'
+				icon='src/Icons/PlayerIcons/BaseIcons/Majin.dmi'
 				Colorable=1
-			else icon = 'FemaleMajin.dmi'
+			else icon = 'src/Icons/PlayerIcons/BaseIcons/FemaleMajin.dmi'
 		else if(Race in list("Namekian","Ancient Namekian"))
-			icon='NamekYoung.dmi'
+			icon='src/Icons/PlayerIcons/BaseIcons/NamekYoung.dmi'
 			/*switch(input(src,"Choose your skin color") in list("Light Green","Green","Dark Green","Dragon Clan","Foreign Namekian"))
 				if("Light Green") icon+=rgb(30,30,30)
 				if("Dark Green") icon-=rgb(30,30,30)
@@ -172,7 +177,7 @@ mob/proc
 			var/A = input(src,"Choose a color for your character's icon. Select Cancel to have no added color") as color|null
 			if(A) icon += A
 			base_icon_color = A
-		if(arm_stretch&&arm_stretch_icon=='GenericArm.dmi') Auto_color_arm_stretch_icon()
+		if(arm_stretch&&arm_stretch_icon=='src/Icons/Unsorted/GenericArm.dmi') Auto_color_arm_stretch_icon()
 
 mob/var/base_icon_color
 
@@ -186,45 +191,45 @@ obj/Alien_Icons
 		if(istype(src,/obj/Alien_Icons/Human)) usr.Human_Skins()
 		if(usr) usr.Tabs="Customize Stats"
 		usr.Hide_Main_Grid()
-	Alien1 icon='AlienBeetle.dmi'
-	Alien2 icon='AlienPikkon.dmi'
-	Alien3 icon='AlienKanassa.dmi'
-	Alien4 icon='AlienGuldo.dmi'
-	Alien5 icon='AlienBass.dmi'
-	Alien6 icon='AlienBurter.dmi'
-	Alien7 icon='RaceGinyu.dmi'
-	Alien8 icon='RaceKui.dmi'
-	Alien9 icon='Alien1.dmi'
-	Alien10 icon='Alien2.dmi'
-	Alien11 icon='Alien3.dmi'
-	Alien12 icon='Immecka.dmi'
-	Alien13 icon='Yukenojin.dmi'
-	Alien14 icon='Baseniojin.dmi'
-	Alien15 icon='Konatsu.dmi'
-	Alien16 icon='Kanassan.dmi'
-	Alien17 icon='Yardrat.dmi'
-	Alien18 icon='Makyojin2.dmi'
-	Alien19 icon='Alien5.dmi'
-	Alien20 icon='Alien4.dmi'
-	Alien21 icon='Alien6.dmi'
-	Alien22 icon='Alien7.dmi'
-	Alien23 icon='Alien8.dmi'
-	Alien24 icon='Alien9.dmi'
-	Alien25 icon='Alien10.dmi'
-	Alien26 icon='AlienFrog.dmi'
-	Alien27 icon='AlienHive.dmi'
-	Alien28 icon='DemonIfrit.dmi'
+	Alien1 icon='src/Icons/PlayerIcons/BaseIcons/AlienBeetle.dmi'
+	Alien2 icon='src/Icons/PlayerIcons/BaseIcons/AlienPikkon.dmi'
+	Alien3 icon='src/Icons/PlayerIcons/BaseIcons/AlienKanassa.dmi'
+	Alien4 icon='src/Icons/PlayerIcons/BaseIcons/AlienGuldo.dmi'
+	Alien5 icon='src/Icons/PlayerIcons/BaseIcons/AlienBass.dmi'
+	Alien6 icon='src/Icons/PlayerIcons/BaseIcons/AlienBurter.dmi'
+	Alien7 icon='src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi'
+	Alien8 icon='src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi'
+	Alien9 icon='src/Icons/PlayerIcons/BaseIcons/Alien1.dmi'
+	Alien10 icon='src/Icons/PlayerIcons/BaseIcons/Alien2.dmi'
+	Alien11 icon='src/Icons/PlayerIcons/BaseIcons/Alien3.dmi'
+	Alien12 icon='src/Icons/PlayerIcons/BaseIcons/Immecka.dmi'
+	Alien13 icon='src/Icons/PlayerIcons/BaseIcons/Yukenojin.dmi'
+	Alien14 icon='src/Icons/PlayerIcons/BaseIcons/Baseniojin.dmi'
+	Alien15 icon='src/Icons/PlayerIcons/BaseIcons/Konatsu.dmi'
+	Alien16 icon='src/Icons/PlayerIcons/BaseIcons/Kanassan.dmi'
+	Alien17 icon='src/Icons/PlayerIcons/BaseIcons/Yardrat.dmi'
+	Alien18 icon='src/Icons/PlayerIcons/BaseIcons/Makyojin2.dmi'
+	Alien19 icon='src/Icons/PlayerIcons/BaseIcons/Alien5.dmi'
+	Alien20 icon='src/Icons/PlayerIcons/BaseIcons/Alien4.dmi'
+	Alien21 icon='src/Icons/PlayerIcons/BaseIcons/Alien6.dmi'
+	Alien22 icon='src/Icons/PlayerIcons/BaseIcons/Alien7.dmi'
+	Alien23 icon='src/Icons/PlayerIcons/BaseIcons/Alien8.dmi'
+	Alien24 icon='src/Icons/PlayerIcons/BaseIcons/Alien9.dmi'
+	Alien25 icon='src/Icons/PlayerIcons/BaseIcons/Alien10.dmi'
+	Alien26 icon='src/Icons/PlayerIcons/BaseIcons/AlienFrog.dmi'
+	Alien27 icon='src/Icons/PlayerIcons/BaseIcons/AlienHive.dmi'
+	Alien28 icon='src/Icons/PlayerIcons/BaseIcons/DemonIfrit.dmi'
 	//Alien29 icon='Blob.dmi'
-	Alien30 icon='KidAlien.dmi'
-	Alien31 icon='FatGuy.dmi'
-	Alien32 icon='Antumb.dmi'
-	Alien33 icon = 'CLOWN.dmi'
-	Alien34 icon = 'Pennywise.dmi'
-	Alien35 icon = 'BeerusGodOfDestruction.dmi'
-	Alien36 icon = 'Jiren23.dmi'
+	Alien30 icon='src/Icons/PlayerIcons/BaseIcons/KidAlien.dmi'
+	Alien31 icon='src/Icons/PlayerIcons/BaseIcons/FatGuy.dmi'
+	Alien32 icon='src/Icons/PlayerIcons/BaseIcons/Antumb.dmi'
+	Alien33 icon = 'src/Icons/PlayerIcons/BaseIcons/CLOWN.dmi'
+	Alien34 icon = 'src/Icons/PlayerIcons/BaseIcons/Pennywise.dmi'
+	Alien35 icon = 'src/Icons/PlayerIcons/BaseIcons/BeerusGodOfDestruction.dmi'
+	Alien36 icon = 'src/Icons/PlayerIcons/BaseIcons/Jiren23.dmi'
 	Human suffix="Look like a Human"
 
-var/icon/Blob='Blob.dmi' //To keep Blob.dmi in the rsc now that its not an alien icon
+var/icon/Blob='src/Icons/PlayerIcons/BaseIcons/Blob.dmi' //To keep Blob.dmi in the rsc now that its not an alien icon
 
 var/list/Demon_Icons=new
 
@@ -236,34 +241,34 @@ obj/Demon_Icons
 		if(istype(src,/obj/Demon_Icons/Human)) P.Human_Skins()
 		if(P) P.Tabs="Customize Stats"
 		usr.Hide_Main_Grid()
-	Demon1 icon='Demon1.dmi'
-	Demon2 icon='Demon2.dmi'
-	Demon3 icon='Hades.dmi'
-	Demon4 icon='Alien2.dmi'
-	Demon5 icon='Alien3.dmi'
-	Demon6 icon='Demon4.dmi'
-	Demon7 icon='Demon5.dmi'
-	Demon8 icon='Demon6.dmi'
-	Demon9 icon='Demon6Female.dmi'
-	Demon10 icon='Demon7.dmi'
-	Demon11 icon='Darkrai2.dmi'
-	Demon12 icon='DemonJanemba.dmi'
-	Demon13 icon='DemonUberVampire.dmi'
-	Demon14 icon='DemonWolf.dmi'
-	Demon15 icon='DemonElemental.dmi'
-	Demon16 icon='AlienSkully.dmi'
-	Demon17 icon='AlienTattoo.dmi'
-	Demon18 icon='DemonDeath.dmi'
-	Demon19 icon='AlienHive.dmi'
-	Demon20 icon='DemonIfrit.dmi'
-	Demon21 icon='Blob.dmi'
-	Demon22 icon='Antumb.dmi'
-	Demon23 icon='HollowKing.dmi'
-	Demon24 icon='Satan.dmi'
-	Demon25 icon='MakaioshinBase.dmi'
-	Demon26 icon='Lucifer.dmi'
-	Demon27 icon='PossessedSpiritDoll.dmi'
-	Demon28 icon='JaganTransformation.dmi'
+	Demon1 icon='src/Icons/PlayerIcons/BaseIcons/Demon1.dmi'
+	Demon2 icon='src/Icons/PlayerIcons/BaseIcons/Demon2.dmi'
+	Demon3 icon='src/Icons/PlayerIcons/BaseIcons/Hades.dmi'
+	Demon4 icon='src/Icons/PlayerIcons/BaseIcons/Alien2.dmi'
+	Demon5 icon='src/Icons/PlayerIcons/BaseIcons/Alien3.dmi'
+	Demon6 icon='src/Icons/PlayerIcons/BaseIcons/Demon4.dmi'
+	Demon7 icon='src/Icons/PlayerIcons/BaseIcons/Demon5.dmi'
+	Demon8 icon='src/Icons/PlayerIcons/BaseIcons/Demon6.dmi'
+	Demon9 icon='src/Icons/PlayerIcons/BaseIcons/Demon6Female.dmi'
+	Demon10 icon='src/Icons/PlayerIcons/BaseIcons/Demon7.dmi'
+	Demon11 icon='src/Icons/PlayerIcons/BaseIcons/Darkrai2.dmi'
+	Demon12 icon='src/Icons/PlayerIcons/BaseIcons/DemonJanemba.dmi'
+	Demon13 icon='src/Icons/PlayerIcons/BaseIcons/DemonUberVampire.dmi'
+	Demon14 icon='src/Icons/PlayerIcons/BaseIcons/DemonWolf.dmi'
+	Demon15 icon='src/Icons/PlayerIcons/BaseIcons/DemonElemental.dmi'
+	Demon16 icon='src/Icons/PlayerIcons/BaseIcons/AlienSkully.dmi'
+	Demon17 icon='src/Icons/PlayerIcons/BaseIcons/AlienTattoo.dmi'
+	Demon18 icon='src/Icons/PlayerIcons/BaseIcons/DemonDeath.dmi'
+	Demon19 icon='src/Icons/PlayerIcons/BaseIcons/AlienHive.dmi'
+	Demon20 icon='src/Icons/PlayerIcons/BaseIcons/DemonIfrit.dmi'
+	Demon21 icon='src/Icons/PlayerIcons/BaseIcons/Blob.dmi'
+	Demon22 icon='src/Icons/PlayerIcons/BaseIcons/Antumb.dmi'
+	Demon23 icon='src/Icons/PlayerIcons/BaseIcons/HollowKing.dmi'
+	Demon24 icon='src/Icons/PlayerIcons/BaseIcons/Satan.dmi'
+	Demon25 icon='src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/MakaioshinBase.dmi'
+	Demon26 icon='src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/Lucifer.dmi'
+	Demon27 icon='src/Icons/PlayerIcons/BaseIcons/ExGenesis1212012/PossessedSpiritDoll.dmi'
+	Demon28 icon='src/Icons/PlayerIcons/BaseIcons/JaganTransformation.dmi'
 	Human suffix="Look like a Human"
 mob/proc/icer_Icons()
 	var/list/L=new
@@ -301,46 +306,46 @@ obj/Icer
 			alert("Final form icon chosen. Now you go even beyond.")
 			usr.Form5Icon=icon
 			usr.Hide_Main_Grid()
-	C30 icon='C1.dmi'
-	C31 icon='C2.dmi'
-	C32 icon='C3.dmi'
-	C33 icon='C4.dmi'
-	C34 icon='C5.dmi'
-	C35 icon='C6.dmi'
-	C36 icon='C7.dmi'
-	C37 icon='C8.dmi'
-	C38 icon='C9.dmi'
-	C39 icon='C10.dmi'
-	C40 icon='C11.dmi'
-	C1 icon='ChangelingFrieza1002.dmi'
-	C2 icon='ChangelingFrieza100.dmi'
-	C3 icon='ChangelingFrieza1003.dmi'
-	C4 icon='ChangelingFrieza2.dmi'
-	C5 icon='ChangelingFriezaForm22.dmi'
-	C6 icon='ChangelingFriezaForm2.dmi'
-	C7 icon='ChangelingFriezaForm32.dmi'
-	C8 icon='ChangelingFriezaForm3.dmi'
-	C9 icon='ChangelingFriezaForm42.dmi'
-	C10 icon='ChangelingFriezaForm4.dmi'
-	C11 icon='ChangelingFrieza.dmi'
-	C12 icon='ChangelingKold2.dmi'
-	C13 icon='ChangelingKoldForm2.dmi'
-	C14 icon='ChangelingKold.dmi'
-	C15 icon='ChangelingKoola2.dmi'
-	C16 icon='ChangelingKoolaForm2.dmi'
-	C17 icon='ChangelingKoolaForm32.dmi'
-	C18 icon='ChangelingKoolaForm3.dmi'
-	C19 icon='ChangelingKoolaForm43.dmi'
-	C20 icon='ChangelingKoolaForm4.dmi'
-	C21 icon='ChangelingKoola.dmi'
-	C22 icon='ChangelingKuriza.dmi'
-	C23 icon='ChangelingKoolaExpand.dmi'
-	C24 icon='ChangelingKoolaExpand2.dmi'
-	C25 icon='Changeling1Large.dmi'
-	C26 icon='Changeling5Frieza.dmi'
-	C27 icon='Changeling5Kold.dmi'
-	C28 icon='ChangelingFriezaForm43.dmi'
-	C29 icon='ChangelingFriezaBe.dmi'
+	C30 icon='src/Icons/PlayerIcons/BaseIcons/C1.dmi'
+	C31 icon='src/Icons/PlayerIcons/BaseIcons/C2.dmi'
+	C32 icon='src/Icons/PlayerIcons/BaseIcons/C3.dmi'
+	C33 icon='src/Icons/PlayerIcons/BaseIcons/C4.dmi'
+	C34 icon='src/Icons/PlayerIcons/BaseIcons/C5.dmi'
+	C35 icon='src/Icons/PlayerIcons/BaseIcons/C6.dmi'
+	C36 icon='src/Icons/PlayerIcons/BaseIcons/C7.dmi'
+	C37 icon='src/Icons/PlayerIcons/BaseIcons/C8.dmi'
+	C38 icon='src/Icons/PlayerIcons/BaseIcons/C9.dmi'
+	C39 icon='src/Icons/PlayerIcons/BaseIcons/C10.dmi'
+	C40 icon='src/Icons/PlayerIcons/BaseIcons/C11.dmi'
+	C1 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFrieza1002.dmi'
+	C2 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFrieza100.dmi'
+	C3 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFrieza1003.dmi'
+	C4 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFrieza2.dmi'
+	C5 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm22.dmi'
+	C6 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm2.dmi'
+	C7 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm32.dmi'
+	C8 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm3.dmi'
+	C9 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm42.dmi'
+	C10 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm4.dmi'
+	C11 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFrieza.dmi'
+	C12 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKold2.dmi'
+	C13 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoldForm2.dmi'
+	C14 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKold.dmi'
+	C15 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoola2.dmi'
+	C16 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaForm2.dmi'
+	C17 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaForm32.dmi'
+	C18 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaForm3.dmi'
+	C19 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaForm43.dmi'
+	C20 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaForm4.dmi'
+	C21 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoola.dmi'
+	C22 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKuriza.dmi'
+	C23 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaExpand.dmi'
+	C24 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingKoolaExpand2.dmi'
+	C25 icon='src/Icons/PlayerIcons/BaseIcons/Changeling1Large.dmi'
+	C26 icon='src/Icons/PlayerIcons/BaseIcons/Changeling5Frieza.dmi'
+	C27 icon='src/Icons/PlayerIcons/BaseIcons/Changeling5Kold.dmi'
+	C28 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaForm43.dmi'
+	C29 icon='src/Icons/PlayerIcons/BaseIcons/ChangelingFriezaBe.dmi'
 mob/proc/Choose_Hair(force_hair)
 	if(force_hair)
 		DBZ_hair(force_hair)
@@ -377,457 +382,13 @@ mob/proc/RandomHair()
 		if(prob(50)) clr = rgb(rand(0,255), rand(0,255), rand(0,255))
 	Apply_Hair(src, h, clr)
 
-var/list/Hairs=new
-
-proc/Fill_Hair_List() for(var/A in typesof(/obj/Hairs)) if(A!=/obj/Hairs) Hairs+=new A
-
-obj/Hairs
-	Givable=0
-	Makeable=0
-	var/SSj_Hair
-	var/USSj_Hair
-	var/SSjFP_Hair
-	var/SSj2_Hair
-	var/SSj3_Hair
-	Bald/Click() Apply_Hair(usr,src)
-	Hair1
-		New()
-			icon='HairShaggy.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair_Caulifla
-		New()
-			icon = 'CauliflaHair.dmi'
-			SSj_Hair = 'CauliflaHairSSJ.dmi'
-			USSj_Hair = 'CauliflaHairUSSJ.dmi'
-			SSjFP_Hair = 'CauliflaHairSSjFP.dmi'
-			SSj2_Hair = 'CauliflaHairSsj2.dmi'
-			SSj3_Hair = SSj2_Hair
-		Click() Apply_Hair(usr,src)
-	Hair_Kale
-		New()
-			icon='KaleHair.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair2
-		New()
-			icon='HairRen.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair3
-		New()
-			icon='HairShortFemale.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair4
-		New()
-			icon='HairPonytail.dmi'
-			SSj_Hair='HairPonytailSSJ.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair='HairPonytailSsjfp.dmi'
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair5
-		New()
-			icon='HairFemalePonytail.dmi'
-			SSj_Hair = 'HairFemalePonyTailSSj.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair='HairFemalePonyTailSSj.dmi'
-			SSj2_Hair='HairFemalePonyTailSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair6
-		New()
-			icon='HairMessy.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair7
-		New()
-			icon='HairBushy.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair8
-		New()
-			icon='HairBrownHeadband.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair9
-		New()
-			icon='HairBlueMale.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair10
-		New()
-			icon='HairCloud.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(180,180,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair11
-		New()
-			icon='HairSuper17.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair12
-		New()
-			icon='HairKidd.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair13
-		New()
-			icon='HairMuse.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair14
-		New()
-			icon='HairGoku.dmi'
-			SSj_Hair='HairGokuSSj.dmi'
-			USSj_Hair='HairGokuUSSj.dmi'
-			SSjFP_Hair='HairGokuSSjFP.dmi'
-			SSj2_Hair='HairGokuUSSj.dmi'
-			SSj3_Hair='HairGokuSSj3Old.dmi'
-		Click() Apply_Hair(usr,src)
-	Hair15
-		New()
-			icon='HairVegetaTobiUchiha.dmi'
-			SSj_Hair='HairVegetaSSj.dmi'
-			USSj_Hair='HairVegetaUSSj.dmi'
-			SSjFP_Hair='HairVegetaSSjFPOld.dmi'
-			SSj2_Hair='HairVegetaSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair16
-		New()
-			icon='HairRaditz.dmi'
-			SSj_Hair='HairRaditzSSj.dmi'
-			USSj_Hair='HairGokuSSj3Old.dmi'
-			SSjFP_Hair='HairRaditzSSjFP.dmi'
-			SSj2_Hair='HairRaditzSSj.dmi'
-			SSj3_Hair='HairGokuSSj3Old.dmi'
-		Click() Apply_Hair(usr,src)
-	Hair17
-		New()
-			icon='HairFutureGohan.dmi'
-			SSj_Hair='HairGohanSSj.dmi'
-			USSj_Hair='HairGohanUSSj.dmi'
-			SSjFP_Hair='HairGohanSSjFPOriginal.dmi'
-			SSj2_Hair='HairGohanSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair18
-		New()
-			icon='HairGohan.dmi'
-			SSj_Hair='HairGohanSSj.dmi'
-			USSj_Hair='HairGohanUSSj.dmi'
-			SSjFP_Hair='HairGohanSSjFP.dmi'
-			SSj2_Hair='HairGohanSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair19
-		New()
-			icon='HairLong.dmi'
-			SSj_Hair='HairTrunksSSj.dmi'
-			USSj_Hair='HairTrunksUSSj.dmi'
-			SSjFP_Hair='HairLongSSjFP.dmi'
-			SSj2_Hair='HairTrunksSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair20
-		New()
-			icon='HairKidGohan.dmi'
-			SSj_Hair='HairKidGohanSSj.dmi'
-			USSj_Hair='HairKidGohanUSSj.dmi'
-			SSjFP_Hair='HairKidGohanSSjFP.dmi'
-			SSj2_Hair='HairKidGohanSSj2.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair21
-		New()
-			icon='HairKylin2.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair='HairFemaleLongSSj.dmi'
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair22
-		New()
-			icon='HairKylin3.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair23
-		New()
-			icon='HairAfroLegacy.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair=SSj_Hair
-		Click() Apply_Hair(usr,src)
-	Hair24
-		New()
-			icon='HairKylin1.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair25
-		New()
-			icon='HairBroly.dmi'
-			SSj_Hair='HairBrolySSj.dmi'
-			USSj_Hair='HairBrolyLssj.dmi'
-			SSjFP_Hair=SSj_Hair+rgb(15,15,15)
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair26
-		New()
-			icon='HairFemaleLong2.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair='HairFemaleLongSSj.dmi'
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair27
-		New()
-			icon='HairLong.dmi'
-			SSj_Hair='HairTrunksSSj.dmi'
-			USSj_Hair='HairTrunksUSSj.dmi'
-			SSjFP_Hair='HairLongSSjFP.dmi'
-			SSj2_Hair='HairTrunksSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair28
-		New()
-			icon='HairGoten.dmi'
-			SSj_Hair='HairGokuSSj.dmi'
-			USSj_Hair='HairGokuUSSj.dmi'
-			SSjFP_Hair='HairGokuSSjFP.dmi'
-			SSj2_Hair='HairGokuSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair29
-		New()
-			icon='HairGTTrunks.dmi'
-			SSj_Hair='HairTrunksSSj.dmi'
-			USSj_Hair='HairGokuUSSj.dmi'
-			SSjFP_Hair='HairLongSSjFP.dmi'
-			SSj2_Hair='HairTrunksSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair30
-		New()
-			icon='HairGTVegeta.dmi'
-			SSj_Hair='HairGTVegetaSSj.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair='HairGTVegetaSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair31
-		New()
-			icon='HairMohawk.dmi'
-			SSj_Hair='HairMohawkSSj.dmi'
-			USSj_Hair='HairTrunksUSSj.dmi'
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair='HairMohawkSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair32
-		New()
-			icon='HairSpike.dmi'
-			SSj_Hair='HairSpikeSSj.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair33
-		New()
-			icon='HairYamcha.dmi'
-			SSj_Hair='HairYamchaSSj.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=SSj_Hair+rgb(15,15,15)
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair34
-		New()
-			icon='HairVegetaJunior.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair35
-		New()
-			icon='HairLan.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair36
-		New()
-			icon='BlackSSJhair.dmi'
-			SSj_Hair='HairGokuSSj.dmi'
-			USSj_Hair='HairGokuUSSj.dmi'
-			SSjFP_Hair='HairGokuSSjFP.dmi'
-			SSj2_Hair='HairGokuUSSj.dmi'
-			SSj3_Hair='HairGokuSSj3.dmi'
-		Click() Apply_Hair(usr,src)
-	Hair37
-		New()
-			icon='VegitoHairPVP.dmi'
-			SSj_Hair='HairGokuUSSj.dmi'
-			USSj_Hair='HairGokuUSSj.dmi'
-			SSjFP_Hair='VegitoHairPVPSSjFP.dmi'
-			SSj2_Hair='HairGokuUSSj.dmi'
-			SSj3_Hair='HairGokuSSj3.dmi'
-		Click() Apply_Hair(usr,src)
-	Hair38
-		New()
-			icon='MezuHair.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSsj4Gogeta.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair39
-		New()
-			icon='HairStylishBlack.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSsj4Gogeta.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair40
-		New()
-			icon='HopeFfxiiiHair.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair41
-		New()
-			icon='HairSsj4Gogeta.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairGokuSSj3.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair42
-		New()
-			icon='HairHitsugaya.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair43
-		New()
-			icon='LongFemaleHair.dmi'
-			SSj_Hair='LongFemaleHairSsj.dmi'
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=SSj_Hair+rgb(20,20,20)
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairGokuSSj3.dmi'
-		Click() Apply_Hair(usr,src)
-	Hair44
-		New()
-			icon='HairVegeta.dmi'
-			SSj_Hair='HairVegetaSSj.dmi'
-			USSj_Hair='HairVegetaUSSj.dmi'
-			SSjFP_Hair='HairVegetaSSjFPOld.dmi'
-			SSj2_Hair='HairVegetaSSj.dmi'
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	Hair45
-		New()
-			icon='HairFemaleLong.dmi'
-			SSj_Hair='HairYamchaSSj.dmi'
-			USSj_Hair='HairBrolyLssj.dmi'
-			SSjFP_Hair=SSj_Hair+rgb(15,15,15)
-			SSj2_Hair=SSj_Hair
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-	CustomHair
-		New()
-			icon='HairFemaleLong.dmi'
-			SSj_Hair=icon+rgb(150,150,0)
-			USSj_Hair=SSj_Hair
-			SSjFP_Hair=icon+rgb(160,160,80)
-			SSj2_Hair=icon+rgb(160,160,20)
-			SSj3_Hair='HairSSj4.dmi'+rgb(160,150,30)
-		Click() Apply_Hair(usr,src)
-
 proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
+	if(!P || !O) return
 	var/Had_Tail
 	if(P.Tail) Had_Tail=1
 	P.Tail_Remove()
-	P.overlays-=P.hair
+	P.overlays.Remove(P.hair, P.ssjhair, P.ussjhair, P.ssjfphair, P.ssj2hair, P.ssj3hair, P.ssj4hair, P.ssj_blue_hair, P.ssj_god_hair)
+	P.overlays -= 'src/Icons/PlayerIcons/Hair/Ssj3Mastered.dmi'
 	P.base_hair=null
 	P.hair=O.icon
 	P.ssjhair=O.SSj_Hair
@@ -841,6 +402,9 @@ proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
 	P.Hair_Base=P.hair
 	P.Hair_Age=P.Age
 	P.ssj4hair=null
+	P.ssj_blue_hair = null
+	P.ssj_god_hair = null
+	P.royalBlueHair = null
 	if(O.icon)
 
 		//SSJ BLUE HAIR
@@ -858,11 +422,12 @@ proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
 		else if(!P.dbz_character) if((P.Race!="Saiyan"&&P.hair)||(P.Race=="Saiyan"&&P.icon))
 			P.HairColor=input(P,"Choose a hair color. Hit Cancel to have default color.") as color|null
 		if(P.HairColor) P.hair+=P.HairColor
-		P.ssj4hair='HairSSj4.dmi'
+		P.ssj4hair='src/Icons/PlayerIcons/Hair/HairSSj4.dmi'
 		if(P.HairColor) P.ssj4hair+=P.HairColor
 		P.base_hair=P.hair
 		P.overlays+=P.hair
 	if(Had_Tail) P.Tail_Add()
+	P.SSj_Hair()
 	//P<<"You have selected [O]"
 
 mob/proc/Choose_Android_Icon()
@@ -872,8 +437,8 @@ mob/proc/Choose_Android_Icon()
 var/list/Android_Icons
 proc/Android_Icons() if(!Android_Icons)
 	Android_Icons=new/list
-	for(var/V in list('Android.dmi','AndroidBlackout.dmi','AndroidSkeletor.dmi','AndroidSpider.dmi',\
-	'BaseAndroid1.dmi','BaseAndroid2.dmi','AndroidProxy.dmi'))
+	for(var/V in list('src/Icons/PlayerIcons/BaseIcons/Android.dmi','src/Icons/PlayerIcons/BaseIcons/Androids/AndroidBlackout.dmi','src/Icons/PlayerIcons/BaseIcons/Androids/AndroidSkeletor.dmi','src/Icons/PlayerIcons/BaseIcons/Androids/AndroidSpider.dmi',\
+	'src/Icons/PlayerIcons/BaseIcons/Androids/BaseAndroid1.dmi','src/Icons/PlayerIcons/BaseIcons/Androids/BaseAndroid2.dmi','src/Icons/PlayerIcons/BaseIcons/Androids/AndroidProxy.dmi'))
 		var/obj/Base_Icon/O=new
 		O.icon=V
 		Android_Icons+=O

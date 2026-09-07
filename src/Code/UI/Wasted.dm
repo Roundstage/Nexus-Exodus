@@ -85,11 +85,11 @@ obj/GTA5_Stuff
 		MakeImmovableIndestructable()
 
 	GTA5_Wasted_Logo
-		icon = 'WastedGta5.png'
+		icon = 'src/Images/WastedGta5.png'
 		alpha = 0
 		screen_loc = "CENTER-2,CENTER-2"
 
 	GTA5_Vignette
 		//icon = 'ScreenVignetteOverlay.png'
-		icon = 'Blackness2017.dmi'
+		icon = 'src/Icons/UI/Blackness2017.dmi'
 		alpha = 0

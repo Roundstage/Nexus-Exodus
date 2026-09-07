@@ -79,7 +79,7 @@ mob/proc
 var/list/majin_goos = new
 
 obj/Majin_Goo
-	icon = 'Majin1.dmi'
+	icon = 'src/Icons/PlayerIcons/BaseIcons/Majin1.dmi'
 	icon_state = "Regenerate 2"
 	density = 0
 	layer = 7 //arbitrary

@@ -9,7 +9,7 @@ proc/getNexusHudLibraryIcon(width, height, background_color = "#101923", border_
 	height = max(1, round(height))
 	var/cache_key = "[width]x[height]-[background_color]-[border_color]-[accent_color]"
 	if(nexus_hud_library_icon_cache[cache_key]) return nexus_hud_library_icon_cache[cache_key]
-	var/icon/panel_icon = icon('UserNamesBarsUi.png')
+	var/icon/panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	panel_icon.Scale(width, height)
 	panel_icon.DrawBox(background_color, 1, 1, width, height)
 	panel_icon.DrawBox("#160f0a", 1, 1, width, 2)
@@ -36,7 +36,7 @@ proc/getNexusPixelInterfaceIcon(icon_kind)
 	if(icon_kind in list("development", "science")) icon_kind = "science"
 	if(icon_kind in list("log", "legacy")) icon_kind = "logs"
 	if(nexus_pixel_interface_icon_cache[icon_kind]) return nexus_pixel_interface_icon_cache[icon_kind]
-	var/icon/pixel_icon = icon('UserNamesBarsUi.png')
+	var/icon/pixel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
 	pixel_icon.Scale(32, 32)
 	pixel_icon.DrawBox("#0d0906", 1, 1, 32, 32)
 	pixel_icon.DrawBox("#2a2016", 3, 3, 30, 30)

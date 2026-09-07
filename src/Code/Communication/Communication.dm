@@ -277,7 +277,7 @@ mob/var/tmp/obj/Effect/NexusTypingIndicator/nexus_typing_indicator
 
 obj/Effect/NexusTypingIndicator
 	name = "typing"
-	icon = 'KhunTyping.dmi'
+	icon = 'src/Icons/VFX/KhunTyping.dmi'
 	mouse_opacity = 0
 	density = 0
 	Grabbable = 0

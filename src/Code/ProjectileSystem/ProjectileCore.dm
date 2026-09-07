@@ -63,7 +63,7 @@ obj
 				pixel_randomness = 10
 
 			TestBlast
-				icon = 'Blast11.dmi'
+				icon = 'src/Icons/Ki/Blasts/Blast11.dmi'
 
 				verb
 					Hotbar_use()

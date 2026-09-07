@@ -1,6 +1,6 @@
 obj/beam_redirector //when beams are deflected this object is placed down at the spot where it was
 //deflected, and the beam uses the object's dir to know which way it should then go
-	icon='BeamAxis.dmi'
+	icon='src/Icons/Unsorted/BeamAxis.dmi'
 	Grabbable=0
 	Savable=0
 	layer=7

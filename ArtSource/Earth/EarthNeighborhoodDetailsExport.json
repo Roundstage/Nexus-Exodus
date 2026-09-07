@@ -1,0 +1,294 @@
+{
+  "origin": "Native Aseprite additions to the established Earth street kit.",
+  "sourceHashes": {
+    "ArtSource/Earth/EarthNeighborhoodDetails.aseprite": "7fa628c93af8d6f0f33e54e9f488a67c8ff00d94e4fce1b58751852143c1510d"
+  },
+  "states": [
+    {
+      "state": "asphalt",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "lane_h",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "lane_v",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "cross_h",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "cross_v",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 4,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "sidewalk",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 5,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "curb_n",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 6,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "curb_s",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 7,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "curb_e",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 8,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "curb_w",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 9,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "lawn",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 10,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "garden_path",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 11,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "doorstep",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 12,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "exit_mat",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 13,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hedge",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 14,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "fence",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 15,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "bin",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 16,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "flowers",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 17,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "bridge_n",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 18,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bridge_s",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 19,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bridge_e",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 20,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "bridge_w",
+      "cellSize": [
+        32,
+        32
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodDetails.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodDetails.aseprite",
+      "sourceCell": 21,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    }
+  ]
+}

@@ -201,13 +201,13 @@ mob/proc/Other_Load_Stuff()
 			break
 	last_ssj_revert_or_retrans = world.realtime //stop them from logging out in ss then coming back 20 minutes later and insta-mastering it even though they were logged out the whole time
 	Remove_Say_Spark()
-	var/image/A=image(icon='SaySpark.dmi',pixel_y=6)
-	overlays.Remove('AbsorbSparks.dmi','TimeFreeze.dmi','SBombGivePower.dmi',BlastCharge,A)
+	var/image/A=image(icon='src/Icons/Effects/SaySpark.dmi',pixel_y=6)
+	overlays.Remove('src/Icons/Ki/Electricity/AbsorbSparks.dmi','src/Icons/Effects/TimeFreeze.dmi','src/Icons/Ki/Effects/SBombGivePower.dmi',BlastCharge,A)
 	if(KO)
 		UnKO()
 		KO("(logged in KO'd)")
 	Player_Loops(start_delay = 10)
-	if(icon=='Oozbody.dmi')
+	if(icon=='src/Icons/Unsorted/Other/Oozbody.dmi')
 		Great_Ape_revert()
 		Great_Ape()
 	if(locate(/obj/Michael_Jackson) in src) Michael_Jackson_Dance()
@@ -348,7 +348,7 @@ obj/Spawn
 	Bolted=1
 	Knockable=0
 	Cost=0
-	icon='SparkleBlast.dmi'
+	icon='src/Icons/Unsorted/SparkleBlast.dmi'
 	desc="Default spawn"
 	mouse_opacity = 2
 
@@ -523,7 +523,7 @@ atom/proc/text_overlay(var/text="",xx=0,yy=32,timer=10)
 
 turf/var/tmp/nuked=0
 turf/var/nukable=1
-var/image/nuke_icon=image(icon='ExplosionNuke.dmi',pixel_x=-112,pixel_y=-112,layer=99)
+var/image/nuke_icon=image(icon='src/Icons/Effects/ExplosionNuke.dmi',pixel_x=-112,pixel_y=-112,layer=99)
 
 var
 	nukesDetonating = 0 //how many nukes are detonating right now, so i can limit it so people cant crash the server by detonating 100+ nukes at once
@@ -560,7 +560,7 @@ proc/Nuke_detonate(nuke_bp=0, turf/origin, range=30, radiation=1, overlay_prob=8
 						sleep(4)
 				if(t.Water)
 					if(radiation)
-						t.icon='Turfs.dmi'
+						t.icon='src/Icons/Turfs/Turfs.dmi'
 						t.icon_state="nwater"
 				else
 					t.destroy_turf()
@@ -586,7 +586,7 @@ turf/proc/nuke_test(nuke_bp=0,turf/origin,range=80)
 
 	if(nukable)
 		if(Water)
-			icon='Turfs.dmi'
+			icon='src/Icons/Turfs/Turfs.dmi'
 			icon_state="nwater"
 		else destroy_turf()
 
@@ -621,7 +621,7 @@ mob/proc/Remove_evil_overlay()
 	for(var/i in 1 to 3) overlays-=evil_overlay
 
 proc/Make_evil_overlay()
-	evil_overlay=image(icon='EvilOverlay.dmi',pixel_y=40,pixel_x=2,layer=5)
+	evil_overlay=image(icon='src/Icons/Unsorted/EvilOverlay.dmi',pixel_y=40,pixel_x=2,layer=5)
 
 
 

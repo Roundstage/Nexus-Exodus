@@ -1,21 +1,21 @@
-area/proc/Area_Nuke() if(icon!='LightningFlash.dmi')
+area/proc/Area_Nuke() if(icon!='src/Icons/Effects/LightningFlash.dmi')
 	var/Old_State=icon_state
-	icon='LightningFlash.dmi'
+	icon='src/Icons/Effects/LightningFlash.dmi'
 	icon_state=null
 	spawn(600) if(src)
-		icon='Weather.dmi'
+		icon='src/Icons/Effects/Weather/Weather.dmi'
 		icon_state=Old_State
 
 proc/Nuke_Icons(obj/F)
 	switch(pick(1,2,3))
 		if(1)
-			F.icon='Explosion.dmi'
+			F.icon='src/Icons/Effects/Explosion.dmi'
 			F.icon_state=""
 		if(2)
-			F.icon='ExplosionLegacy2.dmi'
+			F.icon='src/Icons/Effects/ExplosionLegacy2.dmi'
 			F.icon_state=""
 		if(3)
-			F.icon='Smoke1.dmi'
+			F.icon='src/Icons/Effects/Smoke1.dmi'
 			F.icon_state=""
 
 turf/proc/Nuke(BP,Force,Range,Amount)
@@ -32,7 +32,7 @@ turf/proc/Nuke(BP,Force,Range,Amount)
 		sleep(0.2)
 
 obj/Blast/Fireball
-	icon='Explosion.dmi'
+	icon='src/Icons/Effects/Explosion.dmi'
 	density=1
 	Shockwave=1
 	Deflectable=0
@@ -54,7 +54,7 @@ obj/Blast/Fireball
 			sleep(1)
 
 	New()
-		icon=pick('Explosion1.dmi','Explosion2.dmi','Explosion3.dmi','Explosion4.dmi')
+		icon=pick('src/Icons/Effects/Explosion1.dmi','src/Icons/Effects/Explosion2.dmi','src/Icons/Effects/Explosion3.dmi','src/Icons/Effects/Explosion4.dmi')
 		Timed_Delete(src, rand(5000,7000))
 		pixel_x=rand(-64,64)
 		pixel_y=rand(-64,64)
@@ -103,7 +103,7 @@ obj/Blast/Fireball
 		. = ..()
 
 obj/items/Nuke
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	era_reset_immune=0
 	icon_state="Panel1"
 	density=1
@@ -285,7 +285,7 @@ obj/items/Nuke
 		Bolted=1
 		Detonate()
 obj/items/Nuke/Sonic_Bomb
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Panel1"
 	density=1
 	desc="This bomb only harms people, not objects. It can kill. It can be mounted to any other object"

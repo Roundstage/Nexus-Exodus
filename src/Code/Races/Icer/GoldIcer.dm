@@ -1,9 +1,9 @@
 mob/var
 	has_gold_form
 	is_gold_form
-	gold_form_aura = 'GoldIcerAuraSmaller.dmi'
+	gold_form_aura = 'src/Icons/Ki/Auras/GoldIcerAuraSmaller.dmi'
 	gold_form_mult = 1.3
-	goldFormIcon = 'GoldIcer.dmi'
+	goldFormIcon = 'src/Icons/PlayerIcons/BaseIcons/GoldIcer.dmi'
 
 	tmp
 		gold_form_drain_loop
@@ -103,7 +103,7 @@ mob/proc
 		if(!isnum(god_ki_mastery)) god_ki_mastery = 0 //fix -nan bug i made
 		gold_form_aura = image(initial(gold_form_aura) + rgb(0,0,0,170), pixel_x = 0, pixel_y = -4)
 		//gold_form_aura = Scaled_Icon(gold_form_aura, 48, 64)
-		gold_form_idle_aura = image(icon = 'GoldIdleAura.dmi' + rgb(0,0,0,203), pixel_x = -32, pixel_y = -28)
+		gold_form_idle_aura = image(icon = 'src/Icons/Ki/Auras/GoldIdleAura.dmi' + rgb(0,0,0,203), pixel_x = -32, pixel_y = -28)
 
 		if(!is_gold_form) return
 
@@ -113,7 +113,7 @@ mob/proc
 		set waitfor=0
 		var/obj/Effect/e = GetEffect()
 		e.loc = loc
-		e.icon = 'MegaSupernova2018.dmi'
+		e.icon = 'src/Icons/Ki/Big/MegaSupernova2018.dmi'
 		CenterIcon(e)
 		e.layer = 9
 		e.alpha = 255

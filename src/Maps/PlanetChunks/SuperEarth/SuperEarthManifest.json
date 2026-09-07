@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "planet": "SuperEarth",
+  "chunkSize": 100,
+  "rows": "ABCDE",
+  "columns": 5,
+  "seedHash": "5f4086d012299ca4b5f5bdda97fb9dc6198d00b071df9c993169389b6aee206f",
+  "orientation": "A is north; local (1,1) is southwest; global y = (4-rowIndex)*100 + localY",
+  "chunks": [
+    {
+      "file": "SuperEarthA1.dmm",
+      "row": "A",
+      "column": 1
+    },
+    {
+      "file": "SuperEarthA2.dmm",
+      "row": "A",
+      "column": 2
+    },
+    {
+      "file": "SuperEarthA3.dmm",
+      "row": "A",
+      "column": 3
+    },
+    {
+      "file": "SuperEarthA4.dmm",
+      "row": "A",
+      "column": 4
+    },
+    {
+      "file": "SuperEarthA5.dmm",
+      "row": "A",
+      "column": 5
+    },
+    {
+      "file": "SuperEarthB1.dmm",
+      "row": "B",
+      "column": 1
+    },
+    {
+      "file": "SuperEarthB2.dmm",
+      "row": "B",
+      "column": 2
+    },
+    {
+      "file": "SuperEarthB3.dmm",
+      "row": "B",
+      "column": 3
+    },
+    {
+      "file": "SuperEarthB4.dmm",
+      "row": "B",
+      "column": 4
+    },
+    {
+      "file": "SuperEarthB5.dmm",
+      "row": "B",
+      "column": 5
+    },
+    {
+      "file": "SuperEarthC1.dmm",
+      "row": "C",
+      "column": 1
+    },
+    {
+      "file": "SuperEarthC2.dmm",
+      "row": "C",
+      "column": 2
+    },
+    {
+      "file": "SuperEarthC3.dmm",
+      "row": "C",
+      "column": 3
+    },
+    {
+      "file": "SuperEarthC4.dmm",
+      "row": "C",
+      "column": 4
+    },
+    {
+      "file": "SuperEarthC5.dmm",
+      "row": "C",
+      "column": 5
+    },
+    {
+      "file": "SuperEarthD1.dmm",
+      "row": "D",
+      "column": 1
+    },
+    {
+      "file": "SuperEarthD2.dmm",
+      "row": "D",
+      "column": 2
+    },
+    {
+      "file": "SuperEarthD3.dmm",
+      "row": "D",
+      "column": 3
+    },
+    {
+      "file": "SuperEarthD4.dmm",
+      "row": "D",
+      "column": 4
+    },
+    {
+      "file": "SuperEarthD5.dmm",
+      "row": "D",
+      "column": 5
+    },
+    {
+      "file": "SuperEarthE1.dmm",
+      "row": "E",
+      "column": 1
+    },
+    {
+      "file": "SuperEarthE2.dmm",
+      "row": "E",
+      "column": 2
+    },
+    {
+      "file": "SuperEarthE3.dmm",
+      "row": "E",
+      "column": 3
+    },
+    {
+      "file": "SuperEarthE4.dmm",
+      "row": "E",
+      "column": 4
+    },
+    {
+      "file": "SuperEarthE5.dmm",
+      "row": "E",
+      "column": 5
+    }
+  ]
+}

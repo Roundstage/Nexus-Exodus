@@ -324,7 +324,7 @@ proc/runNexusProfileArtSmokeTests()
 	var/profile_art_jpg_source = "data/ProfileImages/.profile-art-smoke-source.jpg"
 	fdel(profile_art_png_source)
 	fdel(profile_art_jpg_source)
-	nexusSmokeAssert(fcopy('Slime64.png', profile_art_png_source) && fcopy('Ability.jpg', profile_art_jpg_source), "known-good PNG/JPEG resources could not be staged for raw profile-art smoke coverage")
+	nexusSmokeAssert(fcopy('src/Images/Slime64.png', profile_art_png_source) && fcopy('src/Icons/UI/HotbarIcons/Ability.jpg', profile_art_jpg_source), "known-good PNG/JPEG resources could not be staged for raw profile-art smoke coverage")
 	var/profile_art_png_hash = sha1(file(profile_art_png_source))
 	var/profile_art_jpg_hash = sha1(file(profile_art_jpg_source))
 	nexusSmokeAssert(getNexusProfileArtSignatureFormat(file(profile_art_png_source)) == "png" && getNexusProfileArtSignatureFormat(file(profile_art_jpg_source)) == "jpg" && isNexusProfileArtHash(profile_art_png_hash) && isNexusProfileArtHash(profile_art_jpg_hash), "profile-art content signatures or raw fingerprints do not recognize valid PNG/JPEG files")
@@ -425,7 +425,7 @@ proc/runNexusPlanetMapScannerSmokeTests()
 	var/list/jungle_map_region = getNexusPlanetMapRegion("jungle")
 	var/list/android_map_region = getNexusPlanetMapRegion("android")
 	var/list/atlantis_map_region = getNexusPlanetMapRegion("atlantis")
-	nexusSmokeAssert(planet_map_manifest.len == 9 && desert_map_region["area_type"] == /area/Desert && jungle_map_region["area_type"] == /area/Jungle && android_map_region["area_type"] == /area/Android && atlantis_map_region["z_level"] == 11, "planet-map manifest is missing a canonical surface or places Atlantis on the wrong z-level")
+	nexusSmokeAssert(planet_map_manifest.len == 11 && desert_map_region["area_type"] == /area/Desert && jungle_map_region["area_type"] == /area/Jungle && android_map_region["area_type"] == /area/Android && atlantis_map_region["z_level"] == 11, "planet-map manifest is missing a canonical surface or places Atlantis on the wrong z-level")
 	nexusSmokeAssert(desert_map_region["max_x"] == 250 && desert_map_region["max_y"] == 250 && jungle_map_region["min_y"] == 251 && jungle_map_region["max_x"] == 250 && android_map_region["min_x"] == 251 && android_map_region["min_y"] == 251, "shared z=14 planet regions overlap or have invalid bounds")
 	var/list/resolved_desert_map_region = resolveNexusPlanetMapRegion(14, /area/Desert, 120, 170)
 	var/list/resolved_jungle_map_region = resolveNexusPlanetMapRegion(14, /area/Jungle, 220, 280)
@@ -780,10 +780,10 @@ proc/runNexusPlanetaryControlSmokeTests()
 proc/runNexusGhostCopySmoke()
 	var/mob/NexusSmokeTest/ghost_copy_source = new
 	ghost_copy_source.name = "Ghost Copy Source"
-	ghost_copy_source.icon = 'BaseHumanPale.dmi'
+	ghost_copy_source.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	ghost_copy_source.pixel_x = 3
 	ghost_copy_source.pixel_y = -2
-	ghost_copy_source.overlays += image('RTIronSword.dmi')
+	ghost_copy_source.overlays += image('src/Icons/Objects/Swords/RTIronSword.dmi')
 	var/obj/Blast/ghost_copy_contract = new
 	nexusSmokeAssert(ghost_copy_contract.applyNexusCharacterCopyAppearance(ghost_copy_source) && ghost_copy_contract.icon == ghost_copy_source.icon && ghost_copy_contract.pixel_x == 3 && ghost_copy_contract.pixel_y == -2 && ghost_copy_contract.overlays.len == ghost_copy_source.overlays.len, "Super Ghost Kamikaze projectile does not copy the caster body and equipped silhouette")
 	del(ghost_copy_contract)
@@ -792,7 +792,7 @@ proc/runNexusGhostCopySmoke()
 proc/runNexusAndroidGiantAppearanceSmoke()
 	var/mob/NexusSmokeTest/android_giant_scale_test = new
 	android_giant_scale_test.Android = 1
-	android_giant_scale_test.icon = 'BaseHumanPale.dmi'
+	android_giant_scale_test.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	android_giant_scale_test.pixel_x = 4
 	android_giant_scale_test.pixel_y = -3
 	var/matrix/android_giant_base_transform = matrix()
@@ -1209,7 +1209,9 @@ proc/runViltrumiteStartupSmokeTests()
 	var/mob/NexusSmokeTest/standard = new
 	standard.Viltrumite()
 	nexusSmokeAssert(standard.getRacialProgressionTrack() == "Viltrumite Warfare", "Viltrumites do not resolve to their dedicated racial progression track")
-	nexusSmokeAssert(getRaceSpawnName("Viltrumite") == "Saiyan" && getRaceSpawnName("Half-Viltrumite") == "Saiyan", "Viltrumite races did not resolve to the temporary Saiyan spawn")
+	nexusSmokeAssert(getRaceSpawnName("Viltrumite") == "Viltrumite" && getRaceSpawnName("Half-Viltrumite") == "Viltrumite" && getRaceSpawnName("Saiyan") == "Saiyan", "Viltrumite racial spawns are not independent from Saiyans")
+	runViltrumPlanetStartupSmokeTests()
+	runSuperEarthStartupSmokeTests()
 	nexusSmokeAssert(!standard.old_age_on && standard.Lifespan() == 1.#INF, "standard Viltrumites retained a natural decline or lifespan limit")
 	nexusSmokeAssert(standard.Intelligence == 1, "standard Viltrumite Intelligence diverged from 1")
 	nexusSmokeAssertNear(standard.Get_race_starting_bp_mod() * standard.racialCombatBPMult(), 1.68, 0.0001, "standard Viltrumite creation BP escaped its balance target")
@@ -1324,6 +1326,8 @@ proc/runEnergyRecoveryStartupSmokeTests()
 	del(energy_recovery_test)
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	runTransformationHairSmokeTests()
+	runSsjAwakeningSmokeTests()
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
 	var/normalized_description = normalizeNexusPlayerDescription(legacy_description)
 	var/rendered_description = renderNexusPlayerDescription(legacy_description)
@@ -1348,7 +1352,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(length(normalizeNexusLeagueNotes(oversized_league_notes)) == NEXUS_LEAGUE_NOTES_LIMIT, "league notes do not enforce their server-side length limit")
 	nexusSmokeAssert(normalizeNexusLeagueInlineText("&lt;script&gt;Unsafe&lt;/script&gt;", NEXUS_LEAGUE_NAME_LIMIT) == "scriptUnsafe/script" && length(normalizeNexusLeagueDescription(oversized_league_notes)) == NEXUS_LEAGUE_DESCRIPTION_LIMIT, "league names or descriptions retain executable markup or exceed their limits")
 	nexusSmokeAssert(NEXUS_ADMIN_ITEM_PICKER_LEVEL == 2 && normalizeNexusAdminItemPickerMode("give") == "give" && normalizeNexusAdminItemPickerMode("make") == "make" && !normalizeNexusAdminItemPickerMode("spawn") && !normalizeNexusAdminItemPickerMode("GIVE"), "Admin item picker permissions or strict modes regressed")
-	nexusSmokeAssert(text2path("/datum/NexusPlayerDescriptionEditor") && getNexusApplicationIconSkinValue() == "'Slime64.png'", "the safe description editor or compiled application icon contract is missing")
+	nexusSmokeAssert(text2path("/datum/NexusPlayerDescriptionEditor") && getNexusApplicationIconSkinValue() == "'src/Images/Slime64.png'", "the safe description editor or compiled application icon contract is missing")
 	var/mob/NexusSmokeTest/profile_builder_test = new
 	profile_builder_test.name = "Actual Identity"
 	profile_builder_test.player_profile_name = "The Azure Pilgrim"
@@ -1832,8 +1836,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/NexusLighting/PlaneMaster/lighting_plane = new
 	var/obj/NexusLighting/Emitter/lighting_emitter = new
 	var/obj/LightSource/static_light = new
-	var/icon/lighting_mask = icon('NexusLightGradient.dmi', "10")
-	var/list/lighting_states = icon_states('NexusLightGradient.dmi')
+	var/icon/lighting_mask = icon('src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', "10")
+	var/list/lighting_states = icon_states('src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi')
 	var/list/lighting_center_rgb = rgb2num(lighting_mask.GetPixel(128, 128))
 	var/list/lighting_half_rgb = rgb2num(lighting_mask.GetPixel(64, 128))
 	var/list/lighting_edge_rgb = rgb2num(lighting_mask.GetPixel(2, 128))
@@ -1841,11 +1845,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(lighting_emitter.plane == 15 && lighting_emitter.blend_mode == BLEND_ADD, "dynamic glow is not additive on the lighting plane")
 	nexusSmokeAssert(lighting_mask.Width() == 256 && lighting_mask.Height() == 256 && ("1" in lighting_states) && ("10" in lighting_states), "configurable lighting gradient is corrupt or incomplete")
 	nexusSmokeAssert(lighting_center_rgb[1] > lighting_half_rgb[1] && lighting_half_rgb[1] > lighting_edge_rgb[1], "lighting falloff is not encoded in additive RGB intensity")
-	lighting_emitter.configureNexusEmitter("#ffffff", 1, 200, 'NexusLightGradient.dmi', TRUE, 10)
+	lighting_emitter.configureNexusEmitter("#ffffff", 1, 200, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', TRUE, 10)
 	nexusSmokeAssert(lighting_emitter.core_visual && lighting_emitter.range_tiles == 1 && lighting_emitter.gradient_offset == 10 && lighting_emitter.icon_state == "10" && lighting_emitter.core_visual.icon_state == "1", "layered glow did not apply its requested gradient profile")
 	nexusSmokeAssert(lighting_emitter.alpha < lighting_emitter.core_visual.alpha && lighting_emitter.base_core_scale < lighting_emitter.base_range_scale, "layered glow does not have a compact core and softer ranged falloff")
 	nexusSmokeAssert(round(getNexusGlowRangeScale(1) * 256 / world.icon_size, 0.1) == 1, "glow size no longer maps to total tile diameter")
-	lighting_emitter.configureNexusEmitter("#ffffff", 1.1, 145, 'NexusLightGradient.dmi', TRUE, 4, "small_blast")
+	lighting_emitter.configureNexusEmitter("#ffffff", 1.1, 145, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', TRUE, 4, "small_blast")
 	nexusSmokeAssert(lighting_emitter.variation_style == "small_blast" && lighting_emitter.variation_enabled && lighting_emitter.range_tiles == 1.1, "small-blast flicker profile was not applied")
 	nexusSmokeAssert(static_light.plane == 15 && static_light.getRenderedAlpha() == 210 && static_light.core_visual, "legacy light sources were not adapted to layered screen lighting")
 	var/turf/mobile_light_start = locate(445, 3, 2)
@@ -1864,8 +1868,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/list/test_ambient_matrix = getNexusAmbientMatrix(rgb(16, 22, 38, 255))
 	nexusSmokeAssert(islist(test_ambient_matrix) && test_ambient_matrix[4] == "#0000" && blue_glow_profile["color"] == "#42d9ff" && blue_glow_profile["alpha"] >= 200, "ambient alpha reset or transformation glow profiles are invalid")
 	var/mob/NexusSmokeTest/lighting_owner = new
-	var/obj/NexusLighting/Emitter/action_glow = lighting_owner.setNexusActionGlow("#ffffff", 1, 255, 'NexusLightGradient.dmi', 10, "charge")
-	var/obj/NexusLighting/Emitter/aura_glow = lighting_owner.setNexusAuraGlow("#76dfff", 3, 190, 'NexusLightGradient.dmi', 8, "aura")
+	var/obj/NexusLighting/Emitter/action_glow = lighting_owner.setNexusActionGlow("#ffffff", 1, 255, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 10, "charge")
+	var/obj/NexusLighting/Emitter/aura_glow = lighting_owner.setNexusAuraGlow("#76dfff", 3, 190, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 8, "aura")
 	nexusSmokeAssert(action_glow && (action_glow in lighting_owner.vis_contents) && action_glow.gradient_offset == 10, "independent beam/action glow was not attached with its requested falloff")
 	nexusSmokeAssert(aura_glow && aura_glow != action_glow && (aura_glow in lighting_owner.vis_contents) && aura_glow.variation_style == "aura", "independent aura flicker was not attached")
 	lighting_owner.clearNexusActionGlow()
@@ -1936,7 +1940,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(light_collision_mask && light_collision_mask.GetPixel(171, 129), "light collision mask removed the blocking turf face")
 	nexusSmokeAssert(!light_collision_mask.GetPixel(214, 129), "light collision mask did not clear pixels behind a blocking turf")
 	var/obj/NexusLighting/Emitter/occluded_emitter = new(light_collision_source)
-	occluded_emitter.configureNexusEmitter("#ffffff", 6, 220, 'NexusLightGradient.dmi', FALSE, 10, "charge")
+	occluded_emitter.configureNexusEmitter("#ffffff", 6, 220, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', FALSE, 10, "charge")
 	nexusSmokeAssert(occluded_emitter.filters && occluded_emitter.occlusion_mask_key == light_collision_key, "eligible light emitter did not apply its turf alpha mask")
 	light_collision_source.density = original_light_source_density
 	light_collision_source.opacity = original_light_source_opacity
@@ -1982,7 +1986,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("overlay") == "overlay" && normalizeNexusInterfaceLayout("invalid") == "side_tabs", "interface layout normalization is invalid")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
-	overhead_layout_test.icon = 'Healthbar.dmi'
+	overhead_layout_test.icon = 'src/Icons/UI/Healthbar.dmi'
 	nexusSmokeAssert(getNexusOverheadVitalsBasePixelY(overhead_layout_test) == -12 && getNexusTypingIndicatorPixelY(overhead_layout_test) == 12 && getNexusOverheadFeedbackPixelY(overhead_layout_test) == 46, "Say text, typing, character, and lower vitals are not vertically ordered")
 	nexusSmokeAssert(getNexusTypingIndicatorPixelY(overhead_layout_test) + 32 < getNexusOverheadFeedbackPixelY(overhead_layout_test) && getNexusTypingIndicatorPixelY(overhead_layout_test) + 22 > GetHeight(overhead_layout_test.icon), "typing is not below Say text and above the character")
 	nexusSmokeAssert(getNexusOverheadPercentagePixelY(overhead_layout_test) == -25 && getNexusOverheadPercentagePixelY(overhead_layout_test) + 12 < getNexusOverheadVitalsBasePixelY(overhead_layout_test), "Sense percentage is not below the overhead vitals")
@@ -2032,9 +2036,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(findtext(bronze_hud_browser_css, "body.nexus-hud") && findtext(bronze_hud_browser_css, ".hud-frame:before") && findtext(bronze_hud_browser_css, "#c6a15c") && findtext(bronze_hud_browser_css, "#9a7440"), "player browsers lost the chat/action-button frame, bolt, or bronze edge contract")
 	nexusSmokeAssert(findtext(bronze_hud_browser_css, "@font-face") && findtext(bronze_hud_browser_css, "Nexus Silkscreen") && findtext(bronze_hud_browser_css, "SilkscreenRegular.ttf") && findtext(bronze_hud_browser_css, "SilkscreenBold.ttf"), "native HUD browsers lost the embedded pixel-font contract")
 	nexusSmokeAssert(findtext(blue_hud_browser_css, "#405a70") && findtext(blue_hud_browser_css, "#72c6eb") && findtext(blue_hud_browser_css, ".hud-button.danger"), "admin browsers lost the Server Panel edge, accent, or close-button contract")
-	var/icon/hud_canvas_reference = icon('UserNamesBarsUi.png')
-	var/icon/lethal_hud_reference = icon('LethalHud.dmi')
-	var/icon/rp_mode_hud_reference = icon('RPModeHud.dmi')
+	var/icon/hud_canvas_reference = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
+	var/icon/lethal_hud_reference = icon('src/Icons/UI/LethalHud.dmi')
+	var/icon/rp_mode_hud_reference = icon('src/Icons/UI/RPModeHud.dmi')
 	nexusSmokeAssert(hud_canvas_reference.Width() == 315 && hud_canvas_reference.Height() == 125, "UserNamesBarsUi.png is no longer the expected native HUD drawing canvas")
 	nexusSmokeAssert(lethal_hud_reference.Width() == 32 && lethal_hud_reference.Height() == 32 && rp_mode_hud_reference.Width() == 48 && rp_mode_hud_reference.Height() == 32, "LethalHud.dmi or RPModeHud.dmi lost its documented frame dimensions")
 	var/obj/NexusHud/ActionButton/Lethal/lethal_button = new
@@ -2064,7 +2068,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(splitform_button)
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveMutation") && text2path("/mob/Admin3/verb/rollMutations"), "admin mutation verbs are missing")
 	nexusSmokeAssert(text2path("/mob/Admin3/verb/giveNexusAttacks") && text2path("/mob/Admin3/verb/testNexusCombatEffects"), "Nexus attack or audiovisual testing verb is missing")
-	nexusSmokeAssert(getNexusBeamAttackTypes().len == 12 && getNexusSpecialStyleAttackTypes().len == 8, "Nexus special-style catalog is incomplete")
+	nexusSmokeAssert(getNexusBeamAttackTypes().len == 12 && getNexusSpecialStyleAttackTypes().len == 12, "Nexus special-style catalog is incomplete")
 	nexusSmokeAssert(getNexusRockAttackTypes().len == 3, "Nexus rock-technique testing catalog is incomplete")
 	var/obj/Attacks/NexusMeleeTechnique/Slice/nexus_slice = new
 	var/obj/Attacks/NexusMeleeTechnique/BurningSlash/nexus_combo = new
@@ -2100,8 +2104,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(nexus_throw.behavior == "grapple_throw" && nexus_march.behavior == "march", "Nexus grapple or advancing melee behavior is missing")
 	nexusSmokeAssert(nexus_march.requires_unarmed && nexus_texas_smash.damage_multiplier == 7 && nexus_exploding_heart.damage_multiplier == 4.5 && nexus_exploding_heart.bleed_fraction == 0.15, "peak Unarmed techniques lost their sustained, raw-impact or bleeding damage profiles")
 	nexusSmokeAssertNear(nexus_march.getTotalDamageMultiplier(), 7.2, 0.0001, "March of Fury lost its sustained damage profile")
-	nexusSmokeAssert(nexus_pile_driver.icon == 'RTGrappleImpact.dmi' && nexus_throw.icon_state == "2", "Nexus grapple techniques are missing their original effect icons")
-	nexusSmokeAssert(nexus_uppercut.icon == 'RTUppercut.dmi' && nexus_kickback.icon == 'RTSweepingKick.dmi', "Nexus combo techniques are missing their original effect icons")
+	nexusSmokeAssert(nexus_pile_driver.icon == 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi' && nexus_throw.icon_state == "2", "Nexus grapple techniques are missing their original effect icons")
+	nexusSmokeAssert(nexus_uppercut.icon == 'src/Icons/NexusIntegrated/Attacks/Effects/RTUppercut.dmi' && nexus_kickback.icon == 'src/Icons/NexusIntegrated/Attacks/Effects/RTSweepingKick.dmi', "Nexus combo techniques are missing their original effect icons")
 	nexusSmokeAssert(nexus_pile_driver.getImpactSound() == 'RockImpactHeavy1.ogg' && (nexus_kickback.getImpactSound() in nexus_shonen_sound_bank["melee"]), "Nexus grapple or kick techniques are missing their adapted impact audio")
 	nexusSmokeAssert(nexus_headbutt.effect_icon_state == "explosion_orange" && nexus_axe_kick.effect_icon_state == "blast_orange" && nexus_march.effect_icon_state == "blast_blue" && nexus_consecutive_punches.effect_icon_state == "blast_orange", "core Unarmed strikes are missing their open combat impact animations")
 	nexusSmokeAssert(nexus_wing_clip.effect_icon_state == "blast_blue" && nexus_blue_comet.effect_icon_state == "blast_blue" && (nexus_guard_break.getImpactSound() in nexus_shonen_sound_bank["electric"]), "control stances or speed strikes are missing their distinct VFX or electric audio")
@@ -2118,11 +2122,26 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(nexus_ghosts.ghost_count == 3 && nexus_ghosts.ghost_damage_factor == 6 && nexus_ghosts.locked_homing, "Super Ghost Kamikaze Attack lost its bounded character-copy homing profile")
 	runNexusGhostCopySmoke()
 	nexusSmokeAssert(istype(nexus_explosive_wave, /obj/Attacks/Shockwave) && istype(nexus_earthquake, /obj/Attacks/Shockwave), "the ported area techniques no longer derive from Shockwave")
-	nexusSmokeAssert(nexus_explosive_wave.radius == 4 && nexus_explosive_wave.area_damage_factor == 12 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 4, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
-	nexusSmokeAssert(nexus_earthquake.radius == 5 && nexus_earthquake.area_damage_factor == 10 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
+	nexusSmokeAssert(nexus_explosive_wave.radius == 8 && nexus_explosive_wave.area_damage_factor == 12 && nexus_explosive_wave.hotbar_type == "Defensive" && nexus_explosive_wave.intercepts_blasts && nexus_explosive_wave.knockback_distance == 12, "Super Explosive Wave lost its defensive blast interception or repulsion profile")
+	nexusSmokeAssert(nexus_earthquake.radius == 8 && nexus_earthquake.area_damage_factor == 10 && nexus_earthquake.physical_damage && nexus_earthquake.ground_only && nexus_earthquake.pull_distance == 3 && !nexus_earthquake.knockback_distance, "Earthquake lost its ground-only inward shockwave behavior")
 	var/mob/NexusSmokeTest/wave_owner = new
 	var/mob/NexusSmokeTest/wave_enemy = new
 	wave_owner.loc = locate(445, 3, 2)
+	var/obj/Effect/wolf_visual = wave_owner.WolfFangFistVFX(null, TRUE)
+	var/icon/wolf_icon = new(wolf_visual.icon)
+	nexusSmokeAssert(wolf_visual.loc == wave_owner.loc && wolf_visual.icon_state == "Attack" && ("Attack" in icon_states(wolf_visual.icon)) && wolf_icon.Width() == 164 && wolf_icon.Height() == 164 && wolf_visual.color == "#48bfff", "Wolf Fang Fist lost its visible blue wolf animation")
+	var/obj/Effect/explosive_visual = nexus_explosive_wave.showAreaEffect(wave_owner)
+	var/icon/explosive_icon = new(explosive_visual.icon)
+	nexusSmokeAssert(("explosive_wave" in icon_states(explosive_visual.icon)) && explosive_icon.Width() == 160 && explosive_icon.Height() == 160, "Explosive Wave animation is missing its DMI state or frame dimensions")
+	nexusSmokeAssert(explosive_visual.loc == wave_owner.loc && explosive_visual.blend_mode == BLEND_DEFAULT, "Explosive Wave VFX lost its cast placement or authored palette")
+	var/obj/Effect/earthquake_visual = nexus_earthquake.showAreaEffect(wave_owner)
+	var/icon/earthquake_icon = new(earthquake_visual.icon)
+	nexusSmokeAssert(("earthquake" in icon_states(earthquake_visual.icon)) && earthquake_icon.Width() == 160 && earthquake_icon.Height() == 128, "Earthquake animation is missing its DMI state or frame dimensions")
+	nexusSmokeAssert(earthquake_visual.loc == wave_owner.loc && earthquake_visual.blend_mode == BLEND_DEFAULT && earthquake_visual.layer < MOB_LAYER, "Earthquake VFX lost its ground placement or authored palette")
+	sleep(13)
+	nexusSmokeAssert(!earthquake_visual.loc, "Earthquake VFX was not returned to the effect cache after its animation")
+	nexusSmokeAssert(!wolf_visual.loc, "Wolf Fang Fist VFX was not returned to the effect cache")
+	nexusSmokeAssert(!explosive_visual.loc, "Explosive Wave VFX was not returned to the effect cache after its animation")
 	wave_enemy.loc = get_step(wave_owner, EAST)
 	var/obj/Blast/hostile_wave_blast = new(wave_enemy.loc)
 	hostile_wave_blast.Owner = wave_enemy
@@ -2162,10 +2181,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(nexus_debuff_contract)
 	del(nexus_stance_contract)
 	nexusSmokeAssert(nexus_flame_wall.field_duration == 150, "Wall of Flame is not a persistent field style")
-	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 18 && nexus_dragon_nova.icon == 'RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
-	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'RTSkyBreak.dmi' && nexus_sky_break.explosion_size == 3 && nexus_sky_break.launch_delay_ticks == 1, "Sky Break is missing its weapon scaling, caster-tile launch, or three-tile impact radius")
+	nexusSmokeAssert(nexus_dragon_nova.projectile_damage_factor == 18 && nexus_dragon_nova.icon == 'src/Icons/NexusIntegrated/Attacks/Blasts/RTDragonNova.dmi', "Dragon Nova is missing its integrated balance or icon")
+	nexusSmokeAssert(nexus_sky_break.strength_scaled && nexus_sky_break.requires_weapon && nexus_sky_break.weapon_projectile && nexus_sky_break.icon == 'src/Icons/NexusIntegrated/Attacks/Blasts/RTSkyBreak.dmi' && nexus_sky_break.explosion_size == 3 && nexus_sky_break.launch_delay_ticks == 1, "Sky Break is missing its weapon scaling, caster-tile launch, or three-tile impact radius")
 	nexusSmokeAssert(nexus_sky_break.impact_effect_icon == 'src/Icons/Effects/CC0/SwordSlash.dmi' && nexus_echoing_slash.weapon_projectile && nexus_echoing_slash.explosion_size == 0, "ported sword waves still use generic blast presentation")
-	nexusSmokeAssert(nexus_echoing_slash.icon == 'RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 14 && nexus_echoing_slash.launch_delay_ticks == 1, "Echoing Slash is missing its integrated projectile art, adapted balance, or caster-tile launch")
+	nexusSmokeAssert(nexus_echoing_slash.icon == 'src/Icons/NexusIntegrated/Attacks/Blasts/RTEchoingSlash.dmi' && nexus_echoing_slash.projectile_damage_factor == 14 && nexus_echoing_slash.launch_delay_ticks == 1, "Echoing Slash is missing its integrated projectile art, adapted balance, or caster-tile launch")
 	var/obj/ArcaneSpell/Projectile/Fireball/arcane_fireball_vfx = new
 	var/obj/ArcaneSpell/Projectile/FrostBolt/arcane_frost_vfx = new
 	var/obj/ArcaneSpell/Projectile/LightningBolt/arcane_lightning_vfx = new
@@ -2464,36 +2483,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/mob/NexusSmokeTest/movement_physics_test = new
 	nexusSmokeAssert((vector_movement_inertia_enabled == 0 || vector_movement_inertia_enabled == 1) && vector_movement_acceleration_per_decisecond > 0 && vector_movement_velocity_retention_per_decisecond >= 0 && vector_movement_velocity_retention_per_decisecond < 1 && vector_movement_stop_velocity > 0 && vector_movement_physics_step_deciseconds > 0 && vector_movement_cardinal_gap_ratio >= 0 && vector_movement_cardinal_gap_ratio < 1, "vector movement inertia tuning is invalid")
 	nexusSmokeAssert(skill_motion_default_acceleration > 0 && skill_motion_default_deceleration > 0 && skill_motion_default_max_velocity > 0 && skill_motion_stop_velocity > 0 && skill_motion_stall_frames >= 1, "skill-motion acceleration tuning is invalid")
-	var/mob/NexusSmokeTest/skill_acceleration_test = new
-	var/datum/NexusSkillMotion/skill_acceleration_motion = new(skill_acceleration_test, null, EAST, 100, 0, 80, 160, 200, 0, 0, FALSE)
-	skill_acceleration_test.active_skill_motion = skill_acceleration_motion
-	skill_acceleration_motion.updateDesiredVelocity(0.1)
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16, 0.0001, "skill motion did not ramp its first acceleration step")
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 0, 0.0001, "cardinal skill acceleration leaked into its perpendicular axis")
-	skill_acceleration_motion.updateDesiredVelocity(0.1)
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 32, 0.0001, "skill motion did not retain and build velocity")
-	skill_acceleration_test.skill_movement_velocity_x = 0
-	skill_acceleration_test.skill_movement_velocity_y = 0
-	skill_acceleration_motion.movement_direction = NORTHEAST
-	skill_acceleration_motion.updateDesiredVelocity(0.1)
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its horizontal magnitude")
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its vertical magnitude")
-	skill_acceleration_test.skill_movement_velocity_x = 0
-	skill_acceleration_test.skill_movement_velocity_y = 0
-	var/datum/NexusSkillMotion/arbitrary_vector_motion = new(skill_acceleration_test, null, 0, 100, 0, 100, 100, 200, 0, 0, FALSE, FALSE, 3, 4)
-	skill_acceleration_test.active_skill_motion = arbitrary_vector_motion
-	arbitrary_vector_motion.updateDesiredVelocity(0.1)
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 6, 0.0001, "arbitrary-angle skill acceleration snapped its horizontal component to an eight-way direction")
-	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 8, 0.0001, "arbitrary-angle skill acceleration snapped its vertical component to an eight-way direction")
-	skill_acceleration_test.skill_motion_generation++
-	var/datum/NexusSkillMotion/fresh_skill_motion = new(skill_acceleration_test, null, NORTH, 100, 0, 80, 160, 200, 0, 0, FALSE)
-	skill_acceleration_test.active_skill_motion = fresh_skill_motion
-	nexusSmokeAssert(!skill_acceleration_test.ownsNexusSkillMotion(skill_acceleration_motion) && skill_acceleration_test.ownsNexusSkillMotion(fresh_skill_motion), "a stale skill motion can still own or clear a newer motion")
-	skill_acceleration_test.cancelNexusSkillMotion("smoke")
-	del(skill_acceleration_motion)
-	del(arbitrary_vector_motion)
-	del(fresh_skill_motion)
-	del(skill_acceleration_test)
+	runNexusSkillAccelerationSmoke()
 	var/mob/NexusSmokeTest/skill_budget_test = new(attack_movement_origin)
 	var/mob/NexusSmokeTest/skill_budget_target = new(attack_movement_pass_through)
 	skill_budget_test.setSelectedTarget(skill_budget_target, FALSE)
@@ -3084,20 +3074,14 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(diagonal_slide_result && vector_collision_test.Px(0) == solid_wall_start_x && vector_collision_test.Py(0) > solid_wall_start_y, "diagonal vector movement does not slide along a wall (result [diagonal_slide_result], position [vector_collision_test.Px(0)],[vector_collision_test.Py(0)], start [solid_wall_start_x],[solid_wall_start_y], step [vector_collision_test.step_x],[vector_collision_test.step_y], requested [vector_collision_test.last_vector_move_requested_x],[vector_collision_test.last_vector_move_requested_y], actual [vector_collision_test.last_vector_move_actual_x],[vector_collision_test.last_vector_move_actual_y])")
 	vector_gap_east = new solid_vector_turf_type(vector_gap_east)
 	del(vector_collision_test)
-	var/mob/NexusSmokeTest/rock_wall_caster = new(vector_gap_origin)
-	var/mob/NexusSmokeTest/rock_wall_target = new(vector_gap_second_east)
-	var/rock_wall_turf_type = vector_gap_east.type
-	vector_gap_east = new /turf/NexusSmokeVectorBlocker(vector_gap_east)
-	var/turf/blocked_rock_impact = rock_wall_caster.showRockSkillProjectile(rock_wall_target, 'RTRockThrow.dmi', null, 1)
-	nexusSmokeAssert(!blocked_rock_impact, "a vector rock projectile crossed a dense wall and reported a remote impact")
-	vector_gap_east = new rock_wall_turf_type(vector_gap_east)
-	del(rock_wall_target)
-	del(rock_wall_caster)
+	var/obj/Blast/RockSkill/rock_projectile_contract = new
+	nexusSmokeAssert(!rock_projectile_contract.Can_Home && rock_projectile_contract.strength_scaled == FALSE, "rock projectile defaults unexpectedly enable homing or preconfigure damage scaling")
+	del(rock_projectile_contract)
 	nexusSmokeAssert(hudPercentage(50, 200) == 25, "HUD percentage calculation is invalid")
 	nexusSmokeAssert(hudPercentage(50, 0) == 0, "HUD percentage did not guard a zero maximum")
 	nexusSmokeAssert(nexusIsFiniteNumber(50) && !nexusIsFiniteNumber(1.#INF), "finite-number validation is invalid")
 	var/mob/NexusSmokeTest/vitals_owner = new
-	vitals_owner.icon = 'BaseHumanPale.dmi'
+	vitals_owner.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	vitals_owner.Ki = 8000
 	vitals_owner.max_ki = 8000
 	vitals_owner.willpower = 50
@@ -3261,9 +3245,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/RockThrow/rock_throw_skill = new
 	var/obj/RockSlide/rock_slide_skill = new
 	var/obj/RockTomb/rock_tomb_skill = new
-	nexusSmokeAssert(rock_throw_skill.icon == 'RTRockThrow.dmi' && GetWidth(rock_throw_skill.icon) == 64 && rock_slide_skill.icon == 'RisingRocks.dmi' && rock_tomb_skill.icon == 'RTRockTomb.dmi' && GetWidth(rock_tomb_skill.icon) == 62, "rock skills are missing their differentiated technique icons")
+	nexusSmokeAssert(rock_throw_skill.icon == 'src/Icons/NexusIntegrated/Attacks/Blasts/RTRockThrow.dmi' && GetWidth(rock_throw_skill.icon) == 64 && rock_slide_skill.icon == 'src/Icons/Effects/RisingRocks.dmi' && rock_tomb_skill.icon == 'src/Icons/NexusIntegrated/Attacks/Blasts/RTRockTomb.dmi' && GetWidth(rock_tomb_skill.icon) == 62, "rock skills are missing their differentiated technique icons")
 	nexusSmokeAssert(rock_throw_skill.hotbar_type == "Blast" && rock_slide_skill.hotbar_type == "Blast" && rock_tomb_skill.hotbar_type == "Blast", "rock skills use an unsupported hotbar category")
-	nexusSmokeAssert(text2path("/obj/Effect/RockSkillProjectile"), "rock attacks are missing their visible projectile actor")
+	nexusSmokeAssert(text2path("/obj/Blast/RockSkill"), "rock attacks are missing their straight-line projectile actor")
 	nexusSmokeAssert(text2path("/obj/Effect/RockSkillDebris") && nexus_rock_launch_sounds.len == 2 && nexus_rock_impact_sounds.len == 3 && nexus_rock_heavy_impact_sounds.len == 2 && nexus_rock_break_sounds.len == 3, "rock attacks are missing their CC0 audio or debris profiles")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusTechniqueText"), "Nexus techniques are missing their floating combat announcement actor")
 	var/icon/critical_spark_icon = getNexusCriticalSparkIcon()
@@ -4190,7 +4174,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(getWorldOreAbundanceMultiplier(/obj/items/Ore/Copper) == 3 && getWorldOreAbundanceMultiplier(/obj/items/Ore/Tin) == 2.5 && getWorldOreAbundanceMultiplier(/obj/items/Ore/Iron) == 2 && getWorldOreAbundanceMultiplier(/obj/items/Ore/Silver) == 1.5 && getWorldOreAbundanceMultiplier(/obj/items/Ore/Mythril) == 1.25 && getWorldOreAbundanceMultiplier(/obj/items/Ore/Auracite) == 1, "basic ore veins do not retain their tiered abundance advantage")
 	nexusSmokeAssert(getMiningExperienceForOreYield(7) == 7, "Mining XP is no longer proportional to ore extracted")
 	nexusSmokeAssert(getIncidentalMiningOreYield(1) == 3 && getIncidentalMiningOreYield(16) == 12 && getIncidentalMiningOreYield(100) == 20 && getIncidentalMiningOreYield(1000) == 20, "cave-digging tools no longer convert extraction strength into bounded ore quantity")
-	nexusSmokeAssert(ore_deposit_test.required_mining_level == 30 && ore_deposit_test.ore_type == /obj/items/Ore/Auracite && ore_deposit_test.icon == 'RTAuraciteOre.dmi' && ore_deposit_test.ore_amount >= world_ore_regular_deposit_min && ore_deposit_test.ore_amount <= world_ore_regular_deposit_max, "world Auracite deposits are not configured, abundant or level-gated")
+	nexusSmokeAssert(ore_deposit_test.required_mining_level == 30 && ore_deposit_test.ore_type == /obj/items/Ore/Auracite && ore_deposit_test.icon == 'src/Icons/Objects/Technology/RTAuraciteOre.dmi' && ore_deposit_test.ore_amount >= world_ore_regular_deposit_min && ore_deposit_test.ore_amount <= world_ore_regular_deposit_max, "world Auracite deposits are not configured, abundant or level-gated")
 	var/copper_deposit_amount = getWorldOreDepositAmount(/obj/items/Ore/Copper)
 	nexusSmokeAssert(copper_deposit_amount >= 36 && copper_deposit_amount <= 60, "Copper veins lost their expanded basic-ore capacity")
 	var/obj/WorldOreDeposit/heart_deposit_test = new
@@ -4206,9 +4190,9 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/items/Sword/Forged/rebellion_skin_test = new(profession_test)
 	rebellion_skin_test.forged_style_id = "rebellion"
 	rebellion_skin_test.refreshForgedWeapon()
-	nexusSmokeAssert(rebellion_skin_test.name == "Normal Sword" && rebellion_skin_test.icon == 'ItemSword1.dmi' && rebellion_skin_test.forged_attack_bp_bonus == 0.06, "Rebellion is not a cosmetic skin on a Normal material-named weapon")
+	nexusSmokeAssert(rebellion_skin_test.name == "Normal Sword" && rebellion_skin_test.icon == 'src/Icons/Objects/Items/ItemSword1.dmi' && rebellion_skin_test.forged_attack_bp_bonus == 0.06, "Rebellion is not a cosmetic skin on a Normal material-named weapon")
 	var/obj/items/Sword/Forged/ScienceHammer/normal_hammer_test = new(profession_test)
-	nexusSmokeAssert(normal_hammer_test.name == "Normal War Hammer" && normal_hammer_test.forged_material_id == "normal" && normal_hammer_test.icon == 'RTHammer.dmi', "Science Hammer is not a Normal upgradeable forged weapon")
+	nexusSmokeAssert(normal_hammer_test.name == "Normal War Hammer" && normal_hammer_test.forged_material_id == "normal" && normal_hammer_test.icon == 'src/Icons/Objects/Swords/RTHammer.dmi', "Science Hammer is not a Normal upgradeable forged weapon")
 	var/obj/items/Sword/Forged/mythril_weapon_test = new(profession_test)
 	mythril_weapon_test.forged_material_id = "mythril"
 	mythril_weapon_test.forged_style_id = "rebellion"
@@ -4223,12 +4207,12 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	mythril_gloves_test.forged_material_id = "mythril"
 	mythril_gloves_test.forged_style_id = "hero"
 	mythril_gloves_test.refreshForgedGloves()
-	nexusSmokeAssert(mythril_gloves_test.name == "Mythril Gloves" && mythril_gloves_test.icon == 'OpmGloves.dmi' && mythril_gloves_test.forged_attack_bp_bonus == 0.32, "Mythril gloves did not retain their modular unarmed statistics and appearance")
+	nexusSmokeAssert(mythril_gloves_test.name == "Mythril Gloves" && mythril_gloves_test.icon == 'src/Icons/PlayerIcons/Saitama/OpmGloves.dmi' && mythril_gloves_test.forged_attack_bp_bonus == 0.32, "Mythril gloves did not retain their modular unarmed statistics and appearance")
 	var/obj/items/Mask/Forged/mythril_mask_test = new(profession_test)
 	mythril_mask_test.forged_material_id = "mythril"
 	mythril_mask_test.forged_style_id = "ninja"
 	mythril_mask_test.refreshForgedMask()
-	nexusSmokeAssert(mythril_mask_test.name == "Mythril Mask" && mythril_mask_test.icon == 'ClothesNinjaMask.dmi' && mythril_mask_test.forged_ki_damage_multiplier == 1.24 && mythril_mask_test.forged_ki_bp_bonus == 0.32, "Mythril mask did not retain its modular Ki damage, blast BP and appearance")
+	nexusSmokeAssert(mythril_mask_test.name == "Mythril Mask" && mythril_mask_test.icon == 'src/Icons/PlayerIcons/Clothes/ClothesNinjaMask.dmi' && mythril_mask_test.forged_ki_damage_multiplier == 1.24 && mythril_mask_test.forged_ki_bp_bonus == 0.32, "Mythril mask did not retain its modular Ki damage, blast BP and appearance")
 	var/obj/items/Sword/Forged/silver_critical_weapon_test = new(profession_test)
 	silver_critical_weapon_test.forged_material_id = "silver"
 	silver_critical_weapon_test.refreshForgedWeapon()
@@ -4318,7 +4302,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(findtext(character_sheet_html, "Player dossier") && findtext(character_sheet_html, "Mining") && findtext(character_sheet_html, "Milestones") && findtext(character_sheet_html, "Mask") && !findtext(character_sheet_html, "Clothing & Equipment") && !findtext(character_sheet_html, "Smoke Test Shirt") && !findtext(character_sheet_html, "panel-title-icon") && !findtext(character_sheet_html, "card-pixel-icon") && findtext(character_sheet_html, "body class='nexus-hud'") && findtext(character_sheet_html, "topbar hud-frame") && findtext(character_sheet_html, "hud-sprite") && findtext(character_sheet_html, "#c6a15c"), "detailed Character sheet is incomplete or diverges from the native bronze HUD component contract")
 	nexusSmokeAssert(findtext(character_sheet_html, "Iron Will") && !findtext(character_sheet_html, "Will of Fire"), "Character sheet did not limit Milestones to ranks owned by the character")
 	nexusSmokeAssert(!findtext(character_sheet_html, "LIVE / 1s") && findtext(character_sheet_html, "action:'heartbeat'") && findtext(character_sheet_html, "action=refresh_character_sheet") && findtext(character_sheet_html, "onclick='nexusStoreLiveScroll()'") && findtext(character_sheet_html, "nexusLiveRestoreScrollY=84") && findtext(character_sheet_html, "sessionStorage") && findtext(character_sheet_html, "nexusLiveOnScroll") && findtext(character_sheet_html, ".skill-list,.milestone-list{max-height:none;overflow:visible}"), "Character sheet exposes refresh internals or does not preserve scroll for its manual refresh")
-	profession_test.icon = 'BaseHumanPale.dmi'
+	profession_test.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	profession_test.rebuildPlayerAppearance("Character portrait test")
 	var/icon/base_character_portrait = icon(profession_test.icon, profession_test.icon_state, SOUTH)
 	var/icon/dressed_character_portrait = getNexusCharacterPortraitIcon(profession_test, SOUTH)
@@ -4525,7 +4509,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(cycle_combat_dummy)
 	del(targeting_player)
 	nexusSmokeAssert(!combat_dummy.Savable && !combat_dummy.Savable_NPC, "combat dummy can persist into world saves")
-	nexusSmokeAssert(combat_dummy.icon == 'BaseHumanPale.dmi', "combat dummy does not use a player body")
+	nexusSmokeAssert(combat_dummy.icon == 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi', "combat dummy does not use a player body")
 	nexusSmokeAssert(!(combat_dummy.overhead_health_hud in combat_dummy.contents) && !(combat_dummy.overhead_energy_hud in combat_dummy.contents) && !(combat_dummy.overhead_willpower_hud in combat_dummy.contents), "combat dummy HUD was added to serializable contents")
 	var/savefile/dummy_hud_save = new("nexus-smoke-dummy-hud.sav")
 	combat_dummy.Write(dummy_hud_save)
@@ -4816,17 +4800,17 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(frost_lord.Form1Icon == custom_frost_test_icons[1] && frost_lord.Form5Icon == custom_frost_test_icons[5], "custom Frost Lord forms were not assigned to their independent slots")
 	var/list/starter_clothing_options = nexusStarterClothingOptions()
 	nexusSmokeAssert(starter_clothing_options.len >= 80, "starter clothing catalog is unexpectedly incomplete")
-	var/succubus_flight_state = nexusPreviewIconState('Succubus.dmi', "flight")
-	var/human_flight_state = nexusPreviewIconState('BaseHumanPale.dmi', "flight")
-	var/succubus_preview_url = nexusBrowserIconUrl('Succubus.dmi', succubus_flight_state, WEST)
-	var/cape_preview_url = nexusBrowserIconUrl('ItemPiccoloCape.dmi', "", NORTH)
-	var/icon/naraku_preview_frame = nexusExtractPreviewFrame('ClothesNaraku.dmi', "", SOUTH)
-	var/icon/angel_wings_preview_frame = nexusExtractPreviewFrame('AngelWings.dmi', "", SOUTH)
+	var/succubus_flight_state = nexusPreviewIconState('src/Icons/PlayerIcons/Clothes/Succubus.dmi', "flight")
+	var/human_flight_state = nexusPreviewIconState('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi', "flight")
+	var/succubus_preview_url = nexusBrowserIconUrl('src/Icons/PlayerIcons/Clothes/Succubus.dmi', succubus_flight_state, WEST)
+	var/cape_preview_url = nexusBrowserIconUrl('src/Icons/PlayerIcons/TobiUchihaIcons/ItemPiccoloCape.dmi', "", NORTH)
+	var/icon/naraku_preview_frame = nexusExtractPreviewFrame('src/Icons/PlayerIcons/Clothes/ClothesNaraku.dmi', "", SOUTH)
+	var/icon/angel_wings_preview_frame = nexusExtractPreviewFrame('src/Icons/PlayerIcons/Clothes/AngelWings.dmi', "", SOUTH)
 	nexusSmokeAssert(succubus_flight_state == "Flight", "starter clothing preview did not resolve Flight case-insensitively")
 	nexusSmokeAssert(human_flight_state == "Flight", "standard Human preview has no selectable Flight state")
 	nexusSmokeAssert(findtext(succubus_preview_url, "?dir=[WEST]&frame=1") && findtext(succubus_preview_url, "&state=Flight"), "Succubus preview does not select one directional Flight frame")
 	nexusSmokeAssert(findtext(cape_preview_url, "?dir=[NORTH]&frame=1") && !findtext(cape_preview_url, "&moving="), "native browser previews unexpectedly force a movement variant")
-	nexusSmokeAssert(nexusPreviewIconMoving('ClothesNaraku.dmi', "", SOUTH) && nexusPreviewIconMoving('AngelWings.dmi', "", SOUTH), "Naraku or Angel Wings movement-only state was not detected")
+	nexusSmokeAssert(nexusPreviewIconMoving('src/Icons/PlayerIcons/Clothes/ClothesNaraku.dmi', "", SOUTH) && nexusPreviewIconMoving('src/Icons/PlayerIcons/Clothes/AngelWings.dmi', "", SOUTH), "Naraku or Angel Wings movement-only state was not detected")
 	nexusSmokeAssert(naraku_preview_frame.Width() == 32 && naraku_preview_frame.Height() == 32 && nexusPreviewFrameHasPixels(naraku_preview_frame) && angel_wings_preview_frame.Width() == 32 && angel_wings_preview_frame.Height() == 32 && nexusPreviewFrameHasPixels(angel_wings_preview_frame), "Naraku or Angel Wings preview was not extracted to one visible frame")
 	var/list/starter_clothing_ids = list()
 	for(var/clothing_id in starter_clothing_options)
@@ -4838,8 +4822,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		excess_clothing_ids[clothing_id] = TRUE
 		if(excess_clothing_ids.len > nexus_starter_clothing_limit) break
 	nexusSmokeAssert(!nexusValidateStarterClothing(excess_clothing_ids), "starter clothing exceeded its selection limit")
-	var/icon/custom_body_test_icon = icon('BaseHumanTan.dmi')
-	var/icon/custom_clothing_test_icon = icon('GokuSuit.dmi')
+	var/icon/custom_body_test_icon = icon('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi')
+	var/icon/custom_clothing_test_icon = icon('src/Icons/PlayerIcons/Clothes/GokuSuit.dmi')
 	var/list/custom_clothing_test_icons = list(null, null, null, null)
 	custom_clothing_test_icons[1] = custom_clothing_test_icon
 	var/list/custom_clothing_test_ids = list("custom_clothing_1" = TRUE)
@@ -4924,7 +4908,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(giant_appearance_manager.rendered_appearances.len == 1 && giant_equipment_appearances == 1 && findtext(giant_appearance_manager.last_rebuild_reason, "giant disabled"), "Giant Form did not rebuild exactly one copy of equipped clothing")
 	var/mob/NexusSmokeTest/scaled_giant_form_test = new
 	scaled_giant_form_test.Race = "Human"
-	scaled_giant_form_test.icon = 'BaseHumanPale.dmi'
+	scaled_giant_form_test.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	scaled_giant_form_test.bp_mult = 1
 	var/obj/items/Clothes/ShortSleeveShirt/scaled_giant_form_shirt = new(scaled_giant_form_test)
 	scaled_giant_form_shirt.suffix = "Equipped"
@@ -4950,7 +4934,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	runNexusAndroidGiantAppearanceSmoke()
 	var/mob/NexusSmokeTest/great_ape_appearance_test = new
 	great_ape_appearance_test.Race = "Saiyan"
-	great_ape_appearance_test.icon = 'BaseHumanPale.dmi'
+	great_ape_appearance_test.icon = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi'
 	great_ape_appearance_test.pixel_x = 5
 	great_ape_appearance_test.pixel_y = 7
 	var/obj/Great_Ape/great_ape_contract = new(great_ape_appearance_test)
@@ -4960,11 +4944,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	great_ape_appearance_test.great_ape_base_pixel_x = 5
 	great_ape_appearance_test.great_ape_base_pixel_y = 7
 	great_ape_appearance_test.great_ape_base_pixel_recorded = TRUE
-	great_ape_appearance_test.icon = 'OozaruHayate.dmi'
+	great_ape_appearance_test.icon = 'src/Icons/Unsorted/OozaruHayate.dmi'
 	great_ape_appearance_test.normalizePrimaryTransformation()
-	nexusSmokeAssert(great_ape_appearance_test.getNexusCombatHitboxWidth() == 60 && great_ape_appearance_test.getNexusCombatHitboxHeight() == 72 && great_ape_appearance_test.pixel_x == Icon_Center_X('OozaruHayate.dmi') && great_ape_appearance_test.pixel_y == Icon_Center_Y('OozaruHayate.dmi'), "Oozaru relog normalization lost its centered icon or rectangular hitbox")
+	nexusSmokeAssert(great_ape_appearance_test.getNexusCombatHitboxWidth() == 60 && great_ape_appearance_test.getNexusCombatHitboxHeight() == 72 && great_ape_appearance_test.pixel_x == Icon_Center_X('src/Icons/Unsorted/OozaruHayate.dmi') && great_ape_appearance_test.pixel_y == Icon_Center_Y('src/Icons/Unsorted/OozaruHayate.dmi'), "Oozaru relog normalization lost its centered icon or rectangular hitbox")
 	great_ape_appearance_test.Great_Ape_revert()
-	nexusSmokeAssert(great_ape_appearance_test.icon == 'BaseHumanPale.dmi' && great_ape_appearance_test.pixel_x == 5 && great_ape_appearance_test.pixel_y == 7 && great_ape_appearance_test.getNexusCombatHitboxWidth() == great_ape_appearance_test.bound_width, "Oozaru revert did not restore the base icon anchor and hitbox")
+	nexusSmokeAssert(great_ape_appearance_test.icon == 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi' && great_ape_appearance_test.pixel_x == 5 && great_ape_appearance_test.pixel_y == 7 && great_ape_appearance_test.getNexusCombatHitboxWidth() == great_ape_appearance_test.bound_width, "Oozaru revert did not restore the base icon anchor and hitbox")
 	del(giant_hud_contract)
 	del(giant_typing_contract)
 	del(giant_say_contract)
@@ -5131,3 +5115,58 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(loaded_player)
 	del(player)
 	world.log << "NEXUS_SMOKE_TESTS_PASSED"
+
+proc/runNexusDestructionAuraVisualSmoke(mob/skill_acceleration_test)
+	var/obj/Attacks/NexusSpecialStyle/AuraOfDestruction/aura_visual_test = new(skill_acceleration_test)
+	var/aura_overlay_count = skill_acceleration_test.overlays.len
+	var/aura_underlay_count = skill_acceleration_test.underlays.len
+	aura_visual_test.showAura(skill_acceleration_test)
+	var/icon/aura_range_icon = new(aura_visual_test.aura_field.icon)
+	var/aura_radius_pixels = aura_visual_test.radius * world.icon_size
+	nexusSmokeAssert(aura_range_icon.Width() == aura_radius_pixels * 2 + 2 && aura_range_icon.Height() == aura_radius_pixels * 2 + 2, "destruction aura marker diameter does not match its collision radius")
+	nexusSmokeAssert(aura_range_icon.GetPixel(2, aura_radius_pixels + 1) == "#edb5ff" && !aura_range_icon.GetPixel(1, aura_radius_pixels + 1), "destruction aura boundary is not drawn at its exact range")
+	nexusSmokeAssertNear(aura_visual_test.aura_field.pixel_x + aura_range_icon.Width() / 2, skill_acceleration_test.bound_x + skill_acceleration_test.bound_width / 2, 0.001, "destruction aura marker is not centered on the caster collider")
+	nexusSmokeAssert(skill_acceleration_test.overlays.len == aura_overlay_count + 1 && skill_acceleration_test.underlays.len == aura_underlay_count + 1, "destruction aura did not attach its persistent visual layers")
+	aura_visual_test.stopAura()
+	nexusSmokeAssert(skill_acceleration_test.overlays.len == aura_overlay_count && skill_acceleration_test.underlays.len == aura_underlay_count, "destruction aura left visual layers after stopping")
+	aura_visual_test.active = TRUE
+	aura_visual_test.showAura(skill_acceleration_test)
+	aura_visual_test.processAura(skill_acceleration_test, aura_visual_test.aura_generation - 1)
+	nexusSmokeAssert(aura_visual_test.active && aura_visual_test.aura_owner == skill_acceleration_test, "a stale destruction aura loop cleared a newer activation")
+	del(aura_visual_test)
+	nexusSmokeAssert(skill_acceleration_test.overlays.len == aura_overlay_count && skill_acceleration_test.underlays.len == aura_underlay_count, "deleting destruction aura left its visual layers attached")
+
+proc/runNexusSkillAccelerationSmoke()
+	var/mob/NexusSmokeTest/skill_acceleration_test = new
+	var/datum/NexusSkillMotion/skill_acceleration_motion = new(skill_acceleration_test, null, EAST, 100, 0, 80, 160, 200, 0, 0, FALSE)
+	skill_acceleration_test.active_skill_motion = skill_acceleration_motion
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16, 0.0001, "skill motion did not ramp its first acceleration step")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 0, 0.0001, "cardinal skill acceleration leaked into its perpendicular axis")
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 32, 0.0001, "skill motion did not retain and build velocity")
+	skill_acceleration_test.skill_movement_velocity_x = 0
+	skill_acceleration_test.skill_movement_velocity_y = 0
+	skill_acceleration_motion.movement_direction = NORTHEAST
+	skill_acceleration_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its horizontal magnitude")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 16 / sqrt(2), 0.0001, "diagonal skill acceleration changed its vertical magnitude")
+	skill_acceleration_test.skill_movement_velocity_x = 0
+	skill_acceleration_test.skill_movement_velocity_y = 0
+	var/datum/NexusSkillMotion/arbitrary_vector_motion = new(skill_acceleration_test, null, 0, 100, 0, 100, 100, 200, 0, 0, FALSE, FALSE, 3, 4)
+	skill_acceleration_test.active_skill_motion = arbitrary_vector_motion
+	arbitrary_vector_motion.facing_direction = SOUTHWEST
+	arbitrary_vector_motion.updateDesiredVelocity(0.1)
+	nexusSmokeAssert(skill_acceleration_test.dir == SOUTHWEST, "retreat motion turned the caster away from its firing direction")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_x, 6, 0.0001, "arbitrary-angle skill acceleration snapped its horizontal component to an eight-way direction")
+	nexusSmokeAssertNear(skill_acceleration_test.skill_movement_velocity_y, 8, 0.0001, "arbitrary-angle skill acceleration snapped its vertical component to an eight-way direction")
+	skill_acceleration_test.skill_motion_generation++
+	var/datum/NexusSkillMotion/fresh_skill_motion = new(skill_acceleration_test, null, NORTH, 100, 0, 80, 160, 200, 0, 0, FALSE)
+	skill_acceleration_test.active_skill_motion = fresh_skill_motion
+	nexusSmokeAssert(!skill_acceleration_test.ownsNexusSkillMotion(skill_acceleration_motion) && skill_acceleration_test.ownsNexusSkillMotion(fresh_skill_motion), "a stale skill motion can still own or clear a newer motion")
+	skill_acceleration_test.cancelNexusSkillMotion("smoke")
+	del(skill_acceleration_motion)
+	del(arbitrary_vector_motion)
+	del(fresh_skill_motion)
+	runNexusDestructionAuraVisualSmoke(skill_acceleration_test)
+	del(skill_acceleration_test)

@@ -150,18 +150,18 @@ proc/Initialize_Gun_Icons()
 	var/Gun_Name=1
 	var/obj/Gun_Icon/G=new
 	G.name=Gun_Name
-	G.icon='ItemBlaster.dmi'
+	G.icon='src/Icons/Objects/Items/ItemBlaster.dmi'
 	Gun_Icons+=G
-	for(var/A in icon_states('GUNS.dmi')) if(!(A in list("Rocket Middle","Rocket Right","Ammo 1","Ammo 2",\
+	for(var/A in icon_states('src/Icons/Objects/Technology/GUNS.dmi')) if(!(A in list("Rocket Middle","Rocket Right","Ammo 1","Ammo 2",\
 	"Ammo 3","Ammo Box")))
 		Gun_Name+=1
 		var/obj/Gun_Icon/B=new
 		B.name=Gun_Name
-		B.icon='GUNS.dmi'
+		B.icon='src/Icons/Objects/Technology/GUNS.dmi'
 		B.icon_state=A
 		Gun_Icons+=B
-	var/list/Bullets=list('Bullet1.dmi','Bullet2.dmi','Bullet3.dmi','Bullet4.dmi','Bullet.dmi','MissileSmall.dmi',\
-	'Missile.dmi','Grenade.dmi')
+	var/list/Bullets=list('src/Icons/Projectiles/Bullets/Bullet1.dmi','src/Icons/Projectiles/Bullets/Bullet2.dmi','src/Icons/Projectiles/Bullets/Bullet3.dmi','src/Icons/Projectiles/Bullets/Bullet4.dmi','src/Icons/Projectiles/Bullets/Bullet.dmi','src/Icons/Projectiles/Bullets/MissileSmall.dmi',\
+	'src/Icons/Projectiles/Bullets/Missile.dmi','src/Icons/Objects/Technology/Grenade.dmi')
 	for(var/A in Bullets)
 		var/obj/Bullet_Icons/B=new
 		B.icon=A

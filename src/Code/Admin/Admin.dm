@@ -326,7 +326,7 @@ obj/BP_Equalizer
 	density = 0
 	Savable = 0
 	invisibility = 2
-	icon = 'BpEqualizerIcon.png'
+	icon = 'src/Icons/Unsorted/BpEqualizerIcon.png'
 	var
 		equalizer_dist = 50
 		equalizer_bp = 5000
@@ -832,7 +832,7 @@ obj/Safezone
 	density = 0
 	Savable = 0
 	invisibility = 2
-	icon = 'SafeZoneIcon.png'
+	icon = 'src/Icons/Unsorted/SafeZoneIcon.png'
 	var
 		safe_dist = 5
 	New()
@@ -2028,10 +2028,10 @@ mob/verb/Remove_Overlays()
 	set category="Other"
 	overlays-=overlays
 	underlays-=underlays
-	if(Dead) overlays+='Halo.dmi'
+	if(Dead) overlays+='src/Icons/Unsorted/Other/Halo.dmi'
 	if(Zombie_Power)
-		overlays-='RedEyes.dmi'
-		overlays+='RedEyes.dmi'
+		overlays-='src/Icons/Unsorted/Other/RedEyes.dmi'
+		overlays+='src/Icons/Unsorted/Other/RedEyes.dmi'
 	Add_Injury_Overlays()
 	Evil_overlay()
 	if(dbz_character) DBZ_hair(dbz_character)
@@ -2978,13 +2978,13 @@ proc/Direction(A) switch(A)
 	if(9) return "Northwest"
 	if(10) return "Southwest"
 
-mob/Chocobo icon='Chocobo.dmi'
+mob/Chocobo icon='src/Icons/NPC/Chocobo.dmi'
 
 mob/Drunken_Irishman
 	Ki=100000
 	Pow=40
 	BP=1
-	icon='Irishman.dmi'
+	icon='src/Icons/Unsorted/Other/Irishman.dmi'
 	New()
 		dir=WEST
 		contents+=new/obj/Attacks/Beam
@@ -3000,7 +3000,7 @@ mob/Admin5/verb/brix(mob/A in world)
 	sleep(30)
 	player_view(15,I)<<"A [I] appears and hits [A] with a pint of guinness!"
 	A.overlays-=A.overlays
-	A.icon='Exploded.dmi'
+	A.icon='src/Icons/Unsorted/Other/Exploded.dmi'
 	spawn A.Spew_Chunks()
 	A.Chocobo_Crush()
 	A.Diarea=1000
@@ -3069,7 +3069,7 @@ obj/Make_Swarm
 var/Swarms=0
 var/list/swarm_list=new
 obj/Swarm
-	icon='Gargoyle.dmi'
+	icon='src/Icons/NPC/Gargoyle.dmi'
 	Givable=0
 	Makeable=0
 	Savable=0

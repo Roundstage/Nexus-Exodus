@@ -16,7 +16,7 @@ obj/Attacks/Genki_Dama/Death_Ball
 	student_point_cost = 10
 
 	Genki_Dama_particle_icon = null
-	Genki_Dama_icon = 'DeathBall2017Purple2.dmi'
+	Genki_Dama_icon = 'src/Icons/Ki/Big/DeathBall2017Purple2.dmi'
 	spin_animation = 0
 	usable_if_cybered = 1
 	y_offset = 2 //tiles above player

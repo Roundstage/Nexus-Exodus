@@ -14,6 +14,8 @@ $assetRoots = @('src/Icons', 'src/Images', 'src/Maps', 'src/Sound')
 $assetExtensions = @('.dmi', '.png', '.jpg', '.gif', '.ogg', '.wav', '.mp3', '.mid', '.rtf')
 $generatedAliases = @{
 	'nexus_creator_backdrop.png' = $true
+	# UIStuff.dm exports this browser resource with browse_rsc.
+	'NexusExodusLogo.png' = $true
 }
 $assetsByName = New-Object 'Collections.Generic.Dictionary[string,Collections.Generic.List[string]]' ([StringComparer]::OrdinalIgnoreCase)
 $assetsByRelativePath = New-Object 'Collections.Generic.Dictionary[string,string]' ([StringComparer]::OrdinalIgnoreCase)
@@ -163,13 +165,18 @@ foreach($fullPath in $scanFiles) {
 			$actualName = [IO.Path]::GetFileName($candidates[0])
 			if($resource -cne $actualName) {
 				Add-ReferenceIssue 'Case' $relativeSourcePath ($lineIndex + 1) $resource "Expected $actualName"
+				continue
+			}
+			if([IO.Path]::GetExtension($resource) -in @('.dmi', '.png', '.jpg', '.gif')) {
+				$actualRelativePath = Get-RelativePath $candidates[0]
+				Add-ReferenceIssue 'BarePath' $relativeSourcePath ($lineIndex + 1) $resource "Expected $actualRelativePath"
 			}
 		}
 	}
 }
 
 Write-Host "Asset reference audit: $referenceCount active references across $($scanFiles.Count) files"
-foreach($category in @('Missing', 'Ambiguous', 'Case')) {
+foreach($category in @('Missing', 'Ambiguous', 'Case', 'BarePath')) {
 	$count = @($issues | Where-Object Category -eq $category).Count
 	Write-Host ("{0,-11} {1,6}" -f ($category + ':'), $count)
 }

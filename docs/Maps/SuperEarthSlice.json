@@ -1,0 +1,873 @@
+{
+  "phase": 5,
+  "layout": "Existing continents retained; western city near original Human spawn, replacing the brief ocean-based C3 placement.",
+  "landing": {
+    "x": 101,
+    "y": 362,
+    "radius": 10
+  },
+  "spawn": {
+    "x": 95,
+    "y": 362
+  },
+  "points": [
+    {
+      "name": "Arrival park terminal",
+      "x": 78,
+      "y": 358
+    },
+    {
+      "name": "Regional transit office",
+      "x": 119,
+      "y": 364
+    },
+    {
+      "name": "Human arrival park",
+      "x": 95,
+      "y": 362
+    },
+    {
+      "name": "West city hospital",
+      "x": 80,
+      "y": 331
+    },
+    {
+      "name": "Neighborhood pharmacy",
+      "x": 114,
+      "y": 330
+    },
+    {
+      "name": "Community school and dojo",
+      "x": 169,
+      "y": 330
+    },
+    {
+      "name": "Garden house",
+      "x": 74,
+      "y": 386
+    },
+    {
+      "name": "Corner apartment",
+      "x": 114,
+      "y": 386
+    },
+    {
+      "name": "West terrace home",
+      "x": 73,
+      "y": 305
+    },
+    {
+      "name": "East terrace home",
+      "x": 112,
+      "y": 305
+    },
+    {
+      "name": "Neighborhood supermarket",
+      "x": 168,
+      "y": 381
+    },
+    {
+      "name": "School library",
+      "x": 173,
+      "y": 355
+    },
+    {
+      "name": "Old town cafe",
+      "x": 61,
+      "y": 279
+    },
+    {
+      "name": "Bookshop",
+      "x": 115,
+      "y": 279
+    },
+    {
+      "name": "West city civic square",
+      "x": 175,
+      "y": 275
+    },
+    {
+      "name": "City hall",
+      "x": 174,
+      "y": 308
+    },
+    {
+      "name": "Hardware shop",
+      "x": 163,
+      "y": 245
+    },
+    {
+      "name": "Corner grocery",
+      "x": 117,
+      "y": 264
+    },
+    {
+      "name": "Motor repair garage",
+      "x": 115,
+      "y": 240
+    },
+    {
+      "name": "Riverside workshop",
+      "x": 113,
+      "y": 218
+    },
+    {
+      "name": "West city training lawn",
+      "x": 77,
+      "y": 245
+    }
+  ],
+  "publicRooms": [
+    [
+      73,
+      346,
+      84,
+      370
+    ],
+    [
+      116,
+      356,
+      123,
+      373
+    ],
+    [
+      70,
+      322,
+      90,
+      340
+    ],
+    [
+      109,
+      323,
+      120,
+      338
+    ],
+    [
+      159,
+      322,
+      180,
+      339
+    ],
+    [
+      66,
+      380,
+      83,
+      392
+    ],
+    [
+      108,
+      380,
+      121,
+      392
+    ],
+    [
+      65,
+      302,
+      81,
+      309
+    ],
+    [
+      105,
+      302,
+      120,
+      309
+    ],
+    [
+      159,
+      372,
+      177,
+      391
+    ],
+    [
+      165,
+      347,
+      182,
+      363
+    ],
+    [
+      54,
+      274,
+      69,
+      285
+    ],
+    [
+      107,
+      273,
+      124,
+      285
+    ],
+    [
+      161,
+      301,
+      187,
+      316
+    ],
+    [
+      159,
+      241,
+      167,
+      250
+    ],
+    [
+      110,
+      260,
+      125,
+      268
+    ],
+    [
+      105,
+      232,
+      125,
+      249
+    ],
+    [
+      105,
+      212,
+      122,
+      225
+    ]
+  ],
+  "buildings": [
+    {
+      "name": "Arrival park terminal",
+      "bounds": [
+        72,
+        345,
+        85,
+        371
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          78,
+          345
+        ],
+        [
+          78,
+          371
+        ],
+        [
+          72,
+          358
+        ],
+        [
+          85,
+          358
+        ]
+      ]
+    },
+    {
+      "name": "Regional transit office",
+      "bounds": [
+        115,
+        355,
+        124,
+        374
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          119,
+          355
+        ],
+        [
+          119,
+          374
+        ],
+        [
+          115,
+          364
+        ],
+        [
+          124,
+          364
+        ]
+      ]
+    },
+    {
+      "name": "West city hospital",
+      "bounds": [
+        69,
+        321,
+        91,
+        341
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          80,
+          321
+        ],
+        [
+          80,
+          341
+        ],
+        [
+          69,
+          331
+        ],
+        [
+          91,
+          331
+        ]
+      ]
+    },
+    {
+      "name": "Neighborhood pharmacy",
+      "bounds": [
+        108,
+        322,
+        121,
+        339
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          114,
+          322
+        ],
+        [
+          114,
+          339
+        ],
+        [
+          108,
+          330
+        ],
+        [
+          121,
+          330
+        ]
+      ]
+    },
+    {
+      "name": "Community school and dojo",
+      "bounds": [
+        158,
+        321,
+        181,
+        340
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          169,
+          321
+        ],
+        [
+          169,
+          340
+        ],
+        [
+          158,
+          330
+        ],
+        [
+          181,
+          330
+        ]
+      ]
+    },
+    {
+      "name": "Garden house",
+      "bounds": [
+        65,
+        379,
+        84,
+        393
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          74,
+          379
+        ],
+        [
+          74,
+          393
+        ],
+        [
+          65,
+          386
+        ],
+        [
+          84,
+          386
+        ]
+      ]
+    },
+    {
+      "name": "Corner apartment",
+      "bounds": [
+        107,
+        379,
+        122,
+        393
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          114,
+          379
+        ],
+        [
+          114,
+          393
+        ],
+        [
+          107,
+          386
+        ],
+        [
+          122,
+          386
+        ]
+      ]
+    },
+    {
+      "name": "West terrace home",
+      "bounds": [
+        64,
+        301,
+        82,
+        310
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          73,
+          301
+        ],
+        [
+          73,
+          310
+        ],
+        [
+          64,
+          305
+        ],
+        [
+          82,
+          305
+        ]
+      ]
+    },
+    {
+      "name": "East terrace home",
+      "bounds": [
+        104,
+        301,
+        121,
+        310
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          112,
+          301
+        ],
+        [
+          112,
+          310
+        ],
+        [
+          104,
+          305
+        ],
+        [
+          121,
+          305
+        ]
+      ]
+    },
+    {
+      "name": "Neighborhood supermarket",
+      "bounds": [
+        158,
+        371,
+        178,
+        392
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          168,
+          371
+        ],
+        [
+          168,
+          392
+        ],
+        [
+          158,
+          381
+        ],
+        [
+          178,
+          381
+        ]
+      ]
+    },
+    {
+      "name": "School library",
+      "bounds": [
+        164,
+        346,
+        183,
+        364
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          173,
+          346
+        ],
+        [
+          173,
+          364
+        ],
+        [
+          164,
+          355
+        ],
+        [
+          183,
+          355
+        ]
+      ]
+    },
+    {
+      "name": "Old town cafe",
+      "bounds": [
+        53,
+        273,
+        70,
+        286
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          61,
+          273
+        ],
+        [
+          61,
+          286
+        ],
+        [
+          53,
+          279
+        ],
+        [
+          70,
+          279
+        ]
+      ]
+    },
+    {
+      "name": "Bookshop",
+      "bounds": [
+        106,
+        272,
+        125,
+        286
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          115,
+          272
+        ],
+        [
+          115,
+          286
+        ],
+        [
+          106,
+          279
+        ],
+        [
+          125,
+          279
+        ]
+      ]
+    },
+    {
+      "name": "City hall",
+      "bounds": [
+        160,
+        300,
+        188,
+        317
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          174,
+          300
+        ],
+        [
+          174,
+          317
+        ],
+        [
+          160,
+          308
+        ],
+        [
+          188,
+          308
+        ]
+      ]
+    },
+    {
+      "name": "Hardware shop",
+      "bounds": [
+        158,
+        240,
+        168,
+        251
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          163,
+          240
+        ],
+        [
+          163,
+          251
+        ],
+        [
+          158,
+          245
+        ],
+        [
+          168,
+          245
+        ]
+      ]
+    },
+    {
+      "name": "Corner grocery",
+      "bounds": [
+        109,
+        259,
+        126,
+        269
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          117,
+          259
+        ],
+        [
+          117,
+          269
+        ],
+        [
+          109,
+          264
+        ],
+        [
+          126,
+          264
+        ]
+      ]
+    },
+    {
+      "name": "Motor repair garage",
+      "bounds": [
+        104,
+        231,
+        126,
+        250
+      ],
+      "doors": 5,
+      "entrances": [
+        [
+          115,
+          231
+        ],
+        [
+          115,
+          250
+        ],
+        [
+          104,
+          240
+        ],
+        [
+          126,
+          240
+        ]
+      ]
+    },
+    {
+      "name": "Riverside workshop",
+      "bounds": [
+        104,
+        211,
+        123,
+        226
+      ],
+      "doors": 3,
+      "entrances": [
+        [
+          113,
+          211
+        ],
+        [
+          113,
+          226
+        ],
+        [
+          104,
+          218
+        ],
+        [
+          123,
+          218
+        ]
+      ]
+    }
+  ],
+  "combatSpaces": [
+    {
+      "name": "West city civic square",
+      "bounds": [
+        160,
+        259,
+        189,
+        288
+      ],
+      "minimum": 28
+    },
+    {
+      "name": "West city training lawn",
+      "bounds": [
+        63,
+        230,
+        92,
+        259
+      ],
+      "minimum": 28
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          96,
+          210
+        ],
+        [
+          96,
+          412
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          151,
+          220
+        ],
+        [
+          151,
+          398
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          45,
+          255
+        ],
+        [
+          194,
+          255
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          45,
+          314
+        ],
+        [
+          194,
+          314
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          45,
+          398
+        ],
+        [
+          194,
+          398
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          45,
+          255
+        ],
+        [
+          45,
+          398
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          194,
+          255
+        ],
+        [
+          194,
+          398
+        ]
+      ],
+      "width": 7
+    },
+    {
+      "points": [
+        [
+          60,
+          291
+        ],
+        [
+          194,
+          291
+        ]
+      ],
+      "width": 7
+    }
+  ],
+  "changedChunks": [
+    "SuperEarthA1.dmm",
+    "SuperEarthA2.dmm",
+    "SuperEarthB1.dmm",
+    "SuperEarthB2.dmm",
+    "SuperEarthC1.dmm",
+    "SuperEarthC2.dmm"
+  ],
+  "review": "Interactive review deferred by user; script and headless verification only."
+}

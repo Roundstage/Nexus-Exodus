@@ -100,18 +100,18 @@ obj/Injuries
 	var/Wear_Off //If null, permanent injury. Otherwise it wears off when this year has been reached.
 	var/Alt_Icon
 	var/Max_Injuries=1
-	Internal icon='InternalInjury.dmi'
+	Internal icon='src/Icons/PlayerIcons/Injuries/InternalInjury.dmi'
 	Brain
-	Dick icon='GroinInjury.dmi'
+	Dick icon='src/Icons/PlayerIcons/Injuries/GroinInjury.dmi'
 	Eye
-		icon='EyeLInjury.dmi'
-		Alt_Icon='EyeRInjury.dmi'
+		icon='src/Icons/PlayerIcons/Injuries/EyeLInjury.dmi'
+		Alt_Icon='src/Icons/PlayerIcons/Injuries/EyeRInjury.dmi'
 		Max_Injuries=2
 	Leg
-		icon='LegLInjury.dmi'
-		Alt_Icon='LegRInjury.dmi'
+		icon='src/Icons/PlayerIcons/Injuries/LegLInjury.dmi'
+		Alt_Icon='src/Icons/PlayerIcons/Injuries/LegRInjury.dmi'
 		Max_Injuries=2
 	Arm
-		icon='ArmLInjury.dmi'
-		Alt_Icon='ArmRInjury.dmi'
+		icon='src/Icons/PlayerIcons/Injuries/ArmLInjury.dmi'
+		Alt_Icon='src/Icons/PlayerIcons/Injuries/ArmRInjury.dmi'
 		Max_Injuries=2

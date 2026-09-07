@@ -138,7 +138,7 @@ obj/BeamClashMarker
 	New()
 		. = ..()
 		CenterIcon(src)
-		setNexusGlow("#fff0a0", 2.4, 230, 'NexusLightGradient.dmi', 6, "blast")
+		setNexusGlow("#fff0a0", 2.4, 230, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 6, "blast")
 		transform = matrix() * 0.72
 		animate(src, alpha = 255, transform = matrix() * 1.08, time = 2, loop = -1, easing = SINE_EASING)
 		animate(src, alpha = 150, transform = matrix() * 0.82, time = 2, easing = SINE_EASING)

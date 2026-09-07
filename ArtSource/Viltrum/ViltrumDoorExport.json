@@ -1,0 +1,262 @@
+{
+  "cellSize": [
+    32,
+    32
+  ],
+  "animationTicks": 3,
+  "states": [
+    {
+      "state": "civic_closed",
+      "type": "/obj/ViltrumDoor",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        0
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "civic_opening",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        0,
+        1
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "civic_open",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        2
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "civic_closing",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        2,
+        3
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "palace_closed",
+      "type": "/obj/ViltrumDoor/Palace",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        4
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "palace_opening",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        4,
+        5
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "palace_open",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        6
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "palace_closing",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        6,
+        7
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "laboratory_closed",
+      "type": "/obj/ViltrumDoor/Laboratory",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        8
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "laboratory_opening",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        8,
+        9
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "laboratory_open",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        10
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "laboratory_closing",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        10,
+        11
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "hangar_closed",
+      "type": "/obj/ViltrumDoor/Hangar",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        12
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hangar_opening",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        12,
+        13
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "hangar_open",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        14
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "hangar_closing",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        14,
+        15
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "force_field_closed",
+      "type": "/obj/ViltrumDoor/ForceField",
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        16
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "force_field_opening",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        16,
+        17
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    },
+    {
+      "state": "force_field_open",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        18
+      ],
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "force_field_closing",
+      "type": null,
+      "dmi": "src/Icons/Turfs/Viltrum/ViltrumDoors.dmi",
+      "source": "ArtSource/Viltrum/ViltrumDoors.aseprite",
+      "sourceCells": [
+        18,
+        19
+      ],
+      "dirs": 1,
+      "frames": 2,
+      "transparent": true
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource/Viltrum/ViltrumDoors.aseprite": "899f46722a701bc84d2897017bd2d0753d03218ead2ccb6494281a0b95467885"
+  }
+}

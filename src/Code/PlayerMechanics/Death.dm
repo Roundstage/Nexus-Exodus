@@ -45,7 +45,7 @@ proc/Get_Warp_Destination(mob/M,mob/P)
 
 mob/proc/Warp_To(turf/B,mob/M) if(B)
 	player_view(10,src)<<sound('Teleport.ogg',volume=10)
-	flick('Zanzoken.dmi',src)
+	flick('src/Icons/Effects/Zanzoken.dmi',src)
 	SafeTeleport(locate(B.x,B.y,B.z))
 	dir=get_dir(src,M)
 	M.dir=get_dir(M,src)
@@ -232,7 +232,7 @@ mob/proc/Knockback(mob/A,Distance=10,dirt_trail=1,override_dir,bypass_immunity,f
 			step(src,knock_dir,32)
 
 			if(dirt_trail) if(original_distance >= 8 && (knock_dir in list(NORTH,SOUTH,EAST,WEST)))
-				var/image/i=image(icon='Craterseries.dmi',icon_state="crater",layer=OBJ_LAYER,dir=knock_dir)
+				var/image/i=image(icon='src/Icons/MapObjects/Craterseries.dmi',icon_state="crater",layer=OBJ_LAYER,dir=knock_dir)
 				if(knock_dist==original_distance-1||knock_dist==0) i.icon_state="begin"
 				if(knock_dist==0) i.dir=turn(knock_dir,180)
 				var/turf/t=loc
@@ -624,7 +624,7 @@ mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)
 				Opponent=Z
 				lastSetOpponent = world.time
 			Zenkai(0.5)
-			overlays+='Halo.dmi'
+			overlays+='src/Icons/Unsorted/Other/Halo.dmi'
 			Dead=1
 			UnKO()
 
@@ -736,7 +736,7 @@ mob/proc/Spam_kill_timer()
 	if(spam_killed<0) spam_killed=0
 mob/proc/Revive()
 	Dead=0
-	overlays-='Halo.dmi'
+	overlays-='src/Icons/Unsorted/Other/Halo.dmi'
 	Tell_counterpart_im_alive()
 atom/var/attackable=1
 mob/var/tmp/AutoAttack
@@ -749,7 +749,7 @@ var/list/dust_cache=new
 
 obj/Dust
 	density=0
-	icon = 'DustCloud2018.png'
+	icon = 'src/Icons/Effects/DustCloud2018.png'
 	layer=5
 	Grabbable=0
 	attackable=0
@@ -854,9 +854,9 @@ mob/var/tmp
 mob
 	proc/Grab_Struggle(D)
 		if(Race=="Majin")
-			if(icon!='DeathRegenerate.dmi')
+			if(icon!='src/Icons/Unsorted/DeathRegenerate.dmi')
 				var/old_icon=icon
-				icon='DeathRegenerate.dmi'
+				icon='src/Icons/Unsorted/DeathRegenerate.dmi'
 				spawn(3) icon=old_icon
 			player_view(15,src)<<"<font color=red>[src] breaks free of [grabber]!"
 			grabber.ReleaseGrab()
@@ -969,7 +969,7 @@ proc/Get_cached_body()
 		return m
 	return new/mob/Body
 
-var/image/bodyBlood = image(icon = 'FloorBlood.dmi', pixel_x = -19, pixel_y = -6, layer = 2.9)
+var/image/bodyBlood = image(icon = 'src/Icons/Effects/NewBloodSplatters/FloorBlood.dmi', pixel_x = -19, pixel_y = -6, layer = 2.9)
 
 mob/proc/Leave_Body()
 	var/mob/Body/A = Get_cached_body()
@@ -1021,7 +1021,7 @@ mob/proc/Leave_Body()
 	A.icon=icon
 	if("KO" in icon_states(A.icon)) A.icon_state="KO"
 	A.overlays+=overlays
-	if(client||istype(src,/mob/new_troll)) A.overlays+='Zombie.dmi'
+	if(client||istype(src,/mob/new_troll)) A.overlays+='src/Icons/NPC/Zombie.dmi'
 	else
 		var/turf/t = base_loc()
 		if(t && isturf(t))

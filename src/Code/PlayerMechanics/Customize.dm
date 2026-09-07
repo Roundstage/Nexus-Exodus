@@ -261,7 +261,7 @@ mob/var/Build=0
 mob/var/TechTab
 mob/proc/Get_Hair()
 	overlays-=hair
-	overlays-='Wrinkles.dmi'
+	overlays-='src/Icons/Effects/Wrinkles.dmi'
 	Choose_Hair()
 
 mob/var/tmp/Clothes

@@ -1,0 +1,576 @@
+{
+  "phase": 4,
+  "points": [
+    {
+      "name": "Northwest remote beacon",
+      "x": 72,
+      "y": 450
+    },
+    {
+      "name": "Offshore defense platform",
+      "x": 428,
+      "y": 451
+    },
+    {
+      "name": "Polar survey cavern",
+      "x": 152,
+      "y": 449
+    },
+    {
+      "name": "Defense command",
+      "x": 250,
+      "y": 467
+    },
+    {
+      "name": "West defense wing",
+      "x": 223,
+      "y": 437
+    },
+    {
+      "name": "East defense wing",
+      "x": 276,
+      "y": 437
+    },
+    {
+      "name": "Citadel parade court",
+      "x": 250,
+      "y": 438
+    },
+    {
+      "name": "Polar preserve lodge",
+      "x": 350,
+      "y": 481
+    },
+    {
+      "name": "Polar preserve training loop",
+      "x": 350,
+      "y": 449
+    },
+    {
+      "name": "Western aqueduct control",
+      "x": 72,
+      "y": 353
+    },
+    {
+      "name": "Western aqueduct terrace",
+      "x": 55,
+      "y": 331
+    },
+    {
+      "name": "Eastern cliff service station",
+      "x": 450,
+      "y": 350
+    },
+    {
+      "name": "Eastern scenic overlook",
+      "x": 476,
+      "y": 350
+    },
+    {
+      "name": "Badlands impact basin",
+      "x": 52,
+      "y": 150
+    },
+    {
+      "name": "Badlands survey shelter",
+      "x": 47,
+      "y": 180
+    },
+    {
+      "name": "Abandoned west laboratory",
+      "x": 433,
+      "y": 164
+    },
+    {
+      "name": "Abandoned east laboratory",
+      "x": 467,
+      "y": 153
+    },
+    {
+      "name": "Ruined research court",
+      "x": 450,
+      "y": 150
+    },
+    {
+      "name": "Southern watch post",
+      "x": 147,
+      "y": 52
+    },
+    {
+      "name": "Southeast communications station",
+      "x": 353,
+      "y": 52
+    }
+  ],
+  "publicRooms": [
+    [
+      418,
+      444,
+      438,
+      459
+    ],
+    [
+      140,
+      439,
+      165,
+      459
+    ],
+    [
+      223,
+      458,
+      277,
+      477
+    ],
+    [
+      218,
+      426,
+      229,
+      448
+    ],
+    [
+      271,
+      426,
+      282,
+      448
+    ],
+    [
+      327,
+      475,
+      373,
+      487
+    ],
+    [
+      65,
+      346,
+      80,
+      360
+    ],
+    [
+      441,
+      339,
+      460,
+      362
+    ],
+    [
+      29,
+      175,
+      66,
+      186
+    ],
+    [
+      425,
+      153,
+      442,
+      176
+    ],
+    [
+      459,
+      140,
+      476,
+      166
+    ],
+    [
+      133,
+      44,
+      162,
+      61
+    ],
+    [
+      339,
+      44,
+      368,
+      61
+    ]
+  ],
+  "buildings": [
+    {
+      "name": "Offshore defense platform",
+      "bounds": [
+        417,
+        443,
+        439,
+        460
+      ],
+      "entrances": [
+        [
+          428,
+          443
+        ],
+        [
+          428,
+          460
+        ],
+        [
+          417,
+          451
+        ],
+        [
+          439,
+          451
+        ]
+      ]
+    },
+    {
+      "name": "Polar survey cavern",
+      "bounds": [
+        139,
+        438,
+        166,
+        460
+      ],
+      "entrances": [
+        [
+          152,
+          438
+        ],
+        [
+          152,
+          460
+        ],
+        [
+          139,
+          449
+        ],
+        [
+          166,
+          449
+        ]
+      ]
+    },
+    {
+      "name": "Defense command",
+      "bounds": [
+        222,
+        457,
+        278,
+        478
+      ],
+      "entrances": [
+        [
+          250,
+          457
+        ],
+        [
+          250,
+          478
+        ],
+        [
+          222,
+          467
+        ],
+        [
+          278,
+          467
+        ]
+      ]
+    },
+    {
+      "name": "West defense wing",
+      "bounds": [
+        217,
+        425,
+        230,
+        449
+      ],
+      "entrances": [
+        [
+          223,
+          425
+        ],
+        [
+          223,
+          449
+        ],
+        [
+          217,
+          437
+        ],
+        [
+          230,
+          437
+        ]
+      ]
+    },
+    {
+      "name": "East defense wing",
+      "bounds": [
+        270,
+        425,
+        283,
+        449
+      ],
+      "entrances": [
+        [
+          276,
+          425
+        ],
+        [
+          276,
+          449
+        ],
+        [
+          270,
+          437
+        ],
+        [
+          283,
+          437
+        ]
+      ]
+    },
+    {
+      "name": "Polar preserve lodge",
+      "bounds": [
+        326,
+        474,
+        374,
+        488
+      ],
+      "entrances": [
+        [
+          350,
+          474
+        ],
+        [
+          350,
+          488
+        ],
+        [
+          326,
+          481
+        ],
+        [
+          374,
+          481
+        ]
+      ]
+    },
+    {
+      "name": "Western aqueduct control",
+      "bounds": [
+        64,
+        345,
+        81,
+        361
+      ],
+      "entrances": [
+        [
+          72,
+          345
+        ],
+        [
+          72,
+          361
+        ],
+        [
+          64,
+          353
+        ],
+        [
+          81,
+          353
+        ]
+      ]
+    },
+    {
+      "name": "Eastern cliff service station",
+      "bounds": [
+        440,
+        338,
+        461,
+        363
+      ],
+      "entrances": [
+        [
+          450,
+          338
+        ],
+        [
+          450,
+          363
+        ],
+        [
+          440,
+          350
+        ],
+        [
+          461,
+          350
+        ]
+      ]
+    },
+    {
+      "name": "Badlands survey shelter",
+      "bounds": [
+        28,
+        174,
+        67,
+        187
+      ],
+      "entrances": [
+        [
+          47,
+          174
+        ],
+        [
+          47,
+          187
+        ],
+        [
+          28,
+          180
+        ],
+        [
+          67,
+          180
+        ]
+      ]
+    },
+    {
+      "name": "Abandoned west laboratory",
+      "bounds": [
+        424,
+        152,
+        443,
+        177
+      ],
+      "entrances": [
+        [
+          433,
+          152
+        ],
+        [
+          433,
+          177
+        ],
+        [
+          424,
+          164
+        ],
+        [
+          443,
+          164
+        ]
+      ]
+    },
+    {
+      "name": "Abandoned east laboratory",
+      "bounds": [
+        458,
+        139,
+        477,
+        167
+      ],
+      "entrances": [
+        [
+          467,
+          139
+        ],
+        [
+          467,
+          167
+        ],
+        [
+          458,
+          153
+        ],
+        [
+          477,
+          153
+        ]
+      ]
+    },
+    {
+      "name": "Southern watch post",
+      "bounds": [
+        132,
+        43,
+        163,
+        62
+      ],
+      "entrances": [
+        [
+          147,
+          43
+        ],
+        [
+          147,
+          62
+        ],
+        [
+          132,
+          52
+        ],
+        [
+          163,
+          52
+        ]
+      ]
+    },
+    {
+      "name": "Southeast communications station",
+      "bounds": [
+        338,
+        43,
+        369,
+        62
+      ],
+      "entrances": [
+        [
+          353,
+          43
+        ],
+        [
+          353,
+          62
+        ],
+        [
+          338,
+          52
+        ],
+        [
+          369,
+          52
+        ]
+      ]
+    }
+  ],
+  "combatSpaces": [
+    {
+      "name": "Badlands impact basin",
+      "bounds": [
+        37,
+        135,
+        66,
+        164
+      ],
+      "minimum": 28
+    }
+  ],
+  "changedChunks": [
+    "ViltrumA1.dmm",
+    "ViltrumA2.dmm",
+    "ViltrumA3.dmm",
+    "ViltrumA4.dmm",
+    "ViltrumA5.dmm",
+    "ViltrumB1.dmm",
+    "ViltrumB3.dmm",
+    "ViltrumB4.dmm",
+    "ViltrumB5.dmm",
+    "ViltrumC1.dmm",
+    "ViltrumC4.dmm",
+    "ViltrumC5.dmm",
+    "ViltrumD1.dmm",
+    "ViltrumD2.dmm",
+    "ViltrumD4.dmm",
+    "ViltrumD5.dmm",
+    "ViltrumE1.dmm",
+    "ViltrumE2.dmm",
+    "ViltrumE3.dmm",
+    "ViltrumE4.dmm",
+    "ViltrumE5.dmm"
+  ],
+  "boundaryWidth": 8,
+  "manualPreservedTiles": 2152,
+  "review": "Atlas and headless checks; interactive day/night, combat and movement review deferred by user."
+}

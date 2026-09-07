@@ -295,9 +295,9 @@ mob/proc
 			var/obj/Attacks/Blast/A=new
 			var/obj/Attacks/Charge/B=new
 			var/obj/Attacks/Beam/C=new
-			A.icon=pick('Asset1.dmi','Asset12.dmi','Asset17.dmi','Asset18.dmi','Asset19.dmi','Asset21.dmi','Asset22.dmi','Asset24.dmi','Asset25.dmi')
-			B.icon=pick('Asset11.dmi','Asset20.dmi','Asset26.dmi','Asset27.dmi','Asset31.dmi','Asset4.dmi')
-			C.icon=pick('Beam1.dmi','Beam2.dmi','Beam3.dmi','Beam6.dmi')
+			A.icon=pick('src/Icons/Ki/Blasts/Asset1.dmi','src/Icons/Ki/Blasts/Asset12.dmi','src/Icons/Ki/Blasts/Asset17.dmi','src/Icons/Ki/Blasts/Asset18.dmi','src/Icons/Ki/Blasts/Asset19.dmi','src/Icons/Ki/Blasts/Asset21.dmi','src/Icons/Ki/Blasts/Asset22.dmi','src/Icons/Ki/Blasts/Asset24.dmi','src/Icons/Ki/Blasts/Asset25.dmi')
+			B.icon=pick('src/Icons/Ki/Blasts/Asset11.dmi','src/Icons/Ki/Blasts/Asset20.dmi','src/Icons/Ki/Blasts/Asset26.dmi','src/Icons/Ki/Blasts/Asset27.dmi','src/Icons/Ki/Blasts/Asset31.dmi','src/Icons/Ki/Blasts/Asset4.dmi')
+			C.icon=pick('src/Icons/Ki/Beams/Beam1.dmi','src/Icons/Ki/Beams/Beam2.dmi','src/Icons/Ki/Beams/Beam3.dmi','src/Icons/Ki/Beams/Beam6.dmi')
 			A.icon+=Color
 			B.icon+=Color
 			C.icon+=Color

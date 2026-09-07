@@ -49,7 +49,7 @@ proc/CheckAddNewButtonForCustomDecors()
 	addNewButton = a
 
 obj/AddNewCustomDecorButton
-	icon = 'NewIcon.dmi'
+	icon = 'src/Icons/UI/NewIcon.dmi'
 	Click()
 		usr.TryNewCustomDecorBlueprint()
 
@@ -137,7 +137,7 @@ mob/proc
 		c.lastUsed = world.realtime
 
 obj/CustomDecorBlueprint
-	icon = 'CustomDecor.dmi' //just so we have something to see by default
+	icon = 'src/Icons/UI/CustomDecor.dmi' //just so we have something to see by default
 	name = "Custom Decor"
 	var
 		creator //a key of who made it

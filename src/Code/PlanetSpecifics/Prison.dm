@@ -81,7 +81,7 @@ proc/Deploy_Drone(mob/M,mob/Redeploy,turf/drone_loc,mob/deployer)
 	else T=drone_loc
 	var/obj/Effect/E = GetEffect()
 	E.SafeTeleport(T)
-	E.icon='BlackHole.dmi'
+	E.icon='src/Icons/Effects/BlackHole.dmi'
 	flick("full",E)
 	Timed_Delete(E,60)
 	sleep(30)
@@ -96,7 +96,7 @@ proc/Deploy_Drone(mob/M,mob/Redeploy,turf/drone_loc,mob/deployer)
 var/list/Bounty_Drones=new
 
 mob/Bounty_Drone
-	icon='Gochekbots.dmi'
+	icon='src/Icons/NPC/Gochekbots.dmi'
 	icon_state="5"
 	var/tmp/mob/deployer
 	New()
@@ -128,7 +128,7 @@ mob/Bounty_Drone
 		Bounty_Ray()
 			player_view(15,src)<<"[src]: Target is vulnerable. Firing prison ray."
 			spawn while(src&&Target&&Target.z==z&&getdist(Target,src)<20)
-				Missile('PrisonRay.dmi',src,Target)
+				Missile('src/Icons/Effects/PrisonRay.dmi',src,Target)
 				sleep(2)
 			sleep(50)
 			if(Target)

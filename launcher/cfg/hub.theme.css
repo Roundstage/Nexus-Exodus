@@ -1,0 +1,122 @@
+/* Appended after BYOND's functional hub.css. */
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #100d09;
+	color: #e7d4a5;
+	font-family: Georgia, "Times New Roman", serif;
+}
+
+#content {
+	width: 960px;
+	height: 640px;
+	overflow: hidden;
+	background: linear-gradient(145deg, #21180e 0%, #100d09 48%, #080706 100%);
+}
+
+#content > div {
+	padding: 0;
+}
+
+#page_content {
+	width: 100%;
+	height: 570px;
+	overflow: auto;
+}
+
+#login {
+	height: 42px;
+	padding: 12px 18px 0;
+	text-align: right;
+	font-family: "Segoe UI", sans-serif;
+}
+
+a, a:link, a:visited {
+	color: #e2b75d;
+	text-decoration: none;
+}
+
+.nexus-shell {
+	min-height: 570px;
+	padding: 64px 72px;
+}
+
+.nexus-brand {
+	padding-bottom: 32px;
+	border-bottom: 1px solid #7b5d2d;
+}
+
+.nexus-kicker {
+	margin: 0 0 4px;
+	color: #b98b42;
+	font: 700 14px "Segoe UI", sans-serif;
+	letter-spacing: 0.55em;
+}
+
+h1 {
+	margin: 0;
+	font-size: 68px;
+	font-weight: normal;
+	letter-spacing: 0.12em;
+}
+
+.nexus-subtitle {
+	margin: 14px 0 0;
+	color: #bcae90;
+	font: 16px "Segoe UI", sans-serif;
+}
+
+.nexus-worlds {
+	padding-top: 32px;
+	font-family: "Segoe UI", sans-serif;
+}
+
+.title {
+	font-size: 18px;
+	color: #f0d79b;
+}
+
+.world {
+	margin-top: 16px;
+	padding: 18px;
+	border: 1px solid #5c4527;
+	background: #17120c;
+}
+
+.join {
+	float: right;
+	padding: 8px 18px;
+	border: 1px solid #b7893e;
+	background: #30210f;
+}
+
+.join:hover {
+	background: #4a3216;
+}
+
+#progress {
+	position: relative;
+	height: 24px;
+	margin: 12px 18px;
+}
+
+#progressbar {
+	position: absolute;
+	height: 100%;
+	background: #b7893e;
+}
+
+#progressmessage {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+	font-family: "Segoe UI", sans-serif;
+}
+
+.launched #page_content, .launched #login {
+	display: none !important;
+}

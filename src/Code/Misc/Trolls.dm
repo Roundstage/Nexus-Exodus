@@ -60,9 +60,9 @@ mob/Troll
 	New() spawn(10) if(src&&!(src in Make_List))
 		if(!icon)
 			TextColor=rgb(rand(0,255),rand(0,255),rand(0,255))
-			icon=pick('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi',\
-			'NewBlackFemale.dmi','RaceGinyu.dmi','RaceKui.dmi')
-			if(!(icon in list('RaceGinyu.dmi','RaceKui.dmi')))
+			icon=pick('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi',\
+			'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi','src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi','src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi')
+			if(!(icon in list('src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi','src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi')))
 				var/obj/O=pick(Hairs)
 				if(isobj(O)) overlays+=O.icon
 			var/list/L=new
@@ -85,7 +85,7 @@ mob/Troll
 			Warp=1
 			spawn if(src) if(name==initial(name)) Troll_Name()
 			var/obj/Attacks/Beam/Z=new(src)
-			Z.icon='BeamStaticBeam.dmi'
+			Z.icon='src/Icons/Ki/Beams/BeamStaticBeam.dmi'
 			Z.WaveMult*=5
 			var/obj/Attacks/Blast/B=new(src)
 			B.Spread=3
@@ -127,7 +127,7 @@ mob/Troll
 			if(!(src in view(3,Target))) for(var/turf/T in view(3,Target)) if(T in view(15,src))
 				if(!T.density&&(!T.Water||Flying))
 					player_view(10,src)<<sound('Teleport.ogg',volume=10)
-					flick('Zanzoken.dmi',src)
+					flick('src/Icons/Effects/Zanzoken.dmi',src)
 					var/OldDir=dir
 					AfterImage()
 					SafeTeleport(T)

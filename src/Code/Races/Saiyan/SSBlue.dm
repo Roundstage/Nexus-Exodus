@@ -4,7 +4,7 @@ mob/var
 	ssj_blue_hair
 	ssj_blue_aura
 	ssj_blue_mult = 1.35
-	base_ssj_blue_idle_aura = 'SSjBlueIdleAura.dmi' //icon
+	base_ssj_blue_idle_aura = 'src/Icons/Ki/Auras/SSjBlueIdleAura.dmi' //icon
 
 	tmp
 		ssj_blue_drain_loop
@@ -87,7 +87,7 @@ mob/proc
 		if(!ssj_blue_aura)
 			//ssj_blue_aura = 'SsBlueAura2017.dmi' + rgb(0,0,0,170)
 			//ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 48, 64)
-			ssj_blue_aura = 'SsBlueAura2017.dmi'
+			ssj_blue_aura = 'src/Icons/Ki/Auras/SsBlueAura2017.dmi'
 			ssj_blue_aura = Scaled_Icon(ssj_blue_aura, 96, 96)
 		if(!ssj_blue_idle_aura)
 			ssj_blue_idle_aura = image(icon = base_ssj_blue_idle_aura + rgb(0,0,0,213), pixel_x = -32, pixel_y = -28)

@@ -48,7 +48,7 @@ Movement input, collision, environmental traversal, accelerated skill travel, an
 - Side effects: clears active/internal motion ownership, skill velocity, and optional gap-nudge state.
 
 #### mob/proc/runNexusSkillMotion
-- Signature: `mob/proc/runNexusSkillMotion(atom/movable/target, movement_direction, max_distance_pixels, stop_distance_pixels = 0, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, require_selected_target = FALSE, datum/NexusSkillMotionResult/result_capture, movement_vector_x = 0, movement_vector_y = 0)`
+- Signature: `mob/proc/runNexusSkillMotion(atom/movable/target, movement_direction, max_distance_pixels, stop_distance_pixels = 0, max_velocity = skill_motion_default_max_velocity, acceleration = skill_motion_default_acceleration, deceleration = skill_motion_default_deceleration, afterimage_interval = 0.5, velocity_transfer = 0, pass_mobs = FALSE, require_selected_target = FALSE, datum/NexusSkillMotionResult/result_capture, movement_vector_x = 0, movement_vector_y = 0, facing_direction = 0)`
 - Purpose: Start one ownership-safe accelerated skill movement toward a live target or along a fixed direction.
 - Returns: reached/interrupted result from the owned motion.
 - Side effects: cancels older motion, suspends normal inertia, optionally records pass-through contacts, and can transfer bounded exit velocity back to normal movement.

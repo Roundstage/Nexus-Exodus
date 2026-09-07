@@ -23,7 +23,7 @@ turf/Mining_Rock
 	Buildable = 0
 	Health = 1
 	density = 1
-	icon = 'Turfs3.dmi'
+	icon = 'src/Icons/Turfs/Turfs3.dmi'
 	icon_state = "cliff"
 	takes_gradual_damage = 1
 	opacity = 1

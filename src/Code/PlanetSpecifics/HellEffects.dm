@@ -22,7 +22,7 @@ obj/Make_Holy_Pendant
 			Next_Use=Year+5
 		else usr<<"You can only make one of these per 5 years"
 obj/items/Holy_Pendant
-	icon='HolyPendant.dmi'
+	icon='src/Icons/Objects/Items/HolyPendant.dmi'
 	desc="This pendant protects people from the tortures of hell"
 	Stealable=1
 	verb/Hotbar_use()
@@ -47,7 +47,7 @@ mob/proc/Scary_Effects() while(1)
 mob/proc/Random_Scary_Image() if(client)
 	src<<sound(pick('HellVoice.ogg','PsychoYelling.ogg','PulseExplosion.ogg'))
 	var/obj/Image/I=new
-	I.icon=pick('Exorcist.jpg','CreepyGuy.jpg','ScaryClown.jpg','ScaryDoll.jpg')
+	I.icon=pick('src/Images/Exorcist.jpg','src/Images/CreepyGuy.jpg','src/Images/ScaryClown.jpg','src/Images/ScaryDoll.jpg')
 	client.screen+=I
 	spawn(rand(30,50)) if(src&&client) del(I)
 	while(I&&src&&client)
@@ -62,7 +62,7 @@ mob/proc/Freddy_Kreuger_Image()
 	src<<sound('PsychoYelling.ogg')
 	sleep(10)
 	var/obj/Image/I=new
-	I.icon='FreddyKreuger.jpg'
+	I.icon='src/Images/FreddyKreuger.jpg'
 	I.screen_loc="1,1"
 	client.screen+=I
 	spawn(rand(30,50)) if(src&&client) del(I)

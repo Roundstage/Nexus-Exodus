@@ -1,0 +1,76 @@
+{
+  "origin": "Original built-in OpenAI image_gen atlas; transparent source retained.",
+  "sourceHashes": {
+    "ArtSource/Earth/EarthNeighborhoodServices.aseprite": "9d95b6f595a16a1b7db84e521364ca25eafb8c2d0f9f0d9000bada1b811d5f4e"
+  },
+  "states": [
+    {
+      "state": "hospital",
+      "cellSize": [
+        224,
+        192
+      ],
+      "footprint": [
+        7,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodServices.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodServices.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "shop",
+      "cellSize": [
+        224,
+        192
+      ],
+      "footprint": [
+        7,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodServices.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodServices.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "civic",
+      "cellSize": [
+        224,
+        192
+      ],
+      "footprint": [
+        7,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodServices.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodServices.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "garage",
+      "cellSize": [
+        224,
+        192
+      ],
+      "footprint": [
+        7,
+        6
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodServices.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodServices.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ]
+}

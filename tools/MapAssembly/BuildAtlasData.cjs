@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path');
+const {parse}=require('./Dmm.cjs');
+const {loadPlanet,root}=require('./PlanetChunks.cjs');
+const planet=process.argv[2]||'Viltrum', baseline=process.argv.includes('--baseline');
+const map=baseline?parse(fs.readFileSync(path.join(root,'docs/Maps/RebuildBaseline',planet+'.dmm'),'utf8')):loadPlanet(planet);
+const palette=[...new Set(map.grid.flat())].sort(),lookup=new Map(palette.map((v,i)=>[v,i]));
+const data={planet,baseline,palette,grid:map.grid.map(row=>row.map(v=>lookup.get(v)))};
+const out=path.join(root,'.codex-tmp/PlanetAtlas');fs.mkdirSync(out,{recursive:true});
+fs.writeFileSync(path.join(out,`${planet}${baseline?'Baseline':''}.json`),JSON.stringify(data));

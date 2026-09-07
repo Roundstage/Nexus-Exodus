@@ -4,13 +4,13 @@ obj/Priest
 	desc="Click this priest to get married"
 	Cost=0
 	density=1
-	icon='Android.dmi'
+	icon='src/Icons/PlayerIcons/BaseIcons/Android.dmi'
 	Health=50000
 	takes_gradual_damage=1
 	Makeable=1
 	New()
-		overlays-='ClothesTuxedo.dmi'
-		overlays+='ClothesTuxedo.dmi'
+		overlays-='src/Icons/PlayerIcons/Clothes/ClothesTuxedo.dmi'
+		overlays+='src/Icons/PlayerIcons/Clothes/ClothesTuxedo.dmi'
 		. = ..()
 	Click()
 		if(getdist(usr,src)>1) return
@@ -66,7 +66,7 @@ mob/proc/Kilt_by_redneck()
 		else break
 	var/mob/m=new(t)
 	m.name="REDNECK"
-	m.icon='Farmer.dmi'
+	m.icon='src/Icons/Unsorted/Farmer.dmi'
 	m.TextColor="green"
 	m.attackable=0
 	m.BP=1.#INF
@@ -97,7 +97,7 @@ mob/proc/Kilt_by_redneck()
 		if(Get_step(t,NORTH)) t=Get_step(t,NORTH)
 		else break
 	var/mob/jesus=new(t)
-	jesus.icon='Jesus.dmi'
+	jesus.icon='src/Icons/Unsorted/Jesus.dmi'
 	jesus.name="JEEZUS"
 	jesus.BP=1.#INF
 	jesus.attackable=0

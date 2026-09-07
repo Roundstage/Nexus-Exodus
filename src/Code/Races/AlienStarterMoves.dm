@@ -123,7 +123,7 @@ mob/proc/Alien_Stuff()
 						if("No")
 							goto retry
 					arm_stretch=1
-					arm_stretch_icon='GenericArm.dmi'
+					arm_stretch_icon='src/Icons/Unsorted/GenericArm.dmi'
 					arm_stretch_range=150
 					Auto_color_arm_stretch_icon()
 					Alien_points-=L[choice]
@@ -142,7 +142,7 @@ mob/proc/Alien_Stuff()
 					b.name="Alien transform"
 					b.desc="This is a transformation that increases BP but drains energy"
 					b.buff_attributes+="transformation"
-					var/icon/i='AuraElectric.dmi'+rgb(80,180,80)
+					var/icon/i='src/Icons/Ki/Electricity/AuraElectric.dmi'+rgb(80,180,80)
 					b.buff_overlays+=i
 					Alien_points-=L[choice]
 				if("Time Stop (25 AP)")

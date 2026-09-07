@@ -1,0 +1,32 @@
+[
+  {
+    "path": "src/Maps/Viltrum.dmm",
+    "sha256": "b3e059e4e2939644beca2bf6d44cfb558ceff9d7afc9dface769b597f68e807c",
+    "backup": "docs\\Maps\\RebuildBaseline\\Viltrum.dmm"
+  },
+  {
+    "path": "src/Maps/SuperEarth.dmm",
+    "sha256": "5f4086d012299ca4b5f5bdda97fb9dc6198d00b071df9c993169389b6aee206f",
+    "backup": "docs\\Maps\\RebuildBaseline\\SuperEarth.dmm"
+  },
+  {
+    "path": "tools/GenerateViltrumMap.cjs",
+    "sha256": "ce19a1e478eafed15c06a67ec47b3638e95487f36b8762e83056d2da677e6ce9",
+    "backup": "docs\\Maps\\RebuildBaseline\\GenerateViltrumMap.cjs"
+  },
+  {
+    "path": "tools/GenerateSuperEarthMap.cjs",
+    "sha256": "6acb6315164c8d4a47b8ac28dcb0ce1ba2eed115c9c9c77e35355170111b8c98",
+    "backup": "docs\\Maps\\RebuildBaseline\\GenerateSuperEarthMap.cjs"
+  },
+  {
+    "path": "tools/GenerateScenicSuperEarth.cjs",
+    "sha256": "c2b154070625467afe1065f963cbe63c17b1395151f26b510ff4fd17ee71cbee",
+    "backup": "docs\\Maps\\RebuildBaseline\\GenerateScenicSuperEarth.cjs"
+  },
+  {
+    "path": "tools/GenerateRealisticSuperEarth.cjs",
+    "sha256": "e0e8f012ac9f33d3064af26ca842713fe5a7b9c7df8a20b21c2d917fdef14149",
+    "backup": "docs\\Maps\\RebuildBaseline\\GenerateRealisticSuperEarth.cjs"
+  }
+]

@@ -150,3 +150,20 @@ Managed equipment appearances carry an explicit copy of the character body matri
 
 ### proc/getNexusBeamImpactState
 - Purpose: Select one of the approved `PixelSimulations64.dmi` explosion states for a beam impact.
+
+### Transformation hair selection
+
+`TransformationHair.dm`: `getTransformationHair(key)` reads the current saved/custom hair fields; `getActiveTransformationHairKey()` preserves Ultra Instinct, Blue, God, Mystic, USSJ and Full Power priorities. `getActiveTransformationHair()` retains the mastered Goku SSJ3 exception. `SSj_Hair()` applies this result while retaining existing tail/eye handling. The `base` key returns the actual original colored hair and `ssj` returns the golden variant for cinematic previews without changing gameplay transformation state.
+
+## SSJ1 Aseprite opening
+`datum/NexusSsjAwakening.playSequence` in `SuperSaiyanTransformation.dm` owns temporary aura/light objects, base/gold hair flicker, gentle lift, observer ambient modifiers and a brief world-plane wave filter. `cleanup` is idempotent and releases lighting/filter state even when the actor disappears. Aseprite sources and build scripts live in `artifacts/SuperSaiyan/`; runtime assets are `GoldenAura.dmi` and `TransformationLightning.dmi`. No Pixel Composer dependency remains.
+
+The opening now lasts 22 seconds minimum. Aura and the two crossfading hair visuals are attached through `vis_contents`, inheriting the actor's direction and position. `getNexusAwakeningAnchor` scans the selected body frame's opaque bounds once at sequence creation. The flame asset's feet anchor is (48,12) in bottom-left coordinates, and its growth matrix preserves that point. Twelve expanding ground rings, increasingly frequent 192-pixel falling lightning and world-plane distortion accompany the crescendo. Three per-observer reserved sound channels separate charge, shockwave and electric samples; cleanup or leaving range stops only those channels. The final 1.5 seconds settle the lift, glow and aura. Tests cover a deliberately asymmetric body and interruption after creating the attached visuals.
+
+SSJ1 effects now use `getNexusSsjVisualMastery` (drain 150–300, or Full Power). `getNexusAwakeningDuration(mob)` interpolates from 220 to 6 deciseconds. The mastered path only crossfades hair; it does not acquire observer lighting/sound state or spawn disruptive effects. `updateNexusSsjDaylightGlow` maintains a persistent additive halo above the ambient plane, in addition to the existing light emitter. It shrinks with mastery and is removed on reversion. Ground pulses use the expanding elliptical ring owned by the awakening datum.
+
+Lighting correction: temporary awakening dimmers call `refreshNexusAmbient`, which recomposes the last raw ambient value received by the client instead of resolving the area's day/night flag again. Area/weather updates still replace that raw value normally. Peak dimming is now 22%, scaled down with mastery. The daylight halo explicitly selects gradient state "1"; the previous empty state had no visible pixels. The expanding elliptical shockwave from the 22-second version is restored.
+
+The visible SSJ halo now uses `GoldenGlow.png`, authored by `CreateGoldenGlow.lua` in Aseprite, with a radial alpha falloff and fully transparent borders. The opaque black-backed `NexusLightGradient.dmi` remains exclusive to lighting emitters/masks and is no longer reused as a visible world overlay. Regression tests inspect every border pixel of the actual runtime halo asset and verify a visible center.
+
+Awakening dimming is now an independent black screen layer on plane 14, beneath Nexus lighting (15). `refreshNexusAwakeningDimmer` only updates that layer's alpha, capped at 22%; it does not read, write, reset or animate the lighting plane or ambient color. `refreshNexusAmbient` no longer applies awakening modifiers. Removing the temporary layer cannot restore a white ambient over the night. Overlapping cinematics use the strongest dimmer and release only their own token.

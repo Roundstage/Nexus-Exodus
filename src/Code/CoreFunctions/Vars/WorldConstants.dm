@@ -20,6 +20,8 @@ var/const
 	Z_LEVEL_PRISON = 17
 	Z_LEVEL_CORE = 18
 	Z_LEVEL_BATTLEGROUNDS = 19
+	Z_LEVEL_VILTRUM = 20
+	Z_LEVEL_SUPER_EARTH = 21
 
 var/const
 	LETHAL_COMBAT 						= "Fight to Death"

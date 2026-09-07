@@ -24,9 +24,9 @@ proc
 	GenerateUltraInstinctGraphics()
 		set waitfor=0
 		if(!ultra_instinct_idle_aura)
-			ultra_instinct_idle_aura = image(icon = 'VermarUIAura.dmi')
+			ultra_instinct_idle_aura = image(icon = 'src/Icons/Ki/Auras/VermarTransAuras/VermarUIAura.dmi')
 		if(!ultra_instinct_aura)
-			ultra_instinct_aura = 'VermarUIAura2.dmi' + rgb(0,0,0,222)
+			ultra_instinct_aura = 'src/Icons/Ki/Auras/VermarTransAuras/VermarUIAura2.dmi' + rgb(0,0,0,222)
 			ultra_instinct_aura = Scaled_Icon(ultra_instinct_aura, 48, 64)
 
 mob/var
@@ -106,8 +106,8 @@ have instant transmission
 		SSj_Hair()
 		overlays -= ultra_instinct_idle_aura
 		overlays += ultra_instinct_idle_aura
-		overlays -= 'UIElectricity.dmi'
-		overlays += 'UIElectricity.dmi'
+		overlays -= 'src/Icons/Ki/Auras/GodAurasByKvNGK/UIElectricity.dmi'
+		overlays += 'src/Icons/Ki/Auras/GodAurasByKvNGK/UIElectricity.dmi'
 
 		Spd *= ultra_instinct_speed
 		spdmod *= ultra_instinct_speed
@@ -129,7 +129,7 @@ have instant transmission
 		if(!ultra_instinct) return
 		ultra_instinct = 0
 		overlays -= ultra_instinct_idle_aura
-		overlays -= 'UIElectricity.dmi'
+		overlays -= 'src/Icons/Ki/Auras/GodAurasByKvNGK/UIElectricity.dmi'
 
 		Spd /= ultra_instinct_speed
 		spdmod /= ultra_instinct_speed
@@ -202,7 +202,7 @@ have instant transmission
 						SafeTeleport(t)
 						dir = get_dir(src,last_attacker)
 						player_view(20,src)<<sound('Teleport.ogg',volume=15)
-						flick('Zanzoken.dmi',src)
+						flick('src/Icons/Effects/Zanzoken.dmi',src)
 						Melee()
 			sleep(10)
 
@@ -216,7 +216,7 @@ mob/proc/UltraInstinctGraphics()
 		//Make_Shockwave(src,7,'Electricgroundbeam2.dmi')
 		//Make_Shockwave(src,7,ultra_instinct_aura)
 		//Make_Shockwave(src,7,'GivePowerEffectWhite.dmi')
-		Make_Shockwave(src,7,'UltraInstinctSparkShockwave.dmi')
+		Make_Shockwave(src,7,'src/Icons/Ki/Electricity/UltraInstinctSparkShockwave.dmi')
 		sleep(rand(200,300) / 100)
 	spawn if(src) Ultra_Instinct_Rising_Aura(src,65)
 	RisingRocksTransformFXNoWait(rocksPerSession = 2, sessions = 20, sessionDelay = 2, maxDist = 6, distGrowPerSession = 1, minVel = 30, maxVel = 60, fadeTime = 30, hoverTime = 20)
@@ -236,7 +236,7 @@ proc/UltraInstinctSwirlEffect(turf/pos, time = 100, start_size = 0.1, end_size =
 	var/obj/Effect/o = GetEffect()
 	o.SafeTeleport(pos)
 	Timed_Delete(o,time + 1)
-	o.icon='SwirlingWhiteEnergy.png'
+	o.icon='src/Icons/Effects/SwirlingWhiteEnergy.png'
 	o.alpha = start_alpha
 	o.transform *= start_size
 	o.transform = turn(o.transform, rand(0,360))

@@ -206,14 +206,14 @@ mob/proc/Namekian_Fusion_Gfx()
 	var/N=6
 	spawn while(N&&src)
 		N--
-		Make_Shockwave(src,6,'Electricgroundbeam2.dmi')
+		Make_Shockwave(src,6,'src/Icons/Ki/Electricity/Electricgroundbeam2.dmi')
 		sleep(rand(3,6))
 	spawn if(src) Rising_Aura(src,25)
 	Dust(src, end_size = 1, time = 30)
 	RisingRocksTransformFXNoWait(rocksPerSession = 2, sessions = 15, sessionDelay = 2, maxDist = 6, distGrowPerSession = 1.5, minVel = 6, maxVel = 10, fadeTime = 35, hoverTime = 50)
 	var/obj/O=new(loc)
 	Timed_Delete(O,200)
-	O.icon='WhiteFlashingCircle.dmi'
+	O.icon='src/Icons/Effects/WhiteFlashingCircle.dmi'
 	O.layer=9
 	CenterIcon(O)
 	spawn while(O)

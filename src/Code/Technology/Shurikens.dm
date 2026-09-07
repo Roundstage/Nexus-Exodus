@@ -2,7 +2,7 @@ obj/items/Shuriken
 	Cost=5000
 	can_change_icon=1
 	Stealable=1
-	icon='Shuriken.dmi'
+	icon='src/Icons/Unsorted/Other/Shuriken.dmi'
 	desc="This is a ranged move based on the thrower's strength"
 	var/Shurikens=100
 	var/Shrapnel

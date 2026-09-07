@@ -1,0 +1,303 @@
+{
+  "phase": 3,
+  "publicBuildings": 25,
+  "requiredDestinations": 34,
+  "reachableTiles": 220480,
+  "allPublicFloorTilesReachable": true,
+  "eachPublicDoorwayCanBeBlockedWithoutIsolatingBuilding": true,
+  "combatSpaces": [
+    {
+      "name": "Grand training floor",
+      "bounds": [
+        25,
+        225,
+        74,
+        274
+      ],
+      "minimum": 48
+    },
+    {
+      "name": "Civic agora",
+      "bounds": [
+        136,
+        236,
+        164,
+        264
+      ],
+      "minimum": 28
+    },
+    {
+      "name": "War college arena",
+      "bounds": [
+        326,
+        221,
+        373,
+        268
+      ],
+      "minimum": 48,
+      "exits": [
+        [
+          350,
+          214
+        ],
+        [
+          350,
+          276
+        ],
+        [
+          316,
+          245
+        ],
+        [
+          384,
+          245
+        ]
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "chunk": "B2",
+      "densePercent": 2.75
+    },
+    {
+      "chunk": "B3",
+      "densePercent": 2.67
+    },
+    {
+      "chunk": "B4",
+      "densePercent": 2.91
+    },
+    {
+      "chunk": "C1",
+      "densePercent": 1.18
+    },
+    {
+      "chunk": "C2",
+      "densePercent": 3.2
+    },
+    {
+      "chunk": "C4",
+      "densePercent": 4.96
+    },
+    {
+      "chunk": "C5",
+      "densePercent": 2.64
+    },
+    {
+      "chunk": "D2",
+      "densePercent": 2.52
+    },
+    {
+      "chunk": "D4",
+      "densePercent": 3.04
+    }
+  ],
+  "seams": [
+    {
+      "chunk": "B2",
+      "edge": "west",
+      "active": false,
+      "sevenTileCrossings": 6
+    },
+    {
+      "chunk": "B2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B2",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B2",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "east",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C1",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C1",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "C1",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 4
+    },
+    {
+      "chunk": "C2",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C5",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C5",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "C5",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "D2",
+      "edge": "west",
+      "active": false,
+      "sevenTileCrossings": 6
+    },
+    {
+      "chunk": "D2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D2",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D2",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "east",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    }
+  ],
+  "manualReview": "Script and headless checks; interactive review deferred by user."
+}

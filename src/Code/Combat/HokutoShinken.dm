@@ -60,7 +60,7 @@ obj/Hokuto_Shinken
 		spawn(12) if(usr)
 			for(var/obj/items/Clothes/TankTop/K in usr.item_list) if(K.suffix) K.Click(usr)
 			for(var/obj/items/Clothes/ShortSleeveShirt/K in usr.item_list) if(K.suffix) K.Click(usr)
-		var/Aura='AuraTall.dmi'+rgb(255,255,255)
+		var/Aura='src/Icons/Ki/Auras/AuraTall.dmi'+rgb(255,255,255)
 		var/image/I=image(icon=Aura,icon_state="top",pixel_y=32)
 		var/image/F=image(icon=Aura,icon_state="bottom")
 		usr.overlays.Add(I,F)

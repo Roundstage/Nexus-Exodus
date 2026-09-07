@@ -706,12 +706,14 @@ datum/SkillEngine
 				walk_towards(a, spot, 1)
 				spawn(rand(20, 25) * user.Speed_delay_mult(severity = 0.5)) if(a && a.z && a.Owner == user)
 					a.density = 1
-					if(!user || user.getSelectedTarget(target, require_view = FALSE) != target) target = null
-					if(target)
+					// Commit to the target captured when cast. Damage may clear selected_target,
+					// but it must not disarm shots already deployed around a valid opponent.
+					if(!user || !target || target.z != user.z || target.KO || !target.attackable) target = null
+					if(target && user.canHitNexusTechniqueTarget(target))
 						a.blast_homing_target = target
 						a.followSelectedTarget(target)
 				spawn if(a && a.z && a.Owner == user)
-					while(a && a.z && target && a.Owner == user && !a.deflected && user && user.selected_target == target) sleep(TickMult(2))
+					while(a && a.z && target && a.Owner == user && !a.deflected && user && target.z == user.z && !target.KO) sleep(TickMult(2))
 					if(a && a.z && !a.deflected)
 						walk_rand(a)
 						spawn(rand(1, 50)) if(a) del(a)
@@ -812,7 +814,7 @@ datum/SkillEngine
 					var/dirts = prob(40)
 					while(dirts)
 						dirts -= 1
-						var/image/i = image(icon = 'DamagedGround.dmi', pixel_x = rand(-16, 16), pixel_y = rand(-16, 16))
+						var/image/i = image(icon = 'src/Icons/Effects/DamagedGround.dmi', pixel_x = rand(-16, 16), pixel_y = rand(-16, 16))
 						t.overlays += i
 						t.Remove_Damaged_Ground(i)
 			spawn for(var/mob/p in nexusMobsInCircle(user, 10 * world.icon_size)) if(p.z && p.grabbedObject != user)
@@ -1116,6 +1118,8 @@ datum/SkillEngine
 				break
 			hitcount++
 			player_view(15, user) << sound('Strongpunch.ogg', volume = 60)
+			user.WolfFangFistVFX(victim, hit_number == user.numberOfHits)
+			showNexusOpenCombatEffect(victim, "aim_32", "blast_blue", hit_number == user.numberOfHits ? 1.5 : 0.8, "#89ddff", 220, BLEND_ADD, 1, 0.25)
 			flick("Attack", user)
 			user.ScreenShake(Amount = 8, Offset = 5)
 			victim.ScreenShake(Amount = 12, Offset = 7)

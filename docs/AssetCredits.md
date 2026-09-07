@@ -27,3 +27,76 @@
 - `src/Icons/Effects/OpenCombat/FoozleMagic64.dmi` packages [Pixel Magic Effects](https://foozlecc.itch.io/pixel-magic-sprite-effects), commissioned from lordfitoi and distributed by Foozle under CC0.
 - `src/Icons/Effects/OpenCombat/AimExplosions32.dmi` and `AimExplosions64.dmi` package [Explosions - Pixel Art](https://aim-studios.itch.io/explosions-pixel-art) by Aim studios, released under CC0.
 - `src/Icons/Effects/OpenCombat/SmokeShockwaves128.dmi` adapts the 106-pixel sequences from [Shock Wave / Smoke](https://morningkingdom.itch.io/shock-wave-smoke) by morningkingdom. The page marks the pack CC0 and separately prohibits AI training; Nexus Exodus retains that restriction for this asset. Frames are sampled uniformly and centered in 128x128 DMI cells without interpolation.
+
+## Viltrum map rebuild (2026-09-06)
+
+The initial and revised Viltrum kits were generated with OpenAI's built-in image-generation tool for Nexus Exodus. The user-supplied cyan/teal planet image was used for palette and mood, not copied into production sprites. Generated originals and native Aseprite sheets are under `ArtSource/Viltrum`; current per-state source/destination mappings and hashes are in `ViltrumRevision.json`, with initial mappings in `ViltrumExport.json`.
+
+Normalization crops equal cells, resizes to 32x32 with nearest-neighbor sampling and writes DMI metadata. The furnishing generator returned RGB checkerboards twice; `NormalizeViltrumCutouts.py` removes connected bright neutral background while preserving outlined ivory objects, then imports actual alpha cutouts into Aseprite. `ViltrumMaterialProof.png` shows the eight objects over three floors. Original and rejected sources remain; source art is never overwritten by --force.
+
+No ClassicBlunder assets or layouts were imported in this phase. The user confirmed direct developer permission on 2026-09-06 for selective future reuse from https://github.com/Antenora/ClassicBlunder at commit f31a9dafed198530838d7762bf9c10ace2ed9187. This is project-specific authorization, not a public license. Future imports require original paths and SHA-256 in `docs/Maps/ClassicBlunderAssetImport.json`.
+
+### Viltrum capital and landscape expansion (2026-09-06)
+
+Original built-in OpenAI image_gen art: eight capital furnishings and sixteen
+landscape/floor textures. Native sources:
+`ArtSource/Viltrum/ViltrumCapitalObjects.aseprite` and
+`ArtSource/Viltrum/ViltrumLandscape.aseprite`; production DMIs with corresponding
+names under `src/Icons/Turfs/Viltrum`. Export manifests contain source SHA-256,
+state mappings, frame dimensions and transparency. Original generated PNGs and
+prompt/normalization notes are retained in `ArtSource/Viltrum/ExpansionBrief.md`.
+No ClassicBlunder assets were imported for this expansion.
+
+### Viltrum doors and Earth additions (2026-09-06)
+
+ViltrumDoors.aseprite contains original built-in OpenAI image_gen artwork:
+five styles, four poses each. ExportViltrumDoors.py packages twenty named states
+and thirty animation frames in src/Icons/Turfs/Viltrum/ViltrumDoors.dmi.
+ArtSource/Viltrum/ViltrumDoorExport.json records the source hash and pose mapping;
+ExpansionBrief.md documents normalization and the prompt brief.
+
+EarthCityAdditions.aseprite selects 28 states from existing Nexus Exodus assets,
+including Celianna architecture, FloorsLAWL, Tiles1212011, domestic furniture and
+lab equipment. This is repackaging of existing project art, not a claim of new
+authorship or a new license. ArtSource/Earth/EarthCityExport.json records exact
+original paths, hashes, states/cells and production mappings. Original assets are
+unchanged; legacy binary DMI decoding used an isolated BYOND helper.
+
+EarthStreetAdditions.aseprite contains four original built-in OpenAI image_gen
+road/concrete materials; original PNG, source hashes and exports are retained in
+ArtSource/Earth. EarthCity.dmi and EarthStreets.dmi are under src/Icons/Turfs/Earth.
+See ArtSource/Earth/Provenance.md for prompts, conversion and export details.
+No ClassicBlunder assets or layouts were imported in either world rebuild.
+
+### Earth neighborhood and river correction (2026-09-06)
+
+EarthNeighborhoodHouses, EarthNeighborhoodServices, EarthNeighborhoodProps and
+EarthRiverMaterials are original artwork generated using OpenAI's built-in
+image_gen for Nexus Exodus. Generated originals, exact prompts, alpha extraction
+notes and native Aseprite sources are retained under ArtSource/Earth. Houses and
+services normalize to 160x192 and 224x192; props use transparent 64x96 cells.
+
+EarthNeighborhoodDetails is original native Aseprite pixel work for roads,
+sidewalks, curbs, bridge parapets and small fixtures. EarthRiverTerrain combines
+the generated material swatches into native edge/corner transition states.
+EarthBuildingTiles losslessly repackages the house/service art into structural
+32x32 crops; it adds no external artwork. Corresponding export manifests record
+native hashes, state mappings and production paths under src/Icons/Turfs/Earth.
+
+LimeZu, finalbossblues, RPG Maker, Waterfront Toronto, FHWA, Tiled and Red Blob
+references informed visual/terrain planning only. No asset pack was purchased
+or imported in this revision. Existing interior furniture retains the project
+credits recorded above. See ArtSource/Earth/Provenance.md and
+docs/Maps/RiverCityReferences.md for provenance and research details.
+
+### Earth explorable natural terrain — 2026-09-06
+
+EarthNaturalMaterialsOriginal.png is an original built-in image_gen material
+atlas, retained with its prompt and native Aseprite source. EarthNaturalTiles
+contains native modular terrain, natural ramps, a six-tile cave arch and
+continuous dune shading. All 1,582 DMI states are fully opaque 32x32 terrain.
+Dune transitions incorporate the existing Turf1.dmi `light desert` material;
+its inherited project provenance is unchanged. No whole-landform concept sprite
+or external reference artwork is placed on the map. NPS and official RPG Maker
+pages informed the landform design; sources are recorded in
+docs/Maps/EarthNaturalLandmarksReferences.md.

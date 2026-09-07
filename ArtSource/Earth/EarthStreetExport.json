@@ -1,0 +1,48 @@
+{
+  "origin": "Original built-in OpenAI image_gen street materials.",
+  "states": [
+    {
+      "state": "asphalt",
+      "type": "/turf/EarthFloor/Road",
+      "dmi": "src/Icons/Turfs/Earth/EarthStreets.dmi",
+      "source": "ArtSource/Earth/EarthStreetAdditions.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "crosswalk",
+      "type": "/turf/EarthFloor/Crosswalk",
+      "dmi": "src/Icons/Turfs/Earth/EarthStreets.dmi",
+      "source": "ArtSource/Earth/EarthStreetAdditions.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "concrete",
+      "type": "/turf/EarthFloor/Sidewalk",
+      "dmi": "src/Icons/Turfs/Earth/EarthStreets.dmi",
+      "source": "ArtSource/Earth/EarthStreetAdditions.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    },
+    {
+      "state": "industrial_concrete",
+      "type": "/turf/EarthFloor/Concrete",
+      "dmi": "src/Icons/Turfs/Earth/EarthStreets.dmi",
+      "source": "ArtSource/Earth/EarthStreetAdditions.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": false
+    }
+  ],
+  "sourceHashes": {
+    "ArtSource/Earth/EarthStreetAdditions.aseprite": "e630e61cfb08fe4a42b26a89cde307e57d8d1d7dd9da93ecf28e3aa206697b33"
+  }
+}

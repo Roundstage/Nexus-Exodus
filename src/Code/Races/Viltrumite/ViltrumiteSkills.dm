@@ -111,7 +111,7 @@ mob/proc/castViltrumiteRush(obj/Attacks/NexusMeleeTechnique/technique)
 	technique.playCastEffects(src)
 	AlterInputDisabled(1)
 	attacking = 1
-	if(getdist(src, target) > 1) runNexusSkillApproach(target, technique.dash_range * world.icon_size, world.icon_size, 125, 280, 340, 0.3)
+	if(getdist(src, target) > 1) runViltrumiteVisualApproach(target, technique.dash_range * world.icon_size, 125, 280, 340, 0.3)
 	AlterInputDisabled(-1)
 	if(!target || getdist(src, target) > 1)
 		Reset_melee()
@@ -148,10 +148,11 @@ mob/proc/castViltrumitePursuit(obj/Attacks/NexusMeleeTechnique/technique)
 	target.viltrumite_pursuit_source = null
 	target.viltrumite_pursuit_until = 0
 	AlterInputDisabled(1)
-	var/motion_result = runNexusSkillApproach(target, technique.dash_range * world.icon_size, world.icon_size, 135, 310, 380, 0.25)
+	var/motion_result = runViltrumiteVisualApproach(target, technique.dash_range * world.icon_size, 135, 310, 380, 0.25)
 	AlterInputDisabled(-1)
 	if(motion_result == NEXUS_SKILL_MOTION_REACHED && target && getdist(src, target) <= 1)
 		dir = get_dir(src, target)
+		showNexusOpenCombatEffect(src, "smoke_shockwaves_128", "middle", 0.15, "#eaf4ff", 150, BLEND_ADD, 2, 0.4)
 		return TRUE
 	return FALSE
 
@@ -224,7 +225,7 @@ mob/proc/castViltrumiteNolanCombination(obj/Attacks/NexusMeleeTechnique/techniqu
 	technique.playCastEffects(src)
 	AlterInputDisabled(1)
 	attacking = 1
-	if(getdist(src, target) > 1) runNexusSkillApproach(target, technique.dash_range * world.icon_size, world.icon_size, 120, 270, 330, 0.3)
+	if(getdist(src, target) > 1) runViltrumiteVisualApproach(target, technique.dash_range * world.icon_size, 120, 270, 330, 0.3)
 	var/has_opening = target && target.hasViltrumiteOpeningFrom(src)
 	if(has_opening) technique.accuracy_bonus += VILTRUMITE_OPENING_ACCURACY
 	var/list/hit_multipliers = list(0.55, 0.55, 0.6, 1.1)
@@ -237,7 +238,7 @@ mob/proc/castViltrumiteNolanCombination(obj/Attacks/NexusMeleeTechnique/techniqu
 		if(!resolveNexusTechniqueHit(target, technique, hit_multipliers[hit_index])) break
 		hits_landed++
 		if(has_opening && hits_landed == 1) target.consumeViltrumiteOpening(src)
-		if(hit_index == hit_multipliers.len) showNexusSwordSlashEffect(target, "#d1283f", 1.35)
+		if(hit_index == hit_multipliers.len) showViltrumitePressureImpact(target, TRUE)
 		else sleep(3)
 	technique.bleed_fraction = original_bleed
 	if(has_opening) technique.accuracy_bonus -= VILTRUMITE_OPENING_ACCURACY
@@ -271,6 +272,10 @@ obj/Attacks/NexusMeleeTechnique/Viltrumite
 	race_teach_only = 1
 	teachable = 0
 	cast_text_color = "#d9b36c"
+
+	showImpact(mob/target)
+		..()
+		showViltrumitePressureImpact(target, knockback_multiplier >= 3)
 
 obj/Attacks/NexusMeleeTechnique/Viltrumite/ViltrumiteRush
 	name = "Viltrumite Rush"
@@ -326,7 +331,7 @@ obj/Attacks/NexusMeleeTechnique/Viltrumite/ConquerorsGrip
 	energy_cost = 14
 	cooldown_ticks = 120
 	behavior = "viltrumite_grip"
-	effect_icon = 'RTGrappleImpact.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi'
 	effect_icon_state = "1"
 	verb/Conquerors_Grip()
 		set name = "Conqueror's Grip"

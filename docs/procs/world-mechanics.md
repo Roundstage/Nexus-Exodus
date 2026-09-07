@@ -1,6 +1,21 @@
 # World Mechanics
 
 ## Overview
+`initializeSuperEarthPlanet()` creates one roaming Super Terra on space Z 16,
+landing at (`SUPER_EARTH_LANDING_X`, `SUPER_EARTH_LANDING_Y`, 21), currently
+(101,362,21). `/area/SuperEarth` uses persistent area state and the
+standard disabled-planet controls. `getSuperEarthRacialSpawns()` supplies the
+preferred default for each non-Viltrumite race, while explicit binds and Earth
+Only retain precedence. Disabled Super Terra falls back to legacy spawns.
+
+`initializeViltrumPlanet()` registers one roaming `/obj/Planets/Viltrum` on
+the existing space Z, after persistent settings load. `/area/Viltrum` occupies
+Z 20, is included in the scanner, and uses the existing disabled-planet list
+and area save data. Planet collision lands at the spaceport (250,78); `Liftoff()`
+returns to the space object. `getRaceSpawnName()` now maps both Viltrumite races
+to the dedicated Viltrumite spawn, with available Earth Human spawns as fallback
+when Viltrum is disabled. Explicit spawn binds and Earth Only remain authoritative.
+
 World simulation, areas, day/night, lighting, planets, tournaments, vehicles, and long-running world state. Legacy `GiveLightSource()` emitters are attached to their owning object through `vis_contents`; their origin turf, area fading, and occlusion therefore follow torches and carried or moved items, and deletion removes the attached emitter.
 
 League names, login descriptions, notes, chat, announcements, and resource amounts now cross explicit server-side boundaries. Names/descriptions are stored as bounded plain text, notes migrate from legacy HTML and are escaped when rendered, chat/announcements are length-limited and escaped, creation/chat are throttled, leaders may own at most five leagues, and resource transfers reject non-finite values.
@@ -1970,3 +1985,34 @@ The family records preserve Viltrumite lineage separately from display class. Hu
 - Turfs keep native machine/planet gravity in `gravity` and temporary spell gravity in `arcane_gravity`.
 - `Gravity_Update()` uses the greater field, so Gravity Well participates in the same damage and mastery loop as a gravity machine.
 - Each active well records its affected turfs. Expiration recomputes overlap from surviving wells and restores the underlying native gravity without overwriting a machine setting.
+
+`getNexusAwakeningAmbient` combines temporary per-client transformation dimmers before the lighting plane matrix is applied. Removing a dimmer recomputes lighting from the current area; overlapping openings preserve remaining dimmers. The player's lighting-disabled preference is respected.
+
+`updateTransformationGlow` preserves the regular SSJ emitter while updating the separate daytime halo. SSJ1 light range/intensity decrease with mastery; the halo remains visible independently of the ambient multiplication pass.
+
+`setNexusAmbient` records the raw ambient in `nexus_base_ambient`. `refreshNexusAmbient` reapplies temporary modifiers without replacing that raw color, including when the lighting plane must be initialized. Awakening entry/exit use refresh so a dark ambient cannot be replaced with white by a day/night flag fallback.
+
+Awakening dimmers have been removed from ambient matrix composition entirely. The scene now uses `NexusAwakeningDimmer` beneath the lighting plane. Weather/day-night transitions continue without being restarted or cancelled by cinematic entry, updates or cleanup.
+
+### Viltrum chunk authoring and public consoles
+
+The 500x500 surface at `Z_LEVEL_VILTRUM` is assembled from 25 editable 100x100 chunks. `VILTRUM_LANDING_X/Y` retain (250,78). `/obj/ViltrumConsole/Click()` provides public wayfinding within two tiles; the Reactor subtype also reports a diagnostic. Neither alters power, combat, saving, planetary control or travel. Roofs form solid opaque perimeter walls, wall faces are decorative, and alpha furnishings are separate fixed objects. No active lights or continuous processing are added. See `docs/Maps/Viltrum.md`.
+
+### Expanded planet surfaces and public doors
+
+Both surface DMMs now assemble from 25 local-Z1 chunks; global Z20/Z21 and
+landing/spawn coordinates are unchanged. Earth keeps its continental geography.
+EarthDirectory/Click provides nearby public wayfinding; EarthFurnishing separates
+transparent object art from floors. EarthBridge retains Water=TRUE while allowing
+walking; EarthOceanBoundary and ViltrumOcean/Boundary reject Enter even in flight.
+
+resolvePlanetSurfaceArrival(turf/destination) returns a normal landing for either
+planet's boundary turf, otherwise the original turf. MovementFlow.SafeTeleport
+calls it for mobs before updating movement/planet context. Direct assignments
+to loc do not invoke this protection.
+
+ViltrumDoor/Cross opens the nearby matching group and only permits passage when
+density has cleared. Open and Close use three-tick transitions. The group checks
+all panel occupants before closing and retries while occupied; closePanel checks
+again before restoring density. There is no crush damage, password or idle loop.
+Five styles and 25 panels use the native ViltrumDoors source and export manifest.

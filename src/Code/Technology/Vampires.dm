@@ -11,7 +11,7 @@ obj/Sunlight_Generator
 	science = 1
 	science_level = 5
 	science_path = "Engineering"
-	icon='PodArconia.dmi'
+	icon='src/Icons/Objects/Technology/PodArconia.dmi'
 	var/tmp/On
 	density=1
 	takes_gradual_damage=1
@@ -57,7 +57,7 @@ mob/proc/Sunlight_Cure()
 	if(src&&!Dead) Vampire_Cure()
 
 obj/Sunfield
-	icon='Sunfield.dmi'
+	icon='src/Icons/Effects/Sunfield.dmi'
 	Grabbable=0
 	Health=1.#INF
 	layer=10
@@ -73,7 +73,7 @@ obj/items/Daybreaker_Virus
 	science = 1
 	science_level = 5
 	science_path = "Genetics"
-	icon='TVirus.dmi'
+	icon='src/Icons/Objects/Technology/TVirus.dmi'
 	Stealable=1
 	Injection=1
 	clonable = 0
@@ -184,7 +184,7 @@ mob/proc/Become_Vampire_Monster() if(Vampire&&!Vampire_Monster)
 		Vampire_Infection=0
 		src<<"Your vampire infection has hit 100%, you have become a vampire monster, a vampire which can feed on \
 		other vampires. This makes you more powerful than ever, but if your infection hits 100% again you will die."
-		icon='Demon4.dmi'
+		icon='src/Icons/PlayerIcons/BaseIcons/Demon4.dmi'
 		overlays-=overlays
 		FullHeal()
 
@@ -239,7 +239,7 @@ mob/proc/Vampire_Infection_Rise()
 				if(Vampire_Infection>100) 
 					Vampire_Infection=100
 				if(Vampire_Monster && !IsGreatApe())
-					icon='Demon4.dmi'
+					icon='src/Icons/PlayerIcons/BaseIcons/Demon4.dmi'
 				if(Vampire_Infection >= 90 && DO_VAMPIRES_NEED_TO_FEED)
 					src<<"<font color=red>Warning: Vampire Infection at [Vampire_Infection]%"
 				if(Vampire_Infection >= 100 && !Dead && DO_VAMPIRES_NEED_TO_FEED)

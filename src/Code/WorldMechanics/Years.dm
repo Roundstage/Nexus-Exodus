@@ -40,8 +40,8 @@ mob/proc/Gray_Hair() if(!buffed())
 		hair=base_hair+rgb(N,N,N)
 		overlays+=hair
 		if(Body<=0.7) if(Race in list("Human","Saiyan","Tsujin","Half Saiyan"))
-			overlays-='Wrinkles.dmi'
-			overlays+='Wrinkles.dmi'
+			overlays-='src/Icons/Effects/Wrinkles.dmi'
+			overlays+='src/Icons/Effects/Wrinkles.dmi'
 mob/proc/Age_Update()
 	if(!BirthYear) BirthYear=Year
 	real_age=(Year-BirthYear)*1
@@ -49,8 +49,8 @@ mob/proc/Age_Update()
 	LogYear=Year
 	syncMilestoneProgression(silent = FALSE)
 	if(!Dead&&Age>Lifespan()&&z!=13&&((z!=6&&Demonic)||!Demonic)) Die()
-	if(Age>Decline/2&&icon=='NamekYoung.dmi') icon='NamekAdult.dmi'
-	if(Age>=Decline&&icon=='NamekAdult.dmi') icon='NamekOld.dmi'
+	if(Age>Decline/2&&icon=='src/Icons/PlayerIcons/BaseIcons/NamekYoung.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NamekAdult.dmi'
+	if(Age>=Decline&&icon=='src/Icons/PlayerIcons/BaseIcons/NamekAdult.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NamekOld.dmi'
 	src<<"<font color=#FFFF00>It is now month [round((Year-round(Year))*10)] of year [round(Year)]</font>"
 	src<<"<font color=#FFFF00>You are now [round(Age,0.1)] years old physically (Born [round(real_age,0.1)] years ago)</font>"
 	if(Age>=13&&!(locate(/obj/Mate) in src))
@@ -105,7 +105,7 @@ mob/proc/Update_Decline() if(!buffed())
 
 mob/proc/Die() if(!Immortal&&!Dead) //from old age
 	if(!old_age_on) return
-	if(icon=='NamekOld.dmi') icon='NamekYoung.dmi'
+	if(icon=='src/Icons/PlayerIcons/BaseIcons/NamekOld.dmi') icon='src/Icons/PlayerIcons/BaseIcons/NamekYoung.dmi'
 	Death("old age",1)
 
 mob/proc/Add_Decline(N=0)
@@ -156,7 +156,7 @@ mob/proc/Can_Mate()
 	return 1
 
 obj/Egg
-	icon='Egg.dmi'
+	icon='src/Icons/Unsorted/Other/Egg.dmi'
 	var/Parent
 	var/Race
 	var/Class
@@ -252,7 +252,7 @@ mob/proc/Mate_Graphics(mob/M)
 		else icon_state="Flight"
 		if(prob(20))
 			var/turf/T=M.loc
-			if(T&&isturf(T)) T.overlays+=image('WhiteStuff.dmi',pixel_x=rand(-11,11),pixel_y=rand(-11,11))
+			if(T&&isturf(T)) T.overlays+=image('src/Icons/Effects/WhiteStuff.dmi',pixel_x=rand(-11,11),pixel_y=rand(-11,11))
 		sleep(1)
 	icon_state=old_state
 	if(M) M.icon_state=m_old_state

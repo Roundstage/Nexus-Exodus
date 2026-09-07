@@ -1,0 +1,206 @@
+ M DU.dme
+ M UI.dmf
+ M docs/assets/CombatAssetLibrary.md
+ M docs/ports/IntegratedSystems.md
+ M docs/procs/character-creation.md
+ M docs/procs/combat.md
+ M docs/procs/core-functions.md
+ M docs/procs/movement.md
+ M docs/procs/player-mechanics.md
+ M docs/procs/tests.md
+ M docs/procs/visual-effects.md
+ M docs/procs/world-mechanics.md
+ M src/Code/Admin/Admin.dm
+ M src/Code/Admin/NexusAttackTesting.dm
+ M src/Code/Application/Combat/SkillEngine.dm
+ M src/Code/Application/Movement/DefensiveDash.dm
+ M src/Code/Application/Movement/FlashStep.dm
+ M src/Code/Application/Movement/MovementCollision.dm
+ M src/Code/Application/Movement/MovementInput.dm
+ M src/Code/Application/Movement/MovementWarp.dm
+ M src/Code/Application/Movement/SkillMovementPhysics.dm
+ M src/Code/BackgroundCode/StatLoop.dm
+ M src/Code/Building/ConnectorWires.dm
+ M src/Code/Building/CustomIconBuildTab.dm
+ M src/Code/CharacterCreation/NexusCharacterCreation.dm
+ M src/Code/Clickinz.dm
+ M src/Code/Combat/CombatDummy.dm
+ M src/Code/Combat/Evasion.dm
+ M src/Code/Combat/HokutoShinken.dm
+ M src/Code/Combat/Injuries.dm
+ M src/Code/Combat/KiSkills/DeathBall2017.dm
+ M src/Code/Combat/KiSkills/FinalExplosion.dm
+ M src/Code/Combat/KiSkills/Hakai.dm
+ M src/Code/Combat/KiSkills/Kikoho2016.dm
+ M src/Code/Combat/KiSkills/Sense2017/Sense.dm
+ M src/Code/Combat/KiSkills/SolarFlare.dm
+ M src/Code/Combat/KiSkills/SpiritBomb2016.dm
+ M src/Code/Combat/KiSkills/Supernova.dm
+ M src/Code/Combat/Melee.dm
+ M src/Code/Combat/Melee/DragonRush.dm
+ M src/Code/Combat/Melee/PressurePunch.dm
+ M src/Code/Combat/Melee/RoundhouseKick.dm
+ M src/Code/Combat/Melee/SuperDropkick.dm
+ M src/Code/Combat/Melee/WolfFangFist.dm
+ M src/Code/Combat/NexusMeleeTechniques.dm
+ M src/Code/Combat/NexusSpecialStyles.dm
+ M src/Code/Combat/NoxianGuillotine.dm
+ M src/Code/Combat/RareDeathEffects.dm
+ M src/Code/Combat/RockThrow.dm
+ M src/Code/Combat/Skills.dm
+ M src/Code/Combat/SplitForms.dm
+ M src/Code/Combat/Stun.dm
+ M src/Code/Combat/Targeting/Targeting.dm
+ M src/Code/Combat/Teams.dm
+ M src/Code/Communication/Communication.dm
+ M src/Code/CoreFunctions/DBModeCharacters.dm
+ M src/Code/CoreFunctions/Main.dm
+ M src/Code/CoreFunctions/MainCreation.dm
+ M src/Code/CoreFunctions/MainWorld.dm
+ M src/Code/CoreFunctions/Map.dm
+ M src/Code/CoreFunctions/MonsterAIRevamp2019.dm
+ M src/Code/CoreFunctions/Saving.dm
+ M src/Code/CoreFunctions/Vars/WorldConstants.dm
+ M src/Code/MapCode/AmbientOcclusion.dm
+ M src/Code/MapCode/AutoEdge.dm
+ M src/Code/MapCode/JaggedEdgeFillers.dm
+ M src/Code/Misc/FrameRateConstantTrick.dm
+ M src/Code/Misc/Jackson.dm
+ M src/Code/Misc/Saitama.dm
+ M src/Code/Misc/Trolls.dm
+ M src/Code/Misc/Trolls2.dm
+ M src/Code/PlanetSpecifics/HellEffects.dm
+ M src/Code/PlanetSpecifics/MiningCave.dm
+ M src/Code/PlanetSpecifics/PlanetVegetaFitness.dm
+ M src/Code/PlanetSpecifics/Prison.dm
+ M src/Code/PlanetSpecifics/SaiyanKing/SaiyanArmyNPCs.dm
+ M src/Code/PlanetSpecifics/SaiyanKing/SaiyanKing.dm
+ M src/Code/PlayerMechanics/Ascension.dm
+ M src/Code/PlayerMechanics/Clothes.dm
+ M src/Code/PlayerMechanics/Cooking.dm
+ M src/Code/PlayerMechanics/Customize.dm
+ M src/Code/PlayerMechanics/Death.dm
+ M src/Code/PlayerMechanics/Diarea.dm
+ M src/Code/PlayerMechanics/GodKiTraining.dm
+ M src/Code/PlayerMechanics/Grabbing.dm
+ M src/Code/PlayerMechanics/Inventory.dm
+ M src/Code/PlayerMechanics/Learn.dm
+ M src/Code/PlayerMechanics/Marriage.dm
+ M src/Code/PlayerMechanics/ProgressionTrees.dm
+ M src/Code/PlayerMechanics/RPCombat.dm
+ M src/Code/PlayerMechanics/Ranks.dm
+ M src/Code/PlayerMechanics/Train.dm
+ M src/Code/ProjectileSystem/BeamCore.dm
+ M src/Code/ProjectileSystem/BeamRedirector.dm
+ M src/Code/ProjectileSystem/Beams.dm
+ M src/Code/ProjectileSystem/Blasts.dm
+ M src/Code/ProjectileSystem/ProjectileCore.dm
+ M src/Code/ProjectileSystem/Projectiles.dm
+ M src/Code/Races/AlienStarterMoves.dm
+ M src/Code/Races/BioAndroid/BioAndroid.dm
+ M src/Code/Races/BioAndroid/Bios.dm
+ M src/Code/Races/Icer/GoldIcer.dm
+ M src/Code/Races/Majin/Majin.dm
+ M src/Code/Races/Majins/GooTrap.dm
+ M src/Code/Races/Nameks.dm
+ M src/Code/Races/Oozaru.dm
+ M src/Code/Races/Saiyan/SSBlue.dm
+ M src/Code/Races/Saiyan/SsGodRed.dm
+ M src/Code/Races/UltraInstinct.dm
+ M src/Code/Races/Viltrumite/ViltrumiteSkills.dm
+ M src/Code/Technology/Bombs.dm
+ M src/Code/Technology/Cybernetics.dm
+ M src/Code/Technology/ForgedEquipment.dm
+ M src/Code/Technology/GunCustomization.dm
+ M src/Code/Technology/Guns.dm
+ M src/Code/Technology/LandMine.dm
+ M src/Code/Technology/Professions.dm
+ M src/Code/Technology/ScourgeVirus.dm
+ M src/Code/Technology/Shurikens.dm
+ M src/Code/Technology/SmokeBomb.dm
+ M src/Code/Technology/Technology.dm
+ M src/Code/Technology/ToxicWaste.dm
+ M src/Code/Technology/Vampires.dm
+ M src/Code/Technology/Zombies.dm
+ M src/Code/Tests/StartupSmoke.dm
+ M src/Code/Transformations/Kaioken.dm
+ M src/Code/UI/ActionHud.dm
+ M src/Code/UI/HUD.dm
+ M src/Code/UI/Hotkeys.dm
+ M src/Code/UI/HudLibrary.dm
+ M src/Code/UI/PlanetMapScanner.dm
+ M src/Code/UI/UIStuff.dm
+ M src/Code/UI/Wasted.dm
+ M src/Code/VisualEffects/BigRocks.dm
+ M src/Code/VisualEffects/ExplosionEffects.dm
+ M src/Code/VisualEffects/Harambe.dm
+ M src/Code/VisualEffects/KiWater.dm
+ M src/Code/VisualEffects/RisingRocks2019.dm
+ M src/Code/WorldMechanics/BaseOrbs.dm
+ M src/Code/WorldMechanics/DeadZone.dm
+ M src/Code/WorldMechanics/DragonBalls.dm
+ M src/Code/WorldMechanics/Gravity.dm
+ M src/Code/WorldMechanics/Leagues.dm
+ M src/Code/WorldMechanics/OrbitingPlanet.dm
+ M src/Code/WorldMechanics/PlanetDestroy.dm
+ M src/Code/WorldMechanics/Space.dm
+ M src/Code/WorldMechanics/Tournament.dm
+ M src/Code/WorldMechanics/Vehicles.dm
+ M src/Code/WorldMechanics/WeatherDayNight/Areas.dm
+ M src/Code/WorldMechanics/WeatherDayNight/Fireflies.dm
+ M src/Code/WorldMechanics/WeatherDayNight/Lighting.dm
+ M src/Code/WorldMechanics/Years.dm
+ M src/Code/_libs/kii_lighting/daynight.dm
+ M src/Code/_libs/kii_weather/particles.dm
+ M src/Code/_libs/shapes/shapes.dm
+ M src/Code/_libs/upform/demo/demo.dm
+ M src/Maps/Backup/Map2018.dmm
+ M src/Maps/BackupPinguin/Map2018.dmm
+ M src/Maps/Map2018.dmm
+ M tools/Invoke-ByondSmoke.ps1
+ M tools/Test-AssetReferences.ps1
+?? .pnpm-store/
+?? SecretsExample.dm
+?? SuperEarthEditor.dme
+?? ViltrumEditor.dme
+?? artifacts/
+?? docs/Balance/UnarmedBeamCounterProposal.md
+?? docs/ByondExeLauncherPocPlan.md
+?? docs/ByondExePackageInventory.md
+?? docs/ImprovementPrompts/ViltrumEarthMapRebuild.md
+?? docs/Maps/
+?? docs/assets/MeleeVfxAudit.md
+?? launcher/
+?? src/Code/CharacterCreation/HairCatalog.dm
+?? src/Code/Tests/SuperEarthSmoke.dm
+?? src/Code/Tests/TransformationHairSmoke.dm
+?? src/Code/Tests/ViltrumPlanetSmoke.dm
+?? src/Code/VisualEffects/EarthquakeEffects.dm
+?? src/Code/VisualEffects/ExplosiveWaveEffects.dm
+?? src/Code/VisualEffects/SuperSaiyanTransformation.dm
+?? src/Code/VisualEffects/TransformationHair.dm
+?? src/Code/VisualEffects/ViltrumiteEffects.dm
+?? src/Code/WorldMechanics/SuperEarth.dm
+?? src/Code/WorldMechanics/Viltrum.dm
+?? src/Icons/Effects/Earthquake.dmi
+?? src/Icons/Effects/ExplosiveWave.dmi
+?? src/Icons/Ki/Electricity/FallingLightning.dmi
+?? src/Icons/Ki/Electricity/TransformationLightning.dmi
+?? src/Icons/Ki/GoldenAura.dmi
+?? src/Icons/Ki/GoldenGlow.png
+?? src/Icons/Objects/TheScourgeVirus.dmi
+?? src/Icons/PlayerIcons/BaseIcons/IcerChangelingMaleOC.dmi
+?? src/Icons/PlayerIcons/BaseIcons/IcerChangelingOC.dmi
+?? src/Maps/SuperEarth.dmm
+?? src/Maps/Viltrum.dmm
+?? tmp/
+?? tools/Build-NexusLauncher.ps1
+?? tools/BuildBiomeTileCatalog.cjs
+?? tools/GenerateRealisticSuperEarth.cjs
+?? tools/GenerateScenicSuperEarth.cjs
+?? tools/GenerateSuperEarthFromCurrentMap.cjs
+?? tools/GenerateSuperEarthMap.cjs
+?? tools/GenerateViltrumMap.cjs
+?? tools/ImportSuperEarthGeography.ps1
+?? tools/RenderScenicSuperEarth.ps1
+?? tools/RenderSuperEarthPreview.ps1

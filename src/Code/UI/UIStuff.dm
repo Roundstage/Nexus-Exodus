@@ -94,7 +94,7 @@ datum/NexusCharacterSelect
 		if(!owner || !owner.client || owner.playerCharacter)
 			del(src)
 			return
-		owner << browse_rsc('NexusExodusLogo.png', "NexusExodusLogo.png")
+		owner << browse_rsc('src/Icons/UI/NexusExodusLogo.png', "NexusExodusLogo.png")
 		owner << browse(buildHtml(), "window=NexusCharacterSelect;size=960x720;can_resize=true;can_close=false")
 
 	Topic(href, list/href_list)
@@ -143,7 +143,7 @@ proc/getNexusInitialConnectViewWidth(mob/current_mob, title_view_width)
 	return max(1, title_view_width)
 
 proc/getNexusApplicationIconSkinValue()
-	return "'Slime64.png'"
+	return "'src/Images/Slime64.png'"
 
 mob/var/tmp/nexus_reconnect_handoff = FALSE
 
@@ -182,7 +182,7 @@ client/proc
 		set waitfor=0
 		while(!resolutionInitialized) sleep(1)
 		mob.loc = locate(445,3,2)
-		var/icon/i2 = icon('NexusExodusLogo.png')
+		var/icon/i2 = icon('src/Icons/UI/NexusExodusLogo.png')
 		sleep(5) //just seeing if this fixes the bug where Width()/Height() fails sometimes
 		var
 			w = i2.Width()

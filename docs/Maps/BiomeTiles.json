@@ -1,0 +1,786 @@
+{
+  "version": 1,
+  "evidence": "Classificacao semantica baseada no codigo e nomes/estados dos assets; nao representa aprovacao visual.",
+  "rules": {
+    "geography": "Definir primeiro regiao/umidade/temperatura/altitude; selecionar tiles depois. Nunca usar luminosidade para decidir neve.",
+    "spawn": "Excluir obstacles/constructed/fictional e density=1. density=inherited exige verificacao no runtime.",
+    "transitions": "Compartilhar edge_icon/cliff_type quando possivel; a igualdade nao garante compatibilidade visual.",
+    "mosaics": "Tiles com mosaico usam icon_state calculado por coordenada; misturar tipos por pixel pode cortar a textura.",
+    "unsupported": "Savana, pantano e rocha transitavel nao tem paleta aprovada neste catalogo. Nao adivinhar uma substituicao."
+  },
+  "recipes": {
+    "desert": [
+      "Ground14",
+      "Ground4",
+      "Ground10"
+    ],
+    "beach": [
+      "Ground14",
+      "GroundPebbles"
+    ],
+    "temperate_grassland": [
+      "Grass5",
+      "Grass13"
+    ],
+    "tropical_forest": [
+      "Grass12"
+    ],
+    "soil": [
+      "GroundDirt",
+      "Ground12",
+      "Ground18"
+    ],
+    "dry_transition": [
+      "Grass8",
+      "GroundDirtSand"
+    ],
+    "polar": [
+      "GroundSnow",
+      "GroundIce",
+      "GroundIce2",
+      "GroundIce3"
+    ],
+    "alpine_snow": [
+      "SnowAndRocks",
+      "GroundSnow"
+    ],
+    "water": [
+      "Water2",
+      "Water6"
+    ]
+  },
+  "tiles": [
+    {
+      "type": "/turf/Ground14",
+      "biomes": [
+        "desert",
+        "beach"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Areia/deserto confirmado pelo asset ou icon_state; tonalidades ainda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigSandTurf.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        4,
+        4
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges4.dmi",
+      "cliffType": "/turf/Wall18"
+    },
+    {
+      "type": "/turf/Ground4",
+      "biomes": [
+        "desert",
+        "beach"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Areia/deserto confirmado pelo asset ou icon_state; tonalidades ainda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs12.dmi",
+      "iconState": "desert",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground10",
+      "biomes": [
+        "desert",
+        "beach"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Areia/deserto confirmado pelo asset ou icon_state; tonalidades ainda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turf1.dmi",
+      "iconState": "light desert",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/GroundPebbles",
+      "biomes": [
+        "beach",
+        "desert"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Apesar do nome, icon_state = Sand; nao classificar como montanha/pedregulho.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs7.dmi",
+      "iconState": "Sand",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges4.dmi",
+      "cliffType": "/turf/Wall18"
+    },
+    {
+      "type": "/turf/GroundDirtSand",
+      "biomes": [
+        "dry_transition"
+      ],
+      "role": "transition",
+      "status": "candidate",
+      "notes": "Candidato terra/areia; verificar textura Turfs96:dirt antes de usar como borda.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "dirt",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/GroundSandDark",
+      "biomes": [
+        "desert"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Deserto escuro; densidade 0 explicita e auto_edge desativado.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turf1.dmi",
+      "iconState": "dark desert",
+      "density": 0,
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/GroundDirt",
+      "biomes": [
+        "soil",
+        "dry_transition"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Terra exposta; nao equivale automaticamente a areia de praia.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigDirtTurfs.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        4,
+        4
+      ],
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground12",
+      "biomes": [
+        "soil",
+        "dry_transition"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Terra exposta; nao equivale automaticamente a areia de praia.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "dirt",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground18",
+      "biomes": [
+        "soil",
+        "dry_transition"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Terra exposta; nao equivale automaticamente a areia de praia.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigDirtTurf2.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        4,
+        4
+      ],
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass5",
+      "biomes": [
+        "temperate_grassland"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Assets BigGrass/BigGrassTurf2; usam mosaicos e overlays em New().",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigGrass.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        4,
+        4
+      ],
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass13",
+      "biomes": [
+        "temperate_grassland"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Assets BigGrass/BigGrassTurf2; usam mosaicos e overlays em New().",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigGrassTurf2.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        3,
+        3
+      ],
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass8",
+      "biomes": [
+        "temperate_grassland",
+        "dry_transition"
+      ],
+      "role": "transition",
+      "status": "code_supported",
+      "notes": "Asset BigGrassAndDirtTurf: mistura grama/terra, nao grama uniforme.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigGrassAndDirtTurf.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass12",
+      "biomes": [
+        "tropical_forest"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "JungleGrassTile: solo de selva.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/JungleGrassTile.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges4.dmi",
+      "cliffType": "/turf/Wall18"
+    },
+    {
+      "type": "/turf/Grass1",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs12.dmi",
+      "iconState": "grass2",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass2",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy5.dmi",
+      "iconState": "grass",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass3",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "grass b",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass4",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "grass c",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass7",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "grass",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass9",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "grass d",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass10",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "Grass!",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass11",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "Grass 50",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Grass14",
+      "biomes": [
+        "grass_variant_review"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Gramas legadas; cor, saturacao e compatibilidade de borda precisam de revisao visual.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "grass a",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/GroundSnow",
+      "biomes": [
+        "polar",
+        "alpine_snow"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Neve; exige mascara fria/altitude explicita. Brilho da imagem nunca autoriza neve.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigSnowTurf.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": true,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges5.dmi",
+      "cliffType": "/turf/Wall19"
+    },
+    {
+      "type": "/turf/GroundIce",
+      "biomes": [
+        "polar",
+        "alpine_snow"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Gelo; exige regiao fria explicita, nao usar como pedra clara.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigIceTurf3.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": true,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges5.dmi",
+      "cliffType": "/turf/Wall19"
+    },
+    {
+      "type": "/turf/GroundIce2",
+      "biomes": [
+        "polar",
+        "alpine_snow"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Gelo; exige regiao fria explicita, nao usar como pedra clara.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigIceTurf2.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": true,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges5.dmi",
+      "cliffType": "/turf/Wall19"
+    },
+    {
+      "type": "/turf/GroundIce3",
+      "biomes": [
+        "polar",
+        "alpine_snow"
+      ],
+      "role": "ground",
+      "status": "code_supported",
+      "notes": "Gelo; exige regiao fria explicita, nao usar como pedra clara.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigIceTurf.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": true,
+      "mosaic": [
+        4,
+        4
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges5.dmi",
+      "cliffType": "/turf/Wall19"
+    },
+    {
+      "type": "/turf/SnowAndRocks",
+      "biomes": [
+        "alpine_snow"
+      ],
+      "role": "transition",
+      "status": "code_supported",
+      "notes": "Mistura neve/rocha; so em borda fria autorizada, nao em montanha tropical generica.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/LargeTurfIcons/BigSnowAndRockTurf.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": true,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges5.dmi",
+      "cliffType": "/turf/Wall19"
+    },
+    {
+      "type": "/turf/Ground13",
+      "biomes": [
+        "rock_barrier"
+      ],
+      "role": "obstacle",
+      "status": "code_supported",
+      "notes": "Densidade 1: obstaculo, nunca piso de spawn/chegada.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "rock",
+      "density": 1,
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground11",
+      "biomes": [
+        "rock_barrier"
+      ],
+      "role": "obstacle",
+      "status": "code_supported",
+      "notes": "Densidade 1: obstaculo, nunca piso de spawn/chegada.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "crack",
+      "density": 1,
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground_Wasteland",
+      "biomes": [
+        "wasteland"
+      ],
+      "role": "ground",
+      "status": "candidate",
+      "notes": "Ambiente degradado/seco; nao substitui automaticamente savana ou Saara.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/WastelandGround.dmi",
+      "iconState": null,
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground3",
+      "biomes": [
+        "fictional"
+      ],
+      "role": "ground",
+      "status": "excluded",
+      "notes": "Assets Vegeta/Hell/Namek: fora da paleta terrestre por padrao.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/VegetaTurf2016.dmi",
+      "iconState": "1",
+      "density": 0,
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges4.dmi",
+      "cliffType": "/turf/Wall18"
+    },
+    {
+      "type": "/turf/Ground17",
+      "biomes": [
+        "fictional"
+      ],
+      "role": "ground",
+      "status": "excluded",
+      "notes": "Assets Vegeta/Hell/Namek: fora da paleta terrestre por padrao.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Unsorted/HellGround2017.dmi",
+      "iconState": "0,0",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": [
+        6,
+        6
+      ],
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges3.dmi",
+      "cliffType": "/turf/Wall17"
+    },
+    {
+      "type": "/turf/GroundHell",
+      "biomes": [
+        "fictional"
+      ],
+      "role": "ground",
+      "status": "excluded",
+      "notes": "Assets Vegeta/Hell/Namek: fora da paleta terrestre por padrao.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turf57.dmi",
+      "iconState": "hellturf1",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/GrassSluggo",
+      "biomes": [
+        "fictional"
+      ],
+      "role": "ground",
+      "status": "excluded",
+      "notes": "Assets Vegeta/Hell/Namek: fora da paleta terrestre por padrao.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Unsorted/NamekTiles.dmi",
+      "iconState": "A 1",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": "src/Icons/Turfs/Edges/Edges2.dmi",
+      "cliffType": "/turf/Wall16"
+    },
+    {
+      "type": "/turf/Ground16",
+      "biomes": [
+        "urban"
+      ],
+      "role": "constructed",
+      "status": "excluded",
+      "notes": "Flagstone/darktile; pavimentacao, nao bioma natural.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/FloorsLAWL.dmi",
+      "iconState": "Flagstone",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Ground19",
+      "biomes": [
+        "urban"
+      ],
+      "role": "constructed",
+      "status": "excluded",
+      "notes": "Flagstone/darktile; pavimentacao, nao bioma natural.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "darktile",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Water2",
+      "biomes": [
+        "water"
+      ],
+      "role": "water",
+      "status": "code_supported",
+      "notes": "Agua confirmada pelo tipo/asset; profundo, raso e agua doce exigem revisao visual e de movimento.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/Turfs96.dmi",
+      "iconState": "stillwater",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    },
+    {
+      "type": "/turf/Water6",
+      "biomes": [
+        "water"
+      ],
+      "role": "water",
+      "status": "code_supported",
+      "notes": "Agua confirmada pelo tipo/asset; profundo, raso e agua doce exigem revisao visual e de movimento.",
+      "source": "src/Code/CoreFunctions/Map.dm",
+      "icon": "src/Icons/Turfs/TurfsLegacy1.dmi",
+      "iconState": "water",
+      "density": "inherited",
+      "visualReview": "pending",
+      "requiresColdRegion": false,
+      "mosaic": null,
+      "edgeIcon": null,
+      "cliffType": null
+    }
+  ]
+}

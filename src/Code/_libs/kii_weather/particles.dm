@@ -11,7 +11,7 @@ particles
 
 
 	snow
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= list("snow1"=5, "snow2"=6, "snow3"=5)
 
 
@@ -34,7 +34,7 @@ particles
 
 
 	rain
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= list("rain1"=5, "rain2"=6, "rain3"=5)
 
 
@@ -58,7 +58,7 @@ particles
 
 
 	storm
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= list("rain1"=5, "rain2"=6, "rain3"=5)
 
 
@@ -78,7 +78,7 @@ particles
 
 
 	raindrop
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= "rainland"
 
 
@@ -96,7 +96,7 @@ particles
 
 
 	leaves
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= list("leaf1"=5, "leaf2"=6, "leaf3"=5)
 
 
@@ -119,7 +119,7 @@ particles
 
 
 	blizzard
-		icon		= 'weather.dmi'
+		icon		= 'src/Icons/Effects/Weather/Weather.dmi'
 		icon_state	= list("snow1"=5, "snow2"=6, "snow3"=5)
 
 

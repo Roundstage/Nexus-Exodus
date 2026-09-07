@@ -36,36 +36,36 @@ obj
 		Givable=0
 
 		Stereo
-			icon='Stereo.dmi'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/Stereo.dmi'
 			density=1
 
 		Planet_Braal_Fitness_Poster_1
-			icon='SexyFreeza.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/SexyFreeza.png'
 			desc="Lord Freeza displaying his astonishing sexyness"
 		Planet_Braal_Fitness_Poster_2
-			icon='CosplayFailGroup.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/CosplayFailGroup.png'
 			desc="ACCURATE PORTRAYAL OF THOSE STUPID FUCKING EARTHLINGS WHO ARE ALWAYS RUINING MY PLANS"
 		Planet_Braal_Fitness_Poster_3
-			icon='FreezaOneyNG.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/FreezaOneyNG.png'
 			desc="Uhh"
 		Planet_Braal_Fitness_Poster_4
-			icon='FreezaCosplayFail.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/FreezaCosplayFail.png'
 			desc="Me at my ONE-HUNDRED-PERCENT MAXIMUM POWER. Ahahahaha!"
 		Lord_Freezas_Monkey_Death_Trap_Emporium
-			icon='LordFreezasMonkeyDeathTrapEmporium.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/LordFreezasMonkeyDeathTrapEmporium.png'
 			desc="Totally not a death trap to kill filthy monkey scum. COME ON IN!"
 		Planet_Braal_Fitness_Logo
-			icon='PlanetVegetaFitnessLogo.png'
+			icon='src/Icons/Turfs/PlanetVegetaFitness/PlanetVegetaFitnessLogo.png'
 
 		Lord_Freeza_Death_Ball_Graphic
-			icon='BallSupernova.dmi'
+			icon='src/Icons/Ki/Big/BallSupernova.dmi'
 			New()
 				CenterIcon(src)
 				. = ..()
 
 		Lord_Freeza
 			//icon='FreezaIcon.dmi'
-			icon = 'GoldIcer.dmi'
+			icon = 'src/Icons/PlayerIcons/BaseIcons/GoldIcer.dmi'
 			density=1
 			dir=SOUTH
 			var/last_nuke=0

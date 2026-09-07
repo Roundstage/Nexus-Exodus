@@ -6,14 +6,14 @@ mob/var/Tail_Icon
 
 mob/proc/Tail_Add() if(Race in list("Saiyan","Half Saiyan"))
 	src<<"Your tail grew back!"
-	if(!Tail_Icon) Tail_Icon='Tail.dmi'+rgb(40,0,0)
+	if(!Tail_Icon) Tail_Icon='src/Icons/Effects/Tail.dmi'+rgb(40,0,0)
 	overlays-=Tail_Icon
 	overlays+=Tail_Icon
 	Tail=1
 
 mob/proc/Tail_Remove()
 	Tail=0
-	if(!Tail_Icon) Tail_Icon='Tail.dmi'+rgb(40,0,0)
+	if(!Tail_Icon) Tail_Icon='src/Icons/Effects/Tail.dmi'+rgb(40,0,0)
 	overlays-=Tail_Icon
 	Great_Ape_revert()
 
@@ -94,8 +94,8 @@ mob/proc/Great_Ape(Golden=0) if(!cyber_bp&&!has_modules()&&!IsGreatApe()&&Tail&&
 	spawn(rand(1,100)) for(var/mob/A in player_view(20,src))
 		var/sound/S=sound('Roar.wav')
 		A<<S
-	if(Golden) icon='GoldOozaruHayate.dmi'
-	else icon='OozaruHayate.dmi'
+	if(Golden) icon='src/Icons/Unsorted/GoldOozaruHayate.dmi'
+	else icon='src/Icons/Unsorted/OozaruHayate.dmi'
 	CenterIcon(src)
 	setNexusCombatHitboxSource("great_ape", 60, 72)
 

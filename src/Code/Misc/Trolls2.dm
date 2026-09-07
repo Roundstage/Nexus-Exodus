@@ -122,10 +122,10 @@ mob/new_troll
 				if(isobj(Icon)) B.icon=Icon.icon
 				B.icon+=rgb(rand(0,255),rand(0,255),rand(0,255))
 				TextColor = GetRandomTextColor()
-				var/icons = list('BaseHumanPale.dmi','BaseHumanTan.dmi','BaseHumanDark.dmi','NewPaleFemale.dmi','NewTanFemale.dmi',\
-				'NewBlackFemale.dmi','RaceGinyu.dmi','RaceKui.dmi')
+				var/icons = list('src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi','src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi','src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi',\
+				'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi','src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi','src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi')
 				icon = pick(icons)
-				if(!(icon in list('RaceGinyu.dmi','RaceKui.dmi')))
+				if(!(icon in list('src/Icons/PlayerIcons/BaseIcons/RaceGinyu.dmi','src/Icons/PlayerIcons/BaseIcons/RaceKui.dmi')))
 					var/obj/O=pick(Hairs)
 					if(isobj(O)) overlays+=O.icon
 
@@ -193,7 +193,7 @@ mob/new_troll
 			if(!beam)
 				beam=new/obj/Attacks/Beam(src)
 				beam.WaveMult*=1
-				beam.icon='BeamStaticBeam.dmi'
+				beam.icon='src/Icons/Ki/Beams/BeamStaticBeam.dmi'
 				beam.icon += rgb(rand(0,255),rand(0,255),rand(0,255))
 
 			troll_actions()
@@ -601,7 +601,7 @@ mob/new_troll
 				return
 			for(var/atom/movable/m in t) return
 			player_view(10,src) << sound('Teleport.ogg',volume=15)
-			flick('Zanzoken.dmi',src)
+			flick('src/Icons/Effects/Zanzoken.dmi',src)
 			AfterImage()
 			SafeTeleport(t)
 			return 1

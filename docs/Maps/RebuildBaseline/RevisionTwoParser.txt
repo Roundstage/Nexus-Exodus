@@ -1,0 +1,4 @@
+PASS A1: one 100x100 map, environment parse and asset resolution
+PASS C3: one 100x100 map, environment parse and asset resolution
+PASS D3: one 100x100 map, environment parse and asset resolution
+PASS DU.dme unchanged; no editor or game client was opened.

@@ -1,0 +1,1168 @@
+{
+  "phase": 3,
+  "styleApproved": "2026-09-06: Está bom, pode continuar.",
+  "points": [
+    {
+      "name": "Imperial audience hall",
+      "x": 250,
+      "y": 367
+    },
+    {
+      "name": "Western imperial office",
+      "x": 229,
+      "y": 332
+    },
+    {
+      "name": "Eastern imperial office",
+      "x": 270,
+      "y": 332
+    },
+    {
+      "name": "Memorial court",
+      "x": 250,
+      "y": 330
+    },
+    {
+      "name": "West residence",
+      "x": 129,
+      "y": 370
+    },
+    {
+      "name": "East residence",
+      "x": 170,
+      "y": 367
+    },
+    {
+      "name": "Terrace clinic",
+      "x": 130,
+      "y": 330
+    },
+    {
+      "name": "Communal dining hall",
+      "x": 169,
+      "y": 330
+    },
+    {
+      "name": "Terrace garden",
+      "x": 149,
+      "y": 350
+    },
+    {
+      "name": "Research hall",
+      "x": 331,
+      "y": 370
+    },
+    {
+      "name": "Medical laboratory",
+      "x": 370,
+      "y": 368
+    },
+    {
+      "name": "Scientific archive",
+      "x": 350,
+      "y": 329
+    },
+    {
+      "name": "Research quadrangle",
+      "x": 350,
+      "y": 350
+    },
+    {
+      "name": "Grand training floor",
+      "x": 50,
+      "y": 250
+    },
+    {
+      "name": "Training equipment pavilion",
+      "x": 49,
+      "y": 289
+    },
+    {
+      "name": "Civic exchange gallery",
+      "x": 150,
+      "y": 283
+    },
+    {
+      "name": "Equipment market",
+      "x": 126,
+      "y": 242
+    },
+    {
+      "name": "Food market",
+      "x": 174,
+      "y": 242
+    },
+    {
+      "name": "Civic agora",
+      "x": 150,
+      "y": 250
+    },
+    {
+      "name": "War college arena",
+      "x": 350,
+      "y": 245
+    },
+    {
+      "name": "War college lecture hall",
+      "x": 330,
+      "y": 289
+    },
+    {
+      "name": "War college barracks",
+      "x": 370,
+      "y": 289
+    },
+    {
+      "name": "Western energy generator",
+      "x": 430,
+      "y": 269
+    },
+    {
+      "name": "Eastern energy generator",
+      "x": 469,
+      "y": 269
+    },
+    {
+      "name": "Planetary grid control",
+      "x": 450,
+      "y": 231
+    },
+    {
+      "name": "Energy service court",
+      "x": 450,
+      "y": 250
+    },
+    {
+      "name": "Western transit hangar",
+      "x": 130,
+      "y": 162
+    },
+    {
+      "name": "Eastern transit hangar",
+      "x": 170,
+      "y": 158
+    },
+    {
+      "name": "Shipyard maintenance",
+      "x": 129,
+      "y": 126
+    },
+    {
+      "name": "Freight apron",
+      "x": 150,
+      "y": 150
+    },
+    {
+      "name": "Precision fabrication",
+      "x": 330,
+      "y": 167
+    },
+    {
+      "name": "Repair facility",
+      "x": 370,
+      "y": 165
+    },
+    {
+      "name": "Freight warehouse",
+      "x": 350,
+      "y": 128
+    },
+    {
+      "name": "Repair court",
+      "x": 350,
+      "y": 145
+    }
+  ],
+  "publicRooms": [
+    [
+      230,
+      352,
+      270,
+      382
+    ],
+    [
+      220,
+      323,
+      239,
+      341
+    ],
+    [
+      261,
+      323,
+      280,
+      341
+    ],
+    [
+      120,
+      361,
+      139,
+      379
+    ],
+    [
+      160,
+      356,
+      180,
+      379
+    ],
+    [
+      121,
+      322,
+      139,
+      339
+    ],
+    [
+      159,
+      322,
+      180,
+      339
+    ],
+    [
+      320,
+      360,
+      342,
+      380
+    ],
+    [
+      360,
+      356,
+      380,
+      380
+    ],
+    [
+      324,
+      320,
+      376,
+      338
+    ],
+    [
+      26,
+      283,
+      73,
+      296
+    ],
+    [
+      120,
+      274,
+      180,
+      292
+    ],
+    [
+      121,
+      224,
+      131,
+      260
+    ],
+    [
+      169,
+      224,
+      180,
+      260
+    ],
+    [
+      319,
+      283,
+      341,
+      295
+    ],
+    [
+      360,
+      283,
+      381,
+      295
+    ],
+    [
+      421,
+      259,
+      440,
+      280
+    ],
+    [
+      460,
+      259,
+      479,
+      280
+    ],
+    [
+      426,
+      223,
+      474,
+      240
+    ],
+    [
+      121,
+      146,
+      139,
+      178
+    ],
+    [
+      161,
+      139,
+      180,
+      178
+    ],
+    [
+      121,
+      119,
+      138,
+      134
+    ],
+    [
+      321,
+      154,
+      340,
+      180
+    ],
+    [
+      360,
+      150,
+      380,
+      180
+    ],
+    [
+      326,
+      120,
+      374,
+      137
+    ]
+  ],
+  "buildings": [
+    {
+      "name": "Imperial audience hall",
+      "bounds": [
+        229,
+        351,
+        271,
+        383
+      ],
+      "entrances": [
+        [
+          250,
+          351
+        ],
+        [
+          250,
+          383
+        ],
+        [
+          229,
+          367
+        ],
+        [
+          271,
+          367
+        ]
+      ]
+    },
+    {
+      "name": "Western imperial office",
+      "bounds": [
+        219,
+        322,
+        240,
+        342
+      ],
+      "entrances": [
+        [
+          229,
+          322
+        ],
+        [
+          229,
+          342
+        ],
+        [
+          219,
+          332
+        ],
+        [
+          240,
+          332
+        ]
+      ]
+    },
+    {
+      "name": "Eastern imperial office",
+      "bounds": [
+        260,
+        322,
+        281,
+        342
+      ],
+      "entrances": [
+        [
+          270,
+          322
+        ],
+        [
+          270,
+          342
+        ],
+        [
+          260,
+          332
+        ],
+        [
+          281,
+          332
+        ]
+      ]
+    },
+    {
+      "name": "West residence",
+      "bounds": [
+        119,
+        360,
+        140,
+        380
+      ],
+      "entrances": [
+        [
+          129,
+          360
+        ],
+        [
+          129,
+          380
+        ],
+        [
+          119,
+          370
+        ],
+        [
+          140,
+          370
+        ]
+      ]
+    },
+    {
+      "name": "East residence",
+      "bounds": [
+        159,
+        355,
+        181,
+        380
+      ],
+      "entrances": [
+        [
+          170,
+          355
+        ],
+        [
+          170,
+          380
+        ],
+        [
+          159,
+          367
+        ],
+        [
+          181,
+          367
+        ]
+      ]
+    },
+    {
+      "name": "Terrace clinic",
+      "bounds": [
+        120,
+        321,
+        140,
+        340
+      ],
+      "entrances": [
+        [
+          130,
+          321
+        ],
+        [
+          130,
+          340
+        ],
+        [
+          120,
+          330
+        ],
+        [
+          140,
+          330
+        ]
+      ]
+    },
+    {
+      "name": "Communal dining hall",
+      "bounds": [
+        158,
+        321,
+        181,
+        340
+      ],
+      "entrances": [
+        [
+          169,
+          321
+        ],
+        [
+          169,
+          340
+        ],
+        [
+          158,
+          330
+        ],
+        [
+          181,
+          330
+        ]
+      ]
+    },
+    {
+      "name": "Research hall",
+      "bounds": [
+        319,
+        359,
+        343,
+        381
+      ],
+      "entrances": [
+        [
+          331,
+          359
+        ],
+        [
+          331,
+          381
+        ],
+        [
+          319,
+          370
+        ],
+        [
+          343,
+          370
+        ]
+      ]
+    },
+    {
+      "name": "Medical laboratory",
+      "bounds": [
+        359,
+        355,
+        381,
+        381
+      ],
+      "entrances": [
+        [
+          370,
+          355
+        ],
+        [
+          370,
+          381
+        ],
+        [
+          359,
+          368
+        ],
+        [
+          381,
+          368
+        ]
+      ]
+    },
+    {
+      "name": "Scientific archive",
+      "bounds": [
+        323,
+        319,
+        377,
+        339
+      ],
+      "entrances": [
+        [
+          350,
+          319
+        ],
+        [
+          350,
+          339
+        ],
+        [
+          323,
+          329
+        ],
+        [
+          377,
+          329
+        ]
+      ]
+    },
+    {
+      "name": "Training equipment pavilion",
+      "bounds": [
+        25,
+        282,
+        74,
+        297
+      ],
+      "entrances": [
+        [
+          49,
+          282
+        ],
+        [
+          49,
+          297
+        ],
+        [
+          25,
+          289
+        ],
+        [
+          74,
+          289
+        ]
+      ]
+    },
+    {
+      "name": "Civic exchange gallery",
+      "bounds": [
+        119,
+        273,
+        181,
+        293
+      ],
+      "entrances": [
+        [
+          150,
+          273
+        ],
+        [
+          150,
+          293
+        ],
+        [
+          119,
+          283
+        ],
+        [
+          181,
+          283
+        ]
+      ]
+    },
+    {
+      "name": "Equipment market",
+      "bounds": [
+        120,
+        223,
+        132,
+        261
+      ],
+      "entrances": [
+        [
+          126,
+          223
+        ],
+        [
+          126,
+          261
+        ],
+        [
+          120,
+          242
+        ],
+        [
+          132,
+          242
+        ]
+      ]
+    },
+    {
+      "name": "Food market",
+      "bounds": [
+        168,
+        223,
+        181,
+        261
+      ],
+      "entrances": [
+        [
+          174,
+          223
+        ],
+        [
+          174,
+          261
+        ],
+        [
+          168,
+          242
+        ],
+        [
+          181,
+          242
+        ]
+      ]
+    },
+    {
+      "name": "War college lecture hall",
+      "bounds": [
+        318,
+        282,
+        342,
+        296
+      ],
+      "entrances": [
+        [
+          330,
+          282
+        ],
+        [
+          330,
+          296
+        ],
+        [
+          318,
+          289
+        ],
+        [
+          342,
+          289
+        ]
+      ]
+    },
+    {
+      "name": "War college barracks",
+      "bounds": [
+        359,
+        282,
+        382,
+        296
+      ],
+      "entrances": [
+        [
+          370,
+          282
+        ],
+        [
+          370,
+          296
+        ],
+        [
+          359,
+          289
+        ],
+        [
+          382,
+          289
+        ]
+      ]
+    },
+    {
+      "name": "Western energy generator",
+      "bounds": [
+        420,
+        258,
+        441,
+        281
+      ],
+      "entrances": [
+        [
+          430,
+          258
+        ],
+        [
+          430,
+          281
+        ],
+        [
+          420,
+          269
+        ],
+        [
+          441,
+          269
+        ]
+      ]
+    },
+    {
+      "name": "Eastern energy generator",
+      "bounds": [
+        459,
+        258,
+        480,
+        281
+      ],
+      "entrances": [
+        [
+          469,
+          258
+        ],
+        [
+          469,
+          281
+        ],
+        [
+          459,
+          269
+        ],
+        [
+          480,
+          269
+        ]
+      ]
+    },
+    {
+      "name": "Planetary grid control",
+      "bounds": [
+        425,
+        222,
+        475,
+        241
+      ],
+      "entrances": [
+        [
+          450,
+          222
+        ],
+        [
+          450,
+          241
+        ],
+        [
+          425,
+          231
+        ],
+        [
+          475,
+          231
+        ]
+      ]
+    },
+    {
+      "name": "Western transit hangar",
+      "bounds": [
+        120,
+        145,
+        140,
+        179
+      ],
+      "entrances": [
+        [
+          130,
+          145
+        ],
+        [
+          130,
+          179
+        ],
+        [
+          120,
+          162
+        ],
+        [
+          140,
+          162
+        ]
+      ]
+    },
+    {
+      "name": "Eastern transit hangar",
+      "bounds": [
+        160,
+        138,
+        181,
+        179
+      ],
+      "entrances": [
+        [
+          170,
+          138
+        ],
+        [
+          170,
+          179
+        ],
+        [
+          160,
+          158
+        ],
+        [
+          181,
+          158
+        ]
+      ]
+    },
+    {
+      "name": "Shipyard maintenance",
+      "bounds": [
+        120,
+        118,
+        139,
+        135
+      ],
+      "entrances": [
+        [
+          129,
+          118
+        ],
+        [
+          129,
+          135
+        ],
+        [
+          120,
+          126
+        ],
+        [
+          139,
+          126
+        ]
+      ]
+    },
+    {
+      "name": "Precision fabrication",
+      "bounds": [
+        320,
+        153,
+        341,
+        181
+      ],
+      "entrances": [
+        [
+          330,
+          153
+        ],
+        [
+          330,
+          181
+        ],
+        [
+          320,
+          167
+        ],
+        [
+          341,
+          167
+        ]
+      ]
+    },
+    {
+      "name": "Repair facility",
+      "bounds": [
+        359,
+        149,
+        381,
+        181
+      ],
+      "entrances": [
+        [
+          370,
+          149
+        ],
+        [
+          370,
+          181
+        ],
+        [
+          359,
+          165
+        ],
+        [
+          381,
+          165
+        ]
+      ]
+    },
+    {
+      "name": "Freight warehouse",
+      "bounds": [
+        325,
+        119,
+        375,
+        138
+      ],
+      "entrances": [
+        [
+          350,
+          119
+        ],
+        [
+          350,
+          138
+        ],
+        [
+          325,
+          128
+        ],
+        [
+          375,
+          128
+        ]
+      ]
+    }
+  ],
+  "combatSpaces": [
+    {
+      "name": "Grand training floor",
+      "bounds": [
+        25,
+        225,
+        74,
+        274
+      ],
+      "minimum": 48
+    },
+    {
+      "name": "Civic agora",
+      "bounds": [
+        136,
+        236,
+        164,
+        264
+      ],
+      "minimum": 28
+    },
+    {
+      "name": "War college arena",
+      "bounds": [
+        326,
+        221,
+        373,
+        268
+      ],
+      "minimum": 48,
+      "exits": [
+        [
+          350,
+          214
+        ],
+        [
+          350,
+          276
+        ],
+        [
+          316,
+          245
+        ],
+        [
+          384,
+          245
+        ]
+      ]
+    }
+  ],
+  "districts": [
+    {
+      "chunk": "B2",
+      "name": "Residential terraces",
+      "bounds": [
+        101,
+        301,
+        200,
+        400
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "B3",
+      "name": "Imperial palace precinct",
+      "bounds": [
+        201,
+        301,
+        300,
+        400
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "B4",
+      "name": "Science enclave",
+      "bounds": [
+        301,
+        301,
+        400,
+        400
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "C1",
+      "name": "Grand training grounds",
+      "bounds": [
+        1,
+        201,
+        100,
+        300
+      ],
+      "densityLimit": 0.2
+    },
+    {
+      "chunk": "C2",
+      "name": "Civic market",
+      "bounds": [
+        101,
+        201,
+        200,
+        300
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "C4",
+      "name": "War college and arena",
+      "bounds": [
+        301,
+        201,
+        400,
+        300
+      ],
+      "densityLimit": 0.2
+    },
+    {
+      "chunk": "C5",
+      "name": "Planetary energy works",
+      "bounds": [
+        401,
+        201,
+        500,
+        300
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "D2",
+      "name": "Shipyard approach",
+      "bounds": [
+        101,
+        101,
+        200,
+        200
+      ],
+      "densityLimit": 0.3
+    },
+    {
+      "chunk": "D4",
+      "name": "Fabrication district",
+      "bounds": [
+        301,
+        101,
+        400,
+        200
+      ],
+      "densityLimit": 0.3
+    }
+  ],
+  "changedChunks": [
+    "ViltrumB2.dmm",
+    "ViltrumB3.dmm",
+    "ViltrumB4.dmm",
+    "ViltrumC1.dmm",
+    "ViltrumC2.dmm",
+    "ViltrumC4.dmm",
+    "ViltrumC5.dmm",
+    "ViltrumD2.dmm",
+    "ViltrumD4.dmm"
+  ],
+  "review": "Script and headless checks; interactive review deferred by user."
+}

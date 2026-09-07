@@ -1,0 +1,8 @@
+{
+  "origin": "OpenAI built-in image_gen, original Viltrum civic kit",
+  "generatedOriginal": "ViltrumGeneratedKit.png",
+  "sha256": "d814dd81344d4c4af8a853cc37135c65b8a0f61c83e6b838bc78e6cee35d76f8",
+  "normalization": "4x4 equal cells cropped and nearest-neighbor resized to opaque 32x32. Closed-door concept omitted until complete animation and logic exist. Aseprite sheets are editable raster sources.",
+  "reference": "User-supplied Imagem do Codex 6 de set. de 2026, 12_28_11.jpg; palette and mood only.",
+  "states": "ViltrumExport.json"
+}

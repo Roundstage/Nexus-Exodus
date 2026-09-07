@@ -1,0 +1,76 @@
+{
+  "origin": "Original built-in OpenAI image_gen atlas; transparent source retained.",
+  "sourceHashes": {
+    "ArtSource/Earth/EarthNeighborhoodProps.aseprite": "b89dbce99696d29e97ad9b0e97d639d119b4901c4ee5ee5738102a1aa3181982"
+  },
+  "states": [
+    {
+      "state": "tree",
+      "cellSize": [
+        64,
+        96
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodProps.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodProps.aseprite",
+      "sourceCell": 0,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "bench",
+      "cellSize": [
+        64,
+        96
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodProps.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodProps.aseprite",
+      "sourceCell": 1,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "lamp",
+      "cellSize": [
+        64,
+        96
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodProps.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodProps.aseprite",
+      "sourceCell": 2,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    },
+    {
+      "state": "car",
+      "cellSize": [
+        64,
+        96
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "dmi": "src/Icons/Turfs/Earth/EarthNeighborhoodProps.dmi",
+      "source": "ArtSource/Earth/EarthNeighborhoodProps.aseprite",
+      "sourceCell": 3,
+      "dirs": 1,
+      "frames": 1,
+      "transparent": true
+    }
+  ]
+}

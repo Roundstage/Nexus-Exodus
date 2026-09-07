@@ -935,7 +935,7 @@ mob/proc/Nanite_repair_loop()
 	set waitfor=0
 	if(nanite_repair_looping) return
 	nanite_repair_looping=1
-	overlays-='NaniteRepair.dmi'
+	overlays-='src/Icons/Effects/NaniteRepair.dmi'
 	var/nanite_overlays
 	while(Nanite_Repair)
 		if(!KO && kikoho_damage <= 0 && Health<50 && (current_area && !istype(current_area,/area/Braal_Core)))
@@ -957,14 +957,14 @@ mob/proc/Nanite_repair_loop()
 				if(Health>100) Health=100
 				Ki-=Drain
 			if(!nanite_overlays)
-				overlays+='NaniteRepair.dmi'
+				overlays+='src/Icons/Effects/NaniteRepair.dmi'
 				nanite_overlays=1
 		else if(nanite_overlays && Health>=60)
-			overlays-='NaniteRepair.dmi'
+			overlays-='src/Icons/Effects/NaniteRepair.dmi'
 			nanite_overlays=0
 		sleep(10)
 	nanite_repair_looping=0
-	overlays-='NaniteRepair.dmi'
+	overlays-='src/Icons/Effects/NaniteRepair.dmi'
 
 mob/proc/Regen_Active() if((Regeneration_Skill&&Health<100)||(Nanite_Repair&&Health<50)) return 1
 
@@ -1028,6 +1028,7 @@ mob/proc
 		return 1
 
 	Can_recover_ki(ki_limit=1.#INF)
+		if(destruction_aura_active) return
 
 		if(Race=="Makyo" && Makyo_Star && Ki<ki_limit && !KO && !Regen_Active() && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
@@ -1209,7 +1210,7 @@ mob/proc/death_regen(set_loc=1)
 			var/old_icon=icon
 			var/list/old_overlays=new
 			old_overlays.Add(overlays)
-			icon='DeathRegenerate.dmi'
+			icon='src/Icons/Unsorted/DeathRegenerate.dmi'
 			overlays.Remove(overlays)
 			KO(allow_anger=0)
 			sleep(TickMult(80/Regenerate**0.5))
@@ -1391,7 +1392,7 @@ mob/proc/PowerupKnockbackEffect(mob/m)
 	kb_dist=ToOne(kb_dist)
 	if(kb_dist)
 		var/turf/t=m.loc
-		if(t&&isturf(t)) t.TempTurfOverlay('SparksLSSj.dmi',30)
+		if(t&&isturf(t)) t.TempTurfOverlay('src/Icons/Ki/Electricity/SparksLSSj.dmi',30)
 		player_view(center=src)<<sound('Scouterexplode.ogg',volume=20)
 		Explosion_Graphics(m,1)
 		m.Knockback(src, kb_dist, dirt_trail = 0, bypass_immunity = 1)

@@ -138,7 +138,7 @@ mob/proc/Race_can_have_rank(rank)
 mob/proc/give_hbtc_key()
 	var/obj/items/Door_Pass/D = new
 	D.name="Time Chamber Key"
-	D.icon='Key.dmi'
+	D.icon='src/Icons/Objects/Items/Key.dmi'
 	D.Password=7125
 	D.Cost=4000000*Resource_Multiplier
 	D.can_blueprint=0

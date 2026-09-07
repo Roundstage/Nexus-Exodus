@@ -1,0 +1,557 @@
+{
+  "phase": 4,
+  "publicBuildings": 1,
+  "requiredDestinations": 54,
+  "reachableTiles": 189016,
+  "allPublicFloorTilesReachable": true,
+  "eachPublicDoorwayCanBeBlockedWithoutIsolatingBuilding": true,
+  "recoveredManualTilesPreserved": 2152,
+  "stormBoundaryTiles": 15744,
+  "combatSpaces": [
+    {
+      "name": "Grand training floor",
+      "bounds": [
+        25,
+        225,
+        74,
+        274
+      ],
+      "minimum": 48
+    },
+    {
+      "name": "Civic agora",
+      "bounds": [
+        136,
+        236,
+        164,
+        264
+      ],
+      "minimum": 28
+    },
+    {
+      "name": "War college arena",
+      "bounds": [
+        326,
+        221,
+        373,
+        268
+      ],
+      "minimum": 48,
+      "exits": [
+        [
+          350,
+          214
+        ],
+        [
+          350,
+          276
+        ],
+        [
+          316,
+          245
+        ],
+        [
+          384,
+          245
+        ]
+      ]
+    },
+    {
+      "name": "Badlands impact basin",
+      "bounds": [
+        37,
+        135,
+        66,
+        164
+      ],
+      "minimum": 28
+    }
+  ],
+  "coverage": [
+    {
+      "chunk": "B2",
+      "densePercent": 3.25
+    },
+    {
+      "chunk": "B3",
+      "densePercent": 2.42
+    },
+    {
+      "chunk": "B4",
+      "densePercent": 2.44
+    },
+    {
+      "chunk": "C1",
+      "densePercent": 8.85
+    },
+    {
+      "chunk": "C2",
+      "densePercent": 2.41
+    },
+    {
+      "chunk": "C4",
+      "densePercent": 5.41
+    },
+    {
+      "chunk": "C5",
+      "densePercent": 10.41
+    },
+    {
+      "chunk": "D2",
+      "densePercent": 2.41
+    },
+    {
+      "chunk": "D4",
+      "densePercent": 2.61
+    }
+  ],
+  "seams": [
+    {
+      "chunk": "B2",
+      "edge": "west",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B2",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B2",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B3",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "east",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "B4",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C1",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C1",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 6
+    },
+    {
+      "chunk": "C1",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "C2",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C2",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "south",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C4",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C5",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "C5",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "C5",
+      "edge": "north",
+      "active": false,
+      "sevenTileCrossings": 5
+    },
+    {
+      "chunk": "D2",
+      "edge": "west",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D2",
+      "edge": "east",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D2",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D2",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "west",
+      "active": true,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "east",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "south",
+      "active": false,
+      "sevenTileCrossings": 7
+    },
+    {
+      "chunk": "D4",
+      "edge": "north",
+      "active": true,
+      "sevenTileCrossings": 7
+    }
+  ],
+  "worldSeams": [
+    {
+      "axis": "X",
+      "boundary": 100,
+      "segment": 1,
+      "fiveTileCrossings": 6
+    },
+    {
+      "axis": "X",
+      "boundary": 100,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 100,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 100,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 100,
+      "segment": 5,
+      "fiveTileCrossings": 6
+    },
+    {
+      "axis": "X",
+      "boundary": 200,
+      "segment": 1,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "X",
+      "boundary": 200,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 200,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 200,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 200,
+      "segment": 5,
+      "fiveTileCrossings": 8
+    },
+    {
+      "axis": "X",
+      "boundary": 300,
+      "segment": 1,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "X",
+      "boundary": 300,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 300,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 300,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 300,
+      "segment": 5,
+      "fiveTileCrossings": 8
+    },
+    {
+      "axis": "X",
+      "boundary": 400,
+      "segment": 1,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "X",
+      "boundary": 400,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 400,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 400,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "X",
+      "boundary": 400,
+      "segment": 5,
+      "fiveTileCrossings": 6
+    },
+    {
+      "axis": "Y",
+      "boundary": 100,
+      "segment": 1,
+      "fiveTileCrossings": 5
+    },
+    {
+      "axis": "Y",
+      "boundary": 100,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 100,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 100,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 100,
+      "segment": 5,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "Y",
+      "boundary": 200,
+      "segment": 1,
+      "fiveTileCrossings": 8
+    },
+    {
+      "axis": "Y",
+      "boundary": 200,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 200,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 200,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 200,
+      "segment": 5,
+      "fiveTileCrossings": 6
+    },
+    {
+      "axis": "Y",
+      "boundary": 300,
+      "segment": 1,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "Y",
+      "boundary": 300,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 300,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 300,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 300,
+      "segment": 5,
+      "fiveTileCrossings": 7
+    },
+    {
+      "axis": "Y",
+      "boundary": 400,
+      "segment": 1,
+      "fiveTileCrossings": 4
+    },
+    {
+      "axis": "Y",
+      "boundary": 400,
+      "segment": 2,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 400,
+      "segment": 3,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 400,
+      "segment": 4,
+      "fiveTileCrossings": 10
+    },
+    {
+      "axis": "Y",
+      "boundary": 400,
+      "segment": 5,
+      "fiveTileCrossings": 6
+    }
+  ],
+  "manualReview": "Script and headless checks; interactive review deferred by user."
+}

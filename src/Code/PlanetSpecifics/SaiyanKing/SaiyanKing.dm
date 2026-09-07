@@ -63,7 +63,7 @@ obj/King_of_Braal_Throne
 	density = 1
 	//Savable = 1
 
-	icon = 'Throne2.dmi'
+	icon = 'src/Icons/MapObjects/Throne2.dmi'
 	icon_state = "gold"
 
 	desc = "Braal's planetary control throne. League leaders can use it to inspect or claim an available control point; an occupied point must be seized from its defeated ruler."

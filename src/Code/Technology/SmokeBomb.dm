@@ -19,7 +19,7 @@ GADGET IDEAS:
 obj/items
 
 	Smoke_Bomb
-		icon = 'SmokePellet.dmi'
+		icon = 'src/Icons/Technology/SmokePellet.dmi'
 		Cost=1000000
 		science = 1
 		science_level = 2
@@ -72,7 +72,7 @@ mob/proc
 
 		var/obj/Effect/grenade = GetEffect()
 		grenade.loc = loc
-		grenade.icon = 'SmokePellet.dmi'
+		grenade.icon = 'src/Icons/Technology/SmokePellet.dmi'
 		CenterIcon(grenade)
 
 		var/d = dir
@@ -109,7 +109,7 @@ proc
 	GetSmokeBombEffect()
 		var/obj/SmokeBombEffect/e = new
 		if(!smoke_bomb_icon)
-			smoke_bomb_icon = 'SwirlingSmokeEffect.dmi' + rgb(0,0,0,350)
+			smoke_bomb_icon = 'src/Icons/Effects/SwirlingSmokeEffect.dmi' + rgb(0,0,0,350)
 		e.icon = smoke_bomb_icon
 		CenterIcon(e)
 		e.blend_mode = BLEND_DEFAULT
@@ -137,7 +137,7 @@ proc
 
 obj/items
 	flash_bang
-		icon = 'SmokePellet.dmi'
+		icon = 'src/Icons/Technology/SmokePellet.dmi'
 		name = "Flashbang"
 		Cost=1000000
 		science = 1
@@ -192,7 +192,7 @@ mob/proc
 
 		var/obj/Effect/grenade = GetEffect()
 		grenade.loc = loc
-		grenade.icon = 'SmokePellet.dmi'
+		grenade.icon = 'src/Icons/Technology/SmokePellet.dmi'
 		CenterIcon(grenade)
 
 		var/d = dir

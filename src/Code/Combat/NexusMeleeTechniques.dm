@@ -937,8 +937,8 @@ obj/Attacks/NexusMeleeTechnique/UppercutCombo
 	knockback_multiplier = 2
 	energy_cost = 14
 	cooldown_ticks = 75
-	icon = 'RTUppercut.dmi'
-	effect_icon = 'RTUppercut.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTUppercut.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTUppercut.dmi'
 	verb/Uppercut_Combo()
 		set name = "Uppercut Combo"
 		set category = "Skills"
@@ -969,8 +969,8 @@ obj/Attacks/NexusMeleeTechnique/KickbackCombo
 	energy_cost = 22
 	cooldown_ticks = 110
 	behavior = "kickback_combo"
-	icon = 'RTSweepingKick.dmi'
-	effect_icon = 'RTSweepingKick.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSweepingKick.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTSweepingKick.dmi'
 	verb/Kickback_Combo()
 		set name = "Kickback Combo"
 		set category = "Skills"
@@ -1004,9 +1004,9 @@ obj/Attacks/NexusMeleeTechnique/PileDriver
 	energy_cost = 24
 	cooldown_ticks = 125
 	behavior = "grapple_slam"
-	icon = 'RTGrappleImpact.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi'
 	icon_state = "1"
-	effect_icon = 'RTGrappleImpact.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi'
 	effect_icon_state = "1"
 	verb/Pile_Driver()
 		set name = "Pile Driver"
@@ -1021,9 +1021,9 @@ obj/Attacks/NexusMeleeTechnique/MegatonThrow
 	energy_cost = 20
 	cooldown_ticks = 110
 	behavior = "grapple_throw"
-	icon = 'RTGrappleImpact.dmi'
+	icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi'
 	icon_state = "2"
-	effect_icon = 'RTGrappleImpact.dmi'
+	effect_icon = 'src/Icons/NexusIntegrated/Attacks/Effects/RTGrappleImpact.dmi'
 	effect_icon_state = "2"
 	verb/Megaton_Throw()
 		set name = "Megaton Throw"
@@ -1221,7 +1221,7 @@ obj/Attacks/NexusStance/Block
 	cooldown_ticks = 240
 	activation_color = "#9ed0ff"
 	activation_message = "You brace behind a guarded stance for eight seconds."
-	icon = 'BlockShield.dmi'
+	icon = 'src/Icons/Unsorted/BlockShield.dmi'
 	verb/Block_Stance()
 		set name = "Block"
 		set category = "Skills"

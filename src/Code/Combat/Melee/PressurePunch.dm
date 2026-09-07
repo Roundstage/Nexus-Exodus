@@ -36,7 +36,7 @@ mob
 			e.dir = dir
 			e.vector_speed = 64
 			vector_step_dir(e, e.dir, e.vector_speed)
-			e.icon = 'PressurePunch.dmi'
+			e.icon = 'src/Icons/VFX/PressurePunch.dmi'
 			var/anim_time = 10
 			e.transform *=3
 			animate(e, transform * 3, alpha = 235, time = anim_time)

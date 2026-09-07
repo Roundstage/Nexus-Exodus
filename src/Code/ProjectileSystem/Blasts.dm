@@ -6,7 +6,7 @@ obj/Attacks/Buster_Barrage
 	Experience=1
 
 	//icon='ShieldLegendary.dmi'
-	icon = 'GreenBall2017.dmi'
+	icon = 'src/Icons/Ki/Big/GreenBall2017.dmi'
 
 	desc="An attack which shoots energy from all parts of your body in random directions."
 	Explosive=1
@@ -40,12 +40,12 @@ mob/proc/Buster_Barrage(obj/Attacks/Buster_Barrage/B)
 
 	//overlays += 'ShieldLegendary.dmi'
 	var/obj/o = new
-	o.icon = 'GreenBall2017.dmi'
+	o.icon = 'src/Icons/Ki/Big/GreenBall2017.dmi'
 	CenterIcon(o)
 	o.transform *= 0.5
 	o.alpha = 200
 	overlays += o
-	setNexusActionGlow("#72ff8c", 2.35, 175, 'NexusLightGradient.dmi', 6, "aura")
+	setNexusActionGlow("#72ff8c", 2.35, 175, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 6, "aura")
 
 	B.Barraging=1
 	var/projectiles_fired = 0
@@ -128,7 +128,7 @@ obj/Attacks/Attack_Barrier
 	verb/Hotbar_use()
 		set hidden=1
 		Attack_Barrier()
-	icon='Asset1.dmi'
+	icon='src/Icons/Ki/Blasts/Asset1.dmi'
 	desc="An offensive and defensive move that makes many balls of ki swarm around you and whatever enters the \
 	barrier will be attacked by them. Press the command once to begin firing the balls, press it again when you \
 	feel you have fired enough. The more you fire the more it will drain your energy. This ability protects the \
@@ -226,134 +226,134 @@ obj/Blasts
 
 		icon = initial(icon)
 
-	Blast1 icon='Asset1.dmi'
-	Blast2 icon='Asset2.dmi'
-	Blast3 icon='Asset3.dmi'
-	Blast4 icon='Asset4.dmi'
-	Blast5 icon='Asset5.dmi'
-	Blast6 icon='Asset6.dmi'
-	Blast7 icon='Asset7.dmi'
-	Blast8 icon='Asset8.dmi'
-	Blast9 icon='Asset9.dmi'
-	Blast10 icon='Asset10.dmi'
-	Blast11 icon='Asset11.dmi'
-	Blast12 icon='Asset12.dmi'
-	Blast13 icon='Asset13.dmi'
-	Blast14 icon='Asset14.dmi'
-	Blast15 icon='Asset15.dmi'
-	Blast16 icon='Asset16.dmi'
-	Blast17 icon='Asset17.dmi'
-	Blast18 icon='Asset18.dmi'
-	Blast19 icon='Asset19.dmi'
-	Blast20 icon='Asset20.dmi'
-	Blast21 icon='Asset21.dmi'
-	Blast22 icon='Asset22.dmi'
-	Blast23 icon='Asset23.dmi'
-	Blast24 icon='Asset24.dmi'
-	Blast25 icon='Asset25.dmi'
-	Blast26 icon='Asset26.dmi'
-	Blast27 icon='Asset27.dmi'
-	Blast28 icon='Asset28.dmi'
-	Blast29 icon='Asset29.dmi'
-	Blast30 icon='Asset30.dmi'
-	Blast31 icon='Asset31.dmi'
-	Blast32 icon='Asset32.dmi'
-	Blast33 icon='Asset33.dmi'
-	Blast34 icon='Asset34.dmi'
-	Blast35 icon='Asset35.dmi'
-	Blast36 icon='Asset36.dmi'
-	Blast37 icon='Asset37.dmi'
-	Blast38 icon='BlastDestructoDisk.dmi'
-	Blast39 icon='BlastDualFireBlast.dmi'
-	Blast40 icon='BlastKiShuriken.dmi'
-	Blast41 icon='Holybolt.dmi'
-	Blast42 icon='Blast0.dmi'
-	Blast43 icon='Blast1.dmi'
-	Blast44 icon='Blast2.dmi'
-	Blast45 icon='Blast3.dmi'
-	Blast46 icon='Blast4.dmi'
-	Blast47 icon='Blast5.dmi'
-	Blast48 icon='Blast6.dmi'
-	Blast49 icon='Blast7.dmi'
-	Blast50 icon='Blast8.dmi'
-	Blast51 icon='Blast9.dmi'
-	Blast52 icon='Blast10.dmi'
-	Blast53 icon='Blast11.dmi'
-	Blast54 icon='Blast12.dmi'
-	Blast55 icon='Blast13.dmi'
-	Blast56 icon='Blast14.dmi'
-	Blast57 icon='Blast15.dmi'
-	Blast58 icon='Blast16.dmi'
-	Blast59 icon='Blast17.dmi'
-	Blast60 icon='Blast18.dmi'
-	Blast61 icon='Blast19.dmi'
-	Blast62 icon='Blast20.dmi'
-	Blast63 icon='Blast21.dmi'
-	Blast64 icon='Blast22.dmi'
-	Blast65 icon='Blast23.dmi'
-	Blast66 icon='Blast24.dmi'
-	Blast67 icon='Blast25.dmi'
-	Blast68 icon='Blast26.dmi'
-	Blast69 icon='Blast27.dmi'
-	Blast70 icon='Blast28.dmi'
-	Blast71 icon='Blast29.dmi'
-	Blast72 icon='Blast30.dmi'
-	Blast73 icon='BallSpiritBomb.dmi'
-	Blast74 icon='BallSupernova.dmi'
-	Blast75 icon='BlastFire.dmi'
-	Blast76 icon='BlastSpiralingKi.dmi'
-	Blast77 icon='BlastSuperDd.dmi'
-	Blast78 icon='AuraBlastSize1.dmi'
-	Blast79 icon='ElectroShield.dmi'
-	Blast80 icon='Hadoken.dmi'
-	Blast81 icon='Asset38.dmi'
-	Blast82 icon='RoyalDeathCrusher.dmi'
-	Blast83 icon='Asset39.dmi'
-	Blast84 icon='BlastAqua.dmi'
-	Blast85 icon='BlastFlame.dmi'
-	Blast86 icon='BlastStar.dmi'
-	Blast87 icon='Daitoppa.dmi'
-	Blast88 icon='Asset40.dmi'
-	Blast89 icon='Trishot.dmi'
-	Blast90 icon='Zankoukyokuha.dmi'
-	Blast91 icon='BasenioBlast.dmi'
-	Blast92 icon='HeartBlast.dmi'
-	Blast93 icon='DarkLance.dmi'
-	Blast94 icon='OmegaBlasterZee.dmi'
-	Blast95 icon='DarkBlast.dmi'
-	Blast96 icon='Flareblast.dmi'
-	Blast97 icon='FireBlastBig.dmi'
-	Blast98 icon='BigBangAttack.dmi'
-	Blast99 icon = 'GreenBall2017.dmi'
-	Beam1 icon='Beam1.dmi'
-	Beam2 icon='LightningBeam2014.dmi'
-	Beam3 icon='Beam3.dmi'
-	Beam4 icon='Beam4.dmi'
-	Beam5 icon='Beam5.dmi'
-	Beam6 icon='Beam6.dmi'
-	Beam8 icon='Beam8.dmi'
-	Beam9 icon='Beam9.dmi'
-	Beam10 icon='Beam10.dmi'
-	Beam11 icon='Beam11.dmi'
-	Piercer_Icon icon='Makkankosappo.dmi'
-	Beam12 icon='PoisonBeam2014.dmi'
-	Beam13 icon='BeamKamehameha.dmi'
-	Beam14 icon='BeamStaticBeam.dmi'
-	Beam15 icon='BeamMultiBeam.dmi'
-	Beam16 icon='BeamMasenko.dmi'
-	Beam17 icon='BeamBlastDragon.dmi'
-	Beam18 icon='BeamBeam1.dmi'
-	Beam19 icon='BeamBigFire.dmi'
-	Beam20 icon='Beam13.dmi'
-	Beam21 icon='Beam14.dmi'
-	Beam22 icon='BlackDragonBeam.dmi'
-	Beam23 icon='Dragonbeam.dmi'
-	Beam24 icon='ZentoBbkhh1.dmi'
-	Beam25 icon='ZentoBbkhh2.dmi'
-	Beam26 icon='SnakeBeam2014.dmi'
-	Beam27 icon='EraserCannon.dmi'
-	Beam28 icon='FreezaDeathRay.dmi'
-	Beam29 icon='KingKoldDeathRay.dmi'
+	Blast1 icon='src/Icons/Ki/Blasts/Asset1.dmi'
+	Blast2 icon='src/Icons/Ki/Blasts/Asset2.dmi'
+	Blast3 icon='src/Icons/Ki/Blasts/Asset3.dmi'
+	Blast4 icon='src/Icons/Ki/Blasts/Asset4.dmi'
+	Blast5 icon='src/Icons/Ki/Blasts/Asset5.dmi'
+	Blast6 icon='src/Icons/Ki/Blasts/Asset6.dmi'
+	Blast7 icon='src/Icons/Ki/Blasts/Asset7.dmi'
+	Blast8 icon='src/Icons/Ki/Blasts/Asset8.dmi'
+	Blast9 icon='src/Icons/Ki/Blasts/Asset9.dmi'
+	Blast10 icon='src/Icons/Ki/Blasts/Asset10.dmi'
+	Blast11 icon='src/Icons/Ki/Blasts/Asset11.dmi'
+	Blast12 icon='src/Icons/Ki/Blasts/Asset12.dmi'
+	Blast13 icon='src/Icons/Ki/Blasts/Asset13.dmi'
+	Blast14 icon='src/Icons/Ki/Blasts/Asset14.dmi'
+	Blast15 icon='src/Icons/Ki/Blasts/Asset15.dmi'
+	Blast16 icon='src/Icons/Ki/Blasts/Asset16.dmi'
+	Blast17 icon='src/Icons/Ki/Blasts/Asset17.dmi'
+	Blast18 icon='src/Icons/Ki/Blasts/Asset18.dmi'
+	Blast19 icon='src/Icons/Ki/Blasts/Asset19.dmi'
+	Blast20 icon='src/Icons/Ki/Blasts/Asset20.dmi'
+	Blast21 icon='src/Icons/Ki/Blasts/Asset21.dmi'
+	Blast22 icon='src/Icons/Ki/Blasts/Asset22.dmi'
+	Blast23 icon='src/Icons/Ki/Blasts/Asset23.dmi'
+	Blast24 icon='src/Icons/Ki/Blasts/Asset24.dmi'
+	Blast25 icon='src/Icons/Ki/Blasts/Asset25.dmi'
+	Blast26 icon='src/Icons/Ki/Blasts/Asset26.dmi'
+	Blast27 icon='src/Icons/Ki/Blasts/Asset27.dmi'
+	Blast28 icon='src/Icons/Ki/Blasts/Asset28.dmi'
+	Blast29 icon='src/Icons/Ki/Blasts/Asset29.dmi'
+	Blast30 icon='src/Icons/Ki/Blasts/Asset30.dmi'
+	Blast31 icon='src/Icons/Ki/Blasts/Asset31.dmi'
+	Blast32 icon='src/Icons/Ki/Blasts/Asset32.dmi'
+	Blast33 icon='src/Icons/Ki/Blasts/Asset33.dmi'
+	Blast34 icon='src/Icons/Ki/Blasts/Asset34.dmi'
+	Blast35 icon='src/Icons/Ki/Blasts/Asset35.dmi'
+	Blast36 icon='src/Icons/Ki/Blasts/Asset36.dmi'
+	Blast37 icon='src/Icons/Ki/Blasts/Asset37.dmi'
+	Blast38 icon='src/Icons/Ki/Blasts/BlastDestructoDisk.dmi'
+	Blast39 icon='src/Icons/Ki/Blasts/BlastDualFireBlast.dmi'
+	Blast40 icon='src/Icons/Ki/Blasts/BlastKiShuriken.dmi'
+	Blast41 icon='src/Icons/Ki/Blasts/Holybolt.dmi'
+	Blast42 icon='src/Icons/Ki/Blasts/Blast0.dmi'
+	Blast43 icon='src/Icons/Ki/Blasts/Blast1.dmi'
+	Blast44 icon='src/Icons/Ki/Blasts/Blast2.dmi'
+	Blast45 icon='src/Icons/Ki/Blasts/Blast3.dmi'
+	Blast46 icon='src/Icons/Ki/Blasts/Blast4.dmi'
+	Blast47 icon='src/Icons/Ki/Blasts/Blast5.dmi'
+	Blast48 icon='src/Icons/Ki/Blasts/Blast6.dmi'
+	Blast49 icon='src/Icons/Ki/Blasts/Blast7.dmi'
+	Blast50 icon='src/Icons/Ki/Blasts/Blast8.dmi'
+	Blast51 icon='src/Icons/Ki/Blasts/Blast9.dmi'
+	Blast52 icon='src/Icons/Ki/Blasts/Blast10.dmi'
+	Blast53 icon='src/Icons/Ki/Blasts/Blast11.dmi'
+	Blast54 icon='src/Icons/Ki/Blasts/Blast12.dmi'
+	Blast55 icon='src/Icons/Ki/Blasts/Blast13.dmi'
+	Blast56 icon='src/Icons/Ki/Blasts/Blast14.dmi'
+	Blast57 icon='src/Icons/Ki/Blasts/Blast15.dmi'
+	Blast58 icon='src/Icons/Ki/Blasts/Blast16.dmi'
+	Blast59 icon='src/Icons/Ki/Blasts/Blast17.dmi'
+	Blast60 icon='src/Icons/Ki/Blasts/Blast18.dmi'
+	Blast61 icon='src/Icons/Ki/Blasts/Blast19.dmi'
+	Blast62 icon='src/Icons/Ki/Blasts/Blast20.dmi'
+	Blast63 icon='src/Icons/Ki/Blasts/Blast21.dmi'
+	Blast64 icon='src/Icons/Ki/Blasts/Blast22.dmi'
+	Blast65 icon='src/Icons/Ki/Blasts/Blast23.dmi'
+	Blast66 icon='src/Icons/Ki/Blasts/Blast24.dmi'
+	Blast67 icon='src/Icons/Ki/Blasts/Blast25.dmi'
+	Blast68 icon='src/Icons/Ki/Blasts/Blast26.dmi'
+	Blast69 icon='src/Icons/Ki/Blasts/Blast27.dmi'
+	Blast70 icon='src/Icons/Ki/Blasts/Blast28.dmi'
+	Blast71 icon='src/Icons/Ki/Blasts/Blast29.dmi'
+	Blast72 icon='src/Icons/Ki/Blasts/Blast30.dmi'
+	Blast73 icon='src/Icons/Ki/Big/BallSpiritBomb.dmi'
+	Blast74 icon='src/Icons/Ki/Big/BallSupernova.dmi'
+	Blast75 icon='src/Icons/Ki/Big/BlastFire.dmi'
+	Blast76 icon='src/Icons/Ki/Big/BlastSpiralingKi.dmi'
+	Blast77 icon='src/Icons/Ki/Big/BlastSuperDd.dmi'
+	Blast78 icon='src/Icons/Ki/Big/AuraBlastSize1.dmi'
+	Blast79 icon='src/Icons/Ki/Big/ElectroShield.dmi'
+	Blast80 icon='src/Icons/Ki/Blasts/Hadoken.dmi'
+	Blast81 icon='src/Icons/Ki/Blasts/Asset38.dmi'
+	Blast82 icon='src/Icons/Ki/Big/RoyalDeathCrusher.dmi'
+	Blast83 icon='src/Icons/Ki/Blasts/Asset39.dmi'
+	Blast84 icon='src/Icons/Ki/Blasts/BlastAqua.dmi'
+	Blast85 icon='src/Icons/Ki/Blasts/BlastFlame.dmi'
+	Blast86 icon='src/Icons/Ki/Blasts/BlastStar.dmi'
+	Blast87 icon='src/Icons/Ki/Blasts/Daitoppa.dmi'
+	Blast88 icon='src/Icons/Ki/Blasts/Asset40.dmi'
+	Blast89 icon='src/Icons/Ki/Blasts/Trishot.dmi'
+	Blast90 icon='src/Icons/Ki/Blasts/Zankoukyokuha.dmi'
+	Blast91 icon='src/Icons/Ki/Blasts/BasenioBlast.dmi'
+	Blast92 icon='src/Icons/Ki/Blasts/Exgenesis1212012/HeartBlast.dmi'
+	Blast93 icon='src/Icons/Ki/Blasts/Exgenesis1212012/DarkLance.dmi'
+	Blast94 icon='src/Icons/Ki/Blasts/Exgenesis1212012/OmegaBlasterZee.dmi'
+	Blast95 icon='src/Icons/Ki/Blasts/DarkBlast.dmi'
+	Blast96 icon='src/Icons/Ki/Blasts/Flareblast.dmi'
+	Blast97 icon='src/Icons/Unsorted/FireBlastBig.dmi'
+	Blast98 icon='src/Icons/Unsorted/BigBangAttack.dmi'
+	Blast99 icon = 'src/Icons/Ki/Big/GreenBall2017.dmi'
+	Beam1 icon='src/Icons/Ki/Beams/Beam1.dmi'
+	Beam2 icon='src/Icons/Ki/Beams/LightningBeam2014.dmi'
+	Beam3 icon='src/Icons/Ki/Beams/Beam3.dmi'
+	Beam4 icon='src/Icons/Ki/Beams/Beam4.dmi'
+	Beam5 icon='src/Icons/Ki/Beams/Beam5.dmi'
+	Beam6 icon='src/Icons/Ki/Beams/Beam6.dmi'
+	Beam8 icon='src/Icons/Ki/Beams/Beam8.dmi'
+	Beam9 icon='src/Icons/Ki/Beams/Beam9.dmi'
+	Beam10 icon='src/Icons/Ki/Beams/Beam10.dmi'
+	Beam11 icon='src/Icons/Ki/Beams/Beam11.dmi'
+	Piercer_Icon icon='src/Icons/Ki/Beams/Makkankosappo.dmi'
+	Beam12 icon='src/Icons/Ki/Beams/PoisonBeam2014.dmi'
+	Beam13 icon='src/Icons/Ki/Beams/BeamKamehameha.dmi'
+	Beam14 icon='src/Icons/Ki/Beams/BeamStaticBeam.dmi'
+	Beam15 icon='src/Icons/Ki/Beams/BeamMultiBeam.dmi'
+	Beam16 icon='src/Icons/Ki/Big/BeamMasenko.dmi'
+	Beam17 icon='src/Icons/Ki/Big/BeamBlastDragon.dmi'
+	Beam18 icon='src/Icons/Ki/Big/BeamBeam1.dmi'
+	Beam19 icon='src/Icons/Ki/Big/BeamBigFire.dmi'
+	Beam20 icon='src/Icons/Ki/Beams/Beam13.dmi'
+	Beam21 icon='src/Icons/Ki/Beams/Beam14.dmi'
+	Beam22 icon='src/Icons/Ki/Beams/BlackDragonBeam.dmi'
+	Beam23 icon='src/Icons/Ki/Beams/Dragonbeam.dmi'
+	Beam24 icon='src/Icons/Ki/Beams/ZentoBbkhh1.dmi'
+	Beam25 icon='src/Icons/Ki/Beams/ZentoBbkhh2.dmi'
+	Beam26 icon='src/Icons/Ki/Beams/SnakeBeam2014.dmi'
+	Beam27 icon='src/Icons/Ki/Beams/EraserCannon.dmi'
+	Beam28 icon='src/Icons/Ki/Beams/FreezaDeathRay.dmi'
+	Beam29 icon='src/Icons/Ki/Beams/KingKoldDeathRay.dmi'
 
 obj/Aura_Choices
 	Savable=0
@@ -376,36 +376,36 @@ obj/Aura_Choices
 		usr.Auras.auraYoffset = auraYoffset
 	None
 	BlueFlameAura
-		icon = 'BlueFlameAura.dmi'
+		icon = 'src/Icons/Ki/Auras/BlueFlameAura.dmi'
 	SuperBuu
-		icon = 'Blurredsuperbuuaura.dmi'
+		icon = 'src/Icons/Ki/Auras/Blurredsuperbuuaura.dmi'
 	Large
-		icon='AuraBig.dmi'
+		icon='src/Icons/Ki/Auras/AuraBig.dmi'
 		Scale=74
 		New() icon=Scaled_Icon(icon,Scale,Scale)
 	Zen_Aura
-		icon='ZenAura.dmi'
+		icon='src/Icons/Ki/Auras/ZenAura.dmi'
 		New() icon=Scaled_Icon(icon,83,121) //half size
-	Sparks icon='AbsorbSparks.dmi'
-	Electric icon='AuraBloo.dmi'
-	Electric_2 icon='AuraElectric.dmi'
+	Sparks icon='src/Icons/Ki/Electricity/AbsorbSparks.dmi'
+	Electric icon='src/Icons/Ki/Auras/AuraBloo.dmi'
+	Electric_2 icon='src/Icons/Ki/Electricity/AuraElectric.dmi'
 	Default icon='src/Icons/Ki/Auras/Aura.dmi'
-	Flowing icon='AuraNormal.dmi'
-	Demon_Flame icon='BlackDemonflame.dmi'
-	Vampire_Aura icon='Aura2.dmi'
-	Electric_3 icon='ElecAura3.dmi'
-	Electric_4 icon='ElecAura1.dmi'
-	Aura1 icon='NormalTallAura.dmi'
-	Aura2 icon='AuraJanuary27th2014.dmi'
-	Buu_Aura icon='BuuAura.dmi'
+	Flowing icon='src/Icons/Ki/Auras/AuraNormal.dmi'
+	Demon_Flame icon='src/Icons/Ki/Auras/BlackDemonflame.dmi'
+	Vampire_Aura icon='src/Icons/Ki/Auras/Aura2.dmi'
+	Electric_3 icon='src/Icons/Ki/Electricity/ElecAura3.dmi'
+	Electric_4 icon='src/Icons/Ki/Electricity/ElecAura1.dmi'
+	Aura1 icon='src/Icons/Ki/Auras/NormalTallAura.dmi'
+	Aura2 icon='src/Icons/PlayerIcons/TobiUchihaIcons/AuraJanuary27th2014.dmi'
+	Buu_Aura icon='src/Icons/PlayerIcons/TobiUchihaIcons/BuuAura.dmi'
 	Fire_Aura
-		icon = 'FireAura.dmi'
+		icon = 'src/Icons/Ki/Auras/FireAura.dmi'
 		auraYoffset = -19
 
 obj/Charges
 	Givable=0
 	Makeable=0
-	icon='BlastCharges.dmi'
+	icon='src/Icons/Ki/BlastCharging/BlastCharges.dmi'
 	Click()
 		icon=initial(icon)
 		var/A=input("Choose a color. Hit cancel to have default color.") as color|null
@@ -461,7 +461,7 @@ obj/Attacks/Blast
 	var/Blast_Count=3
 	var/blast_refire=1
 	var/blast_velocity=1
-	icon='Asset1.dmi'
+	icon='src/Icons/Ki/Blasts/Asset1.dmi'
 	desc="Fire blasts rapidly"
 	repeat_macro=1
 
@@ -750,7 +750,7 @@ obj/Attacks/Big_Bang_Attack
 	student_point_cost = 20
 	Cost_To_Learn=10
 	Experience=1
-	icon='BigBangAttack.dmi'
+	icon='src/Icons/Unsorted/BigBangAttack.dmi'
 	desc="Basicly a more powerful version of the 'charge' ki attack"
 	repeat_macro=1
 	verb/Hotbar_use()
@@ -809,7 +809,7 @@ obj/Attacks/Charge
 	student_point_cost = 10
 	Cost_To_Learn=1
 	Experience=1
-	icon='Asset20.dmi'
+	icon='src/Icons/Ki/Blasts/Asset20.dmi'
 	desc="An explosive one-shot energy attack that takes a few seconds to charge."
 	repeat_macro=1
 
@@ -880,7 +880,7 @@ obj/Attacks/Cyber_Charge
 	Cost_To_Learn=0
 	Experience=1
 	Mastery=100
-	icon='Asset11.dmi'
+	icon='src/Icons/Ki/Blasts/Asset11.dmi'
 	desc="This artificial attack is designed to mimic charge. It is a bit weaker but can be fired \
 	twice as fast."
 	repeat_macro=1
@@ -892,7 +892,7 @@ obj/Attacks/Cyber_Charge
 		if(skill_engine) skill_engine.castSkill(usr, src)
 
 obj/Attacks/Kienzan
-	icon='BlastDestructoDisk.dmi'
+	icon='src/Icons/Ki/Blasts/BlastDestructoDisk.dmi'
 	Cost_To_Learn=3
 	Teach_Timer=1
 	student_point_cost = 20
@@ -916,7 +916,7 @@ obj/Attacks/Spin_Blast
 	student_point_cost = 15
 	Cost_To_Learn=2
 	Drain = 10
-	icon='Asset1.dmi'
+	icon='src/Icons/Ki/Blasts/Asset1.dmi'
 	desc="Shoot many small blasts in every direction continuously"
 	repeat_macro=1
 
@@ -968,7 +968,7 @@ obj/Attacks/Makosen
 	var/ExplosiveChance=0
 	var/Explosiveness=1
 	Drain=150
-	icon='AuraBlastSize1.dmi'
+	icon='src/Icons/Ki/Big/AuraBlastSize1.dmi'
 	desc="A very, very powerful attack, widespread and very destructive. Made up of many smaller shots \
 	that inflict a lot of damage all together. It is very draining, not very long range, and has a \
 	long charge time."
@@ -1024,7 +1024,7 @@ proc/showAlienInfiniteVoidDomain(atom/center, duration = ALIEN_INFINITE_VOID_DUR
 	domain.blend_mode = BLEND_DEFAULT
 	CenterIcon(domain)
 	domain.transform = matrix() * 0.05
-	domain.setNexusGlow("#5540ff", 8, 245, 'NexusLightGradient.dmi', 10, "blast")
+	domain.setNexusGlow("#5540ff", 8, 245, 'src/Code/WorldMechanics/WeatherDayNight/NexusLightGradient.dmi', 10, "blast")
 	animate(domain, alpha = 235, transform = matrix(), time = expand_ticks, easing = CUBIC_EASING)
 	animate(domain, alpha = 245, transform = turn(matrix() * 1.04, 8), time = hold_ticks, easing = SINE_EASING)
 	animate(domain, alpha = 0, transform = turn(matrix() * 1.18, 16), time = collapse_ticks, easing = CUBIC_EASING)
@@ -1060,11 +1060,11 @@ mob/proc/getAlienInfiniteVoidStunTicks(mob/target)
 	return stun_ticks
 
 mob/proc/showAlienInfiniteVoidHit()
-	overlays -= 'TimeFreeze.dmi'
-	overlays += 'TimeFreeze.dmi'
+	overlays -= 'src/Icons/Effects/TimeFreeze.dmi'
+	overlays += 'src/Icons/Effects/TimeFreeze.dmi'
 	pulseNexusGlow("#8d7dff", 3.2, 220, 12)
 	spawn(10)
-		if(src) overlays -= 'TimeFreeze.dmi'
+		if(src) overlays -= 'src/Icons/Effects/TimeFreeze.dmi'
 
 mob/proc/applyAlienInfiniteVoidStun(turf/origin, radius = ALIEN_INFINITE_VOID_RADIUS)
 	if(!origin) return 0
@@ -1086,7 +1086,7 @@ obj/Time_Freeze_Energy
 		var/mob/M=loc
 		if(ismob(M))
 			M.Frozen=0
-			M.overlays-='TimeFreeze.dmi'
+			M.overlays-='src/Icons/Effects/TimeFreeze.dmi'
 		. = ..()
 	proc/TF_Delete()
 		set waitfor=0
@@ -1335,7 +1335,7 @@ obj/Attacks/Scatter_Shot
 	Teach_Timer=1
 	student_point_cost = 35
 	Cost_To_Learn=6
-	icon='Asset17.dmi'
+	icon='src/Icons/Ki/Blasts/Asset17.dmi'
 	desc="This will create multiple homing balls all around an opponent, and when its done they will \
 	all collide at once on top of them. Individually each ball is weak, but all together it can be \
 	extremely devastating to most people. The more energy you get the more balls you can make at once."
@@ -1361,7 +1361,7 @@ mob/var/tmp/lastSokidan = 0 //world.time
 
 obj/var/tmp/Sokidan
 obj/Attacks/Sokidan
-	icon='Asset17.dmi'
+	icon='src/Icons/Ki/Blasts/Asset17.dmi'
 	Teach_Timer=0.7
 	student_point_cost = 25
 	Cost_To_Learn=3
@@ -1384,7 +1384,7 @@ obj/Attacks/Genocide
 	Teach_Timer=5
 	student_point_cost = 50
 	Cost_To_Learn=40
-	icon='Asset18.dmi'
+	icon='src/Icons/Ki/Blasts/Asset18.dmi'
 	desc="This is a very weak attack, about the power of a single blast, but each one homes in on your selected \
 	target across the planet. Press it once to begin firing, again to stop."
 	verb/Hotbar_use()
@@ -1396,7 +1396,7 @@ obj/Attacks/Genocide
 			if(usr.cant_blast()) return
 			if(usr.Ki<usr.GetSkillDrain(mod = Drain, is_energy = 1)) return
 			Charging=1
-			usr.overlays+='SBombGivePower.dmi'
+			usr.overlays+='src/Icons/Ki/Effects/SBombGivePower.dmi'
 			usr.startNexusKiCharge(src, 1)
 			usr.attacking=3
 			sleep(25*usr.Speed_delay_mult(severity=0.5))
@@ -1424,7 +1424,7 @@ obj/Attacks/Genocide
 					sleep(5)
 				else sleep(5)
 
-			usr.overlays-='SBombGivePower.dmi'
+			usr.overlays-='src/Icons/Ki/Effects/SBombGivePower.dmi'
 			usr.clearNexusActionGlow()
 			usr.attacking=0
 			Charging=0
@@ -1444,7 +1444,7 @@ proc/Small_crater(turf/t)
 	return c
 
 obj/Crater
-	icon='Craters.dmi'
+	icon='src/Icons/MapObjects/Craters.dmi'
 	icon_state="small crater"
 	Dead_Zone_Immune=1
 	Health=1.#INF
@@ -1499,7 +1499,7 @@ obj/BigCrater
 	//icon_state="Center"
 
 	//icon = 'KikohoCrater.dmi'
-	icon = 'Crater2Stretch2019.png'
+	icon = 'src/Images/Crater2Stretch2019.png'
 
 	Dead_Zone_Immune=1
 	Health=1.#INF

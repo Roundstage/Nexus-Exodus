@@ -1,6 +1,6 @@
 obj/Mysterious_Portal
 	Cost=0
-	icon='Lab.dmi'
+	icon='src/Icons/Objects/Technology/Lab.dmi'
 	icon_state="Warp"
 	density=1
 	var/tmp/Activated
@@ -35,7 +35,7 @@ obj/Mysterious_Portal
 		usr.Michael_Jackson_Dance()
 obj/Michael_Jackson
 	density=1
-	icon='MichaelJackson.dmi'
+	icon='src/Icons/NPC/MichaelJackson.dmi'
 mob/Admin3/verb/mj(mob/A in players)
 	set name = "MJ"
 	A.Michael_Jackson_Dance()
@@ -62,7 +62,7 @@ mob/proc/Michael_Jackson_Dance()
 		A.icon=icon
 		A.overlays=overlays
 	overlays-=overlays
-	icon='MichaelJackson.dmi'
+	icon='src/Icons/NPC/MichaelJackson.dmi'
 	icon_state="1"
 	for(var/mob/B in view(src)) if(!(locate(/obj/Michael_Jackson) in B)) if(!B.MJ_Immune()) B.Michael_Jackson_Dance()
 	spawn(160) if(src)
@@ -119,16 +119,16 @@ mob/proc/Dance_Effects()
 					new/obj/MJ/Asteroid(pick(B))
 					new/obj/MJ/Meteor(pick(B))
 			if(A==4) for(var/turf/C in view(8,src)) if(prob(50))
-				Missile('Spirit.dmi',src,C)
+				Missile('src/Icons/Effects/Spirit.dmi',src,C)
 				sleep(1)
 turf/proc/MJ_Stars()
-	var/image/A=image(icon='Misc.dmi',icon_state="Stars")
+	var/image/A=image(icon='src/Icons/Unsorted/Other/Misc.dmi',icon_state="Stars")
 	overlays-=A
 	overlays+=A
 	spawn(1200) if(src) overlays-=A
 obj/Skeleton
 	density=1
-	icon='Skeleton.dmi'
+	icon='src/Icons/Unsorted/Other/Skeleton.dmi'
 	Savable=0
 	New()
 		spawn(1200) if(src) del(src)
@@ -147,7 +147,7 @@ obj/MJ
 			B.Health-=5000
 			if(B.Health<=0) del(B)
 	Asteroid
-		icon='Asteroid5112013.dmi'
+		icon='src/Icons/Unsorted/Asteroid5112013.dmi'
 		Health=25000
 		New()
 			CenterIcon(src)
@@ -157,7 +157,7 @@ obj/MJ
 			Explosion_Graphics(src,2,10)
 			. = ..()
 	Meteor
-		icon='SmallAsteroid.dmi'
+		icon='src/Icons/Unsorted/SmallAsteroid.dmi'
 		Health=5000
 		New()
 			CenterIcon(src)

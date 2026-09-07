@@ -1,6 +1,6 @@
 obj/items
 	Land_Mine
-		icon = 'Weapons.dmi'
+		icon = 'src/Icons/Objects/Technology/Weapons.dmi'
 		icon_state = "mine item"
 		Cost=50000000
 		science = 1
@@ -60,7 +60,7 @@ obj/Land_Mine
 	Savable=1
 	Grabbable=0
 	density=0
-	icon='Weapons.dmi'
+	icon='src/Icons/Objects/Technology/Weapons.dmi'
 	icon_state="land mine"
 	var/tmp
 		mine_detonated
@@ -129,7 +129,7 @@ obj/LandMineEffect
 	Makeable=0
 	Givable=0
 	density=0
-	icon='LandMineExplosion.dmi'
+	icon='src/Icons/Effects/LandMineExplosion.dmi'
 	icon_state="explosion2"
 
 	New()

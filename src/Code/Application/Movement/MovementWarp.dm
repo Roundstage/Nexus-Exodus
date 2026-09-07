@@ -33,7 +33,7 @@ mob/proc
 		Ki = max(0, Ki - instantTransmissionWarpCost())
 		last_tap_warp = world.time
 		AfterImage(60, loc_override = old_loc)
-		flick('Zanzoken.dmi', src)
+		flick('src/Icons/Effects/Zanzoken.dmi', src)
 		player_view(20, src) << sound('Teleport.ogg', volume = 18)
 		if(warped_to_target && target) Melee(target, from_auto_attack = 1)
 
@@ -41,6 +41,7 @@ mob/proc
 		return world.tick_lag * 2
 
 	CanTapWarp()
+		if(destruction_aura_suppressed_until > world.time) return 0
 		if(!CanInputMove()) return 0
 		if(stamina < tapwarp_stam_drain) return 0
 		if(BeamStruggling() || UsingAttackBarrier()) return 0
@@ -58,7 +59,7 @@ mob/proc
 		last_tap_warp = world.time
 		AddStamina(-tapwarp_stam_drain)
 		AfterImage(50, loc_override = old_loc)
-		flick('Zanzoken.dmi', src)
+		flick('src/Icons/Effects/Zanzoken.dmi', src)
 		player_view(20, src) << sound('Teleport.ogg', volume = 15)
 		if(warped_to_target && target) Melee(target, from_auto_attack = 1)
 
@@ -85,7 +86,7 @@ mob/proc
 			last_tap_warp = world.time
 			AddStamina(-tapwarp_stam_drain)
 			AfterImage(50, loc_override = oloc)
-			flick('Zanzoken.dmi',src)
+			flick('src/Icons/Effects/Zanzoken.dmi',src)
 			player_view(20,src) << sound('Teleport.ogg',volume=15)
 			if(warped_to_mob_success && m) Melee(m, from_auto_attack=1)
 			return 1

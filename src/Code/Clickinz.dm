@@ -75,7 +75,7 @@ obj/After_Image
 	mouse_opacity = 0
 	attackable = 0
 	New()
-		flick('Zanzoken.dmi',src)
+		flick('src/Icons/Effects/Zanzoken.dmi',src)
 	Del()
 		alpha = 255
 		. = ..()
@@ -141,7 +141,7 @@ turf/Click(turf/T) if(isturf(T))
 					usr.AddStamina(-stam_drain)
 
 					player_view(10,usr)<<sound('Teleport.ogg',volume=15)
-					flick('Zanzoken.dmi',usr)
+					flick('src/Icons/Effects/Zanzoken.dmi',usr)
 					usr.stand_still_time = world.time
 					var/OldDir=usr.dir
 					usr.AfterImage()

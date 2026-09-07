@@ -35,6 +35,7 @@ atom/movable/proc
 	//the game will not allow position changes more than 1 tile if this proc was not used to do it
 	SafeTeleport(turf/t, allowSameTick)
 		if(ismob(src))
+			t = resolvePlanetSurfaceArrival(t)
 			var/mob/m = src
 			m.cancelNexusSkillMotion("teleport")
 			m.movement_teleport_generation++
