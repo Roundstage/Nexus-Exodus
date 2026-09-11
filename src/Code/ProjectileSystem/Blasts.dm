@@ -1330,6 +1330,25 @@ obj/Blast
 				vector_step(src, angle, vector_speed)
 				sleep(TickMult(ki_projectile_step_delay))
 
+obj/Blast/proc/trackScatterShotTarget(mob/user, mob/target, homing_delay)
+	set waitfor = FALSE
+	var/generation = blast_lifecycle_generation
+	spawn(homing_delay)
+		if(src && z && in_use && blast_lifecycle_generation == generation && user && Owner == user && !deflected)
+			density = 1
+			// Keep the cast target even when damage clears selected_target.
+			if(!target || target.z != user.z || target.KO || !target.attackable) target = null
+			if(target && user.canHitNexusTechniqueTarget(target))
+				blast_homing_target = target
+				followSelectedTarget(target)
+	while(src && z && in_use && blast_lifecycle_generation == generation && user && Owner == user && !deflected && target && target.z == user.z && !target.KO)
+		sleep(TickMult(2))
+	if(src && z && in_use && blast_lifecycle_generation == generation && user && Owner == user && !deflected)
+		stopProjectileFlight()
+		walk_rand(src)
+		spawn(rand(1, 50))
+			if(src && blast_lifecycle_generation == generation) del(src)
+
 obj/Attacks/Scatter_Shot
 	Drain = 30
 	Teach_Timer=1
@@ -1439,11 +1458,14 @@ proc/Small_crater(turf/t)
 		c=small_crater_cache[1]
 		small_crater_cache-=c
 	else c=new
+	c.deferred_delete_generation++
+	c.crater_fading = FALSE
 	c.loc=t
 	Timed_Delete(c,50)
 	return c
 
 obj/Crater
+	var/tmp/crater_fading = FALSE
 	icon='src/Icons/MapObjects/Craters.dmi'
 	icon_state="small crater"
 	Dead_Zone_Immune=1
@@ -1460,18 +1482,25 @@ obj/Crater
 		//. = ..()
 
 	Del()
+		if(reallyDelete)
+			small_crater_cache -= src
+			return ..()
 		SmallCraterDel()
 
 	proc
 		SmallCraterDel()
 			set waitfor=0
+			if(crater_fading) return
+			crater_fading = TRUE
+			var/generation = ++deferred_delete_generation
 			var/anim_time = 20
 			animate(src, alpha = 0, time = anim_time)
 			sleep(anim_time + 1)
+			if(!src || deferred_delete_generation != generation) return
 			alpha = 255
 			SafeTeleport(null)
 			transform = null
-			small_crater_cache += src
+			small_crater_cache |= src
 
 proc/BigCrater(turf/pos, maxSize, growTime, fadeTime, minRangeFromOtherCraters)
 
@@ -1485,6 +1514,7 @@ proc/BigCrater(turf/pos, maxSize, growTime, fadeTime, minRangeFromOtherCraters)
 		big_crater_cache -= c
 		c.New()
 	else c = new
+	c.crater_fading = FALSE
 	c.pixel_y -= 11 //was just a little to high looking
 	c.alpha = 255
 	if(maxSize) c.craterMaxSize = sqrt(maxSize)
@@ -1495,6 +1525,7 @@ proc/BigCrater(turf/pos, maxSize, growTime, fadeTime, minRangeFromOtherCraters)
 	return c
 
 obj/BigCrater
+	var/tmp/crater_fading = FALSE
 	//icon='Craters.dmi'
 	//icon_state="Center"
 
@@ -1516,6 +1547,7 @@ obj/BigCrater
 		craterFadeTime = 20
 
 	New()
+		deferred_delete_generation++
 		CenterIcon(src)
 		transform = matrix() * 0.01
 		CraterNew()
@@ -1534,27 +1566,37 @@ obj/BigCrater
 		//. = ..()
 
 	Del()
+		if(reallyDelete)
+			big_crater_cache -= src
+			return ..()
 		BigCraterDel()
 
 	proc
 		CraterNew()
 			set waitfor=0
+			var/generation = deferred_delete_generation
 			sleep(world.tick_lag)
+			if(!src || deferred_delete_generation != generation) return
 			animate(src, transform = matrix() * craterMaxSize * rand(75,115) / 100, time = craterGrowTime)
 
 		CraterDeleteTimer()
 			set waitfor=0
+			var/generation = deferred_delete_generation
 			sleep(craterGrowTime + 60)
-			del(src)
+			if(src && deferred_delete_generation == generation) del(src)
 
 		BigCraterDel()
 			set waitfor=0
+			if(crater_fading) return
+			crater_fading = TRUE
+			var/generation = ++deferred_delete_generation
 			var/anim_time = craterFadeTime
 			animate(src, alpha = 0, time = anim_time)
 			sleep(anim_time + 1)
+			if(!src || deferred_delete_generation != generation) return
 			SafeTeleport(null)
 			transform = null
-			big_crater_cache += src
+			big_crater_cache |= src
 
 obj/Blast/Genki_Dama
 	Piercer=0

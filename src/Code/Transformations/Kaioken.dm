@@ -146,6 +146,7 @@ proc/get_body_part(turf/t)
 		bp=body_part_cache[1]
 		body_part_cache-=bp
 	else bp=new
+	bp.deferred_delete_generation++
 	bp.SafeTeleport(t)
 	Timed_Delete(bp,rand(2000,4000))
 	return bp
@@ -161,5 +162,8 @@ obj/Body_Part
 		dir=pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,SOUTHEAST,NORTHWEST,SOUTHWEST)
 		//. = ..()
 	Del()
+		deferred_delete_generation++
+		body_part_cache-=src
+		if(reallyDelete) return ..()
 		body_part_cache+=src
 		SafeTeleport(null)

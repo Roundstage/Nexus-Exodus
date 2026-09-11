@@ -1,5 +1,7 @@
 # Visual Effects
 
+`GetEffect()`/`Effect.Del()` and `Get_explosion()`/`Explosion.Del()` advance the shared deferred-delete generation and deduplicate pool releases. Explosion animation checks its generation after waits. `reallyDelete` removes either visual from its pool and performs actual deletion. Floating-text ownership still uses its separate animation generation, so replacing text animation does not silently postpone an independent lifetime timer.
+
 ## Overview
 Standalone visual effects such as rock debris, Harambe event visuals, rising rock animations, and the Alien Time Stop domain.
 
@@ -16,6 +18,11 @@ Standalone visual effects such as rock debris, Harambe event visuals, rising roc
 - Time Stop domain helpers live beside the legacy Time Freeze type path in `src/Code/ProjectileSystem/Blasts.dm`, avoiding an additional Dream Maker include dependency.
 
 ## Proc Reference
+
+### obj/Effect/proc/runFloatingText
+- Signature: `runFloatingText(duration = 10)`
+- Purpose: Move a floating text effect upward at four-tick intervals until its deadline.
+- Side effects: starts a nonblocking task owned by the effect, increments a temporary generation, and returns the effect to the cache on expiry. `Del()` invalidates the generation before caching, preventing an old task from moving or deleting a reused instance. Non-finite durations use the ten-tick default; negative durations expire immediately.
 
 ### proc/showAlienInfiniteVoidDomain
 - Signature: `showAlienInfiniteVoidDomain(atom/center, duration = 70)`

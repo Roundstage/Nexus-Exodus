@@ -486,11 +486,7 @@ atom/proc/text_overlay(var/text="",xx=0,yy=32,timer=10)
 	i.pixel_x+=xx
 	i.pixel_y+=yy
 	i.SafeTeleport(loc)
-	spawn while(i)
-		i.pixel_y+=4
-		sleep(4)
-	sleep(timer)
-	if(i) del(i)
+	i.runFloatingText(timer)
 
 
 

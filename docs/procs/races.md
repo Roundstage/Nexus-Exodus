@@ -789,7 +789,7 @@ Rush and Rib Breaker create a three-second combat opening owned by the attacking
 #### obj/Rising_Aura_Ultra_Instinct/New
 - Signature: `New()`
 - Inputs: None
-- Purpose: Initialize object state and register references.
+- Purpose: Start the short-lived aura. Both offset and movement workers stop as soon as `deleted` is set, without waiting for physical garbage collection.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

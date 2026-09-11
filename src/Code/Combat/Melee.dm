@@ -302,6 +302,7 @@ mob/proc
 
 proc/Get_lunge_drawback_graphic()
 	for(var/obj/o in lunge_graphics)
+		o.deferred_delete_generation++
 		o.icon_state="1"
 		lunge_graphics-=o
 		return o
@@ -322,28 +323,35 @@ obj/Lunge_Graphic
 	icon_state="1"
 
 	New()
-		spawn CenterIcon(src)
+		var/generation = deferred_delete_generation
+		spawn if(src && deferred_delete_generation == generation) CenterIcon(src)
 
 	Del()
+		deferred_delete_generation++
 		lunge_graphics-=src
+		if(reallyDelete) return ..()
 		lunge_graphics+=src
 		SafeTeleport(null)
 
 	proc/Lunge_stick_to(mob/center)
 		set waitfor=0
-		while(z && center)
+		var/generation = deferred_delete_generation
+		while(src && z && center && deferred_delete_generation == generation)
 			SafeTeleport(center.loc)
 			sleep(world.tick_lag)
 
 	proc/Lunge_go(mob/center)
+		if(!center) return
+		var/generation = ++deferred_delete_generation
+		CenterIcon(src)
 		SafeTeleport(center.loc)
 		Lunge_stick_to(center)
 		for(var/v in 1 to 6)
-			if(!z) break
+			if(!src || !z || deferred_delete_generation != generation) return
 			else
 				icon_state="[v]"
 				sleep(TickMult(0.75))
-		if(z) del(src)
+		if(src && z && deferred_delete_generation == generation) del(src)
 
 mob/var/tmp
 	lunge_attacking

@@ -1,7 +1,11 @@
 # Core Functions
 
+`getSensePowerMagnitude()` contains the existing BP/stat/regen/recovery/efficiency expression. `Sense_Power(mob/A, source_power)` optionally accepts a magnitude computed for the current batch; callers without it still calculate the observer live. KO reduction, denominator floor, rounding and the 999% cap are unchanged. This is not a persistent BP cache.
+
 ## Overview
 Core world, persistence, combat-recovery, and utility functions.
+
+Object deletion uses bounded FIFO queues in `Infrastructure/ObjectLifecycle.dm`. `queueObjectForGarbageCollection(obj/o)` and `queueObjectForPendingDeletion(obj/o)` detach and logically delete each object once, invalidating deferred callbacks immediately. Logout traverses a copy of inventory because enqueueing removes contents. `GarbageCollect(max_objects)` and `drainPendingObjectDeletes(max_objects)` count inspected entries (including nulls), default to 25 and cap requests at 250; after making progress they stop at 80% tick usage. Both queue heads are periodically compacted. `DeletePendingObjectsLoop()` drains one batch every ten ticks after its existing startup delay; `DeletePendingObjects()` drains in batches with a tick pause while work remains. Save/reboot callers await scheduling of these batches, but not asynchronous internals of individual destructors, as with the existing `DeleteNoWait()` contract. A single destructor is not preempted by this budget.
 
 `SpatialQueries.dm` now supplies the shared combat-hitbox layer. Character targets expose centered rectangular combat bounds independently of their density/movement bounds; projectile and radial checks use exact circle-versus-rectangle intersections after native range broad-phase queries, while beams use capsule-versus-rectangle intersections. Legacy density, turf, door, object destruction, and beam-clash movement remain on BYOND's rectangular tile/bounds collision so world traversal and old maps retain their behavior.
 
@@ -1472,9 +1476,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### atom/proc/text_overlay
 - Signature: `atom/proc/text_overlay(var/text="",xx=0,yy=32,timer=10)`
 - Inputs: var/text="", xx=0, yy=32, timer=10
-- Purpose: Handle text overlay.
+- Purpose: Show floating text for a bounded duration; the effect owns its update task so it can expire even if the source atom is deleted.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: obtains a pooled effect and starts `runFloatingText(timer)`. Expiration returns the effect to its cache; releasing/restarting it invalidates the previous task.
 
 #### proc/Nuke_detonate
 - Signature: `proc/Nuke_detonate(nuke_bp=0, turf/origin, range=30, radiation=1, overlay_prob=8, overlay_timer=35, obj/bombObj, requireBombObj)`
@@ -5071,7 +5075,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 - Side effects: see implementation.
 
 #### mob/proc/Sense_Power
-- Signature: `mob/proc/Sense_Power(mob/A)`
+- Signature: `mob/proc/Sense_Power(mob/A, source_power)`
 - Inputs: mob/A
 - Purpose: Handle sense power.
 - Returns: none (implicit).

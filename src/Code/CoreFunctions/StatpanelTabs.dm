@@ -826,11 +826,13 @@ mob/Admin4/verb/tabRefreshToOne()
 	Stat_Lag*=10
 mob/var/Tabs
 
-mob/proc/Sense_Power(mob/A)
-	var/Yours=BP*((Str/strmod)+(End/endmod)+(Pow/formod)+(Res/resmod)+(Spd/spdmod)+(Off/offmod)+(Def/defmod))\
+mob/proc/getSensePowerMagnitude()
+	return BP*((Str/strmod)+(End/endmod)+(Pow/formod)+(Res/resmod)+(Spd/spdmod)+(Off/offmod)+(Def/defmod))\
 	*(regen**(1/11))*(recov**(1/11))*(Eff**(1/11))
-	var/Theirs=A.BP*((A.Str/A.strmod)+(A.End/A.endmod)+(A.Pow/A.formod)+(A.Res/A.resmod)+(A.Spd/A.spdmod)+\
-	(A.Off/A.offmod)+(A.Def/A.defmod))*(A.regen**(1/11))*(A.recov**(1/11))*(A.Eff**(1/11))
+
+mob/proc/Sense_Power(mob/A, source_power)
+	var/Yours = isnum(source_power) ? source_power : getSensePowerMagnitude()
+	var/Theirs = A.getSensePowerMagnitude()
 	if(Yours<1) Yours=1 //division by zero errors
 	var/Power=100*(Theirs/Yours)
 	if(A.KO) Power*=0.05

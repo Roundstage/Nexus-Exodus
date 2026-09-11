@@ -1,5 +1,17 @@
 # Tests
 
+Performance regression coverage includes `runBoundedWorkSmokeTests()` (invalid/non-progressing Leech work, bounded failed/successful orb placement, orb registry cleanup), `runSpecializedEffectWorkSmokeTests()` (flame-field actual destruction and aura termination at logical deletion), and `runPendingDeleteWorkSmokeTests()` (complete logout enqueue, callback invalidation, deduplication, FIFO, null-entry budget, compaction and hard batch limits).
+
+`runAdminMeteorWorkSmokeTests()` checks one factory call per meteor, valid debris types/locations, yielding across batches, and allocation-free rejection of invalid counts or an absent origin.
+
+`runBlueprintSenseWorkSmokeTests()` checks blueprint order/deduplication, first canonical reference, unknown types, invalid inputs and same-size catalog reordering. Sense coverage uses native image objects without a client: unchanged updates, shared observer magnitude, KO/zero/capped power, custom offsets, cache removal/cleanup and arrow scale changes. It does not replace interactive client visibility/rendering checks.
+
+`runPerformanceCatalogSmokeTests()` checks constructor-free administrative metadata, restrictions/search, one indexed inventory pass for 500 items, exact-type matching and reward insertion/removal. `runDeferredLifecycleSmokeTests()` exercises stale lunge animation/following, duplicate crater fades, stale crater expiry, generic/effect/body-part timer reuse, earliest-expiry semantics and explosion animation ownership. These tests use real factories and also require current-use work to complete.
+
+`runPooledProjectileSmokeTests()` exercises actual cache reuse before beam/meteor tasks and projectile border/collision timers resume. Scatter Shot coverage includes delayed homing and cleanup after same-owner reuse, plus normal expiry after target loss. The beam and meteor probes count collision/movement work without combat damage.
+
+`runEffectLifecycleSmokeTests()` exercises floating-text expiration and reuse before an old task wakes, verifies that cached text stops moving, and checks that a replaced bounty preview survives the earlier task's deadline and eventually stops rotating.
+
 Startup smoke coverage includes planetary region resolution, exact League-ID exemptions, Resource and Arcane Essence withholding, Heran opt-out rules, account-slot holder identity, KO/Willpower conquest gates, single-revision capture, treasury preservation, tax reset on conquest, and persistence round trips.
 
 `runEnergyRecoveryStartupSmokeTests()` pins passive recovery during buffs, Power Up, and flight, while verifying that Power Up upkeep begins escalating cubically only after the Efficiency-based soft cap.

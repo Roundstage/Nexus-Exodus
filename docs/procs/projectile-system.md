@@ -1,5 +1,7 @@
 # Projectile System
 
+`Small_crater()` and `BigCrater()` start a new deferred-delete generation on reuse. Their fade helpers are idempotent: repeated deletion does not schedule another fade, and callbacks cannot release a later use. Big-crater growth and expiry callbacks also check the generation. `reallyDelete` removes either crater from its pool before actual destruction.
+
 ## Overview
 Projectile movement, collision, beam segments, and damage behavior.
 
@@ -1031,7 +1033,18 @@ Projectile Health, natural shield, cyber force-field, explosion, beam, and bleed
 #### obj/Blast/proc/startBlastLifecycle
 - Signature: `startBlastLifecycle()`
 - Purpose: Register and schedule the common initialization callbacks used by both newly allocated and pooled projectiles without calling `New()` manually.
-- Side effects: refreshes creation time and runtime projectile indexes.
+- Side effects: advances the temporary pool-use generation, refreshes creation time and runtime projectile indexes, and scopes deferred registration, appearance and border-expiry work to that generation. Both `Del()` and `cache_blast()` invalidate it. It is separate from `projectile_flight_id`, which may change during homing within one use.
+
+#### obj/Blast/DeleteNoWait
+- Signature: `DeleteNoWait(delay = 0)`
+- Purpose: Preserve immediate deletion and delay semantics while preventing a collision cleanup timer from deleting a later pooled use.
+
+#### obj/Blast/proc/trackScatterShotTarget
+- Signature: `trackScatterShotTarget(mob/user, mob/target, homing_delay)`
+- Purpose: Own delayed Scatter Shot homing, target-loss monitoring and final disposal on the projectile. Every callback checks its original pool-use generation, including same-owner reuse. The cast target remains active if selection is cleared; target loss or KO ends tracking. Target-loss drift stops the previous flight before starting random movement.
+
+#### obj/Blast/Beam lifecycle
+- The collision loop captures the pool-use generation and exits if the projectile is released/reused while the loop sleeps. A new use can start its own loop without retaining the former one.
 
 #### proc/Update_transform_size
 - Signature: `proc/Update_transform_size(new_size=1)`

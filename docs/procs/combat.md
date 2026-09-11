@@ -1,5 +1,9 @@
 # Combat
 
+`refreshNexusSenseReadouts()` computes the observer's power magnitude once per batch. `updateNexusSenseReadoutAppearance()` rewrites maptext only when the percentage changes or the image is uninitialized, and offsets only when their values change. Per-target power state is cleared with the readout, including clientless cleanup. Reconciliation advances the regular readout deadline to avoid another full refresh in the same tick. `UpdateSenseArrowPositions()` shares observer coordinates for its batch, and unchanged arrow scale skips redundant transform operations. Visibility checks, target coverage, percentage rules and regular update intervals remain unchanged.
+
+`Lunge_Graphic/Lunge_go()` scopes animation, attachment and disposal to one `deferred_delete_generation`. `Lunge_stick_to()` exits after release/reuse or replacement of the animation; the pool invalidates deferred work before recycling. `reallyDelete` removes the graphic from its pool and delegates actual destruction.
+
 ## Overview
 Combat resolution, skill routing, damage, and attack-specific behavior.
 
@@ -1431,7 +1435,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - Side effects: mutates game state and/or world resources.
 
 #### mob/proc/UpdateSenseArrowPosition
-- Signature: `UpdateSenseArrowPosition(obj/Screen_Indicator/si, instant_update = 0)`
+- Signature: `UpdateSenseArrowPosition(obj/Screen_Indicator/si, instant_update = 0, source_cx, source_cy)`; omitted observer coordinates are calculated on demand.
 - Inputs: obj/Screen_Indicator/si, instant_update = 0
 - Purpose: Update Sense Arrow Position.
 - Returns: none (implicit).
@@ -3040,7 +3044,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 #### proc/Timed_Delete
 - Signature: `proc/Timed_Delete(obj/O,T=100)`
 - Inputs: obj/O, T=100
-- Purpose: Handle timed delete.
+- Purpose: Capture the object's deferred-delete generation before waiting; delete only if that same use still owns the callback. Concurrent timers in one use retain earliest-expiry behavior, rather than postponing an earlier timer when a later one is scheduled.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3054,7 +3058,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 #### obj/Rising_Aura/New
 - Signature: `New()`
 - Inputs: None
-- Purpose: Initialize object state and register references.
+- Purpose: Start a temporary rising aura. Offset and movement workers stop at logical deletion rather than waiting for the garbage collector.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4526,7 +4530,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - Inputs: none.
 - Purpose: Apply bounded periodic Ki damage, burn and brief stun to enemies occupying the field.
 - Returns: none (implicit).
-- Side effects: damages each target at most six times and deletes the field when its duration ends.
+- Side effects: damages each target at most six times. Only one processor runs per field; missing location/owner, logical deletion or expiry ends processing. `Del()` clears per-cast references and really destroys the specialized controller instead of pooling it as a generic effect. Non-finite duration falls back to 150 ticks.
 
 #### proc/BubbleSort
 - Signature: `proc/BubbleSort(list/l)`

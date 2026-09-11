@@ -493,8 +493,8 @@ mob/verb/Stat_Focus()
 
 var/isSparring = 0
 mob/proc/Leech(mob/P,N=1,no_adapt=0,give_as_hbtc_bp=0,android_matters=1,weights_count=1)
+	if(!P || !nexusIsFiniteNumber(N) || N <= 0) return
 	N *= adapt_mod * 0.2 //server leech modifier * arbitrary modifier
-	if(!P) return
 
 	if(!no_adapt)
 		N*=leech_rate**0.75
@@ -512,7 +512,10 @@ mob/proc/Leech(mob/P,N=1,no_adapt=0,give_as_hbtc_bp=0,android_matters=1,weights_
 	for(var/obj/items/Force_Field/ff in item_list) N/=2
 	if(AtBattlegrounds()) N *= 2
 
+	// Reject invalid modifiers and counts too large for subtraction to make progress.
+	if(!nexusIsFiniteNumber(N) || N <= 0 || N - 1 == N) return
 	N=ToOne(N)
+	if(N <= 0) return
 
 	var/old_bppcnt=P.BPpcnt
 	var/old_ki=P.Ki
@@ -523,7 +526,7 @@ mob/proc/Leech(mob/P,N=1,no_adapt=0,give_as_hbtc_bp=0,android_matters=1,weights_
 		P.Health=100
 		P.BP=P.get_bp()
 
-	while(N)
+	while(N > 0)
 		N--
 		isSparring = 1
 		LeechGodKi(P)

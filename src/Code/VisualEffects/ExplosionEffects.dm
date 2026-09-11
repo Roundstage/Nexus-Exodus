@@ -7,6 +7,7 @@ proc/Get_explosion()
 		break
 	if(!e) e=new/obj/Explosion
 	explosion_cache-=e
+	e.deferred_delete_generation++
 	e.Explosion()
 	return e
 
@@ -23,14 +24,20 @@ obj/Explosion
 
 	proc/Explosion()
 		set waitfor=0
+		var/generation = deferred_delete_generation
 		sleep(world.tick_lag)
+		if(!src || deferred_delete_generation != generation) return
 		CenterIcon(src)
 		for(var/v in 1 to 4)
+			if(!src || deferred_delete_generation != generation) return
 			icon_state="[v]"
 			sleep(1)
-		del(src)
+		if(src && deferred_delete_generation == generation) del(src)
 
 	Del()
+		deferred_delete_generation++
+		explosion_cache-=src
+		if(reallyDelete) return ..()
 		SafeTeleport(null)
 		explosion_cache+=src
 

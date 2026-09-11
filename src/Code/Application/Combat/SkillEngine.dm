@@ -704,19 +704,7 @@ datum/SkillEngine
 				spot = pick(spots)
 				a.Can_Home = 0
 				walk_towards(a, spot, 1)
-				spawn(rand(20, 25) * user.Speed_delay_mult(severity = 0.5)) if(a && a.z && a.Owner == user)
-					a.density = 1
-					// Commit to the target captured when cast. Damage may clear selected_target,
-					// but it must not disarm shots already deployed around a valid opponent.
-					if(!user || !target || target.z != user.z || target.KO || !target.attackable) target = null
-					if(target && user.canHitNexusTechniqueTarget(target))
-						a.blast_homing_target = target
-						a.followSelectedTarget(target)
-				spawn if(a && a.z && a.Owner == user)
-					while(a && a.z && target && a.Owner == user && !a.deflected && user && target.z == user.z && !target.KO) sleep(TickMult(2))
-					if(a && a.z && !a.deflected)
-						walk_rand(a)
-						spawn(rand(1, 50)) if(a) del(a)
+				a.trackScatterShotTarget(user, target, rand(20, 25) * user.Speed_delay_mult(severity = 0.5))
 				sleep(TickMult(0.3))
 			else if(a) del(a)
 		user.Ki -= user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1)

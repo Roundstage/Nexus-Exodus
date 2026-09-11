@@ -6,8 +6,8 @@ proc/Initialize_Learnable_Skills_List()
 	if(!Learnable_Skills)
 		Learnable_Skills=new/list
 		for(var/A in typesof(/obj))
-			var/obj/B=new A
-			if(B && B.Cost_To_Learn) Learnable_Skills["[B.name] (Cost: [B.Cost_To_Learn])"] = B
+			if(initial(A:Cost_To_Learn))
+				Learnable_Skills["[initial(A:name)] (Cost: [initial(A:Cost_To_Learn)]) ([A])"] = A
 
 var/list/Illegal_learnables = list(/obj/Regeneration,/obj/Absorb)
 
@@ -30,22 +30,26 @@ mob/Admin4/verb/manageLearnableSkills()
 			while(src&&client)
 				var/list/L=list("Done")
 				for(var/v in Learnable_Skills)
-					var/obj/o=Learnable_Skills[v]
-					if(o&&!(o.type in Illegal_learnables)) L+=o
-				var/obj/o=input(src,"Which skill to make unlearnable?") in L
-				if(!o||o=="Done") return
-				Illegal_learnables+=o.type
-				src<<"[o] is now unlearnable"
+					var/skill_type = Learnable_Skills[v]
+					if(!(skill_type in Illegal_learnables)) L[v] = skill_type
+				var/choice = input(src,"Which skill to make unlearnable?") as null|anything in L
+				if(!client || !choice || choice == "Done") return
+				var/skill_type = L[choice]
+				if(!ispath(skill_type, /obj)) return
+				Illegal_learnables |= skill_type
+				src<<"[choice] is now unlearnable"
 
 		if("Remove")
 			while(src&&client)
 				var/list/L=list("Done")
 				for(var/v in Illegal_learnables)
-					L += new v
-				var/obj/o=input(src,"What skill to make self learnable again?") in L
-				if(!o||o=="Done") return
-				Illegal_learnables-=o.type
-				src<<"[o] is now learnable again"
+					if(ispath(v, /obj)) L["[initial(v:name)] ([v])"] = v
+				var/choice = input(src,"What skill to make self learnable again?") as null|anything in L
+				if(!client || !choice || choice == "Done") return
+				var/skill_type = L[choice]
+				if(!ispath(skill_type, /obj)) return
+				Illegal_learnables -= skill_type
+				src<<"[choice] is now learnable again"
 
 mob/proc/Delete_excess_buffs()
 	var/n=0
@@ -71,73 +75,6 @@ mob/verb/Learn()
 	if(!client) return
 	syncProgressionTrees(silent = TRUE)
 	showProgressionTrees("Combat", "Ki")
-	return
-	Initialize_Learnable_Skills_List()
-	var/list/L = list("Cancel")
-	for(var/A in Learnable_Skills)
-		var/obj/B = Learnable_Skills[A]
-		if(!B) continue
-		if(B && !(B.type in Illegal_learnables))
-			if(!(locate(B.type) in src) || B.Relearnable)
-				if(istype(B,/obj/Buff) && !custom_buffs_allowed) continue
-				if(istype(B,/obj/Buff)&&Buff_count()>=max_buffs)
-					src<<"<font color=cyan>You can not have more than 8 custom buffs so that option has been removed from Learn"
-					continue
-				if(istype(B,/obj/Giant_Form)&&!(Race in list("Namekian","Makyo"))) continue
-				if(istype(B,/obj/Materialization)&&!(Race in list("Namekian","Kai","Majin"))) continue
-				if(istype(B,/obj/Demon_Contract)&&Race!="Demon") continue
-				if(istype(B,/obj/Third_Eye)&&(Race!="Human"||Class=="Spirit Doll")) continue
-				if(istype(B,/obj/Namekian_Fusion)&&Race!="Namekian") continue
-				if(istype(B,/obj/Ultra_Super_Saiyan)&&((Race!="Saiyan"&&Race!="Half Saiyan")||BP<ussj_bp_req||!SSjAble))
-					continue
-				if(istype(B,/obj/SaiyanPower)&&Race!="Saiyan")
-					continue
-				if(istype(B, /obj/Unlock_Potential) && !RaceCanHaveUnlockPotential(Race)) continue
-				if(istype(B, /obj/Attacks/Piercer) && Race != "Namekian") continue //other races have to get it from db wish
-
-				L["[B.name] ([CostToLearn(B)] SP)"] = B
-
-	if(locate(/obj/Buff) in src) L+="Learn new buff attribute"
-	var/Great_Ape_control_sp=50
-	if(!Great_Ape_control&&Tail&&base_bp+hbtc_bp>=5000) L+="Great_Ape Control ([Great_Ape_control_sp] SP)"
-	if(Tail) L+="[Race] Tail Training (35 SP)"
-	while(src && client)
-		var/A=input(src,"Which skill do you want to learn? You have [round(Experience)] Skill Points") in L
-		if(A=="Cancel")
-			Restore_hotbar_from_IDs()
-			return
-		else if(A=="Great_Ape Control ([Great_Ape_control_sp] SP)")
-			if(Experience<Great_Ape_control_sp) src<<"You need [Great_Ape_control_sp] SP to learn this"
-			else
-				Experience-=Great_Ape_control_sp
-				Great_Ape_control=1
-				src<<"You have learned Great_Ape Control"
-				L-="Great_Ape Control ([Great_Ape_control_sp] SP)"
-		else if(A=="Learn new buff attribute") learn_new_buff_attribute()
-		else if(A=="[Race] Tail Training (35 SP)")
-			if(Experience<35) src<<"You need 35 SP to learn this"
-			else
-				Experience-=35
-				tail_level++
-				src<<"You have learned [Race] Tail Training, rank [tail_level]"
-		else
-			var/obj/O = L[A]
-			if(!O) return
-			var/spNeeded = CostToLearn(O)
-			if(Experience < spNeeded) src<<"You need [spNeeded] Skill Points to learn [O.name]"
-			else
-				Experience -= spNeeded
-				var/obj/S = GetCachedObject(O.type)
-				S.Taught=0
-				S.update_teach_timer()
-				contents+=S
-				src<<"You have learned [S.name]"
-				if(S.type == /obj/Attacks/Blast)
-					src << "<font color=cyan>You can alter the default behavior of 'Blast' using the Blast Options command found in the Other tab. For example to make them explosive."
-				if(S.type == /obj/Buff)
-					src << "<font color=cyan>For a custom buff to do anything, you must first set up what it does by clicking the Buff Options command found in the Other tab. You can set which stats it alters and more"
-				if(!O.Relearnable) L-=A
-	Restore_hotbar_from_IDs()
 
 mob/proc/CostToLearn(obj/o)
 	if(!o) return 0

@@ -1400,22 +1400,32 @@ mob/Admin4/verb/meteors()
 	set name = "Meteors"
 	set category="Admin"
 	var/Amount=input(src,"How many meteors do you want to spawn? Up to 500") as num
+	if(!nexusIsFiniteNumber(Amount)) return
 	if(Amount>500) Amount=500
 	if(Amount<1) Amount=1
 	Amount=round(Amount)
-	while(Amount)
-		Amount-=1
-		var/obj/O=pick(GetCachedObject(/obj/SpaceDebris/Asteroid), GetCachedObject(/obj/SpaceDebris/Meteor))
-		var/list/Turf_List
-		for(var/turf/T in range(40,src))
-			if(!Turf_List) Turf_List=new/list
-			Turf_List+=T
-		if(!Turf_List) return
-		var/turf/T=pick(Turf_List)
-		O.SafeTeleport(T)
+	var/spawned_count = spawnAdminMeteors(Amount)
+	admin_blame(src, "[key] has spawned [spawned_count] meteors.")
 
-	var/blame = "[key] has spawned [Amount] meteors."
-	admin_blame(src, blame)
+mob/proc/getAdminMeteor(type_path)
+	return GetCachedObject(type_path)
+
+mob/proc/spawnAdminMeteors(amount)
+	if(!z || !nexusIsFiniteNumber(amount) || amount <= 0) return 0
+	amount = min(500, round(amount))
+	var/list/locations = list()
+	for(var/turf/t in range(40, src)) locations += t
+	if(!locations.len) return 0
+	var/spawned_count = 0
+	while(src && spawned_count < amount)
+		// Choose the type before allocating; pick(factory(), factory()) allocates both.
+		var/type_path = pick(/obj/SpaceDebris/Asteroid, /obj/SpaceDebris/Meteor)
+		var/obj/meteor = getAdminMeteor(type_path)
+		if(!meteor) break
+		meteor.SafeTeleport(pick(locations))
+		spawned_count++
+		if(spawned_count < amount && (spawned_count % 10 == 0 || world.tick_usage >= 80)) sleep(world.tick_lag)
+	return spawned_count
 
 mob/Admin2/verb/bodies()
 	set name = "Bodies"
@@ -2128,52 +2138,53 @@ mob/Admin4/verb/replace(atom/A as turf|obj in view(10))
 var/list/Give_List
 obj/var/Givable=1
 
+proc/getAdminSpawnChoices(search_text, include_mobs = FALSE, allow_auto_shadow_spar = FALSE)
+	var/list/choices = list("Cancel")
+	if(!include_mobs) choices += "Rank"
+	for(var/object_type in typesof(/obj))
+		if(search_text && !findtext("[object_type]", search_text)) continue
+		if(ispath(object_type, /obj/items/Clothes)) continue
+		if(include_mobs)
+			if(!initial(object_type:Makeable)) continue
+		else
+			if(!initial(object_type:Givable)) continue
+			if(object_type == /obj/Auto_Shadow_Spar && !allow_auto_shadow_spar) continue
+		choices["[initial(object_type:name)] ([object_type])"] = object_type
+	if(include_mobs)
+		for(var/mob_type in typesof(/mob))
+			if(search_text && !findtext("[initial(mob_type:name)]", search_text) && !findtext("[mob_type]", search_text)) continue
+			choices["[initial(mob_type:name)] ([mob_type])"] = mob_type
+	return choices
+
 mob/Admin2/verb/giveItem(mob/A in world, Search as text)
 	set name = "GiveItem"
 	set category="Admin"
-	Give_List = null
-	if(!Give_List)
-		Give_List=list("Cancel","Rank")
-		for(var/O in typesof(/obj))
-			if(findtext("[O]",Search) || !Search)
-				var/obj/B=new O
-				if(B)
-					B.referenceObject = 1
-				if(B && B.Givable && !istype(B,/obj/items/Clothes))
-					if((key in coded_admins) || (B.type != /obj/Auto_Shadow_Spar && B.type))
-						Give_List+=B
-	var/obj/O=input(src,"Choose what to give [A]") in Give_List
-	if(O=="Cancel") return
-	if(O=="Rank")
+	var/list/choices = getAdminSpawnChoices(Search, allow_auto_shadow_spar = (key in coded_admins))
+	var/choice = input(src,"Choose what to give [A]") as null|anything in choices
+	if(!client || !A || !choice || choice == "Cancel") return
+	if(choice == "Rank")
 		Give_Rank(A)
 		return
-	A.contents+=new O.type
-	admin_blame(src, "[key] has given [A.key] a [O].")
+	var/object_type = choices[choice]
+	if(!ispath(object_type, /obj)) return
+	A.contents += new object_type
+	admin_blame(src, "[key] has given [A.key] a [choice].")
 
 var/list/Make_List
 obj/var/Makeable=1
 mob/Admin2/verb/make(mob/A in world, Search as text)
 	set name = "Make"
 	set category="Admin"
-	Make_List = null
-	if(!Make_List)
-		Make_List=list("Cancel")
-		for(var/O in typesof(/obj))
-			if(findtext("[O]",Search) || !Search)
-				var/obj/B=new O
-				if(B)
-					B.referenceObject = 1
-				if(B&&B.Makeable&&!istype(B,/obj/items/Clothes)) Make_List+=B
-		Make_List+="**********MOBS**********"
-		for(var/O in typesof(/mob))
-			var/mob/B=new O
-			if(findtext("[B]",Search) || !Search)
-				if(B) Make_List+=B
-	var/obj/O=input(src,"Choose what to make") in Make_List
-	if(O in list("Cancel","**********MOBS**********")) return
+	var/list/choices = getAdminSpawnChoices(Search, include_mobs = TRUE)
+	var/choice = input(src,"Choose what to make") as null|anything in choices
+	if(!client || !A || !choice || choice == "Cancel") return
+	var/object_type = choices[choice]
+	if(!ispath(object_type, /obj) && !ispath(object_type, /mob)) return
 	// spawns object based on turf coords
-	var/mob/M=new O.type(locate(A.x,A.y,A.z))
-	if(ismob(M)) M.Savable_NPC=1
+	var/atom/movable/M = new object_type(locate(A.x,A.y,A.z))
+	if(ismob(M))
+		var/mob/created_mob = M
+		created_mob.Savable_NPC = 1
 	spawn(10) if(M) M.SafeTeleport(M.loc)
 	admin_blame(src, "[key] has made a [M].")
 
