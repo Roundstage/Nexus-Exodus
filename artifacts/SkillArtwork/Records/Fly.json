@@ -1,0 +1,10 @@
+{
+  "id": "Fly",
+  "original": "artifacts/SkillArtwork/Originals/Fly.png",
+  "asset": "src/Icons/UI/SkillArtwork/Fly.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e79d6374a6b6f5111891755831671ec757bcd526a8c973b80a138db3d0c09088",
+  "promptSha256": "d9381d53c6dc9d0f89e8486d6f2c7420b2be97e3b8a2690a3d542bfe52275db0",
+  "approvedSample": false
+}

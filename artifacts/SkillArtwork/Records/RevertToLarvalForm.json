@@ -1,0 +1,10 @@
+{
+  "id": "RevertToLarvalForm",
+  "original": "artifacts/SkillArtwork/Originals/RevertToLarvalForm.png",
+  "asset": "src/Icons/UI/SkillArtwork/RevertToLarvalForm.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "dc18092c4b95c9d3523e9fc8e7cbb30b5caa67a6269eb93df5616de32ea98aa2",
+  "promptSha256": "3fc9e3363aee048ead0f01f0fcfe3b905323c60202349c9da14bb4da5ff0f4b7",
+  "approvedSample": false
+}

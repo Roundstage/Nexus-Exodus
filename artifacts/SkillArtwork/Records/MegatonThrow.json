@@ -1,0 +1,10 @@
+{
+  "id": "MegatonThrow",
+  "original": "artifacts/SkillArtwork/Originals/MegatonThrow.png",
+  "asset": "src/Icons/UI/SkillArtwork/MegatonThrow.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "adb602fb0b97cbdcf8449ae30e39f666544265351b52cc7b28bf924a5fdd1018",
+  "promptSha256": "a285f4ddbaca0a4a6cf01261ba90043117766a5fccc63468ba557f75933ceb6e",
+  "approvedSample": false
+}

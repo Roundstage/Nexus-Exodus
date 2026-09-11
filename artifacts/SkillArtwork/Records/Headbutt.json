@@ -1,0 +1,10 @@
+{
+  "id": "Headbutt",
+  "original": "artifacts/SkillArtwork/Originals/Headbutt.png",
+  "asset": "src/Icons/UI/SkillArtwork/Headbutt.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a1001b624cacc74ca5595ab51a5b9660d47e4dea411130e0fa0bc75a63e2788a",
+  "promptSha256": "7bc39de6eccd54b27e7fb7aba10f9175fc1c6e133a1f8f01f29eb3fd19ce8a9b",
+  "approvedSample": false
+}

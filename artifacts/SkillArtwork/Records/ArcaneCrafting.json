@@ -1,0 +1,10 @@
+{
+  "id": "ArcaneCrafting",
+  "original": "artifacts/SkillArtwork/Originals/ArcaneCrafting.png",
+  "asset": "src/Icons/UI/SkillArtwork/ArcaneCrafting.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "40b74639170bb14eb04a88d3a0bee69dc4e566b4c822bd2443cf7f4b2a1f5ba3",
+  "promptSha256": "1365d7b161716b19435263ff6e56c7bf9932b2fc8e2a52f46779e19e4021a487",
+  "approvedSample": false
+}

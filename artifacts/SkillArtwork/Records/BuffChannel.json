@@ -1,0 +1,10 @@
+{
+  "id": "BuffChannel",
+  "original": "artifacts/SkillArtwork/Originals/BuffChannel.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffChannel.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "43a095b9f97e601a96fa631a1dfbb97925d1cf15152840c22082b5641f7cdfae",
+  "promptSha256": "9f404d28124ca638da35ef9b1ae12cf46f7eb63303dd77c4dc729af88fd950ae",
+  "approvedSample": false
+}

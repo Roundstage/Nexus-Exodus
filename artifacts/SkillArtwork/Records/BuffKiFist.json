@@ -1,0 +1,10 @@
+{
+  "id": "BuffKiFist",
+  "original": "artifacts/SkillArtwork/Originals/BuffKiFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffKiFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "25e5003bca0920fec8647462f1947023f36c920e1f13e6e07906b854286f437b",
+  "promptSha256": "e82f5dbfdd0c640c4fe7fd5744760f0727f24184c5946af9a46f33e3f69b91a3",
+  "approvedSample": false
+}

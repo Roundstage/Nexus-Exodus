@@ -1,0 +1,10 @@
+{
+  "id": "Enchant",
+  "original": "artifacts/SkillArtwork/Originals/Enchant.png",
+  "asset": "src/Icons/UI/SkillArtwork/Enchant.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1685c675787089f65d83241a629c814e447c5f42ea75c1bac4baa04c3d0c2b4c",
+  "promptSha256": "3cb76cf63161dd001b3e69e501ee63f56893667eb9d6fa413b653be66256ee4c",
+  "approvedSample": false
+}

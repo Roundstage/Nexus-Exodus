@@ -1,0 +1,10 @@
+{
+  "id": "VampireBite",
+  "original": "artifacts/SkillArtwork/Originals/VampireBite.png",
+  "asset": "src/Icons/UI/SkillArtwork/VampireBite.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "26f67100f4baa0fb76854972dbc87b47b74f1c56d42e656dd0a381038448c148",
+  "promptSha256": "421ab340ce29dc7aad03dd9e8c32c41d1f47d3dd2264aa96e0e2f8c61a4e0b6d",
+  "approvedSample": false
+}

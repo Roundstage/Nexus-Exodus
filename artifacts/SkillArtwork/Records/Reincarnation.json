@@ -1,0 +1,10 @@
+{
+  "id": "Reincarnation",
+  "original": "artifacts/SkillArtwork/Originals/Reincarnation.png",
+  "asset": "src/Icons/UI/SkillArtwork/Reincarnation.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b093366ea257c391db913726ad9648fa4d1c81caea1f8813a697f59214dc8de2",
+  "promptSha256": "16ffc16b2707c1d1b091d0b114d98bbdff312fc53d0291f981737c6bded1f787",
+  "approvedSample": false
+}

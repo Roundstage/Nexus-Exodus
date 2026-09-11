@@ -1,0 +1,10 @@
+{
+  "id": "UltraSuperSaiyan",
+  "original": "artifacts/SkillArtwork/Originals/UltraSuperSaiyan.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltraSuperSaiyan.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8e4ab56041bdcfb62cb8df772431b0790929d86c4ee6e91ff2134091d1e876a0",
+  "promptSha256": "523961b940b29f2ff3e43dd67c9378af6ecc74843ce6ca9e9441fbc2a0d70859",
+  "approvedSample": false
+}

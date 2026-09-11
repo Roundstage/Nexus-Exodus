@@ -1,0 +1,10 @@
+{
+  "id": "Block",
+  "original": "artifacts/SkillArtwork/Originals/Block.png",
+  "asset": "src/Icons/UI/SkillArtwork/Block.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "3a8a3a808e71dd8f33e982b30d05d7910c05ce76bc1856c6136627e45416424a",
+  "promptSha256": "ffa45c3e914757dae348d004ae9f8adaaa0482a171a74f2a1803766d63c53d9f",
+  "approvedSample": false
+}

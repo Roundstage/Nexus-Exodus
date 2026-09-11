@@ -24,6 +24,7 @@
 - If you add assets, mirror existing folder structure and update references in `.dm` or `.dmf`.
 
 ## Testing Guidelines
+- User direction, 2026-09-11: leave visual and interactive BYOND verification to the user. Do not launch or control Dream Seeker or Dream Maker UI to inspect interfaces or gameplay.
 - CI and `tools/Invoke-ByondSmoke.ps1` require zero compiler warnings, no startup runtimes, and passing startup assertions.
 - Exercise affected gameplay manually after the automated baseline passes.
 - Check runtime output/logs in `data/Logs`, `data/Bugs`, and `Errors.log`.

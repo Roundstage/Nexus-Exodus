@@ -104,6 +104,8 @@ proc/showRockSkillDebris(turf/impact_turf, heavy = FALSE)
 
 obj/Blast/RockSkill
 	name = "hurled rock"
+	in_use = 1
+	blast_caches = 0
 	Can_Home = 0
 	Deflectable = 1
 	var/heavy_rock = FALSE

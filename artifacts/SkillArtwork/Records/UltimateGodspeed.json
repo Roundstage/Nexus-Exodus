@@ -1,0 +1,10 @@
+{
+  "id": "UltimateGodspeed",
+  "original": "artifacts/SkillArtwork/Originals/UltimateGodspeed.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateGodspeed.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "39ab06b1a6accb56f7242bccd662ae0a138b475c0a59065ff1f50f5d3a6a2b4c",
+  "promptSha256": "8d42eba45242709a52ae5fa2a642bd7078fe856e91c0ce8c92b4427d1daee836",
+  "approvedSample": false
+}

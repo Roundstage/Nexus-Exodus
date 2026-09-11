@@ -1,0 +1,10 @@
+{
+  "id": "MakeFruit",
+  "original": "artifacts/SkillArtwork/Originals/MakeFruit.png",
+  "asset": "src/Icons/UI/SkillArtwork/MakeFruit.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "133f357273e8b881ceb24b30a29cf00b69bc9160d7e51991ee52c680866f9688",
+  "promptSha256": "f4dd3a5077f938f510aaa54ef57ebb7895b6406d24019cfc3f2db9d601c86474",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "SelfDestruct",
+  "original": "artifacts/SkillArtwork/Originals/SelfDestruct.png",
+  "asset": "src/Icons/UI/SkillArtwork/SelfDestruct.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d39980a80cf341531a9c9bd59430fa2c17b57024d8d675607153f76ba0a225eb",
+  "promptSha256": "16d847c448f718a104796db049c9af7e22d6dfb98be0554265a6832f8e6943c3",
+  "approvedSample": false
+}

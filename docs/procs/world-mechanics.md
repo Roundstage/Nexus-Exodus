@@ -1955,21 +1955,21 @@ The family records preserve Viltrumite lineage separately from display class. Hu
 #### mob/proc/Can_Mate
 - Signature: `mob/proc/Can_Mate()`
 - Inputs: None
-- Purpose: Return whether Mate.
+- Purpose: Return whether the character is conscious, alive, owns Mate, is outside its cooldown, and has no blocking condition.
+- Returns: boolean flag.
+- Side effects: none expected.
+
+#### mob/proc/canReceiveMateRequest
+- Signature: `mob/proc/canReceiveMateRequest(mob/requester)`
+- Inputs: mob/requester
+- Purpose: Validate both participants before a Mate consent prompt can be sent, including KO state, ownership, cooldown, and compatible genders.
 - Returns: boolean flag.
 - Side effects: none expected.
 
 #### mob/proc/Mate
 - Signature: `mob/proc/Mate(obj/Mate/M)`
 - Inputs: obj/Mate/M
-- Purpose: Handle mate.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/Mate_Graphics
-- Signature: `mob/proc/Mate_Graphics(mob/M)`
-- Inputs: mob/M
-- Purpose: Handle mate graphics.
+- Purpose: Request consent from an eligible adjacent player and record child inheritance without character animation or visual effects.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

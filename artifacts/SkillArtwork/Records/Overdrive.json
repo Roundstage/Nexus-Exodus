@@ -1,0 +1,10 @@
+{
+  "id": "Overdrive",
+  "original": "artifacts/SkillArtwork/Originals/Overdrive.png",
+  "asset": "src/Icons/UI/SkillArtwork/Overdrive.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "cc8a189e32650f19307c17f82549dd9400761e19ee64ba0331d8f5f3dca91b0f",
+  "promptSha256": "11bdc903cbb2308adc7b026a73e52ea68c9a24307238d89faf15b5e0137ee4bb",
+  "approvedSample": false
+}

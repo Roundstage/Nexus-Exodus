@@ -1,0 +1,10 @@
+{
+  "id": "OverheadSmash",
+  "original": "artifacts/SkillArtwork/Originals/OverheadSmash.png",
+  "asset": "src/Icons/UI/SkillArtwork/OverheadSmash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "cc70b84f189c8be2116cb18d04b3f48d5ad8a4325818819fc8f0f1a69c824c03",
+  "promptSha256": "fc17c3cda9604e2a143b293a31c567ba610db1b1e72b91b2352ee7a214011ad1",
+  "approvedSample": false
+}

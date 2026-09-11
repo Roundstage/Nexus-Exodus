@@ -1,0 +1,10 @@
+{
+  "id": "SaiyanPower",
+  "original": "artifacts/SkillArtwork/Originals/SaiyanPower.png",
+  "asset": "src/Icons/UI/SkillArtwork/SaiyanPower.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8d2366abf889d83b8c256d651af0653b025e5c0d9b9374b712fd146b08586aa7",
+  "promptSha256": "83ee94f83d3e17c5f14bf3d6a9a11c6b55bf7e8464097e59670a808cd1a88ffd",
+  "approvedSample": false
+}

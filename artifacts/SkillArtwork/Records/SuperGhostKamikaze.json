@@ -1,0 +1,10 @@
+{
+  "id": "SuperGhostKamikaze",
+  "original": "artifacts/SkillArtwork/Originals/SuperGhostKamikaze.png",
+  "asset": "src/Icons/UI/SkillArtwork/SuperGhostKamikaze.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "83396888faf38671d2125881084224ddd0ed917db2e6225574ebe768c73af9f3",
+  "promptSha256": "2121d87681363cf12b114b60b7360aca54adc6ef72e0b377756baed82c964eda",
+  "approvedSample": false
+}

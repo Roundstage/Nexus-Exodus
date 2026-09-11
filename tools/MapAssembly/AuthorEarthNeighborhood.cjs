@@ -233,14 +233,8 @@ for(const record of data.buildings.filter(b=>b.planet==='SuperEarth')){
  const floor=/hospital|pharmacy/i.test(record.name)?'/turf/EarthFloor/Clinic':/garage|workshop|manufactur/i.test(record.name)?'/turf/EarthFloor/Concrete':'/turf/EarthFloor';
  const set=(x,y,t,objects=[])=>interiors[interiorHeight-y][x-1]=[...objects,t,area].join(',');
  for(let y=iy;y<iy+h;y++)for(let x=ix;x<ix+w;x++)set(x,y,x===ix||x===ix+w-1||y===iy||y===iy+h-1?'/turf/EarthRoof/Dark':floor);
- const sourceProps=record.props.map(p=>({atom:p.atom,original:p.original}));
- if(domestic&&!sourceProps.length)for(const [i,atom]of ['/obj/EarthFurnishing','/obj/EarthFurnishing/Dresser','/obj/EarthFurnishing/Stove','/obj/EarthFurnishing/Sink','/obj/EarthFurnishing/Table','/obj/EarthFurnishing/Chair','/obj/EarthFurnishing/Bookcase'].entries())sourceProps.push({atom,original:null});
- const positions=[];
- // Side walls hold storage/beds, the central circulation strip stays three wide.
- for(let y=iy+h-3;y>=iy+3;y-=3)for(let x=ix+2;x<ix+w-2;x+=3)if(Math.abs(x-cx)>1)positions.push([x,y]);
- assert(sourceProps.length<=positions.length,`Furniture exceeds room capacity: ${record.name}`);
- record.props=sourceProps.map((p,i)=>{const [x,y]=positions[i];set(x,y,floor,[p.atom]);return {...p,position:[x,y,22]};});
- record.interiorBounds=[ix,iy,ix+w-1,iy+h-1];record.entry=[cx,iy+3,22];record.exits=[[cx,iy+1,22],[cx,iy+h-2,22]];
+ record.props=[];
+ record.interiorBounds=[ix,iy,ix+w-1,iy+h-1];record.entry=[cx,iy+3,22];record.exits=[[cx,iy+1,22]];
  for(const [x,y]of record.exits)set(x,y,floor,[`/obj/CityBuildingDoor/Earth/Exit{building_id = "${record.id}"; target_x = ${record.return[0]}; target_y = ${record.return[1]}; target_z = 21}`]);
  put(...record.door.slice(0,2),STREET+'/Sidewalk',[`/obj/CityBuildingDoor/Earth{name = ${JSON.stringify('Enter '+record.name)}; building_id = "${record.id}"; target_x = ${record.entry[0]}; target_y = ${record.entry[1]}; target_z = 22}`]);
 }

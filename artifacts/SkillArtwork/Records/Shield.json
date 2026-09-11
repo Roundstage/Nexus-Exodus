@@ -1,0 +1,10 @@
+{
+  "id": "Shield",
+  "original": "artifacts/SkillArtwork/Originals/Shield.png",
+  "asset": "src/Icons/UI/SkillArtwork/Shield.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2ad82bc15c0a53dda39552630fbcd0f8f174f6724f42f507b636591c6055ac15",
+  "promptSha256": "e84ad85edf73b6bc1f2f398c02df9daf2c5267a31eb80a75cc0e92ec6d35f36f",
+  "approvedSample": true
+}

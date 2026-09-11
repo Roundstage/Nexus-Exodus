@@ -1,0 +1,10 @@
+{
+  "id": "DemonContract",
+  "original": "artifacts/SkillArtwork/Originals/DemonContract.png",
+  "asset": "src/Icons/UI/SkillArtwork/DemonContract.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8441b464c8c115848c7b7420f762dd9366eca804486c59e12624ac2d7cb6b688",
+  "promptSha256": "3dd4ef55096f2187924992f5dac0ebcb9192c3151a90a7f6a9453835dc1433df",
+  "approvedSample": false
+}

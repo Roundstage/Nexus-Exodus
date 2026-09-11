@@ -1,0 +1,10 @@
+{
+  "id": "SpinBlast",
+  "original": "artifacts/SkillArtwork/Originals/SpinBlast.png",
+  "asset": "src/Icons/UI/SkillArtwork/SpinBlast.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7bcfb49db854d1ed65fd4adbcc2cfbafb68b585ef3669effabd427d7ee087bde",
+  "promptSha256": "14181a461b767846b31cf59eb1727cecede8eb68b95aed08eb316d41e2abff7f",
+  "approvedSample": false
+}

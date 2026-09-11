@@ -1,0 +1,10 @@
+{
+  "id": "Invisibility",
+  "original": "artifacts/SkillArtwork/Originals/Invisibility.png",
+  "asset": "src/Icons/UI/SkillArtwork/Invisibility.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b802a995da18cad4492ea8910ca1b500c1c011a55c81af7cfeaf3a9633ac52b3",
+  "promptSha256": "190b5ef9aabca11231b3586a0ce99ba58303e08cae92faaff3d2fd3060300eff",
+  "approvedSample": false
+}

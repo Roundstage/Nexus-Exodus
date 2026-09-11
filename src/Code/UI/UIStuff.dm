@@ -10,6 +10,10 @@ client
 var/list/clients = new
 
 client/Del()
+	if(nexus_build_window)
+		del(nexus_build_window)
+		nexus_build_window = null
+	if(nexus_classic_hud) del(nexus_classic_hud)
 	if(mob) mob.stopNexusPlayerMusicBroadcast(FALSE)
 	clearCombatTeamMarkers()
 	cancelNexusPlayerMusicValidation()

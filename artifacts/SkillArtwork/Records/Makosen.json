@@ -1,0 +1,10 @@
+{
+  "id": "Makosen",
+  "original": "artifacts/SkillArtwork/Originals/Makosen.png",
+  "asset": "src/Icons/UI/SkillArtwork/Makosen.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "73796a421f856b5bb910c51a36573281b02558a5e754590a4a5a7fadee1686ef",
+  "promptSha256": "922ae95c1739ddaca01063e9e332123a037ce7c955ee51ea7b1783b483e4bb13",
+  "approvedSample": false
+}

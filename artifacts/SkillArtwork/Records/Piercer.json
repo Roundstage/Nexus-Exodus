@@ -1,0 +1,10 @@
+{
+  "id": "Piercer",
+  "original": "artifacts/SkillArtwork/Originals/Piercer.png",
+  "asset": "src/Icons/UI/SkillArtwork/Piercer.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d6f77a9b4830d6f26686720e5667ad9cb340ad12ef54187a57207e2857d29bbd",
+  "promptSha256": "aa88efd6ebc4cc6aac96f751f63345d0d824c992d7c42835f6c2db42c18bcd69",
+  "approvedSample": false
+}

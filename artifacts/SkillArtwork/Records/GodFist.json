@@ -1,0 +1,10 @@
+{
+  "id": "GodFist",
+  "original": "artifacts/SkillArtwork/Originals/GodFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/GodFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "14eab59038572aac748f8de20f5e1371b6b87fe647583eecb978211b8d49d8ef",
+  "promptSha256": "c3c9dfd4676d2263fc1a872006b1033c057a240fd93c20906e9d34f1d0306576",
+  "approvedSample": false
+}

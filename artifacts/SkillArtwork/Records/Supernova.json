@@ -1,0 +1,10 @@
+{
+  "id": "Supernova",
+  "original": "artifacts/SkillArtwork/Originals/Supernova.png",
+  "asset": "src/Icons/UI/SkillArtwork/Supernova.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7592e6fde60871b6686669538330605a51f2d1f2629a0252b59d2c1bca5c6309",
+  "promptSha256": "8240bc422456bf12b8bf6c743d2e94e6aceda02c4d0d7bed8bf1e6cd5e3289fd",
+  "approvedSample": false
+}

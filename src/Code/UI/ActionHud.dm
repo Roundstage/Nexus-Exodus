@@ -28,7 +28,7 @@ proc/getNexusLiveBrowserScript(datum/handler, restore_scroll_y = 0)
 
 proc/isNexusTechniqueObject(obj/candidate)
 	if(!candidate || istype(candidate, /obj/items)) return FALSE
-	return candidate.Skill == 1 && !!candidate.hotbar_type
+	return candidate.Skill == 1
 
 proc/getNexusActionButtonIcon(active, accent_color)
 	var/cache_key = "[active]-[accent_color]"
@@ -175,11 +175,11 @@ mob/proc/getNexusShortcutTypes()
 		/obj/NexusHud/ShortcutButton/Milestones,
 		/obj/NexusHud/ShortcutButton/Build,
 		/obj/NexusHud/ShortcutButton/Sense,
+		/obj/NexusHud/ShortcutButton/World,
 		/obj/NexusHud/ShortcutButton/Chat,
 		/obj/NexusHud/ShortcutButton/Hotkeys,
 		/obj/NexusHud/ShortcutButton/Menu)
 	if(IsAdmin())
-		shortcut_types += /obj/NexusHud/ShortcutButton/World
 		shortcut_types += /obj/NexusHud/ShortcutButton/Admin
 	return shortcut_types
 
@@ -277,6 +277,7 @@ mob/proc/removeActionHud()
 		client.screen -= client.nexus_shortcut_bar
 		del(client.nexus_shortcut_bar)
 		client.nexus_shortcut_bar = null
+	if(client.nexus_classic_hud) del(client.nexus_classic_hud)
 	if(client.nexus_player_menu) del(client.nexus_player_menu)
 	if(client.nexus_character_sheet) del(client.nexus_character_sheet)
 	if(client.nexus_music_library_window) del(client.nexus_music_library_window)
@@ -380,16 +381,16 @@ obj/NexusHud/ShortcutButton
 	Click(location, control, params)
 		if(!owner || usr != owner || !owner.client) return
 		switch(action_id)
-			if("inventory") owner.toggleNexusPlayerMenu("inventory")
-			if("skills") owner.toggleNexusPlayerMenu("skills")
+			if("inventory") owner.toggleClassicWidget("inventory")
+			if("skills") owner.toggleClassicWidget("skills")
 			if("progression") owner.toggleProgressionTrees()
 			if("milestones") owner.toggleProgressionTrees("Milestones")
 			if("build") owner.ToggleBuildMenu()
 			if("sense") owner.toggleNexusPlayerMenu("sense")
-			if("world") owner.toggleNexusPlayerMenu("world")
+			if("world") owner.showClassicWidget("menu", "world")
 			if("chat") owner.toggleNexusChatHud()
 			if("hotkeys") owner.toggleNexusHotkeyEditor()
-			if("menu") owner.Settings()
+			if("menu") owner.showClassicWidget("menu", "actions")
 			if("admin") owner.toggleNexusAdminPanel(FALSE)
 		owner.refreshActionHud()
 
@@ -399,7 +400,7 @@ obj/NexusHud/ShortcutButton
 		desc = "Inventory"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_player_menu && character.client.nexus_player_menu.section == "inventory"
+			return character.client && character.client.nexus_classic_hud && character.client.nexus_classic_hud.isOpen("inventory")
 
 	Skills
 		action_id = "skills"
@@ -407,7 +408,7 @@ obj/NexusHud/ShortcutButton
 		desc = "Skills and techniques"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_player_menu && character.client.nexus_player_menu.section == "skills"
+			return character.client && character.client.nexus_classic_hud && character.client.nexus_classic_hud.isOpen("skills")
 
 	Progression
 		action_id = "progression"
@@ -439,7 +440,7 @@ obj/NexusHud/ShortcutButton
 		desc = "Sense"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_player_menu && character.client.nexus_player_menu.section == "sense"
+			return character.client && character.client.nexus_classic_hud && character.client.nexus_classic_hud.isOpen("sense")
 
 	World
 		action_id = "world"
@@ -447,7 +448,7 @@ obj/NexusHud/ShortcutButton
 		desc = "World information"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_player_menu && character.client.nexus_player_menu.section == "world"
+			return character.client && character.client.nexus_classic_hud && character.client.nexus_classic_hud.isOpen("menu") && character.client.nexus_classic_hud.section == "world"
 
 	Chat
 		action_id = "chat"
@@ -468,7 +469,10 @@ obj/NexusHud/ShortcutButton
 	Menu
 		action_id = "menu"
 		accent_color = "#e0bd74"
-		desc = "Open the Escape menu"
+		desc = "Commands, information and HUD panels"
+
+		isActive(mob/character)
+			return character.client && character.client.nexus_classic_hud && character.client.nexus_classic_hud.isOpen("menu")
 
 	Admin
 		action_id = "admin"
@@ -500,6 +504,7 @@ mob/verb/focusNexusCommand()
 datum/NexusPlayerMenu
 	var/tmp/mob/owner
 	var/tmp/section = "inventory"
+	var/tmp/embedded_widget
 	var/tmp/live_refresh_loop
 	var/tmp/last_browser_heartbeat
 	var/tmp/last_scroll_y
@@ -701,13 +706,11 @@ datum/NexusPlayerMenu
 			del(src)
 
 	proc/normalizeSection(requested_section)
-		if(requested_section == "world" && owner && owner.IsAdmin()) return requested_section
-		if(requested_section in list("inventory", "skills", "sense")) return requested_section
+		if(requested_section in list("inventory", "skills", "sense", "world")) return requested_section
 		return "inventory"
 
 	proc/getSections()
-		var/list/sections = list("inventory", "skills", "sense")
-		if(owner && owner.IsAdmin()) sections += "world"
+		var/list/sections = list("inventory", "skills", "sense", "world")
 		return sections
 
 	proc/getBrowserIcon(atom/subject)
@@ -1046,6 +1049,18 @@ datum/NexusPlayerMenu
 	proc/buildDetailRow(label, value)
 		return "<div><small>[html_encode(label)]</small><b>[html_encode("[value]")]</b></div>"
 
+	proc/getBrowserOptions()
+		if(embedded_widget) return "window=mapwindow.classic_[embedded_widget]"
+		return "window=NexusPlayerMenu;size=760x680;can_resize=false;can_close=true"
+
+	proc/returnToEmbeddedWidget()
+		if(!embedded_widget || !owner || !owner.client || !owner.client.nexus_classic_hud) return FALSE
+		var/return_widget = embedded_widget
+		embedded_widget = null
+		owner.client.nexus_classic_hud.reloadWidget(return_widget)
+		del(src)
+		return TRUE
+
 	proc/showExamineWindow(title, subtitle, icon_html, body_html)
 		if(!owner || !owner.client) return
 		auto_refresh_paused = TRUE
@@ -1053,7 +1068,7 @@ datum/NexusPlayerMenu
 		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>[html_encode(title)]</title><style>
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.header-copy{flex:1}.back{padding:7px 10px}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
 		[getNexusHudBrowserCss("bronze")]</style>[getNexusLiveBrowserScript(src, last_scroll_y)]</head><body class='nexus-hud'><div class='shell hud-shell'><div class='header hud-frame'>[icon_html]<div class='header-copy'><h1 class='hud-title'>[html_encode(title)]</h1><p class='hud-muted'>[html_encode(subtitle)]</p></div><a class='back hud-button' href='byond://?src=\ref[src]&action=back'>BACK</a></div><div class='body hud-frame'>[body_html]</div></div></body></html>"}
-		owner << browse(html, "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
+		owner << browse(html, getBrowserOptions())
 
 	proc/showItemExamine(obj/items/item)
 		var/description_text = item.desc ? "[item.desc]" : "No description available."
@@ -1135,7 +1150,7 @@ datum/NexusPlayerMenu
 			var/use_url = "byond://?src=\ref[src]&action=use_item&item=\ref[item]"
 			var/examine_url = "byond://?src=\ref[src]&action=examine_item&item=\ref[item]"
 			var/drop_url = "byond://?src=\ref[src]&action=drop_item&item=\ref[item]"
-			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[examine_url]')\" oncontextmenu=\"window.location.href='[examine_url]';return false;\">[buildIcon(item, "[item]")]<div class='card-copy'><span class='hud-label'>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><div class='card-actions'><a class='hud-button' href='[use_url]'>USE</a><a class='hud-button' href='[examine_url]'>EXAMINE</a><a class='hud-button danger' href='[drop_url]' onclick=\"return confirm('Drop this item in front of your character?');\">DROP</a></div></div>"
+			html += "<div class='card hud-card with-icon with-actions' draggable='true' ondragstart=\"event.dataTransfer.setData('text/plain','classic-skill:\ref[item]')\" onmousedown=\"return nexusRightClick(window.event,'[examine_url]')\" oncontextmenu=\"window.location.href='[examine_url]';return false;\">[buildIcon(item, "[item]")]<div class='card-copy'><span class='hud-label'>[html_encode(status_text)]</span><b>[html_encode("[item]")]</b><small>[html_encode(description_text)]</small></div><div class='card-actions'><a class='hud-button' href='[use_url]'>USE</a><a class='hud-button' href='byond://?src=\ref[src]&action=bar_item&item=\ref[item]'>BAR</a><a class='hud-button' href='[examine_url]'>EXAMINE</a><a class='hud-button danger' href='[drop_url]' onclick=\"return confirm('Drop this item in front of your character?');\">DROP</a></div></div>"
 		if(!item_count) html += "<div class='empty'>This character is not carrying any items.</div>"
 		return html
 
@@ -1148,7 +1163,7 @@ datum/NexusPlayerMenu
 			var/mastery_text = nexusIsFiniteNumber(skill.Mastery) ? "Mastery [round(skill.Mastery, 0.1)]%" : "Learned"
 			var/skill_examine_url = "byond://?src=\ref[src]&action=examine_skill&subject=\ref[skill]"
 			var/use_link = hascall(skill, "Hotbar_use") && owner.isNexusHotkeyObjectAvailable(skill) ? "<a class='hud-button' href='byond://?src=\ref[src]&action=use_skill&subject=\ref[skill]'>USE</a>" : ""
-			html += "<div class='card hud-card with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[skill_examine_url]')\" oncontextmenu=\"window.location.href='[skill_examine_url]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span class='hud-label'>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>Damage or effect, range, and usage details available.</small></div><div class='card-actions'>[use_link]<a class='hud-button' href='[skill_examine_url]'>EXAMINE</a></div></div>"
+			html += "<div class='card hud-card with-icon with-actions' draggable='true' ondragstart=\"event.dataTransfer.setData('text/plain','classic-skill:\ref[skill]')\" onmousedown=\"return nexusRightClick(window.event,'[skill_examine_url]')\" oncontextmenu=\"window.location.href='[skill_examine_url]';return false;\">[buildIcon(skill, "[skill]")]<div class='card-copy'><span class='hud-label'>[html_encode("[skill.hotbar_type]")]</span><b>[html_encode("[skill]")]</b><small>[html_encode(mastery_text)]</small><small>Damage or effect, range, and usage details available.</small></div><div class='card-actions'>[use_link]<a class='hud-button' href='byond://?src=\ref[src]&action=bar_skill&subject=\ref[skill]'>BAR</a><a class='hud-button' href='[skill_examine_url]'>EXAMINE</a></div></div>"
 		if(!skill_count) html += "<div class='empty'>No techniques are registered on this character.</div>"
 		return html
 
@@ -1180,7 +1195,7 @@ datum/NexusPlayerMenu
 		return html
 
 	proc/buildWorld()
-		if(!owner.IsAdmin()) return "<div class='empty'>World inspection is restricted to administrators.</div>"
+		var/is_admin = owner.IsAdmin()
 		var/turf/current_turf = owner.base_loc()
 		var/location_text = current_turf ? "[current_turf.x], [current_turf.y], [current_turf.z]" : "Unknown"
 		var/area/current_location = owner.get_area()
@@ -1190,9 +1205,12 @@ datum/NexusPlayerMenu
 		for(var/mob/player in players)
 			if(!player.client) continue
 			player_count++
-			var/world_examine_url = "byond://?src=\ref[src]&action=examine_world&target=\ref[player]"
+			var/world_examine_url = is_admin ? "byond://?src=\ref[src]&action=examine_world&target=\ref[player]" : ""
 			var/edit_link = owner.AdminLevel() >= 3 ? "<a class='hud-button' href='byond://?src=\ref[src]&action=edit_world&target=\ref[player]'>EDIT</a>" : ""
-			player_cards += "<div class='card hud-card compact with-icon with-actions' onmousedown=\"return nexusRightClick(window.event,'[world_examine_url]')\" oncontextmenu=\"window.location.href='[world_examine_url]';return false;\">[buildIcon(player, "[player]")]<div class='card-copy'><span class='hud-label'>ONLINE / [player.client.inactivity] inactivity</span><b>[html_encode("[player]")]</b><small>[html_encode("[player.Race] / [player.Class]")]</small><small>[player.x], [player.y], [player.z] / BP [Commas(player.BP)]</small></div><div class='card-actions'><a class='hud-button' href='[world_examine_url]'>EXAMINE</a>[edit_link]</div></div>"
+			var/admin_details = is_admin ? "<small>[player.x], [player.y], [player.z] / BP [Commas(player.BP)]</small>" : ""
+			var/examine_link = is_admin ? "<a class='hud-button' href='[world_examine_url]'>EXAMINE</a>" : ""
+			var/card_class = is_admin ? "card hud-card compact with-icon with-actions" : "card hud-card compact with-icon"
+			player_cards += "<div class='[card_class]'>[buildIcon(player, "[player]")]<div class='card-copy'><span class='hud-label'>ONLINE</span><b>[html_encode("[player]")]</b><small>[html_encode("[player.Race]")]</small>[admin_details]</div><div class='card-actions'>[examine_link][edit_link]</div></div>"
 		return "<div class='world-grid'><div class='hud-panel'><small class='hud-label'>YEAR</small><b>[round(Year, 0.1)]</b></div><div class='hud-panel'><small class='hud-label'>PLAYERS</small><b>[player_count]</b></div><div class='hud-panel'><small class='hud-label'>AREA</small><b>[html_encode(area_text)]</b></div><div class='hud-panel'><small class='hud-label'>COORDINATES</small><b>[location_text]</b></div><div class='hud-panel'><small class='hud-label'>OOC</small><b>[OOC ? "ENABLED" : "DISABLED"]</b></div><div class='hud-panel'><small class='hud-label'>TOURNAMENT</small><b>[Tournament ? "ACTIVE" : "INACTIVE"]</b></div></div><h2 class='hud-section-title'>CONNECTED CHARACTERS</h2><div class='cards'>[player_cards]</div>"
 
 	proc/buildContent()
@@ -1222,7 +1240,7 @@ datum/NexusPlayerMenu
 		if(!force_refresh && render_signature == last_render_signature) return
 		last_render_signature = render_signature
 		prepareNexusHudBrowserResources(owner)
-		owner << browse(buildHtml(rendered_content), "window=NexusPlayerMenu;size=980x680;can_resize=true;can_close=true")
+		owner << browse(buildHtml(rendered_content), getBrowserOptions())
 		if(force_refresh) last_browser_heartbeat = world.time
 		startLiveRefresh()
 
@@ -1233,18 +1251,35 @@ datum/NexusPlayerMenu
 				recordHeartbeat(href_list["scroll_y"])
 				return
 			if("back")
+				if(returnToEmbeddedWidget()) return
 				show(TRUE)
 				return
-			if("section") section = normalizeSection(href_list["id"])
+			if("section")
+				if(href_list["id"] == "sense")
+					owner.showClassicWidget("sense")
+					return
+				section = normalizeSection(href_list["id"])
 			if("use_item")
 				var/obj/items/item = locate(href_list["item"])
 				if(item && item in owner.item_list && !item.isNexusTradeOfferedBy(owner)) item.Click()
 			if("drop_item")
 				var/obj/items/dropped_item = locate(href_list["item"])
 				dropOwnedItem(dropped_item)
+			if("bar_item")
+				var/obj/items/item = locate(href_list["item"])
+				if(item && owner.isNexusHotkeyObjectAvailable(item))
+					owner.showNexusHotkeyEditor(0, null, "classic-skill:\ref[item]")
+			if("bar_skill")
+				var/obj/bar_skill = locate(href_list["subject"])
+				if(isOwnedSkill(bar_skill))
+					owner.showNexusHotkeyEditor(0, null, "classic-skill:\ref[bar_skill]")
 			if("use_skill")
 				var/obj/skill = locate(href_list["subject"] ? href_list["subject"] : href_list["skill"])
 				useOwnedSkill(skill)
+				if(embedded_widget)
+					if(isOwnedSkill(skill)) showSkillExamine(skill)
+					else returnToEmbeddedWidget()
+					return
 			if("examine_item")
 				var/obj/items/examined_item = locate(href_list["item"])
 				if(examined_item && examined_item in owner.item_list) showItemExamine(examined_item)
@@ -1275,12 +1310,18 @@ datum/NexusPlayerMenu
 
 mob/proc/showNexusPlayerMenu(section = "inventory")
 	if(!client || !playerCharacter) return
+	if(section == "sense")
+		showClassicWidget("sense")
+		return
 	if(client.nexus_player_menu) del(client.nexus_player_menu)
 	client.nexus_player_menu = new /datum/NexusPlayerMenu(src, section)
 	client.nexus_player_menu.show()
 
 mob/proc/toggleNexusPlayerMenu(section = "inventory")
 	if(!client || !playerCharacter) return
+	if(section == "sense")
+		showClassicWidget("sense")
+		return
 	var/datum/NexusPlayerMenu/current_menu = client.nexus_player_menu
 	if(current_menu && current_menu.section == current_menu.normalizeSection(section))
 		del(current_menu)

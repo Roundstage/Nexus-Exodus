@@ -1,0 +1,10 @@
+{
+  "id": "ScatterShot",
+  "original": "artifacts/SkillArtwork/Originals/ScatterShot.png",
+  "asset": "src/Icons/UI/SkillArtwork/ScatterShot.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "17affddea5f6296ef5a606f69d202b7720186d943911ee6504463c6db31908f2",
+  "promptSha256": "6fd6d4e49650e567ffc91bdbf27f554291cc7678fb72ee8b0e1f82bc8fa178d8",
+  "approvedSample": false
+}

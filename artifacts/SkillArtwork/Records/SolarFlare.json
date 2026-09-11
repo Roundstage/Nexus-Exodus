@@ -1,0 +1,10 @@
+{
+  "id": "SolarFlare",
+  "original": "artifacts/SkillArtwork/Originals/SolarFlare.png",
+  "asset": "src/Icons/UI/SkillArtwork/SolarFlare.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "c7cd1f509629f8522009515040b12f3e51727e99037ddb9010accc2741caa280",
+  "promptSha256": "58f1b73d3f6700518c6b713c26a892929fdaaa3656d5ff7c72242011b6a30b8d",
+  "approvedSample": true
+}

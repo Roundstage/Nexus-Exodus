@@ -1,0 +1,10 @@
+{
+  "id": "BodySwap",
+  "original": "artifacts/SkillArtwork/Originals/BodySwap.png",
+  "asset": "src/Icons/UI/SkillArtwork/BodySwap.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a04d29907efe2599839e09d5eeedd57e4f47966041c521a14fe58306a0e0c9f8",
+  "promptSha256": "4c8257fb467c2304ca0736127803945010a54d2e527bfe483a1e10c1f3774162",
+  "approvedSample": false
+}

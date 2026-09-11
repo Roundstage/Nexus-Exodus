@@ -1,0 +1,10 @@
+{
+  "id": "BurningShot",
+  "original": "artifacts/SkillArtwork/Originals/BurningShot.png",
+  "asset": "src/Icons/UI/SkillArtwork/BurningShot.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "53daa47d570b8be6f1b33e68a725e9cf12a8566079d72896162aa76cd964caa8",
+  "promptSha256": "30d67225f55c4b7e27c0b441eaf96010e79af00b17e1870714defc18533eef88",
+  "approvedSample": false
+}

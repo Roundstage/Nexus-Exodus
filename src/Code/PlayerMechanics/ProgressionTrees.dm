@@ -1080,6 +1080,9 @@ datum/NexusProgressionTreeWindow
 		return "available"
 
 	proc/buildNodeIcon(datum/ProgressionNode/node)
+		if(node.reward_kind == "skill" || (node.reward_kind == "magic" && node.reward_type != /obj/Arcane_Crafting))
+			var/skill_art = getNexusSkillArtworkResource(owner, node.reward_type)
+			if(skill_art) return "<img src='[skill_art]' alt=''>"
 		if(!node.icon_file) return "<span class='fallback'>[html_encode(copytext(node.name, 1, 2))]</span>"
 		var/icon_key = "[node.icon_file]|[node.icon_state]"
 		var/resource_name = "progression_[md5(icon_key)].png"
@@ -1373,7 +1376,7 @@ datum/NexusProgressionTreeWindow
 			del(src)
 			return
 		prepareNexusHudBrowserResources(owner)
-		owner << browse(buildHtml(), "window=NexusProgressionTrees;size=1280x820;can_resize=true;can_close=true")
+		owner << browse(buildHtml(), "window=NexusProgressionTrees;size=1280x820;can_resize=false;can_close=true")
 
 	Topic(href, list/href_list)
 		if(!canUse()) return

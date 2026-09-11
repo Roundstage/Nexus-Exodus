@@ -1,0 +1,10 @@
+{
+  "id": "Fireball",
+  "original": "artifacts/SkillArtwork/Originals/Fireball.png",
+  "asset": "src/Icons/UI/SkillArtwork/Fireball.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "81d302cc6ac5cef7eb5ffdeb5b0611929ca3b300a4b9c0a45f136c0dae4a1f39",
+  "promptSha256": "b128187ae69147c7edaa029ebfe9ad6c2745bc624782bd53abf902c8d2128086",
+  "approvedSample": false
+}

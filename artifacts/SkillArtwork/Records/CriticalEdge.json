@@ -1,0 +1,10 @@
+{
+  "id": "CriticalEdge",
+  "original": "artifacts/SkillArtwork/Originals/CriticalEdge.png",
+  "asset": "src/Icons/UI/SkillArtwork/CriticalEdge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "3ca16f16c09426bd0cffa1c435da7a5e5266c013c9bd89d7633c954b37f3809a",
+  "promptSha256": "8dc38677f68afcf7375792b68aee245238d3ef3f68532279b23abf61f3356519",
+  "approvedSample": false
+}

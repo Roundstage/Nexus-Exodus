@@ -1,0 +1,10 @@
+{
+  "id": "RevertTransformation",
+  "original": "artifacts/SkillArtwork/Originals/RevertTransformation.png",
+  "asset": "src/Icons/UI/SkillArtwork/RevertTransformation.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "05f09625d4d3f50364395701cf6ac465514e2141395bfab1c79340a7404096ba",
+  "promptSha256": "417dd7092216985e2209f21b9d5534f355c1d401a452beb1b01a8b1df26b23de",
+  "approvedSample": false
+}

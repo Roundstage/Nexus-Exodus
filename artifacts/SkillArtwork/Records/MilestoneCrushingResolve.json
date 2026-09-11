@@ -1,0 +1,10 @@
+{
+  "id": "MilestoneCrushingResolve",
+  "original": "artifacts/SkillArtwork/Originals/MilestoneCrushingResolve.png",
+  "asset": "src/Icons/UI/SkillArtwork/MilestoneCrushingResolve.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ced563bd8b4228bf76f52eea5f24d4b75fed6b0aa82af4c03cfa51c13d1cfa4e",
+  "promptSha256": "cc4604afb72a354e36c3e50de25310e91be80a3ceb6886d816a2babe0d7ee7b0",
+  "approvedSample": false
+}

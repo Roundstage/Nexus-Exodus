@@ -1,0 +1,10 @@
+{
+  "id": "NamekianFusion",
+  "original": "artifacts/SkillArtwork/Originals/NamekianFusion.png",
+  "asset": "src/Icons/UI/SkillArtwork/NamekianFusion.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4e2ba6a3eac496710af69f1b964bdeb8a03cd7e5bdff884825edc7a122222bbb",
+  "promptSha256": "0a1a4bd744a6a78afa7b8d8581ae15c71f3a693f1ab8ac343b7bf23f2ae968c8",
+  "approvedSample": false
+}

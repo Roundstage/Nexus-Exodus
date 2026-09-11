@@ -1,7 +1,9 @@
 {
   "buildings": 66,
-  "interiorFloorTiles": 22736,
+  "interiorFloorTiles": 22996,
   "allRoomsConnected": true,
   "exactReturnDoors": true,
-  "preservedFurniture": true
+  "emptyInteriors": true,
+  "singleReturnDoor": true,
+  "interiorObjects": 66
 }

@@ -1,0 +1,10 @@
+{
+  "id": "IaiSlash",
+  "original": "artifacts/SkillArtwork/Originals/IaiSlash.png",
+  "asset": "src/Icons/UI/SkillArtwork/IaiSlash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "cb5c96c04085b566f87972ffab3a3fbca3cd89b6bb376d49a555d04dba1f9d1b",
+  "promptSha256": "40e1202a9bd97551d0c162737301ab362231c5dd0b3e0e05ee65ab2e2b740e37",
+  "approvedSample": false
+}

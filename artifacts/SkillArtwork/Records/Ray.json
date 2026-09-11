@@ -1,0 +1,10 @@
+{
+  "id": "Ray",
+  "original": "artifacts/SkillArtwork/Originals/Ray.png",
+  "asset": "src/Icons/UI/SkillArtwork/Ray.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "04255314bfb6732f3b3ec6c622d86e2adad789bdaaccff96e3a00177d3e8f142",
+  "promptSha256": "bfa9ac06abb2bb6ef8cdf2214c3239101df427ac0d8e4c40957aa6ab465b26fc",
+  "approvedSample": false
+}

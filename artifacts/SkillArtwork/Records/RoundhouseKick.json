@@ -1,0 +1,10 @@
+{
+  "id": "RoundhouseKick",
+  "original": "artifacts/SkillArtwork/Originals/RoundhouseKick.png",
+  "asset": "src/Icons/UI/SkillArtwork/RoundhouseKick.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "32265f72d898d0ed953e5a1797ae97f73c780c02159a1a5df5bd6835a1843b1f",
+  "promptSha256": "563d425e5c7d204b15f850245dbb690f6defdcf8fb2f0fd5dac1a337f725a9ef",
+  "approvedSample": false
+}

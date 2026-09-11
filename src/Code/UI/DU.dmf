@@ -2364,6 +2364,80 @@ window "mapwindow"
 		on-show = ".winset\"mainwindow.mainvsplit.left=mapwindow\""
 		on-hide = ".winset\"mainwindow.mainvsplit.left=\""
 
+	elem "classic_chat"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+	elem "classic_sense"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+	elem "classic_target"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+	elem "classic_bar"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #00000000
+		border = none
+		is-visible = false
+	elem "classic_menu"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+
+	elem "classic_stats"
+		type = BROWSER
+		pos = 8,80
+		size = 280x260
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+	elem "classic_inventory"
+		type = BROWSER
+		pos = 8,80
+		size = 460x680
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+	elem "classic_skills"
+		type = BROWSER
+		pos = 8,80
+		size = 460x680
+		anchor1 = none
+		anchor2 = none
+		background-color = #181510
+		border = none
+		is-visible = false
+
 window "outputwindow"
 	elem "outputwindow"
 		type = MAIN
@@ -4229,3 +4303,25 @@ window "skills"
 		text = "<"
 		command = ".Skill_Points \"-\" \"Energy\""
 
+
+macro "classictyping"
+	elem "Escape"
+		name = "Escape"
+		command = ".winset \"mapwindow.macro=macro mapwindow.map.focus=true\""
+
+window "classiclegacy"
+	elem "classiclegacy"
+		type = MAIN
+		size = 360x440
+		title = "All commands and information"
+		is-visible = false
+		can-resize = true
+		on-close = "closeClassicLegacy"
+	elem "body"
+		type = CHILD
+		size = 360x440
+		anchor1 = 0,0
+		anchor2 = 100,100
+		left = ""
+		right = ""
+		splitter = 100

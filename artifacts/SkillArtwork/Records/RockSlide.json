@@ -1,0 +1,10 @@
+{
+  "id": "RockSlide",
+  "original": "artifacts/SkillArtwork/Originals/RockSlide.png",
+  "asset": "src/Icons/UI/SkillArtwork/RockSlide.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "33c8476049770969a40ad9db051bc5795ad4653ba807d67b919c07a6a0ee3ac3",
+  "promptSha256": "8cfdb2511d59d21b4bdb3e2c1dd54c9520b2a1975222e18713206089cd4adab7",
+  "approvedSample": false
+}

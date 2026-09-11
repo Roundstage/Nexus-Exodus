@@ -1,0 +1,10 @@
+{
+  "id": "WolfFangFist",
+  "original": "artifacts/SkillArtwork/Originals/WolfFangFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/WolfFangFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "64c7ad261a123db294cf11e5c3c8b671eb604ee9dcef1b2333929bc18d17d870",
+  "promptSha256": "2d587942a8153ad2dd8bf5c93f3b6943d3fe35712a867fdad9d4e65f1970bbed",
+  "approvedSample": true
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BusterCannon",
+  "original": "artifacts/SkillArtwork/Originals/BusterCannon.png",
+  "asset": "src/Icons/UI/SkillArtwork/BusterCannon.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "65a8a6c0206ad6cf75cb81783c0aaa70ce91a2cba62633bf49c56d0be4ff91d4",
+  "promptSha256": "144cce64af27da3d60210a56896c0adb44987960231b518c2e8ba1bfc6411846",
+  "approvedSample": false
+}

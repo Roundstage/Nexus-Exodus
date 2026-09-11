@@ -1,0 +1,10 @@
+{
+  "id": "Cleave",
+  "original": "artifacts/SkillArtwork/Originals/Cleave.png",
+  "asset": "src/Icons/UI/SkillArtwork/Cleave.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "49a1b9cf47750cb8c2dd0ffe3a339ceeb40569248b30b20a97ddc9931de27722",
+  "promptSha256": "d814079352ef050a582d3e91a4a21dc698e43d418f8c018bbe6d62571de7097c",
+  "approvedSample": false
+}

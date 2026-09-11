@@ -1,0 +1,10 @@
+{
+  "id": "Accelerate",
+  "original": "artifacts/SkillArtwork/Originals/Accelerate.png",
+  "asset": "src/Icons/UI/SkillArtwork/Accelerate.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "826320dc455d92acccabebc5f7548422b7abe7f969d7881343fd4abc6bbfc932",
+  "promptSha256": "9cb72616b6eb6694508dc18c810af4028af8b675d57077354fa11017d1c9b20b",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "FlashStep",
+  "original": "artifacts/SkillArtwork/Originals/FlashStep.png",
+  "asset": "src/Icons/UI/SkillArtwork/FlashStep.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7cb5d9d747b20df87db06eac2c1ae53decbdfb146696364b304366c734b9a4ec",
+  "promptSha256": "d46e35e32427401c0f46afc881a4d1a3508bc6e7ec92212302e229ad6f65b7fd",
+  "approvedSample": false
+}

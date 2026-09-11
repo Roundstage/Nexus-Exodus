@@ -1,0 +1,10 @@
+{
+  "id": "RestoreYouth",
+  "original": "artifacts/SkillArtwork/Originals/RestoreYouth.png",
+  "asset": "src/Icons/UI/SkillArtwork/RestoreYouth.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d2cfb17f65d47efaef7ddb3847efb6ec3a71ed5c750c239bdeae3d7748dfcf1e",
+  "promptSha256": "660a1b37a0cbb47d05220e92fb91ef56e594b821214da44310b13e9474ff0e32",
+  "approvedSample": false
+}

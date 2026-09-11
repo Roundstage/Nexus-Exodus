@@ -1,0 +1,10 @@
+{
+  "id": "LaserBeam",
+  "original": "artifacts/SkillArtwork/Originals/LaserBeam.png",
+  "asset": "src/Icons/UI/SkillArtwork/LaserBeam.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "18f4e40995171142d35904179616244ce3d0f6e92cb5e8277bda7687cbd3d72d",
+  "promptSha256": "d4f3698853d368b815603fd77b657864fa1ffed2bd4933d7c5e9f14313e31324",
+  "approvedSample": false
+}

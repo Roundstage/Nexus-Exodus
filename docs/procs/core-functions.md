@@ -15,7 +15,7 @@ Player persistence supports three independent character slots. Live character an
 
 NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds default all three to off. `ServerFeatureDefaults.dm` also performs a one-time migration for pre-versioned `Misc` settings, then preserves later administrator choices. Disabled NPC worlds neither load nor overwrite the persisted `data/NPCs` roster.
 
-`StatpanelTabs.dm` now refreshes supplemental stat data only in Side + Tabs mode. Skills, Other, and Admin remain BYOND's single native verb-category tabs; no synthetic statpanel with a duplicate name is generated. Items and the admin-only World data retain native atom click and context-menu behavior.
+`StatpanelTabs.dm` refreshes supplemental native stat data in Side + Tabs mode or while the Classic All native tabs window is open. Classic captures call the same data procs through classicStat/classicStatPanel without replacing native atom context menus. The Stats tab refreshes through `Stat_Stat()` when the Other legacy category is enabled, alongside Modules and Souls. Skills, Other, and Admin remain BYOND's single native verb-category tabs; no synthetic statpanel with a duplicate name is generated. Items and the admin-only World data retain native atom click and context-menu behavior.
 
 `MainCreation.dm` temporarily maps both `Viltrumite` and `Half-Viltrumite` to the existing Saiyan spawn. Replace that bridge with the Viltrum spawn when the dedicated planet map is added.
 

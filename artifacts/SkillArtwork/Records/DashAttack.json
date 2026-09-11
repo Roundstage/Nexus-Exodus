@@ -1,0 +1,10 @@
+{
+  "id": "DashAttack",
+  "original": "artifacts/SkillArtwork/Originals/DashAttack.png",
+  "asset": "src/Icons/UI/SkillArtwork/DashAttack.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "014a6ff2a66bdca8b595193cf4a0adde72f8ef8823e44edbebb910bf4656c0a9",
+  "promptSha256": "69e69773cac97e12f401b968ad928801816ec05ae28a8c01167eb743c1146958",
+  "approvedSample": false
+}

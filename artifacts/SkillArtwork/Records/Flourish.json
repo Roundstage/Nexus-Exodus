@@ -1,0 +1,10 @@
+{
+  "id": "Flourish",
+  "original": "artifacts/SkillArtwork/Originals/Flourish.png",
+  "asset": "src/Icons/UI/SkillArtwork/Flourish.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2ea0318771b0a6bc4c170a2950ea208bff48b1e682b9b1f776ca45d2da5ef82b",
+  "promptSha256": "9acb2948376caffbe635af89d5337ded8d8dc18ce468f8f9d08bc0fe0851f5d4",
+  "approvedSample": false
+}

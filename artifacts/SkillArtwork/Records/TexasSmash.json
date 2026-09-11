@@ -1,0 +1,10 @@
+{
+  "id": "TexasSmash",
+  "original": "artifacts/SkillArtwork/Originals/TexasSmash.png",
+  "asset": "src/Icons/UI/SkillArtwork/TexasSmash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e0c7b0a31bee7bc9386a572e690d9794a07865ee8bf29d32711b00a2acad8c4e",
+  "promptSha256": "16de092d7cd7ce48bf9b2612175464f9927d061b4e047b532661a962633775e6",
+  "approvedSample": false
+}

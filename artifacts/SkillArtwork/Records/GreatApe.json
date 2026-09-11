@@ -1,0 +1,10 @@
+{
+  "id": "GreatApe",
+  "original": "artifacts/SkillArtwork/Originals/GreatApe.png",
+  "asset": "src/Icons/UI/SkillArtwork/GreatApe.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a3de8510104279156e0a4f4cdb6ae4f53051be920ccd44e91e29ecd5c0e5d7c8",
+  "promptSha256": "9a6a64e20a730135bf347913aa32864f5592bd40aa335746128a892965616e28",
+  "approvedSample": false
+}

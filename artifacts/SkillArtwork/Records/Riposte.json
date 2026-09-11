@@ -1,0 +1,10 @@
+{
+  "id": "Riposte",
+  "original": "artifacts/SkillArtwork/Originals/Riposte.png",
+  "asset": "src/Icons/UI/SkillArtwork/Riposte.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "c20d524158aed24a2ad4a490fbfbcb3c250b0fa55c6df615d72804fa207daf2a",
+  "promptSha256": "3b6bfe48c853e6ed84f215b98075692f9366d836ebabb20fba9a7558d03235dc",
+  "approvedSample": false
+}

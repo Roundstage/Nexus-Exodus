@@ -1,0 +1,631 @@
+{
+  "AutoAttack": {
+    "subject": "A bronze clenched fist encircled by two broad rotating amber motion arcs, suggesting repeated automatic close-range punches. Compact central silhouette."
+  },
+  "Buff": {
+    "subject": "A central dark torso igniting a split gold-and-violet adjustable aura, three broad facets radiating around its chest. Personal customizable power, no sliders or text."
+  },
+  "Focus": {
+    "subject": "One calm pair of closed eyes inside a bright indigo forehead-shaped halo, energy drawn inward into a single small white point. Symmetric concentration."
+  },
+  "BuffMuscleForce": {
+    "subject": "A massive flexed forearm with a hard amber stone-like aura bracing the elbow. Earthy ochre, warm white highlights; emphasize muscle and solidity."
+  },
+  "BuffCombatMathematics": {
+    "subject": "A silver stylized eye with three geometric trajectory lines converging onto a tiny red opponent silhouette, cool teal calculated precision. No equations or numbers."
+  },
+  "BuffKiBlade": {
+    "subject": "A short violet luminous energy edge hugging a forearm held diagonally, a broad tight crescent of energy along its side. Compact martial stance emblem."
+  },
+  "BuffMagicForce": {
+    "subject": "A purple human chest silhouette with three bright broad currents circulating around it like a magical turbine. Plum, lilac-white; no written runes."
+  },
+  "BuffOffensiveStance": {
+    "subject": "A side-on red fighter silhouette with forward fist extended and back heel raised, large sharp orange spearhead aura pointing forward."
+  },
+  "BuffDefensiveStance": {
+    "subject": "A dark fighter torso behind two crossed forearms, layered broad steel-blue chevrons protecting the body. Compact triangular braced stance."
+  },
+  "BuffBleedingEdge": {
+    "subject": "A crimson blade-like speed streak crossing a silver sprinting silhouette, two sharp dark-red accents trailing it. Dangerous mobility stance, no gore."
+  },
+  "BuffBurningFist": {
+    "subject": "One tight orange fist surrounded by a single flaring red flame plume angled forward. The flame hugs the knuckles, compact aggression."
+  },
+  "BuffKiFist": {
+    "subject": "A palm-sized white-violet fist with three circular force rings converging around the knuckles. Bright purple controlled focused unarmed force."
+  },
+  "BuffDemonicFury": {
+    "subject": "A snarling dark horned demonic mask silhouette within a heavy crimson aura with two broad upward flame horns. Purple shadow, red-white highlights."
+  },
+  "BuffAngelicGrace": {
+    "subject": "Two ivory feather-like wing sweeps cradle a small poised airborne silhouette. Pale gold and sky blue graceful mobility; no religious symbols."
+  },
+  "BuffChannel": {
+    "subject": "A planted mage silhouette with open arms drawing two enormous violet streams inward to the chest; broad vertical pillar of power, stillness at center."
+  },
+  "UltimateHighTension": {
+    "subject": "A muscular bronze torso splitting a large dark restraint ring with an explosive gold aura. Huge broad white-gold spikes convey peak power."
+  },
+  "UltimateGodspeed": {
+    "subject": "A white airborne silhouette cutting through a sharp zigzag of electric blue lightning, with a single long lightning wing trail; stronger vertical zigzag than a normal dash."
+  },
+  "UltimateFistsOfFury": {
+    "subject": "Two oversized red-hot fists punching outward from one central orange explosion, strong symmetric V-shaped arrangement; relentless strength."
+  },
+  "UltimateArcanePower": {
+    "subject": "A large amethyst radiant orb suspended between three broad nested magical arcs, intense violet-white center and deep purple space."
+  },
+  "UltimateBestialWrath": {
+    "subject": "A roaring broad jade-green beast maw with three amber claws sweeping beneath it, all one compact aggressive aura emblem."
+  },
+  "UltimateBushido": {
+    "subject": "One immaculate ivory katana held upright before a red rising sun circle, two small dark shoulders at the base. Balanced sober gold and crimson discipline."
+  },
+  "HokutoShinken": {
+    "subject": "A wall of many compact cyan fists rushing toward the viewer, one large focal fist at front with a fan of five clear afterimage fists behind. Rapid barrage, no wolf."
+  },
+  "KiFist": {
+    "subject": "Two bare knuckles sheathed in solid luminous cyan gauntlets of energy, fists facing each other. Thick glowing cuffs and blue-white aura."
+  },
+  "KiSword": {
+    "subject": "A single straight translucent turquoise sword made entirely of ki, fine light blade and luminous hilt, angled upward with a compact energy spark at tip."
+  },
+  "KiHammer": {
+    "subject": "A single gigantic square-headed cobalt energy hammer, oversized translucent head, short handle, blazing cyan edges, diagonal heavy silhouette."
+  },
+  "SpiritSword": {
+    "subject": "A tall elegant emerald-white blade with a long spirit-flame tip and bright floating oval energy core at its hilt. Clean vertical graceful supreme ki weapon."
+  },
+  "Block": {
+    "subject": "Two dark braced forearms crossed into a large X stopping one blunt amber impact burst, thick blue-white protective rim, crop near elbows."
+  },
+  "ViltrumiteGuard": {
+    "subject": "A muscular dark upper body in tight boxing guard stopping a frontal white impact with one braced forearm. Crimson rim light and a small gold opening behind the stopped impact."
+  },
+  "GuardBreak": {
+    "subject": "One red fist cracking a large angular blue guard plate into three pieces. The wide fractured opening is the main readable symbol."
+  },
+  "CriticalEdge": {
+    "subject": "A sharply tilted silver sword edge reflecting a tiny crimson four-point critical glint, close-up razor edge and black negative space. Weapon stance, not a full sweep."
+  },
+  "Slice": {
+    "subject": "A slim silver sword cutting one clean short diagonal ivory slash against navy black. Simple fast stroke, no extra effects."
+  },
+  "Bash": {
+    "subject": "The large blunt brass pommel of a sword striking a violet-white four-lobed stun burst. Pommel dominates, no blade edge impact."
+  },
+  "Flourish": {
+    "subject": "A curved silver sword spinning through two elegant gold ribbon arcs in a circular flourish. Clearly ornamental movement, bold broad arcs."
+  },
+  "WindHowl": {
+    "subject": "A silver curved cutting shockwave expanding as three broad circular wind crescents, blue-white gusts on dark slate, no wolf."
+  },
+  "IaiSlash": {
+    "subject": "A black scabbard in the lower corner and a katana being drawn across a long horizontal icy-white slice; a single faint advancing silhouette behind."
+  },
+  "Riposte": {
+    "subject": "Two blades crossing, a dark incoming blade halted by a bright blue parrying blade that curls into one gold returning arc. Strong X and return motion."
+  },
+  "Cleave": {
+    "subject": "A heavy steel blade sweeping a very wide orange semicircle across three simple dark target silhouettes. Broad frontal fan silhouette."
+  },
+  "SwordStab": {
+    "subject": "A long silver blade foreshortened directly toward the viewer, point dominant, two aligned dark silhouettes behind its straight narrow path. Crimson glint."
+  },
+  "OverheadSmash": {
+    "subject": "A heavy weapon head descending vertically with a thick amber trail and three blocky chips flying from a linear impact below."
+  },
+  "ColossalImpact": {
+    "subject": "An enormous dark hammer striking a central point with two broad expanding golden shock rings and large angular fragments, radial mass."
+  },
+  "BurningSlash": {
+    "subject": "Three curved red-orange slash arcs stacked into a claw-like fan, a silver blade finishing the longest final streak; subtle dark crimson tear, no gore."
+  },
+  "Headbutt": {
+    "subject": "Two simplified head silhouettes in side profile colliding forehead-first, the attacking forehead large with a compact bronze-white impact star."
+  },
+  "UppercutCombo": {
+    "subject": "A large clenched fist rising vertically on a corkscrew orange trail, three broad ascending impact accents and a small launched silhouette above."
+  },
+  "AxeKick": {
+    "subject": "A bent leg with the heel driving straight down like an axe, broad pale gold vertical crescent following the downward foot. No weapon."
+  },
+  "KickbackCombo": {
+    "subject": "One strong forward kick at center, a faint advancing afterimage beyond it, and a second compact fist burst at far edge. Two separated orange impacts linked by cyan motion."
+  },
+  "MarchOfFury": {
+    "subject": "An advancing red fighter with four large staggered fist echoes forming a stepping diagonal toward the viewer. Heavy marching momentum."
+  },
+  "PileDriver": {
+    "subject": "Two compact faceless wrestling silhouettes, the attacker holding an inverted opponent as both plunge toward a single orange ground impact. Non-graphic, bold readable grapple pose."
+  },
+  "MegatonThrow": {
+    "subject": "One fighter lifting an opponent through a broad golden overhead arc then throwing them outward, simplified two figures, powerful diagonal airborne throw."
+  },
+  "ConsecutiveNormalPunches": {
+    "subject": "A large neutral bare fist in the middle of six broad orange fist afterimages lined up horizontally. Restrained warm white and russet, rapid repeated straight punches."
+  },
+  "ExplodingHeartStrike": {
+    "subject": "Two rigid fingertips touching a dark torso silhouette, one small precise crimson inner burst glowing beneath the chest. Non-graphic internal pressure strike."
+  },
+  "TexasSmash": {
+    "subject": "An immense forward fist smashing through one huge squared golden blast of pressure, foreshortened knuckles dominate, massive short raw impact."
+  },
+  "WingClip": {
+    "subject": "A low horizontal sweeping boot tracing a wide teal semicircle across two small lower-leg silhouettes. Ankle-level sweep, no wings."
+  },
+  "SandThrow": {
+    "subject": "A large open palm flinging one ochre sand fan toward a half-closed dark eye silhouette. Broad sandy crescent, only a few large grit accents."
+  },
+  "BurningShot": {
+    "subject": "A flaming fist emerging from a short violet warp streak, three orange-white impact lobes clustered around the knuckles. Fire plus close-range combo."
+  },
+  "BlueCometSpecial": {
+    "subject": "A small compact fighter at the head of a thick blue comet, five broad white motion bands converging into a forward elbow. Long diagonal accelerating rush."
+  },
+  "CometReversal": {
+    "subject": "A bright cyan beam bends back along one broad U-shaped arc around a braced dark fighter, with a small white fist impact at the returning tip. Countering a beam then attacking."
+  },
+  "ViltrumiteRush": {
+    "subject": "A broad-shouldered crimson-and-white flying fighter driving shoulder-first through a broken dark guard, thick straight red speed trail, imperial violent momentum."
+  },
+  "RibBreaker": {
+    "subject": "A compact bare fist striking the side of a dark torso, three stylized ivory rib arcs visible as an abstract impact overlay, amber compression burst, no gore."
+  },
+  "RelentlessPursuit": {
+    "subject": "Two airborne silhouettes in a long straight chase, the larger crimson pursuer connected to the small pale target by one sharp gold pursuit trail. No impact explosion."
+  },
+  "ConquerorsGrip": {
+    "subject": "One large pale hand clamping tightly around a dark opponent's shoulder and upper arm, crimson angular pressure aura. Strong C-shaped grip."
+  },
+  "MeteorDrop": {
+    "subject": "Two locked grapple silhouettes falling vertically like a dense red meteor into a broad golden ground crater. Pair remains compact, no gore."
+  },
+  "SpearHand": {
+    "subject": "An outstretched knife-hand with fingers tightly together thrusting diagonally like an ivory spear, sharp red edge and compact crimson pressure tear. No literal spear, no gore."
+  },
+  "NolansCombination": {
+    "subject": "A muscular crimson fighter delivers a chain of three blunt pale fist echoes ending in one long ivory knife-hand slash. Four clearly rhythmic marks, compact diagonal composition."
+  },
+  "PunishingReversal": {
+    "subject": "A sharply bent elbow pivots back against a stopped dark incoming fist, one tight red hooked counter arc and gold impact glint. Elbow is the unmistakable main shape."
+  },
+  "WallOfFlame": {
+    "subject": "Five tall broad orange flame pillars joined into one continuous horizontal wall, dark bases and white-hot crest, no scenery."
+  },
+  "DragonNova": {
+    "subject": "A huge deep blue charged sphere with a dragon-shaped cyan energy ribbon curled around its lower edge. Weighty round mass, strong glowing core."
+  },
+  "SkyBreak": {
+    "subject": "A large sword swinging upward and launching one enormous blue-white triangular pressure wave that splits two dark cloud shapes. Clear rising sonic blast."
+  },
+  "EchoingSlash": {
+    "subject": "Three clean parallel ivory crescent cutting waves traveling away from a short silver blade, diminishing in size, teal motion accents, no explosion."
+  },
+  "SuperGhostKamikaze": {
+    "subject": "Three mischievous pale violet ghost copies with broad pointed hair and curled smoky tails, one leading ghost large and two smaller behind. Simple eyes and mouths, no named character faces."
+  },
+  "DefensiveBlasting": {
+    "subject": "A faceless fighter leaping backward to the left while a broad fan of orange ki pellets pursues forward to the right. Opposing motion directions are clear."
+  },
+  "SphereOfDestruction": {
+    "subject": "A small intensely black-violet orb with a thick magenta rim tracking a faint distant silhouette along one curved red path. Orb fills most of frame, controlled compact menace."
+  },
+  "AuraOfDestruction": {
+    "subject": "A dark standing silhouette engulfed by a wide purple destructive aura with thick outward hooked lobes, two tiny fading incoming motion streaks stopped at its edge."
+  },
+  "DeathLaser": {
+    "subject": "A razor-thin ruby laser slicing horizontally through three aligned dark target silhouettes, bright red single straight line and one precise emitter glint. No charge orb."
+  },
+  "Shockwave": {
+    "subject": "A low central fist releasing two broad amber and pale blue pressure rings outward, compact circular ripple silhouette."
+  },
+  "SuperExplosiveWave": {
+    "subject": "A dark figure at the center of an enormous orange-white radial blast, two incoming blue energy balls shattering at its perimeter, bright outward force."
+  },
+  "Earthquake": {
+    "subject": "An overhead circle of chunky stone slabs collapsing inward into a dark center, three thick amber cracks converge inward. Inward sinkhole force, no floating island."
+  },
+  "GenkiDama": {
+    "subject": "One enormous luminous sky-blue sphere floating above two small upraised hands, three broad white energy currents gathering into its surface. Monumental round accumulated energy."
+  },
+  "DeathBall": {
+    "subject": "One finger supporting a dense violet-black sphere with a red-white rim, three short jagged purple rays, compact fast hostile energy ball."
+  },
+  "Supernova": {
+    "subject": "An enormous orange sunlike sphere with broad white cracks of power across its surface and one swelling red rim. Slow heavy massive explosion potential."
+  },
+  "Kikoho": {
+    "subject": "Two stylized hands form a triangle aperture around a brilliant yellow-white triangular pressure blast. Strong triangular negative space, no letters."
+  },
+  "LaserBeam": {
+    "subject": "A mechanical steel palm emitter fires a narrow straight lime-green energy beam, dark metal wrist and one concentric targeting ring.",
+    "description": "Cybernetic sustained energy laser projected from an artificial emitter."
+  },
+  "Beam": {
+    "subject": "A single steady cyan-white energy wave emerging from one open palm, broad smooth stream with a rounded head.",
+    "description": "Sustain concentrated ki as a controllable energy wave; the basis of named beam techniques."
+  },
+  "Ray": {
+    "subject": "One extended finger fires a fine rose-red beam with one bright needle tip. Huge simple pointing hand silhouette, narrow attack.",
+    "description": "A quick narrow Death Beam projected in a straight line."
+  },
+  "Piercer": {
+    "subject": "Two fingertips launch a golden needle beam wrapped in a very tight violet spiral coil, spear point and tiny dark shield crack. Narrow precision, unlike the wide purple Double Sunday.",
+    "description": "A peak piercing beam that grows over distance and deals 2.3x damage to shields."
+  },
+  "Kamehameha": {
+    "subject": "Two strongly cupped hands at lower left release a dense brilliant blue-white wave with a large rounded leading head. Wide familiar charged palm blast, crisp blue bands.",
+    "description": "A charged sustained martial-arts energy wave released from cupped hands."
+  },
+  "Dodompa": {
+    "subject": "One upright pointing index finger emits a tiny gold star and a perfectly straight yellow-orange beam. Dominant hand with needle-thin gold line.",
+    "description": "A focused narrow energy ray released from a single fingertip."
+  },
+  "FinalFlash": {
+    "subject": "Two open palms side by side project a huge broad rectangular golden-white wave with diverging yellow shoulders. Maximum overwhelming width and raw luminous impact.",
+    "description": "The Beam tree's peak raw-power wave, built for maximum direct damage."
+  },
+  "GarlicGun": {
+    "subject": "Two overlapping braced palms launch a thick violet wave with a white core and angular flared leading crest, deep magenta bloom, no corkscrew.",
+    "description": "A charged named sustained purple energy wave."
+  },
+  "Masenko": {
+    "subject": "Two open palms stacked overhead, elbows suggested only as dark corners, release a compact angular golden beam forward from the high focal point.",
+    "description": "A named energy wave projected from an overhead palm stance."
+  },
+  "BusterBarrage": {
+    "subject": "A dark central torso firing six thick orange energy bullets outward in irregular radial directions. Starburst volley silhouette."
+  },
+  "AttackBarrier": {
+    "subject": "A dark figure inside a ring of six large blue ki orbs, nearest two orbs bright and ready to intercept a small orange approaching shot. Beaded sphere perimeter, not smooth shield."
+  },
+  "Blast": {
+    "subject": "One small bright cyan ki projectile racing forward with a short simple white teardrop tail. Basic compact projectile; no hands."
+  },
+  "BigBangAttack": {
+    "subject": "A broad open palm behind one compact brilliant teal-white energy ball, heavy dark blue outer rim and flared shock collar. Strong hand plus sphere silhouette."
+  },
+  "Charge": {
+    "subject": "A dense blue sphere being compressed between two dark inward-curving palms, three thick white charge streaks pulled toward center. Ready-to-release explosive projectile."
+  },
+  "CyberCharge": {
+    "subject": "A metallic forearm cannon with a broad glowing yellow capacitor orb at the muzzle, two angular amber charging plates. Mechanical concentrated shot."
+  },
+  "Kienzan": {
+    "subject": "A razor-thin golden energy disc viewed at a shallow angle, large luminous ellipse with one sharp white cutting rim and short curved tail. No central handle."
+  },
+  "SpinBlast": {
+    "subject": "Four bright cyan pellets rotate out of a broad spiral whirlpool, clear pinwheel motion with white-hot center. Circular continuous spray."
+  },
+  "Makosen": {
+    "subject": "Two large parallel yellow-white energy clusters bursting into a dense short cone of smaller orange projectiles. Wide doubled barrage shape, not a beam."
+  },
+  "TimeFreeze": {
+    "subject": "A large violet cosmic circle enclosing a frozen pale humanoid and three suspended amber fragments, a broad still silver hourglass silhouette behind. No clock numerals."
+  },
+  "Explosion": {
+    "subject": "A bright red-orange burst erupting upward from one cracked ground point, large angular blast petals and a dark ring beneath."
+  },
+  "ScatterShot": {
+    "subject": "Six magenta-white homing orbs suspended around one dark central target, curved trails all converging inward. Encirclement closing from all sides."
+  },
+  "Sokidan": {
+    "subject": "One golden-white floating energy sphere making a sharp right-angle turn along a broad curved amber trail, a guiding hand at one lower corner."
+  },
+  "Genocide": {
+    "subject": "A small dark planet silhouette with three long violet homing projectile trails arcing around its circumference toward one bright target point. No people or gore."
+  },
+  "PhotonFlash": {
+    "subject": "A long narrow pale cyan beam with a clean diamond-shaped leading flare and two delicate broad parallel speed wings. Sleek efficient reach; no spiral."
+  },
+  "BusterCannon": {
+    "subject": "A huge blunt orange-white cylindrical energy wave with a heavy red circular muzzle flare and thick short trail. Slow cannon-like mass; no physical cannon."
+  },
+  "RockSlide": {
+    "subject": "A broad diagonal fan of five chunky amber stones moving in parallel, one leading mid-sized rock and four smaller but clear companions, ochre dust."
+  },
+  "RockTomb": {
+    "subject": "One colossal almost-square dark boulder with bright amber fracture seams about to burst, two big slabs peeling outward. Much heavier than Rock Throw."
+  },
+  "GiantForm": {
+    "subject": "Two overlapping dark humanoid silhouettes, a small one at base and an enormous broad-shouldered amber giant rising behind. Thick upward golden expansion arcs."
+  },
+  "LimitBreaker": {
+    "subject": "A red muscular silhouette bursting through a broken gold limiter ring, one white-hot vertical crack in the aura and three heavy fragments; unstable peak power."
+  },
+  "HideEnergy": {
+    "subject": "A small dim teal flame enclosed by two dark cupped hands inside a black shroud, only a thin violet rim betrays its presence. Concealed ki."
+  },
+  "DashAttack": {
+    "subject": "A single red fist leading a stretched forward fighter silhouette through one long straight white-gold impact streak, force grows with distance."
+  },
+  "DemonContract": {
+    "subject": "A dark parchment scroll curling around a glowing violet soul flame held by a claw-like crimson hand; parchment entirely blank, no letters or sigils."
+  },
+  "SoulWeapon": {
+    "subject": "A ghostly magenta sword forming from a bright white soul flame in an open hand, diffuse violet edge and flowing spirit hilt."
+  },
+  "SoulAttack": {
+    "subject": "A pale humanoid soul silhouette enclosed inside a fast deep red energy projectile, broad white trailing flame, one compact attack shape."
+  },
+  "MeditateLevel2": {
+    "subject": "A calm seated lotus silhouette with three broad ascending purple aura rings and a bright golden flame at its core. Training through deep meditation."
+  },
+  "Sense": {
+    "subject": "A luminous turquoise eye suspended above one broad curved planet horizon, two expanding pale blue awareness rings. Basic global sensing."
+  },
+  "AdvancedSense": {
+    "subject": "One large cyan eye focused on a small glowing humanoid silhouette inside its iris, two clean contour rings around the figure. Personal energy inspection."
+  },
+  "Sense3": {
+    "subject": "A silver-teal eye with a sharply detailed three-layer iris revealing a bright humanoid core and three small distinct energy facets. Advanced perception, no numerals."
+  },
+  "ShadowSpar": {
+    "subject": "Two mirrored faceless fighters exchanging one clear punch, the real fighter warm bronze and the imaginary opponent translucent violet. Broad central sparring silhouettes."
+  },
+  "Regeneration": {
+    "subject": "A cracked green forearm silhouette knitting back together under two emerald-white flowing bands, healed seam glows softly, non-graphic."
+  },
+  "GivePower": {
+    "subject": "Two hands at opposite corners joined by a thick golden energy stream, the receiver's hand surrounded by a swelling orange aura. Energy transfer over distance."
+  },
+  "KeepBody": {
+    "subject": "A closed silver martial guardian helmet and broad armored shoulder plates float inside a luminous golden protective halo, with a blue spectral echo of the same armor behind. Armor-only magical preservation emblem, no exposed body or skin. Large bold shapes."
+  },
+  "MakeFruit": {
+    "subject": "One large luminous amber pear-like power fruit growing above an open hand, two broad green leaves and a concentrated orange inner glow."
+  },
+  "Bind": {
+    "subject": "Two heavy crimson spectral shackles closing around a small dark spirit silhouette, one broad glowing chain arc descending into a dark red void. No gore."
+  },
+  "Absorb": {
+    "subject": "One large pink elastic palm enveloping a smaller pale energy silhouette and drawing its glow inward, broad spiral red trail. Abstract absorption, no gore."
+  },
+  "ShunkanIdo": {
+    "subject": "Two fingers touching a faceless forehead, a pale blue figure reappearing in a separate bright vertical sliver behind. Instant Transmission precision, blue and white.",
+    "description": "Instant Transmission follows a known person's energy and teleports the user and nearby companions."
+  },
+  "Teleport": {
+    "subject": "Two small planet spheres connected by one broad violet-white space-fold arc, a compact dark traveler crossing at center. Interplanetary teleport."
+  },
+  "PowerControl": {
+    "subject": "A calm dark upper torso between a rising gold aura on one side and a compressed blue aura on the other, one bright controlled core at chest.",
+    "description": "Regulate ki output to power up, power down and control transformations."
+  },
+  "Fly": {
+    "subject": "A pale airborne fighter rising diagonally with open space around their bent legs and two broad sky-blue lift streams below, no wings."
+  },
+  "SelfDestruct": {
+    "subject": "A small dark humanoid silhouette dissolving at the center of a massive red-white spherical shockburst, broad jagged outward rays. Abstract non-graphic self-sacrifice."
+  },
+  "KaioRevive": {
+    "subject": "One luminous upright golden soul emerging from a dim gray prone silhouette, a large soft white rising arc conveys return to life. No grave or cross."
+  },
+  "UnlockPotential": {
+    "subject": "An open palm above a faceless forehead releases a hidden brilliant golden inner flame, dark outer shell separates into three broad pieces."
+  },
+  "Imitation": {
+    "subject": "Two identical ivory face masks overlapping, one teal and one violet edge, a fluid light ribbon connects them. Identity mimicry, no real face."
+  },
+  "Invisibility": {
+    "subject": "A nearly vanished humanoid torso outlined by a thin icy rim with its middle blending into the black background, one broad fading translucent sweep."
+  },
+  "Observe": {
+    "subject": "A large violet eye gazing into a small distant scene framed by a luminous circle, a single pale humanoid silhouette within. Remote observation, no busy scenery.",
+    "description": "Observe another character remotely."
+  },
+  "Materialization": {
+    "subject": "An open violet-lit palm materializes a small copper sword and folded dark weighted robe from three broad golden energy fragments. Conjuring equipment."
+  },
+  "Mystic": {
+    "subject": "A serene dark head and shoulders with a luminous white flame rising from the crown, lavender aura compressed tightly around the body, restrained awakened potential.",
+    "description": "A powerful mystic empowerment of the character."
+  },
+  "FireFist": {
+    "subject": "A bare forearm with a large blazing fist, broad red-orange flames flow backward from the knuckles, concentrated white heat inside.",
+    "description": "A combat buff with a fiery fist aura."
+  },
+  "SaiyanPower": {
+    "subject": "A jagged rising golden hair-like flame over a clenched dark fist, strong gold-white warrior power aura, no letters or emblems.",
+    "description": "A racial warrior power buff."
+  },
+  "Majin": {
+    "subject": "A dark angular demonic forehead mask with two red glowing eyes and a violet flame crown, no letter on the forehead. Angry power, ominous crimson aura."
+  },
+  "RestoreYouth": {
+    "subject": "A gray aged hand transforms along one bright green ribbon into a smooth youthful hand, split before-and-after contour without realistic wrinkles."
+  },
+  "SplitForm": {
+    "subject": "One centered pale blue fighter splitting into two matching translucent fighters at the sides, a broad Y-shaped ribbon of ki connects them."
+  },
+  "FinalExplosion": {
+    "subject": "A muscular standing silhouette with outstretched arms inside an expanding golden-white sphere, thick magenta charge rim and massive downward flare. Distinct golden sacrifice explosion."
+  },
+  "Hakai": {
+    "subject": "A dark hand releases a tiny purple-white erasure core toward an abstract gray silhouette turning into violet dust fragments. Sparse stark void, non-graphic."
+  },
+  "PressurePunch": {
+    "subject": "One enormous pale fist drives a compressed white pressure ring toward the viewer, thick amber concentric wake behind the knuckles, no fire."
+  },
+  "RoundhouseKick": {
+    "subject": "A large sideways kicking leg sweeps a blue-white circular pressure crescent across the frame, hip rotation readable in a small dark torso behind. No fist.",
+    "description": "Rotate into a powerful sweeping kick that damages and knocks the opponent away. The legacy description incorrectly says punch; the implementation and VFX are a kick."
+  },
+  "Dropkick": {
+    "subject": "Two extended boot soles lead a compact airborne fighter in a horizontal two-footed strike, broad orange-white impact burst at the feet."
+  },
+  "Telepathy": {
+    "subject": "Two simple silver head silhouettes facing each other, a broad violet wave connects glowing points at their temples. Thought transmission, no speech text.",
+    "description": "Send thoughts directly to another character."
+  },
+  "MakeHolyPendant": {
+    "subject": "A single luminous gold protective pendant with an oval pale sapphire center and a short chain arc, bright white sheltering halo, no religious cross."
+  },
+  "UltraSuperSaiyan": {
+    "subject": "An enormous muscular golden warrior torso with a jagged high golden hair silhouette, flaring amber aura, bulk and power dominate over motion.",
+    "description": "A bulky Super Saiyan transformation that emphasizes muscular power."
+  },
+  "ThirdEye": {
+    "subject": "A closed pair of eyes beneath one large open violet-white forehead eye, clear vertical diamond arrangement and soft golden awareness halo."
+  },
+  "FocusinRevert": {
+    "subject": "A violet head silhouette with a small dark artificial crystal above the forehead being lifted away by a pale hand, one calming blue circular sweep.",
+    "description": "Remove the effects of Focusin from oneself or another character."
+  },
+  "MilestoneBleedingEdge": {
+    "subject": "A heavy silver sword edge with one suspended dark ruby droplet and a broad crimson stance crescent, black steel background, no wound."
+  },
+  "MilestoneThunderingBlows": {
+    "subject": "A steel hammer head wrapped in one bold branching gold lightning fork, compact pale impact star beneath. Weapon shock and stagger."
+  },
+  "MilestoneVenomousIntent": {
+    "subject": "A silver blade coated in bright emerald venom, one large green droplet at tip and a coiling dark serpent-like vapor ribbon."
+  },
+  "MilestoneCrushingResolve": {
+    "subject": "A pale clenched fist crushing one violet crystal willpower flame, three large purple shards spilling downward, black crimson pressure aura."
+  },
+  "Reincarnation": {
+    "subject": "A dim violet adult soul spirals into a small bright golden new humanoid silhouette, one large flowing circular cycle of light. Renewal without grave symbols."
+  },
+  "NamekianFusion": {
+    "subject": "Two green faceless warrior silhouettes merging shoulder-to-shoulder into one luminous jade figure, broad gold convergence arcs. No named characters."
+  },
+  "GreatApe": {
+    "subject": "A roaring enormous brown ape head with red eyes under a small pale full moon, broad golden aura, chunky fierce silhouette, no scenery."
+  },
+  "HeranTransformation": {
+    "subject": "A faceless turquoise warrior torso with blazing swept orange hair and a broad jade-white power flare, strong additive energy surge."
+  },
+  "GooTrap": {
+    "subject": "A large glossy pink pool with one elastic hand-shaped tendril reaching toward a small dark foot, purple shadow and bright pink rim, trapping motion."
+  },
+  "BodySwap": {
+    "subject": "Two contrasting faceless torso silhouettes, one purple and one pale green, joined by two broad opposing curved spirit streams. Body exchange without gore."
+  },
+  "Overdrive": {
+    "subject": "A dark mechanical heart reactor forced open with a red-hot center and three strained orange circuit veins. Cybernetic power beyond limits, no text."
+  },
+  "ScrapAbsorb": {
+    "subject": "A mechanical open palm draws three large broken steel fragments into its glowing green core, heavy cobalt metal edges and green energy intake."
+  },
+  "Fireball": {
+    "subject": "One blazing round orange sphere with a thick curling flame tail, white hot core and charred red rim. Distinct organic fire, no ki rings."
+  },
+  "FrostBolt": {
+    "subject": "One long sharp icy blue crystal shard flying diagonally with three broad frozen wisps, white pointed ice edge and deep cobalt facets."
+  },
+  "LightningBolt": {
+    "subject": "One massive jagged gold-white lightning bolt crosses the square, two bold side branches and a small violet charged halo at origin."
+  },
+  "FrostNova": {
+    "subject": "A central pale blue ice crystal detonates into six large radial frost spikes, thick icy circular shockring, cold navy negative space."
+  },
+  "EarthPrison": {
+    "subject": "Four chunky tall ochre rock slabs enclose a small dark central figure in a square ring, clear view from above at an angle, amber cracks, no landscape."
+  },
+  "EmpoweredAttacks": {
+    "subject": "Three small bronze clenched fists share one large bright orange enchantment halo, the central fist largest, communal offensive empowerment."
+  },
+  "EmpoweredDefenses": {
+    "subject": "Three simplified blue shield-like body outlines covered by one broad silver-teal protective arc, central figure larger. Ally-wide defense blessing."
+  },
+  "Accelerate": {
+    "subject": "A stylized silver winged boot inside one broad green arc with three short gold speed ticks, lightweight magical haste, no numerals."
+  },
+  "Rejuvenate": {
+    "subject": "A single open hand cradles a bright emerald-white growing life flame with two broad upward leaf-like energy petals, restorative magic distinct from paired Heal hands."
+  },
+  "GravityWell": {
+    "subject": "A dark central sphere bends three thick concentric violet orbit rings downward into a deep funnel, two heavy gray stones pulled toward it."
+  },
+  "CreatePortal": {
+    "subject": "One upright violet oval portal with a bright silver inner rim and a smaller matching portal reflected through its center, a pale foot crossing the threshold."
+  },
+  "Enchant": {
+    "subject": "A hovering amethyst crystal sends three broad white-violet ribbons into a silver sword blade, the enchanted edge turns luminous gold. Equipment enchantment."
+  },
+  "ArcaneCrafting": {
+    "subject": "Two broad violet hands shape a hovering rough amethyst crystal into a small gold arcane vessel, large fragments converge, ritual creation without runic text."
+  },
+  "VampireBite": {
+    "subject": "A stylized open pale mouth with two long white fangs above one red life-energy droplet, dark plum background, non-graphic vampiric feeding."
+  },
+  "GodFist": {
+    "subject": "One dark clenched fist inside an intense crimson flame aura, three broad rising red power bands flare from the wrist, white-hot red rim. Kaioken escalation."
+  },
+  "Defend": {
+    "subject": "One plain bronze forearm braced vertically with the other fist held close behind, a small blue impact stopped in front. Fundamental guard.",
+    "description": "Basic defensive combat action."
+  },
+  "FlashStep": {
+    "subject": "A white boot disappearing through one narrow turquoise flash seam, a single faint boot afterimage just behind. Instant short movement, no full figure.",
+    "description": "Short-range flash step movement."
+  },
+  "Evade": {
+    "subject": "A crouched dark figure slipping sideways under one broad amber incoming attack streak, cool cyan afterimage curving down and away.",
+    "description": "A short evasive dash."
+  },
+  "Injure": {
+    "subject": "A narrow gold strike glint aligned with the joint of a dark limb silhouette, three crimson pressure marks, restrained non-graphic targeted injury.",
+    "description": "Aim a controlled combat injury."
+  },
+  "Grab": {
+    "subject": "A large bare bronze hand tightly gripping a dark wrist, C-shaped fingers and a small gold squeeze accent, straightforward close grapple.",
+    "description": "Grab an adjacent opponent."
+  },
+  "ManualAttack": {
+    "subject": "One large bare bronze fist with a compact white four-point impact at its leading knuckles, plain single punch and minimal motion.",
+    "description": "One direct manual melee attack."
+  },
+  "Lunge": {
+    "subject": "A forward bronze fighter silhouette leading with one fist and planted back foot, broad short amber triangular speed wedge. Committed melee entry.",
+    "description": "The universal committed melee approach used to enter close combat."
+  },
+  "Train": {
+    "subject": "Two wrapped training fists held beside a small bronze striking post, one broad amber sweat-like energy arc. Physical training emblem.",
+    "description": "Physical training practice."
+  },
+  "Meditate": {
+    "subject": "A simple seated lotus silhouette with one soft teal circular aura and a white energy dot at chest, low calm composition.",
+    "description": "Meditation to recover health and energy."
+  },
+  "PowerUp": {
+    "subject": "A dark clenched fist lifting through one broad ascending golden flame column, bright upward wedge of ki.",
+    "description": "Raise controlled battle power by drawing out ki."
+  },
+  "PowerDown": {
+    "subject": "Two lowered open dark palms settling a broad blue aura into one small calm white core, clear downward inward motion.",
+    "description": "Lower battle power and settle the active ki aura."
+  },
+  "MakeAmulet": {
+    "subject": "A dark silver amulet with a swirling violet-black void at its center, two broad curling purple suction trails on either side, ominous portal charm."
+  },
+  "MakeDragonBalls": {
+    "subject": "A cluster of seven amber wish orbs, one large glowing orb at front and six smaller around it, stars as simple bright glints, no numerals or writing."
+  },
+  "PlanetDestroy": {
+    "subject": "One dark blue planet cracking into three large pieces around a single blazing red-orange impact line, fragments remain legible, no people.",
+    "description": "A destructive energy technique aimed at breaking a planet."
+  },
+  "Mate": {
+    "subject": "Two protective adult silhouettes curved around one tiny golden child-like energy figure, a broad soft rose and blue life ribbon joins the three. Family creation, symbolic and nonsexual."
+  },
+  "ViltrumiteExecutionersHand": {
+    "subject": "One ivory knife-hand descending before a dark red crown-like power aura, a precise crimson cutting glint at its fingertips and a small cracked guard below. Passive lethal mastery, non-graphic."
+  },
+  "MakeSwarm": {
+    "description": "Pestilence creates a replicating swarm with adjustable cohesion.",
+    "subject": "Five dark bat-like gargoyle silhouettes coalesce into one swirling violet-green swarm, one large leading creature with two broad wings, sinister curved collective motion."
+  },
+  "Transform": {
+    "subject": "A dark warrior silhouette shedding an outer blue shell to reveal a bright rising gold inner form, tall jagged aura and clear upward transformation."
+  },
+  "RevertTransformation": {
+    "subject": "A tall golden aura collapsing gently into a smaller calm blue human silhouette, two broad downward light ribbons convey returning to base form."
+  },
+  "RevertToLarvalForm": {
+    "subject": "A chunky green armored insect larva curled inside a broken pale shell, a broad descending violet energy ribbon indicates reverting into a compact biological form."
+  }
+}

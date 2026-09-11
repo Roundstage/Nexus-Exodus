@@ -1,0 +1,10 @@
+{
+  "id": "RockThrow",
+  "original": "artifacts/SkillArtwork/Originals/RockThrow.png",
+  "asset": "src/Icons/UI/SkillArtwork/RockThrow.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b425f342df591f1d2c72d4fe8a30cf19bd6b96e4c99ec26a26055170ecbdc001",
+  "promptSha256": "25ec6332bd206e4c2700ff09f86e7e4b1fd8f420af1442567afc48b0fe684bf3",
+  "approvedSample": true
+}

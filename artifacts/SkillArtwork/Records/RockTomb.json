@@ -1,0 +1,10 @@
+{
+  "id": "RockTomb",
+  "original": "artifacts/SkillArtwork/Originals/RockTomb.png",
+  "asset": "src/Icons/UI/SkillArtwork/RockTomb.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b34cbed6a175a397cfea73745058ea13098567810a08a6ccab1887413bfefec0",
+  "promptSha256": "ff91761d6f84e2cfd5fa5dae8b62b534f02d5b4c2c13aa9865e6ee174279683d",
+  "approvedSample": false
+}

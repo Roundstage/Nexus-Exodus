@@ -1,0 +1,10 @@
+{
+  "id": "MakeSwarm",
+  "original": "artifacts/SkillArtwork/Originals/MakeSwarm.png",
+  "asset": "src/Icons/UI/SkillArtwork/MakeSwarm.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7366b1f5150c6aefafef5b9a7242ecc7d6a60681b4e6d56f3283ef47963ecb82",
+  "promptSha256": "a978e665b2654ebcaef9993d2adca0baf01123f53b6ccbb9d7e8e65bd86bfd7f",
+  "approvedSample": false
+}

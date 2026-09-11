@@ -1,0 +1,10 @@
+{
+  "id": "BuffDefensiveStance",
+  "original": "artifacts/SkillArtwork/Originals/BuffDefensiveStance.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffDefensiveStance.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4673dcf5fba8de127be231bf667e850caec916dec42e607a963d90a17494474a",
+  "promptSha256": "c0a0885e57b4a49daca1e0076ca2a1c3d4c6c17b42891ab2f40f5bb307205d14",
+  "approvedSample": false
+}

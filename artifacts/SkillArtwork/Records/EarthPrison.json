@@ -1,0 +1,10 @@
+{
+  "id": "EarthPrison",
+  "original": "artifacts/SkillArtwork/Originals/EarthPrison.png",
+  "asset": "src/Icons/UI/SkillArtwork/EarthPrison.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "500d379dd89ce908bc1675cd2e77069b253e4af7be2802e6c4cd82a4bfcf5f69",
+  "promptSha256": "cdc756b6485cce7eac5ef0c205ee3d38e3d15ffbfffa8994d37bf5c0745d4503",
+  "approvedSample": false
+}

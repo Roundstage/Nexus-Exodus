@@ -1,0 +1,10 @@
+{
+  "id": "HeranTransformation",
+  "original": "artifacts/SkillArtwork/Originals/HeranTransformation.png",
+  "asset": "src/Icons/UI/SkillArtwork/HeranTransformation.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "317094a72e00273ac6c1e089470743e8915c71ae437e1f0975e8eb6ae725ff5d",
+  "promptSha256": "9609912a47c16c05ce4c0d7db37ccf0252856d6340a27620187e24acc10d1863",
+  "approvedSample": false
+}

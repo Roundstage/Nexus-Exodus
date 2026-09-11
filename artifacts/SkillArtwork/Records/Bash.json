@@ -1,0 +1,10 @@
+{
+  "id": "Bash",
+  "original": "artifacts/SkillArtwork/Originals/Bash.png",
+  "asset": "src/Icons/UI/SkillArtwork/Bash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7340bc020976c7af5facf7e4fb1729fcd1cbfc2a8a739dfb176f3bcc532885ba",
+  "promptSha256": "348888b73064715f7013325e8638cd47c324fe0d4e99aa36c92ba77960b66f41",
+  "approvedSample": false
+}

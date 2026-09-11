@@ -1,0 +1,10 @@
+{
+  "id": "FinalFlash",
+  "original": "artifacts/SkillArtwork/Originals/FinalFlash.png",
+  "asset": "src/Icons/UI/SkillArtwork/FinalFlash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d896e27f5db120cb62261fc541a27c645920bbcd07caaf0b665b8214b69dbec3",
+  "promptSha256": "b89e4a3e8c82fa674d307bab872c8f2500ed9955009e42800a41e2f361954da5",
+  "approvedSample": false
+}

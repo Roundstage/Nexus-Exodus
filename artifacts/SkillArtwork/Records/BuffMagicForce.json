@@ -1,0 +1,10 @@
+{
+  "id": "BuffMagicForce",
+  "original": "artifacts/SkillArtwork/Originals/BuffMagicForce.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffMagicForce.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9249bb439331435ed2e1176b6cb6bd9d25c9556a3f2f45dd46d2424523bc3dc6",
+  "promptSha256": "3b968e64f8f4694a9a97c9dc27acad239c16a557b25eba1b198c2f9f21c68378",
+  "approvedSample": false
+}

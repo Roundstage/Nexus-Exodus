@@ -1,0 +1,10 @@
+{
+  "id": "RibBreaker",
+  "original": "artifacts/SkillArtwork/Originals/RibBreaker.png",
+  "asset": "src/Icons/UI/SkillArtwork/RibBreaker.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a69458444af58a91adc3c8383380d7507fb8db536775ece146afcba55a09d090",
+  "promptSha256": "173a14c4d71d2bc02d9c91e2a71375f3b9c7bc9749e0280bff688dfa8c22823d",
+  "approvedSample": false
+}

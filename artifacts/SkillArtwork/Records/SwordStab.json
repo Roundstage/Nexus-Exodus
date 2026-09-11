@@ -1,0 +1,10 @@
+{
+  "id": "SwordStab",
+  "original": "artifacts/SkillArtwork/Originals/SwordStab.png",
+  "asset": "src/Icons/UI/SkillArtwork/SwordStab.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e88cabcfe4d5035c6cdbeb7d11cc01a5551586a2f3d119313dba59dbf2b3ebb2",
+  "promptSha256": "91b9dcb456f60f7fc98f992813a9a3bee77c7a7e9bea234756405da5efda962e",
+  "approvedSample": false
+}

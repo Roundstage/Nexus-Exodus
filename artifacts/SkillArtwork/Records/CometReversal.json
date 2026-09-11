@@ -1,0 +1,10 @@
+{
+  "id": "CometReversal",
+  "original": "artifacts/SkillArtwork/Originals/CometReversal.png",
+  "asset": "src/Icons/UI/SkillArtwork/CometReversal.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "51838be42c389d5eea1c005c2e76c5f08b23a1769275bae10c4581fb8ff602a6",
+  "promptSha256": "78e0d889388970532218a4677db0a750b4ae4136bb2493c2ff215d2d8b7e93e3",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "GivePower",
+  "original": "artifacts/SkillArtwork/Originals/GivePower.png",
+  "asset": "src/Icons/UI/SkillArtwork/GivePower.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "bb7b045affe20c9ba76aea70f03f245df637371d284b7cafd88e2e899af5a961",
+  "promptSha256": "23c54b716d386db18ee87854409ccd75810fa4137c26ea9e599f1ad14bcf20ba",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "AxeKick",
+  "original": "artifacts/SkillArtwork/Originals/AxeKick.png",
+  "asset": "src/Icons/UI/SkillArtwork/AxeKick.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "3ae8363e952aa8a0a8218fdf57dc274f35a173405522158c9c9fb2729c6cc186",
+  "promptSha256": "2eedcbb71c4f9705010fabbb1a11381be2faa3ef74897ce8da0d5b0bf7907421",
+  "approvedSample": false
+}

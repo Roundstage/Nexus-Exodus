@@ -1,0 +1,10 @@
+{
+  "id": "ExplodingHeartStrike",
+  "original": "artifacts/SkillArtwork/Originals/ExplodingHeartStrike.png",
+  "asset": "src/Icons/UI/SkillArtwork/ExplodingHeartStrike.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "15ab502d7ef2a75e3f000158a4206194717c4a5412789525082d7c7cd05c488f",
+  "promptSha256": "fa01a29dcee5208e554cca7c86e2977c203ffdb62e86a43f5394c66781a39256",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "EchoingSlash",
+  "original": "artifacts/SkillArtwork/Originals/EchoingSlash.png",
+  "asset": "src/Icons/UI/SkillArtwork/EchoingSlash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b927063fe3d6eb234efd4b2247098d017f6b8e124406a262994cc7901e0622b0",
+  "promptSha256": "45cb6f3285a0a48c48fc9fadec642d255a96b4f39c937ad2e2479a950c6d6b1b",
+  "approvedSample": false
+}

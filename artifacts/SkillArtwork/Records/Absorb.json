@@ -1,0 +1,10 @@
+{
+  "id": "Absorb",
+  "original": "artifacts/SkillArtwork/Originals/Absorb.png",
+  "asset": "src/Icons/UI/SkillArtwork/Absorb.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "0e5ee80881311b4a62fb8359173c23d89a56929cafa059414d39d143f3661637",
+  "promptSha256": "688bf245890eb041d7b81752ddc567b8e1cd820ae45cb63e148162043c77013f",
+  "approvedSample": false
+}

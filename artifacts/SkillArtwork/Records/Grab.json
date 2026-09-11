@@ -1,0 +1,10 @@
+{
+  "id": "Grab",
+  "original": "artifacts/SkillArtwork/Originals/Grab.png",
+  "asset": "src/Icons/UI/SkillArtwork/Grab.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "69515bcaebcd5fbae47e276a6932a715e1a804ea7c7599322fb9d65f83a6857a",
+  "promptSha256": "c3d3593b86b0661b6f51ebd713f22d8fc9199e1572f227b6955ab4309012578e",
+  "approvedSample": false
+}

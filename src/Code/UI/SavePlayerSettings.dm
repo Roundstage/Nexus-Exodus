@@ -24,6 +24,8 @@ mob/proc
 		f["sort_sense_by"]<<sort_sense_by
 		f["block_music"] << block_music
 		f["nexus_interface_layout"] << normalizeNexusInterfaceLayout(nexus_interface_layout)
+		f["nexus_classic_layout"] << nexus_classic_layout
+		f["nexus_classic_viewport"] << nexus_classic_viewport
 		f["nexus_legacy_tab_skills"] << nexus_legacy_tab_skills
 		f["nexus_legacy_tab_other"] << nexus_legacy_tab_other
 		f["nexus_legacy_tab_items"] << nexus_legacy_tab_items
@@ -33,6 +35,7 @@ mob/proc
 		f["nexus_overhead_vitals_offset_y"] << normalizeNexusHudOffset(nexus_overhead_vitals_offset_y)
 		f["nexus_main_vitals_x"] << max(0, round(nexus_main_vitals_x))
 		f["nexus_main_vitals_y"] << max(0, round(nexus_main_vitals_y))
+		f["nexus_main_vitals_scale"] << nexus_main_vitals_scale
 
 		//if(hotbar_ids.len && client.connection == "seeker")
 		//	f["hotbar_ids"]<<hotbar_ids
@@ -72,6 +75,8 @@ mob/proc
 		if("sort_sense_by" in f) f["sort_sense_by"]>>sort_sense_by
 		if("block_music" in f) f["block_music"] >> block_music
 		if("nexus_interface_layout" in f) f["nexus_interface_layout"] >> nexus_interface_layout
+		if("nexus_classic_layout" in f) f["nexus_classic_layout"] >> nexus_classic_layout
+		if("nexus_classic_viewport" in f) f["nexus_classic_viewport"] >> nexus_classic_viewport
 		if("nexus_legacy_tab_skills" in f) f["nexus_legacy_tab_skills"] >> nexus_legacy_tab_skills
 		if("nexus_legacy_tab_other" in f) f["nexus_legacy_tab_other"] >> nexus_legacy_tab_other
 		if("nexus_legacy_tab_items" in f) f["nexus_legacy_tab_items"] >> nexus_legacy_tab_items
@@ -81,6 +86,8 @@ mob/proc
 		if("nexus_overhead_vitals_offset_y" in f) f["nexus_overhead_vitals_offset_y"] >> nexus_overhead_vitals_offset_y
 		if("nexus_main_vitals_x" in f) f["nexus_main_vitals_x"] >> nexus_main_vitals_x
 		if("nexus_main_vitals_y" in f) f["nexus_main_vitals_y"] >> nexus_main_vitals_y
+		if("nexus_main_vitals_scale" in f) f["nexus_main_vitals_scale"] >> nexus_main_vitals_scale
+		setNexusMainVitalsScale(nexus_main_vitals_scale)
 		nexus_interface_layout = normalizeNexusInterfaceLayout(nexus_interface_layout)
 		nexus_overhead_vitals_offset_x = normalizeNexusHudOffset(nexus_overhead_vitals_offset_x)
 		nexus_overhead_vitals_offset_y = normalizeNexusHudOffset(nexus_overhead_vitals_offset_y)

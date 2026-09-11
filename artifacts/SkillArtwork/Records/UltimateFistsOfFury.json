@@ -1,0 +1,10 @@
+{
+  "id": "UltimateFistsOfFury",
+  "original": "artifacts/SkillArtwork/Originals/UltimateFistsOfFury.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateFistsOfFury.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "dfc8a27d32e46ea7c93613afa96fecdd25de6d62fa8e33f3b09a59ee3184b87a",
+  "promptSha256": "a3a43438ddb58a6ca4256ee81edf42729d4e1574d51cab0c4b7076fadff647a0",
+  "approvedSample": false
+}

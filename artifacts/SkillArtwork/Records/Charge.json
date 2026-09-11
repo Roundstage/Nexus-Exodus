@@ -1,0 +1,10 @@
+{
+  "id": "Charge",
+  "original": "artifacts/SkillArtwork/Originals/Charge.png",
+  "asset": "src/Icons/UI/SkillArtwork/Charge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9b4d614aef7e9bd5269a8e8f7131cf0c03982c0e3d2060f47d5312f046f2ab68",
+  "promptSha256": "a5a3f9d67c50e942f39d341c87414cec9edc4b94517dd6b115e226b11df78efe",
+  "approvedSample": false
+}

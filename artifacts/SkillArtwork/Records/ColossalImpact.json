@@ -1,0 +1,10 @@
+{
+  "id": "ColossalImpact",
+  "original": "artifacts/SkillArtwork/Originals/ColossalImpact.png",
+  "asset": "src/Icons/UI/SkillArtwork/ColossalImpact.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "0757a36a357e1f43bbdbaeea344e252804e586c41eb43035196d8d91a5750b48",
+  "promptSha256": "27b62a8b974719f50492436584a4d1c14403ce883c5c3d5beff4c675e6f59eae",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "TimeFreeze",
+  "original": "artifacts/SkillArtwork/Originals/TimeFreeze.png",
+  "asset": "src/Icons/UI/SkillArtwork/TimeFreeze.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d460b45d5d633950026ca8782ade0bb4827b567c54a233cc7bbd950919250df7",
+  "promptSha256": "6427d1c36eff71ed99206c9f94b13dc50866205acb6bf2770e1a349b563e25db",
+  "approvedSample": false
+}

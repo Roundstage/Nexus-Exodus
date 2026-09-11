@@ -1,0 +1,10 @@
+{
+  "id": "AutoAttack",
+  "original": "artifacts/SkillArtwork/Originals/AutoAttack.png",
+  "asset": "src/Icons/UI/SkillArtwork/AutoAttack.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7d0d727618197efaeca6d951098bb64fa73efe3742d3704b26ee06093e4c0fea",
+  "promptSha256": "68ad6f78fc03ea7b6859a66e043a8116952353f0485cefc6b1719a7a430495c1",
+  "approvedSample": false
+}

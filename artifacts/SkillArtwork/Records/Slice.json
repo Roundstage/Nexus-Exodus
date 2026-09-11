@@ -1,0 +1,10 @@
+{
+  "id": "Slice",
+  "original": "artifacts/SkillArtwork/Originals/Slice.png",
+  "asset": "src/Icons/UI/SkillArtwork/Slice.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f6fb0f7d6996d8e3ee01cc943aa59298c6456c2edb113fd20e7704be07ace64a",
+  "promptSha256": "bffe9f32f8b9de4d9dad97ce0146a1f290df062922dc82c463cdf0574e59651c",
+  "approvedSample": false
+}

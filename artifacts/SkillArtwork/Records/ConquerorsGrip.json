@@ -1,0 +1,10 @@
+{
+  "id": "ConquerorsGrip",
+  "original": "artifacts/SkillArtwork/Originals/ConquerorsGrip.png",
+  "asset": "src/Icons/UI/SkillArtwork/ConquerorsGrip.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "90da01ce5b2be4225849598d6a9912f56c2b6b41d33c54a16d3425d2509e536f",
+  "promptSha256": "1f07895a125dc567a3db8907aed6b4061b6248e90571e9ac74f0f276946fe47c",
+  "approvedSample": false
+}

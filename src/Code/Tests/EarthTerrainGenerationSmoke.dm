@@ -61,6 +61,7 @@ proc/runCliffAreaBoundarySmokeTests()
 	legacy_area.contents += ground
 	protected_area.contents += water
 	legacy_area.contents += south_ground
+	runBuildTerrainSmokeTests(ground,water,south_ground,legacy_area,protected_area)
 	ground.GenerateCliffs()
 	nexusSmokeAssert(istype(locate(398,295,Z_LEVEL_CITY_INTERIORS),/turf/Water2) && istype(locate(398,294,Z_LEVEL_CITY_INTERIORS),/turf/EarthFloor/Road), "Legacy cliffs crossed into protected water")
 	legacy_area.contents += water

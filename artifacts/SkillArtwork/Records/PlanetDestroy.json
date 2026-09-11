@@ -1,0 +1,10 @@
+{
+  "id": "PlanetDestroy",
+  "original": "artifacts/SkillArtwork/Originals/PlanetDestroy.png",
+  "asset": "src/Icons/UI/SkillArtwork/PlanetDestroy.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "3842080493c3d13e402219c58e25b7f90acbd80b066ff97411f58fb4c611fb63",
+  "promptSha256": "7bb2b1a5c6d80c95e39487fa0b2b8e958b2bc9f41bf4f47800a9ba5b5d6afc7d",
+  "approvedSample": false
+}

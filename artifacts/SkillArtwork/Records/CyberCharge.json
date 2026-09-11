@@ -1,0 +1,10 @@
+{
+  "id": "CyberCharge",
+  "original": "artifacts/SkillArtwork/Originals/CyberCharge.png",
+  "asset": "src/Icons/UI/SkillArtwork/CyberCharge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "04d610c5dbbf4f22791ce4bed7eff1bf8e94cd1373df8044375e6aecc638965c",
+  "promptSha256": "c9525aae0417b66cd8e97b3c59f15b7a1be384a8eda21f59daf8f887e13ea628",
+  "approvedSample": false
+}

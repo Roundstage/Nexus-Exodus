@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "buildings": 66,
+  "removedObjects": 326,
+  "removedExtraExits": 66,
+  "objectsRemaining": 66,
+  "interiorHash": "1cc6743bb87278aeb5878cf8de271e79584c1844c8232e7c4d1884b87fab15f6",
+  "buildingDataHash": "0dd106b7df962b584096c09474a6d00d7b5a52335d700943e727164affb0305a"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Observe",
+  "original": "artifacts/SkillArtwork/Originals/Observe.png",
+  "asset": "src/Icons/UI/SkillArtwork/Observe.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "377981058725d5e088b91f393622436cece64c9dc407a32835f489f329c6d5a2",
+  "promptSha256": "16745f470129c5913f500e472e87b5b4c6a5041a41acf44fcf1f600364280b54",
+  "approvedSample": false
+}

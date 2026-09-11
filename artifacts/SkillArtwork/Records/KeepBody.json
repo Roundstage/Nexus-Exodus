@@ -1,0 +1,10 @@
+{
+  "id": "KeepBody",
+  "original": "artifacts/SkillArtwork/Originals/KeepBody.png",
+  "asset": "src/Icons/UI/SkillArtwork/KeepBody.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "841d17218b70745ac50a200f5398c3d6eca4564e155240c0c0b0de7e80a46f7e",
+  "promptSha256": "fa0e827087757c3e9fd02686663d60a2fcdab124e1ac2fd94de8c26ef0d539e5",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "UltimateBestialWrath",
+  "original": "artifacts/SkillArtwork/Originals/UltimateBestialWrath.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateBestialWrath.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f861a322f7aee56026d48354adbd948d20d5020abe125552d3e73d4f46137db0",
+  "promptSha256": "7e2eefa037edf402cf8942fee7023e40a4d3e0c1077d0c00029e4f9741d4144f",
+  "approvedSample": false
+}

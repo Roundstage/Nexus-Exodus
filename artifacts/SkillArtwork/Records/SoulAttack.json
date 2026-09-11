@@ -1,0 +1,10 @@
+{
+  "id": "SoulAttack",
+  "original": "artifacts/SkillArtwork/Originals/SoulAttack.png",
+  "asset": "src/Icons/UI/SkillArtwork/SoulAttack.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d9d3b34318a6310e48deb65ac446c9c5fe0b4a89fce6e8f625de2c59f011dd21",
+  "promptSha256": "559f7ed2197b0f0bc0a839b93ddc57b336e30d83dad7bf20c3fb162f560dc158",
+  "approvedSample": false
+}

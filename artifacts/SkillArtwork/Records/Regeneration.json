@@ -1,0 +1,10 @@
+{
+  "id": "Regeneration",
+  "original": "artifacts/SkillArtwork/Originals/Regeneration.png",
+  "asset": "src/Icons/UI/SkillArtwork/Regeneration.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "24bd7fb6fccbf379b113be0c6f3d4e985449337be6867b672033fce570efe1f9",
+  "promptSha256": "503de2f739b88e4ebb32fafaab0cacf692d47babde6847535669f5f80101ff68",
+  "approvedSample": false
+}

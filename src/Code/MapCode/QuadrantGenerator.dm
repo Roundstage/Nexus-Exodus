@@ -94,6 +94,7 @@ proc
 		var/count = 0
 		for(var/turf/t in Turfs)
 			t.GenerateAmbientOcclusion()
+			t.refreshBuildEdges()
 			count++
 			if(count >= sleep_every) sleep(TickMult(4))
 

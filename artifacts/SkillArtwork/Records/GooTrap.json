@@ -1,0 +1,10 @@
+{
+  "id": "GooTrap",
+  "original": "artifacts/SkillArtwork/Originals/GooTrap.png",
+  "asset": "src/Icons/UI/SkillArtwork/GooTrap.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "670d31dd1571ffe198362b93dcf29b3a35329b89789a72cd9f8a29f879f6906b",
+  "promptSha256": "269c45b84f0fd3ded038fadf02536cfff9b82f88c02afcc239b4fb1a0b283cda",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "MeteorDrop",
+  "original": "artifacts/SkillArtwork/Originals/MeteorDrop.png",
+  "asset": "src/Icons/UI/SkillArtwork/MeteorDrop.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "65b25161e8e65df1f8844c5117a3358c096722a4e0087bb6e6edb36f4b071b48",
+  "promptSha256": "282d0abc948a98bd479640a73d2a84a4f34ade59a231a6bf4066ec26518c225c",
+  "approvedSample": false
+}

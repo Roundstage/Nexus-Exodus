@@ -1,0 +1,10 @@
+{
+  "id": "Transform",
+  "original": "artifacts/SkillArtwork/Originals/Transform.png",
+  "asset": "src/Icons/UI/SkillArtwork/Transform.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a7ef9ef978c5e203e25119f33e1d6b5435d8b7bee890837838d192a05728e4c6",
+  "promptSha256": "48c14148501d8439dd71398c9478012c75410316200a60581bcf3571963a3c21",
+  "approvedSample": false
+}

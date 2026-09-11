@@ -1,0 +1,10 @@
+{
+  "id": "HideEnergy",
+  "original": "artifacts/SkillArtwork/Originals/HideEnergy.png",
+  "asset": "src/Icons/UI/SkillArtwork/HideEnergy.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "570971ea72809e31a7c02d278f1c3b99a35a31f66416bf7d1470587d53aaf2ad",
+  "promptSha256": "49640ced4fb70cb79bcd08ac6a4fbdae46c02e3887732c0bdecc774bf8788eb0",
+  "approvedSample": false
+}

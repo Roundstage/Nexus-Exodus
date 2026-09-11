@@ -1,0 +1,10 @@
+{
+  "id": "HokutoShinken",
+  "original": "artifacts/SkillArtwork/Originals/HokutoShinken.png",
+  "asset": "src/Icons/UI/SkillArtwork/HokutoShinken.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "040ac5c384195a3af8abe4a409be96a2dabad8a2b6d2b65ab59c57b98e09bf51",
+  "promptSha256": "2abe0f36831340637fd8175fe58bad1c5d69d21414df6c1787e5ae21534c7251",
+  "approvedSample": false
+}

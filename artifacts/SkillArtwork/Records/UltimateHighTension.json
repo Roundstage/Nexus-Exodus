@@ -1,0 +1,10 @@
+{
+  "id": "UltimateHighTension",
+  "original": "artifacts/SkillArtwork/Originals/UltimateHighTension.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateHighTension.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1251200d550952ad9ca6abdc509e813549400366da0a86f6e1718b9101a0c8b1",
+  "promptSha256": "bc4df7e8af284eb4688177613bc01a9ea61c681edc62b85d8368ec66dcbb5bd3",
+  "approvedSample": false
+}

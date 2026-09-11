@@ -1,0 +1,10 @@
+{
+  "id": "UnlockPotential",
+  "original": "artifacts/SkillArtwork/Originals/UnlockPotential.png",
+  "asset": "src/Icons/UI/SkillArtwork/UnlockPotential.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "244a3ab99605fa83cb8c259cff7f38cb50f5521d2c0c1dfbdee26c6ff6264014",
+  "promptSha256": "03da443cc585d4657efc1f14128a1433f807cd16c6c5ba9768c0ea83f27a9da6",
+  "approvedSample": false
+}

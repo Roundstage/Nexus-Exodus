@@ -1,0 +1,10 @@
+{
+  "id": "MakeDragonBalls",
+  "original": "artifacts/SkillArtwork/Originals/MakeDragonBalls.png",
+  "asset": "src/Icons/UI/SkillArtwork/MakeDragonBalls.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a5cba478b4d0ae266afbc758feecc836178f8ed5d58717660bd32f2f6bcdad7e",
+  "promptSha256": "a397c54dc30da47de660e5da8e352c3a4e050470dda035d964980f40c2a22dea",
+  "approvedSample": false
+}

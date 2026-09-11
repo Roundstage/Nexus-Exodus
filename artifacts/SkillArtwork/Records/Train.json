@@ -1,0 +1,10 @@
+{
+  "id": "Train",
+  "original": "artifacts/SkillArtwork/Originals/Train.png",
+  "asset": "src/Icons/UI/SkillArtwork/Train.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "755e3b523250670163ea720ff4f47ff6ee394a89c6dd4a77d6b2fe828f1732a5",
+  "promptSha256": "589e2decaba89b772571d3e565c5db27f30cb2e631f2bda02519bc48a7458ff7",
+  "approvedSample": false
+}

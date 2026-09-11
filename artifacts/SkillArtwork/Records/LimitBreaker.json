@@ -1,0 +1,10 @@
+{
+  "id": "LimitBreaker",
+  "original": "artifacts/SkillArtwork/Originals/LimitBreaker.png",
+  "asset": "src/Icons/UI/SkillArtwork/LimitBreaker.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "c955b5d83b0d067aec42e470ee795241cbc0e9bc765118cb37669471ddf498f5",
+  "promptSha256": "5dc30613cd513bb87ef78f078b62a9b0b1613dcd444de2b0f45c4ec4e1731172",
+  "approvedSample": false
+}

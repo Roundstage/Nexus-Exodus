@@ -1,0 +1,10 @@
+{
+  "id": "UltimateBushido",
+  "original": "artifacts/SkillArtwork/Originals/UltimateBushido.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateBushido.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "bc2713c9ee62033ca643aca9a76a63c0852afa5dcf1277e1d0dcd8c8f53f5f27",
+  "promptSha256": "d83abe0047df9500aa76182b391879007bcf7244023ff8736642b05d29259e34",
+  "approvedSample": false
+}

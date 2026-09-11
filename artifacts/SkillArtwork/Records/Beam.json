@@ -1,0 +1,10 @@
+{
+  "id": "Beam",
+  "original": "artifacts/SkillArtwork/Originals/Beam.png",
+  "asset": "src/Icons/UI/SkillArtwork/Beam.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a733e561c1907cef21a46b42418e20f206ac28b15df5212044076d30f4d1ccf0",
+  "promptSha256": "8aced3b2a7ac4713334b5333ec43e0445d56e273ed5579fe7b9af7e095640e2f",
+  "approvedSample": false
+}

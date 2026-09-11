@@ -1,0 +1,10 @@
+{
+  "id": "SandThrow",
+  "original": "artifacts/SkillArtwork/Originals/SandThrow.png",
+  "asset": "src/Icons/UI/SkillArtwork/SandThrow.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "24c69dd44efb593452f145427b984651346f8d8032edb80f578476b13128cd30",
+  "promptSha256": "c14c196756dd47c3289a5964a8888580c47c651b4cba0b02cb67e1ac724325f1",
+  "approvedSample": false
+}
