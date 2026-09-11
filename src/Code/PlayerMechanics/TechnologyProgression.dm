@@ -52,15 +52,29 @@ proc/getCanonicalScienceBlueprint(blueprint_type)
 		if(technology.type == blueprint_type) return technology
 	return null
 
+proc/indexCanonicalScienceBlueprints(list/blueprints)
+	var/list/canonical_by_type = list()
+	if(!islist(blueprints)) return canonical_by_type
+	for(var/obj/blueprint in blueprints) canonical_by_type[blueprint.type] = TRUE
+	var/remaining_types = canonical_by_type.len
+	if(!remaining_types) return canonical_by_type
+	for(var/obj/technology in tech_list)
+		if(canonical_by_type[technology.type] != TRUE) continue
+		canonical_by_type[technology.type] = technology
+		remaining_types--
+		if(!remaining_types) break
+	return canonical_by_type
+
 proc/getNormalizedScienceBlueprintList(list/blueprints)
 	var/list/normalized_blueprints = list()
 	if(!islist(blueprints)) return normalized_blueprints
-	var/list/seen_types = list()
+	var/list/canonical_by_type = indexCanonicalScienceBlueprints(blueprints)
 	for(var/obj/blueprint in blueprints)
-		if(blueprint.type in seen_types) continue
-		seen_types += blueprint.type
-		var/obj/canonical_blueprint = getCanonicalScienceBlueprint(blueprint.type)
-		normalized_blueprints += canonical_blueprint ? canonical_blueprint : blueprint
+		var/canonical_blueprint = canonical_by_type[blueprint.type]
+		if(!canonical_blueprint) continue
+		normalized_blueprints += isobj(canonical_blueprint) ? canonical_blueprint : blueprint
+		// Mark this type consumed without searching/removing keys from the list.
+		canonical_by_type[blueprint.type] = null
 	return normalized_blueprints
 
 mob/proc/normalizeIndividualScienceItems()

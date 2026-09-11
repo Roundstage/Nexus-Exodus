@@ -56,13 +56,8 @@ mob/Del()
 		<br>\
 		")*/
 		//if(key)
-		for(var/obj/o in contents)
-			nulledPlayerObjects++
-			pending_object_delete_list += o
-			//garbage_collect += o //we are going to see what happens if we use the GarbageCollect() system we made instead of the pending_object_delete_list,
-				//but the above still works fine if we want to go back to it
-			//the difference is that pending_object_delete_list will gradually delete an object like every sleep(5) whereas GarbageCollect deletes all
-			//of the objects at once every like minute or so. which is better? i do not yet know. (maybe even use both)
+		for(var/obj/o in contents.Copy())
+			if(queueObjectForPendingDeletion(o)) nulledPlayerObjects++
 		contents = null
 		drone_module = null //just wondering if this reference is why deleting drones lags so bad
 		. = ..()

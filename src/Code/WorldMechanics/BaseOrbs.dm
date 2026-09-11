@@ -28,6 +28,11 @@ obj/Base_Orb
 		base_orbs += src
 		. = ..()
 
+	Del()
+		base_orbs -= src
+		bp_orbs -= src
+		. = ..()
+
 	BP_Orb
 		icon = 'src/Icons/Objects/OrbIcons/BlueOrb64x64.dmi'
 		name = "Power Orb"
@@ -58,16 +63,19 @@ proc
 		orbs = max_orbs -= orbs
 		if(orbs <= 0) return
 		for(var/v in 1 to orbs)
+			var/turf/orb_location = GetRandomOrbLoc()
+			if(!orb_location) return
 			var/obj/Base_Orb/BP_Orb/bo = new
-			bo.SafeTeleport(GetRandomOrbLoc())
+			bo.SafeTeleport(orb_location)
 
-	GetRandomOrbLoc()
-		var/turf/t
-		var/area/a
-		while(1)
-			t = locate(rand(1,world.maxx), rand(1,world.maxy), rand(1,world.maxz))
-			if(t) a = t.get_area()
+	GetRandomOrbLoc(max_attempts = 1024)
+		if(!nexusIsFiniteNumber(max_attempts) || max_attempts <= 0) return null
+		max_attempts = min(1024, round(max_attempts))
+		for(var/attempt in 1 to max_attempts)
+			var/turf/t = locate(rand(1,world.maxx), rand(1,world.maxy), rand(1,world.maxz))
+			var/area/a = t ? t.get_area() : null
 			if(a && a.has_resources) return t
+		return null
 
 mob/Admin4/verb/toggleBpOrbs()
 	set name = "Toggle BP Orbs"
@@ -78,4 +86,4 @@ mob/Admin4/verb/toggleBpOrbs()
 		to spawn"
 	else
 		src << "Random base orbs are now off"
-		for(var/obj/o in base_orbs) del(o)
+		for(var/obj/o in base_orbs.Copy()) del(o)

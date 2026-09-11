@@ -1,4 +1,5 @@
 obj/var/tmp
+	deferred_delete_generation = 0
 	leaves_big_crater
 	big_explosion_on_delete
 
@@ -41,6 +42,7 @@ mob/Admin5/verb/diagnoseDeletedObjects()
 		src << "You will now not see all deleted objects"
 
 obj/Del()
+	deferred_delete_generation++
 	//so when a player logs out it doesnt have to do all the laggy code below for their items & skills
 	if(reallyDelete || ismob(loc) || world.time < 900)
 		RemoveLightSource()
@@ -90,6 +92,7 @@ obj/var/tmp/deleted
 
 proc/queueObjectForGarbageCollection(obj/o)
 	if(!o || o.deleted) return FALSE
+	o.deferred_delete_generation++
 	o.loc = null
 	o.deleted = TRUE
 	garbage_collect += o
@@ -107,11 +110,11 @@ proc/compactGarbageCollectionQueue(force_compaction = FALSE)
 
 proc/GarbageCollect(max_objects)
 	if(!islist(garbage_collect)) garbage_collect = list()
-	if(!isnum(max_objects) || max_objects <= 0) max_objects = garbage_collection_batch_size
-	max_objects = max(1, round(max_objects))
+	max_objects = getObjectDeletionBatchSize(max_objects)
 	var/objects_scheduled = 0
 	var/entries_inspected = 0
 	while(garbage_collection_head <= garbage_collect.len && entries_inspected < max_objects)
+		if(entries_inspected && world.tick_usage >= 80) break
 		var/obj/o = garbage_collect[garbage_collection_head]
 		garbage_collect[garbage_collection_head] = null
 		garbage_collection_head++
@@ -131,25 +134,59 @@ proc/GarbageCollectLoop()
 		GarbageCollect()
 
 var/list/pending_object_delete_list=new
+var/pending_object_delete_head = 1
 
 obj/var/tmp/reallyDelete //tells obj/Del() to make this object truly be deleted instead of voided or cached or whatever else that would normally happen.
+
+proc/getObjectDeletionBatchSize(requested)
+	if(!nexusIsFiniteNumber(requested) || requested <= 0) requested = garbage_collection_batch_size
+	if(!nexusIsFiniteNumber(requested) || requested <= 0) requested = 25
+	return min(250, max(1, round(requested)))
+
+proc/queueObjectForPendingDeletion(obj/o)
+	if(!o || o.deleted) return FALSE
+	o.deferred_delete_generation++
+	o.deleted = TRUE
+	o.loc = null
+	pending_object_delete_list += o
+	return TRUE
+
+proc/compactPendingObjectDeleteQueue(force_compaction = FALSE)
+	if(pending_object_delete_head > pending_object_delete_list.len)
+		pending_object_delete_list = list()
+		pending_object_delete_head = 1
+	else if(pending_object_delete_head > 1 && (force_compaction || pending_object_delete_head > 200 && pending_object_delete_head > pending_object_delete_list.len / 2))
+		pending_object_delete_list.Cut(1, pending_object_delete_head)
+		pending_object_delete_head = 1
+	if(force_compaction) pending_object_delete_list = remove_nulls(pending_object_delete_list)
+
+proc/drainPendingObjectDeletes(max_objects)
+	max_objects = getObjectDeletionBatchSize(max_objects)
+	var/objects_scheduled = 0
+	var/entries_inspected = 0
+	while(pending_object_delete_head <= pending_object_delete_list.len && entries_inspected < max_objects)
+		if(entries_inspected && world.tick_usage >= 80) break
+		var/obj/o = pending_object_delete_list[pending_object_delete_head]
+		pending_object_delete_list[pending_object_delete_head] = null
+		pending_object_delete_head++
+		entries_inspected++
+		if(!o) continue
+		o.reallyDelete = TRUE
+		o.DeleteNoWait()
+		objects_scheduled++
+	compactPendingObjectDeleteQueue()
+	return objects_scheduled
 
 proc/DeletePendingObjectsLoop()
 	set waitfor=0
 	sleep(300)
 	while(1)
-		for(var/obj/o in pending_object_delete_list)
-			pending_object_delete_list -= o
-			o.reallyDelete = 1
-			o.DeleteNoWait()
-			sleep(5) //keep in mind sleep(10) would delete 60 objects per minute
+		drainPendingObjectDeletes()
 		sleep(10)
 
 proc/DeletePendingObjects()
 	var/count = 0
-	for(var/obj/o in pending_object_delete_list)
-		o.reallyDelete = 1
-		o.DeleteNoWait()
-		count++
+	while(pending_object_delete_head <= pending_object_delete_list.len)
+		count += drainPendingObjectDeletes()
+		if(pending_object_delete_head <= pending_object_delete_list.len) sleep(world.tick_lag)
 	clients << "[count] objects deleted"
-	pending_object_delete_list = new/list

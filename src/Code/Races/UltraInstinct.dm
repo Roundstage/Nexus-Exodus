@@ -269,14 +269,14 @@ obj/Rising_Aura_Ultra_Instinct
 
 	proc/Offsets(Offset=16)
 		set waitfor=0
-		while(src)
+		while(src && !deleted)
 			pixel_x = rand(-Offset,Offset)
 			pixel_x -= 10
 			sleep(1)
 
 	proc/Aura_Walk()
 		set waitfor=0
-		while(src)
+		while(src && !deleted)
 			//step(src,NORTH)
 			step_y += vector_speed
 			sleep(world.tick_lag)

@@ -777,6 +777,21 @@ var/list/Bounties = list("Cancel")
 
 var/minimum_bounty=10000000
 obj/Bounty_Picture
+	var/tmp/preview_generation = 0
+
+	Del()
+		preview_generation++
+		. = ..()
+
+	proc/runBountyPreview(duration = 100)
+		set waitfor = FALSE
+		if(!nexusIsFiniteNumber(duration)) duration = 100
+		var/generation = ++preview_generation
+		var/expires_at = world.time + max(0, duration)
+		while(src && preview_generation == generation && world.time < expires_at)
+			dir = turn(dir, 90)
+			sleep(min(10, expires_at - world.time))
+		if(src && preview_generation == generation) del(src)
 
 proc/Update_Bounties()
 	for(var/V in Bounties) if(V!="Cancel")
@@ -910,12 +925,9 @@ obj/Bounty_Computer
 						var/obj/Bounty_Picture/O = GetCachedObject(/obj/Bounty_Picture)
 						O.icon=OO.icon
 						O.overlays=OO.overlays
-						spawn while(O)
-							O.dir=turn(O.dir,90)
-							sleep(10)
-						spawn(100) if(O) del(O)
 						O.SafeTeleport(loc)
 						O.x-=1
+						O.runBountyPreview()
 						for(var/obj/Bounty_Picture/BP in loc) if(BP!=O) del(BP)
 						usr<<"[src]: To the left you will see the latest image of the suspect.<br>\
 						Name: [L["Name"]]<br>\

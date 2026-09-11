@@ -846,6 +846,11 @@ obj/SpaceDebris
 	layer=5
 	Spawn_Timer=300
 	var/meteor_damage=1
+	var/tmp/meteor_flight_generation = 0
+
+	Del()
+		meteor_flight_generation++
+		. = ..()
 
 	Bump(atom/A)
 		if(!z) return
@@ -868,10 +873,12 @@ obj/SpaceDebris
 
 	proc/Meteor_fly(move_delay = 1)
 		set waitfor=0
+		var/generation = ++meteor_flight_generation
 		sleep(2)
-		while(z)
+		while(src && z && !cached && meteor_flight_generation == generation)
 			var/turf/old_loc = loc
 			step(src,dir)
+			if(!src || cached || meteor_flight_generation != generation) return
 			if(loc == old_loc) del(src)
 			sleep(TickMult(move_delay))
 

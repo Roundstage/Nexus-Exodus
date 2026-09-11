@@ -219,10 +219,12 @@ obj/Effect/NexusFlameField
 		expires_at = 0
 		list/next_pulse_by_target
 		list/pulses_by_target
+	var/tmp/field_processing = FALSE
 
 	New(turf/new_location, mob/new_owner, duration = 150)
 		..()
 		owner = new_owner
+		if(!nexusIsFiniteNumber(duration)) duration = 150
 		expires_at = world.time + max(10, duration)
 		next_pulse_by_target = list()
 		pulses_by_target = list()
@@ -234,12 +236,19 @@ obj/Effect/NexusFlameField
 		spawn() processField()
 
 	Del()
+		// Fields have per-cast state and must never enter the generic visual pool.
+		reallyDelete = TRUE
+		owner = null
+		next_pulse_by_target = null
+		pulses_by_target = null
 		clearNexusGlow()
 		. = ..()
 
 	proc/processField()
 		set waitfor = 0
-		while(src && owner && world.time < expires_at)
+		if(field_processing) return
+		field_processing = TRUE
+		while(src && !deleted && loc && owner && world.time < expires_at)
 			for(var/mob/target in loc)
 				if(!owner.canHitNexusTechniqueTarget(target)) continue
 				if(next_pulse_by_target[target] > world.time) continue

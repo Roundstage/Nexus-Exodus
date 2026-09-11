@@ -957,8 +957,10 @@ obj/Shadow_Spar
 
 proc/Timed_Delete(obj/O,T=100)
 	set waitfor=0
+	if(!O) return
+	var/generation = O.deferred_delete_generation
 	sleep(T)
-	if(O) del(O)
+	if(O && O.deferred_delete_generation == generation) del(O)
 
 proc/Rising_Aura(obj/T,N=50)
 	if(N<0) return
@@ -981,13 +983,13 @@ obj/Rising_Aura
 		spawn(50) if(src) del(src)
 	proc/Offsets(Offset=16)
 		set waitfor=0
-		while(src)
+		while(src && !deleted)
 			pixel_x=rand(-Offset,Offset)
 			pixel_x-=32
 			sleep(1)
 	proc/Aura_Walk()
 		set waitfor=0
-		while(src)
+		while(src && !deleted)
 			step(src,NORTH)
 			sleep(3)
 

@@ -246,6 +246,8 @@ proc/get_cached_blast()
 		return b
 
 obj/Blast/proc/cache_blast()
+	deferred_delete_generation++
+	blast_lifecycle_generation++
 	releaseBasicBlastSlot()
 	stopProjectileFlight()
 	clearNexusGlow()
@@ -253,6 +255,12 @@ obj/Blast/proc/cache_blast()
 	in_use=0
 	cached_blasts-=src
 	cached_blasts+=src //add to end of list
+
+obj/Blast/DeleteNoWait(delay = 0)
+	set waitfor = FALSE
+	var/generation = blast_lifecycle_generation
+	if(delay) sleep(delay)
+	if(src && blast_lifecycle_generation == generation) del(src)
 //blast deleted at 0, 0, 0. in use = 0. from attack = Blast. owner = Tens
 
 var/list/all_blast_objs=new
@@ -261,6 +269,8 @@ area/var/tmp/list/blast_objs=new
 
 obj/Blast/Del()
 	set waitfor=0
+	deferred_delete_generation++
+	blast_lifecycle_generation++
 	releaseBasicBlastSlot()
 	stopProjectileFlight()
 	var/area/a = get_area()
@@ -368,23 +378,27 @@ obj/Blast
 	vector_speed = 32
 	var/deflected //sets to 1 if deflected so that controlled moves arent controllable any more
 	var/tmp/turf/last_object_shockwaved_against //to prevent shockwave spamming the same turf repeatedly, causing lag
+	// Pool ownership is separate from projectile_flight_id: homing can restart a flight within one use.
+	var/tmp/blast_lifecycle_generation = 0
 
 	New()
 		startBlastLifecycle()
 
 	proc/startBlastLifecycle()
+		deferred_delete_generation++
+		var/generation = ++blast_lifecycle_generation
 		projectile_creation_time = world.time
-		spawn if(src)
+		spawn if(src && blast_lifecycle_generation == generation)
 			var/area/a=get_area()
 			if(a)
 				a.blast_objs -= src
 				a.blast_objs += src
 
 		if(!(src in all_blast_objs)) all_blast_objs += src
-		spawn if(src) if(GetWidth(icon)>36||GetHeight(icon)>36) CenterIcon(src)
+		spawn if(src && blast_lifecycle_generation == generation) if(GetWidth(icon)>36||GetHeight(icon)>36) CenterIcon(src)
 		if(type!=/obj/Blast/Genki_Dama)
-			spawn(1) if(Owner&&ismob(Owner)&&Owner.icon_state!="Attack") if(Owner.client) flick("Attack",Owner)
-		spawn(30) if(src && z && !Get_step(src,dir))
+			spawn(1) if(src && blast_lifecycle_generation == generation && Owner&&ismob(Owner)&&Owner.icon_state!="Attack") if(Owner.client) flick("Attack",Owner)
+		spawn(30) if(src && blast_lifecycle_generation == generation && z && !Get_step(src,dir))
 			del(src)
 
 	proc/Update_transform_size(new_size=1)
@@ -730,10 +744,11 @@ obj/Blast
 	proc/Beam()
 		set waitfor=0
 		if(beam_loop_running) return
+		var/generation = blast_lifecycle_generation
 		var/loop_delay = world.tick_lag
 		var/damage_window = getBeamDamageWindow(loop_delay)
 		beam_loop_running=1
-		while(src)
+		while(src && blast_lifecycle_generation == generation)
 			if(delete_on_next_move == 1)
 				return
 			if(!z)

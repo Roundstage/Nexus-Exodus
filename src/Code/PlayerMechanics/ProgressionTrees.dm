@@ -796,8 +796,15 @@ mob/proc/hasProgressionReward(reward_type)
 	var/node_id = getProgressionNodeIdForReward(reward_type)
 	return node_id && hasProgressionNode(node_id)
 
-mob/proc/hasExactProgressionRewardObject(reward_type)
+mob/proc/indexProgressionRewardTypes(list/reward_types)
+	if(!islist(reward_types)) reward_types = list()
+	else reward_types.Cut()
+	for(var/obj/reward in src) reward_types[reward.type] = TRUE
+	return reward_types
+
+mob/proc/hasExactProgressionRewardObject(reward_type, list/reward_types)
 	if(!reward_type) return FALSE
+	if(islist(reward_types)) return !!reward_types[reward_type]
 	for(var/obj/reward in src)
 		if(reward.type == reward_type) return TRUE
 	return FALSE
@@ -846,17 +853,20 @@ mob/proc/getProgressionNodeLockReason(datum/ProgressionNode/node)
 	if(progression_experience < node.cost) return "Requires [node.cost] Progression XP."
 	return null
 
-mob/proc/applyProgressionNodeReward(datum/ProgressionNode/node, announce = TRUE)
+mob/proc/applyProgressionNodeReward(datum/ProgressionNode/node, announce = TRUE, list/reward_types)
 	if(!node) return FALSE
+	var/inventory_count_before = contents.len
+	var/reward_granted = FALSE
 	switch(node.reward_kind)
 		if("skill")
-			if(node.reward_type && !hasExactProgressionRewardObject(node.reward_type))
+			if(node.reward_type && !hasExactProgressionRewardObject(node.reward_type, reward_types))
 				var/obj/new_skill = new node.reward_type(src)
 				new_skill.Taught = 0
+				reward_granted = TRUE
 		if("magic")
 			initializeMagicResearchCatalog()
 			var/datum/MagicResearchNode/magic_node = magic_research_catalog[node.reward_value]
-			if(magic_node) grantMagicResearchNode(magic_node, announce)
+			if(magic_node) reward_granted = grantMagicResearchNode(magic_node, announce)
 		if("technology")
 			if(!islist(individual_science_items)) individual_science_items = list()
 			for(var/obj/technology in tech_list)
@@ -866,6 +876,8 @@ mob/proc/applyProgressionNodeReward(datum/ProgressionNode/node, announce = TRUE)
 		if("tech_path")
 			if(!islist(player_tech_paths)) player_tech_paths = list()
 			if(!(node.reward_value in player_tech_paths)) player_tech_paths += node.reward_value
+	// Constructors and magic rewards can add more than the requested skill.
+	if(islist(reward_types) && (reward_granted || contents.len != inventory_count_before)) indexProgressionRewardTypes(reward_types)
 	if(announce)
 		src << sound('Capsuleclick.ogg', volume = 18)
 		src << "<font color=#ffd166>Progression unlocked: [node.name]."
@@ -978,6 +990,7 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 	initializeProgressionTreeCatalog()
 	migrateProgressionExperienceScale()
 	normalizeIndividualScienceItems()
+	var/list/reward_types = indexProgressionRewardTypes()
 	if(!islist(progression_nodes_owned)) progression_nodes_owned = list()
 	progression_experience = max(0, progression_experience)
 	progression_lifetime_experience = max(progression_lifetime_experience, progression_experience)
@@ -989,7 +1002,7 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 			Experience = 0
 		for(var/node_id in progression_node_catalog)
 			var/datum/ProgressionNode/node = progression_node_catalog[node_id]
-			if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
+			if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type, reward_types)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
 			else if(node.reward_kind == "magic")
 				if((node.reward_value in magic_nodes_unlocked) || magic_level >= node.required_level) progression_nodes_owned[node.id] = 1
 			else if(node.reward_kind == "technology")
@@ -1010,8 +1023,8 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 		if(!silent) src << "Your legacy Skill Points and learned abilities were migrated to Progression Trees."
 	for(var/node_id in progression_node_catalog)
 		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
-		if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
-		if(hasProgressionNode(node.id)) applyProgressionNodeReward(node, announce = FALSE)
+		if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type, reward_types)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
+		if(hasProgressionNode(node.id)) applyProgressionNodeReward(node, announce = FALSE, reward_types = reward_types)
 	if(progression_last_passive_realtime <= 0) progression_last_passive_realtime = world.realtime
 	updatePassiveProgression(announce = !silent)
 

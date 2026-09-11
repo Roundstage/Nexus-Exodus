@@ -1,5 +1,7 @@
 # Transformations
 
+`get_body_part()` and `Body_Part.Del()` advance the temporary deferred-delete generation, preventing an old `Timed_Delete()` from reclaiming a reused body part. Pool insertion is deduplicated; `reallyDelete` removes the part from the pool and delegates actual destruction.
+
 ## Overview
 Primary transformation registry/controller plus Heran and Kaioken ("God Fist") drain and boost logic. A mob may have one primary transformation; Third Eye, Mystic, Fire Fist, Saiyan Power, Majin, Kaioken, and Limit Breaker remain explicit secondary/burst categories.
 

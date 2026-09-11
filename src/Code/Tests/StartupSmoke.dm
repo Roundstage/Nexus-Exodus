@@ -176,6 +176,592 @@ proc/nexusSmokeAssertNear(actual, expected, tolerance, message)
 	if(!isnum(actual) || abs(actual - expected) > tolerance)
 		CRASH("Nexus smoke test failed: [message] (expected [expected], received [actual])")
 
+obj/Blast/BeamLifecycleSmoke
+	var/tmp/collision_cycles = 0
+
+	getNexusBeamCollisionTargets()
+		collision_cycles++
+		return list()
+
+obj/SpaceDebris/Meteor/LifecycleSmoke
+	var/tmp/movement_calls = 0
+
+	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
+		movement_calls++
+		loc = NewLoc
+		return TRUE
+
+obj/Blast/ScatterLifecycleSmoke
+	var/tmp/homing_calls = 0
+
+	followSelectedTarget(mob/target)
+		homing_calls++
+
+proc/runPooledProjectileSmokeTests()
+	var/turf/test_location = locate(2, 2, 1)
+	var/mob/NexusSmokeTest/owner = new
+	var/obj/Blast/BeamLifecycleSmoke/beam = new
+	beam.Owner = owner
+	beam.loc = test_location
+	beam.Piercer = TRUE
+	beam.Beam()
+	nexusSmokeAssert(beam.collision_cycles == 1, "beam lifecycle fixture did not execute its initial collision cycle")
+	beam.cache_blast()
+	var/obj/Blast/reused_beam = get_cached_blast()
+	nexusSmokeAssert(reused_beam == beam, "beam lifecycle fixture did not reuse the same projectile")
+	reused_beam.Owner = owner
+	reused_beam.loc = test_location
+	reused_beam.Piercer = TRUE
+	var/cycles_before = beam.collision_cycles
+	sleep(4)
+	nexusSmokeAssert(beam.collision_cycles == cycles_before, "a recycled beam continued its old collision loop")
+	beam.blast_caches = FALSE
+	beam.reallyDelete = TRUE
+	del(beam)
+	var/obj/SpaceDebris/Meteor/LifecycleSmoke/meteor = GetCachedObject(/obj/SpaceDebris/Meteor/LifecycleSmoke)
+	meteor.loc = test_location
+	CacheObject(meteor)
+	var/obj/reused_meteor = GetCachedObject(/obj/SpaceDebris/Meteor/LifecycleSmoke)
+	nexusSmokeAssert(reused_meteor == meteor, "meteor lifecycle fixture did not reuse the same object")
+	meteor.loc = test_location
+	meteor.dir = EAST
+	meteor.Meteor_fly(100)
+	var/moves_before = meteor.movement_calls
+	sleep(4)
+	nexusSmokeAssert(meteor.movement_calls == moves_before + 1, "recycled or replaced meteor tasks produced extra movement")
+	meteor.reallyDelete = TRUE
+	del(meteor)
+	var/obj/Blast/border_blast = get_cached_blast()
+	sleep(10)
+	border_blast.cache_blast()
+	var/obj/Blast/reused_border = get_cached_blast()
+	nexusSmokeAssert(reused_border == border_blast, "border timer fixture did not reuse the same projectile")
+	reused_border.loc = locate(world.maxx, 1, 1)
+	reused_border.dir = EAST
+	sleep(22)
+	nexusSmokeAssert(reused_border.z && reused_border.in_use, "an old border timer deleted a reused projectile")
+	sleep(12)
+	nexusSmokeAssert(!reused_border.z && !reused_border.in_use, "the current projectile border timer did not expire")
+	var/obj/Blast/delayed_blast = get_cached_blast()
+	delayed_blast.loc = test_location
+	delayed_blast.DeleteNoWait(6)
+	delayed_blast.cache_blast()
+	var/obj/Blast/reused_delayed_blast = get_cached_blast()
+	nexusSmokeAssert(reused_delayed_blast == delayed_blast, "collision cleanup fixture did not reuse the same projectile")
+	reused_delayed_blast.loc = test_location
+	sleep(8)
+	nexusSmokeAssert(reused_delayed_blast.in_use && reused_delayed_blast.loc == test_location, "an old delayed collision deletion discarded a reused projectile")
+	reused_delayed_blast.DeleteNoWait(4)
+	sleep(8)
+	nexusSmokeAssert(!reused_delayed_blast.z && !reused_delayed_blast.in_use, "current delayed collision deletion did not expire")
+	var/mob/NexusSmokeTest/target = new(test_location)
+	owner.loc = test_location
+	owner.selected_target = target
+	var/obj/Blast/ScatterLifecycleSmoke/homing_probe = new
+	homing_probe.Owner = owner
+	homing_probe.loc = test_location
+	homing_probe.in_use = TRUE
+	homing_probe.density = FALSE
+	nexusSmokeAssert(owner.getSelectedTarget(target, require_view = FALSE) == target, "scatter homing fixture has no selectable target")
+	homing_probe.trackScatterShotTarget(owner, target, 4)
+	owner.selected_target = null
+	sleep(8)
+	nexusSmokeAssert(homing_probe.density && homing_probe.homing_calls == 1, "scatter homing lost its cast target after selection was cleared")
+	homing_probe.blast_caches = FALSE
+	homing_probe.reallyDelete = TRUE
+	del(homing_probe)
+	var/obj/Blast/scatter = get_cached_blast()
+	scatter.Owner = owner
+	scatter.loc = test_location
+	scatter.trackScatterShotTarget(owner, target, 12)
+	scatter.cache_blast()
+	var/obj/Blast/reused_scatter = get_cached_blast()
+	nexusSmokeAssert(reused_scatter == scatter, "scatter lifecycle fixture did not reuse the same projectile")
+	reused_scatter.Owner = owner
+	reused_scatter.loc = test_location
+	reused_scatter.density = FALSE
+	sleep(16)
+	nexusSmokeAssert(reused_scatter.in_use && reused_scatter.loc == test_location && !reused_scatter.density, "stale scatter homing changed a reused projectile from the same owner")
+	owner.selected_target = null
+	reused_scatter.trackScatterShotTarget(owner, null, 100)
+	reused_scatter.cache_blast()
+	var/obj/Blast/final_scatter = get_cached_blast()
+	nexusSmokeAssert(final_scatter == reused_scatter, "scatter cleanup fixture did not reuse the same projectile")
+	final_scatter.Owner = owner
+	final_scatter.loc = test_location
+	final_scatter.density = FALSE
+	sleep(105)
+	nexusSmokeAssert(final_scatter.in_use && final_scatter.loc == test_location && !final_scatter.density, "stale scatter cleanup moved or deleted a reused projectile")
+	final_scatter.trackScatterShotTarget(owner, null, 100)
+	sleep(55)
+	nexusSmokeAssert(!final_scatter.z && !final_scatter.in_use, "current scatter cleanup did not expire after target loss")
+	del(target)
+	del(owner)
+	world.log << "NEXUS_POOLED_PROJECTILE_TESTS_PASSED"
+
+var/performance_catalog_constructor_calls = 0
+
+obj/PerformanceCatalogSmoke
+	New()
+		performance_catalog_constructor_calls++
+
+obj/PerformanceInventorySmoke
+	New()
+		return
+
+obj/PerformanceInventorySmoke/Child
+
+mob/NexusSmokeTest/PerformanceCatalogSmoke
+	New()
+		performance_catalog_constructor_calls++
+
+mob/NexusSmokeTest/ProgressionIndexSmoke
+	var/tmp/index_builds = 0
+	var/tmp/indexed_items = 0
+	var/tmp/unindexed_queries = 0
+	var/tmp/indexed_queries = 0
+
+	indexProgressionRewardTypes(list/reward_types)
+		index_builds++
+		indexed_items += contents.len
+		return ..()
+
+	hasExactProgressionRewardObject(reward_type, list/reward_types)
+		if(islist(reward_types)) indexed_queries++
+		else unindexed_queries++
+		return ..()
+
+proc/runPerformanceCatalogSmokeTests()
+	var/constructor_calls_before = performance_catalog_constructor_calls
+	var/contracts_before = soul_contracts.len
+	var/list/give_choices = getAdminSpawnChoices(null)
+	var/list/make_choices = getAdminSpawnChoices(null, include_mobs = TRUE)
+	nexusSmokeAssert(give_choices["PerformanceCatalogSmoke (/obj/PerformanceCatalogSmoke)"] == /obj/PerformanceCatalogSmoke, "GiveItem metadata omitted a permitted object")
+	nexusSmokeAssert(make_choices["PerformanceCatalogSmoke (/mob/NexusSmokeTest/PerformanceCatalogSmoke)"] == /mob/NexusSmokeTest/PerformanceCatalogSmoke, "Make metadata omitted a mob")
+	for(var/label in give_choices)
+		var/object_type = give_choices[label]
+		if(!object_type) continue
+		nexusSmokeAssert(ispath(object_type, /obj) && initial(object_type:Givable) && !ispath(object_type, /obj/items/Clothes) && object_type != /obj/Auto_Shadow_Spar, "GiveItem metadata bypassed a restriction")
+	var/list/restricted_choices = getAdminSpawnChoices("/obj/Auto_Shadow_Spar")
+	var/list/privileged_choices = getAdminSpawnChoices("/obj/Auto_Shadow_Spar", allow_auto_shadow_spar = TRUE)
+	nexusSmokeAssert(privileged_choices.len == restricted_choices.len + 1, "GiveItem metadata lost the coded-admin exception")
+	var/list/filtered_choices = getAdminSpawnChoices("/obj/PerformanceCatalogSmoke")
+	nexusSmokeAssert(filtered_choices.len == 3, "GiveItem metadata search did not filter by type")
+	var/list/old_learnable_skills = Learnable_Skills
+	Learnable_Skills = null
+	Initialize_Learnable_Skills_List()
+	var/expected_learnables = 0
+	for(var/object_type in typesof(/obj))
+		if(initial(object_type:Cost_To_Learn)) expected_learnables++
+	nexusSmokeAssert(Learnable_Skills.len == expected_learnables, "learnable metadata omitted or merged a skill type")
+	for(var/label in Learnable_Skills)
+		var/skill_type = Learnable_Skills[label]
+		nexusSmokeAssert(ispath(skill_type, /obj) && initial(skill_type:Cost_To_Learn), "learnable metadata contains a non-skill")
+	Learnable_Skills = old_learnable_skills
+	nexusSmokeAssert(soul_contracts.len == contracts_before && performance_catalog_constructor_calls == constructor_calls_before, "building administrative menus executed gameplay constructors")
+	var/mob/NexusSmokeTest/ProgressionIndexSmoke/player = new
+	player.syncProgressionTrees()
+	while(player.contents.len < 500) new /obj/PerformanceInventorySmoke(player)
+	player.index_builds = 0
+	player.indexed_items = 0
+	player.unindexed_queries = 0
+	player.indexed_queries = 0
+	player.syncProgressionTrees()
+	nexusSmokeAssert(player.index_builds == 1 && player.indexed_items == 500 && !player.unindexed_queries && player.indexed_queries > 200, "unchanged progression did not use one inventory index")
+	world.log << "NEXUS_PROGRESSION_INDEX inventory=[player.contents.len] indexed_items=[player.indexed_items] indexed_queries=[player.indexed_queries] unindexed_queries=[player.unindexed_queries]"
+	var/mob/NexusSmokeTest/exact_player = new
+	new /obj/PerformanceInventorySmoke/Child(exact_player)
+	var/list/reward_types = exact_player.indexProgressionRewardTypes()
+	nexusSmokeAssert(!exact_player.hasExactProgressionRewardObject(/obj/PerformanceInventorySmoke, reward_types), "progression index confused a child with its exact parent type")
+	var/datum/ProgressionNode/reward = new("performance_test", "Test", "Test", "Combat", "Foundation")
+	reward.reward_kind = "skill"
+	reward.reward_type = /obj/PerformanceInventorySmoke
+	exact_player.applyProgressionNodeReward(reward, FALSE, reward_types)
+	exact_player.applyProgressionNodeReward(reward, FALSE, reward_types)
+	nexusSmokeAssert(exact_player.contents.len == 2 && exact_player.hasExactProgressionRewardObject(reward.reward_type, reward_types), "progression index duplicated or failed to index a newly granted skill")
+	var/obj/removed_skill = locate(/obj/PerformanceInventorySmoke/Child) in exact_player
+	del(removed_skill)
+	reward_types = exact_player.indexProgressionRewardTypes()
+	nexusSmokeAssert(!exact_player.hasExactProgressionRewardObject(/obj/PerformanceInventorySmoke/Child, reward_types), "a new progression index retained a removed item")
+	del(reward)
+	for(var/obj/item in player) del(item)
+	for(var/obj/item in exact_player) del(item)
+	del(player)
+	del(exact_player)
+	world.log << "NEXUS_PERFORMANCE_CATALOG_TESTS_PASSED"
+
+proc/runDeferredLifecycleSmokeTests()
+	var/turf/test_location = locate(2, 2, 1)
+	var/turf/other_location = locate(5, 5, 1)
+	var/mob/NexusSmokeTest/owner = new(test_location)
+	var/obj/Lunge_Graphic/lunge = Get_lunge_drawback_graphic()
+	// Lunge_go normally blocks its caller; put the fixture's animation in its own task.
+	spawn lunge.Lunge_go(owner)
+	sleep(1)
+	var/obj/Lunge_Graphic/released_lunge = lunge
+	del(released_lunge)
+	lunge_graphics -= lunge
+	lunge_graphics.Insert(1, lunge)
+	var/obj/Lunge_Graphic/reused_lunge = Get_lunge_drawback_graphic()
+	nexusSmokeAssert(reused_lunge == lunge, "lunge fixture did not reuse its pooled instance")
+	reused_lunge.loc = other_location
+	reused_lunge.icon_state = "6"
+	sleep(12)
+	nexusSmokeAssert(reused_lunge.loc == other_location && reused_lunge.icon_state == "6", "old lunge work moved, animated or deleted a reused graphic")
+	reused_lunge.Lunge_go(owner)
+	nexusSmokeAssert(!reused_lunge.loc && (reused_lunge in lunge_graphics), "current lunge did not finish normally")
+	reused_lunge.reallyDelete = TRUE
+	del(reused_lunge)
+	del(owner)
+	var/obj/Crater/crater = Small_crater(test_location)
+	var/obj/Crater/released_crater = crater
+	del(released_crater)
+	sleep(5)
+	released_crater = crater
+	del(released_crater)
+	sleep(17)
+	nexusSmokeAssert(crater in small_crater_cache, "crater fade did not return its fixture to the pool")
+	small_crater_cache -= crater
+	small_crater_cache.Insert(1, crater)
+	var/obj/Crater/reused_crater = Small_crater(test_location)
+	nexusSmokeAssert(reused_crater == crater, "crater fixture did not reuse its pooled instance")
+	sleep(32)
+	nexusSmokeAssert(reused_crater.loc == test_location && !reused_crater.crater_fading, "old crater fade or expiry affected the next use")
+	sleep(42)
+	nexusSmokeAssert(!reused_crater.loc && (reused_crater in small_crater_cache), "current crater did not fade and expire normally")
+	reused_crater.reallyDelete = TRUE
+	del(reused_crater)
+	var/obj/BigCrater/big = BigCrater(test_location, 1, 1, 2)
+	var/obj/BigCrater/released_big = big
+	del(released_big)
+	sleep(4)
+	nexusSmokeAssert(big in big_crater_cache, "big crater fade did not return its fixture to the pool")
+	big_crater_cache -= big
+	big_crater_cache.Insert(1, big)
+	var/obj/BigCrater/reused_big = BigCrater(test_location, 1, 100, 2)
+	nexusSmokeAssert(reused_big == big, "big crater fixture did not reuse its pooled instance")
+	sleep(60)
+	nexusSmokeAssert(reused_big.loc == test_location && !reused_big.crater_fading, "an old big crater timer discarded its next use")
+	reused_big.reallyDelete = TRUE
+	del(reused_big)
+	var/obj/Effect/effect = GetEffect()
+	effect.loc = test_location
+	Timed_Delete(effect, 8)
+	var/obj/Effect/released_effect = effect
+	del(released_effect)
+	effect_cache -= effect
+	effect_cache.Insert(1, effect)
+	var/obj/Effect/reused_effect = GetEffect()
+	nexusSmokeAssert(reused_effect == effect, "effect timer fixture did not reuse its pooled instance")
+	reused_effect.loc = test_location
+	sleep(10)
+	nexusSmokeAssert(reused_effect.loc == test_location, "old generic timer deleted a reused effect")
+	Timed_Delete(reused_effect, 4)
+	Timed_Delete(reused_effect, 20)
+	sleep(8)
+	nexusSmokeAssert(!reused_effect.loc, "a later timer postponed the earlier valid effect expiry")
+	reused_effect.reallyDelete = TRUE
+	del(reused_effect)
+	var/obj/After_Image/afterimage = GetCachedObject(/obj/After_Image)
+	afterimage.loc = test_location
+	Timed_Delete(afterimage, 4)
+	CacheObject(afterimage)
+	var/obj/After_Image/reused_afterimage = GetCachedObject(/obj/After_Image)
+	nexusSmokeAssert(reused_afterimage == afterimage, "generic cache fixture did not reuse its pooled instance")
+	reused_afterimage.loc = test_location
+	sleep(8)
+	nexusSmokeAssert(reused_afterimage.loc == test_location, "old generic timer deleted a reused afterimage")
+	reused_afterimage.reallyDelete = TRUE
+	del(reused_afterimage)
+	var/obj/Body_Part/body_part = get_body_part(test_location)
+	Timed_Delete(body_part, 4)
+	var/obj/Body_Part/released_part = body_part
+	del(released_part)
+	released_part = body_part
+	del(released_part)
+	var/cache_entries = 0
+	for(var/obj/Body_Part/entry in body_part_cache)
+		if(entry == body_part) cache_entries++
+	nexusSmokeAssert(cache_entries == 1, "duplicate body part release added multiple pool entries")
+	body_part_cache -= body_part
+	body_part_cache.Insert(1, body_part)
+	var/obj/Body_Part/reused_part = get_body_part(test_location)
+	sleep(8)
+	nexusSmokeAssert(reused_part == body_part && reused_part.loc == test_location, "old body part timer discarded the next use")
+	reused_part.reallyDelete = TRUE
+	del(reused_part)
+	var/obj/Explosion/explosion = Get_explosion()
+	explosion.icon = 'src/Icons/Unsorted/AttackSpark.dmi'
+	explosion.loc = test_location
+	var/obj/Explosion/released_explosion = explosion
+	del(released_explosion)
+	explosion_cache -= explosion
+	explosion_cache.Insert(1, explosion)
+	var/obj/Explosion/reused_explosion = Get_explosion()
+	// Extend this use's animation by invalidating its first task, then only observe stale work.
+	reused_explosion.deferred_delete_generation++
+	reused_explosion.loc = test_location
+	reused_explosion.icon_state = "4"
+	sleep(10)
+	nexusSmokeAssert(reused_explosion == explosion && reused_explosion.loc == test_location && reused_explosion.icon_state == "4", "old explosion animation affected a later generation")
+	reused_explosion.Explosion()
+	sleep(10)
+	nexusSmokeAssert(!reused_explosion.loc && (reused_explosion in explosion_cache), "current explosion animation did not expire")
+	reused_explosion.reallyDelete = TRUE
+	del(reused_explosion)
+	world.log << "NEXUS_DEFERRED_LIFECYCLE_TESTS_PASSED"
+
+mob/NexusSmokeTest/SenseWorkSmoke
+	var/tmp/magnitude_calls = 0
+	getSensePowerMagnitude()
+		magnitude_calls++
+		return ..()
+
+proc/runBlueprintSenseWorkSmokeTests()
+	var/list/original_tech_list = tech_list
+	var/obj/PerformanceInventorySmoke/canonical = new
+	var/obj/PerformanceInventorySmoke/duplicate_canonical = new
+	var/obj/PerformanceInventorySmoke/Child/child_canonical = new
+	var/obj/PerformanceInventorySmoke/saved_copy = new
+	var/obj/PerformanceInventorySmoke/Child/saved_child = new
+	var/obj/Effect/unknown = new
+	tech_list = list(canonical, duplicate_canonical, child_canonical)
+	var/list/source = list(saved_child, saved_copy, duplicate_canonical, unknown, "invalid", null)
+	var/list/normalized = getNormalizedScienceBlueprintList(source)
+	nexusSmokeAssert(normalized.len == 3 && normalized[1] == child_canonical && normalized[2] == canonical && normalized[3] == unknown, "indexed blueprints changed order, first canonical selection, unknown types or duplicate handling")
+	nexusSmokeAssert(source.len == 6 && source[1] == saved_child, "blueprint normalization mutated its input")
+	tech_list = list(duplicate_canonical, canonical, child_canonical)
+	var/list/reordered = getNormalizedScienceBlueprintList(source)
+	nexusSmokeAssert(reordered[2] == duplicate_canonical, "blueprint index retained stale references after a same-size catalog reorder")
+	nexusSmokeAssert(!getNormalizedScienceBlueprintList(null).len && !indexCanonicalScienceBlueprints(null).len, "blueprint index did not handle empty input")
+	tech_list = original_tech_list
+	del(canonical)
+	del(duplicate_canonical)
+	del(child_canonical)
+	del(saved_copy)
+	del(saved_child)
+	unknown.reallyDelete = TRUE
+	del(unknown)
+	var/mob/NexusSmokeTest/SenseWorkSmoke/observer = new
+	var/mob/NexusSmokeTest/target = new
+	observer.BP = 100
+	target.BP = 100
+	var/image/readout = image(icon = null, loc = target)
+	observer.nexus_sense_readouts[target] = readout
+	var/source_power = observer.getSensePowerMagnitude()
+	nexusSmokeAssert(observer.Sense_Power(target) == observer.Sense_Power(target, source_power), "shared Sense magnitude changed equal-power readings")
+	observer.magnitude_calls = 0
+	nexusSmokeAssert(observer.updateNexusSenseReadoutAppearance(target, readout, source_power), "initial Sense readout did not render")
+	var/unchanged_updates = 0
+	for(var/i in 1 to 100)
+		unchanged_updates += observer.updateNexusSenseReadoutAppearance(target, readout, source_power)
+	nexusSmokeAssert(!unchanged_updates && !observer.magnitude_calls, "unchanged Sense readouts recomposed appearance or recalculated observer magnitude")
+	world.log << "NEXUS_SENSE_WORK unchanged_refreshes=100 appearance_updates=[unchanged_updates] observer_magnitude_recalculations=[observer.magnitude_calls]"
+	target.KO = TRUE
+	nexusSmokeAssert(observer.Sense_Power(target, source_power) == 5 && observer.updateNexusSenseReadoutAppearance(target, readout, source_power) && findtext(readout.maptext, "5%"), "Sense KO reduction did not update the readout")
+	target.KO = FALSE
+	target.BP = 100000
+	nexusSmokeAssert(observer.Sense_Power(target, source_power) == 999, "Sense percentage cap changed")
+	observer.updateNexusSenseReadoutAppearance(target, readout, source_power)
+	target.nexus_overhead_vitals_offset_x = 7
+	target.nexus_overhead_vitals_offset_y = 11
+	nexusSmokeAssert(observer.updateNexusSenseReadoutAppearance(target, readout, source_power) && readout.maptext_x == -25 && readout.maptext_y == -14, "Sense readout ignored layout changes at equal power")
+	target.BP = 0
+	nexusSmokeAssert(observer.updateNexusSenseReadoutAppearance(target, readout, source_power) && findtext(readout.maptext, "0%"), "Sense readout lost a zero-power update")
+	nexusSmokeAssert(!observer.updateNexusSenseReadoutAppearance(target, readout, source_power), "zero-power Sense readout was repeatedly rewritten")
+	observer.removeNexusSenseReadout(target)
+	nexusSmokeAssert(!(target in observer.nexus_sense_readout_power) && !(target in observer.nexus_sense_readouts), "Sense removal retained cached target values")
+	observer.nexus_sense_readouts[target] = readout
+	observer.updateNexusSenseReadoutAppearance(target, readout, source_power)
+	observer.clearNexusSenseReadouts()
+	nexusSmokeAssert(!observer.nexus_sense_readout_power.len && !observer.nexus_sense_readouts.len, "Sense cleanup retained state without a client")
+	var/obj/Screen_Indicator/arrow = GetNewScreenIndicator()
+	arrow.target = target
+	observer.UpdateSenseArrowSizeBasedOnPower(arrow)
+	nexusSmokeAssert(!observer.UpdateSenseArrowSizeBasedOnPower(arrow), "unchanged Sense arrow rebuilt its transform")
+	target.BP = 100000
+	nexusSmokeAssert(observer.UpdateSenseArrowSizeBasedOnPower(arrow), "Sense arrow ignored a changed scale")
+	del(arrow)
+	del(observer)
+	del(target)
+	world.log << "NEXUS_BLUEPRINT_SENSE_WORK_TESTS_PASSED"
+
+mob/NexusSmokeTest/LeechWorkSmoke
+	var/tmp/leech_iterations = 0
+	LeechGodKi(mob/target)
+		leech_iterations++
+	decline_gains()
+		return 1
+	AtBattlegrounds()
+		return FALSE
+
+proc/runBoundedWorkSmokeTests()
+	var/mob/NexusSmokeTest/LeechWorkSmoke/learner = new
+	var/mob/NexusSmokeTest/target = new
+	learner.Leech(target, -1)
+	learner.Leech(target, 0)
+	learner.Leech(target, 1.#INF)
+	learner.Leech(target, "invalid")
+	learner.Leech(target, 1e30)
+	var/original_adapt_mod = adapt_mod
+	adapt_mod = -1
+	learner.Leech(target, 10)
+	adapt_mod = 1.#INF
+	learner.Leech(target, 10)
+	adapt_mod = original_adapt_mod
+	nexusSmokeAssert(!learner.leech_iterations, "Leech accepted negative, non-finite or non-progressing work")
+	adapt_mod = 1
+	learner.Leech(target, 100, no_adapt = TRUE, weights_count = FALSE)
+	adapt_mod = original_adapt_mod
+	nexusSmokeAssert(learner.leech_iterations > 0 && !isSparring, "bounded Leech rejected ordinary work or retained sparring state")
+	del(learner)
+	del(target)
+	// Disable candidate areas only for synchronous searches; restore before asserting.
+	var/list/area_resources = list()
+	for(var/area/a in world)
+		area_resources[a] = a.has_resources
+		a.has_resources = FALSE
+	var/turf/missing_location = GetRandomOrbLoc()
+	for(var/area/a in area_resources)
+		a.has_resources = TRUE
+	var/turf/valid_location = GetRandomOrbLoc(1)
+	for(var/area/a in area_resources)
+		a.has_resources = area_resources[a]
+	nexusSmokeAssert(!missing_location && valid_location, "orb location search did not bound failure or retain valid candidates")
+	nexusSmokeAssert(!GetRandomOrbLoc(0) && !GetRandomOrbLoc(-1) && !GetRandomOrbLoc(1.#INF), "orb location search accepted invalid budgets")
+	var/obj/Base_Orb/BP_Orb/orb = new
+	var/obj/Base_Orb/BP_Orb/orb_reference = orb
+	nexusSmokeAssert((orb in bp_orbs) && (orb in base_orbs), "orb was not registered")
+	orb.reallyDelete = TRUE
+	del(orb)
+	nexusSmokeAssert(!orb_reference && !(orb_reference in bp_orbs) && !(orb_reference in base_orbs), "deleted orb retained registry references")
+	world.log << "NEXUS_BOUNDED_WORK_TESTS_PASSED"
+
+mob/NexusSmokeTest/AdminMeteorWorkSmoke
+	var/tmp/list/spawned_meteors = list()
+	var/tmp/list/requested_types = list()
+	getAdminMeteor(type_path)
+		requested_types += type_path
+		var/obj/PerformanceInventorySmoke/meteor = new
+		spawned_meteors += meteor
+		return meteor
+
+proc/runAdminMeteorWorkSmokeTests()
+	var/mob/NexusSmokeTest/AdminMeteorWorkSmoke/admin = new
+	admin.loc = locate(1, 1, 1)
+	var/started_at = world.time
+	var/spawned_count = admin.spawnAdminMeteors(21)
+	var/valid_locations = TRUE
+	var/valid_types = TRUE
+	for(var/obj/meteor in admin.spawned_meteors)
+		if(!isturf(meteor.loc) || meteor.z != admin.z || get_dist(admin, meteor) > 40) valid_locations = FALSE
+		meteor.reallyDelete = TRUE
+		del(meteor)
+	for(var/type_path in admin.requested_types)
+		if(type_path != /obj/SpaceDebris/Asteroid && type_path != /obj/SpaceDebris/Meteor) valid_types = FALSE
+	nexusSmokeAssert(spawned_count == 21 && admin.requested_types.len == 21 && valid_types && valid_locations, "meteor spawning allocated extra objects or changed placement/types")
+	nexusSmokeAssert(world.time > started_at, "large meteor spawning did not yield between batches")
+	nexusSmokeAssert(!admin.spawnAdminMeteors(0) && !admin.spawnAdminMeteors(-1) && !admin.spawnAdminMeteors(1.#INF), "meteor spawning accepted invalid counts")
+	admin.loc = null
+	nexusSmokeAssert(!admin.spawnAdminMeteors(1), "meteor spawning allocated without a valid origin")
+	del(admin)
+	world.log << "NEXUS_ADMIN_METEOR_WORK_TESTS_PASSED"
+
+proc/runPendingDeleteWorkSmokeTests()
+	var/list/original_queue = pending_object_delete_list
+	var/original_head = pending_object_delete_head
+	pending_object_delete_list = list()
+	pending_object_delete_head = 1
+	var/mob/NexusSmokeTest/player = new
+	var/obj/PerformanceInventorySmoke/first = new(player)
+	var/obj/PerformanceInventorySmoke/second = new(player)
+	var/obj/PerformanceInventorySmoke/third = new(player)
+	var/first_generation = first.deferred_delete_generation
+	del(player)
+	var/logout_queued_all = pending_object_delete_list.len == 3 && first.deleted && second.deleted && third.deleted && !first.loc && !second.loc && !third.loc
+	var/invalidated_callbacks = first.deferred_delete_generation != first_generation
+	var/duplicate_rejected = !queueObjectForPendingDeletion(first)
+	var/first_count = drainPendingObjectDeletes(1)
+	var/fifo_preserved = !first && !!second && !!third
+	pending_object_delete_list.Insert(pending_object_delete_head, null)
+	var/null_count = drainPendingObjectDeletes(1)
+	var/null_budget_preserved = !!second && !!third
+	compactPendingObjectDeleteQueue(TRUE)
+	var/compaction_preserved = pending_object_delete_head == 1 && pending_object_delete_list.len == 2 && pending_object_delete_list[1] == second
+	var/second_count = drainPendingObjectDeletes(1)
+	var/second_preserved_order = !second && !!third
+	var/third_count = drainPendingObjectDeletes(1)
+	var/queue_reset = !third && !pending_object_delete_list.len && pending_object_delete_head == 1
+	pending_object_delete_list = original_queue
+	pending_object_delete_head = original_head
+	nexusSmokeAssert(logout_queued_all && invalidated_callbacks && duplicate_rejected, "logout failed to deactivate every item exactly once")
+	nexusSmokeAssert(first_count == 1 && fifo_preserved && !null_count && null_budget_preserved, "pending deletion violated FIFO or its inspected-entry budget")
+	nexusSmokeAssert(compaction_preserved && second_count == 1 && second_preserved_order && third_count == 1 && queue_reset, "pending deletion lost entries during compaction or did not reset its head")
+	nexusSmokeAssert(getObjectDeletionBatchSize(1) == 1 && getObjectDeletionBatchSize(1e30) == 250 && getObjectDeletionBatchSize(1.#INF) <= 250, "deletion batches accept unbounded work")
+	world.log << "NEXUS_PENDING_DELETE_WORK_TESTS_PASSED"
+
+proc/runSpecializedEffectWorkSmokeTests()
+	var/turf/test_location = locate(1, 1, 1)
+	var/mob/NexusSmokeTest/owner = new
+	var/obj/Effect/NexusFlameField/field = new(test_location, owner, 10)
+	field.processField()
+	sleep(14)
+	nexusSmokeAssert(!field, "expired flame field entered the generic effect pool instead of being destroyed")
+	var/obj/Effect/NexusFlameField/early_field = new(test_location, owner, 40)
+	var/obj/Effect/NexusFlameField/early_reference = early_field
+	del(early_field)
+	nexusSmokeAssert(!early_reference, "early flame-field deletion retained its controller")
+	for(var/obj/Effect/NexusFlameField/cached_field in effect_cache)
+		nexusSmokeAssert(FALSE, "a flame-field controller contaminated the generic effect pool")
+	var/obj/Rising_Aura_Ultra_Instinct/aura = new(test_location)
+	aura.vector_speed = 10
+	sleep(2)
+	var/old_generation = aura.deferred_delete_generation
+	nexusSmokeAssert(queueObjectForGarbageCollection(aura) && aura.deferred_delete_generation != old_generation, "logical deletion did not invalidate deferred callbacks")
+	var/final_step_y = aura.step_y
+	sleep(4)
+	nexusSmokeAssert(!aura || aura.step_y == final_step_y, "queued Ultra Instinct aura continued animating")
+	if(aura)
+		aura.reallyDelete = TRUE
+		del(aura)
+	del(owner)
+	world.log << "NEXUS_SPECIALIZED_EFFECT_WORK_TESTS_PASSED"
+
+proc/runEffectLifecycleSmokeTests()
+	var/turf/test_location = locate(1, 1, 1)
+	var/obj/Effect/effect = GetEffect()
+	effect.loc = test_location
+	effect.runFloatingText(30)
+	sleep(2)
+	var/obj/Effect/released_effect = effect
+	del(released_effect)
+	// Reuse this exact cached instance as a different visual before its old task wakes.
+	effect_cache -= effect
+	ResetVars(effect)
+	effect.loc = test_location
+	effect.pixel_y = 137
+	sleep(32)
+	nexusSmokeAssert(effect && effect.loc == test_location && effect.pixel_y == 137, "an expired floating-text task moved or deleted a reused effect")
+	effect.runFloatingText(8)
+	sleep(12)
+	nexusSmokeAssert(effect && !effect.loc && (effect in effect_cache), "floating text did not return its effect to the cache at expiry")
+	var/final_pixel_y = effect.pixel_y
+	sleep(8)
+	nexusSmokeAssert(effect.pixel_y == final_pixel_y, "floating text continues updating a cached effect after expiry")
+	var/obj/Bounty_Picture/preview = GetCachedObject(/obj/Bounty_Picture)
+	preview.loc = test_location
+	preview.runBountyPreview(5)
+	preview.runBountyPreview(25)
+	sleep(12)
+	nexusSmokeAssert(preview && preview.loc == test_location, "an older bounty-preview task deleted the replacement preview")
+	sleep(18)
+	nexusSmokeAssert(!preview || !preview.loc, "bounty preview did not expire")
+	if(preview)
+		var/final_direction = preview.dir
+		sleep(12)
+		nexusSmokeAssert(preview.dir == final_direction, "bounty preview continues rotating in the cache")
+	world.log << "NEXUS_EFFECT_LIFECYCLE_TESTS_PASSED"
+
 proc/runNexusPlayerMusicSmokeTests()
 	nexusSmokeAssert(nexus_player_music_channel == 1024 && nexus_player_music_validation_channel == 1023 && nexus_player_music_range == 22 && nexus_player_music_max_duration_seconds == 300 && nexus_player_music_session_limit == 3000, "player music does not use isolated channels, its nearby range, or the five-minute cap")
 	nexusSmokeAssert(nexus_player_music_max_file_bytes == 5 * 1024 * 1024 && nexus_player_music_max_tracks == 5 && nexus_player_music_max_total_bytes == 20 * 1024 * 1024, "player music upload quotas changed unexpectedly")
@@ -5114,6 +5700,15 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 
 	del(loaded_player)
 	del(player)
+	runEffectLifecycleSmokeTests()
+	runPooledProjectileSmokeTests()
+	runPerformanceCatalogSmokeTests()
+	runDeferredLifecycleSmokeTests()
+	runBlueprintSenseWorkSmokeTests()
+	runBoundedWorkSmokeTests()
+	runSpecializedEffectWorkSmokeTests()
+	runPendingDeleteWorkSmokeTests()
+	runAdminMeteorWorkSmokeTests()
 	world.log << "NEXUS_SMOKE_TESTS_PASSED"
 
 proc/runNexusDestructionAuraVisualSmoke(mob/skill_acceleration_test)

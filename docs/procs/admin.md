@@ -1,5 +1,9 @@
 # Admin
 
+`spawnAdminMeteors(amount)` collects the 40-tile-radius spawn locations once, chooses one debris type before requesting an object from `getAdminMeteor(type_path)`, and spawns at most 500 objects. It yields every ten objects or at 80% tick usage and returns the actual count for the admin log. The list anchors placement to the command's initial location; invalid inputs/origins allocate nothing. The factory proc allows smoke tests to verify allocation counts without launching debris AI.
+
+`getAdminSpawnChoices(search_text, include_mobs = FALSE, allow_auto_shadow_spar = FALSE)` builds invocation-local label → type menus without constructing objects or mobs. Labels include initial names and full paths so same-name types remain distinguishable. `giveItem()` and `make()` instantiate only the selected type after input; cancellation and target loss do not create anything. Object searches retain path matching, and mob searches accept initial names or paths. Initial `Givable`/`Makeable`, clothing exclusions, Rank, and the coded-admin Auto Shadow Spar exception are preserved. Runtime-randomized constructor names are intentionally no longer used for previews.
+
 ## Overview
 Administrative commands and management flows. Administrators receive a searchable full control panel and a compact player-focused quick panel. `Manage Player` appears on a clicked player's context menu and opens that quick panel with the player already selected. The normal command/right-click surface is otherwise limited to both panel launchers plus Teleport, Summon, AdminHeal, Admin Revive, and Admin Inspector; any other legacy verb can be exposed individually through the searchable legacy palette. The structured inspector remains the complete variable, collection, and mutation editor.
 

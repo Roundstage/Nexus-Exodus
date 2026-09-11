@@ -81,6 +81,7 @@ mob
 			list/sense_arrows = new
 			list/sense_arrow_by_target = new
 			list/nexus_sense_readouts = new
+			list/nexus_sense_readout_power = new
 			next_nexus_sense_refresh = 0
 			next_nexus_sense_arrow_refresh = 0
 			area/last_nexus_sense_area
@@ -98,6 +99,7 @@ mob
 			return FALSE
 
 		clearNexusSenseReadouts()
+			nexus_sense_readout_power = list()
 			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
 			if(client)
 				for(var/mob/old_target in nexus_sense_readouts)
@@ -106,6 +108,7 @@ mob
 			nexus_sense_readouts = list()
 
 		removeNexusSenseReadout(mob/target)
+			if(islist(nexus_sense_readout_power)) nexus_sense_readout_power -= target
 			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
 			var/image/readout = nexus_sense_readouts[target]
 			if(readout && client) client.images -= readout
@@ -147,16 +150,35 @@ mob
 				clearNexusSenseReadouts()
 				return
 			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
+			var/source_power = nexus_sense_readouts.len ? getSensePowerMagnitude() : 0
 			for(var/mob/target in nexus_sense_readouts.Copy())
 				if(!target || !target.loc || target.current_area != current_area || target.locz() != locz() || !CanSense(src, target))
 					removeNexusSenseReadout(target)
 					continue
 				var/image/readout = nexus_sense_readouts[target]
 				if(!readout) continue
-				readout.maptext_x = getNexusOverheadVitalsBasePixelX(target) - 32
-				readout.maptext_y = getNexusOverheadPercentagePixelY(target)
-				var/power_percent = Sense_Power(target)
+				updateNexusSenseReadoutAppearance(target, readout, source_power)
+			// A list reconciliation already refreshed the values; avoid a second refresh in this tick.
+			next_nexus_sense_refresh = world.time + 10
+
+		updateNexusSenseReadoutAppearance(mob/target, image/readout, source_power)
+			if(!target || !readout) return FALSE
+			if(!islist(nexus_sense_readout_power)) nexus_sense_readout_power = list()
+			var/changed = FALSE
+			var/new_x = getNexusOverheadVitalsBasePixelX(target) - 32
+			var/new_y = getNexusOverheadPercentagePixelY(target)
+			if(readout.maptext_x != new_x)
+				readout.maptext_x = new_x
+				changed = TRUE
+			if(readout.maptext_y != new_y)
+				readout.maptext_y = new_y
+				changed = TRUE
+			var/power_percent = Sense_Power(target, source_power)
+			if(!length(readout.maptext) || nexus_sense_readout_power[target] != power_percent)
 				readout.maptext = "<div style='font-family:Courier New;font-size:7px;font-weight:bold;text-align:center;color:#9de8ff;text-shadow:1px 1px #000'>[power_percent]%</div>"
+				nexus_sense_readout_power[target] = power_percent
+				changed = TRUE
+			return changed
 
 		UpdateSenseArrowPositionsLoop()
 			set waitfor=0
@@ -183,18 +205,21 @@ mob
 			if(!a)
 				RemoveAllSenseArrows()
 				return
+			if(!sense_arrows.len) return
+			var/source_cx = Cx()
+			var/source_cy = Cy()
 			for(var/obj/Screen_Indicator/si in sense_arrows)
-				UpdateSenseArrowPosition(si)
+				UpdateSenseArrowPosition(si, source_cx = source_cx, source_cy = source_cy)
 
-		UpdateSenseArrowPosition(obj/Screen_Indicator/si, instant_update = 0)
+		UpdateSenseArrowPosition(obj/Screen_Indicator/si, instant_update = 0, source_cx, source_cy)
 			if(!client) return
 
 			if(!si.target)
 				RemoveSenseArrow(si)
 				return
 
-			var/source_cx = Cx()
-			var/source_cy = Cy()
+			if(!isnum(source_cx)) source_cx = Cx()
+			if(!isnum(source_cy)) source_cy = Cy()
 			var/target_cx = si.target.Cx()
 			var/target_cy = si.target.Cy()
 			var/position_changed = source_cx != si.last_source_cx || source_cy != si.last_source_cy || target_cx != si.last_target_cx || target_cy != si.last_target_cy
@@ -238,9 +263,11 @@ mob
 			var/size_mod = (Sense_Power(si.target) / 100) ** 0.4
 			size_mod = Clamp(size_mod, 0.5, 1.1)
 			var/new_trans_size = size_mod * si.base_trans_size
+			if(new_trans_size == si.transform_size) return FALSE
 			si.transform /= si.transform_size
 			si.transform *= new_trans_size
 			si.transform_size = new_trans_size
+			return TRUE
 
 		RemoveSenseArrow(obj/Screen_Indicator/si)
 			if(!si) return

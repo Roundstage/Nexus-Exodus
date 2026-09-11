@@ -1,5 +1,7 @@
 # Background Code
 
+`GetCachedObject()` and `CacheObject()` advance `obj.deferred_delete_generation` when reusing/releasing an object. The temporary counter survives `ResetVars()` and invalidates `Timed_Delete()` callbacks from earlier uses. The base `obj/Del()` also advances it. Custom pools must advance it explicitly; this is not an automatic guarantee for every legacy `Del()` override.
+
 ## Overview
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 

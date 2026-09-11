@@ -25,6 +25,7 @@ proc
 				var/obj/o = l[l.len]
 				l.len--
 				if(!o) continue
+				o.deferred_delete_generation++
 				if(pos) o.Move(pos)
 				o.New()
 				o.cached = 0
@@ -35,6 +36,7 @@ proc
 
 	CacheObject(obj/o)
 		if(!o || o.cached) return
+		o.deferred_delete_generation++
 		animate(o) //stop all animations
 		o.SafeTeleport(null)
 		if(o.reset_vars_on_cache) ResetVars(o)

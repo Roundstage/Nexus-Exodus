@@ -1,5 +1,7 @@
 # World Mechanics
 
+`obj/SpaceDebris/Meteor_fly()` captures a temporary flight generation before its initial delay. Restarting flight or deleting the meteor invalidates earlier tasks; cached objects do not move. The loop checks again after `step()` because a collision can release the meteor during movement.
+
 ## Overview
 `initializeSuperEarthPlanet()` creates one roaming Super Terra on space Z 16,
 landing at (`SUPER_EARTH_LANDING_X`, `SUPER_EARTH_LANDING_Y`, 21), currently
@@ -152,9 +154,21 @@ Planetary control is persistent per canonical planet. A rank 7 League leader may
 #### proc/GenerateBPOrbs
 - Signature: `GenerateBPOrbs()`
 - Inputs: None
-- Purpose: Handle generate bporbs.
+- Purpose: Generate up to four visible Power Orbs; resolve an eligible turf before allocating each orb. If the bounded search fails, end this generation pass without creating an orphan. This does not guarantee placement when eligible turfs are very sparse.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+#### proc/GetRandomOrbLoc
+
+- Signature: `GetRandomOrbLoc(max_attempts = 1024)`
+- Purpose: Sample random map coordinates, accepting only areas with resources. Inspect at most 1024 candidates; invalid/non-positive budgets fail immediately.
+- Returns: Eligible turf, or null when the search budget is exhausted.
+- Side effects: none.
+
+#### obj/Base_Orb/Del
+
+- Signature: `Del()`
+- Purpose: Remove the orb from both registries before delegating to object destruction. The disable command traverses a copy so registry removal does not skip orbs.
 
 #### proc/GetRandomOrbLoc
 - Signature: `GetRandomOrbLoc()`

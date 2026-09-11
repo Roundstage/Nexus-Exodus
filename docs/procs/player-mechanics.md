@@ -1,5 +1,9 @@
 # Player Mechanics
 
+`indexCanonicalScienceBlueprints(blueprints)` resolves the requested exact types in one pass over `tech_list`, stopping when all are found. `getNormalizedScienceBlueprintList()` consumes this invocation-local index to retain the first canonical object per type, input order and unknown-type fallback while dropping duplicates/non-objects. It still returns a fresh list and never mutates the input. Rebuilding per call handles same-length catalog replacements/reorders without stale global caches; direct `getCanonicalScienceBlueprint()` callers retain their original lookup.
+
+`syncProgressionTrees()` builds a temporary exact-type inventory index with `indexProgressionRewardTypes()`. It is shared with `hasExactProgressionRewardObject()` and `applyProgressionNodeReward()` for that synchronization only, and rebuilt after a newly granted skill/magic reward or a changed inventory count. Non-indexed callers retain live inventory lookup. A subtype does not count as its exact parent type; the next synchronization rebuilds the index, including externally added/removed items.
+
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
@@ -1624,6 +1628,11 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 
 ### src/Code/PlayerMechanics/Inventory.dm
 
+#### obj/Bounty_Picture/proc/runBountyPreview
+- Signature: `runBountyPreview(duration = 100)`
+- Purpose: Rotate a bounty preview every ten ticks for a bounded duration.
+- Side effects: replaces any previous preview task using a temporary generation. `Del()` invalidates pending work before following the normal object lifecycle. An older preview cannot rotate or delete a replacement. Non-finite durations use the hundred-tick default; negative durations expire immediately.
+
 #### obj/Brain_Scrambler/New
 - Signature: `New()`
 - Inputs: None
@@ -3190,7 +3199,7 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 #### proc/Initialize_Learnable_Skills_List
 - Signature: `proc/Initialize_Learnable_Skills_List()`
 - Inputs: None
-- Purpose: Initialize Learnable Skills List.
+- Purpose: Build a cached label → skill-type metadata list from initial names and `Cost_To_Learn`, without invoking constructors. `manageLearnableSkills()` adds/removes type paths using these labels, including otherwise-illegal types when removing a restriction. The unreachable legacy menu after `Learn()`'s unconditional progression-window return was removed; the active Progression Trees UI is unchanged.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3928,7 +3937,7 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 #### mob/proc/Leech
 - Signature: `mob/proc/Leech(mob/P,N=1,no_adapt=0,give_as_hbtc_bp=0,android_matters=1,weights_count=1)`
 - Inputs: mob/P, N=1, no_adapt=0, give_as_hbtc_bp=0, android_matters=1, weights_count=1
-- Purpose: Handle leech.
+- Purpose: Apply adaptive training gains. Reject non-positive/non-finite input and modified counts, including magnitudes at which subtracting one cannot progress. Positive fractional counts retain the legacy probabilistic rounding and gain formulas.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
