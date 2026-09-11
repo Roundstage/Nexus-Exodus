@@ -1,0 +1,10 @@
+{
+  "id": "WindHowl",
+  "original": "artifacts/SkillArtwork/Originals/WindHowl.png",
+  "asset": "src/Icons/UI/SkillArtwork/WindHowl.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "55ac33ff0a910e5ac2722928dde23c5bb75c9404ffee14954060e443faf54a99",
+  "promptSha256": "97d164a244f02e48c9d107ebd3975cd507b16654bc762fe4232a05ec32fc4bdb",
+  "approvedSample": false
+}

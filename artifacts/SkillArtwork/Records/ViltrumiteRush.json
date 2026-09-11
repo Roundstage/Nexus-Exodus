@@ -1,0 +1,10 @@
+{
+  "id": "ViltrumiteRush",
+  "original": "artifacts/SkillArtwork/Originals/ViltrumiteRush.png",
+  "asset": "src/Icons/UI/SkillArtwork/ViltrumiteRush.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f3e54c414fb5068ca7df6c652285f4bbad9bcd475cb46fe3b14e3a36d8eac963",
+  "promptSha256": "854f32da145d66c418f81c50b322c80e11aaba68830025c5ca6f6eedc8095b60",
+  "approvedSample": false
+}

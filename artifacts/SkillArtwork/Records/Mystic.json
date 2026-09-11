@@ -1,0 +1,10 @@
+{
+  "id": "Mystic",
+  "original": "artifacts/SkillArtwork/Originals/Mystic.png",
+  "asset": "src/Icons/UI/SkillArtwork/Mystic.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1da38d913f6067daef0ffcea4d531d1872e1190eae4ef3fa13c009efa0de2e4a",
+  "promptSha256": "f097feeabca30843a2cd3ef76a6361cdc81c65807a2827f253949e6d6e54eddc",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Heal",
+  "original": "artifacts/SkillArtwork/Originals/Heal.png",
+  "asset": "src/Icons/UI/SkillArtwork/Heal.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "6d6f1c3ba6d8ca5e5f1e5cfa52be9c1a1a59e1cce59c3cf366574fd67b770c34",
+  "promptSha256": "664595217a6d9a499d23f4c06f1cea99aaf05f3b6a1685b59b5d8d5790e0f6aa",
+  "approvedSample": true
+}

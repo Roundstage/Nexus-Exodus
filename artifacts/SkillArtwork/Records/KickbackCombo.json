@@ -1,0 +1,10 @@
+{
+  "id": "KickbackCombo",
+  "original": "artifacts/SkillArtwork/Originals/KickbackCombo.png",
+  "asset": "src/Icons/UI/SkillArtwork/KickbackCombo.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "54dcc1906943e57418d762eb842aad7c66aff37f8e5f78370461e47c1dbf7971",
+  "promptSha256": "ef64bf0a46d619e193d3013ec5783a244ff3b8a769b2a2c5dab56f5abbff7f6f",
+  "approvedSample": false
+}

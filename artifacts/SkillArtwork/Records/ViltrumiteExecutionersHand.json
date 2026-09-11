@@ -1,0 +1,10 @@
+{
+  "id": "ViltrumiteExecutionersHand",
+  "original": "artifacts/SkillArtwork/Originals/ViltrumiteExecutionersHand.png",
+  "asset": "src/Icons/UI/SkillArtwork/ViltrumiteExecutionersHand.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4432b9ca56432334bf8cd06a533c73a4b0efef9c0bae9ca53bdc61505fb92f78",
+  "promptSha256": "168de1e0da1cc2b5bd3af0bf49f86d6a4fdebcad1a0bd13218cd3cef440b51da",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "NolansCombination",
+  "original": "artifacts/SkillArtwork/Originals/NolansCombination.png",
+  "asset": "src/Icons/UI/SkillArtwork/NolansCombination.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "86bafe65739acaae90395d81420ee6e27d682156ca65238fa72998cc784a68c7",
+  "promptSha256": "3123b7e4b8a54bbd6e41d9dfceb192ba774c1f3d1fb4b17c0134a46d34522647",
+  "approvedSample": false
+}

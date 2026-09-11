@@ -1,0 +1,10 @@
+{
+  "id": "FireFist",
+  "original": "artifacts/SkillArtwork/Originals/FireFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/FireFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "30daa64a2bd570bc701892461afd35d77df35449587db654130467c28417a34c",
+  "promptSha256": "7f4abbc3ffed5b415cc10fc1e2cd3e999214e5ba0e2069f04c20038cc9d5f6df",
+  "approvedSample": false
+}

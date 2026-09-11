@@ -1,0 +1,10 @@
+{
+  "id": "ShadowSpar",
+  "original": "artifacts/SkillArtwork/Originals/ShadowSpar.png",
+  "asset": "src/Icons/UI/SkillArtwork/ShadowSpar.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "40a2ec51db3b0f84aa3f24ac5513932d7c74b7e82afb77221fb57cec44864a39",
+  "promptSha256": "1bdf8f02618d09d4cfd94a40c19e29f177a89b7d43d495d35e4874df484f3c28",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "PowerControl",
+  "original": "artifacts/SkillArtwork/Originals/PowerControl.png",
+  "asset": "src/Icons/UI/SkillArtwork/PowerControl.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d7f7cba0106179ebdaf64452436c008fb40e35fcaec2b64c3fa930b91d63fdc8",
+  "promptSha256": "010283b897066a0c45ccb4983b91bf4fd144e87437a52c3a8255b66fd2d66e25",
+  "approvedSample": false
+}

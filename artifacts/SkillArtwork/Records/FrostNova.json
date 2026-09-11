@@ -1,0 +1,10 @@
+{
+  "id": "FrostNova",
+  "original": "artifacts/SkillArtwork/Originals/FrostNova.png",
+  "asset": "src/Icons/UI/SkillArtwork/FrostNova.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "535de25d00c19c61e143c64a7fddc3b34a77ddddb1a68c9eae4c251572a9c6d3",
+  "promptSha256": "b045160c2f15f2b97c0414d958fa5daab54f51154659c194854466d4717b5c9c",
+  "approvedSample": false
+}

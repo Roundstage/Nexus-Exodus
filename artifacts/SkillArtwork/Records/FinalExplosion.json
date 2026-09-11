@@ -1,0 +1,10 @@
+{
+  "id": "FinalExplosion",
+  "original": "artifacts/SkillArtwork/Originals/FinalExplosion.png",
+  "asset": "src/Icons/UI/SkillArtwork/FinalExplosion.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "961e2b0e679ac4113355cedfe10607fdb5ab140dddf089a450da68a53e604181",
+  "promptSha256": "053de66405670883775418e52bb2ffc11fa021cdb8cb93e1773eb6bd2e2043df",
+  "approvedSample": false
+}

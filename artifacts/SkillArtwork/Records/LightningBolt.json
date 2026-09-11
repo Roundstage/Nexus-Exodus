@@ -1,0 +1,10 @@
+{
+  "id": "LightningBolt",
+  "original": "artifacts/SkillArtwork/Originals/LightningBolt.png",
+  "asset": "src/Icons/UI/SkillArtwork/LightningBolt.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ea296632e8bd3cd2b9e0c53f3183672f810a26901c8fb4f3604fd6227599a511",
+  "promptSha256": "14c72cf90c6ed7291559fee7fa8e74c7698500c5adf37def48923305b6dfc657",
+  "approvedSample": false
+}

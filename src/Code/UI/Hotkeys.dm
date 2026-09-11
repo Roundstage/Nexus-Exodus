@@ -25,6 +25,18 @@ mob/proc
 		f["hotbar_ids"] >> hotbar_ids
 		f["nexus_hotkey_bindings"] >> nexus_hotkey_bindings
 		f["nexus_hotkey_version"] >> nexus_hotkey_version
+		if("nexus_classic_slot_keys_version" in f) f["nexus_classic_slot_keys_version"] >> nexus_classic_slot_keys_version
+		var/list/bar_settings
+		var/bar_key = "nexus_classic_bar_[clampNexusCharacterSlot(active_character_slot)]"
+		if(bar_key in f) f[bar_key] >> bar_settings
+		if(islist(bar_settings) && bar_settings["created"] == character_made_time)
+			nexus_classic_slots = bar_settings["slots"]
+			nexus_classic_bars = bar_settings["bars"]
+			nexus_classic_next_bar = bar_settings["next_bar"]
+			nexus_classic_bar_rows = bar_settings["rows"]
+			nexus_classic_bar_columns = bar_settings["columns"]
+			nexus_classic_bar_size = bar_settings["size"]
+			nexus_classic_bar_locked = bar_settings["locked"]
 		if("nexus_keyboard_layout" in f) f["nexus_keyboard_layout"] >> nexus_keyboard_layout
 		nexus_keyboard_layout = normalizeNexusKeyboardLayout(nexus_keyboard_layout)
 
@@ -35,6 +47,9 @@ mob/proc
 		f["hotbar_ids"] << hotbar_ids
 		f["nexus_hotkey_bindings"] << nexus_hotkey_bindings
 		f["nexus_hotkey_version"] << nexus_hotkey_version
+		f["nexus_classic_slot_keys_version"] << nexus_classic_slot_keys_version
+		if(islist(nexus_classic_slots))
+			f["nexus_classic_bar_[clampNexusCharacterSlot(active_character_slot)]"] << list("created" = character_made_time, "slots" = nexus_classic_slots, "bars" = nexus_classic_bars, "next_bar" = nexus_classic_next_bar, "rows" = nexus_classic_bar_rows, "columns" = nexus_classic_bar_columns, "size" = nexus_classic_bar_size, "locked" = nexus_classic_bar_locked)
 		f["nexus_keyboard_layout"] << normalizeNexusKeyboardLayout(nexus_keyboard_layout)
 
 obj/var/tmp
@@ -668,7 +683,7 @@ mob/proc/Refresh_hotbar_ability_grid()
 	for(var/obj/o in hotbar_objects)
 
 		winset(src,"hotbar.ability_grid","current-cell=1,[cell]")
-		src<<output(Get_hotbar_type_icon(o.hotbar_type),"hotbar.ability_grid")
+		src<<output(getNexusHotbarSkillIcon(o),"hotbar.ability_grid")
 
 		winset(src,"hotbar.ability_grid","current-cell=2,[cell]")
 		src<<output(o,"hotbar.ability_grid")
@@ -759,7 +774,7 @@ mob/proc/Refresh_hotbar_key_grid()
 			if(o.loc==src)
 
 				winset(src,"hotbar.key_grid","current-cell=2,[cell]")
-				src<<output(Get_hotbar_type_icon(o.hotbar_type),"hotbar.key_grid")
+				src<<output(getNexusHotbarSkillIcon(o),"hotbar.key_grid")
 
 				winset(src,"hotbar.key_grid","current-cell=3,[cell]")
 				src<<output(o.name,"hotbar.key_grid")

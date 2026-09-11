@@ -1,0 +1,10 @@
+{
+  "id": "PowerUp",
+  "original": "artifacts/SkillArtwork/Originals/PowerUp.png",
+  "asset": "src/Icons/UI/SkillArtwork/PowerUp.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "39e468ea6adc45ff9fa646604d1b5bc324ec32ed4e4e847857868d5b8efe61ce",
+  "promptSha256": "efe2f1b16295a47ba2fcfe3dcf861dc3634e747cba718970f4952b18028891ca",
+  "approvedSample": false
+}

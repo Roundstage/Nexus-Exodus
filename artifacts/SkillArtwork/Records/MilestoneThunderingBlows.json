@@ -1,0 +1,10 @@
+{
+  "id": "MilestoneThunderingBlows",
+  "original": "artifacts/SkillArtwork/Originals/MilestoneThunderingBlows.png",
+  "asset": "src/Icons/UI/SkillArtwork/MilestoneThunderingBlows.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "752281ae24c40d9168aefce9ce8c0aeee69e7e85cae710f3d5cfc849e0120a0f",
+  "promptSha256": "d897c2697eb9a45d6b70181841ef4220e1f1e029f9b45c5eb4dd99b4d9a766d8",
+  "approvedSample": false
+}

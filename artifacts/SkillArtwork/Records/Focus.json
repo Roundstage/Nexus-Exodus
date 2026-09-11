@@ -1,0 +1,10 @@
+{
+  "id": "Focus",
+  "original": "artifacts/SkillArtwork/Originals/Focus.png",
+  "asset": "src/Icons/UI/SkillArtwork/Focus.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a5c19e5178aaa5d210f8587c99eba030403920e4609896ffb8b0895924369276",
+  "promptSha256": "4fb174cc0d405c2d8f7112587668709ae9977f4a766832b8134e0fc095c95ffd",
+  "approvedSample": false
+}

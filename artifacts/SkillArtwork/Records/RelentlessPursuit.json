@@ -1,0 +1,10 @@
+{
+  "id": "RelentlessPursuit",
+  "original": "artifacts/SkillArtwork/Originals/RelentlessPursuit.png",
+  "asset": "src/Icons/UI/SkillArtwork/RelentlessPursuit.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e50df925773213a97e0702da02045ebcc833447922e9303e0557a2ff79297058",
+  "promptSha256": "309cb1b20c26b055304e5d232651cb741349a13897592d566971981de3619932",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BuffMuscleForce",
+  "original": "artifacts/SkillArtwork/Originals/BuffMuscleForce.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffMuscleForce.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f87f6960c3d7aefa424d47bc1beb37ee25ad95143c6492c57943542d91669c5b",
+  "promptSha256": "00341cb88220942af24d3232cff1254e2212e9e20a1e7070c7d359408f9f4982",
+  "approvedSample": false
+}

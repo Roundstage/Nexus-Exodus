@@ -15,13 +15,15 @@ mob/proc/DisplayItemCost(obj/o)
 mob/var/tmp
 	last_double_click = 0
 
-client/DblClick(obj/A)
+client/DblClick(obj/A, location, control, params)
+	if(nexus_build_window && nexus_build_window.consumesMapClick(A,location,control)) return
 	mob.last_double_click = world.time
 	var/mob/player = usr
 	player.TryCreateScienceItem(A)
 
 client/Click(obj/A, location, control, params)
 	var/mob/player = usr
+	if(nexus_build_window && nexus_build_window.consumesMapClick(A,location,control)) return
 	if(player.isTechnologyReferenceClick(A))
 		mob.DisplayItemCost(A)
 	else if(mob.Lootables&&mob&&isobj(A)&&(A in mob.Lootables)&&!istype(A,/obj/Cancel_Loot)) for(var/mob/B in view(1,mob)) if(A.loc==B)

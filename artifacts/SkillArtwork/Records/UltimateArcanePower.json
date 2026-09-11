@@ -1,0 +1,10 @@
+{
+  "id": "UltimateArcanePower",
+  "original": "artifacts/SkillArtwork/Originals/UltimateArcanePower.png",
+  "asset": "src/Icons/UI/SkillArtwork/UltimateArcanePower.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2cf7ebba5f66b39c5bb668fa6bc88d8f93337c3480125da411234a07f4cbcc97",
+  "promptSha256": "c30e14201a7921aa195534292bb879707b62475d3ae088336c49a197d19208b0",
+  "approvedSample": false
+}

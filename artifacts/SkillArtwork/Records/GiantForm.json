@@ -1,0 +1,10 @@
+{
+  "id": "GiantForm",
+  "original": "artifacts/SkillArtwork/Originals/GiantForm.png",
+  "asset": "src/Icons/UI/SkillArtwork/GiantForm.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4bc129e927598058ac6483ac917502533cd4d1c86d00d82d7bd3db4efc23c04b",
+  "promptSha256": "0ef1af03686342fb3cb1aec4b9f96d83385d20b807586a7220f28f27a73db367",
+  "approvedSample": false
+}

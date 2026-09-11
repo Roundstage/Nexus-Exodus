@@ -1,0 +1,10 @@
+{
+  "id": "PunishingReversal",
+  "original": "artifacts/SkillArtwork/Originals/PunishingReversal.png",
+  "asset": "src/Icons/UI/SkillArtwork/PunishingReversal.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f16dd0867a793c16122bf75e7e7e5e4f5e8033fb898dee2a4d0352a8a1f45f9c",
+  "promptSha256": "043fd166c2746a957a1f1a62c8f4a1ef42ba57e738950237547a2900d88ea79e",
+  "approvedSample": false
+}

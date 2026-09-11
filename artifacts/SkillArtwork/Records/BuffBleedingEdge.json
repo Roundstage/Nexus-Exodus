@@ -1,0 +1,10 @@
+{
+  "id": "BuffBleedingEdge",
+  "original": "artifacts/SkillArtwork/Originals/BuffBleedingEdge.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffBleedingEdge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4cc4c76d3b354fa96169b211a057c46e45479ce9df1e7c8c3ba9da0a857c7ec1",
+  "promptSha256": "678e493ccdb8f778f8800117716955cd930c0ddf4476cf8364e4a531b5bb4b88",
+  "approvedSample": false
+}

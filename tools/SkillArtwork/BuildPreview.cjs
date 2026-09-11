@@ -1,0 +1,32 @@
+const fs = require('fs');
+const path = require('path');
+const {pathToFileURL} = require('url');
+const root = path.resolve(__dirname, '../..');
+const out = path.join(root, 'artifacts/SkillArtwork');
+const manifest = JSON.parse(fs.readFileSync(path.join(out, 'Manifest.json')));
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ready = manifest.skills.filter(s => fs.existsSync(path.join(out, 'Records', s.id + '.json')));
+const categories = [...new Set(manifest.skills.map(s => s.category))].sort();
+const cards = ready.map(s => {
+ const asset = '../../' + s.asset;
+ const description = String(s.artDescription || s.description).replace(/<br\s*\/?\s*>/gi, ' ').replace(/<[^>]*>/g, '');
+ return '<article data-category="' + esc(s.category) + '" data-search="' + esc((s.name+' '+s.category+' '+description).toLowerCase()) + '"><a class="art" href="Originals/' + s.id + '.png"><img src="' + asset + '" width="128" height="128" alt="' + esc(s.name) + '"></a><div class="cardbody"><span class="category">' + esc(s.category) + '</span><h2>' + esc(s.name) + '</h2><p>' + esc(description) + '</p><div class="sizes"><span><img src="' + asset + '" width="40" height="40" alt="">40 px</span><span><img src="' + asset + '" width="32" height="32" alt="">32 px</span></div></div></article>';
+}).join('\n');
+const html = '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nexus Exodus · Artes das skills</title><style>*{box-sizing:border-box}body{margin:0;background:#0a0d13;color:#e9eef5;font:14px/1.5 system-ui,sans-serif}header{max-width:1440px;margin:auto;padding:40px 32px 22px}header small{letter-spacing:.24em;color:#e9b868;font-size:11px}h1{font-size:36px;margin:8px 0}header p{color:#9daabb;max-width:720px}nav{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 12px}input,select{font:inherit;background:#141b27;color:#e9eef5;border:1px solid #344153;border-radius:8px;padding:11px 14px}input{flex:1;min-width:250px}#count{color:#a5b2c5;font-size:12px}main{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:1440px;margin:0 auto;padding:0 32px 40px}article{background:#111722;border:1px solid #273142;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding-top:20px}article[hidden]{display:none}.art{display:block;line-height:0;border-radius:8px;overflow:hidden}.art img{display:block}.cardbody{padding:16px 20px;width:100%}.category{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#e9b868}h2{font-size:17px;margin:4px 0 8px}article p{font-size:12px;color:#99a7ba;margin:0;min-height:54px;max-height:72px;overflow:auto}.sizes{border-top:1px solid #253042;margin-top:14px;padding-top:12px;display:flex;gap:22px}.sizes span{display:flex;align-items:center;gap:8px;color:#718198;font-size:10px}.sizes img{border-radius:4px}.qa main{grid-template-columns:repeat(4,1fr);max-width:1120px;padding:0 24px 24px;gap:12px}.qa header{padding:20px 24px 16px}.qa h1{font-size:25px}.qa header p,.qa nav,.qa #count,.qa article p{display:none}.qa article{padding-top:12px}.qa h2{font-size:14px;min-height:21px}.qa .cardbody{padding:10px 14px}.qa .sizes{padding-top:8px;margin-top:8px}.overview main{grid-template-columns:repeat(12,1fr);gap:6px;padding:0 24px 24px;max-width:1440px}.overview article{padding:5px;border-radius:5px}.overview .art img{width:80px;height:80px}.overview .cardbody{padding:4px 0 0}.overview h2{font-size:9px;line-height:12px;margin:0;text-align:center;min-height:24px}.overview .category,.overview .sizes,.overview article p,.overview nav,.overview #count{display:none}.overview header{padding:24px}.overview h1{font-size:26px}</style><header><small>NEXUS EXODUS</small><h1>Uma identidade para cada skill</h1><p>' + ready.length + ' artes de ' + manifest.skills.length + ', baseadas nas descrições do jogo. Clique em uma arte para abrir o original. As miniaturas mostram a leitura real em 40 e 32 pixels.</p><nav><input id="search" type="search" placeholder="Buscar habilidade, categoria ou efeito..." aria-label="Buscar habilidade"><select id="category" aria-label="Categoria"><option value="">Todas as categorias</option>' + categories.map(c=>'<option>'+esc(c)+'</option>').join('') + '</select></nav><div id="count"></div></header><main>' + cards + '</main><script>const cards=[...document.querySelectorAll("article")],search=document.querySelector("#search"),category=document.querySelector("#category");function filter(){const q=search.value.trim().toLowerCase();cards.forEach(c=>c.hidden=(!c.dataset.search.includes(q)||(category.value&&c.dataset.category!==category.value)));document.querySelector("#count").textContent=cards.filter(c=>!c.hidden).length+" habilidades";}search.addEventListener("input",filter);category.addEventListener("change",filter);filter();const params=new URLSearchParams(location.search);if(params.has("page")){document.body.classList.add("qa");const page=Number(params.get("page"));cards.forEach((c,i)=>c.hidden=i<page*16||i>=(page+1)*16);}if(params.has("overview"))document.body.classList.add("overview");</script></html>';
+fs.writeFileSync(path.join(out,'index.html'),html);
+console.log('Gallery: '+ready.length+'/'+manifest.skills.length);
+if (process.argv.includes('--render')) (async()=>{
+ const {chromium} = require('playwright');
+ const browser=await chromium.launch({channel:'chrome',headless:true});
+ const page=await browser.newPage({viewport:{width:1120,height:900},deviceScaleFactor:1});
+ const base=pathToFileURL(path.join(out,'index.html')).href;
+ fs.mkdirSync(path.join(out,'Review'),{recursive:true});
+ for(let i=0;i<Math.ceil(ready.length/16);i++){
+  await page.goto(base+'?page='+i); await page.evaluate(()=>Promise.all([...document.images].map(im=>im.decode())));
+  await page.screenshot({path:path.join(out,'Review','Sheet'+String(i+1).padStart(2,'0')+'.png'),fullPage:true});
+ }
+ await page.setViewportSize({width:1440,height:1000}); await page.goto(base+'?overview=1'); await page.evaluate(()=>Promise.all([...document.images].map(im=>im.decode())));
+ await page.screenshot({path:path.join(out,'SkillArtworkOverview.png'),fullPage:true});
+ await browser.close();
+ console.log('Rendered '+Math.ceil(ready.length/16)+' review sheets and overview.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

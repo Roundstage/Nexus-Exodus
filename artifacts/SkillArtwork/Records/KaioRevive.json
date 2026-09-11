@@ -1,0 +1,10 @@
+{
+  "id": "KaioRevive",
+  "original": "artifacts/SkillArtwork/Originals/KaioRevive.png",
+  "asset": "src/Icons/UI/SkillArtwork/KaioRevive.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b0d9a9424ffe9517a565e64ba7bf7519999335f899ae08fa9567f851cc151bae",
+  "promptSha256": "192a208bccd686bfc265b44b0dd4e7f8bfe86d9d0eeeff50947facc60f5932c8",
+  "approvedSample": false
+}

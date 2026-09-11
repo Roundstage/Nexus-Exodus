@@ -83,7 +83,7 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 
 ### mob/proc/selectBuildBlueprint(obj/Build/build)
 - Purpose: Authoritative selection path shared by native icon clicks and the modern `M`-key build catalog.
-- Side effects: checks combat, places the first tile, sets or clears `Target`, reports resource cost, and restores map focus.
+- Side effects: selects the persistent build brush without placing anything. Repeated selection is idempotent; the combat `Target` is untouched.
 
 ### mob/proc/turfLayCost()
 - Purpose: Calculate the resource cost per tile to build.
@@ -96,7 +96,7 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 - Purpose: Determine whether a mob is in the void/blank turf.
 - Returns: true if location is invalid or `/turf/Other/Blank`.
 
-### proc/buildLay(obj/Build/o, mob/p)
+### proc/buildLay(obj/Build/o, mob/p, turf/destination, decorate = TRUE, datum/NexusBuildWindow/session = null, obj/CustomDecorBlueprint/custom = null)
 - Purpose: Core build placement routine for a selected template.
 - Side effects: validates build rules, instantiates the target turf/obj, charges resources, updates `Built_Objs`/`built_turfs`.
 
@@ -149,14 +149,7 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 - Side effects: charges resources, invokes `CustomizeDecor`, appends to `customDecors`.
 
 ### mob/proc/TryBuildCustomDecor(obj/CustomDecorBlueprint/c)
-- Purpose: Validate and build a decor from a blueprint.
-
-### mob/proc/CantBuildCustomDecor(obj/CustomDecorBlueprint/c)
-- Purpose: Return a failure reason string for custom decor build attempts.
-
-### mob/proc/BuildCustomDecor(obj/CustomDecorBlueprint/c)
-- Purpose: Place a custom decor object in the world.
-- Side effects: charges resources, updates `Built_Objs`, marks `Savable`.
+- Purpose: Open the native build panel and select an authorized custom decor brush. Placement uses the shared `buildLay` validation and the explicit mouse destination.
 
 ### obj/CustomDecorBlueprint/Click(location, control, params)
 - Purpose: Build the selected decor and refocus the map window.
@@ -174,3 +167,20 @@ Player construction, map save/load of built tiles, buildable object catalog, and
 ### mob/proc/CustomizeDecor(obj/CustomDecorBlueprint/c)
 - Purpose: Prompt for icon, name, offsets, description, density, and layer.
 - Side effects: validates icon size/type and updates blueprint fields.
+
+### Native construction panel and brush (2026-09-11)
+- `M` toggles a draggable native map HUD. `BuildPanel.dm` allocates controls and 25 sprite slots once; categories, pages, search, selection and option changes update those same controls. No browser, HTML navigation or `browse()` reload participates in building.
+- The compact panel is 220x448 native pixels with an opaque background, thin frames, three rows of three category tabs, gold selection/hover feedback and unscaled 32px thumbnails at its normal size. `/obj/NexusHudBitmapText` renders labels from the project's Silkscreen glyph sprites, with exact advance/ink measurements, discrete font sizes and explicit ellipsis; these controls no longer render HTML/maptext. The title uses 16px glyphs, normal controls 12px, and small controls/status details 8px. Status lines occupy independent boxes below the grid. `TOP` already accounts for each icon's height; applying another height offset hides the background and misaligns controls. `fitToViewport()` reduces visible rows before reducing scale, reuses hidden slots, adapts pagination, and clamps the entire panel inside an 8px margin. A visibility-scoped viewport watcher reads the map's actual `size` and `view-size`, accounting for skin zoom and cropped map controls.
+- `NexusBuildWindow/selectBlueprint()` keeps the brush in `mob.build_brush`, independently from combat `Target`. Selecting twice keeps it selected; changing category preserves it. Science selection requires an explicit **Craft item** action and custom decor selection does not spawn anything.
+- `getBuildMouseTile(object, location, control)` uses the mouse event's world turf, including when an object covers it, and rejects HUD controls and missing locations. It never falls back to the character's position.
+- `updateHover()` displays all 1/9/25 cells in the selected brush, a visible footprint outline, and the enabled finishing. `beginStroke()` / `extendStroke()` preview the complete stroke, including perimeter edges and southern cliff faces, before release. Reachable tiles are collected once per footprint; repeated hover events on the same tile reuse the preview. Interpolation covers gaps between mouse packets; coordinate keys deduplicate the stroke, capped at 128 tiles. `MouseUp` calls `commitStroke()`, which validates and places each unique tile once, retaining the selected brush.
+- Right-click cancels the stroke. Stop clears the brush. Closing, moving, changing category/brush and releasing outside the world cancel pending work. A generation counter prevents stale work after cancellation during a yielded commit; combat and resources are checked at placement time.
+- `buildLay()` requires an explicit destination in the builder's visible view on the same Z, and rechecks area restrictions, ownership, resources, entrances and turret passes there. Terrain and objects share this path; custom decor additionally validates catalog membership, creator/admin access and the custom-building policy. Object limits are checked before allocation. Every placed tile/object is charged and registered for saving once.
+- Objects retain the selected brush after placement. Door passwords and sign text are configured before painting through **Configure**, so painting never opens a prompt per object. **Rotate** affects objects; turf orientation uses the blueprint's original direction. Walking does not place anything.
+- With Cliffs enabled, a ground stroke targets one level above its starting tile. `build_elevation` distinguishes same-material raised patches and nested terraces, following the supplied `2026-09-11 08-04-55.mp4` reference. Adjacent terrain at the same type/level joins without internal seams. Without Cliffs, painting preserves the destination's existing level.
+- `placeBuildCliff(ground, explicit_build, painted_keys)` uses `getBuildCliffDestination()` for explicit brush finishing: one paid/owned cliff may occupy lower, empty southern natural ground or ordinary water in the same area. Roads, authored Earth banks/landforms, entrances, objects, other owners and coordinates included in the current stroke are excluded. All normal `buildLay()` permission, resource and distance checks still apply. The entire footprint is placed before cliffs are generated, avoiding transient cliffs and extra costs inside a 3x3/5x5 brush. No lower tile is flooded to make room for a cliff.
+- `refreshBuildEdges()` tracks only build-generated overlays and outlines material/level boundaries using existing edge sprites; it does not add texture-fringe blending. `refreshBuildEdgesAround()` updates neighboring player-built borders while preserving authored art. The explicit player options apply to owned construction even where global automatic decoration is disabled. Super Earth's `auto_edges`, `auto_cliffs` and `auto_waves` remain FALSE, and the legacy world generators retain all protected-area checks.
+- Map segments store optional aligned `BuildEdges` and `BuildElevations` lists. Both normal and external loading restore elevations through `getSavedBuildElevation()`; old saves default to level zero and disabled build edges.
+- `canActivateControl()` gates both clicks and hover highlighting. The title remains a drag handle without button highlighting; backgrounds, status text, page labels, empty slots and unavailable actions do not advertise a clickable action. Stop also clears Science selection.
+- Regression coverage: `BuildBrushSmoke.dm` exercises opaque background geometry, TOP anchoring, viewport fitting, non-overlapping controls, visible text pixels, explicit truncation, native thumbnail sizes, control reuse, real terrain/object placement away from the builder, interpolation, deduplication, resource costs, ownership/saving, cancellation and combat. It exports `BuildPanelTextSmoke.png` from actual runtime icons in the temporary smoke directory. `BuildTerrainSmoke.dm` covers shoreline finishing and protected areas. Research, rationale and verification limits are recorded in `docs/BuildHudRenderingResearch.md`.
+- Reference examined: Fourth Fate [native HUD](https://github.com/Antenora/ClassicBlunder/blob/ca513d9b428f0a53f4c46cb94b699f49a2fc5b67/_Reworks/Building/build_hud.dm), [mouse/paint tools](https://github.com/Antenora/ClassicBlunder/blob/ca513d9b428f0a53f4c46cb94b699f49a2fc5b67/_Reworks/Building/build_tools.dm), [previews](https://github.com/Antenora/ClassicBlunder/blob/ca513d9b428f0a53f4c46cb94b699f49a2fc5b67/_Reworks/Building/build_preview.dm) and [session state](https://github.com/Antenora/ClassicBlunder/blob/ca513d9b428f0a53f4c46cb94b699f49a2fc5b67/_Reworks/Building/build_core.dm). This implements the native palette/paint workflow using Nexus code, assets and construction permissions.

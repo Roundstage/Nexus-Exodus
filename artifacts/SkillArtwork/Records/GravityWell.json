@@ -1,0 +1,10 @@
+{
+  "id": "GravityWell",
+  "original": "artifacts/SkillArtwork/Originals/GravityWell.png",
+  "asset": "src/Icons/UI/SkillArtwork/GravityWell.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a669204af79d27363cf9c972009f57c8057acd6f7d754f5321feee435c9e5326",
+  "promptSha256": "81652f163aaf3f190ed212c9acf6a6b16c188837afc354f83c1accaff12e6610",
+  "approvedSample": false
+}

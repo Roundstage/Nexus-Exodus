@@ -1,0 +1,10 @@
+{
+  "id": "UppercutCombo",
+  "original": "artifacts/SkillArtwork/Originals/UppercutCombo.png",
+  "asset": "src/Icons/UI/SkillArtwork/UppercutCombo.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "abe4e8ae15f125d6c43c65144239fc2e0f618865661e114b6186537b0be22406",
+  "promptSha256": "ea592bf246949c666ccb7e5e551c48b587bb83b34ce41e2e65d41f4b9f79b1cd",
+  "approvedSample": false
+}

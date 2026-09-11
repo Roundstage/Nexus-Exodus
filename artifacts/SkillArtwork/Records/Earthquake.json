@@ -1,0 +1,10 @@
+{
+  "id": "Earthquake",
+  "original": "artifacts/SkillArtwork/Originals/Earthquake.png",
+  "asset": "src/Icons/UI/SkillArtwork/Earthquake.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9d207b689e4f3f753af4fa5718cc0767b35bc61c001eca37d191cc0e188089a4",
+  "promptSha256": "59280ed4b43eb2750612835b09689c5b945c1ffb4b141042fc849c52802524af",
+  "approvedSample": false
+}

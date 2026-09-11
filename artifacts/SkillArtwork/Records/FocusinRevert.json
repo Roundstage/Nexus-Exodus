@@ -1,0 +1,10 @@
+{
+  "id": "FocusinRevert",
+  "original": "artifacts/SkillArtwork/Originals/FocusinRevert.png",
+  "asset": "src/Icons/UI/SkillArtwork/FocusinRevert.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "867c9fac6d1c77240b4f09277f8e6ac97590eb0f645ae11925009f18077e31ea",
+  "promptSha256": "e11dcc5f778ef252ff8e845f81a8f8b01a3443f08f6316865e737d02e963f231",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "TyrantLancer",
+  "original": "artifacts/SkillArtwork/Originals/TyrantLancer.png",
+  "asset": "src/Icons/UI/SkillArtwork/TyrantLancer.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e6ed3ea70c9469b177fcc8326e28697be2da667565081663968a580fdbc1a4fa",
+  "promptSha256": "94487f249f9f4bed4bb156079d0d680e881a360d8eccee0e588536442007924b",
+  "approvedSample": true
+}

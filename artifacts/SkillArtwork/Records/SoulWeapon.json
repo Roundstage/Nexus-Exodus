@@ -1,0 +1,10 @@
+{
+  "id": "SoulWeapon",
+  "original": "artifacts/SkillArtwork/Originals/SoulWeapon.png",
+  "asset": "src/Icons/UI/SkillArtwork/SoulWeapon.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "db85fb2c62ea7effc50ed0e99853e75d07c6a637cc88c22561db219b66f3bc95",
+  "promptSha256": "46b7029c3424eda072da909a5bf4fab6f6369933b6d4cc9ab15200a1caadce77",
+  "approvedSample": false
+}

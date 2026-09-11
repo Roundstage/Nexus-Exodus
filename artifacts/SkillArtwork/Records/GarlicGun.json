@@ -1,0 +1,10 @@
+{
+  "id": "GarlicGun",
+  "original": "artifacts/SkillArtwork/Originals/GarlicGun.png",
+  "asset": "src/Icons/UI/SkillArtwork/GarlicGun.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "efc2ba442b8fdeb36b21580c3f2f29f37bc4193751cbbdb59974504f5639cd63",
+  "promptSha256": "ba399a8f5d482a3c15102dc799390dfa7b37e40a1cf47203ddbff250c666febd",
+  "approvedSample": false
+}

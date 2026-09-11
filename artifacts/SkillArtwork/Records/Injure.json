@@ -1,0 +1,10 @@
+{
+  "id": "Injure",
+  "original": "artifacts/SkillArtwork/Originals/Injure.png",
+  "asset": "src/Icons/UI/SkillArtwork/Injure.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "e4daa203dd72d2428bcc6e2ba42d505a61c81609bfc8fd667cac048338195a26",
+  "promptSha256": "a0a0855d135810b1cd3cd0df091391ee6bf31702574336049a9cd0095efcde9c",
+  "approvedSample": false
+}

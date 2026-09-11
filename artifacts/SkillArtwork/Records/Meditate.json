@@ -1,0 +1,10 @@
+{
+  "id": "Meditate",
+  "original": "artifacts/SkillArtwork/Originals/Meditate.png",
+  "asset": "src/Icons/UI/SkillArtwork/Meditate.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "53d1ff3406262dbfb60787851e48f25a0f2127dbd218231337bf83942f570866",
+  "promptSha256": "af9b75fb9220086e7be3c87919bf91e3b24fd4cf21320bd7ef1f71124f4c0293",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BuffAngelicGrace",
+  "original": "artifacts/SkillArtwork/Originals/BuffAngelicGrace.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffAngelicGrace.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "85d07986c9791fc1fabdf0c2e5e82108a5ddcc98e488be87b3b32b26fc746bea",
+  "promptSha256": "714c69813c6da915ee379aca6fe6f0b4727950349fd408fc5f2666de072bb94f",
+  "approvedSample": false
+}

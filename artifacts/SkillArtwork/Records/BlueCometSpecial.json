@@ -1,0 +1,10 @@
+{
+  "id": "BlueCometSpecial",
+  "original": "artifacts/SkillArtwork/Originals/BlueCometSpecial.png",
+  "asset": "src/Icons/UI/SkillArtwork/BlueCometSpecial.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f7214e2f5c4a6d6780b2297dc3c870039e435cb2e1544511802d34781d73c203",
+  "promptSha256": "58c40c8f7c114aa0a1a2a7d4ca1fbcc60c7a4ef4b497b730c3e594a90058bfa4",
+  "approvedSample": false
+}

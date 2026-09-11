@@ -1,0 +1,10 @@
+{
+  "id": "BuffBurningFist",
+  "original": "artifacts/SkillArtwork/Originals/BuffBurningFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffBurningFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "44f79f56efadc66f7886614b9fe3c02f7e1de05e937b261066c3b7a85437a8e6",
+  "promptSha256": "7578590d56927feb1a8b5cbc9701e3ffef15918de677266ae7608b43b6d79560",
+  "approvedSample": false
+}

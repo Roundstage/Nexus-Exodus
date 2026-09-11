@@ -1,0 +1,10 @@
+{
+  "id": "WingClip",
+  "original": "artifacts/SkillArtwork/Originals/WingClip.png",
+  "asset": "src/Icons/UI/SkillArtwork/WingClip.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2dc6e4cf2ff4a41e3b322a9510c52b509117bf0aa616d8caab9bbed061e51a85",
+  "promptSha256": "e8df2b39f6561c93813edd03b6c3890a7755d8839755e0b5fe830732305baabb",
+  "approvedSample": false
+}

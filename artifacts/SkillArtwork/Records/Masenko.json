@@ -1,0 +1,10 @@
+{
+  "id": "Masenko",
+  "original": "artifacts/SkillArtwork/Originals/Masenko.png",
+  "asset": "src/Icons/UI/SkillArtwork/Masenko.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "356fca5183ee5e016cb716f9a88698d133cc00de28f6a67e7165cd6e1a5bbef6",
+  "promptSha256": "dce9870a3c474d7752813fe48d1bd9dcaa84b9a62aa1180453f1580c0fcd764e",
+  "approvedSample": false
+}

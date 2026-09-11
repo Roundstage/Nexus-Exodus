@@ -1,0 +1,10 @@
+{
+  "id": "SpearHand",
+  "original": "artifacts/SkillArtwork/Originals/SpearHand.png",
+  "asset": "src/Icons/UI/SkillArtwork/SpearHand.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "7e08f76453a5d2a4b3005421ec7963f46b4abc43e441c2a2c7576623f6da101d",
+  "promptSha256": "0c67ee4ab3a3c6dbc45c5e02cb7ac5762a2354745685f4212df683199acf3ddf",
+  "approvedSample": false
+}

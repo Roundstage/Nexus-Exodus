@@ -126,8 +126,7 @@ obj/Mate
 	hotbar_type="Ability"
 	can_hotbar=1
 	Skill=1
-	desc="Children will inherit some attributes of the parent(s) such as base power and energy and possibly some \
-	others."
+	desc="Create a child with another eligible player. Children inherit some attributes from their parent(s), such as base power and energy."
 	var/Race
 	var/Class
 	var/ViltrumiteLineage
@@ -149,11 +148,21 @@ obj/Mate
 		if(usr.tournament_override(fighters_can=0))
 			usr<<"You can not use this in a tournament"
 			return
-		if(usr.KO) return
+		if(usr.KO)
+			usr<<"You cannot do this while knocked out."
+			return
 		usr.Mate(src)
 mob/proc/Can_Mate()
-	if(Roid_Power || Dead || (locate(/obj/Injuries/Dick) in injury_list) || !(locate(/obj/Mate) in src)) return
+	if(KO || Roid_Power || Dead || (locate(/obj/Injuries/Dick) in injury_list)) return
+	var/obj/Mate/mate_ability = locate(/obj/Mate) in src
+	if(!mate_ability || mate_ability.Next_Use > world.realtime) return
 	return 1
+
+mob/proc/canReceiveMateRequest(mob/requester)
+	if(!requester || requester == src) return FALSE
+	if(!Can_Mate() || !requester.Can_Mate()) return FALSE
+	if(gender == requester.gender) return FALSE
+	return TRUE
 
 obj/Egg
 	icon='src/Icons/Unsorted/Other/Egg.dmi'
@@ -169,6 +178,7 @@ obj/Egg
 	var/Vampire
 
 mob/proc/Mate(obj/Mate/M)
+	if(!M || M.loc != src || !Can_Mate()) return
 	if(M.Asexual)
 		var/obj/Egg/E=new(loc)
 		E.Parent=src
@@ -184,21 +194,18 @@ mob/proc/Mate(obj/Mate/M)
 		M.Next_Use=world.realtime+(60*60*10)
 	else
 		for(var/mob/P in Get_step(src,dir)) if(P.client)
-			switch(alert(P,"[src] wants to mate with you","","No","Yes"))
+			if(!P.canReceiveMateRequest(src))
+				src << "That player is not eligible to create a child with you."
+				return
+			switch(alert(P,"[src] wants to create a child with you.","Create a child","No","Yes"))
 				if("No") return
-			if(getdist(src,P)>1) return
-			if(!Can_Mate())
-				player_view(15,src)<<"[src] can't mate"
-				return
-			if(!P.Can_Mate())
-				player_view(15,src)<<"[P] can't mate"
-				return
-			Mate_Graphics(P)
-			if(!P) return
+			// Revalidate after the blocking consent prompt. Either player may
+			// have moved, become KO, lost the ability, or entered cooldown.
+			if(!P || getdist(src,P)>1 || !P.canReceiveMateRequest(src)) return
 			var/Mother
 			if(gender=="female") Mother=src
 			if(P.gender=="female") Mother=P
-			if(P.gender==gender) return
+			if(!Mother) return
 			M=locate(/obj/Mate) in Mother
 			if(M && Race==P.Race)
 				M.Race=Race
@@ -231,33 +238,9 @@ mob/proc/Mate(obj/Mate/M)
 				else M.Vampire = 0
 				M.Waiting=1
 				M.Next_Use=world.realtime+(60*60*10)
-				player_view(15,Mother)<<"[Mother] is pregnant"
+				player_view(15,Mother)<<"[Mother] is expecting a child."
 			return
-		src << "There must be someone in front of you to mate with. They will then be asked if they want to accept."
-
-mob/proc/Mate_Graphics(mob/M)
-	var/old_state=icon_state
-	var/m_old_state=M.icon_state
-	var/old_x=pixel_x
-	var/old_y=pixel_y
-	SafeTeleport(M.loc)
-	M.icon_state="KO"
-	dir=EAST
-	pixel_y=15
-	pixel_x=-10
-	var/N=100
-	while(N&&M)
-		N--
-		if(icon_state=="Flight") icon_state=""
-		else icon_state="Flight"
-		if(prob(20))
-			var/turf/T=M.loc
-			if(T&&isturf(T)) T.overlays+=image('src/Icons/Effects/WhiteStuff.dmi',pixel_x=rand(-11,11),pixel_y=rand(-11,11))
-		sleep(1)
-	icon_state=old_state
-	if(M) M.icon_state=m_old_state
-	pixel_x=old_x
-	pixel_y=old_y
+		src << "There must be an eligible, conscious player with the Mate ability directly in front of you."
 
 mob/proc/Mate_Check()
 	for(var/mob/P in players) for(var/obj/Mate/M in P) if(M.Waiting&&M.Race==Race)

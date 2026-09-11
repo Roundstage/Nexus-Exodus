@@ -1,0 +1,10 @@
+{
+  "id": "MakeAmulet",
+  "original": "artifacts/SkillArtwork/Originals/MakeAmulet.png",
+  "asset": "src/Icons/UI/SkillArtwork/MakeAmulet.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "de5b3f848b824b54ee61f181e25c85237dcbf2216bea72c2e082510725e58b11",
+  "promptSha256": "9da52750a61a2681efea73a7c54c28a5de265cd6126a87a891e35e740d91cf0e",
+  "approvedSample": false
+}

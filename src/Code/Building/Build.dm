@@ -5,7 +5,7 @@ proc/getMapSavePath(segment = 1)
 	segment = max(1, round(segment))
 	return "data/Map[segment]"
 
-proc/writeMapSaveSegment(segment, list/types, list/healths, list/builders, list/xs, list/ys, list/zs, list/fly_over)
+proc/writeMapSaveSegment(segment, list/types, list/healths, list/builders, list/xs, list/ys, list/zs, list/fly_over, list/build_edges = null, list/build_elevations = null)
 	var/savefile/f = new(getMapSavePath(segment))
 	f["Types"] << types
 	f["Healths"] << healths
@@ -14,6 +14,8 @@ proc/writeMapSaveSegment(segment, list/types, list/healths, list/builders, list/
 	f["Ys"] << ys
 	f["Zs"] << zs
 	f["FlyOver"] << fly_over
+	f["BuildEdges"] << build_edges
+	f["BuildElevations"] << build_elevations
 
 proc/writeMapSaveManifest(segment_count)
 	var/savefile/manifest = new("data/MapManifest")
@@ -47,6 +49,8 @@ proc/mapSave()
 	var/list/ys=new
 	var/list/zs=new
 	var/list/fly_over=new
+	var/list/build_edges=new
+	var/list/build_elevations=new
 	for(var/turf/a in Turfs) if(a.Builder)
 		types+=a.type
 
@@ -59,9 +63,11 @@ proc/mapSave()
 		ys+=a.y
 		zs+=a.z
 		fly_over+=a.FlyOverAble
+		build_edges += a.build_edges_enabled
+		build_elevations += a.build_elevation
 		amount+=1
 		if(amount % MAP_SAVE_SEGMENT_SIZE == 0)
-			writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over)
+			writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over, build_edges, build_elevations)
 			segments_written = e
 			e ++
 			types=new
@@ -72,9 +78,11 @@ proc/mapSave()
 			ys=new
 			zs=new
 			fly_over=new
+			build_edges=new
+			build_elevations=new
 
 	if(amount % MAP_SAVE_SEGMENT_SIZE != 0 || !segments_written)
-		writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over)
+		writeMapSaveSegment(e, types, healths, builders, xs, ys, zs, fly_over, build_edges, build_elevations)
 		segments_written = e
 
 	writeMapSaveManifest(segments_written)
@@ -104,6 +112,8 @@ proc/mapLoad()
 		var/list/ys=f["Ys"]
 		var/list/zs=f["Zs"]
 		var/list/fly_over=f["FlyOver"]
+		var/list/build_edges=f["BuildEdges"]
+		var/list/build_elevations=f["BuildElevations"]
 
 		clients << "Map Load Stage 1 Begin"
 		sleep(5)
@@ -120,6 +130,8 @@ proc/mapLoad()
 
 			t.Builder = builders[amount]
 			t.FlyOverAble = text2num(fly_over[amount])
+			t.build_edges_enabled = islist(build_edges) && amount <= build_edges.len && build_edges[amount]
+			t.build_elevation = getSavedBuildElevation(build_elevations,amount)
 			Turfs += t
 
 			if(!(t.Builder in built_turfs)) built_turfs[t.Builder] = new/list
@@ -165,6 +177,8 @@ proc/mapLoadExternal(savefile/f)
 	var/list/ys=f["Ys"]
 	var/list/zs=f["Zs"]
 	var/list/fly_over=f["FlyOver"]
+	var/list/build_edges=f["BuildEdges"]
+	var/list/build_elevations=f["BuildElevations"]
 	sleep(5)
 	amount = 0
 	for(var/a in types)
@@ -176,6 +190,8 @@ proc/mapLoadExternal(savefile/f)
 		if(istext(t.Health)) t.Health = text2num(t.Health)
 		t.Builder = builders[amount]
 		t.FlyOverAble = text2num(fly_over[amount])
+		t.build_edges_enabled = islist(build_edges) && amount <= build_edges.len && build_edges[amount]
+		t.build_elevation = getSavedBuildElevation(build_elevations,amount)
 		Turfs += t
 		if(!(t.Builder in built_turfs)) built_turfs[t.Builder] = new/list
 		var/list/l = built_turfs[t.Builder]
@@ -187,6 +203,7 @@ proc/mapLoadExternal(savefile/f)
 				o.respawn_on_delete = 0
 				o.DeleteNoWait();
 				o.SafeTeleport(null)
+	for(var/turf/t in Turfs) t.refreshBuildEdges()
 	world<<"<font color=yellow>External map loaded (+[debug_amount] turfs)"
 
 var/Turf_Strength = 2 //this many times the upgrade value
@@ -360,6 +377,9 @@ proc/addBuilds()
 			b.icon=c.icon
 			b.icon_state=c.icon_state
 			b.Creates=c.type
+			b.dir=c.dir
+			b.pixel_x=c.pixel_x
+			b.pixel_y=c.pixel_y
 			b.name="[c.name]-B"
 			Builds+=b
 		del(c)
@@ -371,6 +391,9 @@ proc/addBuilds()
 			c.icon=b.icon
 			c.icon_state=b.icon_state
 			c.Creates=b.type
+			c.dir=b.dir
+			c.pixel_x=b.pixel_x
+			c.pixel_y=b.pixel_y
 			c.name="[b.name]-B"
 			Builds+=c
 	for(var/a in typesof(/obj/Trees))
@@ -381,6 +404,9 @@ proc/addBuilds()
 			c.icon=b.icon
 			c.icon_state=b.icon_state
 			c.Creates=b.type
+			c.dir=b.dir
+			c.pixel_x=b.pixel_x
+			c.pixel_y=b.pixel_y
 			c.name="[b.name]-B"
 			Builds+=c
 	for(var/a in typesof(/obj/Edges))
@@ -390,6 +416,9 @@ proc/addBuilds()
 			c.icon=b.icon
 			c.icon_state=b.icon_state
 			c.Creates=b.type
+			c.dir=b.dir
+			c.pixel_x=b.pixel_x
+			c.pixel_y=b.pixel_y
 			c.name="[b.name]-B"
 			Builds+=c
 	for(var/a in typesof(/obj/Surf))
@@ -399,6 +428,9 @@ proc/addBuilds()
 			c.icon=b.icon
 			c.icon_state=b.icon_state
 			c.Creates=b.type
+			c.dir=b.dir
+			c.pixel_x=b.pixel_x
+			c.pixel_y=b.pixel_y
 			c.name="[b.name]-B"
 			Builds+=c
 	rebuildBuildCatalogIndexes()
@@ -413,22 +445,12 @@ obj/Build
 		if(usr) usr.selectBuildBlueprint(src)
 
 mob/proc/selectBuildBlueprint(obj/Build/build)
-	if(!build || !(build in Builds)) return FALSE
-	if(!is_out_of_combat(victim = src))
-		var/combat_timer = round((KO_SYSTEM_OUT_OF_COMBAT_TIMER - get_time_out_of_combat(victim = src)) / 10, 1)
-		src << "You can not build while in combat. You will be able to build again in [combat_timer] seconds."
-		return FALSE
-	if(Target == build)
-		src << "You have deselected [build]"
-		Target = null
-		return TRUE
-	turf_lay_cost = turfLayCost()
-	buildLay(build, src)
-	if(Target != build)
-		Target = build
-		src << "You have selected [build]"
-		src << "It will cost [Commas(turfLayCost())] resources per tile you build. This cost rises as the shared map grows."
-	MapFocus()
+	if(!build || !(build in Builds) || !is_out_of_combat(src)) return FALSE
+	if(client)
+		if(!client.nexus_build_window) client.nexus_build_window = new(src)
+		if(!client.nexus_build_window.active) client.nexus_build_window.show()
+		return client.nexus_build_window.selectBlueprint(build)
+	build_brush = build
 	return TRUE
 
 mob/proc/turfLayCost()
@@ -439,7 +461,10 @@ mob/proc/turfLayCost()
 	return n * building_price_mult
 
 mob/proc/stopBuildingThings()
-	Target = null
+	build_brush = null
+	if(client && client.nexus_build_window)
+		client.nexus_build_window.cancelStroke()
+		client.nexus_build_window.refreshStatus()
 
 proc/isInVoid(mob/m)
 	if(!m) return
@@ -447,28 +472,40 @@ proc/isInVoid(mob/m)
 	if(!t) return 1
 	if(t.type == /turf/Other/Blank) return 1
 
-proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is building it, location to put it
-	set waitfor=0
+proc/buildLay(obj/Build/o,mob/p,turf/destination, decorate = TRUE, datum/NexusBuildWindow/session = null, obj/CustomDecorBlueprint/custom = null)
+	if(!p || p.KO || !destination) return
+	if(session && session.owner != p) return
+	if(custom)
+		if(!customBuildAllowed || !(custom in customDecors) || (custom.creator != p.ckey && !p.IsAdmin())) return
+	else if(!o || !(o in Builds)) return
+	var/owner_key = p.getBuildOwnerKey()
+	if(!owner_key) return
+	var/owner_ckey = ckey(owner_key)
+	var/build_type = custom ? /obj/Turfs/Custom : o.Creates
+	if(!p.is_out_of_combat(victim = p))
+		p.stopBuildingThings()
+		return
+	if(!p.canReachBuildTile(destination)) return
 
-	if(p.AtBattlegrounds())
+	if(p.AtBattlegrounds() || istype(destination.loc,/area/Battlegrounds))
 		p << "You can not build here"
 		p.stopBuildingThings()
 		return
 
-	var/turf/t2 = p.loc
+	var/turf/t2 = destination
 	if(!t2 || !isturf(t2))
 		p.stopBuildingThings()
 		return
 
-	var/turf/true_loc=p.base_loc()
+	var/turf/true_loc=destination
 	if(!true_loc.Builder && true_loc && isturf(true_loc) && true_loc.z==5 && true_loc.type!=/turf/Other/Sky2)
 		var/turf/death_spawn=locate(death_x,death_y,death_z)
 		if(get_dist(true_loc,death_spawn) < checkpointBuildDist)
 			p<<"Building is not allowed here except on the clouds"
-			p.Target=null
+			p.stopBuildingThings()
 			return
 
-	if(isInVoid(p))
+	if(destination.type == /turf/Other/Blank)
 		if(!can_build_in_void && !p.IsAdmin())
 			p.stopBuildingThings()
 			return
@@ -476,37 +513,37 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 			p.stopBuildingThings()
 			return
 
-	if(prison_exit&&p.z==prison_exit.z&&getdist(p,prison_exit)<=20)
+	if(prison_exit&&p.z==prison_exit.z&&getdist(destination,prison_exit)<=20)
 		p<<"You can not build this close to the prison exit"
 		p.stopBuildingThings()
 		return
 
-	if(istype(p.get_area(),/area/tournament_area))
+	if(istype(destination.loc,/area/tournament_area))
 		p<<"Building here is impossible"
 		p.stopBuildingThings()
 		return
 
-	if(istype(p.get_area(),/area/God_Ki_Realm))
+	if(istype(destination.loc,/area/God_Ki_Realm))
 		p<<"Building here is impossible"
 		p.stopBuildingThings()
 		return
 
-	if(istype(p.get_area(),/area/Braal_Core))
+	if(istype(destination.loc,/area/Braal_Core))
 		p<<"Building here is impossible"
 		p.stopBuildingThings()
 		return
 
-	for(var/obj/Fighter_Spot/f in Fighter_Spots) if(f.z==p.locz()&&getdist(f,p)<=12)
+	for(var/obj/Fighter_Spot/f in Fighter_Spots) if(f.z==p.locz()&&getdist(f,destination)<=12)
 		p<<"You can not build near the tournament"
 		p.stopBuildingThings()
 		return
 
-	var/res_cost = p.turf_lay_cost
+	var/res_cost = custom ? customDecorBuildCost : p.turfLayCost()
 	if(p.z == Z_LEVEL_SPACE && res_cost != 0) res_cost += 10000 * building_price_mult
 
 	if(res_cost != 0)
 		var/obj/Spawn/s
-		for(s in Spawn_List) if(!s.Builder&&s.z==p.z&&getdist(s,p)<=20) break
+		for(s in Spawn_List) if(!s.Builder&&s.z==p.z&&getdist(s,destination)<=20) break
 		if(s)
 			res_cost += 100000 * building_price_mult
 			if(p.Res()<res_cost)
@@ -519,8 +556,8 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 		p.stopBuildingThings()
 		return
 
-	for(var/turf/t in range(0,p))
-		if(t.Builder && t.Builder!=p.key && p.maxTurfUpgrade()<t.Health*0.95)
+	for(var/turf/t in range(0,destination))
+		if(t.Builder && t.Builder!=owner_key && p.maxTurfUpgrade()<t.Health*0.95)
 			p<<"You can not build over this person's turfs because it was built with knowledge too far \
 			beyond yours."
 			p.stopBuildingThings()
@@ -531,21 +568,21 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 			return
 		if(locate(/obj/Bank) in t) return
 
-	for(var/obj/Turfs/Door/d in range(0,p)) if(d.Password==7125)
+	for(var/obj/Turfs/Door/d in range(0,destination)) if(d.Password==7125)
 		p<<"You can not build over the time chamber door"
 		p.stopBuildingThings()
 		return
 
 	if(!Built_Objs) initializeBuiltObjs()
-	var/atom/D=p
-	if(p.Ship) D=p.Ship
+	var/atom/D=destination
 	if(!D.loc) return
-	var/Turrets
+	var/blocked_by_turret = FALSE
 
-	for(var/obj/Turret/T in Turrets) if(T.z&&T.z==D.z&&getdist(T,D)<=15&&T.Password)
-		Turrets=1
-		for(var/obj/items/Door_Pass/i in p.item_list) if(istype(i, /obj/items/AdvancedDoorPass) || i.Password==T.Password) Turrets=0
-	if(Turrets)
+	for(var/obj/Turret/T in view(15,D)) if(T.z&&T.z==D.z&&getdist(T,D)<=15&&T.Password)
+		var/has_pass = FALSE
+		for(var/obj/items/Door_Pass/i in p.item_list) if(istype(i, /obj/items/AdvancedDoorPass) || i.Password==T.Password) has_pass = TRUE
+		if(!has_pass) blocked_by_turret = TRUE
+	if(blocked_by_turret)
 		p<<"You cannot build this close to turrets that want to attack you"
 		return
 
@@ -557,46 +594,57 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 		return
 	if(!D) return
 
-	var/atom/c
-	if(copytext(o.Creates,1,6) == "/turf")
-		//C = new O.Creates(locate(D.x,D.y,D.z), skip_auto_gen = 1)
-		c = new o.Creates(locate(D.x,D.y,D.z))
-	else c = new o.Creates(locate(D.x,D.y,D.z))
+	if(ispath(build_type,/obj))
+		var/object_count = 0
+		for(var/obj/existing in destination) object_count++
+		if(object_count >= 4) return
+	var/build_elevation = destination.build_elevation
+	if(decorate && p.build_auto_cliffs && ispath(build_type,/turf))
+		var/turf/material = build_type
+		if(!initial(material.Water) && !initial(material.density) && initial(material.build_category) == BUILD_GROUND && initial(material.auto_cliff))
+			build_elevation = session && !isnull(session.stroke_elevation) ? session.stroke_elevation : build_elevation+1
+	var/atom/c = new build_type(destination)
 
 	if(!c) return
-	c.Builder=p.key
+	c.Builder=owner_key
 	if(isobj(c))
 
-		p.stopBuildingThings() //so you only place 1 per click instead of til you untoggle it
 
-		if(!(p.ckey in Built_Objs)) Built_Objs[ckey(p.key)]=new/list
-		var/list/L=Built_Objs[ckey(p.key)]
+		if(!(owner_ckey in Built_Objs)) Built_Objs[ckey(owner_key)]=new/list
+		var/list/L=Built_Objs[ckey(owner_key)]
 		L+=c
-		Built_Objs[ckey(p.key)]=L
+		Built_Objs[ckey(owner_key)]=L
 
 		c:Spawn_Timer=0
 		if(istype(c,/obj/Turfs/Sign)||istype(c,/obj/Turfs/Glass))
-			c.Bolted=p.key
-		var/turf_objects=0
-		for(var/obj/k in range(0,p)) if(!(locate(k) in p)) turf_objects+=1
-		if(turf_objects>4)
-			p<<"Nothing more can be placed here."
-			del(c)
-			return
+			c.Bolted=owner_key
 
 	if(istype(c,/obj/Turfs/Door))
-		var/new_password=input(p,"Enter a password or leave blank") as text
+		var/new_password = session ? session.door_password : input(p,"Enter a password or leave blank") as text
 		if(!c) return
 		c.Password=new_password
 		if(isobj(c)) c:Grabbable=0
 
-		p.stopBuildingThings() //Only build 1 door at a time
+
 
 	if(istype(c,/obj/Turfs/Sign))
-		var/txt = input(p,"What do you want to write on the sign?","options") as text
+		var/txt = session ? session.sign_text : input(p,"What do you want to write on the sign?","options") as text
 		if(!c) return
 		c.maptext = txt
 		c.maptext="<b><font color=cyan>[c.maptext]"
+	if(custom)
+		c.name = custom.name
+		c.icon = custom.icon
+		c.icon_state = custom.icon_state
+		c.desc = custom.desc
+		c.alpha = custom.alpha
+		c.pixel_x = custom.pixel_x
+		c.pixel_y = custom.pixel_y
+		c.density = custom.density
+		c:clickMsg = custom.clickMsg
+		c.layer = custom.layer
+		custom.lastUsed = world.realtime
+	if(session && isobj(c)) c.dir = session.brush_direction
 	if(!isturf(c)) c.Savable=1
 	else
 		c.Savable=0
@@ -607,14 +655,21 @@ proc/buildLay(obj/Build/o,mob/p) if(!p.KO) //Type to build, player who is buildi
 		for(var/obj/Turfs/e in c) del(e)
 		Turfs+=c
 
-		if(!(p.key in built_turfs)) built_turfs[p.key]=new/list
-		var/list/l=built_turfs[p.key]
+		if(!(owner_key in built_turfs)) built_turfs[owner_key]=new/list
+		var/list/l=built_turfs[owner_key]
 		l+=c
-		built_turfs[p.key]=l
+		built_turfs[owner_key]=l
 
+		c:build_elevation = build_elevation
+		c:build_edges_enabled = decorate && p.build_auto_edges
 		GenerateFeaturesOnBuildLay(c)
 
 	p.Alter_Res(-res_cost)
+	if(isturf(c))
+		if(!session || !session.committing)
+			if(decorate && p.build_auto_cliffs) p.placeBuildCliff(c,TRUE)
+			refreshBuildEdgesAround(c)
+	return c
 
 
 

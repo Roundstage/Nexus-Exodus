@@ -1,0 +1,10 @@
+{
+  "id": "Hakai",
+  "original": "artifacts/SkillArtwork/Originals/Hakai.png",
+  "asset": "src/Icons/UI/SkillArtwork/Hakai.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8a7c393cb30f804378bb8af17fdf4bd25610f5053efbb217be01fed0e19ac690",
+  "promptSha256": "eea7fe693fdad8648191aba16389d16ddaba03e3fb1a1e8106eb3f1691b2990d",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Kamehameha",
+  "original": "artifacts/SkillArtwork/Originals/Kamehameha.png",
+  "asset": "src/Icons/UI/SkillArtwork/Kamehameha.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "6c8292bfb5ad54ae3148e42ac2b23eca9f6c0c08a34550d311b4b2924d80cb44",
+  "promptSha256": "c96fdca3cde6870141f17c706e9ecf901785a1821f0e2a4bf5594f02c50ec727",
+  "approvedSample": false
+}

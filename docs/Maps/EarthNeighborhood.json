@@ -7051,7 +7051,7 @@
     "matchedEdgesAndCorners": true
   },
   "outputHash": "79d64ee0c0f4c47ba38d84946e4ae1a8dd33101056a9ef8797c6232392b6dd41",
-  "interiorHash": "9c542033dcdda29a39524b84392fc8a67c135f159c9ea682d1de498b967f3e0d",
+  "interiorHash": "1cc6743bb87278aeb5878cf8de271e79584c1844c8232e7c4d1884b87fab15f6",
   "beforeHash": "fcdf1b3acd3af5cc7a74614f85935b7c2538142ac7978ee723474fb438e4ad17",
   "totalBuildings": 61,
   "accessibleBuildings": 29,
@@ -7101,7 +7101,7 @@
     "SuperEarthE2.dmm",
     "SuperEarthE3.dmm"
   ],
-  "buildingDataHash": "70d04b8da7aa0f52bae133e47288e376375d81c7e7a1115d56898774c8b69d22",
+  "buildingDataHash": "0dd106b7df962b584096c09474a6d00d7b5a52335d700943e727164affb0305a",
   "manualRecovery": "SuperEarthManualRecovery.json",
   "wildernessRevision": {
     "report": "EarthWilderness.json",

@@ -30,13 +30,11 @@ for(const planet of ['Viltrum','SuperEarth']){
  const migrate=oldBuildings.filter(b=>{
   const [a,y,c,d]=b.bounds;for(let yy=y-1;yy<=d;yy++)for(let x=a;x<=c;x++)if(!earth&&manual.has(`${x},${yy}`)){report.preservedManualBuildings.push({planet,name:b.name});return false;}return true;
  });
- const savedProps=new Map();
- for(const b of migrate){const [a,y,c,d]=b.bounds,props=[];
+ for(const b of migrate){const [a,y,c,d]=b.bounds;
   for(let yy=y-1;yy<=d;yy++)for(let x=a;x<=c;x++)if(!protectedTile(x,yy)){
-   for(const atom of atoms(x,yy).filter(a=>a.startsWith('/obj/')&&!a.startsWith('/obj/Spawn')))props.push({atom,original:[x,yy]});
    if(roads[id(x,yy)])report.roadConflictsResolved.push({planet,building:b.name,x,y:yy});
    set(x,yy,floor);
-  }savedProps.set(b.name,props);
+  }
  }
  // Restore roads after removing old shells, before placing any new lot.
  for(let y=9;y<=492;y++)for(let x=9;x<=492;x++)if(roads[id(x,y)]&&!protectedTile(x,y)&&!inCombat(x,y)){
@@ -70,13 +68,8 @@ for(const planet of ['Viltrum','SuperEarth']){
   const ix=(slot%10)*40+5,iy=Math.floor(slot/10)*30+5,iz=22,interiorArea=earth?'/area/CityInterior/Earth':'/area/CityInterior',interiorFloor=earth?'/turf/EarthFloor':'/turf/ViltrumFloor',roof=earth?'/turf/EarthRoof':'/turf/ViltrumRoof';
   const putInside=(x,y,t,objects=[])=>interior[240-y][x-1]=[...objects,t,interiorArea].join(',');
   for(let yy=iy;yy<=iy+19;yy++)for(let x=ix;x<=ix+27;x++)putInside(x,yy,x===ix||x===ix+27||yy===iy||yy===iy+19?roof:interiorFloor);
-  const entry=[ix+13,iy+2],exit=[ix+13,iy+1],interiorProps=[];
-  // Group furniture against the sides; preserve central navigation and both exits.
-  const positions=[];for(let yy=iy+4;yy<=iy+17;yy+=3)for(const xx of [ix+2,ix+5,ix+8,ix+19,ix+22,ix+25])positions.push([xx,yy]);
-  const props=savedProps.get(b.name).filter(p=>!p.atom.startsWith('/obj/ViltrumDoor'));
-  assert(props.length<=positions.length,'Interior furniture capacity exceeded');
-  props.forEach((p,i)=>{const [x,y]=positions[i];putInside(x,y,interiorFloor,[p.atom]);interiorProps.push({...p,position:[x,y,iz]});});
-  const exits=[exit,[ix+13,iy+18]];
+   const entry=[ix+13,iy+2],exit=[ix+13,iy+1],interiorProps=[];
+   const exits=[exit];
   for(const [x,y]of exits)putInside(x,y,interiorFloor,[`/obj/CityBuildingDoor/Exit{building_id = "${buildingId}"; target_x = ${door[0]}; target_y = ${door[1]}; target_z = ${earth?21:20}}`]);
   set(...door,floor,[`/obj/CityBuildingDoor{name = ${JSON.stringify('Enter '+b.name)}; building_id = "${buildingId}"; target_x = ${entry[0]}; target_y = ${entry[1]}; target_z = 22}`]);
   // A three-tile front walk connects the threshold to surrounding public paving.

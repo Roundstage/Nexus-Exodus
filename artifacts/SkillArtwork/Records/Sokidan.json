@@ -1,0 +1,10 @@
+{
+  "id": "Sokidan",
+  "original": "artifacts/SkillArtwork/Originals/Sokidan.png",
+  "asset": "src/Icons/UI/SkillArtwork/Sokidan.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "84cf6830755a94ca3f190f7933b826be26bdf5ab51ce0022da31395879808787",
+  "promptSha256": "9c1e3d3a90445e142e4ecdbfbf4fea14e2e2cb8d23ef7080b3005dc12a741cb6",
+  "approvedSample": false
+}

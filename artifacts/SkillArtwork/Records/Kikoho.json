@@ -1,0 +1,10 @@
+{
+  "id": "Kikoho",
+  "original": "artifacts/SkillArtwork/Originals/Kikoho.png",
+  "asset": "src/Icons/UI/SkillArtwork/Kikoho.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "dc587031f764d7f7c927c77eb2f9301b8c1482f54a1a5cfbb74e676a4094caa7",
+  "promptSha256": "e7e81248b2924213c8c2e5d90f33bd4eae342fbe6a774e13b4c7faa7837e8da5",
+  "approvedSample": false
+}

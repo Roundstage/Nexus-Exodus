@@ -1,0 +1,10 @@
+{
+  "id": "MarchOfFury",
+  "original": "artifacts/SkillArtwork/Originals/MarchOfFury.png",
+  "asset": "src/Icons/UI/SkillArtwork/MarchOfFury.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "322f77feac4b2ac8a510f8826853927e51721f51abd8ba10dc29c5c7eea1f047",
+  "promptSha256": "6bee716fa63965eb87dd00b651783aca968ead253e02d08a1ae4f1db63cfe345",
+  "approvedSample": false
+}

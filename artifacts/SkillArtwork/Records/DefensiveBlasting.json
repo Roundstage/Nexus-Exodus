@@ -1,0 +1,10 @@
+{
+  "id": "DefensiveBlasting",
+  "original": "artifacts/SkillArtwork/Originals/DefensiveBlasting.png",
+  "asset": "src/Icons/UI/SkillArtwork/DefensiveBlasting.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "63fe004393f0c1316a602f5a8af7d3ded20455fdc247532852facaac42a7577e",
+  "promptSha256": "ff10188aea3a89a3ca0336655376ec1935478eaeabead1ef57f0df8bbfe8c6c1",
+  "approvedSample": false
+}

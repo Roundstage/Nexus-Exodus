@@ -1,0 +1,10 @@
+{
+  "id": "AuraOfDestruction",
+  "original": "artifacts/SkillArtwork/Originals/AuraOfDestruction.png",
+  "asset": "src/Icons/UI/SkillArtwork/AuraOfDestruction.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f39c282c8246c19904b21365dd949627c68ee68bed137509e9219fa298356bf0",
+  "promptSha256": "16b9304673c3d4a46ce3f06941288d187521f7e906bc9b828668ea857a553825",
+  "approvedSample": false
+}

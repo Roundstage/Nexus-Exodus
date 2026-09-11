@@ -1,0 +1,10 @@
+{
+  "id": "AttackBarrier",
+  "original": "artifacts/SkillArtwork/Originals/AttackBarrier.png",
+  "asset": "src/Icons/UI/SkillArtwork/AttackBarrier.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1ebeb3b158703851eaa5011e32ce28481198b61d317ad3780d3ed89eefe21018",
+  "promptSha256": "a43162f00b5a373ebddda125c2e67c5f967744a59598d00f17e4f0402cc1720f",
+  "approvedSample": false
+}

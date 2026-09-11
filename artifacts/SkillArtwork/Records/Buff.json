@@ -1,0 +1,10 @@
+{
+  "id": "Buff",
+  "original": "artifacts/SkillArtwork/Originals/Buff.png",
+  "asset": "src/Icons/UI/SkillArtwork/Buff.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ea1b05dea6bd86f08e190fed9c75cb3548ee69624d81bb190f3b9bf824a0e7d5",
+  "promptSha256": "67eff4aa9f486d0c9ee7b9b3d9b09afcf4e0c29ae419155c1a60807206b0e26a",
+  "approvedSample": false
+}

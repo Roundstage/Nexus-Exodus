@@ -1,0 +1,10 @@
+{
+  "id": "DoubleSunday",
+  "original": "artifacts/SkillArtwork/Originals/DoubleSunday.png",
+  "asset": "src/Icons/UI/SkillArtwork/DoubleSunday.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8c2a660ac8c37693f0fcb9201472fba1e4d479e6614ff8ec12eb18f8abcd0173",
+  "promptSha256": "5eb5c9f10180e8e656577e0caa9a383495cf1faa9ae63646c907c870b46a6290",
+  "approvedSample": true
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Explosion",
+  "original": "artifacts/SkillArtwork/Originals/Explosion.png",
+  "asset": "src/Icons/UI/SkillArtwork/Explosion.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ff66afb6c57281c3355879c6a635a87af0d3964790827132041f1f0efa0b0226",
+  "promptSha256": "317d8779049beebc95947f8286d6fe8b454a18685b08ab5c96e9249ca06e29c0",
+  "approvedSample": false
+}

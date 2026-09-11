@@ -1,0 +1,10 @@
+{
+  "id": "Dodompa",
+  "original": "artifacts/SkillArtwork/Originals/Dodompa.png",
+  "asset": "src/Icons/UI/SkillArtwork/Dodompa.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "17dee751c4f8bc45eaa90a6bfba2d6277251f08e311fbffe419048fa409e673a",
+  "promptSha256": "edcfa003b2099927622614a02469eaad92961be01d90455857557af5b7868d96",
+  "approvedSample": false
+}

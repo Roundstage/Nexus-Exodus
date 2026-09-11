@@ -1,0 +1,10 @@
+{
+  "id": "ThirdEye",
+  "original": "artifacts/SkillArtwork/Originals/ThirdEye.png",
+  "asset": "src/Icons/UI/SkillArtwork/ThirdEye.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "00be5bd063bd548c548e25ee16f312654911ac8abbbeb10923db150c6fa89ac7",
+  "promptSha256": "2455c7c0646cb02a782dd92a8de0f73daf01e70e1e41880616aa201a722837e8",
+  "approvedSample": false
+}

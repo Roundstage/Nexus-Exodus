@@ -1,0 +1,10 @@
+{
+  "id": "AdvancedSense",
+  "original": "artifacts/SkillArtwork/Originals/AdvancedSense.png",
+  "asset": "src/Icons/UI/SkillArtwork/AdvancedSense.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "fdf27bee9225f8387a114d1472dde592593f3cefa4ead4e03921e8040ba0ee10",
+  "promptSha256": "8240dd30829fadec4ff0028af2e4a8b7bdc8dead34b938f1b6128f3473eaede7",
+  "approvedSample": false
+}

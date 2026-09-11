@@ -1,0 +1,10 @@
+{
+  "id": "DeathBall",
+  "original": "artifacts/SkillArtwork/Originals/DeathBall.png",
+  "asset": "src/Icons/UI/SkillArtwork/DeathBall.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ccb62af7c60f178a5f93a5f04c5ecc87cfabbc5172da454db2871cf07f72ac8d",
+  "promptSha256": "1c4fcb93fee6e2a9598884c28e7e0f979d11f1e6fb5bb4c83ecdd970a7e23191",
+  "approvedSample": false
+}

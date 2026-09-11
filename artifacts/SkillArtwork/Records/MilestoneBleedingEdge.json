@@ -1,0 +1,10 @@
+{
+  "id": "MilestoneBleedingEdge",
+  "original": "artifacts/SkillArtwork/Originals/MilestoneBleedingEdge.png",
+  "asset": "src/Icons/UI/SkillArtwork/MilestoneBleedingEdge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "3d7651a09c1816f550af8ad5f90ef4e962cdaced7402a7eb62ca6e148584cb82",
+  "promptSha256": "64949c552a47511af310f2d5ad23ccbda63f42f480f70e2bd1a974b2891e7a6c",
+  "approvedSample": false
+}

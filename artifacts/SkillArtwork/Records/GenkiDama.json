@@ -1,0 +1,10 @@
+{
+  "id": "GenkiDama",
+  "original": "artifacts/SkillArtwork/Originals/GenkiDama.png",
+  "asset": "src/Icons/UI/SkillArtwork/GenkiDama.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "70a1740206dbbb048e9e7c07d5079799783aff3f1ccfefb498231b48074c3672",
+  "promptSha256": "64b07b02d2eae33945b1cdfcf1571dab2b36e241af5ebfc892fd7fa36c2d294d",
+  "approvedSample": false
+}

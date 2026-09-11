@@ -1,0 +1,10 @@
+{
+  "id": "SphereOfDestruction",
+  "original": "artifacts/SkillArtwork/Originals/SphereOfDestruction.png",
+  "asset": "src/Icons/UI/SkillArtwork/SphereOfDestruction.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "005a9e0d0977a5c8501187ce86cdce56196e32b9cea5b303f8ba540dfa0e7b73",
+  "promptSha256": "f1719b12f4610f0f186626e09a8fc14c0eb92395ee3b58487a11b43502d32152",
+  "approvedSample": false
+}

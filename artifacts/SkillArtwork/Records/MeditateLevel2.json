@@ -1,0 +1,10 @@
+{
+  "id": "MeditateLevel2",
+  "original": "artifacts/SkillArtwork/Originals/MeditateLevel2.png",
+  "asset": "src/Icons/UI/SkillArtwork/MeditateLevel2.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "600d42b8cf776073fc709f2085e8ce7ac3c0b6d3d83ea33d4cfdb00dfbf8eaa1",
+  "promptSha256": "f6974ce9c5b2019ebc3b2adebf787ba3e8a3f272f086daf1cb74d7536d87c2cd",
+  "approvedSample": false
+}

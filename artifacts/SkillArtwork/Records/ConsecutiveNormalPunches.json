@@ -1,0 +1,10 @@
+{
+  "id": "ConsecutiveNormalPunches",
+  "original": "artifacts/SkillArtwork/Originals/ConsecutiveNormalPunches.png",
+  "asset": "src/Icons/UI/SkillArtwork/ConsecutiveNormalPunches.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1cfa8978024a42256ff4702e44e34d1b38beabee80cb9dec72387bd63a5d543d",
+  "promptSha256": "3223ea7d5056beb17fc7f9940a51400133f7283af46abd5c1a21967bc63f0d74",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Imitation",
+  "original": "artifacts/SkillArtwork/Originals/Imitation.png",
+  "asset": "src/Icons/UI/SkillArtwork/Imitation.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2f12db6ef6ed5ce8fd596ca55e10fb15f288a02daae10f92503601ce9edcefd5",
+  "promptSha256": "9d112bbf838c456a0b378ca21100d920a98f1d1451ab77a5d2f536293acdb909",
+  "approvedSample": false
+}

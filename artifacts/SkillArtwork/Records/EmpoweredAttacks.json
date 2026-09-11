@@ -1,0 +1,10 @@
+{
+  "id": "EmpoweredAttacks",
+  "original": "artifacts/SkillArtwork/Originals/EmpoweredAttacks.png",
+  "asset": "src/Icons/UI/SkillArtwork/EmpoweredAttacks.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9335921dfda411bb20ba20c6373d89cc7d1e5b15eef18fe8ed1a3a9f76819135",
+  "promptSha256": "f8207e70aa9003fadee03ec7ef10c71f420eb055012d208b4243e962e3b4640f",
+  "approvedSample": false
+}

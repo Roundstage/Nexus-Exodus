@@ -1,0 +1,10 @@
+{
+  "id": "DeathLaser",
+  "original": "artifacts/SkillArtwork/Originals/DeathLaser.png",
+  "asset": "src/Icons/UI/SkillArtwork/DeathLaser.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1081c180cfb634a1d1d0d96e168ae17d63adea8003399595b74b1cc5a7ec9e76",
+  "promptSha256": "48b0f0c00c34d5541de098b7f71176be4a1a34aaafabcbd87b7dbb38b3b9808a",
+  "approvedSample": false
+}

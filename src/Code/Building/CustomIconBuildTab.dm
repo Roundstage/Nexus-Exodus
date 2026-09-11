@@ -99,42 +99,11 @@ mob/proc
 			alert(src, "If you set it up wrong, simply right click it in the menu and click Customize to try again")
 
 	TryBuildCustomDecor(obj/CustomDecorBlueprint/c)
-		var/cant = CantBuildCustomDecor(c)
-		if(cant)
-			switch(cant)
-				if("resources") alert(src, "You need [customDecorBuildCost] resources")
-			return
-		if(!customBuildAllowed)
-			alert("The custom build system is disabled on this server")
-			return
-		BuildCustomDecor(c)
+		if(!client || !(c in customDecors) || (c.creator != ckey && !IsAdmin())) return
+		if(!client.nexus_build_window) client.nexus_build_window = new(src)
+		if(!client.nexus_build_window.active) client.nexus_build_window.show()
+		client.nexus_build_window.selectBlueprint(c)
 
-	CantBuildCustomDecor(obj/CustomDecorBlueprint/c)
-		if(Res() < customDecorBuildCost) return "resources"
-		if(!base_loc()) return "no loc"
-		return 0
-
-	BuildCustomDecor(obj/CustomDecorBlueprint/c)
-		if(!key) return
-		Alter_Res(-customDecorBuildCost)
-		var/obj/Turfs/Custom/c2 = new(base_loc())
-		c2.name = c.name
-		c2.icon = c.icon
-		c2.icon_state = c.icon_state
-		c2.desc = c.desc
-		c2.alpha = c.alpha
-		c2.pixel_x = c.pixel_x
-		c2.pixel_y = c.pixel_y
-		c2.density = c.density
-		c2.clickMsg = c.clickMsg
-		c2.layer = c.layer
-		c2.Builder = key
-		if(!(ckey in Built_Objs)) Built_Objs[ckey] = new/list
-		var/list/l = Built_Objs[ckey]
-		l += c2
-		Built_Objs[ckey] = l
-		c2.Savable = 1
-		c.lastUsed = world.realtime
 
 obj/CustomDecorBlueprint
 	icon = 'src/Icons/UI/CustomDecor.dmi' //just so we have something to see by default

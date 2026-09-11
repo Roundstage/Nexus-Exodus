@@ -1,0 +1,10 @@
+{
+  "id": "Mate",
+  "original": "artifacts/SkillArtwork/Originals/Mate.png",
+  "asset": "src/Icons/UI/SkillArtwork/Mate.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "96aff7fdd9d6f7482aaf0b1a1cc0cccd89c8fc587063fce5b360d9e55414fbd1",
+  "promptSha256": "4ce5409fb50719e921684e9d6dfc61a51e96d921408a15602504fd44dabd41a2",
+  "approvedSample": false
+}

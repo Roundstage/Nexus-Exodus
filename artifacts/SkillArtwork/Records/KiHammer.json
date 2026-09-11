@@ -1,0 +1,10 @@
+{
+  "id": "KiHammer",
+  "original": "artifacts/SkillArtwork/Originals/KiHammer.png",
+  "asset": "src/Icons/UI/SkillArtwork/KiHammer.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "603356bd994f035a62799cf7b407df67b802c82137e940fef4bd079dd185ce8e",
+  "promptSha256": "1d7c632c1f924cbbc503059f47609b9645805cc60f682d986315d0e5b53bfbc3",
+  "approvedSample": false
+}

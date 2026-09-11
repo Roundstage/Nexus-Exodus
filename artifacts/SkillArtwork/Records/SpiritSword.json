@@ -1,0 +1,10 @@
+{
+  "id": "SpiritSword",
+  "original": "artifacts/SkillArtwork/Originals/SpiritSword.png",
+  "asset": "src/Icons/UI/SkillArtwork/SpiritSword.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "5ce756b2ec0b86ed98b5112465058145d91d2bc322cf78895744bc8847580d0a",
+  "promptSha256": "b212f288d51b62043023d6971bf43d58b9cde868cd70a8f005319ba689fc4939",
+  "approvedSample": false
+}

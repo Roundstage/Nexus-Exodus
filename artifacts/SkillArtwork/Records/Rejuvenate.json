@@ -1,0 +1,10 @@
+{
+  "id": "Rejuvenate",
+  "original": "artifacts/SkillArtwork/Originals/Rejuvenate.png",
+  "asset": "src/Icons/UI/SkillArtwork/Rejuvenate.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "6e53d8af9e9fd6a1a1b324e424602547e4278be313366c4aa33841a367a4e565",
+  "promptSha256": "d0f627ccc0e5af88d89500f4ca615c841453a6d8eef7156d054aed913edfa79b",
+  "approvedSample": false
+}

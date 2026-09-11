@@ -1,11 +1,11 @@
 # UI
 
 ## Overview
-Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, Chat, Hotkeys, and the classic Escape menu; World and Admin are permission-gated administrator tools. The experimental Planet Map is available only through an admin verb. Pressing an active window icon again closes that window.
+Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, World, Chat, Hotkeys, and a searchable command/information menu; only Admin remains permission-gated. The experimental Planet Map is available only through an admin verb. Inventory and Skills retain their toggle behavior and detailed Examine actions. Sense opens persistent, independent Sense/target monitors; Menu and World select a category in the compact command panel.
 
-The compact lower-left vitals panel renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Player-attached bars, speech/typing feedback, fixed vitals, and overlay chat reset inherited transforms so Giant Form, Return to Larva, and other character scaling never resize the interface. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
+The compact lower-left vitals panel starts flush at the bottom-left edge and renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Player-attached bars, speech/typing feedback, fixed vitals, and overlay chat reset inherited transforms so Giant Form, Return to Larva, and other character scaling never resize the interface. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
 
-The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay renders the compact rustic panel over the lower-right map and includes a CMD action; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. New messages update only the existing message surface: the overlay retains its HUD objects and the side browser invokes `updateMessages()` instead of navigating the whole document, preventing flashes on chat and combat-log delivery. Browser-function payloads are JSON encoded and URL encoded so HTML `&`/`;` delimiters cannot be parsed as extra BYOND arguments or trigger the upload broker. The reduced browser is not a plain fallback: it uses `getNexusHudBrowserCss("bronze")`, Silkscreen, the same bolted frames, and the canonical pixel pictograms for its channel and composition controls. Message bodies override that display font with Courier New because Silkscreen maps lowercase letters to uppercase-shaped glyphs; controls retain the pixel font. It deliberately omits redundant command-bar/focus instructional copy. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height flex rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
+The HudLib chat owns All, Combat, IC, and OOC feeds. Classic Overlay uses an embedded browser with draggable header/borders, real-height scrolling, compact channel controls and a permanent footer containing Say, OOC, Emote, Logs, and CMD; Side + Tabs puts the native Skills, Other, Items, World, and Admin categories above a reduced chat with a permanent Dream Seeker command input. New messages update only the existing message surface: the Classic browser retains its document and scroll position and the side browser invokes `updateMessages()` instead of navigating the whole document, preventing flashes on chat and combat-log delivery. Browser-function payloads are JSON encoded and URL encoded so HTML `&`/`;` delimiters cannot be parsed as extra BYOND arguments or trigger the upload broker. The reduced browser is not a plain fallback: it uses `getNexusHudBrowserCss("bronze")`, Silkscreen, the same bolted frames, and the canonical pixel pictograms for its channel and composition controls. Message bodies use the pixel-font stack with forced wrapping. It deliberately omits redundant command-bar/focus instructional copy. Enter routes to the appropriate CMD interaction for the selected layout. Entries are divided by responsive, full-width horizontal rules instead of fixed text dashes. Channel and action buttons use fixed-height rows so legacy HTML content cannot stack them vertically. Legacy `mob << text` output is intercepted at the client operator and retained in All as a System message, while sounds, images, browser resources, and targeted control output continue through BYOND normally.
 
 The primary game browsers use `getNexusHudBrowserCss()` to reproduce the native HUD construction instead of layering a broad theme over unrelated markup. Player-facing Inventory, Skills, Sense, World, Character, Progression, Milestones, Build, and Music Library surfaces use the bronze chat/action-button palette; administration uses the blue Server Panel palette. Character is an explicit snapshot with a manual Refresh control so reading it can never be interrupted by document replacement. Live menu scripts write scroll state to `sessionStorage` and restore it after intentional navigation. Login and Dream Seeker reconnect both use the silent, resizable RPG-style three-slot character selector instead of the New/Load alert. The selector and classic map title share the canonical transparent pixel-art logo. A reconnect saves and cleans up the previously attached character, transfers the client to a fresh lobby mob, and applies the oversized title view only to that lobby host; live characters retain their clamped saved view.
 
@@ -21,8 +21,24 @@ These references are intentional and must not be removed, renamed, replaced with
 - `src/Images/Slime64.png` is a legacy resource path whose contents are now the canonical 64x64 Nexus Exodus application/window icon: a simplified bronze gateway X with a cyan central rift. The filename is retained only as an already tracked compiled-resource handle; it contains no slime or third-party artwork. `UI.dmf` declares `'Slime64.png'` directly on the main window so the icon is present from startup, and `client/applyNexusApplicationIcon()` reapplies the same quoted compiled resource after client creation. A runtime `/icon` reference is not accepted by the skin parameter. Do not substitute franchise characters, mascots, or a reduced copy of the full wordmark.
 - The top-right Lethal and RP Mode buttons are 108x20 procedural surfaces from `getNexusActionButtonIcon()`: black outer frame, bronze inner edge, two gold top bolts, Fixedsys/Courier maptext, red Lethal accent, and orange RP Mode accent.
 - Native panel bolts are not separate image files. They are 2x2 `#c6a15c` pixels drawn at the corners by `getNexusHudLibraryIcon()` and reproduced by the scoped `.hud-frame`/`.hud-card` pseudo-elements in `getNexusHudBrowserCss()`.
-- Content imagery must come from the actual runtime atom through `getNexusBrowserAtomIconResource()` (`icon`, `icon_state`, direction, color, and alpha). Category pictograms must never substitute for item, technique, character, or blueprint sprites.
+- Skill imagery uses the user-approved dedicated artwork in `src/Icons/UI/SkillArtwork/`, resolved by exact type through `getNexusBrowserAtomIconResource()`. Other content imagery comes from the actual runtime atom (`icon`, `icon_state`, direction, color, and alpha). Category pictograms remain fallbacks, and inventory items, characters, and blueprints retain their runtime sprites.
 - Bronze chrome (`#201810`, `#715735`, `#9a7440`, `#d2aa61`) belongs to player surfaces and chat. Blue chrome (`#080d14`, `#304456`, `#405a70`, `#72c6eb`) belongs to admin/development surfaces. Both use square corners, hard inset edges, black pixel shadows, and no gradients in structural frames.
+
+## Classic combat HUD (2026-09-07)
+
+- Runtime optimization (2026-09-11): `shouldRefreshWidget()` skips periodic work for collapsed widgets, refreshes bars/target every 5 ticks and other panels every 10 ticks; explicit refreshes and first payloads bypass this gate. `queueChatRefresh()` coalesces message bursts over one tick. `refreshChat()` compares the client history revision, channel, text size and geometry before rebuilding up to 300 messages; reopening forces a fresh payload. Both history append paths increment `nexus_chat_revision`. Menus enumerate owned verbs only for Actions, Playtest and Admin, while command execution still revalidates ownership. `buildClassicSlotKeyMap()` scans shortcuts once per bar render instead of once per slot and does not retain stale bindings across renders.
+
+- `ClassicHud.dm`: `initializeClassicHud()` owns embedded chat, Sense, target, menu, Stats, Inventory, and Skills controls plus dynamically created hotbar controls; the skin defines the primary bar and both detailed panels so they cannot fall back to white-title native windows. `showClassicWidget()` opens one without replacing the others. The main menu, Inventory, and Skills panels are movable but fixed at the approved 460x680 reference size (or clamped to a smaller viewport), so their controls cannot be broken by resizing. Inventory and Skills retain Use, Bar, and direct Examine actions; the Skills capture accepts every owned non-item object marked `Skill == 1`, including legacy techniques without `hotbar_type`. The primary hotbar is a transparent, player-resizable component centered against the bottom edge; extra horizontal bars auto-size and stack above it without drawing a second enclosing slab. An untouched default bar is populated in legacy key order with the existing non-movement commands (Space Attack, B World Chat, E Use, F Blast, G/H Power, I Injure, J Meditate, K Train, L Music, M Build, N Emote). Chat defaults to 540x480. World/Who is a public compact category while administrative world internals remain protected. The larger 1280x820 Progression/Milestone tree is also fixed-size. The manager updates changed payloads, validates owner/generation/action tokens, clamps geometry to the map and saves account layout settings. `refreshChat()` updates only messages without repeated viewport queries. `showLegacy()` moves the existing default Info pane into a compact native window; `closeClassicLegacy()` returns it to the selected layout.
+- `ClassicData.dm`: `captureClassicData()`, `classicStat()`, `classicStatPanel()` reuse native tab data and visibility rules. Inventory reports its total carried-item count and emits a subject token for every resource/item row, enabling Use, Bar, and Examine. Every owned `/obj/items` may be assigned to a hotbar; objects without a dedicated `Hotbar_use()` fall back to their ordinary `Click()` behavior. Skill and item examination keeps the same embedded browser target: using a skill refreshes its details in place, and Back reconstructs the original Inventory or Skills list instead of opening the detached legacy menu. Capture state is restored even on exceptions. Target data excludes administrative Inspect and only contains readable combat values; original complete data and atom context menus remain available in All native tabs. Saga/science render-only captures suppress progression mutations.
+- `ClassicActionBar.dm`: `initializeClassicSlots()`, `resolveClassicSlot()`, `assignClassicSlot()`, `swapClassicSlots()`, `clearClassicSlot()` maintain dynamically allocated character slot IDs without an application-imposed bar/slot limit; keys bind to stable slot IDs and stay with the slot when actions move. `useClassicSlot()` uses `executeNexusHotkeyAction()`. `getClassicCooldown()` normalizes actual world-time, real-time and calendar deadlines; `getClassicSkillState()` reports cooldown, active, unavailable and resource states. No click-created cooldown timer exists.
+- `ClassicCommandCatalog.dm` is generated by `node tools/BuildClassicCommandCatalog.cjs` from visible compiled verbs. Regenerate when verbs change; `--check` detects stale metadata. Commands revalidate ownership and execute through BYOND's command parser, retaining argument prompts and native access checks.
+- `Browser/ClassicHud.js` / `ClassicHud.css`: actual-height history with scroll anchoring, word reflow, native drag/resize, searchable lists and independent compact MMO bar grids with configurable columns, abbreviated keys and radial cooldowns. Hotbar browser controls require Dream Seeker 516.1680+ and set both their document background and WebView2 `inner-background-color` fully transparent, so unused control space reveals the map instead of a white rectangle. The WebView2-only parameter is applied with `winset()` at runtime rather than stored in the DMF, preventing older Dream Maker skin parsers from reporting it as a missing file. Search changes the native macro set and suppresses server hotkey execution while typing. Skill and inventory cards expose drag data and BAR buttons; command rows expose authorized verb tokens. Character exposes the independent LIVE STATS panel.
+- `HotkeyEditor.dm` and `Browser/HotbarEditor.js` / `.css` replace the simulated keyboard with a searchable catalog, dynamic bar selector and 12-slot editor pages. Real-key capture and a manual selector support Ctrl/Shift/Alt and double tap; conflicts require acknowledgement of the current binding fingerprint. `migrateClassicSlotKeys()` preserves non-bar shortcuts; `resolveNexusHotkeyBinding()` resolves slot bindings to the original skill object, retaining held/release semantics.
+- `initializeClassicBars()` migrates the old bank into independent bars without renumbering slots. `createClassicBar()`, `addClassicBarSlots()`, `removeClassicBarSlot()` and `removeClassicBar()` manage arbitrary numbers of bars and slots. Deleted slot IDs are not reused; deleting a bar removes only its own key bindings. `fitClassicBar(id)` lays out each bar separately. Native BROWSER controls are created with `winset(parent=mapwindow,type=browser)` and removed on deletion/disconnect ([BYOND control creation reference](https://www.byond.com/docs/ref/skinparams.html)).
+- `classicBindingFromToken()` / `resolveClassicVerbSource()` validate current verb membership, ownership, metadata and trade restrictions. Verb actions use native argument prompts. Object-backed verbs display the object’s cooldown state.
+- `HUD.dm`: `setNexusMainVitalsScale()` clamps 50–150% and defaults to 75%. `VitalsPanel.applyScale()` lays out children in final integer pixels and redraws cached frames/bars at that size, keeping the lower-left anchor fixed. Text stays outside any transformed `KEEP_TOGETHER` group with a minimum 9px font, so reducing the HUD does not rasterize its labels. Double-click opens Stats.
+- Geometry and vitals scale are exported by `SavePlayerSettings.dm`; slot actions/layout are character save fields plus per-character backup entries in `Hotkeys.dm`. Closing a widget is explicit; Menu can reopen each widget and reset geometry.
+- Validation and manual reproduction: [Classic HUD testing](../ClassicHudTesting.md).
 
 ## Files
 - `src/Code/UI/DU.dmf`
@@ -57,16 +73,16 @@ These references are intentional and must not be removed, renamed, replaced with
 - `refreshActionHud()` keeps labels, colors, chat state, and permission-aware shortcuts synchronized and reattaches objects removed by another screen system. Icon-aware `RIGHT`/`TOP` anchors keep the compact controls inside the map viewport.
 - `getNexusLiveBrowserScript()` supplies the owner-authenticated refresh heartbeat shared by live browser windows. Scroll events publish their position immediately, restoration is retried after layout settles, and the refresh cadence remains an internal implementation detail rather than a visible status badge.
 - `getNexusHotkeyDownMacroCommand()` and `getNexusHotkeyUpMacroCommand()` quote modifier combinations, provide matching release macros, and preserve normal cardinal/diagonal movement when an arrow also owns a custom action.
-- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and admin-only World surfaces. Inventory presents both carried Resources and the authoritative Arcane Essence balance as currencies; every carried item exposes Use, Examine, and a confirmation-gated Drop action, and Inventory, Skills, Sense, and World export actual runtime sprites where their subjects are atoms. Items committed to an active trade offer remain visible but cannot be used or dropped through the Inventory action. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World character cards expose Examine and, at Admin Level 3+, Edit through the complete structured inspector. Skill details calculate an attacker-only, equal-power damage preview with zero enemy Endurance/Resistance plus range, cost, cooldown, mechanics, and equipment/grab requirements. Nexus melee previews retain the canonical base melee, speed, equipped sword/style, forged BP, and Milestone path; Comet Reversal instead labels its beam trigger from an emitter in the frontal arc, 1.2-second window, 32-tile conditional approach, multi-beam rush guard capped at 3.5 seconds, unarmed requirement and adjacency-only normal-accuracy strike. Projectile previews reserve `setStats()`-scaled direct damage and unscaled splash separately through the authored shared budget. Basic Blast derives its preview from the currently configured volley count, refire factor, and optional center-projectile splash instead of displaying the shared-budget ceiling as every configuration's damage; Super Ghost Kamikaze exposes the maximum of its three fixed direct hits through their shared budget. Buffs expose all non-neutral BP/Energy/stat/regeneration/recovery multipliers and special attributes; transformations explain their form behavior and current state, including Great Ape's concrete multipliers, activation requirements, cooldown, and controlled/uncontrolled behavior, without exposing Sense information above the owner's access level.
+- `datum/NexusPlayerMenu` provides bronze native-HUD Inventory, Skills, Sense, and World surfaces. Inventory presents both carried Resources and the authoritative Arcane Essence balance as currencies; every carried item exposes Use, Examine, Bar, and a confirmation-gated Drop action, and Skills export dedicated skill illustrations; Inventory, Sense, and World export actual runtime sprites where their subjects are atoms. Items committed to an active trade offer remain visible but cannot be used or dropped through the Inventory action. Skills accepts only authoritative `Skill == 1` objects and explicitly excludes `/obj/items`; every skill retains Use, Bar, and Examine where applicable. While its root view is open, a bounded loop rebuilds content once per second and sends a new page only when server state changed and the reader is at the top; closing the window terminates the loop. Examine pauses automatic page replacement and provides Back navigation. World shows a safe connected-character overview to players; character Examine and, at Admin Level 3+, Edit remain administrator-only. Skill details calculate an attacker-only, equal-power damage preview with zero enemy Endurance/Resistance plus range, cost, cooldown, mechanics, and equipment/grab requirements. Nexus melee previews retain the canonical base melee, speed, equipped sword/style, forged BP, and Milestone path; Comet Reversal instead labels its beam trigger from an emitter in the frontal arc, 1.2-second window, 32-tile conditional approach, multi-beam rush guard capped at 3.5 seconds, unarmed requirement and adjacency-only normal-accuracy strike. Projectile previews reserve `setStats()`-scaled direct damage and unscaled splash separately through the authored shared budget. Basic Blast derives its preview from the currently configured volley count, refire factor, and optional center-projectile splash instead of displaying the shared-budget ceiling as every configuration's damage; Super Ghost Kamikaze exposes the maximum of its three fixed direct hits through their shared budget. Buffs expose all non-neutral BP/Energy/stat/regeneration/recovery multipliers and special attributes; transformations explain their form behavior and current state, including Great Ape's concrete multipliers, activation requirements, cooldown, and controlled/uncontrolled behavior, without exposing Sense information above the owner's access level.
 - `getSkillDamageData()`, `getProjectilePreviewReservedFactor()`, `getUnresistedSkillDamage()`, and `getSkillEffectData()` keep runtime preview profiles, projectile reservation semantics, resistance-free damage math, and buff/transformation metadata separate so Examine never reads the selected opponent. Direct physical/Ki/hybrid skills, projectile `setStats()` paths, weapon projectiles, canonical melee, and raw Final Explosion BP/Force scaling remain distinct profiles.
 - `showNexusCommandPrompt()` focuses the permanent side CMD input or opens the overlay CMD prompt. `focusNexusCommand()` is the Return-key router for both layouts.
-- `showNexusPlayerMenu(section)` opens the requested player-menu section; `toggleNexusPlayerMenu(section)` closes it when the matching Inventory, Skills, Sense, or World icon is pressed again.
+- `showNexusPlayerMenu(section)` opens the requested player-menu section; `toggleNexusPlayerMenu(section)` closes it when the matching Inventory or Skills icon is pressed again. Sense is routed to its independent monitor.
 - `removeActionHud()` detaches runtime screen objects and closes the replacement player menu during client/HUD cleanup.
 
 ### src/Code/UI/HudLibrary.dm
 
 - `getNexusHudLibraryIcon()` creates and caches scalable bolted, square panel/button surfaces used by native HUD windows.
-- `getNexusBrowserAtomIconResource()` exports and caches the real runtime sprite used by an object so browser Inventory and Skills remain visually identical to their in-game counterparts.
+- `getNexusBrowserAtomIconResource()` resolves dedicated skill artwork before inspecting the runtime icon, including skills with no world sprite. Unmapped objects retain their real runtime sprite and existing cache. It never changes the gameplay object appearance.
 - `getNexusCharacterPortraitIcon()` flattens the character body, underlays, and overlays into the Character portrait, so equipped clothing and transformation layers are visible instead of exporting a naked base icon.
 - `prepareNexusHudBrowserResources(viewer)` sends both local Silkscreen font weights once per client before a native-HUD browser is opened.
 - `getNexusHudBrowserCss(theme)` provides the embedded `Nexus Silkscreen` font and scoped native-HUD components (`hud-frame`, `hud-card`, `hud-button`, `hud-tab`, `hud-panel`, and `hud-sprite`) in bronze player or blue admin palettes. It must be used through `body.nexus-hud`; it must not become an unscoped global override.
@@ -137,7 +153,7 @@ These references are intentional and must not be removed, renamed, replaced with
 
 - `showCharacterSheet()` opens a client-owned `datum/NexusCharacterSheetWindow`, exports the current sprite portrait, and starts its bounded live lifecycle.
 - `datum/NexusCharacterSheetWindow` sends one placeholder-backed HTML snapshot, retains a heartbeat only for lifecycle cleanup, and never replaces the open document automatically. Refresh is an explicit player action and preserves the stored document scroll position.
-- `buildCharacterSheetHtml(portrait_resource, topic_source, restore_scroll_y)` renders identity, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Lethal pressure, owned Milestones, and learned skills as one bronze native-HUD dossier. Its portrait is a flattened copy of the current in-game appearance, including clothes, equipment, hair, and transformation overlays; learned techniques use their real runtime sprites. Unowned Milestones are omitted, and nested content scroll areas are deliberately avoided so refresh restoration has one authoritative scroll position.
+- `buildCharacterSheetHtml(portrait_resource, topic_source, restore_scroll_y)` renders identity, vitals, effective and raw combat stats, growth, Technology, professions, Knowledge, Lethal pressure, owned Milestones, and learned skills as one bronze native-HUD dossier. Its portrait is a flattened copy of the current in-game appearance, including clothes, equipment, hair, and transformation overlays; learned techniques use their dedicated skill artwork. Unowned Milestones are omitted, and nested content scroll areas are deliberately avoided so refresh restoration has one authoritative scroll position.
 - Admins receive a direct link from Character to the structured inspector.
 
 ### src/Code/UI/DamageIndicators.dm
@@ -194,6 +210,16 @@ These references are intentional and must not be removed, renamed, replaced with
 - Skill use/examination requires the object to remain directly owned; Sense targeting/examination revalidates the target's actual area and `CanSense()` state rather than depending on a possibly stale area list.
 - Dynamic inventory details are read through a variable-name indirection so examining an item without a subtype-only durability variable cannot raise an undefined-variable runtime.
 
+### src/Code/UI/HudBitmapText.dm
+
+- `getNexusHudFont(size)` loads the compiled `NexusHudGlyphs.json` metrics; `getNexusHudGlyph(size, code)` caches individual 8/12/16px glyphs from `NexusHudGlyphs.dmi`.
+- `measureNexusHudText(value, size)` sums integer advances; `getNexusHudTextBounds(value, size)` measures the actual characters' ink height independently of unused accented glyphs in the font.
+- `normalizeNexusHudText(value)` flattens line breaks/tabs and limits labels to 256 Unicode characters. ASCII and Latin-1 characters use authored glyphs; unsupported characters display `?`. This renderer is scoped to native build/vitals/buff labels, not chat or general rich text.
+- `fitNexusHudText(value, size, width)` shortens long labels on character boundaries with visible `...`, reserving its measured width.
+- `getNexusHudTextIcon(value, size, width, height, text_color, alignment)` composes tinted glyphs and a one-pixel shadow at integer coordinates. The word-image cache is capped at 512 entries.
+- `/obj/NexusHudBitmapText/setBitmapText(...)` chooses a discrete font size, optionally reduces it to fit the width, and reuses unchanged icons. `maptext_width`/`maptext_height` describe its layout box for compatibility with existing HUD code, but `maptext` stays null; the text is an actual icon. Text atoms use `PIXEL_SCALE` and reset inherited color/alpha/transforms.
+- `tools/BuildHudFont.py` regenerates the atlas and metrics from the existing OFL-licensed `SilkscreenRegular.ttf`; `--check` verifies all 573 glyphs and reproducibility. Runtime does not require Python, Pillow or an installed system font.
+
 ### src/Code/UI/HUD.dm
 
 #### proc/hudPercentage
@@ -239,30 +265,30 @@ These references are intentional and must not be removed, renamed, replaced with
 - Side effects: initializes a cache entry on first use.
 
 #### proc/getVitalsPanelIcon
-- Signature: `proc/getVitalsPanelIcon()`
-- Inputs: None.
-- Purpose: Build or reuse the clean 296x136 translucent backdrop for the draggable vitals panel.
+- Signature: `proc/getVitalsPanelIcon(scale = 1)`
+- Inputs: normalized HUD scale (0.5–1.5).
+- Purpose: Build or reuse the translucent backdrop at its final size (296x136 at 100%), using `createNexusVitalsBackdrop()` to paint whole-pixel borders and bolts.
 - Returns: cached icon.
 - Side effects: initializes the panel icon on first use.
 
 #### proc/getVitalsBarIcon
-- Signature: `proc/getVitalsBarIcon(percent, accent_color)`
-- Inputs: percentage and accent color.
-- Purpose: Build or reuse a 168x19 native progress-bar icon with proportional fill.
+- Signature: `proc/getVitalsBarIcon(percent, accent_color, scale = 1)`
+- Inputs: percentage, accent color and normalized HUD scale.
+- Purpose: Build or reuse a native progress-bar icon with proportional fill at its final pixel size (168x19 at 100%, minimum height 13px).
 - Returns: cached icon.
 - Side effects: initializes a cache entry on first use.
 
 #### proc/getPowerGaugeIcon
-- Signature: `proc/getPowerGaugeIcon(percent, over_limit)`
+- Signature: `proc/getPowerGaugeIcon(percent, over_limit, scale = 1)`
 - Inputs: normalized soft-cap progress and over-limit state.
 - Purpose: Build either lateral power gauge, switching from violet to red above the efficient limit.
-- Returns: cached 7x72 icon.
+- Returns: cached icon at the requested scale (7x72 at 100%).
 - Side effects: initializes a cache entry on first use.
 
 #### proc/getActiveModifiersPanelIcon
-- Signature: `proc/getActiveModifiersPanelIcon()`
-- Inputs: None.
-- Purpose: Build or reuse the 296x38 rustic strip displayed directly above the main vitals panel while temporary modifiers are active.
+- Signature: `proc/getActiveModifiersPanelIcon(scale = 1)`
+- Inputs: normalized HUD scale.
+- Purpose: Build or reuse the rustic strip above the vitals panel at matching width and enough height for three independent glyph rows (296x56 at 100%). `getNexusVitalsFontSize()` chooses 8px below 75%, 12px from 75% through 149%, and 16px at 150%. `/obj/NexusHudBitmapText` renders the text without HTML/maptext.
 - Returns: cached icon.
 - Side effects: initializes the shared modifier-strip icon on first use.
 
@@ -274,9 +300,9 @@ These references are intentional and must not be removed, renamed, replaced with
 - Side effects: none.
 
 #### mob/proc/getNexusActiveHudModifierSummary
-- Signature: `mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)`
-- Inputs: maximum number of stat fragments to render.
-- Purpose: Produce a compact title and at most two stat rows for the active-modifier strip, prioritizing BP, Speed, Recovery, Regeneration, and Energy. Long custom names and oversized stat sets are compacted; each returned row is rendered by an independently positioned maptext object so Dream Seeker cannot collapse the lines together.
+- Signature: `mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8, maximum_columns = 46)`
+- Inputs: maximum number of stat fragments and available character columns.
+- Purpose: Produce a compact title and at most two stat rows, prioritizing BP, Speed, Recovery, Regeneration, and Energy. Fit complete stat fragments to the current width, truncate long names, and reserve `+N MORE` for omitted stats. `ActiveModifiersReadout.applyScale()` derives a conservative column budget from glyph measurements and positions independent bitmap rows; deactivation clears and hides the backdrop and all rows.
 - Returns: an associative render summary.
 - Side effects: none.
 
@@ -355,7 +381,7 @@ These references are intentional and must not be removed, renamed, replaced with
 - Inputs: None.
 - Purpose: Refresh the centered character, right-aligned `(current Energy) percentage%`, raw power percentage, powerup soft-cap state, and combined temporary stat modifiers. The modifier strip stays transparent in base state.
 - Returns: none (implicit).
-- Side effects: updates screen appearances and maptext.
+- Side effects: updates screen appearances and cached text glyph icons.
 
 #### mob/proc/setVitalsHudVisibility
 - Signature: `mob/proc/setVitalsHudVisibility(visible)`
@@ -414,30 +440,30 @@ These references are intentional and must not be removed, renamed, replaced with
 - Side effects: updates `screen_loc`.
 
 #### obj/NexusHud/CharacterPortrait/proc/update
-- Signature: `update(mob/owner)`
+- Signature: `update(mob/owner, scale = 1)`
 - Inputs: owning player.
 - Purpose: Copy, enlarge, and center the character between the lateral power gauges without an additional frame.
 - Returns: none (implicit).
 - Side effects: replaces the portrait appearance.
 
 #### obj/NexusHud/VitalRow/proc/update
-- Signature: `update(label, percent, detail, accent_color)`
-- Inputs: row label, percentage, display detail, and accent color.
-- Purpose: Render one native icon-based stat row, its progress fill, label, and numeric detail.
+- Signature: `update(label, percent, detail, accent_color, scale = 1, energy_amount = null)`
+- Inputs: row label, percentage, display detail, accent color, scale, and optional raw energy amount.
+- Purpose: Render one native stat row, its progress fill, label, and numeric detail. `applyScale(scale, row_y)` reserves the text height; `update()` measures the label and assigns the remaining width to the value. Scales below 100% use WP/HP/KI/STA labels. `getNexusHudEnergyText()` preserves the `(amount) percent%` format, abbreviating very large amounts with K/M/B/T only when the full value cannot fit even at 8px.
 - Returns: none (implicit).
-- Side effects: swaps a cached bar icon and updates maptext.
+- Side effects: swaps a cached bar icon and updates separate cached label/value glyph icons.
 
 #### obj/NexusHud/PowerGauge/proc/update
-- Signature: `update(percent, over_limit)`
+- Signature: `update(percent, over_limit, scale = 1)`
 - Purpose: Raise both lateral indicators with power and show red saturation after the soft cap.
 - Returns: none (implicit).
 - Side effects: swaps a cached vertical icon.
 
 #### obj/NexusHud/PowerReadout/proc/update
-- Signature: `update(power_percent, soft_cap, over_limit)`
+- Signature: `update(power_percent, soft_cap, over_limit, scale = 1)`
 - Purpose: Render exactly one percentage line below the character, using color rather than duplicate text to signal the soft cap.
 - Returns: none (implicit).
-- Side effects: updates maptext.
+- Side effects: updates a cached percentage glyph icon.
 
 #### obj/NexusHud/OverheadHealthBar/proc/update
 - Signature: `update(mob/owner)`
@@ -558,14 +584,14 @@ These references are intentional and must not be removed, renamed, replaced with
 #### mob/proc/Hotkey_server_backup_load
 - Signature: `Hotkey_server_backup_load()`
 - Inputs: None
-- Purpose: Restore legacy IDs, custom bindings, binding version, and the selected XKB keyboard layout.
+- Purpose: Restore legacy IDs, custom bindings, binding version, keyboard profile, slot-key migration version, and the matching character hotbar backup.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Hotkey_server_backup_save
 - Signature: `Hotkey_server_backup_save()`
 - Inputs: None
-- Purpose: Persist legacy IDs, custom bindings, binding version, and the normalized XKB keyboard layout.
+- Purpose: Persist legacy IDs, custom bindings, binding version, keyboard profile, slot-key migration version, and per-character hotbar actions/layout.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1028,7 +1054,7 @@ These references are intentional and must not be removed, renamed, replaced with
 - Side effects: replaces only client-local macros created by this system.
 
 #### mob/proc/buildNexusHotkeyEditorHtml
-- Purpose: Render the enlarged rustic action deck, draggable XKB-profile keyboard, Unix key labels, single/double activation controls, complete F-key row, navigation/editing block, visible arrow keys, independent numpad, and active binding summary without wrapping keyboard groups over one another.
+- Purpose: Render the compact MMO hotbar editor with a dynamic bar list with creation/deletion, slot addition/removal, 12-slot editor pagination, a searchable skill/item/verb catalog, real key-combination capture, manual key/modifier controls, conflict confirmation, preserved other shortcuts, and bar layout settings.
 - Security: actions are represented by server-issued opaque tokens and revalidated in `Topic()`.
 
 #### datum/NexusHotkeyEditor/Topic
@@ -1058,7 +1084,7 @@ These references are intentional and must not be removed, renamed, replaced with
 - Purpose: Build the nine editor palette buttons with priority inline backgrounds so the shared rustic button theme cannot replace their visible colors.
 
 #### datum/NexusEmoteEditor
-- Purpose: Provide a resizable two-pane emote editor with visible theme-safe color swatches, custom color selection, formatting controls, counters, RP mode selection, and live preview.
+- Purpose: Provide a resizable two-pane emote editor with visible theme-safe color swatches, custom color selection, formatting controls, counters, RP mode selection, and live preview. Its grid and flex children may shrink, while the editor and preview forcibly wrap long unbroken input so user text cannot expand or break the window.
 
 #### mob/proc/showNexusEmoteEditor
 - Signature: `showNexusEmoteEditor()`
@@ -1175,13 +1201,16 @@ These references are intentional and must not be removed, renamed, replaced with
 - Inputs: None
 - Purpose: Toggle the modern `NexusBuildWindow` from the default `M` hotkey or top Build icon.
 - Returns: none (implicit).
-- Side effects: closes the legacy `TabHolder`, opens the browser catalog, and restores map focus on close.
+- Side effects: hides the legacy `TabHolder` and toggles the native draggable build panel on the map; the existing session and controls are reused.
 
 #### datum/NexusBuildWindow
-- Purpose: Render the unified build catalog for Floors, Ground, Roofs, Walls, Decor, Trees, Other, Custom, and Science.
-- Navigation: category tabs, category search, 48-card pages, live resources, active-blueprint state, and direct create/edit/delete controls for owned custom decor.
-- Performance: only the active page is rendered; extracted DMI states are cached globally and transferred once per client session.
-- Placement: ordinary cards route through `selectBuildBlueprint()`, Science cards through `TryCreateScienceItem()`, and Custom cards through the existing custom-decor validation path.
+- Purpose: Present a native HUD palette for Floors, Ground, Roofs, Walls, Decor, Trees, Other, Custom, and Science; implementation is split between `BuildPanel.dm`, `BuildBrush.dm`, and the catalog accessors in `BuildTab.dm`.
+- Navigation: category buttons, search, up to 25 persistent sprite slots per page, brush selection, 1/3/5-tile brush sizes, object rotation and optional shoreline finishing.
+- Layout: a compact 220x448 native-pixel panel with an opaque background, thin frames, three rows of three category tabs, gold selection/hover feedback and full-resolution 32px thumbnails at its normal size. Build, main vitals and buff text uses `/obj/NexusHudBitmapText`: cached glyph icons with exact measured widths, explicit truncation and separate rows. It does not rely on client HTML layout. `fitToViewport()` reduces rows for short windows, scales only when still necessary and clamps all sides on dragging/resizing. `refreshViewport()` converts the visible map control size through its rendered view size; `watchViewport()` runs only while the panel is open. `TOP` anchors the full control icon without a second height offset.
+- Performance: controls are allocated once and updated in place; thumbnails are cached by icon/state/direction. No browser reloads or per-tile catalog redraws.
+- Placement: hover shows the complete 1x1/3x3/5x5 footprint and its enabled finishing; `MouseDown` starts a preview, `MouseDrag` extends/interpolates it, and `MouseUp` commits unique coordinates through `buildLay()`. The preview includes planned terrain borders and cliff faces. Raised same-material patches and nested terraces use saved construction elevations. Ordinary/custom selection never builds at the player's feet. Science requires an explicit Craft item action.
+- Interaction: `canActivateControl()` is shared by click dispatch and hover styling. Titles, backgrounds, status text, page readouts, empty slots and unavailable actions do not receive clickable highlighting; title dragging remains available.
+- Lifecycle: right-click cancels a stroke; Stop clears selection; closing, moving, category changes and disconnect clear pending previews/work. The brush is independent from combat targeting. See `docs/procs/building.md` for permissions and regression coverage.
 
 #### mob/proc/PopulateBuildTabs
 - Signature: `PopulateBuildTabs()`
@@ -1447,3 +1476,12 @@ The Nexus HUD, HudLib windows, overhead vitals, damage numbers, and Nexus techni
 - Purpose: Initialize object state and register references.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### Skill artwork
+
+- `getNexusSkillArtworkFile(skill_type)` performs an exact catalog lookup and resolves the Grab, Injure, Train, and Meditate verb aliases. No inherited artwork is applied to unrelated objects.
+- `getNexusSkillArtworkResource(viewer, skill_type)` serves the 128px PNG under a revisioned resource name once per client. The generated catalog revision includes asset bytes.
+- `getNexusSkillArtworkIcon(skill_type)` caches a 32px native icon; `getNexusHotbarSkillIcon(subject)` applies it to legacy hotbar grids.
+- `getNexusBindingSkillArtworkResource(viewer, binding)` resolves object, directional action, and native verb bindings. Directional Zanzoken and defensive dash actions share the corresponding skill illustration.
+- Classic action bars, their editor catalog, the Skills list, Character sheet, and progression skill nodes use the same artwork. Arcane crafting recipe nodes retain their recipe icons. Browser skill art uses smooth resampling; runtime pixel sprites keep their existing rendering.
+- `tools/SkillArtwork/` exports the compiled skill inventory, preserves prompts/provenance, prepares runtime PNGs, and builds the catalog and review gallery. See `artifacts/SkillArtwork/README.md`.

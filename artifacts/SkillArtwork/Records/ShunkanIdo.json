@@ -1,0 +1,10 @@
+{
+  "id": "ShunkanIdo",
+  "original": "artifacts/SkillArtwork/Originals/ShunkanIdo.png",
+  "asset": "src/Icons/UI/SkillArtwork/ShunkanIdo.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "8956ed2ed9ff159c156da50ac11a7f6104fe7cc10e69fde7a474acce59237317",
+  "promptSha256": "fcb3ecd3064d626f478ba8f63166f7f0b91078196b700dea6fdfe1875df6c3f8",
+  "approvedSample": false
+}

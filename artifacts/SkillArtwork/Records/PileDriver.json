@@ -1,0 +1,10 @@
+{
+  "id": "PileDriver",
+  "original": "artifacts/SkillArtwork/Originals/PileDriver.png",
+  "asset": "src/Icons/UI/SkillArtwork/PileDriver.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "377554a3ad50f27396dcd26e9dcfa54f543a22d6e2a3418bdcd11ca90757d27d",
+  "promptSha256": "c9814835f67d8318f196df9eee6627ffd7506260f161de1e04e59b01d2816a41",
+  "approvedSample": false
+}

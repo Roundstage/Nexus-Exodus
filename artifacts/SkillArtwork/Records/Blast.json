@@ -1,0 +1,10 @@
+{
+  "id": "Blast",
+  "original": "artifacts/SkillArtwork/Originals/Blast.png",
+  "asset": "src/Icons/UI/SkillArtwork/Blast.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d976a35a0ce130ec0935b82e58e3c0cf944520994907df39ee45dd1d22122c06",
+  "promptSha256": "e77300a6ca7a16e0919a6c3f8d78099cd9274e9e588a689127b40918cd9e2d09",
+  "approvedSample": false
+}

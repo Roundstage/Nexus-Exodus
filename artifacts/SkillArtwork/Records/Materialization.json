@@ -1,0 +1,10 @@
+{
+  "id": "Materialization",
+  "original": "artifacts/SkillArtwork/Originals/Materialization.png",
+  "asset": "src/Icons/UI/SkillArtwork/Materialization.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "842f13b616076a042c0d95e4f278948ad9d52e0ac37f83bad1c1b1724029c5ae",
+  "promptSha256": "8cd8ec323559b58c89b3d053b40d6688accc3960ae15e69739867c999ed3a210",
+  "approvedSample": false
+}

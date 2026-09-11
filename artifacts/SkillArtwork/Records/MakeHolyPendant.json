@@ -1,0 +1,10 @@
+{
+  "id": "MakeHolyPendant",
+  "original": "artifacts/SkillArtwork/Originals/MakeHolyPendant.png",
+  "asset": "src/Icons/UI/SkillArtwork/MakeHolyPendant.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "51e235a712088a386b60be5776379a6121a5a78e740309d6a3b8fbf9a93bd865",
+  "promptSha256": "fcf2e831e525ee565b848eea09683f49ef2f88841e4d4a469ed4c468dcaba737",
+  "approvedSample": false
+}

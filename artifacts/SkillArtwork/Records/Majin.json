@@ -1,0 +1,10 @@
+{
+  "id": "Majin",
+  "original": "artifacts/SkillArtwork/Originals/Majin.png",
+  "asset": "src/Icons/UI/SkillArtwork/Majin.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f09dd6aa3d640ebe71eed7a6366253259624e1fb8c34753d431d7de26cc13960",
+  "promptSha256": "91ff25d36163281aec019e68e200f894fc39099a516dc3ecc7b5542d9371aae3",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "KiFist",
+  "original": "artifacts/SkillArtwork/Originals/KiFist.png",
+  "asset": "src/Icons/UI/SkillArtwork/KiFist.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "2f4ad30111d78771d9a7847eb82fd37f81512ff14c9b51c2a36f8dc7466fe7ff",
+  "promptSha256": "f097f32d429b044f37cda2ac08ab8e7bb3a5d15951c4d32f504fb807e454276b",
+  "approvedSample": false
+}

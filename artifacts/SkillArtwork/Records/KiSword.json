@@ -1,0 +1,10 @@
+{
+  "id": "KiSword",
+  "original": "artifacts/SkillArtwork/Originals/KiSword.png",
+  "asset": "src/Icons/UI/SkillArtwork/KiSword.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "fffcc6b03d49dd4fce417e743545b0de35291b4ef226007ffa0d9c7369c7ba95",
+  "promptSha256": "7628cbcffc7ce44f3e89d71e6b312cba615011c4d7e18a583d9226a8ea423931",
+  "approvedSample": false
+}

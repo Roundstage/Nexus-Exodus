@@ -1,0 +1,10 @@
+{
+  "id": "SplitForm",
+  "original": "artifacts/SkillArtwork/Originals/SplitForm.png",
+  "asset": "src/Icons/UI/SkillArtwork/SplitForm.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "193949edf9ade418b09c2f7cc8b549015d1571629bdd94d650572f7356c8e805",
+  "promptSha256": "27ba560d4f04c5f6ad051730a70e0fd096db21e845d104d8cf2479a42d708daa",
+  "approvedSample": false
+}

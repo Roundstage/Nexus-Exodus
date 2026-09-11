@@ -198,7 +198,10 @@ proc/getNexusPixelInterfaceIconResource(mob/viewer, icon_kind)
 	return resource_name
 
 proc/getNexusBrowserAtomIconResource(mob/viewer, atom/subject)
-	if(!subject || !subject.icon) return null
+	if(!subject) return null
+	var/skill_art = getNexusSkillArtworkResource(viewer, subject.type)
+	if(skill_art) return skill_art
+	if(!subject.icon) return null
 	var/icon_direction = subject.dir ? subject.dir : SOUTH
 	var/cache_key = "[subject.icon]|[subject.icon_state]|[icon_direction]|[subject.color]|[subject.alpha]"
 	var/resource_name = "nexus_atom_[md5(cache_key)].png"
@@ -282,7 +285,7 @@ proc/getNexusHudBrowserCss(theme = "bronze")
 		button_color = "#101923"
 		active_color = "#193044"
 	return {"
-	@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenRegular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenBold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:block}*{box-sizing:border-box;border-radius:0!important}html,body{margin:0;min-height:100%;background:[page_color];color:[text_color];font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace}body.nexus-hud{background:[page_color];image-rendering:pixelated}.nexus-hud,.nexus-hud *{font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace!important}.nexus-hud b,.nexus-hud strong{font-weight:700!important}.nexus-hud .hud-shell{min-height:100vh;padding:8px;background:[page_color]}.nexus-hud .hud-frame,.nexus-hud .hud-card{position:relative;background:[panel_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-frame:before,.nexus-hud .hud-frame:after,.nexus-hud .hud-card:before,.nexus-hud .hud-card:after{content:'';position:absolute;z-index:3;left:4px;right:4px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-frame:before,.nexus-hud .hud-card:before{top:4px}.nexus-hud .hud-frame:after,.nexus-hud .hud-card:after{bottom:4px}.nexus-hud .hud-panel{background:[panel_alt_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 0 0 0 2px [border_color]!important}.nexus-hud .hud-title{color:[heading_color]!important;font-weight:bold;text-shadow:2px 2px #000;letter-spacing:1px}.nexus-hud .hud-muted{color:[muted_color]!important}.nexus-hud .hud-accent{color:[accent_color]!important}.nexus-hud .hud-button,.nexus-hud a.hud-button,.nexus-hud button.hud-button,.nexus-hud .hud-tab{position:relative;display:inline-block;background:[button_color]!important;border:2px solid [outer_color]!important;outline:1px solid [edge_color]!important;box-shadow:inset 0 0 0 1px [border_color],2px 2px 0 #000!important;color:[text_color]!important;font-weight:bold;text-transform:uppercase;text-decoration:none;text-align:center}.nexus-hud .hud-button:before,.nexus-hud .hud-tab:before{content:'';position:absolute;left:3px;right:3px;top:3px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-button:hover,.nexus-hud .hud-tab:hover{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important}.nexus-hud .hud-button:active,.nexus-hud .hud-tab:active{transform:translate(1px,1px);box-shadow:inset 0 0 0 2px [outer_color]!important}.nexus-hud .hud-tab.active{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important;box-shadow:inset 3px 0 [accent_color],inset 0 0 0 1px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-button.danger{background:#241718!important;outline-color:#7e4646!important;color:#ffd8d4!important;box-shadow:inset 3px 0 #e26767,2px 2px 0 #000!important}.nexus-hud .hud-sprite{display:flex;align-items:center;justify-content:center;background:[outer_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [panel_alt_color]!important;overflow:hidden;image-rendering:pixelated}.nexus-hud .hud-sprite img{object-fit:contain;image-rendering:pixelated}.nexus-hud .hud-label{color:[accent_color]!important;font-size:9px;text-transform:uppercase;letter-spacing:.4px}.nexus-hud .hud-section-title{position:relative;margin:0;background:[panel_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 4px 0 [accent_color],inset 0 0 0 2px [border_color]!important;color:[heading_color]!important;text-transform:uppercase;text-shadow:1px 1px #000}.nexus-hud input,.nexus-hud textarea,.nexus-hud select{background:[outer_color]!important;border:2px inset [edge_color]!important;color:[text_color]!important}.nexus-hud ::-webkit-scrollbar{width:14px;height:14px}.nexus-hud ::-webkit-scrollbar-track{background:[outer_color];border:1px solid [border_color]}.nexus-hud ::-webkit-scrollbar-thumb{background:[button_color];border:2px outset [edge_color]}
+	@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenRegular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}@font-face{font-family:'Nexus Silkscreen';src:url('SilkscreenBold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:block}*{box-sizing:border-box;border-radius:0!important}html,body{margin:0;min-height:100%;background:[page_color];color:[text_color];font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace}body.nexus-hud{background:[page_color];image-rendering:pixelated}.nexus-hud,.nexus-hud *{font-family:'Nexus Silkscreen','Fixedsys','Lucida Console','Courier New',monospace!important}.nexus-hud b,.nexus-hud strong{font-weight:700!important}.nexus-hud .hud-shell{min-height:100vh;padding:8px;background:[page_color]}.nexus-hud .hud-frame,.nexus-hud .hud-card{position:relative;background:[panel_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-frame:before,.nexus-hud .hud-frame:after,.nexus-hud .hud-card:before,.nexus-hud .hud-card:after{content:'';position:absolute;z-index:3;left:4px;right:4px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-frame:before,.nexus-hud .hud-card:before{top:4px}.nexus-hud .hud-frame:after,.nexus-hud .hud-card:after{bottom:4px}.nexus-hud .hud-panel{background:[panel_alt_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 0 0 0 2px [border_color]!important}.nexus-hud .hud-title{color:[heading_color]!important;font-weight:bold;text-shadow:2px 2px #000;letter-spacing:1px}.nexus-hud .hud-muted{color:[muted_color]!important}.nexus-hud .hud-accent{color:[accent_color]!important}.nexus-hud .hud-button,.nexus-hud a.hud-button,.nexus-hud button.hud-button,.nexus-hud .hud-tab{position:relative;display:inline-block;background:[button_color]!important;border:2px solid [outer_color]!important;outline:1px solid [edge_color]!important;box-shadow:inset 0 0 0 1px [border_color],2px 2px 0 #000!important;color:[text_color]!important;font-weight:bold;text-transform:uppercase;text-decoration:none;text-align:center}.nexus-hud .hud-button:before,.nexus-hud .hud-tab:before{content:'';position:absolute;left:3px;right:3px;top:3px;height:2px;border-left:2px solid [bolt_color];border-right:2px solid [bolt_color];pointer-events:none}.nexus-hud .hud-button:hover,.nexus-hud .hud-tab:hover{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important}.nexus-hud .hud-button:active,.nexus-hud .hud-tab:active{transform:translate(1px,1px);box-shadow:inset 0 0 0 2px [outer_color]!important}.nexus-hud .hud-tab.active{background:[active_color]!important;color:[heading_color]!important;outline-color:[accent_color]!important;box-shadow:inset 3px 0 [accent_color],inset 0 0 0 1px [border_color],2px 2px 0 #000!important}.nexus-hud .hud-button.danger{background:#241718!important;outline-color:#7e4646!important;color:#ffd8d4!important;box-shadow:inset 3px 0 #e26767,2px 2px 0 #000!important}.nexus-hud .hud-sprite{display:flex;align-items:center;justify-content:center;background:[outer_color]!important;border:2px solid [outer_color]!important;outline:1px solid [border_color]!important;box-shadow:inset 0 0 0 2px [panel_alt_color]!important;overflow:hidden;image-rendering:pixelated}.nexus-hud .hud-sprite img{object-fit:contain;image-rendering:pixelated}.nexus-hud img\[src^='nexus_skill_']{image-rendering:auto!important}.nexus-hud .hud-label{color:[accent_color]!important;font-size:9px;text-transform:uppercase;letter-spacing:.4px}.nexus-hud .hud-section-title{position:relative;margin:0;background:[panel_color]!important;border:2px solid [outer_color]!important;box-shadow:inset 4px 0 [accent_color],inset 0 0 0 2px [border_color]!important;color:[heading_color]!important;text-transform:uppercase;text-shadow:1px 1px #000}.nexus-hud input,.nexus-hud textarea,.nexus-hud select{background:[outer_color]!important;border:2px inset [edge_color]!important;color:[text_color]!important}.nexus-hud ::-webkit-scrollbar{width:14px;height:14px}.nexus-hud ::-webkit-scrollbar-track{background:[outer_color];border:1px solid [border_color]}.nexus-hud ::-webkit-scrollbar-thumb{background:[button_color];border:2px outset [edge_color]}
 	"}
 
 client/var/tmp
@@ -410,6 +413,8 @@ proc/encodeNexusBrowserFunctionArgument(value)
 proc/nexusChatChannelAppearsInAll(channel)
 	return normalizeNexusChatChannel(channel) != "combat"
 
+client/var/tmp/nexus_chat_revision = 0
+
 client/proc/initializeNexusChatHistory()
 	if(!islist(nexus_chat_history)) nexus_chat_history = list()
 	for(var/channel in list("all", "combat", "ic", "ooc"))
@@ -420,6 +425,7 @@ client/proc/operator<<(out, target, window)
 		initializeNexusChatHistory()
 		var/list/all_entries = nexus_chat_history["all"]
 		all_entries += "<span style='color:#d4ad65'>\[SYSTEM\]</span> [out]"
+		nexus_chat_revision++
 		while(all_entries.len > 300) all_entries.Cut(1, 2)
 		if(nexus_chat_hud)
 			nexus_chat_hud.scroll_offset = 0
@@ -430,6 +436,7 @@ client/proc/operator<<(out, target, window)
 
 client/proc/receiveNexusHudChatMessage(message, channel = "all")
 	if(!message) return
+	nexus_chat_revision++
 	initializeNexusChatHistory()
 	channel = normalizeNexusChatChannel(channel)
 	if(nexusChatChannelAppearsInAll(channel))
@@ -568,45 +575,8 @@ datum/NexusChatHud
 
 	proc/refreshOverlay()
 		if(!owner || !owner.client) return
-		var/panel_y = 8
-		var/panel_width = Clamp(round(owner.nexus_chat_hud_width), 360, 820)
-		var/panel_height = Clamp(round(owner.nexus_chat_hud_height), 130, 460)
-		owner.nexus_chat_hud_width = panel_width
-		owner.nexus_chat_hud_height = panel_height
-		if(owner.nexus_chat_hud_collapsed) panel_height = 24
-		addElementAt("", null, getRightAnchoredLocation(panel_width, 0, panel_width, panel_y), panel_width, panel_height, "#201810", "#765a35", "", "#ead39f", "left", 9, FALSE)
-		var/header_y = panel_y + panel_height - 22
-		var/control_width = 21
-		var/list/header_actions = list("scroll_up" = "^", "scroll_down" = "v", "width_down" = "W-", "width_up" = "W+", "height_down" = "H-", "height_up" = "H+", "collapse" = owner.nexus_chat_hud_collapsed ? "+" : "_")
-		var/control_x = panel_width - 4 - (header_actions.len * control_width)
-		addElementAt("CHAT / [uppertext(active_channel)]", null, getRightAnchoredLocation(panel_width, 4, max(60, control_x - 4), header_y), max(60, control_x - 4), 20, "#382719", "#8f6c3b", "#d2aa61", "#f1d69c", "left", 9, FALSE)
-		for(var/action_id in header_actions)
-			addElementAt(header_actions[action_id], action_id, getRightAnchoredLocation(panel_width, control_x, control_width, header_y), control_width, 20, "#46321d", "#987140", "", "#f2d8a0", "center", 8)
-			control_x += control_width
-		if(owner.nexus_chat_hud_collapsed) return
-		var/tab_y = panel_y + panel_height - 43
-		var/tab_width = round((panel_width - 8) / 4)
-		var/tab_x = 4
-		for(var/channel in list("all", "combat", "ic", "ooc"))
-			var/is_active = channel == active_channel
-			addElementAt(uppertext(channel), "channel:[channel]", getRightAnchoredLocation(panel_width, tab_x, tab_width, tab_y), tab_width, 19, is_active ? "#725027" : "#302319", is_active ? "#d2aa61" : "#725735", is_active ? "#e0bd74" : "", is_active ? "#fff0bd" : "#cbb389", "center", 8)
-			tab_x += tab_width
-		var/footer_height = 22
-		var/message_y = panel_y + footer_height
-		var/message_height = max(40, panel_height - 68)
-		message_panel = addElementAt("", null, getRightAnchoredLocation(panel_width, 4, panel_width - 8, message_y), panel_width - 8, message_height, "#130f0b", "#574128", "", "#ead7b0", "left", 8, FALSE)
-		message_panel.maptext_x = 7
-		message_panel.maptext_y = 5
-		message_panel.maptext_width = panel_width - 22
-		message_panel.maptext_height = message_height - 10
-		var/chat_font_size = Clamp(round(owner.TextSize + 11), 12, 21)
-		message_panel.maptext = "<div style='font-family:Courier New;font-size:[chat_font_size]px;color:#ead7b0'>[buildMessageHtml()]</div>"
-		var/list/footer_actions = list("cmd" = "CMD", "say" = "SAY", "ooc" = "OOC", "emote" = "EMOTE", "logs" = "LOGS")
-		var/footer_width = round((panel_width - 8) / footer_actions.len)
-		var/footer_x = 4
-		for(var/action_id in footer_actions)
-			addElementAt(footer_actions[action_id], action_id, getRightAnchoredLocation(panel_width, footer_x, footer_width, panel_y + 2), footer_width, 18, "#3c2b1a", "#846238", "", "#ead09a", "center", 8)
-			footer_x += footer_width
+		if(!owner.client.nexus_classic_hud) owner.initializeClassicHud()
+		else owner.client.nexus_classic_hud.queueChatRefresh()
 
 	proc/applyLayout()
 		clearElements()
@@ -616,10 +586,12 @@ datum/NexusChatHud
 			if(owner.nexus_interface_layout == "side_tabs" && owner.hasEnabledNexusLegacyTabs()) attachTabsOnly()
 			else attachOverlay()
 			winset(owner, "mapwindow.map", "focus=true")
+			owner.initializeClassicHud()
 			return
 		if(owner.nexus_interface_layout == "side_tabs") attachSidePanel()
 		else attachOverlay()
 		refresh()
+		owner.initializeClassicHud()
 
 	proc/refresh()
 		clearElements()
@@ -633,11 +605,7 @@ datum/NexusChatHud
 		if(normalizeNexusInterfaceLayout(owner.nexus_interface_layout) == "side_tabs")
 			owner << output(buildMessageOutputPayload(), "nexuschatwindow.chat:updateMessages")
 			return
-		if(message_panel && message_panel in elements)
-			var/chat_font_size = Clamp(round(owner.TextSize + 11), 12, 21)
-			message_panel.maptext = "<div style='font-family:Courier New;font-size:[chat_font_size]px;color:#ead7b0'>[buildMessageHtml()]</div>"
-			return
-		refresh()
+		refreshOverlay()
 
 	handleAction(action_id)
 		if(!owner || !owner.client) return
@@ -677,13 +645,17 @@ datum/NexusChatHud
 
 	proc/setVisible(new_visibility)
 		is_visible = !!new_visibility
-		if(owner && owner.client) owner.client.show_chatbox = is_visible
+		if(owner && owner.client)
+			owner.client.show_chatbox = is_visible
+			if(owner.client.nexus_classic_hud) owner.nexus_classic_layout["chat"]["open"] = is_visible
 		applyLayout()
 
 mob/proc/hasEnabledNexusLegacyTabs()
 	return nexus_legacy_tab_skills || nexus_legacy_tab_other || nexus_legacy_tab_items || (IsAdmin() && (nexus_legacy_tab_world || nexus_legacy_tab_admin))
 
 mob/proc/isNexusLegacyTabEnabled(tab_id)
+	if(client && client.nexus_classic_hud && client.nexus_classic_hud.legacy_open)
+		return !(lowertext(tab_id) in list("admin", "world")) || IsAdmin()
 	if(normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs") return FALSE
 	switch(lowertext(tab_id))
 		if("skills") return nexus_legacy_tab_skills
@@ -711,7 +683,7 @@ datum/NexusInterfaceSettings
 		return "<a class='option [enabled ? "active" : ""]' href='byond://?src=\ref[src]&action=toggle&id=[action_id]'><b>[html_encode(label)]</b><span>[html_encode(description)]</span><em>[enabled ? "ON" : "OFF"]</em></a>"
 
 	proc/buildHudControls()
-		return {"<div class='hud-grid'><article class='hud-control'><b>OVERHEAD VITALS</b><span>Offset X [owner.nexus_overhead_vitals_offset_x] / Y [owner.nexus_overhead_vitals_offset_y]. Moves the bars below the character together with the Sense percentage.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=overhead'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=overhead'>RESET</a></div></article><article class='hud-control'><b>MAIN VITALS PANEL</b><span>Position X [owner.nexus_main_vitals_x] / Y [owner.nexus_main_vitals_y]. You can also drag the panel directly during play.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=main_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=main'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=main'>RESET</a></div></article></div>"}
+		return {"<div class='hud-grid'><article class='hud-control'><b>OVERHEAD VITALS</b><span>Offset X [owner.nexus_overhead_vitals_offset_x] / Y [owner.nexus_overhead_vitals_offset_y]. Moves the bars below the character together with the Sense percentage.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=overhead_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=overhead'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=overhead'>RESET</a></div></article><article class='hud-control'><b>MAIN VITALS PANEL</b><span>Position X [owner.nexus_main_vitals_x] / Y [owner.nexus_main_vitals_y]. Scale [owner.nexus_main_vitals_scale]%. Drag to move; double-click for live Stats.</span><div class='nudge'><a href='byond://?src=\ref[src]&action=hud_move&id=main_left'>LEFT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_right'>RIGHT</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_up'>UP</a><a href='byond://?src=\ref[src]&action=hud_move&id=main_down'>DOWN</a><a href='byond://?src=\ref[src]&action=hud_set&id=main'>SET X/Y</a><a href='byond://?src=\ref[src]&action=hud_reset&id=main'>RESET</a><a href='byond://?src=\ref[src]&action=hud_scale&id=50'>50%</a><a href='byond://?src=\ref[src]&action=hud_scale&id=75'>75%</a><a href='byond://?src=\ref[src]&action=hud_scale&id=100'>100%</a><a href='byond://?src=\ref[src]&action=hud_scale&id=125'>125%</a><a href='byond://?src=\ref[src]&action=hud_scale&id=150'>150%</a></div></article></div>"}
 
 	proc/buildHtml()
 		var/overlay_active = owner.nexus_interface_layout == "overlay"
@@ -725,7 +697,7 @@ datum/NexusInterfaceSettings
 		var/hud_controls = buildHudControls()
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Interface Settings</title><style>[getNexusRpgBrowserCss()]
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.head{display:flex;align-items:center;border:3px ridge #84643a;padding:10px}.head h1{margin:0 auto 0 0;font-size:18px}.close{padding:7px 10px}.layouts,.options,.hud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}.layout,.option,.hud-control{position:relative;display:block;min-height:88px;padding:12px;border:3px ridge #735631;background:#2b2117;color:#e8d4aa;text-decoration:none}.layout,.option{padding-right:70px}.layout.active,.option.active{border-color:#d0a65d;background:#4a351e}.layout b,.layout span,.option b,.option span,.hud-control b,.hud-control span{display:block}.layout b,.option b,.hud-control b{color:#f0d497;font-size:14px}.layout span,.option span,.hud-control span{margin-top:7px;color:#bca47c;line-height:1.4}.layout em,.option em{position:absolute;right:12px;top:12px;color:#ffe6a8;font-style:normal;font-weight:bold}.section{margin-top:12px;padding:8px;border:2px solid #715735;background:#211a13}.section h2{margin:0 0 8px;padding:7px;font-size:13px}.nudge{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}.nudge a{padding:6px 3px;border:2px outset #9a7440;background:#49351f;color:#f2d79e;text-align:center;text-decoration:none;font-weight:bold}.note{margin-top:9px;padding:8px;border-left:4px solid #a77a3f;color:#bca47c}@media(max-width:650px){.layouts,.options,.hud-grid{grid-template-columns:1fr}}
-		</style></head><body><main class='shell'><header class='head'><h1>INTERFACE &amp; HUD SETTINGS</h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></header><div class='layouts'><a class='layout [overlay_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=overlay'><b>CLASSIC OVERLAY</b><span>Compact rustic chat over the map, with resize controls and CMD below it.</span><em>[overlay_active ? "ACTIVE" : "SELECT"]</em></a><a class='layout [side_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=side_tabs'><b>SIDE + TABS</b><span>Native tabs above a smaller chat and permanent CMD bar outside the map.</span><em>[side_active ? "ACTIVE" : "SELECT"]</em></a></div><section class='section'><h2>HUD POSITION</h2>[hud_controls]<div class='note'>Overhead adjustments move the three bars and Sense percentage together. Typing and Say always remain above the character. All positions are saved for this account.</div></section><section class='section'><h2>LEGACY TAB CATEGORIES</h2><div class='options'>[tab_options]</div><div class='note'>These switches control the legacy categories shown in Side + Tabs mode. Preferences are saved for this account.</div></section></main></body></html>"}
+		</style></head><body><main class='shell'><header class='head'><h1>INTERFACE &amp; HUD SETTINGS</h1><a class='close' href='byond://?src=\ref[src]&action=close'>CLOSE</a></header><div class='layouts'><a class='layout [overlay_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=overlay'><b>CLASSIC OVERLAY</b><span>Resizable chat, persistent Sense and target, and a visible skill bar over the map.</span><em>[overlay_active ? "ACTIVE" : "SELECT"]</em></a><a class='layout [side_active ? "active" : ""]' href='byond://?src=\ref[src]&action=layout&id=side_tabs'><b>SIDE + TABS</b><span>Native tabs above a smaller chat and permanent CMD bar outside the map.</span><em>[side_active ? "ACTIVE" : "SELECT"]</em></a></div><section class='section'><h2>HUD POSITION</h2>[hud_controls]<div class='note'>Overhead adjustments move the three bars and Sense percentage together. Typing and Say always remain above the character. All positions are saved for this account.</div></section><section class='section'><h2>LEGACY TAB CATEGORIES</h2><div class='options'>[tab_options]</div><div class='note'>These switches control the legacy categories shown in Side + Tabs mode. Preferences are saved for this account.</div></section></main></body></html>"}
 
 	proc/show()
 		if(!owner || !owner.client)
@@ -767,9 +739,10 @@ datum/NexusInterfaceSettings
 				if(isnull(new_y)) return
 				if(href_list["id"] == "overhead") owner.setNexusOverheadVitalsOffset(new_x, new_y)
 				else owner.setNexusMainVitalsPosition(new_x, new_y)
+			if("hud_scale") owner.setNexusMainVitalsScale(text2num(href_list["id"]))
 			if("hud_reset")
 				if(href_list["id"] == "overhead") owner.setNexusOverheadVitalsOffset(0, 0)
-				else owner.setNexusMainVitalsPosition(8, 8)
+				else owner.setNexusMainVitalsPosition(0, 0)
 			if("close")
 				owner.save_player_settings()
 				del(src)
@@ -786,6 +759,7 @@ mob/proc/showNexusInterfaceSettings()
 
 mob/proc/applyNexusInterfaceLayout()
 	if(!client || !playerCharacter) return
+	if(client.nexus_classic_hud && client.nexus_classic_hud.legacy_open) closeClassicLegacy()
 	nexus_interface_layout = normalizeNexusInterfaceLayout(nexus_interface_layout)
 	if(!client.nexus_chat_hud) initializeNexusChatHud()
 	else client.nexus_chat_hud.applyLayout()
@@ -802,7 +776,9 @@ mob/proc/initializeNexusChatHud()
 	if(!client || !playerCharacter) return
 	if(client.nexus_chat_hud) del(client.nexus_chat_hud)
 	client.nexus_chat_hud = new /datum/NexusChatHud(src)
-	client.nexus_chat_hud.setVisible(client.show_chatbox)
+	var/show_chat = client.show_chatbox
+	if(islist(nexus_classic_layout) && islist(nexus_classic_layout["chat"])) show_chat = !!nexus_classic_layout["chat"]["open"]
+	client.nexus_chat_hud.setVisible(show_chat)
 
 mob/proc/toggleNexusChatHud()
 	if(!client || !playerCharacter) return

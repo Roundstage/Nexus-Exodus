@@ -1,0 +1,10 @@
+{
+  "id": "SuperExplosiveWave",
+  "original": "artifacts/SkillArtwork/Originals/SuperExplosiveWave.png",
+  "asset": "src/Icons/UI/SkillArtwork/SuperExplosiveWave.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "a4a7ba870523d3b2938588ac3264bc7d7cc906b9aa8909bb02418e045da00323",
+  "promptSha256": "13c1e82c254f15208d42db8953316066708c363c6e88a7e41dda69e022a317da",
+  "approvedSample": false
+}

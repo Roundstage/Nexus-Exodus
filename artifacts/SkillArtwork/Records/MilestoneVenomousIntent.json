@@ -1,0 +1,10 @@
+{
+  "id": "MilestoneVenomousIntent",
+  "original": "artifacts/SkillArtwork/Originals/MilestoneVenomousIntent.png",
+  "asset": "src/Icons/UI/SkillArtwork/MilestoneVenomousIntent.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "02cec7b783b135066be0483c4c606eddd634a62af4d38c7ca30e2bee9b484ec2",
+  "promptSha256": "66c113f1c96fb36e3bdccb9630f5ee91bcfda77633b11779615010139690dcbc",
+  "approvedSample": false
+}

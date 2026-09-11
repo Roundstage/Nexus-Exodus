@@ -1,0 +1,10 @@
+{
+  "id": "Telepathy",
+  "original": "artifacts/SkillArtwork/Originals/Telepathy.png",
+  "asset": "src/Icons/UI/SkillArtwork/Telepathy.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1a48e366f6918c724324328a57a84d190a360584bd16786c3e4cfdbf7f325822",
+  "promptSha256": "c832fb49c7cbeefcf36fe5a0a6440f4b6d9b2ab7171cc72d9528a9a700fa0596",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BigBangAttack",
+  "original": "artifacts/SkillArtwork/Originals/BigBangAttack.png",
+  "asset": "src/Icons/UI/SkillArtwork/BigBangAttack.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "c61cb7cbbfe3d304333e8212f92d3bccff5edc6375ee37e06bdc06aab34d88af",
+  "promptSha256": "6f854e6afe79e7326aad022ac27ecd57b3f9a36423116b179abae9ee90e62426",
+  "approvedSample": false
+}

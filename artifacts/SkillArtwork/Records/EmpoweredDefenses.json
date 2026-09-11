@@ -1,0 +1,10 @@
+{
+  "id": "EmpoweredDefenses",
+  "original": "artifacts/SkillArtwork/Originals/EmpoweredDefenses.png",
+  "asset": "src/Icons/UI/SkillArtwork/EmpoweredDefenses.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f95e4572dc49f27e57e29bc477cef6af0b84a919e334a4268a4da30224a3307b",
+  "promptSha256": "48d72cbda41e42ccba21f529ef9de772c148df733e577957073c5328b3849b20",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BuffDemonicFury",
+  "original": "artifacts/SkillArtwork/Originals/BuffDemonicFury.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffDemonicFury.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9caccb093dbec15682a9e834c18020577b357b74ec3dc709e24fcff29ff31a7d",
+  "promptSha256": "d352db2b9685e149620a9d60cef00137e4c17ba879ac93a80d0b9e1cbfbeda74",
+  "approvedSample": false
+}

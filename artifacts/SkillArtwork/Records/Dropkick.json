@@ -1,0 +1,10 @@
+{
+  "id": "Dropkick",
+  "original": "artifacts/SkillArtwork/Originals/Dropkick.png",
+  "asset": "src/Icons/UI/SkillArtwork/Dropkick.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "43a4a7af9818f50dd8a4081a0f8fdc3e7a14ddbfa8548929eb46e1f2239405c5",
+  "promptSha256": "5637db40b94dc504f36cd30657461c433834ddfb151d6eb6cc2cef7ccced52b6",
+  "approvedSample": false
+}

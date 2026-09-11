@@ -45,111 +45,9 @@
           18,
           6,
           22
-        ],
-        [
-          18,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Imperial directory\"; status_text = \"Audience hall and offices. South: forum and spaceport. West: residences. East: research enclave. Both outer terraces bypass the hall.\"}",
-          "original": [
-            233,
-            355
-          ],
-          "position": [
-            7,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            234,
-            357
-          ],
-          "position": [
-            10,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            266,
-            357
-          ],
-          "position": [
-            13,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            234,
-            365
-          ],
-          "position": [
-            24,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            266,
-            365
-          ],
-          "position": [
-            27,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            234,
-            377
-          ],
-          "position": [
-            30,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Banner",
-          "original": [
-            266,
-            377
-          ],
-          "position": [
-            7,
-            12,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Throne",
-          "original": [
-            250,
-            379
-          ],
-          "position": [
-            10,
-            12,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -190,39 +88,9 @@
           58,
           6,
           22
-        ],
-        [
-          58,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            224,
-            337
-          ],
-          "position": [
-            47,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            235,
-            337
-          ],
-          "position": [
-            50,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -263,39 +131,9 @@
           98,
           6,
           22
-        ],
-        [
-          98,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            265,
-            337
-          ],
-          "position": [
-            87,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            276,
-            337
-          ],
-          "position": [
-            90,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -336,51 +174,9 @@
           138,
           6,
           22
-        ],
-        [
-          138,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            123,
-            364
-          ],
-          "position": [
-            127,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            123,
-            375
-          ],
-          "position": [
-            130,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            136,
-            375
-          ],
-          "position": [
-            133,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -421,51 +217,9 @@
           178,
           6,
           22
-        ],
-        [
-          178,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            177,
-            359
-          ],
-          "position": [
-            167,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            163,
-            375
-          ],
-          "position": [
-            170,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            177,
-            375
-          ],
-          "position": [
-            173,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -506,51 +260,9 @@
           218,
           6,
           22
-        ],
-        [
-          218,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Terrace services\"; status_text = \"Communal residences north; clinic and dining south. Palace east; civic market south. Public rooms use open arches.\"}",
-          "original": [
-            137,
-            325
-          ],
-          "position": [
-            207,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/MedicalBed",
-          "original": [
-            124,
-            336
-          ],
-          "position": [
-            210,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/MedicalBed",
-          "original": [
-            136,
-            336
-          ],
-          "position": [
-            213,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -591,51 +303,9 @@
           258,
           6,
           22
-        ],
-        [
-          258,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            164,
-            325
-          ],
-          "position": [
-            247,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            176,
-            325
-          ],
-          "position": [
-            250,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/ServingCounter",
-          "original": [
-            163,
-            336
-          ],
-          "position": [
-            253,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -676,51 +346,9 @@
           298,
           6,
           22
-        ],
-        [
-          298,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Research records\"; status_text = \"Civil research, medical observation and the scientific archive. Medical laboratory east, archive south. Energy works southeast.\"}",
-          "original": [
-            325,
-            364
-          ],
-          "position": [
-            287,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            324,
-            375
-          ],
-          "position": [
-            290,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            338,
-            375
-          ],
-          "position": [
-            293,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -761,63 +389,9 @@
           338,
           6,
           22
-        ],
-        [
-          338,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing",
-          "original": [
-            360,
-            354
-          ],
-          "position": [
-            327,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            365,
-            360
-          ],
-          "position": [
-            330,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/MedicalBed",
-          "original": [
-            364,
-            376
-          ],
-          "position": [
-            333,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/MedicalBed",
-          "original": [
-            376,
-            376
-          ],
-          "position": [
-            344,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -858,63 +432,9 @@
           378,
           6,
           22
-        ],
-        [
-          378,
-          23,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            329,
-            334
-          ],
-          "position": [
-            367,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            341,
-            334
-          ],
-          "position": [
-            370,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            359,
-            334
-          ],
-          "position": [
-            373,
-            9,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            371,
-            334
-          ],
-          "position": [
-            384,
-            9,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -955,75 +475,9 @@
           18,
           36,
           22
-        ],
-        [
-          18,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Training course\"; status_text = \"Central field: fifty tiles square. The outer loop remains clear for endurance running. Forum east; badlands south.\"}",
-          "original": [
-            29,
-            286
-          ],
-          "position": [
-            7,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            31,
-            293
-          ],
-          "position": [
-            10,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            42,
-            293
-          ],
-          "position": [
-            13,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            58,
-            293
-          ],
-          "position": [
-            24,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            68,
-            293
-          ],
-          "position": [
-            27,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1064,75 +518,9 @@
           58,
           36,
           22
-        ],
-        [
-          58,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Civic exchange\"; status_text = \"Civic exchange and public meeting halls. Equipment gallery west, communal food hall east. Forum east; residential terraces north.\"}",
-          "original": [
-            123,
-            278
-          ],
-          "position": [
-            47,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            124,
-            288
-          ],
-          "position": [
-            50,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            137,
-            288
-          ],
-          "position": [
-            53,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            163,
-            288
-          ],
-          "position": [
-            64,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            176,
-            288
-          ],
-          "position": [
-            67,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1173,63 +561,9 @@
           98,
           36,
           22
-        ],
-        [
-          98,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            124,
-            228
-          ],
-          "position": [
-            87,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            124,
-            236
-          ],
-          "position": [
-            90,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            124,
-            250
-          ],
-          "position": [
-            93,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Locker",
-          "original": [
-            124,
-            256
-          ],
-          "position": [
-            104,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1270,63 +604,9 @@
           138,
           36,
           22
-        ],
-        [
-          138,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/ServingCounter",
-          "original": [
-            177,
-            228
-          ],
-          "position": [
-            127,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/ServingCounter",
-          "original": [
-            177,
-            236
-          ],
-          "position": [
-            130,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/ServingCounter",
-          "original": [
-            177,
-            250
-          ],
-          "position": [
-            133,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/ServingCounter",
-          "original": [
-            177,
-            256
-          ],
-          "position": [
-            144,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1367,51 +647,9 @@
           178,
           36,
           22
-        ],
-        [
-          178,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"War college directory\"; status_text = \"Arena south: four open exits and a 48 by 48 clear combat floor. Spectator circulation runs around the perimeter. Barracks east.\"}",
-          "original": [
-            320,
-            286
-          ],
-          "position": [
-            167,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            323,
-            292
-          ],
-          "position": [
-            170,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            337,
-            292
-          ],
-          "position": [
-            173,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1452,39 +690,9 @@
           218,
           36,
           22
-        ],
-        [
-          218,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            364,
-            292
-          ],
-          "position": [
-            207,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Bed",
-          "original": [
-            377,
-            292
-          ],
-          "position": [
-            210,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1525,39 +733,9 @@
           258,
           36,
           22
-        ],
-        [
-          258,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            435,
-            263
-          ],
-          "position": [
-            247,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            426,
-            275
-          ],
-          "position": [
-            250,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1598,39 +776,9 @@
           298,
           36,
           22
-        ],
-        [
-          298,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            464,
-            263
-          ],
-          "position": [
-            287,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            474,
-            275
-          ],
-          "position": [
-            290,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1671,75 +819,9 @@
           338,
           36,
           22
-        ],
-        [
-          338,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Planetary grid diagnostics\"; status_text = \"Generator service court north. Research northwest; fabrication southwest. Grid diagnostics nominal. Keep generator approaches clear.\"}",
-          "original": [
-            430,
-            226
-          ],
-          "position": [
-            327,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            432,
-            237
-          ],
-          "position": [
-            330,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            443,
-            237
-          ],
-          "position": [
-            333,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            457,
-            237
-          ],
-          "position": [
-            344,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            468,
-            237
-          ],
-          "position": [
-            347,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1780,51 +862,9 @@
           378,
           36,
           22
-        ],
-        [
-          378,
-          53,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Freight dispatch\"; status_text = \"Clear freight apron east. Imperial terminal is east along either perimeter route. Maintenance south. Hangars are public staging interiors.\"}",
-          "original": [
-            123,
-            149
-          ],
-          "position": [
-            367,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            124,
-            151
-          ],
-          "position": [
-            370,
-            39,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            136,
-            173
-          ],
-          "position": [
-            373,
-            39,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1865,39 +905,9 @@
           18,
           66,
           22
-        ],
-        [
-          18,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            165,
-            143
-          ],
-          "position": [
-            7,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            177,
-            173
-          ],
-          "position": [
-            10,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -1938,39 +948,9 @@
           58,
           66,
           22
-        ],
-        [
-          58,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            124,
-            131
-          ],
-          "position": [
-            47,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            135,
-            131
-          ],
-          "position": [
-            50,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2011,51 +991,9 @@
           98,
           66,
           22
-        ],
-        [
-          98,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Fabrication orders\"; status_text = \"Precision hall west; repairs east; freight warehouse south. Open service court connects the spaceport and energy works.\"}",
-          "original": [
-            326,
-            157
-          ],
-          "position": [
-            87,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            336,
-            157
-          ],
-          "position": [
-            90,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            325,
-            176
-          ],
-          "position": [
-            93,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2096,63 +1034,9 @@
           138,
           66,
           22
-        ],
-        [
-          138,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            330,
-            133
-          ],
-          "position": [
-            127,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            340,
-            133
-          ],
-          "position": [
-            130,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            360,
-            133
-          ],
-          "position": [
-            133,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            370,
-            133
-          ],
-          "position": [
-            144,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2193,27 +1077,9 @@
           178,
           66,
           22
-        ],
-        [
-          178,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            422,
-            456
-          ],
-          "position": [
-            167,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2254,51 +1120,9 @@
           218,
           66,
           22
-        ],
-        [
-          218,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Polar survey record\"; status_text = \"Ancient strata exposed beneath the escarpment. Survey chamber open. Citadel east; beacon west.\"}",
-          "original": [
-            143,
-            442
-          ],
-          "position": [
-            207,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            143,
-            456
-          ],
-          "position": [
-            210,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            162,
-            456
-          ],
-          "position": [
-            213,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2339,75 +1163,9 @@
           258,
           66,
           22
-        ],
-        [
-          258,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Defense command directory\"; status_text = \"Twin defense wings face the parade court. Palace south; polar survey west; preserve east.\"}",
-          "original": [
-            226,
-            462
-          ],
-          "position": [
-            247,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            228,
-            474
-          ],
-          "position": [
-            250,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            242,
-            474
-          ],
-          "position": [
-            253,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            258,
-            474
-          ],
-          "position": [
-            264,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/ArchiveTable",
-          "original": [
-            272,
-            474
-          ],
-          "position": [
-            267,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2448,27 +1206,9 @@
           298,
           66,
           22
-        ],
-        [
-          298,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            225,
-            445
-          ],
-          "position": [
-            287,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2509,27 +1249,9 @@
           338,
           66,
           22
-        ],
-        [
-          338,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            275,
-            445
-          ],
-          "position": [
-            327,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2570,39 +1292,9 @@
           378,
           66,
           22
-        ],
-        [
-          378,
-          83,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumFurnishing/Bench",
-          "original": [
-            333,
-            484
-          ],
-          "position": [
-            367,
-            69,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumFurnishing/Bench",
-          "original": [
-            367,
-            484
-          ],
-          "position": [
-            370,
-            69,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2643,39 +1335,9 @@
           18,
           96,
           22
-        ],
-        [
-          18,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Aqueduct pressure station\"; status_text = \"Reservoir channel runs north-south. Use the southern and northern crossings. Residential terraces east; training grounds south.\"}",
-          "original": [
-            68,
-            349
-          ],
-          "position": [
-            7,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumConsole/Reactor",
-          "original": [
-            68,
-            357
-          ],
-          "position": [
-            10,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2716,39 +1378,9 @@
           58,
           96,
           22
-        ],
-        [
-          58,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Cliff service records\"; status_text = \"Eastern maintenance passage. Science enclave west; energy works south. Cliff terrace loop open.\"}",
-          "original": [
-            445,
-            342
-          ],
-          "position": [
-            47,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            445,
-            359
-          ],
-          "position": [
-            50,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2789,39 +1421,9 @@
           98,
           96,
           22
-        ],
-        [
-          98,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            33,
-            182
-          ],
-          "position": [
-            87,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/FreightCrate",
-          "original": [
-            62,
-            182
-          ],
-          "position": [
-            90,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2862,51 +1464,9 @@
           138,
           96,
           22
-        ],
-        [
-          138,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Recovered research log\"; status_text = \"Archive fragment: the eastern array was evacuated before the last polar storm. Two laboratory wings remain accessible around the open court.\"}",
-          "original": [
-            429,
-            157
-          ],
-          "position": [
-            127,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            439,
-            157
-          ],
-          "position": [
-            130,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            428,
-            173
-          ],
-          "position": [
-            133,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -2947,39 +1507,9 @@
           178,
           96,
           22
-        ],
-        [
-          178,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            473,
-            144
-          ],
-          "position": [
-            167,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/Workbench",
-          "original": [
-            462,
-            162
-          ],
-          "position": [
-            170,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -3020,27 +1550,9 @@
           218,
           96,
           22
-        ],
-        [
-          218,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            137,
-            58
-          ],
-          "position": [
-            207,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "Viltrum",
@@ -3081,51 +1593,9 @@
           258,
           96,
           22
-        ],
-        [
-          258,
-          113,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/ViltrumConsole{name = \"Southern relay\"; status_text = \"Polar relay synchronized. Follow the coast west to the landing apron, or north toward fabrication.\"}",
-          "original": [
-            343,
-            47
-          ],
-          "position": [
-            247,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            344,
-            58
-          ],
-          "position": [
-            250,
-            99,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/ViltrumCapitalFurnishing/CommunicationsMast",
-          "original": [
-            363,
-            58
-          ],
-          "position": [
-            253,
-            99,
-            22
-          ]
-        }
-      ]
+      "props": []
     },
     {
       "planet": "SuperEarth",
@@ -3166,51 +1636,9 @@
           296,
           96,
           22
-        ],
-        [
-          296,
-          111,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthDirectory{directions_text = \"Welcome to the western city. Hospital south; residential streets north; civic center southeast. The open lawn east is reserved for planetary arrivals.\"; name = \"Arrival park routes\"}",
-          "original": [
-            76,
-            349
-          ],
-          "position": [
-            287,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bench",
-          "original": [
-            81,
-            350
-          ],
-          "position": [
-            290,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bench",
-          "original": [
-            75,
-            366
-          ],
-          "position": [
-            293,
-            110,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         57,
         358,
@@ -3256,11 +1684,6 @@
         [
           336,
           96,
-          22
-        ],
-        [
-          336,
-          111,
           22
         ]
       ],
@@ -3311,87 +1734,9 @@
           376,
           96,
           22
-        ],
-        [
-          376,
-          111,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            73,
-            325
-          ],
-          "position": [
-            367,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            87,
-            325
-          ],
-          "position": [
-            370,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Files",
-          "original": [
-            74,
-            330
-          ],
-          "position": [
-            373,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthDirectory{directions_text = \"Public wards north and south. Reception is through the open central corridor. Arrival park north; pharmacy across the road.\"; name = \"Hospital directory\"}",
-          "original": [
-            88,
-            333
-          ],
-          "position": [
-            379,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            73,
-            337
-          ],
-          "position": [
-            382,
-            110,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            87,
-            337
-          ],
-          "position": [
-            367,
-            107,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         57,
         338,
@@ -3438,39 +1783,9 @@
           16,
           126,
           22
-        ],
-        [
-          16,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            111,
-            326
-          ],
-          "position": [
-            7,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            111,
-            335
-          ],
-          "position": [
-            10,
-            140,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         106,
         338,
@@ -3517,63 +1832,9 @@
           56,
           126,
           22
-        ],
-        [
-          56,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            161,
-            325
-          ],
-          "position": [
-            47,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            177,
-            325
-          ],
-          "position": [
-            50,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            161,
-            336
-          ],
-          "position": [
-            53,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            177,
-            336
-          ],
-          "position": [
-            59,
-            140,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         180,
         358,
@@ -3620,63 +1881,9 @@
           92,
           126,
           22
-        ],
-        [
-          92,
-          135,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": [
-            67,
-            381
-          ],
-          "position": [
-            87,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": [
-            82,
-            381
-          ],
-          "position": [
-            90,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            67,
-            391
-          ],
-          "position": [
-            96,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": [
-            82,
-            391
-          ],
-          "position": [
-            87,
-            131,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         56,
         378,
@@ -3723,63 +1930,9 @@
           132,
           126,
           22
-        ],
-        [
-          132,
-          135,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": [
-            109,
-            381
-          ],
-          "position": [
-            127,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": [
-            120,
-            381
-          ],
-          "position": [
-            130,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            109,
-            391
-          ],
-          "position": [
-            136,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": [
-            120,
-            391
-          ],
-          "position": [
-            127,
-            131,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         105,
         378,
@@ -3826,63 +1979,9 @@
           172,
           126,
           22
-        ],
-        [
-          172,
-          135,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": [
-            66,
-            303
-          ],
-          "position": [
-            167,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": [
-            80,
-            303
-          ],
-          "position": [
-            170,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            66,
-            308
-          ],
-          "position": [
-            176,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": [
-            80,
-            308
-          ],
-          "position": [
-            167,
-            131,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         56,
         318,
@@ -3929,63 +2028,9 @@
           212,
           126,
           22
-        ],
-        [
-          212,
-          135,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": [
-            106,
-            303
-          ],
-          "position": [
-            207,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": [
-            119,
-            303
-          ],
-          "position": [
-            210,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": [
-            106,
-            308
-          ],
-          "position": [
-            216,
-            134,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": [
-            119,
-            308
-          ],
-          "position": [
-            207,
-            131,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         105,
         318,
@@ -4032,87 +2077,9 @@
           256,
           126,
           22
-        ],
-        [
-          256,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            161,
-            375
-          ],
-          "position": [
-            247,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            175,
-            375
-          ],
-          "position": [
-            250,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            161,
-            382
-          ],
-          "position": [
-            253,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            175,
-            382
-          ],
-          "position": [
-            259,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            161,
-            388
-          ],
-          "position": [
-            262,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            175,
-            388
-          ],
-          "position": [
-            247,
-            137,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         173,
         378,
@@ -4159,63 +2126,9 @@
           296,
           126,
           22
-        ],
-        [
-          296,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            167,
-            350
-          ],
-          "position": [
-            287,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            180,
-            350
-          ],
-          "position": [
-            290,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            167,
-            359
-          ],
-          "position": [
-            293,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            180,
-            359
-          ],
-          "position": [
-            299,
-            140,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         173,
         358,
@@ -4262,51 +2175,9 @@
           336,
           126,
           22
-        ],
-        [
-          336,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": [
-            66,
-            277
-          ],
-          "position": [
-            327,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": [
-            65,
-            281
-          ],
-          "position": [
-            330,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": [
-            56,
-            282
-          ],
-          "position": [
-            333,
-            140,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         57,
         295,
@@ -4353,63 +2224,9 @@
           376,
           126,
           22
-        ],
-        [
-          376,
-          141,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            109,
-            276
-          ],
-          "position": [
-            367,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            122,
-            276
-          ],
-          "position": [
-            370,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            109,
-            282
-          ],
-          "position": [
-            373,
-            140,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": [
-            122,
-            282
-          ],
-          "position": [
-            379,
-            140,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         106,
         295,
@@ -4456,51 +2273,9 @@
           16,
           156,
           22
-        ],
-        [
-          16,
-          171,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthDirectory{directions_text = \"Town hall and civic square. Hospital northwest; shops south; garage southwest. River crossings connect both banks.\"; name = \"Civic district routes\"}",
-          "original": [
-            164,
-            304
-          ],
-          "position": [
-            7,
-            170,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            164,
-            313
-          ],
-          "position": [
-            10,
-            170,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Desk",
-          "original": [
-            184,
-            313
-          ],
-          "position": [
-            13,
-            170,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         173,
         295,
@@ -4547,39 +2322,9 @@
           96,
           156,
           22
-        ],
-        [
-          96,
-          171,
-          22
         ]
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            123,
-            262
-          ],
-          "position": [
-            87,
-            170,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Shelf",
-          "original": [
-            112,
-            266
-          ],
-          "position": [
-            90,
-            170,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "return": [
         106,
         271,
@@ -4603,71 +2348,7 @@
         378,
         226
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            367,
-            224,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            370,
-            224,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            376,
-            224,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            367,
-            221,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            370,
-            221,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            376,
-            221,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            367,
-            218,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "sage",
       "type": "/obj/EarthHouse/Sage",
       "bounds": [
@@ -4697,11 +2378,6 @@
           372,
           216,
           22
-        ],
-        [
-          372,
-          225,
-          22
         ]
       ]
     },
@@ -4721,71 +2397,7 @@
         18,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            7,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            10,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            16,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            7,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            10,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            16,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            7,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "brick",
       "type": "/obj/EarthHouse/Brick",
       "bounds": [
@@ -4815,11 +2427,6 @@
           12,
           246,
           22
-        ],
-        [
-          12,
-          255,
-          22
         ]
       ]
     },
@@ -4839,71 +2446,7 @@
         58,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            47,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            50,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            56,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            47,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            50,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            56,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            47,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "blue",
       "type": "/obj/EarthHouse/Blue",
       "bounds": [
@@ -4933,11 +2476,6 @@
           52,
           246,
           22
-        ],
-        [
-          52,
-          255,
-          22
         ]
       ]
     },
@@ -4957,71 +2495,7 @@
         98,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            87,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            90,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            96,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            87,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            90,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            96,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            87,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "cream",
       "type": "/obj/EarthHouse",
       "bounds": [
@@ -5051,11 +2525,6 @@
           92,
           246,
           22
-        ],
-        [
-          92,
-          255,
-          22
         ]
       ]
     },
@@ -5075,71 +2544,7 @@
         138,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            127,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            130,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            136,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            127,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            130,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            136,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            127,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "sage",
       "type": "/obj/EarthHouse/Sage",
       "bounds": [
@@ -5169,11 +2574,6 @@
           132,
           246,
           22
-        ],
-        [
-          132,
-          255,
-          22
         ]
       ]
     },
@@ -5193,71 +2593,7 @@
         178,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            167,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            170,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            176,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            167,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            170,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            176,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            167,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "brick",
       "type": "/obj/EarthHouse/Brick",
       "bounds": [
@@ -5287,11 +2623,6 @@
           172,
           246,
           22
-        ],
-        [
-          172,
-          255,
-          22
         ]
       ]
     },
@@ -5311,71 +2642,7 @@
         218,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            207,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            210,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            216,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            207,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            210,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            216,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            207,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "blue",
       "type": "/obj/EarthHouse/Blue",
       "bounds": [
@@ -5405,11 +2672,6 @@
           212,
           246,
           22
-        ],
-        [
-          212,
-          255,
-          22
         ]
       ]
     },
@@ -5429,71 +2691,7 @@
         258,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            247,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            250,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            256,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            247,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            250,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            256,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            247,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "cream",
       "type": "/obj/EarthHouse",
       "bounds": [
@@ -5523,11 +2721,6 @@
           252,
           246,
           22
-        ],
-        [
-          252,
-          255,
-          22
         ]
       ]
     },
@@ -5547,71 +2740,7 @@
         298,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            287,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            290,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            296,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            287,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            290,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            296,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            287,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "sage",
       "type": "/obj/EarthHouse/Sage",
       "bounds": [
@@ -5641,11 +2770,6 @@
           292,
           246,
           22
-        ],
-        [
-          292,
-          255,
-          22
         ]
       ]
     },
@@ -5665,71 +2789,7 @@
         338,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            327,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            330,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            336,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            327,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            330,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            336,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            327,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "brick",
       "type": "/obj/EarthHouse/Brick",
       "bounds": [
@@ -5759,11 +2819,6 @@
           332,
           246,
           22
-        ],
-        [
-          332,
-          255,
-          22
         ]
       ]
     },
@@ -5783,71 +2838,7 @@
         378,
         256
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            367,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            370,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            376,
-            254,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            367,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            370,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            376,
-            251,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            367,
-            248,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "blue",
       "type": "/obj/EarthHouse/Blue",
       "bounds": [
@@ -5877,11 +2868,6 @@
           372,
           246,
           22
-        ],
-        [
-          372,
-          255,
-          22
         ]
       ]
     },
@@ -5901,71 +2887,7 @@
         18,
         286
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            7,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            10,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            16,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            7,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            10,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            16,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            7,
-            278,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "cream",
       "type": "/obj/EarthHouse",
       "bounds": [
@@ -5995,11 +2917,6 @@
           12,
           276,
           22
-        ],
-        [
-          12,
-          285,
-          22
         ]
       ]
     },
@@ -6019,71 +2936,7 @@
         58,
         286
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            47,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            50,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            56,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            47,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            50,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            56,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            47,
-            278,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "brick",
       "type": "/obj/EarthHouse/Brick",
       "bounds": [
@@ -6113,11 +2966,6 @@
           52,
           276,
           22
-        ],
-        [
-          52,
-          285,
-          22
         ]
       ]
     },
@@ -6137,71 +2985,7 @@
         98,
         286
       ],
-      "props": [
-        {
-          "atom": "/obj/EarthFurnishing",
-          "original": null,
-          "position": [
-            87,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Dresser",
-          "original": null,
-          "position": [
-            90,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Stove",
-          "original": null,
-          "position": [
-            96,
-            284,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Sink",
-          "original": null,
-          "position": [
-            87,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Table",
-          "original": null,
-          "position": [
-            90,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Chair",
-          "original": null,
-          "position": [
-            96,
-            281,
-            22
-          ]
-        },
-        {
-          "atom": "/obj/EarthFurnishing/Bookcase",
-          "original": null,
-          "position": [
-            87,
-            278,
-            22
-          ]
-        }
-      ],
+      "props": [],
       "style": "blue",
       "type": "/obj/EarthHouse/Blue",
       "bounds": [
@@ -6230,11 +3014,6 @@
         [
           92,
           276,
-          22
-        ],
-        [
-          92,
-          285,
           22
         ]
       ]

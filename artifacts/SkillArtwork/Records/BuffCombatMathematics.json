@@ -1,0 +1,10 @@
+{
+  "id": "BuffCombatMathematics",
+  "original": "artifacts/SkillArtwork/Originals/BuffCombatMathematics.png",
+  "asset": "src/Icons/UI/SkillArtwork/BuffCombatMathematics.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "74dee15009e9de0da8dc8fe87edb92610657a15696240fa39ee8c57894978357",
+  "promptSha256": "cd36c48900769c1d0f043ea401714df2c5e30e6914c85765a20534a2fbe73889",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "CreatePortal",
+  "original": "artifacts/SkillArtwork/Originals/CreatePortal.png",
+  "asset": "src/Icons/UI/SkillArtwork/CreatePortal.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "c719d489efc7665aca5ca80940c8290388bf16f770668a6efb35c8b800dc84f8",
+  "promptSha256": "06c25dcf4ad5205f50827a53d2db3f57a7b7a32b7792fda2b448c638f747eacc",
+  "approvedSample": false
+}

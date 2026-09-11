@@ -1,0 +1,10 @@
+{
+  "id": "PhotonFlash",
+  "original": "artifacts/SkillArtwork/Originals/PhotonFlash.png",
+  "asset": "src/Icons/UI/SkillArtwork/PhotonFlash.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f7848a627ef8ef438de3314c1e023befed93273037df5f7086262200882ed3e0",
+  "promptSha256": "e49a59e8657767259fb2497732a8bffde6b09eac88366f0c97664569f98016a8",
+  "approvedSample": false
+}

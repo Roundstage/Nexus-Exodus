@@ -1,0 +1,10 @@
+{
+  "id": "ManualAttack",
+  "original": "artifacts/SkillArtwork/Originals/ManualAttack.png",
+  "asset": "src/Icons/UI/SkillArtwork/ManualAttack.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9f81cd7cd734e5581ac5b8c6b634632240c2c51ec7210dba48ca4dfe7ca6ae78",
+  "promptSha256": "1f76d00df8a1e8fcb72eb2b990b08695dd347c40893e07b65143c17bc178db65",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "BusterBarrage",
+  "original": "artifacts/SkillArtwork/Originals/BusterBarrage.png",
+  "asset": "src/Icons/UI/SkillArtwork/BusterBarrage.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d8f5c44a9d10d6c3d36a90ba7749b0d10ab6e5f4609cfae531aba59fc3ffd09a",
+  "promptSha256": "057b5445b59c1360e531a11a1db2450bb9a41b6872a725545930cf65a7e20124",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "Bind",
+  "original": "artifacts/SkillArtwork/Originals/Bind.png",
+  "asset": "src/Icons/UI/SkillArtwork/Bind.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b2441875cc37382b7237fca2cfb06cec6336ad048852ddb0e4bc2fd813fe405e",
+  "promptSha256": "c1896be587873e92057b4e2f9a9781305b1f8e2977b7d68587f68e284af566d5",
+  "approvedSample": false
+}

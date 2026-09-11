@@ -152,8 +152,8 @@ proc/screenLocationPixels(screen_location)
 var/list/overhead_vital_icon_cache = list()
 var/list/vitals_bar_icon_cache = list()
 var/list/power_gauge_icon_cache = list()
-var/icon/vitals_panel_icon
-var/icon/active_modifiers_panel_icon
+var/list/vitals_panel_icon_cache = list()
+var/list/active_modifiers_panel_icon_cache = list()
 
 var/list/nexus_hud_modifier_order = list(
 	"BP", "SPD", "REC", "REGEN", "KI", "STR", "END", "FOR", "RES", "OFF", "DEF", "ANGER", "PWR", "MELEE", "MASTERY", "MEDITATION")
@@ -178,66 +178,86 @@ proc/getOverheadVitalIcon(percent, accent_color)
 	overhead_vital_icon_cache[cache_key] = vital_icon
 	return vital_icon
 
-proc/getVitalsPanelIcon()
-	if(vitals_panel_icon) return vitals_panel_icon
-	vitals_panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
-	vitals_panel_icon.Scale(296, 136)
-	vitals_panel_icon.DrawBox(rgb(31, 23, 15, 232), 1, 1, 296, 136)
-	vitals_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)
-	vitals_panel_icon.DrawBox("#140e09", 1, 134, 296, 136)
-	vitals_panel_icon.DrawBox("#140e09", 1, 1, 3, 136)
-	vitals_panel_icon.DrawBox("#140e09", 294, 1, 296, 136)
-	vitals_panel_icon.DrawBox("#826039", 4, 4, 293, 4)
-	vitals_panel_icon.DrawBox("#826039", 4, 132, 293, 132)
-	for(var/bolt_x in list(6, 289))
-		for(var/bolt_y in list(6, 128)) vitals_panel_icon.DrawBox("#c6a15c", bolt_x, bolt_y, bolt_x + 1, bolt_y + 1)
-	return vitals_panel_icon
+// Draw at the final pixel size. Scaling a KEEP_TOGETHER group rasterizes its text.
+proc/createNexusVitalsBackdrop(panel_width, panel_height, panel_alpha)
+	var/icon/panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
+	panel_icon.Scale(panel_width, panel_height)
+	panel_icon.DrawBox(rgb(31, 23, 15, panel_alpha), 1, 1, panel_width, panel_height)
+	panel_icon.DrawBox("#140e09", 1, 1, panel_width, 2)
+	panel_icon.DrawBox("#140e09", 1, panel_height - 1, panel_width, panel_height)
+	panel_icon.DrawBox("#140e09", 1, 1, 2, panel_height)
+	panel_icon.DrawBox("#140e09", panel_width - 1, 1, panel_width, panel_height)
+	panel_icon.DrawBox("#826039", 3, 3, panel_width - 2, 3)
+	panel_icon.DrawBox("#826039", 3, panel_height - 2, panel_width - 2, panel_height - 2)
+	for(var/bolt_x in list(5, panel_width - 5))
+		for(var/bolt_y in list(5, panel_height - 5)) panel_icon.DrawBox("#c6a15c", bolt_x, bolt_y, bolt_x, bolt_y)
+	return panel_icon
 
-proc/getVitalsBarIcon(percent, accent_color)
+proc/getVitalsPanelIcon(scale = 1)
+	var/cache_key = "[scale]"
+	if(!vitals_panel_icon_cache[cache_key])
+		vitals_panel_icon_cache[cache_key] = createNexusVitalsBackdrop(round(296 * scale), round(136 * scale), 232)
+	return vitals_panel_icon_cache[cache_key]
+
+proc/getVitalsBarIcon(percent, accent_color, scale = 1)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_width = round(percent * 1.6)
-	var/cache_key = "[accent_color]-[fill_width]"
+	var/bar_width = round(168 * scale)
+	var/bar_height = max(13, round(19 * scale))
+	var/inset = max(2, round(4 * scale))
+	var/fill_width = round(percent / 100 * (bar_width - 2 * inset))
+	var/cache_key = "[accent_color]-[scale]-[fill_width]"
 	if(vitals_bar_icon_cache[cache_key]) return vitals_bar_icon_cache[cache_key]
 	var/icon/bar_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
-	bar_icon.Scale(168, 19)
-	bar_icon.DrawBox("#1a120c", 1, 1, 168, 19)
-	bar_icon.DrawBox("#46321f", 5, 3, 164, 16)
-	if(fill_width) bar_icon.DrawBox(accent_color, 5, 3, 4 + fill_width, 16)
-	bar_icon.DrawBox(accent_color, 1, 1, 4, 19)
+	bar_icon.Scale(bar_width, bar_height)
+	bar_icon.DrawBox("#1a120c", 1, 1, bar_width, bar_height)
+	bar_icon.DrawBox("#46321f", inset + 1, 3, bar_width - inset, bar_height - 3)
+	if(fill_width) bar_icon.DrawBox(accent_color, inset + 1, 3, inset + fill_width, bar_height - 3)
+	bar_icon.DrawBox(accent_color, 1, 1, inset, bar_height)
 	vitals_bar_icon_cache[cache_key] = bar_icon
 	return bar_icon
 
-proc/getPowerGaugeIcon(percent, over_limit)
+proc/getPowerGaugeIcon(percent, over_limit, scale = 1)
 	if(!nexusIsFiniteNumber(percent)) percent = 0
 	percent = round(Clamp(percent, 0, 100))
-	var/fill_height = round(percent * 0.66)
-	var/cache_key = "[over_limit]-[fill_height]"
+	var/gauge_width = max(4, round(7 * scale))
+	var/gauge_height = round(72 * scale)
+	var/fill_height = round(percent / 100 * (gauge_height - 6))
+	var/cache_key = "[over_limit]-[scale]-[fill_height]"
 	if(power_gauge_icon_cache[cache_key]) return power_gauge_icon_cache[cache_key]
 	var/gauge_color = over_limit ? "#ff5c45" : "#b983ff"
 	var/icon/gauge_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
-	gauge_icon.Scale(7, 72)
-	gauge_icon.DrawBox("#1a120c", 1, 1, 7, 72)
-	gauge_icon.DrawBox("#5b4227", 3, 3, 5, 68)
-	if(fill_height) gauge_icon.DrawBox(gauge_color, 3, 3, 5, 2 + fill_height)
-	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, 69, 7, 72)
+	gauge_icon.Scale(gauge_width, gauge_height)
+	gauge_icon.DrawBox("#1a120c", 1, 1, gauge_width, gauge_height)
+	gauge_icon.DrawBox("#5b4227", 2, 3, gauge_width - 1, gauge_height - 4)
+	if(fill_height) gauge_icon.DrawBox(gauge_color, 2, 3, gauge_width - 1, 2 + fill_height)
+	gauge_icon.DrawBox(over_limit ? "#ffb09f" : "#e8dcff", 1, gauge_height - 3, gauge_width, gauge_height)
 	power_gauge_icon_cache[cache_key] = gauge_icon
 	return gauge_icon
 
-proc/getActiveModifiersPanelIcon()
-	if(active_modifiers_panel_icon) return active_modifiers_panel_icon
-	active_modifiers_panel_icon = icon('src/Icons/Unsorted/UserNamesBarsUi.png')
-	active_modifiers_panel_icon.Scale(296, 38)
-	active_modifiers_panel_icon.DrawBox(rgb(31, 23, 15, 242), 1, 1, 296, 38)
-	active_modifiers_panel_icon.DrawBox("#140e09", 1, 1, 296, 3)
-	active_modifiers_panel_icon.DrawBox("#140e09", 1, 36, 296, 38)
-	active_modifiers_panel_icon.DrawBox("#140e09", 1, 1, 3, 38)
-	active_modifiers_panel_icon.DrawBox("#140e09", 294, 1, 296, 38)
-	active_modifiers_panel_icon.DrawBox("#826039", 4, 4, 293, 4)
-	active_modifiers_panel_icon.DrawBox("#826039", 4, 34, 293, 34)
-	active_modifiers_panel_icon.DrawBox("#c6a15c", 6, 6, 7, 7)
-	active_modifiers_panel_icon.DrawBox("#c6a15c", 289, 6, 290, 7)
-	return active_modifiers_panel_icon
+proc/getNexusVitalsFontSize(scale)
+	return scale < 0.75 ? 8 : (scale >= 1.5 ? 16 : 12)
+
+proc/getActiveModifiersPanelIcon(scale = 1)
+	var/cache_key = "[scale]"
+	if(!active_modifiers_panel_icon_cache[cache_key])
+		var/panel_height = 3 * (getNexusVitalsFontSize(scale) + 4) + 8
+		active_modifiers_panel_icon_cache[cache_key] = createNexusVitalsBackdrop(round(296 * scale), panel_height, 242)
+	return active_modifiers_panel_icon_cache[cache_key]
+
+proc/getNexusHudEnergyText(amount, percent, width)
+	var/full_text = "([amount]) [percent]%"
+	if(measureNexusHudText(full_text,8)+1 <= width) return full_text
+	var/shortest_text = full_text
+	var/list/units = list("T" = 1.0e12,"B" = 1.0e9,"M" = 1.0e6,"K" = 1000)
+	for(var/unit in units)
+		if(amount < units[unit]) continue
+		// A fractional suffix can still be too wide at 50%; reserve the entire percentage.
+		for(var/precision in list(0.1,1))
+			var/compact_text = "([round(amount/units[unit],precision)][unit]) [percent]%"
+			if(measureNexusHudText(compact_text,8)+1 <= width) return compact_text
+			if(measureNexusHudText(compact_text,8) < measureNexusHudText(shortest_text,8)) shortest_text = compact_text
+	return shortest_text
 
 proc/addNexusHudModifier(list/modifiers, stat_id, multiplier)
 	if(!islist(modifiers) || !istext(stat_id) || !nexusIsFiniteNumber(multiplier) || multiplier <= 0) return
@@ -387,14 +407,15 @@ mob/proc/getNexusActiveHudModifiers()
 
 	return list("names" = names, "modifiers" = modifiers)
 
-mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)
+mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8, maximum_columns = 46)
 	var/list/modifier_data = getNexusActiveHudModifiers()
 	var/list/names = modifier_data["names"]
 	var/list/modifiers = modifier_data["modifiers"]
 	if(!names.len) return list("active" = FALSE, "title" = "", "first_row" = "", "second_row" = "")
 
 	var/title = jointext(names, " + ")
-	if(length(title) > 46) title = "[copytext(title, 1, 44)]..."
+	var/title_columns = max(12, maximum_columns - 8)
+	if(length(title) > title_columns) title = "[copytext(title, 1, title_columns - 2)]..."
 	var/list/stat_fragments = list()
 	var/hidden_stats = 0
 	for(var/stat_id in nexus_hud_modifier_order)
@@ -402,15 +423,20 @@ mob/proc/getNexusActiveHudModifierSummary(maximum_stats = 8)
 		if(!nexusIsFiniteNumber(multiplier) || abs(multiplier - 1) < 0.005) continue
 		if(stat_fragments.len < maximum_stats) stat_fragments += "[stat_id] [formatNexusHudMultiplier(multiplier)]"
 		else hidden_stats++
-	if(hidden_stats && stat_fragments.len)
-		stat_fragments[stat_fragments.len] = "+[hidden_stats + 1] MORE"
-
-	var/split_at = min(4, stat_fragments.len)
 	var/list/first_fragments = list()
 	var/list/second_fragments = list()
-	for(var/index in 1 to stat_fragments.len)
-		if(index <= split_at) first_fragments += stat_fragments[index]
-		else second_fragments += stat_fragments[index]
+	var/list/current_row = first_fragments
+	for(var/fragment in stat_fragments)
+		var/row_width = length(jointext(current_row, " | "))
+		if(current_row.len && (current_row.len >= 4 || row_width + 3 + length(fragment) > maximum_columns)) current_row = second_fragments
+		row_width = length(jointext(current_row, " | "))
+		if(row_width + (current_row.len ? 3 : 0) + length(fragment) <= maximum_columns) current_row += fragment
+		else hidden_stats++
+	if(hidden_stats)
+		while(second_fragments.len && length(jointext(second_fragments, " | ")) + 3 + length("+[hidden_stats] MORE") > maximum_columns)
+			second_fragments.Cut(second_fragments.len)
+			hidden_stats++
+		second_fragments += "+[hidden_stats] MORE"
 	return list(
 		"active" = TRUE,
 		"title" = title,
@@ -426,8 +452,9 @@ client/var/tmp/obj/NexusHud/VitalsPanel/main_vitals_hud
 mob/var
 	nexus_overhead_vitals_offset_x = 0
 	nexus_overhead_vitals_offset_y = 0
-	nexus_main_vitals_x = 8
-	nexus_main_vitals_y = 8
+	nexus_main_vitals_x = 0
+	nexus_main_vitals_y = 0
+	nexus_main_vitals_scale = 75
 
 proc/normalizeNexusHudOffset(value)
 	if(!nexusIsFiniteNumber(value)) return 0
@@ -459,6 +486,10 @@ mob/proc/setNexusOverheadVitalsOffset(new_x, new_y)
 	nexus_overhead_vitals_offset_x = normalizeNexusHudOffset(new_x)
 	nexus_overhead_vitals_offset_y = normalizeNexusHudOffset(new_y)
 	updateOverheadHealthHud()
+
+mob/proc/setNexusMainVitalsScale(value)
+	nexus_main_vitals_scale = Clamp(round(classicNumber(value, 75)), 50, 150)
+	if(client && client.main_vitals_hud) client.main_vitals_hud.applyScale(nexus_main_vitals_scale)
 
 mob/proc/setNexusMainVitalsPosition(new_x, new_y)
 	nexus_main_vitals_x = max(0, round(new_x))
@@ -592,12 +623,14 @@ obj/NexusHud
 			row_offset = 8
 
 	VitalsPanel
+		appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 		alpha = 255
 		mouse_opacity = 2
-		screen_loc = "LEFT:8,BOTTOM:8"
+		screen_loc = "LEFT:0,BOTTOM:0"
 		var/tmp/mob/panel_owner
-		var/tmp/screen_x = 8
-		var/tmp/screen_y = 8
+		var/tmp/hud_scale = 0
+		var/tmp/screen_x = 0
+		var/tmp/screen_y = 0
 		var/tmp/drag_mouse_x
 		var/tmp/drag_mouse_y
 		var/tmp/drag_start_x
@@ -630,7 +663,8 @@ obj/NexusHud
 
 		proc/update(mob/owner)
 			if(!owner || !portrait) return
-			portrait.update(owner)
+			applyScale(owner.nexus_main_vitals_scale, FALSE)
+			portrait.update(owner, hud_scale)
 			var/max_willpower = owner.getMaxWillpower()
 			var/willpower_percent = hudPercentage(owner.willpower, max_willpower)
 			var/health_percent = hudPercentage(owner.Health)
@@ -643,14 +677,40 @@ obj/NexusHud
 			var/soft_cap = 100 + soft_cap_excess
 			var/over_limit = current_power > soft_cap
 			var/gauge_percent = Clamp((current_power - 100) / soft_cap_excess * 100, 0, 100)
-			willpower_row.update("WILLPOWER", willpower_percent, "[willpower_percent]%", "#b983ff")
-			health_row.update("HEALTH", health_percent, "[health_percent]%", "#ff4d6d")
-			energy_row.update("ENERGY", energy_percent, "([energy_current]) [energy_percent]%", "#37cfff")
-			stamina_row.update("STAMINA", stamina_percent, "[stamina_percent]%", "#f6c453")
-			left_power_gauge.update(gauge_percent, over_limit)
-			right_power_gauge.update(gauge_percent, over_limit)
-			power_readout.update(round(current_power, 0.1), round(soft_cap, 0.1), over_limit)
+			willpower_row.update("WILLPOWER", willpower_percent, "[willpower_percent]%", "#b983ff", hud_scale)
+			health_row.update("HEALTH", health_percent, "[health_percent]%", "#ff4d6d", hud_scale)
+			energy_row.update("ENERGY", energy_percent, "([energy_current]) [energy_percent]%", "#37cfff", hud_scale, energy_current)
+			stamina_row.update("STAMINA", stamina_percent, "[stamina_percent]%", "#f6c453", hud_scale)
+			left_power_gauge.update(gauge_percent, over_limit, hud_scale)
+			right_power_gauge.update(gauge_percent, over_limit, hud_scale)
+			power_readout.update(round(current_power, 0.1), round(soft_cap, 0.1), over_limit, hud_scale)
 			active_modifiers_readout.update(owner)
+
+		proc/applyScale(percent, refresh = TRUE)
+			var/scale = Clamp(round(classicNumber(percent, 75)), 50, 150) / 100
+			if(hud_scale == scale || !portrait) return
+			hud_scale = scale
+			transform = null
+			pixel_x = 0
+			pixel_y = 0
+			icon = getVitalsPanelIcon(scale)
+			left_power_gauge.pixel_x = round(4 * scale)
+			right_power_gauge.pixel_x = round(105 * scale)
+			left_power_gauge.pixel_y = round(40 * scale)
+			right_power_gauge.pixel_y = round(40 * scale)
+			power_readout.pixel_x = round(8 * scale)
+			power_readout.pixel_y = max(4, round(6 * scale))
+			power_readout.maptext_width = round(99 * scale)
+			power_readout.maptext_height = getNexusVitalsFontSize(scale) + 4
+			willpower_row.applyScale(scale, 111)
+			health_row.applyScale(scale, 85)
+			energy_row.applyScale(scale, 59)
+			stamina_row.applyScale(scale, 33)
+			active_modifiers_readout.applyScale(scale)
+			if(refresh && panel_owner) update(panel_owner)
+
+		DblClick()
+			if(usr == panel_owner) panel_owner.showClassicWidget("stats")
 
 		proc/setScreenPosition(new_x, new_y, update_owner = TRUE)
 			screen_x = max(0, round(new_x))
@@ -693,7 +753,7 @@ obj/NexusHud
 		pixel_y = 45
 		layer = 101
 
-		proc/update(mob/owner)
+		proc/update(mob/owner, scale = 1)
 			appearance = owner.appearance
 			plane = initial(plane)
 			layer = 101
@@ -701,16 +761,17 @@ obj/NexusHud
 			icon_z = 0
 			pixel_w = 0
 			pixel_z = 0
-			pixel_x = 40
-			pixel_y = 45
+			// The icon's transform is centered on its original 32px footprint.
+			pixel_x = round(56 * scale - 16)
+			pixel_y = round(61 * scale - 16)
 			alpha = 255
 			mouse_opacity = 0
 			invisibility = 0
 			dir = SOUTH
 			underlays = null
-			appearance_flags = RESET_ALPHA | RESET_TRANSFORM | PIXEL_SCALE | KEEP_TOGETHER
+			appearance_flags = RESET_ALPHA | RESET_TRANSFORM | KEEP_TOGETHER
 			var/matrix/portrait_transform = matrix()
-			portrait_transform.Scale(1.9, 2.05)
+			portrait_transform.Scale(1.9 * scale, 2.05 * scale)
 			transform = portrait_transform
 
 	PowerGauge
@@ -718,8 +779,8 @@ obj/NexusHud
 		layer = 103
 		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 
-		proc/update(percent, over_limit)
-			icon = getPowerGaugeIcon(percent, over_limit)
+		proc/update(percent, over_limit, scale = 1)
+			icon = getPowerGaugeIcon(percent, over_limit, scale)
 
 		Left
 			pixel_x = 4
@@ -728,16 +789,17 @@ obj/NexusHud
 			pixel_x = 105
 
 	PowerReadout
+		parent_type = /obj/NexusHudBitmapText
 		pixel_x = 8
 		pixel_y = 6
 		layer = 104
-		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
+		appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM | PIXEL_SCALE
 		maptext_width = 99
 		maptext_height = 16
 
-		proc/update(power_percent, soft_cap, over_limit)
+		proc/update(power_percent, soft_cap, over_limit, scale = 1)
 			var/status_color = over_limit ? "#ff705c" : "#cda8ff"
-			maptext = "<div style='font-family:Courier New;text-align:center;text-shadow:1px 1px #000'><b style='font-size:11px;color:[status_color]'>[power_percent]%</b></div>"
+			setBitmapText("[power_percent]%", getNexusVitalsFontSize(scale), status_color, "center", TRUE)
 
 	ActiveModifiersReadout
 		pixel_x = 0
@@ -747,6 +809,7 @@ obj/NexusHud
 		var/tmp/obj/NexusHud/ActiveModifierText/header_text
 		var/tmp/obj/NexusHud/ActiveModifierText/first_row_text
 		var/tmp/obj/NexusHud/ActiveModifierText/second_row_text
+		var/tmp/maximum_columns = 46
 
 		New()
 			. = ..()
@@ -755,7 +818,24 @@ obj/NexusHud
 			first_row_text = new /obj/NexusHud/ActiveModifierText/FirstRow
 			second_row_text = new /obj/NexusHud/ActiveModifierText/SecondRow
 			vis_contents.Add(header_text, first_row_text, second_row_text)
+			applyScale(1)
 			setVisible(FALSE)
+
+		proc/applyScale(scale)
+			pixel_y = round(136 * scale) + 4
+			icon = getActiveModifiersPanelIcon(scale)
+			var/font_size = getNexusVitalsFontSize(scale)
+			var/row_height = font_size + 4
+			for(var/obj/NexusHud/ActiveModifierText/text_row in vis_contents)
+				text_row.font_size = font_size
+				text_row.pixel_x = 8
+				text_row.maptext_x = 0
+				text_row.maptext_width = round(296 * scale) - 16
+				text_row.maptext_height = row_height
+			maximum_columns = max(20, round(header_text.maptext_width / measureNexusHudText("M",font_size)))
+			header_text.pixel_y = 4 + 2 * row_height
+			first_row_text.pixel_y = 4 + row_height
+			second_row_text.pixel_y = 4
 
 		proc/setVisible(visible)
 			var/new_alpha = visible ? 255 : 0
@@ -765,7 +845,8 @@ obj/NexusHud
 			if(second_row_text) second_row_text.alpha = new_alpha
 
 		proc/update(mob/owner)
-			var/list/summary = owner.getNexusActiveHudModifierSummary()
+			if(!owner) return
+			var/list/summary = owner.getNexusActiveHudModifierSummary(8, maximum_columns)
 			if(!summary["active"])
 				setVisible(FALSE)
 				if(header_text) header_text.setText("")
@@ -784,19 +865,19 @@ obj/NexusHud
 			. = ..()
 
 	ActiveModifierText
+		parent_type = /obj/NexusHudBitmapText
 		pixel_x = 0
 		layer = 106
-		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
+		appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM | PIXEL_SCALE
 		maptext_x = 10
 		maptext_width = 276
-		maptext_height = 9
+		maptext_height = 15
 		var/text_color = "#cda8ff"
-		var/font_size = 7
+		var/font_size = 11
 		var/font_weight = "normal"
 
 		proc/setText(value)
-			var/safe_value = html_encode("[value]")
-			maptext = "<span style='font-family:Courier New;font-size:[font_size]px;font-weight:[font_weight];color:[text_color];white-space:nowrap;text-shadow:1px 1px #000'>[safe_value]</span>"
+			setBitmapText(value, font_size, text_color)
 
 		Header
 			pixel_y = 25
@@ -810,10 +891,11 @@ obj/NexusHud
 			pixel_y = 4
 
 	VitalDetail
+		parent_type = /obj/NexusHudBitmapText
 		pixel_x = 52
 		pixel_y = 4
 		layer = 103
-		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
+		appearance_flags = RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM | PIXEL_SCALE
 		maptext_width = 108
 		maptext_height = 11
 
@@ -826,24 +908,54 @@ obj/NexusHud
 		layer = 102
 		appearance_flags = RESET_ALPHA | RESET_TRANSFORM
 		var/tmp/obj/NexusHud/VitalDetail/detail_text
+		var/tmp/obj/NexusHudBitmapText/primary_text
 		var/detail_alignment = "right"
+		var/tmp/text_font_size = 9
 
 		New()
 			. = ..()
+			primary_text = new
+			primary_text.layer = 103
 			detail_text = new
-			vis_contents += detail_text
+			vis_contents.Add(primary_text,detail_text)
 			switch(type)
 				if(/obj/NexusHud/VitalRow/Willpower) pixel_y = 111
 				if(/obj/NexusHud/VitalRow/Health) pixel_y = 85
 				if(/obj/NexusHud/VitalRow/Energy) pixel_y = 59
 				if(/obj/NexusHud/VitalRow/Stamina) pixel_y = 33
 
-		proc/update(label, percent, detail, accent_color)
-			icon = getVitalsBarIcon(percent, accent_color)
-			maptext = "<span style='font-family:Courier New;font-size:8px;font-weight:bold;color:#f0dbaf;white-space:nowrap;text-shadow:1px 1px #000'>[label]</span>"
-			detail_text.maptext = "<div style='font-family:Courier New;font-size:8px;font-weight:bold;color:#f0dbaf;text-align:[detail_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[detail]</div>"
+		proc/applyScale(scale, row_y)
+			pixel_x = round(120 * scale)
+			pixel_y = round(row_y * scale)
+			text_font_size = getNexusVitalsFontSize(scale)
+			maptext_x = max(3, round(6 * scale))
+			maptext_y = 1
+			maptext_height = max(11,round(19 * scale)-2)
+			detail_text.pixel_y = maptext_y
+			detail_text.maptext_height = maptext_height
+
+		proc/update(label, percent, detail, accent_color, scale = 1, energy_amount = null)
+			icon = getVitalsBarIcon(percent, accent_color, scale)
+			maptext = null
+			if(scale < 1)
+				switch(label)
+					if("WILLPOWER") label = "WP"
+					if("HEALTH") label = "HP"
+					if("ENERGY") label = "KI"
+					if("STAMINA") label = "STA"
+			maptext_width = measureNexusHudText(label,text_font_size)+1
+			primary_text.pixel_x = maptext_x
+			primary_text.pixel_y = maptext_y
+			primary_text.maptext_width = maptext_width
+			primary_text.maptext_height = maptext_height
+			primary_text.setBitmapText(label,text_font_size,"#fff1d4")
+			detail_text.pixel_x = maptext_x+maptext_width+4
+			detail_text.maptext_width = round(168*scale)-detail_text.pixel_x-max(2,round(4*scale))
+			if(!isnull(energy_amount)) detail = getNexusHudEnergyText(energy_amount,percent,detail_text.maptext_width)
+			detail_text.setBitmapText(detail,text_font_size,"#fff1d4",detail_alignment,TRUE)
 
 		Del()
+			if(primary_text) del(primary_text)
 			if(detail_text) del(detail_text)
 			. = ..()
 

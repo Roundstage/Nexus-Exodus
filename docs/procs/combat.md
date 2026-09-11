@@ -1397,9 +1397,9 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 #### obj/Screen_Indicator/proc/SenseArrowMatchAppearance
 - Signature: `SenseArrowMatchAppearance(update_overlays = 1)`
 - Inputs: update_overlays = 1
-- Purpose: Handle sense arrow match appearance.
+- Purpose: Mirror the sensed character's appearance without copying active Aura of Destruction layers into the HUD indicator.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: refreshes the indicator icon and its filtered visual layers.
 
 #### obj/Screen_Indicator/Click
 - Signature: `Click()`
@@ -1414,7 +1414,7 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 
 #### mob/proc/ensureNexusSenseReadout
 - Signature: `ensureNexusSenseReadout(mob/target)`
-- Purpose: Create a target readout only when it is not already registered.
+- Purpose: Create a target readout only when it is not already registered, using an explicit transparent anchor icon so the image cannot inherit and duplicate the target's appearance.
 
 #### mob/proc/syncNexusSenseReadouts
 - Signature: `syncNexusSenseReadouts(area/a)`

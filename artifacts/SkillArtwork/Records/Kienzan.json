@@ -1,0 +1,10 @@
+{
+  "id": "Kienzan",
+  "original": "artifacts/SkillArtwork/Originals/Kienzan.png",
+  "asset": "src/Icons/UI/SkillArtwork/Kienzan.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "66116d6c34e03f7acb445ccb30ad47e2b3211f60227d1230104b834a064a0865",
+  "promptSha256": "683a02cf40759f66339502b5792add641ad81448453c9fb07365f5967a2f1b60",
+  "approvedSample": false
+}

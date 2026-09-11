@@ -1,5 +1,15 @@
 mob/var/tmp/testing_sense = TRUE
 
+var/icon/nexus_sense_readout_icon
+
+proc/getNexusSenseReadoutIcon()
+	if(nexus_sense_readout_icon) return nexus_sense_readout_icon
+	var/icon/blank_icon = icon('src/Icons/UI/Healthbar.dmi', "100")
+	blank_icon.Scale(1, 1)
+	blank_icon.DrawBox(null, 1, 1, 1, 1)
+	nexus_sense_readout_icon = blank_icon
+	return nexus_sense_readout_icon
+
 mob/verb/Toggle_Sense_Overlay()
 	set category = "Other"
 	testing_sense = TRUE
@@ -66,8 +76,16 @@ obj/Screen_Indicator
 			name = m.name
 			//because updating overlays seems to cause a lot of cpu use
 			if(update_overlays)
-				overlays = m.overlays
-				underlays = m.underlays
+				var/list/copied_overlays = m.overlays.Copy()
+				var/list/copied_underlays = m.underlays.Copy()
+				// Sense indicators mirror the character, but must not clone an active
+				// destruction aura into a second apparent world position.
+				for(var/obj/Attacks/NexusSpecialStyle/AuraOfDestruction/aura in m)
+					if(aura.aura_owner != m) continue
+					copied_overlays -= aura.aura_flames
+					copied_underlays -= aura.aura_field
+				overlays = copied_overlays
+				underlays = copied_underlays
 
 	Click()
 		if(target) target.Click(usr)
@@ -119,7 +137,9 @@ mob
 			if(!islist(nexus_sense_readouts)) nexus_sense_readouts = list()
 			var/image/readout = nexus_sense_readouts[target]
 			if(readout) return readout
-			readout = image(icon = null, loc = target)
+			// An icon-less image can inherit its loc's appearance and draw a ghost
+			// copy of the sensed character. Anchor maptext with an explicit blank.
+			readout = image(icon = getNexusSenseReadoutIcon(), loc = target)
 			readout.layer = 1000
 			readout.maptext_width = 96
 			readout.maptext_height = 12

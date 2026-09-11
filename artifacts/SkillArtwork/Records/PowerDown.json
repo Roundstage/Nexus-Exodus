@@ -1,0 +1,10 @@
+{
+  "id": "PowerDown",
+  "original": "artifacts/SkillArtwork/Originals/PowerDown.png",
+  "asset": "src/Icons/UI/SkillArtwork/PowerDown.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4b87f2fb101df2ef3296ef8f251852cbbe7dfe775da0bc27b294acd23dd8f76e",
+  "promptSha256": "03b2d603ff164ca08047fc52d0e8408ce26920c1de103aa5ac23a1b35e03e33d",
+  "approvedSample": false
+}

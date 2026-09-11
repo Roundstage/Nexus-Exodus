@@ -1,0 +1,10 @@
+{
+  "id": "FrostBolt",
+  "original": "artifacts/SkillArtwork/Originals/FrostBolt.png",
+  "asset": "src/Icons/UI/SkillArtwork/FrostBolt.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b953505d8498ac3f6c0bcc703dc22290ef0a0f4c096c095aea2e203b762b7b63",
+  "promptSha256": "60f4c11dfc766c338a7ef6afdfbc8cd0d346f49ec3b670721986858a480d109e",
+  "approvedSample": false
+}

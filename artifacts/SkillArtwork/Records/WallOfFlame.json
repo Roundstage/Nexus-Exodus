@@ -1,0 +1,10 @@
+{
+  "id": "WallOfFlame",
+  "original": "artifacts/SkillArtwork/Originals/WallOfFlame.png",
+  "asset": "src/Icons/UI/SkillArtwork/WallOfFlame.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ad010abad2f97412cda12a523e1208ef27aea30b3fcfaa48c2459c008e1d7f8d",
+  "promptSha256": "80fff9b3a433b04bae591240362270e7f399d6fe507fa01d5efd38dfe208edcd",
+  "approvedSample": false
+}

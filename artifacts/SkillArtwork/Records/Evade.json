@@ -1,0 +1,10 @@
+{
+  "id": "Evade",
+  "original": "artifacts/SkillArtwork/Originals/Evade.png",
+  "asset": "src/Icons/UI/SkillArtwork/Evade.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ca2bc62e7695be0f03d0d599db509d0b522efa761927a7f60bbc54dc8fb7d242",
+  "promptSha256": "f8684d77097889c1331d3e25aa52f429f2d7c35bf5b06f35410d44b72810f5c9",
+  "approvedSample": false
+}

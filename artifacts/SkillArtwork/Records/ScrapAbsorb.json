@@ -1,0 +1,10 @@
+{
+  "id": "ScrapAbsorb",
+  "original": "artifacts/SkillArtwork/Originals/ScrapAbsorb.png",
+  "asset": "src/Icons/UI/SkillArtwork/ScrapAbsorb.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "50b0c5be05b6fc1d298422345fafbbabec0e528eefdc5fc468f9040b809db312",
+  "promptSha256": "eb213044452755b61e4466bb5569ef6c6980d8d942d78331e142ac832593f300",
+  "approvedSample": false
+}

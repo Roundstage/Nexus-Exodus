@@ -1,0 +1,10 @@
+{
+  "id": "Teleport",
+  "original": "artifacts/SkillArtwork/Originals/Teleport.png",
+  "asset": "src/Icons/UI/SkillArtwork/Teleport.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ea5dc8fdb04eebd0a704c8f8a577561b541f943e177679b6e7ca7307f39bc077",
+  "promptSha256": "0625f5fd2851498501e13bb32879701883f5160699fb7d3724c735afa245f53f",
+  "approvedSample": false
+}

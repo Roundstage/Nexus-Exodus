@@ -1,0 +1,10 @@
+{
+  "id": "Defend",
+  "original": "artifacts/SkillArtwork/Originals/Defend.png",
+  "asset": "src/Icons/UI/SkillArtwork/Defend.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "cf196c6c70dcba80b47a5ea9cba3c5e600920a965c1c6622818f7d8325e7a4dc",
+  "promptSha256": "f23cfef2c3e703b34c89ba17ec0958ff41ba45429956c1004b2c9cca6e5283c1",
+  "approvedSample": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "GuardBreak",
+  "original": "artifacts/SkillArtwork/Originals/GuardBreak.png",
+  "asset": "src/Icons/UI/SkillArtwork/GuardBreak.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "ad0691259a8328b78cac4e88f03b2bde050a17152ebda08ee39a76f6e3f77c7a",
+  "promptSha256": "073ddff33672743128800beae3ce19e109c16ef868213a095124422cd8102b87",
+  "approvedSample": false
+}

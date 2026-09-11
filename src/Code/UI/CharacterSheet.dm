@@ -67,7 +67,7 @@ mob/proc/buildCharacterSheetHtml(portrait_resource, datum/topic_source = null, r
 	var/class_text = Class ? "[Class]" : "No class"
 	var/alignment_text = alignment ? "[alignment]" : "Unaligned"
 	var/admin_button = IsAdmin() ? "<a class='top-button hud-button admin' href='byond://?src=[topic_reference]&action=open_admin_inspector'>ADMIN INSPECTOR</a>" : ""
-	var/window_controls = live_window ? "<a class='top-button hud-button' href='byond://?src=[topic_reference]&action=refresh_character_sheet' onclick='nexusStoreLiveScroll()'>REFRESH</a><a class='top-button hud-button danger close' href='byond://?src=[topic_reference]&action=close'>CLOSE</a>" : ""
+	var/window_controls = live_window ? "<a class='top-button hud-button' href='byond://?src=[topic_reference]&action=classic_stats'>LIVE STATS</a><a class='top-button hud-button' href='byond://?src=[topic_reference]&action=refresh_character_sheet' onclick='nexusStoreLiveScroll()'>REFRESH</a><a class='top-button hud-button danger close' href='byond://?src=[topic_reference]&action=close'>CLOSE</a>" : ""
 	var/skill_cards = buildCharacterSkillCards()
 	var/milestone_cards = buildCharacterMilestoneCards()
 	var/stats_html = ""
@@ -182,6 +182,9 @@ datum/NexusCharacterSheetWindow
 	Topic(href, list/href_list)
 		if(!canUse()) return
 		switch(href_list["action"])
+			if("classic_stats")
+				owner.showClassicWidget("stats")
+				return
 			if("heartbeat")
 				recordHeartbeat(href_list["scroll_y"])
 				return

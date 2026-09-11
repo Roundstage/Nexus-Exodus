@@ -1,0 +1,10 @@
+{
+  "id": "Sense3",
+  "original": "artifacts/SkillArtwork/Originals/Sense3.png",
+  "asset": "src/Icons/UI/SkillArtwork/Sense3.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "bd1e9b667e686ab5378b6f4213534a7a50cac4a3ab66b8df0f30f49732ea4b60",
+  "promptSha256": "eabd83f0f64ed6dd96beef5b63bd19a72abca089dac162dbc21fd27680d6ea14",
+  "approvedSample": false
+}

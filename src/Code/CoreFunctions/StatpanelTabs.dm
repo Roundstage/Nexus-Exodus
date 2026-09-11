@@ -12,7 +12,7 @@ mob/Stat()
 		return
 
 	if(!client) sleep(100)
-	else if(!Tabs || tabs_hidden || normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs") sleep(20) //Native tabs only refresh in the configured side layout.
+	else if((!client.nexus_classic_hud || !client.nexus_classic_hud.legacy_open) && (!Tabs || tabs_hidden || normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs")) sleep(20) //Native tabs only refresh in the configured side layout.
 	else
 		RefreshAllTabs()
 		//SleepTabs()
@@ -26,7 +26,7 @@ mob/proc/RefreshAllTabsNoWait()
 
 mob/proc/RefreshAllTabs()
 	if(Lootables)
-		if(statpanel("Looting")) stat(Lootables)
+		if(classicStatPanel("Looting")) classicStat(Lootables)
 	else
 		if(client.inactivity >= 1200) client.statpanel = "Other"
 		var/startTime = world.time - (last_logon + tabStartupDelay)
@@ -38,6 +38,7 @@ mob/proc/RefreshAllTabs()
 		if(startTime > 3)
 			if(isNexusLegacyTabEnabled("items")) Stat_Items()
 			if(isNexusLegacyTabEnabled("other"))
+				Stat_Stat()
 				Stat_Modules()
 				Stat_Souls()
 		if(startTime > 4)
@@ -122,22 +123,22 @@ var/hero_training_mult=2
 
 mob/proc/saga_tab()
 	if(!sagas||!sagas_tab) return
-	if(statpanel("Sagas"))
+	if(classicStatPanel("Sagas"))
 		var/mob/h=hero_online()
 		var/mob/v=villain_online()
 		if(!h||!v) return
-		stat("It is currently the [v] saga")
-		stat("Main hero:",h)
-		stat("Main villain:",v)
-		stat("The main villain has [v.showdown_time] minutes to kill the hero or they lose the villain \
+		classicStat("It is currently the [v] saga")
+		classicStat("Main hero:",h)
+		classicStat("Main villain:",v)
+		classicStat("The main villain has [v.showdown_time] minutes to kill the hero or they lose the villain \
 		rank")
 		if(world.realtime<h.training_period)
-			v.good_kills=0
+			if(!nexus_classic_capture) v.good_kills=0
 			var/minutes = (h.training_period - world.realtime) / 10 / 60
-			stat("The main hero is currently in a [hero_training_mult]x bp gain training period to defeat the villain. They \
+			classicStat("The main hero is currently in a [hero_training_mult]x bp gain training period to defeat the villain. They \
 			have [minutes] minutes left to train.")
 		else if(v.good_kills>killing_spree_min)
-			stat("[v] is killing good people to draw [h] out from hiding. [v] has killed \
+			classicStat("[v] is killing good people to draw [h] out from hiding. [v] has killed \
 			[v.good_kills] innocents so far. If [h] does not respond before the count reaches \
 			[killing_spree_max] they will \
 			be considered a failure as a hero and lose the title")
@@ -145,16 +146,16 @@ mob/proc/saga_tab()
 mob/var/tmp/list/league_list=new
 mob/proc/Stat_leagues()
 	for(var/obj/League/L in league_list)
-		if(statpanel(L.name))
-			stat(L)
-			stat("Leader: [L.leaders_name]")
+		if(classicStatPanel(L.name))
+			classicStat(L)
+			classicStat("Leader: [L.leaders_name]")
 			for(var/planet_id in nexus_planet_controls)
 				var/datum/NexusPlanetControl/control = nexus_planet_controls[planet_id]
 				if(control && control.controller_league_id == L.league_id && !control.isAbandoned())
-					stat("Rules [control.planet_name]", "Resources [control.resource_tax_rate]% / Essence [control.essence_tax_rate]%")
-			stat("Members:")
+					classicStat("Rules [control.planet_name]", "Resources [control.resource_tax_rate]% / Essence [control.essence_tax_rate]%")
+			classicStat("Members:")
 			for(var/mob/P in players) for(var/obj/League/L2 in P.league_list) if(L2.league_id==L.league_id)
-				stat("Rank [L2.league_rank]",P)
+				classicStat("Rank [L2.league_rank]",P)
 
 mob/var/tmp/obj/sense3_obj
 mob/var/tmp/obj/sense2_obj
@@ -172,8 +173,8 @@ mob/proc/KnowledgeRating()
 	return knowledge_rating
 
 mob/proc/Stat_Sense_Tab() if(Target&&ismob(Target))
-	if(IsAdmin()) if(statpanel("Inspect"))
-		stat(Target.contents)
+	if(IsAdmin()) if(classicStatPanel("Inspect"))
+		classicStat(Target.contents)
 
 	if(Scouter&&Scouter.android_detection)
 		detect_androids=1
@@ -186,36 +187,36 @@ mob/proc/Stat_Sense_Tab() if(Target&&ismob(Target))
 	if(Race != "Android" && Target.has_god_ki && !has_god_ki) return
 
 	if(Target.Scannable(detect_androids,src))
-		if(statpanel("[Target]"))
+		if(classicStatPanel("[Target]"))
 			if(Target!=src)
 				var/turf/T=base_loc()
 				if(T&&isturf(T))
-					if(Target.z!=T.z) stat("[Target] is on a different map")
-					else stat("[getdir(T,Target.loc)] x[getdist(T,Target.loc)]",Target.name) //,Target) lags if i show the actual mob now
+					if(Target.z!=T.z) classicStat("[Target] is on a different map")
+					else classicStat("[getdir(T,Target.loc)] x[getdist(T,Target.loc)]",Target.name) //,Target) lags if i show the actual mob now
 
 			// Only has sense 2
 			if(!sense3_obj && Race != "Frost Lord")
 				if(!Scouter || (Scouter && !Scouter.suffix)) 
-					stat("Power","[Sense_Power(Target)]% your power")
-					stat("Health","[round(Target.Health)]%")
-					stat("Energy","[round(Target.Ki/Target.max_ki*100)]%")
+					classicStat("Power","[Sense_Power(Target)]% your power")
+					classicStat("Health","[round(Target.Health)]%")
+					classicStat("Energy","[round(Target.Ki/Target.max_ki*100)]%")
 				else 
-					stat("[Commas(Scouter_Reading(Target,Scouter))]",Target.name) //,Target)
-					stat("Health","[round(Target.Health)]%")
-					stat("Energy","[round(Target.Ki/Target.max_ki*100)]%")
+					classicStat("[Commas(Scouter_Reading(Target,Scouter))]",Target.name) //,Target)
+					classicStat("Health","[round(Target.Health)]%")
+					classicStat("Energy","[round(Target.Ki/Target.max_ki*100)]%")
 			// Has Sense3
 			else 
 				if(alignment_on)
-					if(Target.alignment=="Good") stat("[Target]'s energy is that of a good person")
-					else stat("[Target] has an evil energy")
+					if(Target.alignment=="Good") classicStat("[Target]'s energy is that of a good person")
+					else classicStat("[Target] has an evil energy")
 
 				if(!Scouter || (Scouter && !Scouter.suffix)) 
-					stat("Power","[Sense_Power(Target)]% your power")
+					classicStat("Power","[Sense_Power(Target)]% your power")
 				else 
-					stat("[Commas(Scouter_Reading(Target,Scouter))]",Target.name) //,Target)
+					classicStat("[Commas(Scouter_Reading(Target,Scouter))]",Target.name) //,Target)
 
-				stat("Health",				"[round(Target.Health)]%")
-				stat("Energy",				"[round(Target.Ki)] ([round(Target.Ki/Target.max_ki*100)]%)")
+				classicStat("Health",				"[round(Target.Health)]%")
+				classicStat("Energy",				"[round(Target.Ki)] ([round(Target.Ki/Target.max_ki*100)]%)")
 
 				if(SENSE_SYSTEM_SHOW_VAGUE_INFO)
 					var/anger_text = "Calm"
@@ -243,161 +244,161 @@ mob/proc/Stat_Sense_Tab() if(Target&&ismob(Target))
 						else if(life_ratio < 0.2) age_text = "Very young"
 
 					if(has_scanner_module)
-						stat("Current anger",		"[round(Target.anger*0.01,0.01)]x")
-						stat("Race",				"[Target.Race] [Target.Class]")
-						stat("Age",					"[age_text] [round(Target.Age,2.0)] ([round(Target.Body*100)]% Youth)")
+						classicStat("Current anger",		"[round(Target.anger*0.01,0.01)]x")
+						classicStat("Race",				"[Target.Race] [Target.Class]")
+						classicStat("Age",					"[age_text] [round(Target.Age,2.0)] ([round(Target.Body*100)]% Youth)")
 					else
-						stat("Current anger",		"[anger_text]")
-						stat("Race",				"[race_text]")
-						stat("Age",					"[age_text]")
+						classicStat("Current anger",		"[anger_text]")
+						classicStat("Race",				"[race_text]")
+						classicStat("Age",					"[age_text]")
 				else
-					stat("Current anger",		"[round(Target.anger*0.01,0.01)]x")
-					stat("Race",				"[Target.Race] [Target.Class]")
-					stat("Age",					"[round(Target.Age,0.1)] ([round(Target.Body*100)]% Youth)")
+					classicStat("Current anger",		"[round(Target.anger*0.01,0.01)]x")
+					classicStat("Race",				"[Target.Race] [Target.Class]")
+					classicStat("Age",					"[round(Target.Age,0.1)] ([round(Target.Body*100)]% Youth)")
 
 				if(SENSE_SYSTEM_SHOW_STAT_BUILD)
 					if(Target.Race=="Android" && Target != src)
-						stat("Android stat builds are unsensable")
+						classicStat("Android stat builds are unsensable")
 					else
-						stat("Gravity Mastered",	"[round(Target.gravity_mastered,0.01)]x")
+						classicStat("Gravity Mastered",	"[round(Target.gravity_mastered,0.01)]x")
 						
-						stat("Scientific Knowledge:",Target.KnowledgeRating())
+						classicStat("Scientific Knowledge:",Target.KnowledgeRating())
 
-						stat("Strength:","[Target.strpcnt_rate()]")
-						stat("Durability:","[Target.durpcnt_rate()]")
-						stat("Speed:","[Target.spdpcnt_rate()]")
-						stat("Force:","[Target.powpcnt_rate()]")
-						stat("Resistance:","[Target.respcnt_rate()]")
-						stat("Accuracy:","[Target.offpcnt_rate()]")
-						stat("Reflex:","[Target.defpcnt_rate()]")
-						stat("Regeneration:","[Target.regen_rating()]")
-						stat("Recovery:","[Target.recov_rating()]")
+						classicStat("Strength:","[Target.strpcnt_rate()]")
+						classicStat("Durability:","[Target.durpcnt_rate()]")
+						classicStat("Speed:","[Target.spdpcnt_rate()]")
+						classicStat("Force:","[Target.powpcnt_rate()]")
+						classicStat("Resistance:","[Target.respcnt_rate()]")
+						classicStat("Accuracy:","[Target.offpcnt_rate()]")
+						classicStat("Reflex:","[Target.defpcnt_rate()]")
+						classicStat("Regeneration:","[Target.regen_rating()]")
+						classicStat("Recovery:","[Target.recov_rating()]")
 
 			SleepTab(5)
 
-mob/proc/Stat_Vampire() if(Vampire&&statpanel("Smell"))
-	stat("Any non-vampire within 10 tiles of you will appear here because you can smell non-vampires.")
+mob/proc/Stat_Vampire() if(Vampire&&classicStatPanel("Smell"))
+	classicStat("Any non-vampire within 10 tiles of you will appear here because you can smell non-vampires.")
 	if(current_area) for(var/mob/P in current_area.player_list)
 		if(P.client&&!P.Vampire&&getdist(src,P)<20)
-			stat(P)
+			classicStat(P)
 
-mob/proc/Stat_Science() if(Intelligence()&&TechTab&&statpanel("Science"))
-	syncTechnologyProgression(silent = TRUE)
-	stat("Knowledge:",Commas(Knowledge*Intelligence()))
-	stat("Technology Level:","[player_tech_level]/[technology_level_thresholds.len]")
+mob/proc/Stat_Science() if(Intelligence()&&TechTab&&classicStatPanel("Science"))
+	if(!nexus_classic_capture) syncTechnologyProgression(silent = TRUE)
+	classicStat("Knowledge:",Commas(Knowledge*Intelligence()))
+	classicStat("Technology Level:","[player_tech_level]/[technology_level_thresholds.len]")
 	if(player_tech_level < technology_level_thresholds.len)
-		stat("Technology XP:","[round(technology_experience, 0.1)]/[technology_level_thresholds[player_tech_level + 1]]")
+		classicStat("Technology XP:","[round(technology_experience, 0.1)]/[technology_level_thresholds[player_tech_level + 1]]")
 	else
-		stat("Technology XP:","[round(technology_experience, 0.1)] (maximum level)")
-	stat("Technology Paths:",length(player_tech_paths) ? jointext(player_tech_paths, ", ") : "None")
+		classicStat("Technology XP:","[round(technology_experience, 0.1)] (maximum level)")
+	classicStat("Technology Paths:",length(player_tech_paths) ? jointext(player_tech_paths, ", ") : "None")
 	var/obj/Resources/r = GetResourceObject()
 	if(r)
 		r.Update_value()
-		stat(r)
+		classicStat(r)
 	for(var/obj/O in tech_list) if(canAccessTechnology(O) && !(O.type in Illegal_Science))
-		stat("[Commas(Item_cost(src,O))]$",O)
+		classicStat("[Commas(Item_cost(src,O))]$",O)
 	SleepTab(100)
 
-mob/proc/Stat_Build() if(Build&&statpanel("Build"))
-	stat(Builds)
+mob/proc/Stat_Build() if(Build&&classicStatPanel("Build"))
+	classicStat(Builds)
 	SleepTab(100)
 
 mob/proc/Stat_Souls() if(locate(/obj/Contract_Soul) in src)
-	if(statpanel("Souls"))
-		for(var/obj/Contract_Soul/CS in src) if(CS.suffix) stat(CS)
-		for(var/obj/Contract_Soul/CS in src) if(!CS.suffix) stat(CS)
+	if(classicStatPanel("Souls"))
+		for(var/obj/Contract_Soul/CS in src) if(CS.suffix) classicStat(CS)
+		for(var/obj/Contract_Soul/CS in src) if(!CS.suffix) classicStat(CS)
 		SleepTab(10)
 
 mob/proc/Stat_Modules() for(var/obj/Module/MM in src)
-	if(statpanel("Modules"))
-		for(var/obj/Module/M in src) stat(M)
+	if(classicStatPanel("Modules"))
+		for(var/obj/Module/M in src) classicStat(M)
 		SleepTab(10)
 	break
 
-mob/proc/Stat_Items() if(statpanel("Items"))
+mob/proc/Stat_Items() if(classicStatPanel("Items"))
 	var/obj/Resources/r = GetResourceObject()
 	if(r)
 		r.Update_value()
-		stat(r)
-	for(var/obj/items/O in item_list) stat(O)
-	//for(var/obj/Faction/F in src) stat(F)
+		classicStat(r)
+	for(var/obj/items/O in item_list) classicStat(O)
+	//for(var/obj/Faction/F in src) classicStat(F)
 	SleepTab(6)
 
-mob/proc/Stat_Ship() if(Ship&&statpanel("[Ship]"))
-	stat("Coordinates","[Ship.x], [Ship.y], [Ship.z]")
-	stat(Ship.contents)
-	stat("Health","[Commas(Ship.Health/Ship.BP*100)]%")
-	stat("Energy","[round(Ship.Ki)]%")
-	stat("BP","[Commas(Ship.BP)]")
-	stat("Strength",Ship.Str)
-	stat("Durability",Ship.Dur)
-	stat("Speed",Ship.Spd)
-	stat("Efficiency",Ship.Eff)
+mob/proc/Stat_Ship() if(Ship&&classicStatPanel("[Ship]"))
+	classicStat("Coordinates","[Ship.x], [Ship.y], [Ship.z]")
+	classicStat(Ship.contents)
+	classicStat("Health","[Commas(Ship.Health/Ship.BP*100)]%")
+	classicStat("Energy","[round(Ship.Ki)]%")
+	classicStat("BP","[Commas(Ship.BP)]")
+	classicStat("Strength",Ship.Str)
+	classicStat("Durability",Ship.Dur)
+	classicStat("Speed",Ship.Spd)
+	classicStat("Efficiency",Ship.Eff)
 
 mob/proc/Stat_Nav()
 	var/turf/T=base_loc()
 	if(T&&T.z==16) for(var/obj/items/Nav_System/N in item_list)
 		var/Panel_Name="Nav"
 		if(Ship) Panel_Name="[Ship]"
-		if(statpanel(Panel_Name))
+		if(classicStatPanel(Panel_Name))
 			for(var/obj/Planets/A in planets) if(A.z)
-				if(N.Upgrade_Level>=A.Nav_Level) stat("[getdir(T,A.loc)] x[getdist(T,A)]",A)
+				if(N.Upgrade_Level>=A.Nav_Level) classicStat("[getdir(T,A.loc)] x[getdist(T,A)]",A)
 			SleepTab(5)
 		break
 
 mob/proc/Stat_Admin() if(IsAdmin())
-	if(statpanel("World"))
+	if(classicStatPanel("World"))
 		var/turf/T=base_loc()
 
-		stat("BYOND version:",world.byond_version)
-		stat("Highest Players Ever:",highest_player_count)
-		stat("World IP:", world.internet_address)
+		classicStat("BYOND version:",world.byond_version)
+		classicStat("Highest Players Ever:",highest_player_count)
+		classicStat("World IP:", world.internet_address)
 
 		var/cache_count=0
 		for(var/obj/o in cached_blasts) cache_count++
-		stat("Blast cache size",cache_count)
+		classicStat("Blast cache size",cache_count)
 
-		if(active_zombie_list.len) stat("Active Zombies",active_zombie_list.len)
-		if(zombie_cache.len) stat("Cached Zombies",zombie_cache.len)
+		if(active_zombie_list.len) classicStat("Active Zombies",active_zombie_list.len)
+		if(zombie_cache.len) classicStat("Cached Zombies",zombie_cache.len)
 
-		if(Swarms) stat("Swarms",Swarms)
+		if(Swarms) classicStat("Swarms",Swarms)
 		if(alignment_on)
 			var/evils=0
 			var/goods=0
 			for(var/mob/m in players) if(m.z)
 				if(m.alignment=="Evil") evils++
 				if(m.alignment=="Good") goods++
-			stat("[evils] evil players. [goods] good players.")
-		stat("Processor","[world.cpu]% ([T.x],[T.y],[T.z])")
-		stat("Balance rating:","[balance_rating()]")
-		stat("FPS",world.fps)
-		stat("Year","[round(Year,0.1)] (Speed: [Year_Speed]x)")
-		stat("Gain","[Gain]x")
-		stat("Highest Stats",Commas(Stat_Record))
-		stat("Highest stats guy:",stat_record_mob)
-		stat("Highest Speed",Commas(Max_Speed))
-		stat("Highest Speed person:",max_speed_mob)
-		stat("Global Upgrade Cap",Commas(Tech_BP))
+			classicStat("[evils] evil players. [goods] good players.")
+		classicStat("Processor","[world.cpu]% ([T.x],[T.y],[T.z])")
+		classicStat("Balance rating:","[balance_rating()]")
+		classicStat("FPS",world.fps)
+		classicStat("Year","[round(Year,0.1)] (Speed: [Year_Speed]x)")
+		classicStat("Gain","[Gain]x")
+		classicStat("Highest Stats",Commas(Stat_Record))
+		classicStat("Highest stats guy:",stat_record_mob)
+		classicStat("Highest Speed",Commas(Max_Speed))
+		classicStat("Highest Speed person:",max_speed_mob)
+		classicStat("Global Upgrade Cap",Commas(Tech_BP))
 
-		stat("Shikon jewel possessors:")
+		classicStat("Shikon jewel possessors:")
 		for(var/obj/o in shikon_jewels)
-			if(ismob(o.loc)) stat(o.loc)
+			if(ismob(o.loc)) classicStat(o.loc)
 
-		stat("Shikon Locations")
+		classicStat("Shikon Locations")
 		for(var/obj/o in shikon_jewels)
 			if(o.z)
-				stat("[o.x],[o.y],[o.z]", o)
+				classicStat("[o.x],[o.y],[o.z]", o)
 			else if(o.loc)
-				stat("[o.x],[o.y],[o.z]", o)
+				classicStat("[o.x],[o.y],[o.z]", o)
 
-		stat("Base Orbs")
+		classicStat("Base Orbs")
 		for(var/obj/o in base_orbs)
 			if(o.z)
-				stat("[o.x],[o.y],[o.z]", o)
+				classicStat("[o.x],[o.y],[o.z]", o)
 
-		stat("world.realtime:",num2text(world.realtime,20))
+		classicStat("world.realtime:",num2text(world.realtime,20))
 		SleepTab(3)
-	if(statpanel("Who"))
+	if(classicStatPanel("Who"))
 		var/Total_BPs=0
 		for(var/mob/P in players) Total_BPs+=P.BP
 		//var/playerCount = Player_Count()
@@ -405,89 +406,89 @@ mob/proc/Stat_Admin() if(IsAdmin())
 
 		//NOW THAT TROLLBOTS ARE IN THE ACTUAL 'players' LIST WE DONT NEED TO DO THEM SEPARATELY. UNLESS WE ONCE AGAIN REMOVE THEM FROM THAT LIST DUE TO PROBLEMS
 		//for(var/mob/m in trollbots) playerCount++
-		stat("Players:", playerCount)
-		stat("Average BP:","[Commas(Average_BP_of_Players())]")
-		//for(var/mob/P in trollbots) stat("[Commas(P.BP)]",P)
-		for(var/mob/P in players) stat("[Commas(P.BP)]",P)
+		classicStat("Players:", playerCount)
+		classicStat("Average BP:","[Commas(Average_BP_of_Players())]")
+		//for(var/mob/P in trollbots) classicStat("[Commas(P.BP)]",P)
+		for(var/mob/P in players) classicStat("[Commas(P.BP)]",P)
 		SleepTab(30)
 
 mob/var/tmp/Safezone
-mob/proc/Stat_Stat() if(statpanel("Stats"))
+mob/proc/Stat_Stat() if(classicStatPanel("Stats"))
 	if(current_buff)
-		stat("Current Buff:", current_buff.name)
+		classicStat("Current Buff:", current_buff.name)
 
 	if(trainingRestoreHours) //then the system is enabled
 		if(trainingTime != null)
-			stat("Training Time Left:", "[round(trainingTime, 0.01)] hours")
+			classicStat("Training Time Left:", "[round(trainingTime, 0.01)] hours")
 
 	if(bleed_damage)
-		stat("Bleeding x[round(bleed_damage)]")
+		classicStat("Bleeding x[round(bleed_damage)]")
 
 	if(AtBattlegrounds())
-		stat("Battleground Master: ", battleground_master)
+		classicStat("Battleground Master: ", battleground_master)
 
 	if(current_area && current_area.type == /area/Braal_Core)
-		stat("Core Gains:", "[round(CoreGainsMult(),0.1)]x / [round(CoreMaxGainsMult(),0.1)]x")
+		classicStat("Core Gains:", "[round(CoreGainsMult(),0.1)]x / [round(CoreMaxGainsMult(),0.1)]x")
 
-	if(grabber) stat("Grab strength: [round(grabber.grab_power)]%")
-	/*if(senzu_overload) stat("Overeating debuff [round(senzu_overload/60)] minutes [round(senzu_overload%60)] seconds")
-	else if(senzu_timer) stat("You are full for [round(senzu_timer/60)] minutes [round(senzu_timer%60)] seconds")*/
+	if(grabber) classicStat("Grab strength: [round(grabber.grab_power)]%")
+	/*if(senzu_overload) classicStat("Overeating debuff [round(senzu_overload/60)] minutes [round(senzu_overload%60)] seconds")
+	else if(senzu_timer) classicStat("You are full for [round(senzu_timer/60)] minutes [round(senzu_timer%60)] seconds")*/
 
 	if(God_Fist_level)
-		if(super_God_Fist) stat("Super God_Fist")
-		else stat("God_Fist x[God_Fist_level]")
+		if(super_God_Fist) classicStat("Super God_Fist")
+		else classicStat("God_Fist x[God_Fist_level]")
 
-	if(spam_killed) stat("Death immunity: [round(spam_killed/60)] minutes [round(spam_killed%60)] seconds")
-	if(Safezone) stat("You are in the safezone")
-	if(Diarea>0) stat("Status:","Diarea x[Diarea]")
-	stat("Willpower:","[round(willpower)]/[round(getMaxWillpower())]")
-	stat("RP Mode:",rp_mode ? "Active" : "Inactive")
-	stat("Milestone Points:",milestone_points)
-	//if(Zombie_Virus) stat("Status:","Zombie Virus x[round(Zombie_Virus)]")
+	if(spam_killed) classicStat("Death immunity: [round(spam_killed/60)] minutes [round(spam_killed%60)] seconds")
+	if(Safezone) classicStat("You are in the safezone")
+	if(Diarea>0) classicStat("Status:","Diarea x[Diarea]")
+	classicStat("Willpower:","[round(willpower)]/[round(getMaxWillpower())]")
+	classicStat("RP Mode:",rp_mode ? "Active" : "Inactive")
+	classicStat("Milestone Points:",milestone_points)
+	//if(Zombie_Virus) classicStat("Status:","Zombie Virus x[round(Zombie_Virus)]")
 	if(Health<0) Health=0
 	if(Ki<0) Ki=0
-	if(Vampire) stat("Vampire Hunger %",Vampire_Infection)
+	if(Vampire) classicStat("Vampire Hunger %",Vampire_Infection)
 	if(alignment_on&&alignment=="Evil"&&villain_damage_penalty!=1)
-		stat("You are doing [villain_damage_penalty*100]% normal damage because there are too many villains")
+		classicStat("You are doing [villain_damage_penalty*100]% normal damage because there are too many villains")
 	//if(available_potential<1)
-		//stat("Untapped potential:","[100-round(available_potential*100)]%")
+		//classicStat("Untapped potential:","[100-round(available_potential*100)]%")
 
 	if(Action == "Meditating" && knowledge_training)
-		stat("Knowledge:","[Commas(Knowledge*Intelligence())] ([KnowledgeRating()])")
+		classicStat("Knowledge:","[Commas(Knowledge*Intelligence())] ([KnowledgeRating()])")
 
 	if(Gravity>gravity_mastered)
-		stat("Gravity",round(Gravity,0.1))
+		classicStat("Gravity",round(Gravity,0.1))
 
-	if(classic_ui)
+	if(classic_ui || nexus_classic_capture)
 		var/bp_mod_display_mult = 1 * effectiveBaseBPMult()
 		if(NearBPOrb()) bp_mod_display_mult *= bp_orb_increase
-		stat("Battle Power","[Commas(Scouter_Reading(src))] ([round(bp_mod * weights() * GravityGainsMult() * bp_mod_display_mult, 1)]x gains)")
+		classicStat("Battle Power","[Commas(Scouter_Reading(src))] ([round(bp_mod * weights() * GravityGainsMult() * bp_mod_display_mult, 1)]x gains)")
 
-		stat("Health",round(Health))
-		stat("Energy","[round(Ki)] ([round((Ki / max_ki) * 100)]%) ([Eff]x gains)")
+		classicStat("Health",round(Health))
+		classicStat("Energy","[round(Ki)] ([round((Ki / max_ki) * 100)]%) ([Eff]x gains)")
 
-		for(var/name in usr.energies)
-			var/Energy/energy = usr.energies[name]
-			stat("[energy.name]","[round(energy.quantity)] ([round((energy.quantity / energy.maximum) * 100)]%)")
+		for(var/name in src.energies)
+			var/Energy/energy = src.energies[name]
+			classicStat("[energy.name]","[round(energy.quantity)] ([round((energy.quantity / energy.maximum) * 100)]%)")
 
-		stat("Strength",StatViewThing(getMilestoneScaledCombatStat(Swordless_strength()), "Str"))
-		if(using_sword()) stat("Sword Strength",StatViewThing(Str, "Str"))
-		stat("Durability",StatViewThing(getMilestoneScaledCombatStat(End), "End"))
-		stat("Force",StatViewThing(getMilestoneScaledCombatStat(Pow), "Pow"))
-		stat("Resistance",StatViewThing(getMilestoneScaledCombatStat(Res), "Res"))
-		stat("Speed",StatViewThing(getMilestoneEffectiveSpeed(), "Spd"))
-		stat("Accuracy",StatViewThing(getMilestoneEffectiveOffense(), "Off"))
-		stat("Reflex",StatViewThing(getMilestoneEffectiveDefense(), "Def"))
+		classicStat("Strength",StatViewThing(getMilestoneScaledCombatStat(Swordless_strength()), "Str"))
+		if(using_sword()) classicStat("Sword Strength",StatViewThing(Str, "Str"))
+		classicStat("Durability",StatViewThing(getMilestoneScaledCombatStat(End), "End"))
+		classicStat("Force",StatViewThing(getMilestoneScaledCombatStat(Pow), "Pow"))
+		classicStat("Resistance",StatViewThing(getMilestoneScaledCombatStat(Res), "Res"))
+		classicStat("Speed",StatViewThing(getMilestoneEffectiveSpeed(), "Spd"))
+		classicStat("Accuracy",StatViewThing(getMilestoneEffectiveOffense(), "Off"))
+		classicStat("Reflex",StatViewThing(getMilestoneEffectiveDefense(), "Def"))
 
 		var/regenLabel = (regen + Regen_Mult - 1)
-		stat("Regeneration", round(regenLabel, 0.01))
-		//stat("Regeneration",round(regen + Regen_Mult-1,0.01))
-		stat("Recovery",round(recov + Recov_Mult-1,0.01))
+		classicStat("Regeneration", round(regenLabel, 0.01))
+		//classicStat("Regeneration",round(regen + Regen_Mult-1,0.01))
+		classicStat("Recovery",round(recov + Recov_Mult-1,0.01))
 
-	if(has_god_ki || InGodKiRealm()) stat("God Ki Mastery %:", round(god_ki_mastery))
-	stat("Move Speed (pixels):", round(stepSizeLabel,0.1))
-	stat("Melee Speed:", round(1 / (Speed_delay_mult(severity = melee_delay_severity)/speedDelayMultMod), 0.01))
-	stat("Critical Chance:", round(GetCriticalChance()))
+	if(has_god_ki || InGodKiRealm()) classicStat("God Ki Mastery %:", round(god_ki_mastery))
+	classicStat("Move Speed (pixels):", round(stepSizeLabel,0.1))
+	classicStat("Melee Speed:", round(1 / (Speed_delay_mult(severity = melee_delay_severity)/speedDelayMultMod), 0.01))
+	classicStat("Critical Chance:", round(GetCriticalChance()))
 
 	SleepTab(10)
 
@@ -523,22 +524,22 @@ mob/var/tmp/obj/items/Radar/radar_obj
 
 mob/proc/Stat_Radar()
 	var/obj/items/Radar/R=radar_obj
-	if(R && R.suffix && R.Detects && R.loc == src && statpanel("Radar"))
+	if(R && R.suffix && R.Detects && R.loc == src && classicStatPanel("Radar"))
 		var/turf/T=base_loc()
-		if(IsAdmin()) stat("CPU","[world.cpu]%")
+		if(IsAdmin()) classicStat("CPU","[world.cpu]%")
 		if(!T) return
-		stat("Location","([T.x],[T.y],[T.z])")
+		classicStat("Location","([T.x],[T.y],[T.z])")
 		for(var/obj/O in Radar_List)
 			if(istype(O, R.Detects) && !Inert_Dragon_Ball(O))
 				var/mob/M=O.loc
-				if(M&&locz()!=M.locz()) stat("In a cave",O)
-				else if(!(O in T)) stat("[getdir(T,M)] x[getdist(T,M)]",O)
+				if(M&&locz()!=M.locz()) classicStat("In a cave",O)
+				else if(!(O in T)) classicStat("[getdir(T,M)] x[getdist(T,M)]",O)
 		SleepTab(5)
 
 mob/proc/update_radar_loop()
 	set waitfor=0
 	while(src)
-		if(client && client.statpanel == "Radar" && get_area())
+		if(client && (client.statpanel == "Radar" || (client.nexus_classic_hud && client.nexus_classic_hud.section == "radar" && client.nexus_classic_hud.isOpen("menu"))) && get_area())
 			var/area/area=get_area()
 			var/obj/items/Radar/r=radar_obj
 			if(r && r.suffix && r.loc==src && r.Detects)
@@ -597,10 +598,10 @@ mob/proc
 
 mob/proc/Stat_Sense()
 	if(Android || !sense_obj || Scouter || !client) return
-	if(statpanel("Sense"))
+	if(classicStatPanel("Sense"))
 		var/turf/t = base_loc()
 		if(!t) return
-		stat("Location","([t.x],[t.y],[t.z])")
+		classicStat("Location","([t.x],[t.y],[t.z])")
 
 		if(current_area)
 			var/sense_list_update_rate = TickMult(3) //2 = 5 fps
@@ -623,12 +624,12 @@ mob/proc/Stat_Sense()
 				var/locz = m.locz()
 				if(alignment_on)
 					if(locz == t.z)
-						stat("[Sense_Power(m)]%. [getdir(t,m.loc)] [getdist(t,m.loc)] ([m.alignment])",m)
-					else stat("[Sense_Power(m)]%. In a cave. ([m.alignment])",m)
+						classicStat("[Sense_Power(m)]%. [getdir(t,m.loc)] [getdist(t,m.loc)] ([m.alignment])",m)
+					else classicStat("[Sense_Power(m)]%. In a cave. ([m.alignment])",m)
 				else
 					if(locz == t.z)
-						stat("[Sense_Power(m)]%. [getdir(t,m.loc)] [getdist(t,m.loc)]",m)
-					else stat("[Sense_Power(m)]%. In a cave.",m)
+						classicStat("[Sense_Power(m)]%. [getdir(t,m.loc)] [getdist(t,m.loc)]",m)
+					else classicStat("[Sense_Power(m)]%. In a cave.",m)
 
 		SleepTab(5)
 
@@ -663,10 +664,10 @@ proc/Sort_by_associative_value(list/l)
 mob/var/unsenseable
 
 mob/proc/Stat_Scouter() if((Scouter&&Scouter.suffix)||Cyber_Scanner)
-	if(statpanel("Scan"))
+	if(classicStatPanel("Scan"))
 		var/turf/T=base_loc()
 		if(!T) return
-		stat("Location","([T.x],[T.y],[T.z])")
+		classicStat("Location","([T.x],[T.y],[T.z])")
 
 		if(current_area)
 			var/list/sense_list=new
@@ -685,7 +686,7 @@ mob/proc/Stat_Scouter() if((Scouter&&Scouter.suffix)||Cyber_Scanner)
 				if(M.locz()==T.z) sense_display+=" [getdir(T,M.loc)] x[getdist(T,M.loc)]"
 				else sense_display+=" In a cave"
 				if(alignment_on) sense_display+=" ([M.alignment])"
-				stat(sense_display,M)
+				classicStat(sense_display,M)
 		SleepTab(5)
 
 mob/var/tmp/obj/items/Scouter/Scouter

@@ -1,0 +1,10 @@
+{
+  "id": "Zanzoken",
+  "original": "artifacts/SkillArtwork/Originals/Zanzoken.png",
+  "asset": "src/Icons/UI/SkillArtwork/Zanzoken.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "4241b6eb246a380a8cd32dece376c423946485f283107bada2558dabfd8785ac",
+  "promptSha256": "01e78c6d2e4a5f08865911fa481c9fc34dc225baefeda07becc9b69667de0021",
+  "approvedSample": true
+}

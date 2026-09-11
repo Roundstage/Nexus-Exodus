@@ -171,8 +171,8 @@ Regression coverage for the isolated dimmer checks its 22% alpha cap, concurrent
 `runViltrumPlanetStartupSmokeTests()` calls `runViltrumSliceStartupSmokeTests()` in both startup modes. It verifies the 21x21 arrival region, actual roof density/opacity, decorative wall behavior, floor-preserving alpha furniture, the civic spawn, energy regulator and unobstructed 38x30 combat floor. `TestPlanetChunks.cjs` covers DMM grammar, orientation, safe deterministic assembly and unchanged baseline chunks. `TestViltrumSlice.cjs` covers cardinal routes, public interiors, alternate approaches and coverage. `TestPlanetParser.ps1` checks A1/C3/D3 environments without opening StrongDMM. See `docs/Maps/Viltrum.md` for deferred gameplay gates and the unrelated pre-existing asset-reference failure.
 
 Viltrum expansion: `runViltrumCapitalStartupSmokeTests` checks the arena/training/
-agora floor collision, four arena exits, palace throne and eight transparent
-furnishing states. `runViltrumBoundaryStartupSmokeTests` exercises eight storm-belt
+agora floor collision, four arena exits, the intentionally empty palace interior
+and eight transparent furnishing asset states. `runViltrumBoundaryStartupSmokeTests` exercises eight storm-belt
 edge/corner positions for walking, flight, knockback and SafeTeleport destination resolution.
 The original slice checks additionally protect roofs from the global flight
 bypass. Headless graph checks cover all public rooms, alternate entrances, forty
@@ -294,3 +294,19 @@ snapshot because those shadows are still enabled.
 TestRuntimeMapOrder also rejects a reserved BEGIN_INCLUDE marker in an earlier
 explanatory comment; an editor save treated that comment as the block boundary
 and removed the protected map includes.
+
+### Classic HUD runtime work
+
+`runClassicHudSmokeTests()` also validates periodic refresh intervals, immediate explicit refresh, collapsed-widget skipping, first-payload restoration, and per-render shortcut lookup after binding removal. Its temporary HUD uses a separate mob so initialization does not alter legacy slot-migration fixtures.
+
+`runNexusVitalsLayoutSmokeTests()` covers native-pixel HUD layout at 50/75/100/125/150%, returning to a previous scale, fixed drag anchoring, glyph bounds and visible pixels, separate label/value columns, untruncated compact/full status labels, exact `(8000) 100%` energy text, active Focus values, literal long names, two-row modifier overflow, and removal of all buff text/backdrop after deactivation. It rejects a transform on the entire composed panel and exports `VitalsTextSmoke50.png` through `VitalsTextSmoke150.png` from the actual runtime icons. `runNexusHudBitmapTextSmokeTests()` checks nontransparent glyphs, literal markup, newline normalization, explicit truncation, unchanged-icon reuse, clearing and the 512-entry word cache bound. `python tools/BuildHudFont.py --check` validates the generated font atlas and its metrics against the source font. Client scaling and interaction remain the user's in-game checks.
+
+### Skill artwork
+
+`runSkillArtworkSmokeTests()` checks exact skill resources, different illustrations for different skills, iconless-skill support, preservation of gameplay appearances and inventory sprites, native 32px caching, directional shortcuts, and native skill/transform verb resolution. Existing Skills-menu assertions require the dedicated artwork. `node tools/SkillArtwork/AuditArtwork.cjs` verifies complete manifest coverage, original/prompt hashes, unique images, and 128px runtime assets; `BuildRuntimeCatalog.cjs --check` verifies the compiled catalog matches those assets.
+
+### Native build panel and mouse painting
+- Follow-up coverage for the user's 2026-09-11 video: complete 1/9/25-cell hover footprints and cleanup, passive-versus-clickable control states, terrain finishing previews, raised same-material ground, nested terraces, saved elevation round-trip and old-save defaults, final-perimeter cliff placement after a 3x3 stroke, exact tile/cliff costs, explicit finishing in an area with global decoration disabled, option opt-out, and protection of roads, occupied tiles and other builders' land. The unchanged Earth generator suite still requires the full authored terrain/shoreline snapshot to survive automatic generation. `BuildBrush5x5Smoke.png` and `BuildTerrainFinishingSmoke.png` are generated from actual fixture icons for offline review; these are not in-game screenshots.
+- Native text regressions now require actual nontransparent glyph pixels and measured ink bounds in both build and vitals/buff controls. Status lines occupy separate, non-overlapping text objects. Earlier HTML-string/rectangle assertions did not prove that text was visible; the affected controls now render their glyphs on the server. Generated icon previews still do not verify Dream Seeker compositing, display scaling or pointer events. Interactive BYOND verification is left to the user, as requested on 2026-09-11.
+- `src/Code/Tests/BuildBrushSmoke.dm`: called by the Earth terrain fixture; allocates the native panel, checks control reuse across categories/pages, places owned turfs/objects/custom decor away from the character through the actual brush/backend, verifies costs and deduplication, tests brush size, cancelled/outside releases, combat and movement cancellation, and restores its map slots. `runBuildPanelLayoutSmokeTests()` checks fitting several viewport sizes and returning to the initial size, full opaque background coverage, correct TOP anchoring, no intersecting control rectangles, hidden-slot input exclusion, explicit status lines and native 32px thumbnails. Client-rendered appearance remains a Dream Seeker visual check.
+- `src/Code/Tests/BuildTerrainSmoke.dm`: checks idempotent selection, no selection-time terrain changes, out-of-view rejection, combat revalidation, shoreline edge refresh and protected cliff areas.

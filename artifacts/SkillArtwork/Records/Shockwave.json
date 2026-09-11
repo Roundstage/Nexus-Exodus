@@ -1,0 +1,10 @@
+{
+  "id": "Shockwave",
+  "original": "artifacts/SkillArtwork/Originals/Shockwave.png",
+  "asset": "src/Icons/UI/SkillArtwork/Shockwave.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "b053de404081d03e2a18b43b90780caea928234baf8f9b3f7a17a1b1c8d2d7c8",
+  "promptSha256": "65762b8be02fa4b018332ed499fcfaadeb59f3728a9de6f91d08fc0e80672a70",
+  "approvedSample": false
+}

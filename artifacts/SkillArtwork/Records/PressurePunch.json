@@ -1,0 +1,10 @@
+{
+  "id": "PressurePunch",
+  "original": "artifacts/SkillArtwork/Originals/PressurePunch.png",
+  "asset": "src/Icons/UI/SkillArtwork/PressurePunch.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "70519422b2fbad66812849fc2bc314e53fa1618e2308faeace4d7df857581229",
+  "promptSha256": "6c6234df9fd885690266f92b308144d3efd89e676d9fe6231ba303db12ef4b5c",
+  "approvedSample": false
+}

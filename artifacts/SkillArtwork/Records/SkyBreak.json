@@ -1,0 +1,10 @@
+{
+  "id": "SkyBreak",
+  "original": "artifacts/SkillArtwork/Originals/SkyBreak.png",
+  "asset": "src/Icons/UI/SkillArtwork/SkyBreak.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "d26f5a28f67498a1f158d4043e7f15667031d69916b80d56127c3eb777377e46",
+  "promptSha256": "860404c29532efcdb1fe90658c9cdeaf5fd81d2d31d7e5346b44f96ec889df76",
+  "approvedSample": false
+}

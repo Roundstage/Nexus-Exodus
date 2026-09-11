@@ -1,0 +1,10 @@
+{
+  "id": "Lunge",
+  "original": "artifacts/SkillArtwork/Originals/Lunge.png",
+  "asset": "src/Icons/UI/SkillArtwork/Lunge.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "1c1b34985da56361c28dca1428270a7038f274a6bd8900e6a67afbb9123f7e36",
+  "promptSha256": "c5ab53c6fcd71384677cc0b12c4004e8dff55b057f90f0931192ffcbc40d1bd3",
+  "approvedSample": false
+}

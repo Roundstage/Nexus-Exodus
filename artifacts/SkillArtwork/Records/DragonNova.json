@@ -1,0 +1,10 @@
+{
+  "id": "DragonNova",
+  "original": "artifacts/SkillArtwork/Originals/DragonNova.png",
+  "asset": "src/Icons/UI/SkillArtwork/DragonNova.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "9ac8f40aeaab2240327c23b94692e7517e392de95797dbff7b7f621da885c75d",
+  "promptSha256": "20d9679046acb0f9cff8804780d5a1d97a8eb275745ce8e4f65f1ca4789b2ff5",
+  "approvedSample": false
+}

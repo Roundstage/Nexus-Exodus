@@ -1,0 +1,10 @@
+{
+  "id": "ViltrumiteGuard",
+  "original": "artifacts/SkillArtwork/Originals/ViltrumiteGuard.png",
+  "asset": "src/Icons/UI/SkillArtwork/ViltrumiteGuard.png",
+  "originalWidth": 1254,
+  "originalHeight": 1254,
+  "sha256": "f523190080b18db6d3bad0c052019d1f4c644c9fa2a4f274c8d6fb3404c3a9e7",
+  "promptSha256": "3fc896ff7d370dc7ac290be24e0834353af3b161c681a98a169bdde8779af93e",
+  "approvedSample": false
+}
