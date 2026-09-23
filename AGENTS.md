@@ -34,6 +34,7 @@
 - The main proc reference for agents lives under `docs/procs/` (per subsystem). Update it when behavior changes.
 
 ## Persistent Mapping Decisions
+- User direction, 2026-09-14: prepare Viltrum as a modern ecumenopolis with coherent dense neighborhoods and adjacent housing. Earth's single-city/wilderness restriction remains specific to Earth. Read `docs/Maps/WorldbuildingContract.md` and `docs/Maps/ViltrumEcumenopolisBrief.md`; reusable city/terrain skill sources are under `tools/SkillPackages/byond-city-design` and `tools/SkillPackages/byond-terrain-design`. Compare current map outputs with chunks before rebuilding, because both planets had later output edits at consolidation time.
 - User direction, 2026-09-06: architectural turf art must occupy the entire 32x32 tile, not resemble a small freestanding prop on a floor. The initial Viltrum wall sprite was rejected for this reason.
 - User clarification, 2026-09-06: **roofs are the actual walls** in this game's mapping convention: solid, collision-bearing, sight-blocking structural turfs. **Walls are decorative facade faces**, not the building's structural enclosure. Do not interpret roofs as overhead overlays covering playable interiors; put roof turfs on the structural perimeter and leave interior floor tiles walkable.
 - Viltrum furnishings must have transparent backgrounds and be reusable objects over any underlying turf. Never bake a floor/background into benches, planters, banners, statues, tables or other furnishings. Define object collision separately from the transparent art.
@@ -51,9 +52,12 @@
 - Super Earth's authored riverbanks, bridges and coasts must not be rewritten by the legacy runtime cliff generator. Keep `area/SuperEarth.auto_cliffs = FALSE`; checking only turf subtypes misses manually placed legacy ground. `GenerateCliffs` must respect protected areas at the source and both possible destination tiles.
 - Keep Super Earth's `auto_edges` and `auto_waves` area policies FALSE too. The runtime `GenerateEdges` and `GenerateShoreWaves` calls otherwise paint old edge/surf overlays over authored riverbanks. Check the policy inside these procs so direct calls are covered; preserve existing overlays and authored water animations.
 
+- Viltrum ecumenopolis implemented 2026-09-14: see docs/Maps/ViltrumEcumenopolis.md and its current JSON registry/report. Use AuthorViltrumEcumenopolis.cjs for guarded candidates and TestViltrumEcumenopolis.cjs for the applied map; older Slice/Capital/Wilderness reports describe superseded layouts. Keep area/Viltrum auto_cliffs/auto_edges/auto_waves FALSE. Preserve the existing empty interiors and single return portal policy. New edits must be reconciled before regenerating; do not discard them through a historical baseline.
+
 ## Commit & Pull Request Guidelines
 - Follow existing prefixes from history: `Fix:`, `Feat:`, `Refactor:`, `Patch:` plus a short, sentence-case summary.
 - PRs should include: a concise description, testing notes, linked issues (if any), and screenshots for UI/map changes.
 
 ## Security & Configuration Tips
+- User direction, 2026-09-22: deployment is live with playtest rewards disabled. `Pwipe` must erase all gameplay persistence, including Feats, economy, factions/roles, items and map changes; preserve administration, bans, rules and logs. See `docs/FullWipe.md`. Implementing this policy does not authorize executing a production wipe.
 - `SECRETS.dm` stores hub credentials and admin levels. Keep secrets empty or local; do not commit real passwords.

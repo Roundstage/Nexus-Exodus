@@ -4,3 +4,4 @@ DU.dme -text whitespace=-blank-at-eol
 
 # Container entrypoints must retain Unix line endings when built on Windows.
 deploy/docker/entrypoint.sh text eol=lf
+tools/Measure-NexusDockerCpu.sh text eol=lf

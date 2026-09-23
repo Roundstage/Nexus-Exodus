@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-14",
+  "byond": "516.1686",
+  "compile": {
+    "errors": 0,
+    "warnings": 0,
+    "localArtifacts": [
+      "DU.dmb",
+      "DU.rsc"
+    ],
+    "sourceHashes": {
+      "DU.dme": "8a8db50df80bdd680fb99b8c72c577c3a347048b4fc4019760d4a2df67d43240",
+      "src/Code/MapCode/ViltrumEcumenopolis.dm": "76e104830208ba7497c804cbf62269709828a9f8a31873368d4f252990dfe575",
+      "src/Code/Tests/ViltrumEcumenopolisSmoke.dm": "131c11e96ddd12984ac5fa3977d9ea78f2cc29a97072839f48c4ba59703013f6",
+      "src/Code/Tests/EarthTerrainGenerationSmoke.dm": "52d12cae3bb4abaa29dacf43f102391ea44d0738d4f3f893a97b6dcf34d02b20",
+      "src/Code/Tests/ViltrumPlanetSmoke.dm": "8280bd11377a50509f04aed03bb156046d84ac5d5afed7a6fb95ede637b1f03a",
+      "src/Code/WorldMechanics/Viltrum.dm": "ddc5dcc68f35bf7d87a0a6b03c756f4eb917dee901ff39858d0d41c105414c7b"
+    }
+  },
+  "smoke": {
+    "dataModes": [
+      "Versioned",
+      "Clean"
+    ],
+    "result": "passed",
+    "startupTimeoutSeconds": 300,
+    "mappedViltrumDoorRoundTrips": 37,
+    "terrainTilesCompared": 250000,
+    "zonesVisited": 16,
+    "shorelinesChecked": 727
+  },
+  "layout": {
+    "blocks": 58,
+    "buildings": 877,
+    "accessible": 37,
+    "structuralTiles": 26864,
+    "reachableTiles": 165579,
+    "connectedRoadTiles": 42985,
+    "preservedWaterTiles": 57135,
+    "manualTilesPreserved": true,
+    "clearFrontages": true,
+    "matchingStructuralArt": true,
+    "exactReturnTargets": true
+  },
+  "assets": {
+    "buildings": 6,
+    "structuralTiles": 266,
+    "streetStates": 30,
+    "nativeHashesMatch": true,
+    "losslessStructuralCrops": true,
+    "transparentObjects": true,
+    "fullTileGround": true
+  },
+  "assetReferences": {
+    "activeReferences": 3740,
+    "missing": 0,
+    "ambiguous": 0,
+    "caseErrors": 0,
+    "barePaths": 0
+  },
+  "mapPipelineTests": 10,
+  "runtimeMapOrder": "passed",
+  "naming": {
+    "newViltrumFiles": 0,
+    "repositoryInformationalIssues": 6177,
+    "pathAndAssetNamingIssues": 0
+  },
+  "appliedMapHashes": {
+    "src/Maps/Viltrum.dmm": "d917811fd4fbd8637f273ea64b4c833f8306513f40d8a9e15c93e743021673a4",
+    "src/Maps/ViltrumMetadata.json": "ebe74f548dbf8df6e53aecdef6e02fbfe324b6d5009d9ca63ea4138ece3fa025",
+    "src/Maps/CityInteriors.dmm": "693fc63c9b2dad70ae879909a5d13ee36aa2f18c78aba20e126c88a0006802d3",
+    "docs/Maps/CityBuildings.json": "57965284ee437f2fc3718109fa51bc5614b3f8e3c42a0345c6b6b1c006626635",
+    "src/Maps/SuperEarth.dmm": "9f2197326e3a4445bbe71c635830b0c27a953b29df67bf79831016d26c6aafcc",
+    "src/Maps/SuperEarthMetadata.json": "30e2aa350b9ff74482156871097479d4a83b21ba16701ce0f0781f506f9926b8"
+  },
+  "interactiveByondReview": "Deferred to user; no StrongDMM or Dream Maker/Dream Seeker UI inspection",
+  "localWorldRestarted": false
+}

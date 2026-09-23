@@ -32,9 +32,12 @@ proc/runEarthTerrainGenerationSmokeTests()
 	world.log << "EARTH_TERRAIN_GENERATION_PASSED: 250000 tiles, 16 zones, [shore_count] shorelines, edge/wave overlays unchanged"
 
 proc/getEarthTerrainSmokeColumn(tile_x)
+	return getAuthoredTerrainSmokeColumn(tile_x,Z_LEVEL_SUPER_EARTH)
+
+proc/getAuthoredTerrainSmokeColumn(tile_x,surface_z)
 	var/list/tiles = list()
 	for(var/tile_y = 1, tile_y <= 500, tile_y++)
-		var/turf/tile = locate(tile_x,tile_y,Z_LEVEL_SUPER_EARTH)
+		var/turf/tile = locate(tile_x,tile_y,surface_z)
 		var/list/shore_overlays = list()
 		for(var/appearance_value in tile.overlays)
 			var/icon_path = "[appearance_value:icon]"

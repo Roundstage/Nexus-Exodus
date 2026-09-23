@@ -1,122 +1,274 @@
-"a" = (/obj/CityBuildingDoor{building_id = "viltrum_027"; name = "Enter Defense command"; target_x = 258; target_y = 67; target_z = 22},/turf/ViltrumFloor,/area/Viltrum)
-"b" = (/obj/CityBuildingDoor{building_id = "viltrum_028"; name = "Enter West defense wing"; target_x = 298; target_y = 67; target_z = 22},/turf/ViltrumFloor,/area/Viltrum)
-"c" = (/obj/CityBuildingDoor{building_id = "viltrum_029"; name = "Enter East defense wing"; target_x = 338; target_y = 67; target_z = 22},/turf/ViltrumFloor,/area/Viltrum)
-"d" = (/obj/CityHouse/Terrace{building_id = "viltrum_027"; name = "Defense command"},/turf/CityBuildingFootprint,/area/Viltrum)
-"e" = (/obj/CityHouse/Terrace{building_id = "viltrum_028"; name = "West defense wing"},/turf/CityBuildingFootprint,/area/Viltrum)
-"f" = (/obj/CityHouse/Terrace{building_id = "viltrum_029"; name = "East defense wing"},/turf/CityBuildingFootprint,/area/Viltrum)
-"g" = (/turf/CityBuildingFootprint,/area/Viltrum)
-"h" = (/turf/ViltrumDistrictFloor/Arena,/area/Viltrum)
-"i" = (/turf/ViltrumFloor,/area/Viltrum)
-"j" = (/turf/ViltrumFloor/Road,/area/Viltrum)
-"k" = (/turf/ViltrumGround,/area/Viltrum)
-"l" = (/turf/ViltrumLandscape,/area/Viltrum)
-"m" = (/turf/ViltrumLandscape/Garden,/area/Viltrum)
-"n" = (/turf/ViltrumLandscape/Ice,/area/Viltrum)
-"o" = (/turf/ViltrumLandscape/Shore,/area/Viltrum)
-"p" = (/turf/ViltrumLandscape/Snow,/area/Viltrum)
-"q" = (/turf/ViltrumOcean,/area/Viltrum)
-"r" = (/turf/ViltrumOcean/Boundary,/area/Viltrum)
-"s" = (/turf/ViltrumOcean/Shallow,/area/Viltrum)
+"aa" = (/obj/CityBuildingDoor/ViltrumCity{building_id = "viltrum_027"; target_x = 258; target_y = 67; target_z = 22},/turf/ViltrumCityStreet/Pavement,/area/Viltrum)
+"ab" = (/obj/CityBuildingDoor/ViltrumCity{building_id = "viltrum_028"; target_x = 298; target_y = 67; target_z = 22},/turf/ViltrumCityStreet/Pavement,/area/Viltrum)
+"ac" = (/obj/CityBuildingDoor/ViltrumCity{building_id = "viltrum_029"; target_x = 338; target_y = 67; target_z = 22},/turf/ViltrumCityStreet/Pavement,/area/Viltrum)
+"ad" = (/obj/ViltrumCityHouse,/turf/ViltrumCityStructure{icon_state = "residence_0_0"},/area/Viltrum)
+"ae" = (/obj/ViltrumCityHouse/ResidenceB,/turf/ViltrumCityStructure{icon_state = "residenceb_0_0"},/area/Viltrum)
+"af" = (/obj/ViltrumCityHouse/ResidenceB{building_id = "viltrum_027"; name = "Defense command"},/turf/ViltrumCityStructure{icon_state = "residenceb_0_0"},/area/Viltrum)
+"ag" = (/obj/ViltrumCityHouse/ResidenceB{building_id = "viltrum_028"; name = "West defense wing"},/turf/ViltrumCityStructure{icon_state = "residenceb_0_0"},/area/Viltrum)
+"ah" = (/obj/ViltrumCityHouse/ResidenceB{building_id = "viltrum_029"; name = "East defense wing"},/turf/ViltrumCityStructure{icon_state = "residenceb_0_0"},/area/Viltrum)
+"ai" = (/obj/ViltrumCityHouse/Science,/turf/ViltrumCityStructure{icon_state = "science_0_0"},/area/Viltrum)
+"aj" = (/obj/ViltrumCityTree,/turf/ViltrumCityStreet/Plaza,/area/Viltrum)
+"ak" = (/obj/ViltrumFurnishing,/turf/ViltrumCityStreet/Pavement,/area/Viltrum)
+"al" = (/turf/ViltrumCityStreet,/area/Viltrum)
+"am" = (/turf/ViltrumCityStreet/CrossingHorizontal,/area/Viltrum)
+"an" = (/turf/ViltrumCityStreet/CrossingVertical,/area/Viltrum)
+"ao" = (/turf/ViltrumCityStreet/Garden,/area/Viltrum)
+"ap" = (/turf/ViltrumCityStreet/LaneHorizontal,/area/Viltrum)
+"aq" = (/turf/ViltrumCityStreet/LaneVertical,/area/Viltrum)
+"ar" = (/turf/ViltrumCityStreet/Pavement,/area/Viltrum)
+"as" = (/turf/ViltrumCityStreet/Plaza,/area/Viltrum)
+"at" = (/turf/ViltrumCityStreet/Quay{icon_state = "quay_0"},/area/Viltrum)
+"au" = (/turf/ViltrumCityStreet/Quay{icon_state = "quay_1"},/area/Viltrum)
+"av" = (/turf/ViltrumCityStructure{icon_state = "civic_0_4"},/area/Viltrum)
+"aw" = (/turf/ViltrumCityStructure{icon_state = "civic_0_5"},/area/Viltrum)
+"ax" = (/turf/ViltrumCityStructure{icon_state = "civic_0_6"},/area/Viltrum)
+"ay" = (/turf/ViltrumCityStructure{icon_state = "civic_0_7"},/area/Viltrum)
+"az" = (/turf/ViltrumCityStructure{icon_state = "civic_0_8"},/area/Viltrum)
+"aA" = (/turf/ViltrumCityStructure{icon_state = "civic_0_9"},/area/Viltrum)
+"aB" = (/turf/ViltrumCityStructure{icon_state = "civic_1_4"},/area/Viltrum)
+"aC" = (/turf/ViltrumCityStructure{icon_state = "civic_1_5"},/area/Viltrum)
+"aD" = (/turf/ViltrumCityStructure{icon_state = "civic_1_6"},/area/Viltrum)
+"aE" = (/turf/ViltrumCityStructure{icon_state = "civic_1_7"},/area/Viltrum)
+"aF" = (/turf/ViltrumCityStructure{icon_state = "civic_1_8"},/area/Viltrum)
+"aG" = (/turf/ViltrumCityStructure{icon_state = "civic_1_9"},/area/Viltrum)
+"aH" = (/turf/ViltrumCityStructure{icon_state = "civic_2_4"},/area/Viltrum)
+"aI" = (/turf/ViltrumCityStructure{icon_state = "civic_2_5"},/area/Viltrum)
+"aJ" = (/turf/ViltrumCityStructure{icon_state = "civic_2_6"},/area/Viltrum)
+"aK" = (/turf/ViltrumCityStructure{icon_state = "civic_2_7"},/area/Viltrum)
+"aL" = (/turf/ViltrumCityStructure{icon_state = "civic_2_8"},/area/Viltrum)
+"aM" = (/turf/ViltrumCityStructure{icon_state = "civic_2_9"},/area/Viltrum)
+"aN" = (/turf/ViltrumCityStructure{icon_state = "civic_3_4"},/area/Viltrum)
+"aO" = (/turf/ViltrumCityStructure{icon_state = "civic_3_5"},/area/Viltrum)
+"aP" = (/turf/ViltrumCityStructure{icon_state = "civic_3_6"},/area/Viltrum)
+"aQ" = (/turf/ViltrumCityStructure{icon_state = "civic_3_7"},/area/Viltrum)
+"aR" = (/turf/ViltrumCityStructure{icon_state = "civic_3_8"},/area/Viltrum)
+"aS" = (/turf/ViltrumCityStructure{icon_state = "civic_3_9"},/area/Viltrum)
+"aT" = (/turf/ViltrumCityStructure{icon_state = "civic_4_4"},/area/Viltrum)
+"aU" = (/turf/ViltrumCityStructure{icon_state = "civic_4_5"},/area/Viltrum)
+"aV" = (/turf/ViltrumCityStructure{icon_state = "civic_4_6"},/area/Viltrum)
+"aW" = (/turf/ViltrumCityStructure{icon_state = "civic_4_7"},/area/Viltrum)
+"aX" = (/turf/ViltrumCityStructure{icon_state = "civic_4_8"},/area/Viltrum)
+"aY" = (/turf/ViltrumCityStructure{icon_state = "civic_4_9"},/area/Viltrum)
+"aZ" = (/turf/ViltrumCityStructure{icon_state = "civic_5_4"},/area/Viltrum)
+"ba" = (/turf/ViltrumCityStructure{icon_state = "civic_5_5"},/area/Viltrum)
+"bb" = (/turf/ViltrumCityStructure{icon_state = "civic_5_6"},/area/Viltrum)
+"bc" = (/turf/ViltrumCityStructure{icon_state = "civic_5_7"},/area/Viltrum)
+"bd" = (/turf/ViltrumCityStructure{icon_state = "civic_5_8"},/area/Viltrum)
+"be" = (/turf/ViltrumCityStructure{icon_state = "civic_5_9"},/area/Viltrum)
+"bf" = (/turf/ViltrumCityStructure{icon_state = "civic_6_4"},/area/Viltrum)
+"bg" = (/turf/ViltrumCityStructure{icon_state = "civic_6_5"},/area/Viltrum)
+"bh" = (/turf/ViltrumCityStructure{icon_state = "civic_6_6"},/area/Viltrum)
+"bi" = (/turf/ViltrumCityStructure{icon_state = "civic_6_7"},/area/Viltrum)
+"bj" = (/turf/ViltrumCityStructure{icon_state = "civic_6_8"},/area/Viltrum)
+"bk" = (/turf/ViltrumCityStructure{icon_state = "civic_6_9"},/area/Viltrum)
+"bl" = (/turf/ViltrumCityStructure{icon_state = "civic_7_4"},/area/Viltrum)
+"bm" = (/turf/ViltrumCityStructure{icon_state = "civic_7_5"},/area/Viltrum)
+"bn" = (/turf/ViltrumCityStructure{icon_state = "civic_7_6"},/area/Viltrum)
+"bo" = (/turf/ViltrumCityStructure{icon_state = "civic_7_7"},/area/Viltrum)
+"bp" = (/turf/ViltrumCityStructure{icon_state = "civic_7_8"},/area/Viltrum)
+"bq" = (/turf/ViltrumCityStructure{icon_state = "civic_7_9"},/area/Viltrum)
+"br" = (/turf/ViltrumCityStructure{icon_state = "residence_0_1"},/area/Viltrum)
+"bs" = (/turf/ViltrumCityStructure{icon_state = "residence_0_2"},/area/Viltrum)
+"bt" = (/turf/ViltrumCityStructure{icon_state = "residence_0_3"},/area/Viltrum)
+"bu" = (/turf/ViltrumCityStructure{icon_state = "residence_0_4"},/area/Viltrum)
+"bv" = (/turf/ViltrumCityStructure{icon_state = "residence_0_5"},/area/Viltrum)
+"bw" = (/turf/ViltrumCityStructure{icon_state = "residence_1_0"},/area/Viltrum)
+"bx" = (/turf/ViltrumCityStructure{icon_state = "residence_1_1"},/area/Viltrum)
+"by" = (/turf/ViltrumCityStructure{icon_state = "residence_1_2"},/area/Viltrum)
+"bz" = (/turf/ViltrumCityStructure{icon_state = "residence_1_3"},/area/Viltrum)
+"bA" = (/turf/ViltrumCityStructure{icon_state = "residence_1_4"},/area/Viltrum)
+"bB" = (/turf/ViltrumCityStructure{icon_state = "residence_1_5"},/area/Viltrum)
+"bC" = (/turf/ViltrumCityStructure{icon_state = "residence_2_0"},/area/Viltrum)
+"bD" = (/turf/ViltrumCityStructure{icon_state = "residence_2_1"},/area/Viltrum)
+"bE" = (/turf/ViltrumCityStructure{icon_state = "residence_2_2"},/area/Viltrum)
+"bF" = (/turf/ViltrumCityStructure{icon_state = "residence_2_3"},/area/Viltrum)
+"bG" = (/turf/ViltrumCityStructure{icon_state = "residence_2_4"},/area/Viltrum)
+"bH" = (/turf/ViltrumCityStructure{icon_state = "residence_2_5"},/area/Viltrum)
+"bI" = (/turf/ViltrumCityStructure{icon_state = "residence_3_0"},/area/Viltrum)
+"bJ" = (/turf/ViltrumCityStructure{icon_state = "residence_3_1"},/area/Viltrum)
+"bK" = (/turf/ViltrumCityStructure{icon_state = "residence_3_2"},/area/Viltrum)
+"bL" = (/turf/ViltrumCityStructure{icon_state = "residence_3_3"},/area/Viltrum)
+"bM" = (/turf/ViltrumCityStructure{icon_state = "residence_3_4"},/area/Viltrum)
+"bN" = (/turf/ViltrumCityStructure{icon_state = "residence_3_5"},/area/Viltrum)
+"bO" = (/turf/ViltrumCityStructure{icon_state = "residence_4_0"},/area/Viltrum)
+"bP" = (/turf/ViltrumCityStructure{icon_state = "residence_4_1"},/area/Viltrum)
+"bQ" = (/turf/ViltrumCityStructure{icon_state = "residence_4_2"},/area/Viltrum)
+"bR" = (/turf/ViltrumCityStructure{icon_state = "residence_4_3"},/area/Viltrum)
+"bS" = (/turf/ViltrumCityStructure{icon_state = "residence_4_4"},/area/Viltrum)
+"bT" = (/turf/ViltrumCityStructure{icon_state = "residence_4_5"},/area/Viltrum)
+"bU" = (/turf/ViltrumCityStructure{icon_state = "residenceb_0_1"},/area/Viltrum)
+"bV" = (/turf/ViltrumCityStructure{icon_state = "residenceb_0_2"},/area/Viltrum)
+"bW" = (/turf/ViltrumCityStructure{icon_state = "residenceb_0_3"},/area/Viltrum)
+"bX" = (/turf/ViltrumCityStructure{icon_state = "residenceb_0_4"},/area/Viltrum)
+"bY" = (/turf/ViltrumCityStructure{icon_state = "residenceb_0_5"},/area/Viltrum)
+"bZ" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_0"},/area/Viltrum)
+"ca" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_1"},/area/Viltrum)
+"cb" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_2"},/area/Viltrum)
+"cc" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_3"},/area/Viltrum)
+"cd" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_4"},/area/Viltrum)
+"ce" = (/turf/ViltrumCityStructure{icon_state = "residenceb_1_5"},/area/Viltrum)
+"cf" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_0"},/area/Viltrum)
+"cg" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_1"},/area/Viltrum)
+"ch" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_2"},/area/Viltrum)
+"ci" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_3"},/area/Viltrum)
+"cj" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_4"},/area/Viltrum)
+"ck" = (/turf/ViltrumCityStructure{icon_state = "residenceb_2_5"},/area/Viltrum)
+"cl" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_0"},/area/Viltrum)
+"cm" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_1"},/area/Viltrum)
+"cn" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_2"},/area/Viltrum)
+"co" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_3"},/area/Viltrum)
+"cp" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_4"},/area/Viltrum)
+"cq" = (/turf/ViltrumCityStructure{icon_state = "residenceb_3_5"},/area/Viltrum)
+"cr" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_0"},/area/Viltrum)
+"cs" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_1"},/area/Viltrum)
+"ct" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_2"},/area/Viltrum)
+"cu" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_3"},/area/Viltrum)
+"cv" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_4"},/area/Viltrum)
+"cw" = (/turf/ViltrumCityStructure{icon_state = "residenceb_4_5"},/area/Viltrum)
+"cx" = (/turf/ViltrumCityStructure{icon_state = "science_0_1"},/area/Viltrum)
+"cy" = (/turf/ViltrumCityStructure{icon_state = "science_0_2"},/area/Viltrum)
+"cz" = (/turf/ViltrumCityStructure{icon_state = "science_0_3"},/area/Viltrum)
+"cA" = (/turf/ViltrumCityStructure{icon_state = "science_0_4"},/area/Viltrum)
+"cB" = (/turf/ViltrumCityStructure{icon_state = "science_0_5"},/area/Viltrum)
+"cC" = (/turf/ViltrumCityStructure{icon_state = "science_1_0"},/area/Viltrum)
+"cD" = (/turf/ViltrumCityStructure{icon_state = "science_1_1"},/area/Viltrum)
+"cE" = (/turf/ViltrumCityStructure{icon_state = "science_1_2"},/area/Viltrum)
+"cF" = (/turf/ViltrumCityStructure{icon_state = "science_1_3"},/area/Viltrum)
+"cG" = (/turf/ViltrumCityStructure{icon_state = "science_1_4"},/area/Viltrum)
+"cH" = (/turf/ViltrumCityStructure{icon_state = "science_1_5"},/area/Viltrum)
+"cI" = (/turf/ViltrumCityStructure{icon_state = "science_2_0"},/area/Viltrum)
+"cJ" = (/turf/ViltrumCityStructure{icon_state = "science_2_1"},/area/Viltrum)
+"cK" = (/turf/ViltrumCityStructure{icon_state = "science_2_2"},/area/Viltrum)
+"cL" = (/turf/ViltrumCityStructure{icon_state = "science_2_3"},/area/Viltrum)
+"cM" = (/turf/ViltrumCityStructure{icon_state = "science_2_4"},/area/Viltrum)
+"cN" = (/turf/ViltrumCityStructure{icon_state = "science_2_5"},/area/Viltrum)
+"cO" = (/turf/ViltrumCityStructure{icon_state = "science_3_0"},/area/Viltrum)
+"cP" = (/turf/ViltrumCityStructure{icon_state = "science_3_1"},/area/Viltrum)
+"cQ" = (/turf/ViltrumCityStructure{icon_state = "science_3_2"},/area/Viltrum)
+"cR" = (/turf/ViltrumCityStructure{icon_state = "science_3_3"},/area/Viltrum)
+"cS" = (/turf/ViltrumCityStructure{icon_state = "science_3_4"},/area/Viltrum)
+"cT" = (/turf/ViltrumCityStructure{icon_state = "science_3_5"},/area/Viltrum)
+"cU" = (/turf/ViltrumCityStructure{icon_state = "science_4_0"},/area/Viltrum)
+"cV" = (/turf/ViltrumCityStructure{icon_state = "science_4_1"},/area/Viltrum)
+"cW" = (/turf/ViltrumCityStructure{icon_state = "science_4_2"},/area/Viltrum)
+"cX" = (/turf/ViltrumCityStructure{icon_state = "science_4_3"},/area/Viltrum)
+"cY" = (/turf/ViltrumCityStructure{icon_state = "science_4_4"},/area/Viltrum)
+"cZ" = (/turf/ViltrumCityStructure{icon_state = "science_4_5"},/area/Viltrum)
+"da" = (/turf/ViltrumCityStructure{icon_state = "science_5_0"},/area/Viltrum)
+"db" = (/turf/ViltrumCityStructure{icon_state = "science_5_1"},/area/Viltrum)
+"dc" = (/turf/ViltrumCityStructure{icon_state = "science_5_2"},/area/Viltrum)
+"dd" = (/turf/ViltrumCityStructure{icon_state = "science_5_3"},/area/Viltrum)
+"de" = (/turf/ViltrumCityStructure{icon_state = "science_5_4"},/area/Viltrum)
+"df" = (/turf/ViltrumCityStructure{icon_state = "science_5_5"},/area/Viltrum)
+"dg" = (/turf/ViltrumCityStructure{icon_state = "science_6_0"},/area/Viltrum)
+"dh" = (/turf/ViltrumCityStructure{icon_state = "science_6_1"},/area/Viltrum)
+"di" = (/turf/ViltrumCityStructure{icon_state = "science_6_2"},/area/Viltrum)
+"dj" = (/turf/ViltrumCityStructure{icon_state = "science_6_3"},/area/Viltrum)
+"dk" = (/turf/ViltrumCityStructure{icon_state = "science_6_4"},/area/Viltrum)
+"dl" = (/turf/ViltrumCityStructure{icon_state = "science_6_5"},/area/Viltrum)
+"dm" = (/turf/ViltrumOcean,/area/Viltrum)
+"dn" = (/turf/ViltrumOcean/Boundary,/area/Viltrum)
+"do" = (/turf/ViltrumOcean/Shallow,/area/Viltrum)
 
 (1,1,1) = {"
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-ooooooooooooooooooiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiooooooooooooooooooo
-ooooooooooooooooooiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiooooooooooooooooooo
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiggggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiidgggggggiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiaiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppppiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiippppppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiippppppppppppppppp
-ppppppppppppppppiiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-ppppppppppppppppiiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-nnnnnnnnnnnnnnnniiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-nnnnnnnnnnnnnnnniiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-nnnnnnnnnnnnnnnniiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-nnnnnnnnnnnnnnnniiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-nnnnnnnnnnnnnnnniiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiippppppppppppppppp
-iiiiiiiiiiiiiiiiiiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiiiiiiiiiiiiiiiiiii
-iiiiiiiiiiiiiiiiiiggggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiggggggggiiiiiiiiiiiiiiiiiiiii
-jjjjjjjjjjjjjjjjiiegggggggiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiifgggggggiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiibiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiciiiiiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjj
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiihhhhhhhiiiiiiiiiiiiiiiiiiiiihhhhhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-iiiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiiiii
-iiiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiijjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjiiiiii
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-nnniijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiiijjjjjjjiinnnnnnnnnnnnnnnnnnnnnnnnniijjjjjjjiinnnn
-llliijjjjjjjiillllllllllllllllllllllllliijjjjjjjiiijjjjjjjiillllllllllllllllllllllllliijjjjjjjiillll
-kkkiijjjjjjjiikkkkkkkkkkkkkkkkkkkkkkkkkiijjjjjjjiiijjjjjjjiimmmmmmmmmmmmmmmmmmmmmmmmmiijjjjjjjiikkkk
-kkkiijjjjjjjiikkkkkkkkkkkkkkkkkkkkkkkkkiijjjjjjjiiijjjjjjjiimmmmmmmmmmmmmmmmmmmmmmmmmiijjjjjjjiikkkk
-kkkiijjjjjjjiiikkkkkkkkkkkkkkkkkkkkkkkkiijjjjjjjiiijjjjjjjiimmmmmmmmmmmmmmmmmmmmmmmmiiijjjjjjjiikkkk
-kkkiijjjjjjjiiikkkkkkkkkkkkkkkkkkkkkkkkiijjjjjjjiiijjjjjjjiimmmmmmmmmmmmmmmmmmmmmmmmiiijjjjjjjiikkkk
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndndn
+dmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdm
+dmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdm
+dmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdm
+dmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdm
+dmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdmdm
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+dodododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododododo
+auauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauauau
+atatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatat
+atatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatat
+atatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatatat
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoao
+arararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararar
+arararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararararar
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapamalalalalalalalalalamapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapamalalalalalalalalalamapapapapapapapapapapap
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararanananananarararararararararararararararararararararararararararararararararararararararanananananarararararararararararararar
+ararakarararararararararararararararararararararararararararararakararararalalaqalalararararakarararararararararararararararararararararararararararararakararararalalaqalalararararakararararararararar
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoao
+bvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTararalalaqalalararbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTararalalaqalalararbvbBbHbNbTbYceckcqcwbvbB
+bubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSararalalaqalalararbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSararalalaqalalararbubAbGbMbSbXcdcjcpcvbubA
+btbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRararalalaqalalararbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRararalalaqalalararbtbzbFbLbRbWcccicocubtbz
+bsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQararalalaqalalararbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQararalalaqalalararbsbybEbKbQbVcbchcnctbsby
+brbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPararalalaqalalararbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPararalalaqalalararbrbxbDbJbPbUcacgcmcsbrbx
+adbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOararalalaqalalararadbwbCbIbOafbZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOararalalaqalalararadbwbCbIbOaebZcfclcradbw
+arararararararararararararararararararararararararararararararararararararalalaqalalarararararararararaaarararararararararararararararararararararararararararararalalaqalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararar
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoao
+bvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTararalalaqalalararbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTararalalaqalalararbvbBbHbNbTbvbBbHbNbTbYce
+bubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSararalalaqalalararbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSararalalaqalalararbubAbGbMbSbubAbGbMbSbXcd
+btbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRararalalaqalalararbtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRararalalaqalalararbtbzbFbLbRbtbzbFbLbRbWcc
+bsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQararalalaqalalararbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQararalalaqalalararbsbybEbKbQbsbybEbKbQbVcb
+brbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPararalalaqalalararbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPararalalaqalalararbrbxbDbJbPbrbxbDbJbPbUca
+adbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOagbZcfclcradbwbCbIbOararalalaqalalararadbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOahbZcfclcradbwbCbIbOararalalaqalalararadbwbCbIbOadbwbCbIbOaebZ
+arararararararararararararararararararararararararararabarararararararararalalaqalalarararararararararararararararararararararararararararararacarararararararararalalaqalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararar
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+alalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalaqalalalalalalalalalalalalalalalal
+aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoao
+bYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwararalalaqalalararbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwararalalaqalalararcBcHcNcTcZdfdlbvbBbHbNbT
+bXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvararalalaqalalararbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvararalalaqalalararcAcGcMcScYdedkbubAbGbMbS
+bWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocuararalalaqalalararbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocuararalalaqalalararczcFcLcRcXdddjbtbzbFbLbR
+bVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctararalalaqalalararbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctararalalaqalalararcycEcKcQcWdcdibsbybEbKbQ
+bUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsararalalaqalalararbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsararalalaqalalararcxcDcJcPcVdbdhbrbxbDbJbP
+aebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcrararalalaqalalararaebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcrararalalaqalalararaicCcIcOcUdadgadbwbCbIbO
+arararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararanananananarararararararararararararararararararararararararararararararararararararararanananananarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapamalalalalalalalalalamapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapapamalalalalalalalalalamapapapapapapapapapapap
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+amalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalamalalalalalalalalalamalalalalalalalalalalal
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+arararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararararararararararararararararararararararararararararalalalalalarararararararararararararar
+asasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasararanananananarararararararararararararararararararararararararararararararararararararararanananananarararararararararararararar
+asasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasararalalaqalalararararakarararararararararararararararararararararararararararararakararararalalaqalalararararakararararararararar
+asasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoararalalaqalalararaoaoaoaoaoaoaoaoaoaoaoao
+asasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasararalalaqalalararbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTbvbBbHbNbTbYceckcqcwbvbBbHbNbTararalalaqalalararbvbBbHbNbTbvbBbHbNbTbYce
+asasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasararalalaqalalararbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSbubAbGbMbSbXcdcjcpcvbubAbGbMbSararalalaqalalararbubAbGbMbSbubAbGbMbSbXcd
+asasajasasasasajasasasasasaAaGaMaSaYbebkbqasasasasasasajasasasasajasasararalalaqalalararbtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRbtbzbFbLbRbWcccicocubtbzbFbLbRararalalaqalalararbtbzbFbLbRbtbzbFbLbRbWcc
+asasasasasasasasasasasasasazaFaLaRaXbdbjbpasasasasasasasasasasasasasasararalalaqalalararbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQbsbybEbKbQbVcbchcnctbsbybEbKbQararalalaqalalararbsbybEbKbQbsbybEbKbQbVcb
+asasasasasasasasasasasasasayaEaKaQaWbcbiboasasasasasasasasasasasasasasararalalaqalalararbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPbrbxbDbJbPbUcacgcmcsbrbxbDbJbPararalalaqalalararbrbxbDbJbPbrbxbDbJbPbUca
+asasasasasasasasasasasasasaxaDaJaPaVbbbhbnasasasasasasasasasasasasasasararalalaqalalararadbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOadbwbCbIbOaebZcfclcradbwbCbIbOararalalaqalalararadbwbCbIbOadbwbCbIbOaebZ
+asasasasasasasasasasasasasawaCaIaOaUbabgbmasasasasasasasasasasasasasasararalalaqalalarararararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararar
+asasasasasasasasasasasasasavaBaHaNaTaZbfblasasasasasasasasasasasasasasararalalaqalalarararararararararararararararararararararararararararararararararararararararalalaqalalarararararararararararararar
 "}

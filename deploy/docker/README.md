@@ -29,9 +29,10 @@ ambiente `development`. Nenhuma porta fica acessível na LAN ou na internet.
 
 Use `./tools/Invoke-NexusLocalDocker.sh status` para verificar o healthcheck e
 `./tools/Invoke-NexusLocalDocker.sh down` para encerrar. O volume
-`nexus-local_nexus_state` preserva os dados do playtest; `down` não o remove.
+`nexus-local_nexus_live_state` preserva os dados locais; `down` não o remove.
+O runtime local também usa `live`, com recompensas de playtest desligadas.
 
-## Iniciar o playtest
+## Iniciar o servidor live
 
 1. Configure `SECRETS.dm` localmente, sem registrar credenciais no Git.
 2. Configure o roteador TCP do Traefik conforme a seção abaixo.
@@ -47,10 +48,24 @@ enquanto o restante da imagem continua somente leitura. Quando o hash de
 `DU.dmb` ou `DU.rsc` muda, o cache dinâmico antigo é removido e recriado para
 não misturar recursos de builds diferentes.
 
-O volume `nexus_state` preserva saves, mapas construídos, uploads e logs entre
-atualizações. Faça backup desse volume antes de trocar a imagem. O container
-inicia como playtest isolado e habilita os rewards self-service; não reutilize
-esse volume posteriormente como servidor live.
+O volume `nexus_live_state` preserva saves, mapas construídos, uploads e logs
+entre atualizações. Faça backup desse volume antes de trocar a imagem. O
+container inicia com `nexus_environment=live&nexus_playtest_rewards=0` e a tag
+padrão é `live-516.1686`.
+
+A mudança de nome cria um volume live novo. O antigo `nexus_state` de playtest
+permanece separado, sem migração automática de personagens ou estado do mundo.
+Reaplique no volume novo os administradores, bans, regras e logs que desejar
+manter. A preservação automática descrita abaixo se aplica ao `Pwipe` dentro
+do mesmo volume; a troca de volume não copia arquivos.
+
+O comando administrativo **Pwipe** agora sempre limpa todo o progresso de jogo:
+personagens, Feats, economia, facções e cargos (inclusive Grand Regent), itens,
+construções e alterações do mapa. Ele registra um pedido persistente e reinicia
+em 10 segundos. A limpeza ocorre antes de carregar os saves no próximo startup,
+mantendo administração, bans, regras e logs. **Pwipe Settings** apenas explica
+essa política; não existem opções para preservar Feats, itens ou construções.
+Veja o escopo e a recuperação de falhas em [Wipe completo](../../docs/FullWipe.md).
 
 Antes de iniciar o DreamDaemon, o entrypoint cria e testa os diretórios
 persistentes de personagens, Feats, retratos, músicas e logs. Isso inclui os
@@ -69,6 +84,71 @@ SHA-1 dentro do mesmo volume privado; nenhum arquivo ou URL é enviado a um
 serviço externo. O container falha no startup se o inspetor não ficar pronto.
 Nos logs, as linhas `Profile media inspector is ready.` e
 `Persistent runtime directories are ready.` confirmam as duas precondições.
+
+## Investigar CPU alta na VPS
+
+O campo `Processor` do jogo exibe `world.cpu`: a fração do tick usada por procs
+e envio de informações do mapa, conforme a [referência do BYOND](https://www.byond.com/docs/ref/#/world/var/cpu).
+Ele não substitui a medição do processo no Linux. CPU baixa nesse campo com
+CPU alta no host exige distinguir o DreamDaemon, suas threads, o inspetor
+Python e os processos do Docker antes de atribuir a causa ao código do jogo
+ou ao container. `world.map_cpu` já é parte de `world.cpu`, não uma parcela
+extra a somar.
+
+Com o container em execução, rode **na própria VPS**, na raiz do repositório:
+
+```sh
+sh tools/Measure-NexusDockerCpu.sh
+```
+
+Se houver mais de um container Nexus, informe o nome explicitamente:
+
+```sh
+sh tools/Measure-NexusDockerCpu.sh docker-nexus-exodus-1
+```
+
+O script usa o socket local do Docker e comandos de leitura. Não instala
+pacotes, inicia containers, reinicia o jogo ou altera saves. Também pode ser
+usado com o container parado para consultar a configuração; nesse caso,
+informa que não há amostra de CPU. Não é necessário reconstruir a imagem.
+
+A coleta dura aproximadamente 20 segundos, além do tempo de resposta do
+Docker. Ela mostra arquitetura do host/imagem, limites de CPU, reinícios,
+consumo agregado, processos do host, threads do container e contadores de
+throttling disponíveis. Registre o `Processor` do jogo durante essa mesma
+janela. Para guardar o relatório, redirecione a saída para um arquivo fora do
+repositório. O script não coleta saves, variáveis de ambiente ou logs de
+jogadores. Use a configuração padrão do `top` (nomes dos processos, sem
+argumentos) para obter os campos descritos abaixo.
+
+Como interpretar:
+
+- No `top` com o modo Irix padrão, 100% corresponde a uma CPU lógica ocupada;
+  não significa necessariamente todas as CPUs da VPS. O modo Solaris divide
+  esse valor pelo número de CPUs. A configuração pessoal do `top` pode mudar
+  esse modo.
+- Ignore o primeiro quadro do `top` por threads e compare os três seguintes.
+  A tabela de `docker top` serve para identificar PIDs; seu `%CPU` é uma média
+  desde o início do processo, não a mesma janela dos quadros seguintes.
+- Uma thread do DreamDaemon alta, com `Processor` baixo na mesma janela,
+  direciona a investigação para trabalho do engine fora dessa métrica. Isso
+  ainda não identifica qual rotina nem comprova defeito do Docker.
+- Python alto direciona a investigação para o inspetor de mídia. `dockerd` ou
+  `docker-proxy` altos no quadro do host direcionam a investigação para o
+  serviço Docker, logs ou rede. Os nomes das threads podem ser truncados.
+- Esta imagem força `linux/amd64`. Host ARM com imagem AMD64 exige emulação;
+  compare a arquitetura informada pelo **daemon Docker** com a imagem. A
+  [documentação do Docker](https://docs.docker.com/build/building/multi-platform/)
+  descreve o custo possível de emular uma arquitetura diferente.
+- Compare os contadores `nr_throttled`/`throttled_usec` (ou `throttled_time` em
+  cgroup v1) antes/depois. Crescimento indica limitação de CPU nessa janela.
+  Valores ausentes dependem do layout/permissões do cgroup; não equivalem a
+  zero. Quotas de grupos ancestrais da VPS também podem limitar o processo.
+
+Se o servidor ficar responsivo com CPU alta, preserve uma coleta antes de
+reiniciar. Processos muito breves entre quadros podem não aparecer; o total
+do container ainda inclui esse trabalho. Uma coleta durante o startup também
+deve ser distinguida do consumo sustentado após o mundo terminar de carregar.
 
 ## Traefik em host network
 
@@ -100,7 +180,7 @@ Conecte com `byond://nexus-exodus.roundstage.net.br:50000`.
 ## Homologação isolada
 
 Uma segunda instância pode usar outra porta, imagem e volume sem afetar o
-playtest principal. O nome de projeto diferente faz o Compose criar um volume
+servidor live principal. O nome de projeto diferente faz o Compose criar um volume
 separado:
 
 ```sh

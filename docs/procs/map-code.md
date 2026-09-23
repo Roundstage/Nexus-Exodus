@@ -1,5 +1,22 @@
 # Map Code
 
+## Viltrum ecumenopolis — 2026-09-14
+
+`ViltrumEcumenopolis.dm` defines `ViltrumCityHouse`, its five visual variants,
+`ViltrumCityStructure`, streets and a transparent garden tree. Structures inherit
+the solid, opaque CityBuildingFootprint behavior; each turf has the corresponding
+32px crop and a shared pavement underlay, independent of the large object anchor.
+
+`CityBuildingDoor/ViltrumCity.Crossed` and `CityBuildingDoor/Exit/ViltrumCity.Crossed`
+reuse `travel` for adjacent walking entry and exact street return. They retain
+KO/KB, obstacle and planet/area validation. The 37 existing Viltrum rooms stay in
+place and empty; only surface locations and their single return targets move.
+
+`area/Viltrum` now disables automatic cliffs, edges and waves through the same
+source/destination policies as SuperEarth. The authored coast must survive direct
+decorator calls and late GenerateZone visits. No per-building loops or lights
+were added. See `docs/Maps/ViltrumEcumenopolis.md` for sources and validation.
+
 ## Overview
 Auto-generated first-pass proc summaries based on signature names. Refine descriptions during refactors.
 

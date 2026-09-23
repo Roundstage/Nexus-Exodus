@@ -1,0 +1,56 @@
+[
+  {
+    "file": "ViltrumPlanetMood.jpg",
+    "originalFile": "Imagem do Codex 6 de set. de 2026, 12_28_11.jpg",
+    "sha256": "fdde98e91b6abc494bdc814532b3105904b6d9d88803b40c936590f450c5d209",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "ViltrumSkyline.png",
+    "originalFile": "codex-clipboard-3a4c3bd3-4d2b-4ca9-89c5-10a8df097c1f.png",
+    "sha256": "d41e9c67be7fee43c2eb886b1388d2332fff9821a8b514013e11f812830bd4ba",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "ViltrumGrasslandSpire.png",
+    "originalFile": "codex-clipboard-c43f9123-bed4-4784-a146-7ece20d18c22.png",
+    "sha256": "61302c45d339058c8399708d9cfdf6a7f369a457189da9b9849f5d8a5ddd7d3a",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "ViltrumCivicStatue.png",
+    "originalFile": "codex-clipboard-83b28232-036c-4cfe-b770-3b6e47cb4b83.png",
+    "sha256": "ebd52fec87ed222414f082677b68935f2ea349f8aba34d3a1d38f73a83052478",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "ViltrumAerialTower.png",
+    "originalFile": "codex-clipboard-cead536d-3510-4863-8208-5e72e9fd97bd.png",
+    "sha256": "476f27bde3d000147e2f5ca97d1f3ed73e23b7acf56981593cb23797cb3079b7",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "AdjacentMedievalBuildings.png",
+    "originalFile": "codex-clipboard-c94c9992-6136-4d13-a0e4-0ef47a756e9f.png",
+    "sha256": "011255f9ef74d5711f8eb8dbca48bcaa6dc46fd078df81d4ad138cb3848650ec",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "ModernStreetBlock.png",
+    "originalFile": "codex-clipboard-31f6cb66-cf6f-4516-8040-88510be10db7.png",
+    "sha256": "b2b39a45ddd846772390dce263d1c2574bbef4eb96187afa281dec1d873fe58f",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "FuturisticStreetBlock.png",
+    "originalFile": "codex-clipboard-79d1a0d1-202d-43dd-b3df-93c32377c4fe.png",
+    "sha256": "79925b704a3d6ee68c2034de67fa7f57e0a06cec7645a208721f477f8083df42",
+    "use": "User-provided visual reference; not production art"
+  },
+  {
+    "file": "RejectedRiverCity.png",
+    "originalFile": "codex-clipboard-fa88a611-62d6-4333-8fbb-d7b8cff738df.png",
+    "sha256": "a0f4099165d847014b472aa302654f69baea17d7568cf34e00cd99633dfb71b6",
+    "use": "User-provided visual reference; not production art"
+  }
+]

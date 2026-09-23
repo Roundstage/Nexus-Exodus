@@ -18,7 +18,7 @@ function checkInteriors(){
   for(let yy=y;yy<=d;yy++)for(let x=a;x<=c;x++){
    const atoms=splitOutside(map.grid[map.height-yy][x-1],','),turf=atoms.at(-2);assert.equal(atoms.at(-1),expectedArea);
    const objects=atoms.slice(0,-2);interiorObjects+=objects.length;
-   const allowedExit=/^\/obj\/CityBuildingDoor(?:\/Earth)?\/Exit(?:\{|$)/;
+   const allowedExit=/^\/obj\/CityBuildingDoor(?:\/Earth)?\/Exit(?:\/ViltrumCity)?(?:\{|$)/;
    assert(objects.every(atom=>allowedExit.test(atom)),`Unexpected object inside ${b.name}`);
    const solid=/Roof/.test(turf);
    if(!solid)walkable.add(`${x},${yy}`);

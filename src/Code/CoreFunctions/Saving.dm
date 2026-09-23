@@ -10,9 +10,9 @@ proc/getNexusCharacterSaveRoot(environment = nexus_runtime_environment)
 proc/getNexusFeatSaveRoot(environment = nexus_runtime_environment)
 	return normalizeNexusRuntimeEnvironment(environment) == "playtest" ? "data/Playtest/Feats" : "data/Feats"
 
-proc/getNexusWipePersistenceRoots(delete_feats = TRUE, environment = nexus_runtime_environment)
+proc/getNexusWipePersistenceRoots(environment = nexus_runtime_environment)
 	var/list/roots = list("[getNexusCharacterSaveRoot(environment)]/")
-	if(delete_feats) roots += "[getNexusFeatSaveRoot(environment)]/"
+	roots += "[getNexusFeatSaveRoot(environment)]/"
 	return roots
 
 proc/getNexusCharacterSavePathForKey(character_key, slot = 1, environment = nexus_runtime_environment)
@@ -337,8 +337,10 @@ proc/saveWorldRepeat() while(1)
 	spawn saveWorld()
 
 proc/saveWorld(save_map=1, allow_auto_reboot=1, delete_pending_objs=1)
+	if(nexus_full_wipe_pending) return
 	world<<"<font color=yellow><font size=3>Saving all items. Prepare for lag spike."
 	sleep(5)
+	if(nexus_full_wipe_pending) return
 	GarbageCollect()
 	saveAdmins()
 	saveYear()
@@ -565,10 +567,6 @@ proc/saveMisc()
 	s["skill_tournament_bp_boost"]<<skill_tournament_bp_boost
 	s["minimum_bounty"]<<minimum_bounty
 	s["incline_on"]<<incline_on
-	s["pwipe_delete_map"]<<pwipe_delete_map
-	s["pwipe_turf_health"]<<pwipe_turf_health
-	s["pwipe_delete_items"]<<pwipe_delete_items
-	s["pwipe_cost_threshold"]<<pwipe_cost_threshold
 	s["dbz_character_mode"]<<dbz_character_mode
 	s["disabled_dbz_characters"]<<disabled_dbz_characters
 	s["toxic_waste_on"]<<toxic_waste_on
@@ -601,7 +599,6 @@ proc/saveMisc()
 	s["feats_on"]<<feats_on
 	s["nexus_server_feature_defaults_version"]<<nexus_server_feature_defaults_version
 	s["auto_reboot_hours"]<<auto_reboot_hours
-	s["pwipe_delete_feats"]<<pwipe_delete_feats
 	s["override_spawn"]<<override_spawn
 	s["imitate_allowed"]<<imitate_allowed
 	s["majin_auto_learn"]<<majin_auto_learn
@@ -731,6 +728,7 @@ proc/loadMisc()
 	loadCustomDecors()
 	if(!fexists("Misc"))
 		applyNexusServerFeatureDefaultsMigration()
+		loadNexusWipeAdministration()
 		return
 	var/savefile/s=new("Misc")
 	s["Status_Message"]>>Status_Message
@@ -826,10 +824,6 @@ proc/loadMisc()
 	s["skill_tournament_bp_boost"]>>skill_tournament_bp_boost
 	s["minimum_bounty"]>>minimum_bounty
 	s["incline_on"]>>incline_on
-	s["pwipe_delete_map"]>>pwipe_delete_map
-	s["pwipe_turf_health"]>>pwipe_turf_health
-	s["pwipe_delete_items"]>>pwipe_delete_items
-	s["pwipe_cost_threshold"]>>pwipe_cost_threshold
 	s["dbz_character_mode"]>>dbz_character_mode
 	s["disabled_dbz_characters"]>>disabled_dbz_characters
 	s["toxic_waste_on"]>>toxic_waste_on
@@ -912,7 +906,6 @@ proc/loadMisc()
 	if("feats_on" in s) s["feats_on"]>>feats_on
 	if("nexus_server_feature_defaults_version" in s) s["nexus_server_feature_defaults_version"]>>nexus_server_feature_defaults_version
 	if("auto_reboot_hours" in s) s["auto_reboot_hours"]>>auto_reboot_hours
-	if("pwipe_delete_feats" in s) s["pwipe_delete_feats"]>>pwipe_delete_feats
 	if("override_spawn" in s) s["override_spawn"]>>override_spawn
 	if("imitate_allowed" in s) s["imitate_allowed"]>>imitate_allowed
 	if("majin_auto_learn" in s) s["majin_auto_learn"]>>majin_auto_learn
@@ -997,7 +990,6 @@ proc/loadMisc()
 
 	//offline_gains = 1 //forced on. no more option for admins to turn it off
 	//feats_on = 1 //forced on now (no. bad for rp to have forced on)
-	pwipe_delete_feats = 0
 	if(Turf_Strength > max_turf_str) Turf_Strength = max_turf_str
 
 	if(auto_revive_timer < minReviveTimer) auto_revive_timer = minReviveTimer

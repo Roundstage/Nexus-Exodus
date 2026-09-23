@@ -300,7 +300,6 @@ var/list/nexus_classic_command_catalog = list(
 	"/mob/verb/Whisper" = list("Whisper", "Commands", FALSE),
 	"/mob/verb/Who" = list("Who", "Other", FALSE),
 	"/mob/villain/verb/Threaten_Hero" = list("Threaten Hero", "Skills", FALSE),
-	"/obj/Ability/Blast/TestBlast/verb/TestBlast" = list("TestBlast", "Skills", TRUE),
 	"/obj/Absorb/verb/Absorb" = list("Absorb", "Skills", TRUE),
 	"/obj/Arcane_Crafting/verb/Arcane_Crafting" = list("Arcane Crafting", "Skills", TRUE),
 	"/obj/ArcaneSpell/Accelerate/verb/Accelerate" = list("Accelerate", "Skills", TRUE),

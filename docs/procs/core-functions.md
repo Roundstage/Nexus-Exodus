@@ -69,7 +69,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 ### src/Code/CoreFunctions/Saving.dm
 
 - `getNexusCharacterSaveRoot()`, `getNexusFeatSaveRoot()`, `getNexusCharacterSavePathForKey()`, and `getNexusFeatSavePathForKey()` produce environment-scoped, clamped slot paths for slots 1 through 3.
-- `getNexusWipePersistenceRoots()` returns only the active runtime's character root plus its Feat root when configured, preventing a playtest pwipe from targeting live persistence.
+- `getNexusWipePersistenceRoots()` always returns the active runtime's character and Feat roots. Full wipe no longer offers a preserve-Feats option.
+- `world/New()` consumes a durable full-wipe request before initialization loads persistence. A failed or invalid request stops startup and remains available for retry. `saveWorld()` rejects new saves once a wipe is pending.
+- `loadMisc()` restores default gameplay settings and the administrative allowlist from `WipeAdministration` when `Misc` is absent after a wipe; existing `Misc` saves retain precedence on later starts.
 - `isNexusSaveEnvironmentCompatible()` and `isNexusCharacterSavePathEnvironmentCompatible()` require playtest saves to carry the exact playtest marker and reject cross-environment loading. Markerless legacy saves remain live-only.
 - `ensureNexusCharacterSlots()` performs idempotent live-only legacy migration and creates the per-account migration marker without copying legacy characters or Feats into playtest storage.
 - `getNexusCharacterSlotInfo()` reads lightweight selector metadata without loading a character into the live mob.

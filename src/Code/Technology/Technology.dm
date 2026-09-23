@@ -384,6 +384,7 @@ proc/searchTechnologyCatalog(query, list/accessible_entries, maximum_results = 1
 
 proc/Add_Technology()
 	for(var/v in typesof(/obj))
+		if(initial(v:catalog_test_only)) continue
 		if(!initial(v:Cost)) continue
 		var/obj/o = new v
 		if(o)

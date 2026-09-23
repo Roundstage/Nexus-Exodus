@@ -1,0 +1,7 @@
+{
+  "date": "2026-09-14",
+  "tool": "Built-in image_gen",
+  "source": "Generated/ScienceOpaqueOriginal.png",
+  "result": "Generated/Science.png",
+  "prompt": "Remove ONLY the black backdrop from this exact single science-library game building sprite. Return the same entire building with genuine transparent alpha pixels outside the building, preserving all window colors, slate dark outlines, ivory walls, observatory dome, and interior dark details. Do not replace black with another solid color or a checkerboard. No new shadows or ground. Keep the existing silhouette, proportions, perspective and architecture exactly."
+}

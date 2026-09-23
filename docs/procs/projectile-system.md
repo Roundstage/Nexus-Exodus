@@ -928,19 +928,7 @@ Configured Fire and Electric on-hit statuses are copied into cached projectiles 
 - Returns: none (implicit).
 - Side effects: mutates game state and/or world resources.
 
-#### obj/Ability/Blast/TestBlast/verb/Hotbar_use
-- Signature: `Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### obj/Ability/Blast/TestBlast/verb/TestBlast
-- Signature: `TestBlast()`
-- Inputs: None
-- Purpose: Home the test projectile only toward the explicitly selected target.
-- Returns: none (implicit).
-- Side effects: see implementation.
+`obj/Ability/Blast/TestBlast` is a retired, non-hotbar compatibility shell with `catalog_test_only = TRUE`. Its test projectile and verbs were removed. Progression synchronization removes saved instances from characters.
 
 ### src/Code/ProjectileSystem/Projectiles.dm
 

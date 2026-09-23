@@ -1,5 +1,7 @@
 # Technology
 
+`Add_Technology()` rejects types whose initial `catalog_test_only` metadata is true before constructing catalog references. This excludes smoke-test Ship subtypes from Science and the progression tree while preserving their inherited behavior for automated tests.
+
 `gainArcaneEssence()` records gross generated essence in lifetime progression, applies any current planetary Arcane Essence income tax, and credits the spendable balance with the net amount. Vault withdrawals, secure trades, costs, and refunds remain raw transfers and are not taxed again. Resource bags retain their tax-exempt transfer share through merges and CyberDrone transport so recollection cannot create a second income event. Arcane Portal anchors also retain their bound planet, allowing a portal endpoint inside a shared mining cave to propagate the correct tax jurisdiction.
 
 ## Scourge Virus

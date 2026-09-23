@@ -19,6 +19,11 @@ world
 	status = "Nexus Exodus"
 	New()
 		log=file("Errors.log")
+		configureNexusPlaytestRewards()
+		if(!applyPendingNexusFullWipe())
+			log << "NEXUS_FULL_WIPE_FAILED startup stopped; request retained for retry"
+			shutdown()
+			return
 		spawn initialize()
 		AddBlasts()
 		World_Status()

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Terrenos BYOND"
+  short_description: "Rios, montanhas e biomas exploráveis em tiles"
+  default_prompt: "Use $byond-terrain-design para preparar o terreno e a hidrologia de Viltrum para sua ecumenópolis."

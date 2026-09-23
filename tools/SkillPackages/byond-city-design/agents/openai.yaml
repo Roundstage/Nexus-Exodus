@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cidades BYOND"
+  short_description: "Cidades densas, legíveis e jogáveis em tiles"
+  default_prompt: "Use $byond-city-design para criar um bairro moderno de Viltrum seguindo o contrato de mundo do projeto."
