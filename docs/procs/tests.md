@@ -1,5 +1,33 @@
 # Tests
 
+## Full gameplay wipe
+
+`runWorldWipeSmokeTests()` in `WorldWipeSmoke.dm` seeds isolated live/playtest filesystem fixtures and invokes the real durable-request cleanup helpers. It checks characters, Feats, global state, maps with numbering gaps, items, uploads and unknown nested gameplay files are deleted. It verifies administrative files/logs, the moderation allowlist from `Misc`, the media-inspector marker and the other environment's persistence survive; RP President is cleared while administrative votes remain. Duplicate requests, environment mismatches, malformed JSON, unsafe fixture roots and non-repetition after success are covered. No production wipe or reboot is invoked by these tests.
+
+## Test content catalog isolation
+
+`runTestContentCatalogSmokeTests()` checks that flagged object fixtures are absent from GiveItem, Make, Science and all progression rewards. It exercises inherited Blast metadata, explicit Combat/Racial registration, saved global/individual blueprint grants, removal of legacy test skills and node ownership, preservation of real Blast/Ship content and XP, and repeated cleanup. TestBlast has no executable verb. Existing catalog completeness assertions count only eligible production objects; the automated fixtures themselves remain available to the suite.
+
+`runTechnologyCatalogSmokeTests(soul_contract_count_before)` contains the existing technology completeness, equipment migration, blueprint deduplication and search assertions, extracted to keep `runStartupSmokeTests()` below Dream Maker's procedure-size limit.
+
+## Viltrum ecumenopolis — 2026-09-14
+
+`runViltrumEcumenopolisStartupSmokeTests()` exercises all 37 mapped surface
+doorways via actual movement, exact returns, KO/KB rejection, remote entry
+rejection, wrong surface/room region rejection and planet context. It verifies
+the city's structural turfs and walking/flight/knockback blocking.
+
+`runViltrumTerrainGenerationSmokeTests()` fingerprints every surface column,
+calls edge/wave decorators across 250,000 tiles, cliffs on 727 coastal positions,
+then visits all 16 generation zones. Terrain, collision and shoreline overlays
+must match afterward. `getAuthoredTerrainSmokeColumn(tile_x,surface_z)` is shared
+with Earth's unchanged coverage; `getEarthTerrainSmokeColumn` remains its wrapper.
+
+`TestViltrumEcumenopolis.cjs` reads applied maps directly, validates all building
+footprints/frontages, a connected road network, preserved water/manual tiles,
+private entry/return targets and source-chunk equivalence. Asset audit compares
+all 266 structural crops pixel for pixel with the six exported native sprites.
+
 Performance regression coverage includes `runBoundedWorkSmokeTests()` (invalid/non-progressing Leech work, bounded failed/successful orb placement, orb registry cleanup), `runSpecializedEffectWorkSmokeTests()` (flame-field actual destruction and aura termination at logical deletion), and `runPendingDeleteWorkSmokeTests()` (complete logout enqueue, callback invalidation, deduplication, FIFO, null-entry budget, compaction and hard batch limits).
 
 `runAdminMeteorWorkSmokeTests()` checks one factory call per meteor, valid debris types/locations, yielding across batches, and allocation-free rejection of invalid counts or an absent origin.
@@ -31,9 +59,11 @@ Pass `-ProfileMediaInspectorPythonPath <python>` to the smoke runner to start th
 
 ## Playtest rewards
 
+Docker deployments now default to `live` and disable these rewards. Explicit isolated playtest parameters remain available for development only.
+
 Self-service player rewards are disabled by default and fail closed in a live runtime. A dedicated, isolated playtest runtime must start with both exact world parameters `nexus_environment=playtest` and `nexus_playtest_rewards=1`. Within that immutable playtest environment, a level-four administrator can disable or re-enable the verbs for the current session with **Toggle Playtest Rewards**. Unknown parameter values fail closed, and the admin toggle cannot convert a running live server into a playtest server.
 
-Playtest character and Feat files use the separate `data/Playtest/Save` and `data/Playtest/Feats` namespaces and carry an environment marker that prevents cross-loading. Startup assertions also pin the environment-aware persistence roots consumed by `pwipe`, including the configuration that preserves Feats. The host must still run the playtest from its own complete runtime directory: world items and server state exist outside character saves, so a live runtime directory must never be reused for a playtest. Promote no playtest persistence back to live; migrate any approved cosmetic later through an explicit allowlist.
+Playtest character and Feat files use the separate `data/Playtest/Save` and `data/Playtest/Feats` namespaces and carry an environment marker that prevents cross-loading. Startup assertions pin both environment-aware roots; full wipe always deletes Feats in the active environment. The host must still run the playtest from its own complete runtime directory: world items and server state exist outside character saves, so a live runtime directory must never be reused for a playtest. Promote no playtest persistence back to live; migrate any approved cosmetic later through an explicit allowlist.
 
 While enabled, six verbs appear in the **Playtest** category: the complete reward bundle, Resources plus Arcane Essence (the game's mana currency), Progression XP, Milestone Points, normalized combat-stat and Energy capping, and relative base-BP matching. Currency and Progression grants are fixed, versioned, saved, and claimable once per character. Milestones stop at the authoritative 22-point lifetime cap. The stat operation raises all seven combat stats to the server-observed cap and base Energy to `energy_cap`, preserving the character's Efficiency multiplier and refilling current Energy. Stat and BP operations only raise permanent values; BP uses the strongest relative base recorded this wipe plus the current online scan, and Androids receive equivalent cybernetic BP instead of invalid natural BP. Every verb is self-only, accepts no player-supplied value, is rate-limited, rechecks server authorization, and writes an audit record.
 

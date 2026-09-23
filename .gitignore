@@ -55,6 +55,8 @@ Thumbs.db
 /Misc
 /Votes
 /Year
+/WipeAdministration
+/.nexus-full-wipe.json
 
 # Local Codex analysis and generated previews #
 /.codex-tmp/

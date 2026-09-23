@@ -3,6 +3,8 @@ mob/NexusSmokeTest
 		return
 
 obj/Ships/Ship/NexusControlSmoke
+	catalog_test_only = TRUE
+
 	New()
 		ships ||= list()
 		ships |= src
@@ -12,6 +14,8 @@ obj/Ships/Ship/NexusControlSmoke
 		loc = null
 
 obj/Controls/NexusControlSmoke
+	catalog_test_only = TRUE
+
 	New()
 		ship_controls ||= list()
 		ship_controls |= src
@@ -47,6 +51,7 @@ datum/NexusTradeSmokeSession
 		return null
 
 obj/items/NexusTradeFailMove
+	catalog_test_only = TRUE
 	var/fail_next_move
 
 	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
@@ -159,6 +164,7 @@ turf/NexusSmokeTest
 	FlyOverAble = 1
 
 obj/NexusSmokeSkillAction
+	catalog_test_only = TRUE
 	Skill = 1
 	hotbar_type = "Ability"
 	can_hotbar = 1
@@ -177,6 +183,7 @@ proc/nexusSmokeAssertNear(actual, expected, tolerance, message)
 		CRASH("Nexus smoke test failed: [message] (expected [expected], received [actual])")
 
 obj/Blast/BeamLifecycleSmoke
+	catalog_test_only = TRUE
 	var/tmp/collision_cycles = 0
 
 	getNexusBeamCollisionTargets()
@@ -184,6 +191,7 @@ obj/Blast/BeamLifecycleSmoke
 		return list()
 
 obj/SpaceDebris/Meteor/LifecycleSmoke
+	catalog_test_only = TRUE
 	var/tmp/movement_calls = 0
 
 	Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
@@ -192,6 +200,7 @@ obj/SpaceDebris/Meteor/LifecycleSmoke
 		return TRUE
 
 obj/Blast/ScatterLifecycleSmoke
+	catalog_test_only = TRUE
 	var/tmp/homing_calls = 0
 
 	followSelectedTarget(mob/target)
@@ -302,14 +311,72 @@ proc/runPooledProjectileSmokeTests()
 var/performance_catalog_constructor_calls = 0
 
 obj/PerformanceCatalogSmoke
+	catalog_test_only = TRUE
+
 	New()
 		performance_catalog_constructor_calls++
 
 obj/PerformanceInventorySmoke
+	catalog_test_only = TRUE
+
 	New()
 		return
 
 obj/PerformanceInventorySmoke/Child
+
+obj/Attacks/Blast/NexusCatalogSmoke
+	catalog_test_only = TRUE
+
+proc/runTestContentCatalogSmokeTests()
+	var/list/give_choices = getAdminSpawnChoices(null)
+	var/list/make_choices = getAdminSpawnChoices(null, include_mobs = TRUE)
+	for(var/test_type in getTestProgressionRewardTypes())
+		var/label = "[initial(test_type:name)] ([test_type])"
+		nexusSmokeAssert(!give_choices[label] && !make_choices[label], "administrative item catalogs exposed [test_type]")
+		nexusSmokeAssert(!getCanonicalScienceBlueprint(test_type), "Science registered test blueprint [test_type]")
+		for(var/node_id in progression_node_catalog)
+			var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+			nexusSmokeAssert(node.reward_type != test_type, "progression registered test reward [test_type]")
+	nexusSmokeAssert(!registerProgressionSkillType(/obj/Attacks/Blast/NexusCatalogSmoke), "explicit skill registration bypassed test exclusion")
+	nexusSmokeAssert(!registerRacialProgressionSkill("Earth Guardian", /obj/Attacks/Blast/NexusCatalogSmoke, 2, list()), "racial registration bypassed test exclusion")
+	nexusSmokeAssert(!text2path("/obj/Ability/Blast/TestBlast/verb/TestBlast"), "retired TestBlast verb remains usable")
+	var/mob/NexusSmokeTest/player = new
+	var/obj/Attacks/Blast/real_skill = new(player)
+	var/obj/Attacks/Blast/NexusCatalogSmoke/test_skill = new(player)
+	var/obj/Ability/Blast/TestBlast/legacy_skill = new(player)
+	var/obj/NexusSmokeSkillAction/test_action = new(player)
+	test_skill.catalog_test_only = FALSE
+	var/obj/Ships/Ship/NexusControlSmoke/test_blueprint = new
+	var/obj/real_blueprint = getCanonicalScienceBlueprint(/obj/Ships/Ship)
+	nexusSmokeAssert(real_blueprint, "fixture exclusion removed the real Ship design")
+	var/list/old_global_blueprints = GLOBAL_SCIENCE_TAB_ITEMS
+	GLOBAL_SCIENCE_TAB_ITEMS = list(test_blueprint)
+	player.individual_science_items = list(test_blueprint, real_blueprint)
+	player.player_tech_level = 10
+	player.player_tech_paths = list("Engineering")
+	nexusSmokeAssert(!player.canAccessTechnology(test_blueprint) && !player.canUnlockTechnology(test_blueprint), "saved test blueprint bypassed Science access checks")
+	player.normalizeIndividualScienceItems()
+	nexusSmokeAssert(length(player.individual_science_items) == 1 && player.individual_science_items[1] == real_blueprint, "blueprint cleanup did not preserve the real design")
+	nexusSmokeAssert(!getNormalizedScienceBlueprintList(GLOBAL_SCIENCE_TAB_ITEMS).len, "global blueprint cleanup retained test content")
+	GLOBAL_SCIENCE_TAB_ITEMS = old_global_blueprints
+	var/test_skill_id = getProgressionNodeIdForType(test_skill.type)
+	var/test_science_id = getProgressionScienceNodeIdForType(test_blueprint.type)
+	var/real_skill_id = getProgressionNodeIdForType(real_skill.type)
+	player.progression_nodes_owned = list()
+	player.progression_nodes_owned[test_skill_id] = 1
+	player.progression_nodes_owned[test_science_id] = 1
+	player.progression_nodes_owned[real_skill_id] = 1
+	player.progression_experience = 123
+	player.progression_lifetime_experience = 456
+	player.removeTestProgressionContent()
+	player.removeTestProgressionContent()
+	nexusSmokeAssert(!test_skill && !legacy_skill && !test_action && real_skill.loc == player, "test skill cleanup deleted real content or retained a fixture")
+	nexusSmokeAssert(!player.hasProgressionNode(test_skill_id) && !player.hasProgressionNode(test_science_id) && player.hasProgressionNode(real_skill_id), "test node cleanup altered real progress or retained test unlocks")
+	nexusSmokeAssert(player.progression_experience == 123 && player.progression_lifetime_experience == 456, "test cleanup changed earned experience")
+	del(test_blueprint)
+	del(real_skill)
+	del(player)
+	world.log << "NEXUS_TEST_CONTENT_CATALOG_TESTS_PASSED"
 
 mob/NexusSmokeTest/PerformanceCatalogSmoke
 	New()
@@ -336,7 +403,9 @@ proc/runPerformanceCatalogSmokeTests()
 	var/contracts_before = soul_contracts.len
 	var/list/give_choices = getAdminSpawnChoices(null)
 	var/list/make_choices = getAdminSpawnChoices(null, include_mobs = TRUE)
-	nexusSmokeAssert(give_choices["PerformanceCatalogSmoke (/obj/PerformanceCatalogSmoke)"] == /obj/PerformanceCatalogSmoke, "GiveItem metadata omitted a permitted object")
+	nexusSmokeAssert(!give_choices["PerformanceCatalogSmoke (/obj/PerformanceCatalogSmoke)"], "GiveItem metadata exposed a test fixture")
+	var/real_skill_type = /obj/Attacks/Blast
+	nexusSmokeAssert(give_choices["[initial(real_skill_type:name)] ([real_skill_type])"] == real_skill_type, "GiveItem metadata omitted a permitted skill")
 	nexusSmokeAssert(make_choices["PerformanceCatalogSmoke (/mob/NexusSmokeTest/PerformanceCatalogSmoke)"] == /mob/NexusSmokeTest/PerformanceCatalogSmoke, "Make metadata omitted a mob")
 	for(var/label in give_choices)
 		var/object_type = give_choices[label]
@@ -346,17 +415,18 @@ proc/runPerformanceCatalogSmokeTests()
 	var/list/privileged_choices = getAdminSpawnChoices("/obj/Auto_Shadow_Spar", allow_auto_shadow_spar = TRUE)
 	nexusSmokeAssert(privileged_choices.len == restricted_choices.len + 1, "GiveItem metadata lost the coded-admin exception")
 	var/list/filtered_choices = getAdminSpawnChoices("/obj/PerformanceCatalogSmoke")
-	nexusSmokeAssert(filtered_choices.len == 3, "GiveItem metadata search did not filter by type")
+	nexusSmokeAssert(filtered_choices.len == 2, "GiveItem metadata search exposed a test fixture")
 	var/list/old_learnable_skills = Learnable_Skills
 	Learnable_Skills = null
 	Initialize_Learnable_Skills_List()
 	var/expected_learnables = 0
 	for(var/object_type in typesof(/obj))
+		if(initial(object_type:catalog_test_only)) continue
 		if(initial(object_type:Cost_To_Learn)) expected_learnables++
 	nexusSmokeAssert(Learnable_Skills.len == expected_learnables, "learnable metadata omitted or merged a skill type")
 	for(var/label in Learnable_Skills)
 		var/skill_type = Learnable_Skills[label]
-		nexusSmokeAssert(ispath(skill_type, /obj) && initial(skill_type:Cost_To_Learn), "learnable metadata contains a non-skill")
+		nexusSmokeAssert(ispath(skill_type, /obj) && initial(skill_type:Cost_To_Learn) && !initial(skill_type:catalog_test_only), "learnable metadata contains a non-skill or test fixture")
 	Learnable_Skills = old_learnable_skills
 	nexusSmokeAssert(soul_contracts.len == contracts_before && performance_catalog_constructor_calls == constructor_calls_before, "building administrative menus executed gameplay constructors")
 	var/mob/NexusSmokeTest/ProgressionIndexSmoke/player = new
@@ -519,11 +589,12 @@ mob/NexusSmokeTest/SenseWorkSmoke
 
 proc/runBlueprintSenseWorkSmokeTests()
 	var/list/original_tech_list = tech_list
-	var/obj/PerformanceInventorySmoke/canonical = new
-	var/obj/PerformanceInventorySmoke/duplicate_canonical = new
-	var/obj/PerformanceInventorySmoke/Child/child_canonical = new
-	var/obj/PerformanceInventorySmoke/saved_copy = new
-	var/obj/PerformanceInventorySmoke/Child/saved_child = new
+	// Use gameplay types here: fixture types must now be rejected by normalization.
+	var/obj/items/Sword/canonical = new
+	var/obj/items/Sword/duplicate_canonical = new
+	var/obj/items/Sword/Forged/Science/child_canonical = new
+	var/obj/items/Sword/saved_copy = new
+	var/obj/items/Sword/Forged/Science/saved_child = new
 	var/obj/Effect/unknown = new
 	tech_list = list(canonical, duplicate_canonical, child_canonical)
 	var/list/source = list(saved_child, saved_copy, duplicate_canonical, unknown, "invalid", null)
@@ -2400,12 +2471,11 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 3) == "data/Save/smokekey-slot3.sav", "slot-three save path is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 4) == getNexusCharacterSavePathForKey("Smoke Key", 3), "character slot clamping is invalid")
 	nexusSmokeAssert(getNexusCharacterSavePathForKey("Smoke Key", 1, "playtest") == "data/Playtest/Save/smokekey-slot1.sav" && getNexusFeatSavePathForKey("Smoke Key", 2, "playtest") == "data/Playtest/Feats/smokekey-slot2.sav", "playtest character persistence is not namespaced away from live saves")
-	var/list/live_wipe_roots = getNexusWipePersistenceRoots(TRUE, "live")
-	var/list/playtest_wipe_roots = getNexusWipePersistenceRoots(TRUE, "playtest")
-	var/list/playtest_save_only_wipe_roots = getNexusWipePersistenceRoots(FALSE, "playtest")
+	var/list/live_wipe_roots = getNexusWipePersistenceRoots("live")
+	var/list/playtest_wipe_roots = getNexusWipePersistenceRoots("playtest")
 	nexusSmokeAssert(live_wipe_roots.len == 2 && ("data/Save/" in live_wipe_roots) && ("data/Feats/" in live_wipe_roots), "live pwipe does not target both active persistence roots")
 	nexusSmokeAssert(playtest_wipe_roots.len == 2 && ("data/Playtest/Save/" in playtest_wipe_roots) && ("data/Playtest/Feats/" in playtest_wipe_roots), "playtest pwipe targets live persistence or omits active playtest data")
-	nexusSmokeAssert(playtest_save_only_wipe_roots.len == 1 && ("data/Playtest/Save/" in playtest_save_only_wipe_roots), "pwipe cannot preserve Feats while deleting the active character root")
+	runWorldWipeSmokeTests()
 	nexusSmokeAssert(text2path("/mob/Admin4/verb/pwipe"), "level-four pwipe verb is missing")
 	nexusSmokeAssert(isNexusSaveEnvironmentCompatible(null, "live") && !isNexusSaveEnvironmentCompatible(null, "playtest") && !isNexusSaveEnvironmentCompatible("playtest", "live") && isNexusSaveEnvironmentCompatible("playtest", "playtest"), "character save environment markers permit cross-environment loading")
 	nexusSmokeAssert(findtext(getNexusRpgBrowserCss(), "border-radius:0") && findtext(getNexusRpgBrowserCss(), "Courier New"), "shared rustic browser theme is missing")
@@ -4352,6 +4422,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	del(fire_lord_target)
 	nexusSmokeAssert((locate(/obj/FireFist) in milestone_test) && (locate(/obj/MilestoneTechnique/BleedingEdge) in milestone_test) && (locate(/obj/MilestoneTechnique/ThunderingBlows) in milestone_test) && (locate(/obj/MilestoneTechnique/VenomousIntent) in milestone_test) && (locate(/obj/MilestoneTechnique/CrushingResolve) in milestone_test), "combat milestone techniques were not granted or restored")
 	initializeProgressionTreeCatalog()
+	runTestContentCatalogSmokeTests()
 	runNexusCometReversalSmoke(attack_movement_origin, attack_movement_destination, attack_movement_pass_through)
 	var/list/progression_categories = list()
 	for(var/progression_node_id in progression_node_catalog)
@@ -5641,8 +5712,30 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!loaded_player.get_energy("Mental Energy"), "completed migration restored an intentionally removed energy")
 	nexusSmokeAssert(!GLOBAL_ENERGY_TYPES["Qi"], "Qi remains registered")
 
+	runTechnologyCatalogSmokeTests(soul_contract_count_before)
+	if(Builds.len)
+		var/obj/Build/build_search_test = Builds[1]
+		nexusSmokeAssert(build_search_test in getBuildCatalogForCategory(build_search_test.build_category), "build category index omitted a registered recipe")
+		nexusSmokeAssert(build_search_test in searchBuildCatalog(build_search_test.name, build_search_test.build_category), "build prefix index cannot find a registered recipe")
+	runNexusActionCycleSmoke()
+
+	del(loaded_player)
+	del(player)
+	runEffectLifecycleSmokeTests()
+	runPooledProjectileSmokeTests()
+	runPerformanceCatalogSmokeTests()
+	runDeferredLifecycleSmokeTests()
+	runBlueprintSenseWorkSmokeTests()
+	runBoundedWorkSmokeTests()
+	runSpecializedEffectWorkSmokeTests()
+	runPendingDeleteWorkSmokeTests()
+	runAdminMeteorWorkSmokeTests()
+	world.log << "NEXUS_SMOKE_TESTS_PASSED"
+
+proc/runTechnologyCatalogSmokeTests(soul_contract_count_before)
 	var/list/expected_technology_types = list()
 	for(var/technology_type in typesof(/obj))
+		if(initial(technology_type:catalog_test_only)) continue
 		if(initial(technology_type:Cost))
 			expected_technology_types += technology_type
 	nexusSmokeAssert(tech_list.len == expected_technology_types.len, "technology catalog has an unexpected entry count")
@@ -5656,6 +5749,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	var/obj/items/Shikon_Jewel/shikon_science_reference
 	var/list/forged_science_replacements = list()
 	for(var/obj/technology in tech_list)
+		nexusSmokeAssert(!initial(technology.catalog_test_only), "technology catalog exposed a test fixture")
 		nexusSmokeAssert(technology.Cost, "technology catalog contains an object without Cost")
 		nexusSmokeAssert(technology.referenceObject, "technology catalog entry is not marked as a reference")
 		nexusSmokeAssert(!istype(technology, /obj/Contract_Soul), "Contract Soul was added to the technology catalog")
@@ -5720,24 +5814,6 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	if(tech_list.len)
 		var/obj/technology_search_test = tech_list[1]
 		nexusSmokeAssert(technology_search_test in searchTechnologyCatalog(technology_search_test.name), "technology prefix index cannot find a registered recipe")
-	if(Builds.len)
-		var/obj/Build/build_search_test = Builds[1]
-		nexusSmokeAssert(build_search_test in getBuildCatalogForCategory(build_search_test.build_category), "build category index omitted a registered recipe")
-		nexusSmokeAssert(build_search_test in searchBuildCatalog(build_search_test.name, build_search_test.build_category), "build prefix index cannot find a registered recipe")
-	runNexusActionCycleSmoke()
-
-	del(loaded_player)
-	del(player)
-	runEffectLifecycleSmokeTests()
-	runPooledProjectileSmokeTests()
-	runPerformanceCatalogSmokeTests()
-	runDeferredLifecycleSmokeTests()
-	runBlueprintSenseWorkSmokeTests()
-	runBoundedWorkSmokeTests()
-	runSpecializedEffectWorkSmokeTests()
-	runPendingDeleteWorkSmokeTests()
-	runAdminMeteorWorkSmokeTests()
-	world.log << "NEXUS_SMOKE_TESTS_PASSED"
 
 proc/runNexusDestructionAuraVisualSmoke(mob/skill_acceleration_test)
 	var/obj/Attacks/NexusSpecialStyle/AuraOfDestruction/aura_visual_test = new(skill_acceleration_test)

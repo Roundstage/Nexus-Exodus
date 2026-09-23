@@ -70,6 +70,7 @@ proc/getNormalizedScienceBlueprintList(list/blueprints)
 	if(!islist(blueprints)) return normalized_blueprints
 	var/list/canonical_by_type = indexCanonicalScienceBlueprints(blueprints)
 	for(var/obj/blueprint in blueprints)
+		if(initial(blueprint.catalog_test_only)) continue
 		var/canonical_blueprint = canonical_by_type[blueprint.type]
 		if(!canonical_blueprint) continue
 		normalized_blueprints += isobj(canonical_blueprint) ? canonical_blueprint : blueprint
@@ -84,6 +85,7 @@ mob/proc/normalizeIndividualScienceItems()
 
 mob/proc/canUnlockTechnology(obj/technology)
 	if(!istype(technology, /obj) || !technology.science) return FALSE
+	if(initial(technology.catalog_test_only)) return FALSE
 	var/required_level = technology.science_level
 	if(!required_level) required_level = 1
 	required_level = max(1, required_level)
@@ -93,6 +95,7 @@ mob/proc/canUnlockTechnology(obj/technology)
 
 mob/proc/canAccessTechnology(obj/technology)
 	if(!istype(technology, /obj)) return FALSE
+	if(initial(technology.catalog_test_only)) return FALSE
 	if(isRetiredScienceEquipment(technology)) return FALSE
 	if(scienceBlueprintListContainsType(GLOBAL_SCIENCE_TAB_ITEMS, technology.type)) return TRUE
 	if(scienceBlueprintListContainsType(individual_science_items, technology.type)) return TRUE

@@ -1,4 +1,5 @@
 proc/runViltrumPlanetStartupSmokeTests()
+	runViltrumEcumenopolisStartupSmokeTests()
 	runViltrumSliceStartupSmokeTests()
 	var/list/saved_disabled = disabled_planets.Copy()
 	var/list/saved_destroyed = destroyed_planets.Copy()

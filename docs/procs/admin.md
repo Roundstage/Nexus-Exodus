@@ -1,5 +1,7 @@
 # Admin
 
+`getAdminSpawnChoices()` excludes object types with initial `catalog_test_only` metadata from both GiveItem and Make. Automated fixtures remain directly constructible by the smoke suite.
+
 `spawnAdminMeteors(amount)` collects the 40-tile-radius spawn locations once, chooses one debris type before requesting an object from `getAdminMeteor(type_path)`, and spawns at most 500 objects. It yields every ten objects or at 80% tick usage and returns the actual count for the admin log. The list anchors placement to the command's initial location; invalid inputs/origins allocate nothing. The factory proc allows smoke tests to verify allocation counts without launching debris AI.
 
 `getAdminSpawnChoices(search_text, include_mobs = FALSE, allow_auto_shadow_spar = FALSE)` builds invocation-local label → type menus without constructing objects or mobs. Labels include initial names and full paths so same-name types remain distinguishable. `giveItem()` and `make()` instantiate only the selected type after input; cancellation and target loss do not create anything. Object searches retain path matching, and mob searches accept initial names or paths. Initial `Givable`/`Makeable`, clothing exclusions, Rank, and the coded-admin Auto Shadow Spar exception are preserved. Runtime-randomized constructor names are intentionally no longer used for previews.
@@ -810,30 +812,34 @@ Administrative commands and management flows. Administrators receive a searchabl
 #### mob/Admin4/verb/pwipeSettings
 - Signature: `mob/Admin4/verb/pwipeSettings()`
 - Inputs: None
-- Purpose: Handle pwipe settings.
+- Source: `src/Code/Admin/WorldWipe.dm`.
+- Purpose: Explain the fixed full-gameplay wipe policy; there are no selective-preservation toggles.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: displays an informational alert.
 
 #### mob/Admin4/verb/pwipe
 - Signature: `mob/Admin4/verb/pwipe()`
-- Inputs: confirmed administrator action and the persisted pwipe settings.
-- Purpose: Delete player persistence from the active live or isolated playtest namespace, then schedule a server reboot.
+- Inputs: confirmed administrator action; access is rechecked after the prompt.
+- Source: `src/Code/Admin/WorldWipe.dm`.
+- Purpose: Schedule a full gameplay reset in the current runtime.
 - Returns: none (implicit).
 - Side effects: records the administrator action and invokes the destructive wipe workflow.
 
 #### proc/Wipe
-- Signature: `proc/Wipe(delete_map=1,delete_items=1,cost_threshold=0,turf_health=20000,delete_feats=1)`
-- Inputs: delete_map=1, delete_items=1, cost_threshold=0, turf_health=20000, delete_feats=1
-- Purpose: Reset configured world state and delete character persistence from the current runtime environment without crossing between live and playtest roots.
-- Returns: none (implicit).
-- Side effects: disables player saving, resets planetary ownership, rates, and treasuries, removes configured map/item/Feat/profile/DBZ data, sends a non-blocking warning to connected players, and schedules a reboot after 30 seconds.
+- Signature: `proc/Wipe()`
+- Inputs: None.
+- Source: `src/Code/Admin/WorldWipe.dm`.
+- Purpose: Durably queue a full wipe of characters, Feats, world state, economy, factions, roles, items and construction while preserving administration, bans, rules and logs.
+- Returns: TRUE when scheduled; FALSE when pending already or the request cannot be persisted.
+- Side effects: writes the environment-bound wipe marker, blocks logins/player and world saves, saves current operational settings, announces the reset and schedules a reboot after 10 seconds. Deletion occurs at the next startup before loading gameplay saves.
 
-#### obj/proc/Item_upgrade_reset_for_wipe
-- Signature: `obj/proc/Item_upgrade_reset_for_wipe()`
-- Inputs: None
-- Purpose: Handle item upgrade reset for wipe.
-- Returns: none (implicit).
-- Side effects: see implementation.
+#### Full-wipe persistence helpers
+- `queueNexusFullWipe()` writes a versioned JSON request and refuses duplicate requests.
+- `applyPendingNexusFullWipe()` validates the request/environment, calls `clearNexusFullWipeState()` and removes the marker only after success. It is called by `world/New()` before persistence loads.
+- `getNexusFullWipeRootPaths()` and `getNexusFullWipePreservedPaths()` define the fixed deletion roots and operational/other-environment exceptions. `deleteNexusWipePath()` recursively removes files while retaining directories.
+- `preserveNexusWipeAdministration()` snapshots only `getNexusWipeAdministrationFields()` from `Misc` before deletion; `loadNexusWipeAdministration()` restores them when `loadMisc()` starts without `Misc`. This preserves administrative restrictions while discarding banks and Grand Regent ownership.
+- `clearNexusFullWipeState()` also clears only the in-world RP President from `Votes`, retaining Head Admin and vote bans. A cleanup failure keeps the marker and stops startup; completed requests do not repeat on later boots.
+- Optional fixture roots are restricted to `data/.wipe-smoke/` with `nexus_smoke_tests`; production uses the runtime directory. See [Full wipe](../FullWipe.md) for scope and recovery.
 
 #### mob/Admin3/verb/afkBoot
 - Signature: `mob/Admin3/verb/afkBoot()`

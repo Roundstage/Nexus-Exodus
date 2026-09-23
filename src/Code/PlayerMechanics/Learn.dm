@@ -1,4 +1,6 @@
 obj/var/Cost_To_Learn=0
+// Test fixtures retain their inherited behavior, but stay out of acquisition catalogs.
+obj/var/tmp/catalog_test_only = FALSE
 
 var/list/Learnable_Skills
 
@@ -6,6 +8,7 @@ proc/Initialize_Learnable_Skills_List()
 	if(!Learnable_Skills)
 		Learnable_Skills=new/list
 		for(var/A in typesof(/obj))
+			if(initial(A:catalog_test_only)) continue
 			if(initial(A:Cost_To_Learn))
 				Learnable_Skills["[initial(A:name)] (Cost: [initial(A:Cost_To_Learn)]) ([A])"] = A
 

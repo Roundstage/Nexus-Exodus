@@ -4,6 +4,9 @@
 
 /area/Viltrum
 	name = "Viltrum"
+	auto_cliffs = FALSE
+	auto_edges = FALSE
+	auto_waves = FALSE
 	has_resources = 1
 	resource_refill_mod = 1000
 	has_daynight_cycle = 1

@@ -1,0 +1,13 @@
+{
+  "blocks": 58,
+  "buildings": 877,
+  "accessible": 37,
+  "structuralTiles": 26864,
+  "reachableTiles": 165579,
+  "connectedRoadTiles": 42985,
+  "preservedWaterTiles": 57135,
+  "manualTilesPreserved": true,
+  "clearFrontages": true,
+  "matchingStructuralArt": true,
+  "exactReturnTargets": true
+}

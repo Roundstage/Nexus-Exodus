@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
-    image: "nexus-exodus:${NEXUS_IMAGE_TAG:-playtest-516.1686}"
+    image: "nexus-exodus:${NEXUS_IMAGE_TAG:-live-516.1686}"
     platform: linux/amd64
     restart: unless-stopped
     init: true
@@ -18,7 +18,7 @@ services:
       retries: 12
       start_period: 30s
     volumes:
-      - nexus_state:/srv/nexus
+      - nexus_live_state:/srv/nexus
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
@@ -30,4 +30,4 @@ services:
     stop_grace_period: 90s
 
 volumes:
-  nexus_state:
+  nexus_live_state:

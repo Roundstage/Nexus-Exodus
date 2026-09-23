@@ -344,14 +344,14 @@ obj/Voting
 					return
 				if(!usr.Can_Vote(src)) return
 				var/Voting/V=new;var/Vote_Initiator=usr.displaykey;
-				switch(input("You are about to start a vote to erase all player saves. Continue?") in list("Yes","No"))
+				switch(input("Start a full wipe vote? It will erase characters, Feats, economy, factions, ranks, items and map changes. Administration, bans, rules and logs remain. Continue?") in list("Yes","No"))
 					if("No") return
 				var/Timer=60
 				var/list/Voted=new //List of IPs who have already voted
 				spawn for(var/mob/P in players) spawn if(P&&!P.Vote_Banned()&&!(P.client.address in Voted)&&!P.Ignore(Vote_Initiator))
 					Voted+=P.client.address
 					switch(input(P,"[Vote_Initiator] has started a vote \
-					to PWIPE. Do you want this? There is only [Timer] seconds before the vote ends.") in \
+					to fully PWIPE characters, Feats, economy, factions, ranks, items and map changes. Administration, bans, rules and logs remain. Do you want this? There is only [Timer] seconds before the vote ends.") in \
 					list("Don't Vote","No","Yes"))
 						if("No") if(usr) V.No+=1
 						if("Yes") if(usr) V.Yes+=1
@@ -362,8 +362,8 @@ obj/Voting
 					else if(V.Yes+V.No<unique_players()*0.15)
 						world<<"Less than 15% of the population voted for a pwipe. Vote Failed."
 					else if(V.Yes>=(V.Yes+V.No)*0.7)
-						world<<"At least 70% were in favor. Erasing all player saves."
-						Wipe(delete_map=pwipe_delete_map,delete_items=pwipe_delete_items,cost_threshold=pwipe_cost_threshold,turf_health=pwipe_turf_health)
+						world<<"At least 70% were in favor. Scheduling a full gameplay wipe."
+						if(!Wipe()) world << "The full wipe could not be scheduled. An administrator must check the server log."
 					else world<<"Less than 70% were in favor of a pwipe. Vote Failed."
 			if("Remove All Admins")
 				if(!usr.Can_Vote(src)) return

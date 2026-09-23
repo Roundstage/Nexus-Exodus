@@ -63,26 +63,7 @@ obj
 				pixel_randomness = 10
 
 			TestBlast
-				icon = 'src/Icons/Ki/Blasts/Blast11.dmi'
-
-				verb
-					Hotbar_use()
-						set hidden = 1
-						TestBlast()
-
-					TestBlast()
-						set category = "Skills"
-						SetCooldown(usr)
-						var/obj/Effect/e = new(usr.loc)
-						e.density = 0
-						e.icon = icon
-						e.vector_speed = rand(1,2)
-						var/mob/m = usr.getSelectedTarget(max_dist = 20)
-						if(!m)
-							del(e)
-							return
-						while(e && m && usr && usr.getSelectedTarget(m, max_dist = 20, require_view = FALSE) == m)
-							var/angle = get_global_angle(e,m.loc)
-							vector_step(e, angle, e.vector_speed)
-							sleep(world.tick_lag)
-						if(e) del(e)
+				// Compatibility shell for old saves; removed during progression synchronization.
+				catalog_test_only = TRUE
+				can_hotbar = FALSE
+				Skill = 0

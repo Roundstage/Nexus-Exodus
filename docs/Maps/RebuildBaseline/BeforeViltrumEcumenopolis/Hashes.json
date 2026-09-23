@@ -1,0 +1,38 @@
+{
+  "files": {
+    "src/Maps/Viltrum.dmm": "46a615b10d33b5763826c8198033f51ff5eadab1c87aee79d75a0541fe3610a3",
+    "src/Maps/ViltrumMetadata.json": "bf7af77a28591f321e39548bd1c4e32ba4b8c69fae48e1bec628a59ccde0b6ea",
+    "src/Maps/CityInteriors.dmm": "8813f7995b2ee73c6356d30664ea20e88334c5a3cf8cffae200456f1d6ac3f2e",
+    "docs/Maps/CityBuildings.json": "aaad59e8b1af1843366ef0bfc7efa2d4e7562db348dc4534f2b563571501b92f",
+    "src/Maps/SuperEarth.dmm": "9f2197326e3a4445bbe71c635830b0c27a953b29df67bf79831016d26c6aafcc",
+    "src/Maps/SuperEarthMetadata.json": "30e2aa350b9ff74482156871097479d4a83b21ba16701ce0f0781f506f9926b8"
+  },
+  "chunks": {
+    "ViltrumA1.dmm": "7a51da53d503e59e55e2ca877ef2c7a7a8a87c3f3fce0d59c4e0277d2606ff3f",
+    "ViltrumA2.dmm": "66994beb0237e38d9f9e70049ea49aa000756762f58d027d1ebdf155125ca1ea",
+    "ViltrumA3.dmm": "4731f676e603a1d345dadab6dc7fbda60f354421c289656a1bf79ce712cc88d0",
+    "ViltrumA4.dmm": "18f45ecd2a64977a5cfd74c54a4d7e61230cfa9f320d21b92268fa1e84c256c8",
+    "ViltrumA5.dmm": "cf25fe096068c21ee15bceb887f6190227130ca0419882efcfd16ae0edee0408",
+    "ViltrumB1.dmm": "146530ad4bb8763edb7ccf1d3833a080bcd95d3dad96b765e1f54b888fbc6441",
+    "ViltrumB2.dmm": "bfbef2c10437f11efab233b98f0d8f94e394b28864f3ca1520b0a9c9b360ca77",
+    "ViltrumB3.dmm": "4e53800a2c6da9e741a5ff49b33eb70c952ddc876c218b4599e4a3afd639f642",
+    "ViltrumB4.dmm": "f1b9ce7da1b6c262f7f82b294d4b59ac85dce42d69f801f0b58df35ac6deee6d",
+    "ViltrumB5.dmm": "55956d90609d4b32ce2ccf155236b769f379c9d2b4324668afa9688519e1c074",
+    "ViltrumC1.dmm": "23e8aa2bf8c84e1863f5a14b62823bd9d986895758a8ea262d4d3d69538e08ca",
+    "ViltrumC2.dmm": "85b7ae716d4275cf801945e65df93a4feb1163839e62b047918bf4c5b3a9e19c",
+    "ViltrumC3.dmm": "a8953d54cce113ed9345c795a81d6b02f26a25aea051730c3eb0030cfcf48a42",
+    "ViltrumC4.dmm": "bbfea3a96dee67d3255ac409f05f6c828022aca11dae553ca9a3bc8fb4212442",
+    "ViltrumC5.dmm": "e97a0c7bebd31f4bdafbfc8a269f59df9ddc2878a8343e17179489a25edcf0e9",
+    "ViltrumD1.dmm": "a718d7dcad7e79a97c8a2d9d8966ae400acc54a6f77285ec7676345f4d35fde5",
+    "ViltrumD2.dmm": "cefd05a3ebf1e94bf475def2e685182ce75a3b8df80b927aab2a3a12e9284454",
+    "ViltrumD3.dmm": "b30019acdbe655ef1ed990186db40f49f27172feabd8d7ce78c41176d389463f",
+    "ViltrumD4.dmm": "76ff85b20729abba2b92333418c7d8c0c1c96e80bc2566b238129d0b68385323",
+    "ViltrumD5.dmm": "e8da976293d9c13c61018650c24e2de5975fe9fbeaeffc9b04c5c85ac56147b9",
+    "ViltrumE1.dmm": "974b447ddb7f583719b070c617cb79fdd7d8fcc486a0b1935a515aafaea74ef0",
+    "ViltrumE2.dmm": "11ec2998442f7af8914e933c89b97661cac25a7cc3493bed84b94d6cdd09b6e3",
+    "ViltrumE3.dmm": "ce6cfe2743b99de81917e661570fe0e2297dccc363df0dce5f531d857fb209ac",
+    "ViltrumE4.dmm": "3059a2b5c74d05097ddb1b97f167cf7a6d06c3592ee01dc1872a141e3a8bc0ad",
+    "ViltrumE5.dmm": "95bd99a2e4bc080ae26cafbd781d46d8e9f8b885b2e8e234c38cd388b9ef0faa"
+  },
+  "semanticOutputDelta": 0
+}

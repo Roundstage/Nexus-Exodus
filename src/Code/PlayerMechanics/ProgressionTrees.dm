@@ -177,6 +177,7 @@ proc/registerViltrumiteProgressionPath(root_id)
 
 proc/registerRacialProgressionSkill(racial_track, skill_type, tier, list/prerequisites)
 	if(!racial_track || !skill_type) return null
+	if(initial(skill_type:catalog_test_only)) return null
 	var/skill_name = initial(skill_type:name)
 	var/skill_description = initial(skill_type:desc)
 	var/node_id = getRacialProgressionNodeId(racial_track, skill_type)
@@ -283,6 +284,7 @@ proc/getProgressionCombatExcludedSkillTypes()
 
 proc/isProgressionCombatTreeExcluded(skill_type)
 	if(!skill_type) return TRUE
+	if(initial(skill_type:catalog_test_only)) return TRUE
 	if(skill_type in getProgressionCombatExcludedSkillTypes()) return TRUE
 	if(ispath(skill_type, /obj/MilestoneTechnique)) return TRUE
 	if(ispath(skill_type, /obj/ArcaneSpell)) return TRUE
@@ -691,7 +693,7 @@ proc/initializeProgressionScienceCatalog()
 		for(var/required_level = 1, required_level <= technology_level_thresholds.len, required_level++)
 			var/list/current_tier = list()
 			for(var/obj/technology in tech_list)
-				if(!technology.science) continue
+				if(!technology.science || initial(technology.catalog_test_only)) continue
 				var/technology_branch = technology.science_path ? technology.science_path : "Foundation"
 				if(technology_branch != branch || max(1, technology.science_level) != required_level) continue
 				var/node_id = getProgressionScienceNodeIdForType(technology.type)
@@ -986,8 +988,30 @@ mob/proc/updatePassiveProgression(announce = TRUE)
 	var/reason = elapsed_hours == 1 ? "hourly progression" : "[elapsed_hours] hours of online/offline progression"
 	return gainProgressionExperience(reward, reason, announce = announce, source_kind = "passive")
 
+mob/proc/removeTestProgressionContent()
+	// Keep the saved type paths loadable so old test skills can be retired safely.
+	for(var/obj/skill in contents)
+		if(initial(skill.catalog_test_only) && (skill.Skill || istype(skill, /obj/Ability/Blast/TestBlast))) del(skill)
+	if(!islist(progression_nodes_owned)) return
+	var/static/list/test_node_ids
+	if(!islist(test_node_ids))
+		test_node_ids = list()
+		for(var/test_type in getTestProgressionRewardTypes())
+			test_node_ids += getProgressionNodeIdForType(test_type)
+			test_node_ids += getProgressionScienceNodeIdForType(test_type)
+	for(var/node_id in test_node_ids) progression_nodes_owned -= node_id
+
+proc/getTestProgressionRewardTypes()
+	var/static/list/test_types
+	if(!islist(test_types))
+		test_types = list()
+		for(var/object_type in typesof(/obj))
+			if(initial(object_type:catalog_test_only)) test_types += object_type
+	return test_types
+
 mob/proc/syncProgressionTrees(silent = TRUE)
 	initializeProgressionTreeCatalog()
+	removeTestProgressionContent()
 	migrateProgressionExperienceScale()
 	normalizeIndividualScienceItems()
 	var/list/reward_types = indexProgressionRewardTypes()

@@ -1,0 +1,9 @@
+{
+  "buildings": 6,
+  "structuralTiles": 266,
+  "streetStates": 30,
+  "nativeHashesMatch": true,
+  "losslessStructuralCrops": true,
+  "transparentObjects": true,
+  "fullTileGround": true
+}
