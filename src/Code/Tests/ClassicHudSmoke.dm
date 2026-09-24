@@ -1,4 +1,55 @@
+proc/runClassicResponsiveLayoutSmokeTests()
+	var/list/layout = list(
+		"chat" = list("x" = 1360, "y" = 520, "w" = 550, "h" = 450, "open" = TRUE),
+		"bar" = list("x" = 680, "y" = 986, "w" = 541, "h" = 94, "open" = TRUE),
+		"bar_2" = list("x" = 1260, "y" = 720, "w" = 80, "h" = 223, "open" = TRUE))
+	var/original = json_encode(layout)
+	for(var/list/size in list(list(1003, 625), list(800, 600), list(640, 480), list(1920, 1080), list(2560, 1080)))
+		var/width = size[1]
+		var/height = size[2]
+		var/scale = classicHudScale(1920, 1080, width, height)
+		var/list/placed = list()
+		for(var/id in layout)
+			var/list/state = layout[id]
+			var/list/display = scaleClassicGeometry(state, 1920, 1080, width, height)
+			nexusSmokeAssert(display["scale"] == scale && display["content_w"] == state["w"] && display["content_h"] == state["h"], "Classic [id] changed its logical content instead of scaling it")
+			nexusSmokeAssert(abs(display["w"] - state["w"] * scale) < 1.01 && abs(display["h"] - state["h"] * scale) < 1.01, "Classic [id] lost proportional size at [width]x[height]")
+			nexusSmokeAssert(display["x"] >= 0 && display["y"] >= 0 && display["x"] + display["w"] <= width && display["y"] + display["h"] <= height, "Classic [id] escaped [width]x[height]")
+			for(var/list/other in placed)
+				nexusSmokeAssert(display["x"] >= other["x"] + other["w"] || display["x"] + display["w"] <= other["x"] || display["y"] >= other["y"] + other["h"] || display["y"] + display["h"] <= other["y"], "Classic scaling overlapped formerly separate panels")
+			placed += list(display)
+		nexusSmokeAssert(json_encode(layout) == original, "Classic window resize modified the saved layout")
+	var/list/chat = layout["chat"]
+	var/list/restored = scaleClassicGeometry(chat, 1920, 1080, 1920, 1080)
+	for(var/key in list("x", "y", "w", "h"))
+		nexusSmokeAssert(restored[key] == chat[key], "Classic failed to restore [key] at reference resolution")
+	var/list/display = scaleClassicGeometry(chat, 1920, 1080, 1003, 625)
+	display["x"] -= 40
+	display["y"] -= 30
+	var/list/moved = unscaleClassicGeometry(display, chat, "chat", 1920, 1080, 1003, 625)
+	var/list/projected = scaleClassicGeometry(moved, 1920, 1080, 1003, 625)
+	nexusSmokeAssert(abs(projected["x"] - display["x"]) <= 1 && abs(projected["y"] - display["y"]) <= 1 && moved["w"] == chat["w"] && moved["h"] == chat["h"], "Classic scaled drag drifted or changed panel size")
+	display["w"] += 20
+	display["h"] += 15
+	var/list/resized = unscaleClassicGeometry(display, chat, "chat", 1920, 1080, 1003, 625)
+	nexusSmokeAssert(resized["w"] > chat["w"] && resized["h"] > chat["h"], "Classic scaled resize failed to update logical dimensions")
+	var/list/collapsed = chat.Copy()
+	collapsed["collapsed"] = TRUE
+	collapsed["open"] = FALSE
+	display = scaleClassicGeometry(collapsed, 1920, 1080, 960, 540)
+	nexusSmokeAssert(display["h"] == 13 && display["collapsed"] && !display["open"], "Classic collapsed header did not scale or changed visibility")
+	var/list/old_chat = list("x" = 8, "y" = 170, "w" = 550, "h" = 335, "open" = FALSE, "preferred" = chat.Copy())
+	old_chat["preferred"]["viewport_w"] = 1920
+	old_chat["preferred"]["viewport_h"] = 1080
+	var/list/old_layout = list("chat" = old_chat)
+	var/list/reference = migrateClassicLayout(old_layout, list("w" = 1003, "h" = 625))
+	nexusSmokeAssert(reference["reference_w"] == 1920 && reference["reference_h"] == 1080 && old_layout["chat"]["x"] == chat["x"] && old_layout["chat"]["h"] == chat["h"] && !old_layout["chat"]["open"] && !old_layout["chat"]["preferred"], "Classic migration kept the discarded rearrangement instead of the player's placement")
+	old_layout = json_decode(json_encode(old_layout))
+	reference = migrateClassicLayout(old_layout, json_decode(json_encode(reference)))
+	nexusSmokeAssert(reference["reference_w"] == 1920 && old_layout["chat"]["x"] == 1360, "Classic settings reload lost its scaling reference")
+
 proc/runClassicHudSmokeTests()
+	runClassicResponsiveLayoutSmokeTests()
 	runSkillArtworkSmokeTests()
 	runNexusVitalsLayoutSmokeTests()
 	var/list/geometry = normalizeClassicGeometry(list("x" = 9000, "y" = -200, "w" = 9999, "h" = -20), "chat", 800, 600)
@@ -11,8 +62,8 @@ proc/runClassicHudSmokeTests()
 	var/list/default_bar_geometry = normalizeClassicGeometry(null, "bar", 1920, 1080)
 	nexusSmokeAssert(default_chat_geometry["w"] == 540 && default_chat_geometry["h"] == 480, "Classic chat did not receive its approved default size")
 	nexusSmokeAssert(default_bar_geometry["x"] == round((1920 - default_bar_geometry["w"]) / 2) && default_bar_geometry["y"] + default_bar_geometry["h"] == 1080, "primary hotbar is not centered flush with the bottom edge")
-	var/list/sense_geometry = resizeClassicGeometry(normalizeClassicGeometry(null, "sense", 1920, 1080), "sense", 1920, 1080, 1366, 768)
-	var/list/target_geometry = resizeClassicGeometry(normalizeClassicGeometry(null, "target", 1920, 1080), "target", 1920, 1080, 1366, 768)
+	var/list/sense_geometry = scaleClassicGeometry(normalizeClassicGeometry(null, "sense", 1920, 1080), 1920, 1080, 1366, 768)
+	var/list/target_geometry = scaleClassicGeometry(normalizeClassicGeometry(null, "target", 1920, 1080), 1920, 1080, 1366, 768)
 	nexusSmokeAssert(target_geometry["x"] + target_geometry["w"] <= sense_geometry["x"], "Classic target covered Sense after changing resolution")
 	var/mob/user = new
 	var/mob/refresh_user = new

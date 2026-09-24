@@ -428,6 +428,7 @@ proc/Apply_Hair(mob/P,obj/Hairs/O,force_color)
 		P.overlays+=P.hair
 	if(Had_Tail) P.Tail_Add()
 	P.SSj_Hair()
+	P.rebuildPlayerAppearance("hair change")
 	//P<<"You have selected [O]"
 
 mob/proc/Choose_Android_Icon()
@@ -447,6 +448,6 @@ obj/Base_Icon
 	Givable=0
 	Savable=0
 	Click()
-		usr.icon=icon
+		usr.setNexusAppearanceIcon(icon)
 		usr<<"Character icon chosen"
 		usr.Hide_Main_Grid()

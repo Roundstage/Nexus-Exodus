@@ -46,11 +46,21 @@ Standalone visual effects such as rock debris, Harambe event visuals, rising roc
 
 Managed equipment appearances carry an explicit copy of the character body matrix and opt out of inheriting it a second time. This keeps clothing, forged swords, masks and armor synchronized through Giant Form and Android Giant Version even on clients that detach item appearances from the parent transform. Character scaling changes only the linear matrix components, preserving any existing translation and pixel anchor.
 - Purpose: Own player equipment overlay slots, source identity, stable priorities, and isolated rendered images.
-- Behavior: removes legacy raw item icons plus orphaned rendered equipment images by icon state and pixel offset, derives equipped sources, sorts by priority/category/slot, rebuilds once, and re-adds injuries above equipment. Signature cleanup is what makes the manager safe after a relog or a transformation temporarily stores and restores the mob overlay list.
+- Behavior: removes legacy raw item icons plus orphaned rendered equipment images by icon state and pixel offset, derives equipped sources, sorts by priority/category/slot, rebuilds once, re-adds injuries above equipment, and reconstructs Lethal/RP Mode indicators from their current flags. Signature cleanup is what makes the manager safe after a relog or a transformation temporarily stores and restores the mob overlay list.
 
 ### mob/proc/rebuildPlayerAppearance(reason)
-- Purpose: Reconstruct managed overlays after login, equipment changes, body swap, or primary transformation changes.
-- Side effects: removes both current manager-owned images and visually matching stale equipment images, then replaces them with fresh per-player images. It deliberately leaves unrelated transient combat effects intact.
+- Purpose: Reconstruct equipment and combat-status overlays after loading a character, login normalization, icon/equipment changes, body swap, or primary transformation changes.
+- Side effects: removes both current manager-owned images and visually matching stale equipment images, then replaces them with fresh per-player images. Lethal/RP Mode cleanup identifies every old indicator by its resource, even after temporary image references were lost. Hair, custom cosmetics, and unrelated combat effects are preserved.
+
+### mob/Read(save_file)
+- Purpose: Rebuild the character appearance immediately after deserialization, including migration of orphaned combat indicators from older saves.
+- Side effects: replaces any temporary appearance manager inherited from the destination mob, reconstructs equipped items and status images, and preserves saved combat-mode flags. Normal login transformation normalization still runs afterward.
+
+### atom/proc/setNexusAppearanceIcon(new_icon, new_icon_state, center)
+- Purpose: Apply a body or item icon change and rebuild the affected character immediately. Used by Change Icon, Copy Someone's Icon, recoloring, the admin icon inspector, base-icon selection and custom Frost Lord base icons. Hair selection and custom-overlay additions also call the shared rebuild.
+- Side effects: cleans an owned item's old equipment signature before changing its resource/state/offset, optionally centers the icon, then rebuilds the owner. This also handles missing temporary manager references after a relog.
+
+Imitation refreshes combat indicators after copying/restoring cosmetics, so it displays the imitator's actual mode flags. `Enlarge_Overlays()` repairs and excludes these indicators from bitmap resizing, preventing them from becoming unrecognizable permanent custom icons.
 
 ### mob/verb/manageVisualLayers
 - Purpose: Let a player move an equipped visual between priority 300 (back) and 700 (front) without directly splicing `overlays`.

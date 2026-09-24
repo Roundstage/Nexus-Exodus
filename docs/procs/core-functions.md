@@ -389,6 +389,12 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 
 ### src/Code/CoreFunctions/KoSystem.dm
 
+#### Anger combat rounds
+- `recordAngerCombatOpponent(mob/opponent)` records both sides of hostile contact and updates a saved real-time activity timestamp. Damage, shields, legacy attack timestamps, DoTs and KO routing share this tracking; self-hits and already-KO opponents are excluded.
+- `finishAngerCombatRound()` ends a real KO/death cycle (including Willpower breaks and Battleground defeat), removes the defeated character from each rival's tracked opponents, and rearms only rivals with no opponents left. The winner's prior boost is calmed without granting an extra heal.
+- `canRestAngerCombatRound()` requires standing, full Health/Energy and five minutes without incoming or outgoing contact. `tryResetAngerAfterRest()` also checks every tracked standing opponent before clearing an abandoned round.
+- The consumed flag and activity timestamp persist; opponent mob references remain temporary to avoid serializing other characters. A reload cannot immediately rearm Anger; if the encounter references are no longer available, full recovery and the saved five-minute rest gate remain required.
+
 #### mob/proc/Cause_Combat_KO
 - Signature: `Cause_Combat_KO(mob/victim, mob/attacker, combat_mode_override)`
 - Inputs: victim, optional attacking mob, and optional explicit Casual/Lethal disposition.

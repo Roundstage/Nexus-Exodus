@@ -69,9 +69,9 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 - Side effects: see implementation.
 
 #### turf/Click
-- Signature: `turf/Click(turf/T) if(isturf(T))`
-- Inputs: turf/T
-- Purpose: Handle click.
+- Signature: `turf/Click(turf/T, control, params) if(isturf(T))`
+- Inputs: clicked turf, control, and BYOND mouse parameters.
+- Purpose: Dispatch Explosion targeting or click-to-Zanzoken. Zanzoken uses icon-local mouse coordinates to center the character on the cursor, replacing previous movement offsets and checking the full landing footprint before charging resources.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

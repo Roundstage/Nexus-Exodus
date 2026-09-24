@@ -609,6 +609,18 @@ Movement input, collision, environmental traversal, accelerated skill travel, an
 
 ### src/Code/Application/Movement/MovementWarp.dm
 
+#### mob/proc/getZanzokenClickOffsets
+- Signature: `getZanzokenClickOffsets(turf/target, params)`
+- Purpose: Convert BYOND's one-based, unscaled `icon-x`/`icon-y` mouse coordinates to step offsets that center the character's physical bounds on the click. Missing parameters use the tile center; invalid coordinates are rejected.
+- Returns: A two-element offset list, or null if the footprint crosses a map edge, dense turf/object/character, door, or water while grounded.
+- Side effects: none.
+
+#### mob/proc/teleportToZanzokenClick
+- Signature: `teleportToZanzokenClick(turf/target, list/click_offsets)`
+- Purpose: Apply the validated cursor placement through `SafeTeleport`, replacing old movement offsets and clearing inertia. Planetary boundary redirects retain their existing placement.
+- Returns: TRUE for an accepted placement, FALSE for missing target/offsets.
+- Side effects: updates location, pixel offsets, and teleport movement state.
+
 #### mob/proc/TapWarpCantMoveTime
 - Signature: `TapWarpCantMoveTime()`
 - Inputs: None

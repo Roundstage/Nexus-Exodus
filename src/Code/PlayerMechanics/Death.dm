@@ -288,8 +288,10 @@ mob/var
 		last_attacked_by_player = 0
 		mob/last_attacker
 		cant_anger_until_time = 0
+		anger_calm_generation = 0
 
 mob/proc/SetLastAttackedTime(mob/a) //a = attacker
+	recordAngerCombatOpponent(a)
 	last_attacker = a
 	last_attacked_time = world.time
 	if(a && ismob(a) && a.client && a != src) last_attacked_by_player = world.time
@@ -309,7 +311,6 @@ mob/proc/disableAnger()
 	anger = 100
 	max_anger = 100
 	last_anger = 0
-	has_angered_before_ko = FALSE
 	if(islist(anger_reasons)) anger_reasons.Cut()
 	return FALSE
 
@@ -325,7 +326,8 @@ mob/proc/hasAngerHealthRecovery()
 
 mob/proc/canUseAngerHealthRecovery()
 	if(!hasAngerHealthRecovery()) return FALSE
-	if(has_angered_before_ko || Giving_Power) return FALSE
+	tryResetAngerAfterRest()
+	if(KO || has_angered_before_ko || Giving_Power) return FALSE
 	if(cant_anger_until_time > world.time) return FALSE
 	return TRUE
 
@@ -342,11 +344,16 @@ mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")
 	Health = 100
 	Ki = max_ki
 	has_angered_before_ko = TRUE
+	anger_last_combat_at = world.realtime
 	UpdateBP()
 	updateOverheadHealthHud()
-	spawn(800)
-		if(src && has_angered_before_ko) Calm()
+	scheduleAngerCalm()
 	return TRUE
+
+mob/proc/scheduleAngerCalm(delay_ticks = 800)
+	var/calm_generation = ++anger_calm_generation
+	spawn(delay_ticks)
+		if(src && calm_generation == anger_calm_generation) Calm()
 
 mob/proc/gainAngerFromDamage(applied_damage)
 	if(applied_damage <= 0 || !can_anger()) return 0
@@ -405,14 +412,16 @@ mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())
 			if(has_ssj_req(1.6) && !SSjAble) SSj()
 			if(has_ssj2_req(1.3) && !SSj2Able) SSj2()
 			if(has_ssj3_req(1.3) && !SSj3Able) SSj3()
-	spawn(800) Calm()
+	scheduleAngerCalm()
 
 mob/proc/Calm()
+	anger_calm_generation++
 	if(anger>100)
 		player_view(15,src)<<"[src] becomes calm"
 		last_anger=world.time
 	anger=100
-	if(is_out_of_combat()) has_angered_before_ko = FALSE
+	// Expiring the boost alone does not end a round, even after the combat timeout.
+	tryResetAngerAfterRest()
 	BP = get_bp()
 
 mob/var/Regenerate=0 //Like Majin and Bios regenerate instead of dying
@@ -494,6 +503,7 @@ mob/proc/Death(mob/Z,Force_Death=0,drone_sd=0,lose_hero=1,lose_immortality=1)
 
 	//if(key in epic_list) return
 
+	finishAngerCombatRound()
 	ObserveDeathSpot()
 
 	if(Final_Realm())

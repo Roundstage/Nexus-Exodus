@@ -1,3 +1,62 @@
+proc/runZanzokenClickSmokeTests()
+	var/list/original_turfs = list()
+	for(var/turf/original in block(locate(439, 9, 2), locate(441, 11, 2)))
+		original_turfs += list(list(original.type, original.x, original.y, original.z))
+		new /turf/NexusSmokeTest(original)
+	var/turf/target = locate(440, 10, 2)
+	var/mob/NexusSmokeTest/player = new
+	player.loc = locate(445, 10, 2)
+	player.configureNexusVectorCollisionBounds()
+	player.density = TRUE
+	var/list/clicks = list(list(1, 1), list(32, 32), list(8, 27), list(17, 17))
+	for(var/list/click in clicks)
+		player.loc = locate(445, 10, 2)
+		player.step_x = 11
+		player.step_y = -7
+		player.movement_velocity_x = 9
+		player.movement_velocity_y = -3
+		var/list/offsets = player.getZanzokenClickOffsets(target, "icon-x=[click[1]];icon-y=[click[2]];screen-loc=4:20,7:10")
+		nexusSmokeAssert(offsets && player.teleportToZanzokenClick(target, offsets), "Zanzoken rejected an unobstructed cursor position")
+		nexusSmokeAssertNear(player.Cx(), target.Px(0) + click[1] - 1, 0, "Zanzoken landed horizontally away from the cursor")
+		nexusSmokeAssertNear(player.Cy(), target.Py(0) + click[2] - 1, 0, "Zanzoken landed vertically away from the cursor")
+		nexusSmokeAssert(!player.movement_velocity_x && !player.movement_velocity_y, "Zanzoken retained movement inertia after a pixel landing")
+		var/list/resized_offsets = player.getZanzokenClickOffsets(target, "icon-x=[click[1]];icon-y=[click[2]];screen-loc=2:10,3:5")
+		nexusSmokeAssert(resized_offsets && offsets[1] == resized_offsets[1] && offsets[2] == resized_offsets[2], "Zanzoken applied screen scaling to icon-local cursor coordinates")
+	player.loc = locate(445, 10, 2)
+	var/list/center_offsets = player.getZanzokenClickOffsets(target, null)
+	player.teleportToZanzokenClick(target, center_offsets)
+	nexusSmokeAssert(player.Cx() == target.Cx() && player.Cy() == target.Cy(), "Zanzoken without mouse parameters did not use the tile center")
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(target, "icon-x=33;icon-y=17") && !player.getZanzokenClickOffsets(target, "icon-x=garbage;icon-y=17") && !player.getZanzokenClickOffsets(target, "icon-x=5"), "Zanzoken accepted invalid cursor coordinates")
+	var/turf/east = get_step(target, EAST)
+	east.density = TRUE
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(target, "icon-x=32;icon-y=17"), "Zanzoken allowed its landing bounds to overlap a neighboring wall")
+	nexusSmokeAssert(player.getZanzokenClickOffsets(target, "icon-x=17;icon-y=17"), "Zanzoken rejected a landing that clears a neighboring wall")
+	east.density = FALSE
+	east.Water = TRUE
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(target, "icon-x=32;icon-y=17"), "grounded Zanzoken overlapped neighboring water")
+	player.Flying = TRUE
+	nexusSmokeAssert(player.getZanzokenClickOffsets(target, "icon-x=32;icon-y=17"), "flying Zanzoken rejected a water landing")
+	player.Flying = FALSE
+	east.Water = FALSE
+	var/mob/NexusSmokeTest/blocker = new
+	blocker.loc = east
+	blocker.density = TRUE
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(target, "icon-x=32;icon-y=17"), "Zanzoken overlapped a neighboring character")
+	del(blocker)
+	var/obj/object_blocker = new(east)
+	object_blocker.density = TRUE
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(target, "icon-x=32;icon-y=17"), "Zanzoken overlapped a neighboring dense object")
+	del(object_blocker)
+	nexusSmokeAssert(!player.getZanzokenClickOffsets(locate(1, 1, 2), "icon-x=1;icon-y=1"), "Zanzoken allowed a landing beyond the map edge")
+	var/turf/before_rejected_warp = player.loc
+	var/before_x = player.step_x
+	var/before_y = player.step_y
+	nexusSmokeAssert(!player.teleportToZanzokenClick(target, null) && player.loc == before_rejected_warp && player.step_x == before_x && player.step_y == before_y, "rejected Zanzoken placement changed the character position")
+	del(player)
+	for(var/list/original in original_turfs)
+		var/turf_type = original[1]
+		new turf_type(locate(original[2], original[3], original[4]))
+
 mob/NexusSmokeTest
 	New()
 		return
@@ -30,6 +89,137 @@ mob/NexusSmokeTest/TradeHotbarProbe
 	Restore_hotbar_from_IDs()
 		if(skip_restore_hotbar) return
 		trade_restore_calls++
+
+proc/runAngerRecoverySmokeTests()
+	var/mob/NexusSmokeTest/AngerKoProbe/anger_attacker = new
+	var/mob/NexusSmokeTest/AngerKoProbe/normal_anger_test = new
+	normal_anger_test.Race = "Human"
+	normal_anger_test.Health = 0
+	normal_anger_test.max_ki = 1000
+	normal_anger_test.Ki = 0
+	normal_anger_test.max_anger = 200
+	nexusSmokeAssert(normal_anger_test.canPossessAnger() && normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "ordinary races cannot trigger their Anger second wind")
+	nexusSmokeAssert(normal_anger_test.Health == 100 && normal_anger_test.Ki == normal_anger_test.max_ki && normal_anger_test.anger == normal_anger_test.max_anger && normal_anger_test.has_angered_before_ko, "Anger second wind does not restore full Health and Energy or lock its one use")
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0 && normal_anger_test.Ki == 0, "Anger second wind can trigger more than once in one combat cycle")
+	normal_anger_test.last_attacked_time = max(1, world.time)
+	normal_anger_test.Calm()
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(normal_anger_test.has_angered_before_ko && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "calming during active combat rearms the Anger second wind")
+	normal_anger_test.last_attacked_time = world.time - KO_SYSTEM_OUT_OF_COMBAT_TIMER - 1
+	normal_anger_test.Calm()
+	nexusSmokeAssert(normal_anger_test.is_out_of_combat() && normal_anger_test.has_angered_before_ko && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "a pause in a long fight rearms the Anger second wind")
+	normal_anger_test.FullHeal()
+	sleep(1)
+	normal_anger_test.Calm()
+	nexusSmokeAssert(normal_anger_test.has_angered_before_ko, "healing or meditation immediately rearms the Anger second wind")
+	var/savefile/anger_save = new("nexus-smoke-anger.sav")
+	normal_anger_test.Write(anger_save)
+	var/mob/NexusSmokeTest/AngerKoProbe/loaded_anger_test = new
+	loaded_anger_test.Read(anger_save)
+	loaded_anger_test.Calm()
+	nexusSmokeAssert(loaded_anger_test.has_angered_before_ko && loaded_anger_test.anger_last_combat_at == normal_anger_test.anger_last_combat_at && !loaded_anger_test.canUseAngerHealthRecovery(), "reloading a character rearms Anger before their round ends")
+	nexusSmokeAssert(!length(loaded_anger_test.anger_combat_opponents), "saving an Anger round serializes opponent mobs")
+	del(loaded_anger_test)
+	anger_save = null
+	fdel("nexus-smoke-anger.sav")
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	normal_anger_test.KO(anger_attacker, combat_ko_handled = TRUE)
+	sleep(1)
+	nexusSmokeAssert(normal_anger_test.KO && !normal_anger_test.has_angered_before_ko, "a real KO does not reset the Anger second-wind cycle")
+	nexusSmokeAssert(normal_anger_test.Health < 1 && !normal_anger_test.canUseAngerHealthRecovery(), "a spent Anger prevented KO or can heal while knocked out")
+	normal_anger_test.UnKO()
+	sleep(1)
+	normal_anger_test.Health = 0
+	normal_anger_test.Ki = 0
+	nexusSmokeAssert(normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "Anger second wind remains locked after recovering from a real KO")
+	var/mob/NexusSmokeTest/android_anger_test = new
+	android_anger_test.Race = "Android"
+	android_anger_test.Android = TRUE
+	var/mob/NexusSmokeTest/lssj_anger_test = new
+	lssj_anger_test.Class = "Legendary Saiyan"
+	var/mob/NexusSmokeTest/jiren_anger_test = new
+	jiren_anger_test.jirenAlien = TRUE
+	var/list/angerless_archetypes = list(android_anger_test, lssj_anger_test, jiren_anger_test)
+	for(var/mob/NexusSmokeTest/angerless_test in angerless_archetypes)
+		angerless_test.Health = 0
+		angerless_test.anger = 175
+		angerless_test.max_anger = 250
+		nexusSmokeAssert(!angerless_test.canPossessAnger() && !angerless_test.can_anger(), "Android, LSSJ, or Jiren can still gain Anger")
+		nexusSmokeAssert(angerless_test.anger == 100 && angerless_test.max_anger == 100 && angerless_test.Anger_mult() == 1, "an Angerless archetype retained Anger stats or power")
+		nexusSmokeAssert(!angerless_test.TryToCauseAnger(anger_attacker, angerless_test) && angerless_test.Health == 0, "an Angerless archetype received an Anger second wind")
+	del(anger_attacker)
+	del(normal_anger_test)
+	del(android_anger_test)
+	del(lssj_anger_test)
+	del(jiren_anger_test)
+	runAngerRoundSmokeTests()
+
+proc/runAngerRoundSmokeTests()
+	var/mob/NexusSmokeTest/AngerKoProbe/winner = new
+	var/mob/NexusSmokeTest/AngerKoProbe/first_opponent = new
+	var/mob/NexusSmokeTest/AngerKoProbe/second_opponent = new
+	for(var/mob/fighter in list(winner, first_opponent, second_opponent))
+		fighter.Race = "Human"
+		fighter.max_anger = 200
+		fighter.max_ki = 1000
+		fighter.Ki = 1000
+	winner.TakeDamage(10, attacker = first_opponent)
+	second_opponent.TakeDamage(10, attacker = winner)
+	nexusSmokeAssert(length(winner.anger_combat_opponents) == 2 && (winner in first_opponent.anger_combat_opponents) && (winner in second_opponent.anger_combat_opponents), "incoming and outgoing damage do not track both round opponents")
+	winner.Health = 0
+	nexusSmokeAssert(winner.TryToCauseAnger(first_opponent, winner), "the multi-opponent round cannot use its first Anger")
+	first_opponent.KO(winner, allow_anger = FALSE, combat_ko_handled = TRUE)
+	sleep(1)
+	nexusSmokeAssert(first_opponent.KO && winner.has_angered_before_ko && !winner.canUseAngerHealthRecovery() && length(winner.anger_combat_opponents) == 1, "defeating one of two opponents grants double Anger")
+	second_opponent.Safezone = TRUE
+	second_opponent.KO(winner, allow_anger = FALSE, combat_ko_handled = TRUE)
+	sleep(1)
+	nexusSmokeAssert(!second_opponent.KO && winner.has_angered_before_ko, "a rejected KO incorrectly ends the winner's round")
+	second_opponent.Safezone = FALSE
+	second_opponent.KO(winner, allow_anger = FALSE, combat_ko_handled = TRUE)
+	sleep(1)
+	nexusSmokeAssert(second_opponent.KO && !winner.KO && !winner.has_angered_before_ko && winner.canUseAngerHealthRecovery() && !length(winner.anger_combat_opponents), "the undefeated winner does not regain Anger after all opponents are knocked out")
+	nexusSmokeAssert(winner.anger == 100, "the winner carries the previous round's Anger boost into the next round")
+	first_opponent.UnKO()
+	sleep(1)
+	winner.Health = 0
+	nexusSmokeAssert(winner.TryToCauseAnger(first_opponent, winner), "the winner cannot use Anger in the next round against the same opponent")
+	var/expired_rest_time = world.realtime - ANGER_ROUND_REST_TIME - 1
+	winner.anger_last_combat_at = expired_rest_time
+	first_opponent.anger_last_combat_at = expired_rest_time
+	first_opponent.Health = 50
+	nexusSmokeAssert(!winner.tryResetAngerAfterRest() && winner.has_angered_before_ko, "resting with an injured opponent still in the round grants double Anger")
+	first_opponent.Health = 100
+	first_opponent.Ki = 1000
+	first_opponent.anger_last_combat_at = world.realtime
+	nexusSmokeAssert(!winner.tryResetAngerAfterRest(), "a recently active opponent is treated as a rested round")
+	first_opponent.anger_last_combat_at = expired_rest_time
+	winner.Ki = 500
+	nexusSmokeAssert(!winner.tryResetAngerAfterRest(), "partial Energy recovery rearms Anger after a timeout")
+	winner.Ki = 1000
+	nexusSmokeAssert(winner.tryResetAngerAfterRest() && !winner.has_angered_before_ko && !length(first_opponent.anger_combat_opponents), "a fully recovered, mutually rested round leaves Anger permanently consumed")
+	winner.Health = 0
+	winner.TryToCauseAnger(first_opponent, winner)
+	winner.scheduleAngerCalm(5)
+	first_opponent.KO(winner, allow_anger = FALSE, combat_ko_handled = TRUE)
+	sleep(1)
+	first_opponent.UnKO()
+	sleep(1)
+	winner.Health = 0
+	nexusSmokeAssert(winner.TryToCauseAnger(first_opponent, winner), "the timer fixture cannot start a new victorious round")
+	sleep(5)
+	nexusSmokeAssert(winner.anger == winner.max_anger && winner.has_angered_before_ko, "a previous round's scheduled Calm removes the new round's Anger")
+	winner.scheduleAngerCalm(1)
+	sleep(2)
+	nexusSmokeAssert(winner.anger == 100 && winner.has_angered_before_ko, "the current Anger timer fails to calm or rearms recovery")
+	del(winner)
+	del(first_opponent)
+	del(second_opponent)
+	world.log << "NEXUS_ANGER_ROUND_TESTS_PASSED: single recovery, long pauses, persistence, KO, multi-opponent victory, rematch, mutual rest and timer ownership"
 
 mob/NexusSmokeTest/AngerKoProbe
 	TryToKoNPC(mob/attacker, mob/victim)
@@ -437,7 +627,11 @@ proc/runPerformanceCatalogSmokeTests()
 	player.unindexed_queries = 0
 	player.indexed_queries = 0
 	player.syncProgressionTrees()
-	nexusSmokeAssert(player.index_builds == 1 && player.indexed_items == 500 && !player.unindexed_queries && player.indexed_queries > 200, "unchanged progression did not use one inventory index")
+	var/active_skill_queries = 0
+	for(var/node_id in progression_node_catalog)
+		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+		if(isProgressionNodeEnabledForWipe(node) && node.reward_kind == "skill" && node.reward_type) active_skill_queries++
+	nexusSmokeAssert(player.index_builds == 1 && player.indexed_items == 500 && !player.unindexed_queries && active_skill_queries > 0 && player.indexed_queries >= active_skill_queries, "unchanged progression did not use one inventory index for all enabled skill nodes")
 	world.log << "NEXUS_PROGRESSION_INDEX inventory=[player.contents.len] indexed_items=[player.indexed_items] indexed_queries=[player.indexed_queries] unindexed_queries=[player.unindexed_queries]"
 	var/mob/NexusSmokeTest/exact_player = new
 	new /obj/PerformanceInventorySmoke/Child(exact_player)
@@ -1960,10 +2154,14 @@ proc/runViltrumiteStartupSmokeTests()
 
 	var/list/starter_options = nexusStarterClothingOptions()
 	var/viltrumite_clothing_id
+	var/viltrumite_bulk_clothing_id
+	var/viltrumite_skirt_clothing_id
 	var/general_clothing_id
 	for(var/clothing_id in starter_options)
 		var/clothing_type = starter_options[clothing_id]
 		if(clothing_type == /obj/items/Clothes/ViltrumiteSoldierRobe) viltrumite_clothing_id = clothing_id
+		else if(clothing_type == /obj/items/Clothes/ViltrumiteBulkJumpsuit) viltrumite_bulk_clothing_id = clothing_id
+		else if(clothing_type == /obj/items/Clothes/ViltrumiteSkirtUniform) viltrumite_skirt_clothing_id = clothing_id
 		else if(!general_clothing_id)
 			var/obj/items/Clothes/clothing = new clothing_type
 			if(clothing.canUseAsNexusStarter("Human")) general_clothing_id = clothing_id
@@ -1974,6 +2172,15 @@ proc/runViltrumiteStartupSmokeTests()
 	general_ids[general_clothing_id] = TRUE
 	nexusSmokeAssert(viltrumite_clothing_id && nexusValidateStarterClothing(viltrumite_ids, null, "Viltrumite") && !nexusValidateStarterClothing(viltrumite_ids, null, "Human"), "Viltrumite starter clothing scope is not enforced")
 	nexusSmokeAssert(general_clothing_id && nexusValidateStarterClothing(general_ids, null, "Human") && !nexusValidateStarterClothing(general_ids, null, "Viltrumite"), "general clothing leaked into Viltrumite creation")
+	nexusSmokeAssert(viltrumite_bulk_clothing_id && viltrumite_skirt_clothing_id, "tailored Viltrumite clothing is missing from creation")
+	var/mob/NexusCreationPreview/outfit_preview = new
+	outfit_preview.icon = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteFemaleWhite.dmi'
+	// Submit the outer uniform first: catalog/form order must not bury the skirt.
+	outfit_preview.applyNexusStarterClothing(list(viltrumite_skirt_clothing_id, viltrumite_clothing_id))
+	var/obj/items/Clothes/ViltrumiteSkirtUniform/skirt_uniform = locate() in outfit_preview
+	var/obj/items/Clothes/ViltrumiteSoldierRobe/under_uniform = locate() in outfit_preview
+	nexusSmokeAssert(skirt_uniform && under_uniform && skirt_uniform.appearance_priority > under_uniform.appearance_priority, "creation placed the jumpsuit over the short skirt")
+	del(outfit_preview)
 	del(regent)
 	del(royal)
 	del(hybrid)
@@ -2002,7 +2209,12 @@ proc/runEnergyRecoveryStartupSmokeTests()
 	del(energy_recovery_test)
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	runDemonRanksSmokeTests()
+	runAppearanceRebuildSmokeTests()
+	runZanzokenClickSmokeTests()
 	runClassicHudSmokeTests()
+	runMilestoneShopSmokeTests()
+	runInjureSmokeTests()
 	runTransformationHairSmokeTests()
 	runSsjAwakeningSmokeTests()
 	var/legacy_description = "<p>A quiet <b>traveler</b>.</p><script>alert('x')</script>\n&lt;visible text&gt;"
@@ -4249,54 +4461,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	rp_combat_test.TakeDamage(25)
 	nexusSmokeAssertNear(rp_combat_test.Health, 75, 0.01, "damage application changed during gradual anger buildup")
 	nexusSmokeAssertNear(rp_combat_test.anger, 125, 0.01, "anger does not build proportionally as health is lost")
-	var/mob/NexusSmokeTest/anger_attacker = new
-	var/mob/NexusSmokeTest/AngerKoProbe/normal_anger_test = new
-	normal_anger_test.Race = "Human"
-	normal_anger_test.Health = 0
-	normal_anger_test.max_ki = 1000
-	normal_anger_test.Ki = 0
-	normal_anger_test.max_anger = 200
-	nexusSmokeAssert(normal_anger_test.canPossessAnger() && normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "ordinary races cannot trigger their Anger second wind")
-	nexusSmokeAssert(normal_anger_test.Health == 100 && normal_anger_test.Ki == normal_anger_test.max_ki && normal_anger_test.anger == normal_anger_test.max_anger && normal_anger_test.has_angered_before_ko, "Anger second wind does not restore full Health and Energy or lock its one use")
-	normal_anger_test.Health = 0
-	normal_anger_test.Ki = 0
-	nexusSmokeAssert(!normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test) && normal_anger_test.Health == 0 && normal_anger_test.Ki == 0, "Anger second wind can trigger more than once in one combat cycle")
-	normal_anger_test.last_attacked_time = max(1, world.time)
-	normal_anger_test.Calm()
-	normal_anger_test.Health = 0
-	normal_anger_test.Ki = 0
-	nexusSmokeAssert(normal_anger_test.has_angered_before_ko && !normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "calming during active combat rearms the Anger second wind")
-	normal_anger_test.last_attacked_time = world.time - KO_SYSTEM_OUT_OF_COMBAT_TIMER - 1
-	normal_anger_test.Calm()
-	nexusSmokeAssert(!normal_anger_test.has_angered_before_ko && normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "leaving combat does not rearm the Anger second wind")
-	normal_anger_test.KO(anger_attacker, allow_anger = FALSE, combat_ko_handled = TRUE)
-	sleep(1)
-	nexusSmokeAssert(normal_anger_test.KO && !normal_anger_test.has_angered_before_ko, "a real KO does not reset the Anger second-wind cycle")
-	normal_anger_test.UnKO()
-	sleep(1)
-	normal_anger_test.Health = 0
-	normal_anger_test.Ki = 0
-	nexusSmokeAssert(normal_anger_test.TryToCauseAnger(anger_attacker, normal_anger_test), "Anger second wind remains locked after recovering from a real KO")
-	var/mob/NexusSmokeTest/android_anger_test = new
-	android_anger_test.Race = "Android"
-	android_anger_test.Android = TRUE
-	var/mob/NexusSmokeTest/lssj_anger_test = new
-	lssj_anger_test.Class = "Legendary Saiyan"
-	var/mob/NexusSmokeTest/jiren_anger_test = new
-	jiren_anger_test.jirenAlien = TRUE
-	var/list/angerless_archetypes = list(android_anger_test, lssj_anger_test, jiren_anger_test)
-	for(var/mob/NexusSmokeTest/angerless_test in angerless_archetypes)
-		angerless_test.Health = 0
-		angerless_test.anger = 175
-		angerless_test.max_anger = 250
-		nexusSmokeAssert(!angerless_test.canPossessAnger() && !angerless_test.can_anger(), "Android, LSSJ, or Jiren can still gain Anger")
-		nexusSmokeAssert(angerless_test.anger == 100 && angerless_test.max_anger == 100 && angerless_test.Anger_mult() == 1, "an Angerless archetype retained Anger stats or power")
-		nexusSmokeAssert(!angerless_test.TryToCauseAnger(anger_attacker, angerless_test) && angerless_test.Health == 0, "an Angerless archetype received an Anger second wind")
-	del(anger_attacker)
-	del(normal_anger_test)
-	del(android_anger_test)
-	del(lssj_anger_test)
-	del(jiren_anger_test)
+	runAngerRecoverySmokeTests()
 	var/mob/NexusSmokeTest/kaioken_upkeep_test = new
 	kaioken_upkeep_test.base_bp = 100
 	kaioken_upkeep_test.max_ki = 1000
@@ -4369,8 +4534,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!rp_combat_test.KO && !rp_combat_test.rp_mode && rp_combat_test.Health == 70, "Willpower get-up restored an invalid combat state")
 	var/mob/NexusSmokeTest/willpower_break_test = new
 	willpower_break_test.willpower = 5
+	willpower_break_test.has_angered_before_ko = TRUE
 	willpower_break_test.drainWillpower(5, "Smoke test", announce = FALSE)
 	nexusSmokeAssert(willpower_break_test.KO && willpower_break_test.rp_mode && willpower_break_test.ko_is_lethal, "zero Willpower entered RP Mode without causing a knockout")
+	nexusSmokeAssert(!willpower_break_test.has_angered_before_ko, "a Willpower knockout leaves Anger consumed")
 	del(willpower_break_test)
 	del(rp_grabber_test)
 	var/mob/NexusSmokeTest/milestone_test = new
@@ -4769,19 +4936,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 		if(searched_node.id == "magic_philosophers_stone") found_philosophers_stone = TRUE
 	nexusSmokeAssert(found_philosophers_stone && searched_magic_entries.len < total_magic_entries, "progression search did not return the matching node with a bounded result graph")
 	del(tree_navigation_test)
-	var/mob/NexusSmokeTest/racial_tree_owner = new
-	racial_tree_owner.Race = "Kai"
-	var/datum/NexusProgressionTreeWindow/racial_navigation_test = new(racial_tree_owner, "Racial")
-	var/list/kai_racial_entries = racial_navigation_test.collectVisibleEntries()
-	var/racial_entries_match_owner = kai_racial_entries.len > 1
-	for(var/datum/ProgressionNode/racial_entry in kai_racial_entries)
-		if(racial_entry.required_racial_track != "Kaioshin") racial_entries_match_owner = FALSE
-	nexusSmokeAssert(racial_navigation_test.branch_filter == "Kaioshin" && racial_entries_match_owner, "Racial progression exposed another race's rank curriculum")
-	nexusSmokeAssert(findtext(racial_tree_owner.getProgressionNodeLockReason(demon_hakai_node), "Daimao"), "server-side racial validation allowed a Kai to access Daimao Hakai")
-	var/racial_window_html = racial_navigation_test.buildHtml()
-	nexusSmokeAssert(findtext(racial_window_html, ">RACIAL</a>") && findtext(racial_window_html, "KAIOSHIN"), "the Racial tab or owner-specific branch is missing from Progression")
-	del(racial_navigation_test)
-	del(racial_tree_owner)
+	runRacialProgressionWipeSmokeTests()
 	var/datum/NexusProgressionTreeWindow/combat_navigation_test = new(progression_test, "Combat")
 	nexusSmokeAssert(combat_navigation_test.branch_filter == "Foundation", "Combat progression does not open on the universal Foundation branch")
 	var/combat_graph_html = combat_navigation_test.buildGraph()
@@ -4815,14 +4970,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(!findtext(ki_graph_html, "data-route-x=") && !findtext(ki_graph_html, "class='joint"), "Ki graph still renders the ambiguous orthogonal route channels or square connector joints")
 	combat_navigation_test.branch_filter = "Foundation"
 	var/combat_window_html = combat_navigation_test.buildHtml()
+	nexusSmokeAssert(!("Milestones" in combat_navigation_test.getAvailableCategories()) && !findtext(combat_window_html, "action=category&id=Milestones"), "Progression Trees still links to Milestones")
 	nexusSmokeAssert(findtext(combat_window_html, "body class='nexus-hud'") && findtext(combat_window_html, "header hud-frame") && findtext(combat_window_html, "hud-sprite") && findtext(combat_window_html, "#c6a15c") && findtext(combat_window_html, "CLICK + DRAG TO MOVE") && findtext(combat_window_html, "nexusInitGraphPan") && findtext(combat_window_html, "nexusFocusGraphConnections") && findtext(combat_window_html, "overflow:hidden;cursor:move"), "Progression did not adopt the native bronze HUD components, real-sprite frame, connection focus or draggable canvas")
 	del(combat_navigation_test)
-	var/datum/NexusProgressionTreeWindow/milestone_list_test = new(progression_test, "Milestones")
-	var/list/all_milestone_entries = milestone_list_test.collectVisibleEntries()
-	var/milestone_list_html = milestone_list_test.buildGraph()
-	var/milestone_navigation_html = milestone_list_test.buildTreeNavigation()
-	nexusSmokeAssert(all_milestone_entries.len == milestone_catalog.len && findtext(milestone_list_html, "milestone-list") && !findtext(milestone_list_html, "connections") && !findtext(milestone_list_html, "milestone-branch") && !findtext(milestone_navigation_html, "branch-tab"), "Milestones are not rendered as one uncategorized independent list")
+	var/datum/NexusMilestoneShopWindow/milestone_list_test = new(progression_test)
+	var/list/milestone_shop_data = milestone_list_test.buildMilestoneShopData()
+	var/list/all_milestone_entries = milestone_shop_data["entries"]
+	var/milestone_list_html = milestone_list_test.buildMilestoneShopHtml()
+	nexusSmokeAssert(all_milestone_entries.len == milestone_catalog.len && findtext(milestone_list_html, "MilestoneShop.js") && !findtext(milestone_list_html, "connections"), "Milestones did not open their dedicated shop with the complete independent catalog")
 	del(milestone_list_test)
+	var/datum/NexusProgressionTreeWindow/stale_milestone_navigation = new(progression_test, "Milestones")
+	nexusSmokeAssert(stale_milestone_navigation.category == "Combat" && !hascall(stale_milestone_navigation, "purchaseMilestoneShopEntry"), "a stale Milestones route reopened the shop inside Progression Trees")
+	del(stale_milestone_navigation)
 	var/datum/NexusBuildWindow/build_catalog_test = new(progression_test)
 	var/list/floor_blueprints = build_catalog_test.getBlueprints(FALSE)
 	var/build_category_isolated = floor_blueprints.len > 0
@@ -5731,6 +5890,74 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	runPendingDeleteWorkSmokeTests()
 	runAdminMeteorWorkSmokeTests()
 	world.log << "NEXUS_SMOKE_TESTS_PASSED"
+
+proc/runRacialProgressionWipeSmokeTests()
+	var/mob/NexusSmokeTest/player = new
+	player.Race = "Kai"
+	player.syncProgressionTrees(silent = TRUE)
+	player.progression_experience = 10000
+	player.progression_lifetime_experience = 10000
+	var/blocked_nodes = 0
+	for(var/node_id in progression_node_catalog)
+		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+		if(node.category != "Racial" || node.required_racial_track == "Viltrumite Warfare") continue
+		blocked_nodes++
+		nexusSmokeAssert(findtext(player.getProgressionNodeLockReason(node), "wipe"), "a disabled racial node has no wipe lock: [node.id]")
+		nexusSmokeAssert(!player.purchaseProgressionNode(node.id) && !player.applyProgressionNodeReward(node, announce = FALSE) && !player.hasProgressionNode(node.id), "a disabled racial node could be purchased or granted: [node.id]")
+	nexusSmokeAssert(blocked_nodes > 0 && player.progression_experience == 10000, "the retained racial catalog is empty or blocked purchases spent XP")
+	var/datum/NexusProgressionTreeWindow/window = new(player, "Racial")
+	var/list/non_viltrumite_races = list("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Heran", "Namekian", "Alien", "Kanassan", "Frost Lord", "Kai", "Demigod", "Demon", "Majin", "Makyo", "Android", "Bio-Android", "Spirit Doll", "Tsujin")
+	for(var/race_name in non_viltrumite_races)
+		player.Race = race_name
+		nexusSmokeAssert(!("Racial" in window.getAvailableCategories()) && !length(window.getAvailableBranches("Racial")), "a non-Viltrumite can navigate to Racial progression: [race_name]")
+	nexusSmokeAssert(window.category == "Combat" && !findtext(window.buildHtml(), ">RACIAL</a>"), "opening an unavailable racial tree did not fall back to Combat without the tab")
+	window.category = "Racial"
+	window.branch_filter = "Kaioshin"
+	window.search_query = "Hakai"
+	nexusSmokeAssert(!length(window.collectVisibleEntries()), "a stale racial category or search exposed disabled nodes")
+	window.buildHtml()
+	nexusSmokeAssert(window.category == "Combat" && window.branch_filter == "Foundation" && !window.search_query, "a stale racial window did not reset its category, branch and search")
+	player.Race = "Kai"
+	var/kai_hakai_id = getRacialProgressionNodeId("Kaioshin", /obj/Hakai)
+	var/datum/ProgressionNode/kai_hakai = progression_node_catalog[kai_hakai_id]
+	player.progression_nodes_owned[kai_hakai_id] = 1
+	for(var/migration_pass = 1, migration_pass <= 2, migration_pass++)
+		if(migration_pass == 1) player.progression_tree_version = 0
+		player.syncProgressionTrees(silent = TRUE)
+		nexusSmokeAssert(!player.hasExactProgressionRewardObject(/obj/Hakai) && player.hasProgressionNode(kai_hakai_id), "sync restored disabled Hakai or erased retained racial ownership")
+		nexusSmokeAssert(findtext(player.getProgressionNodeLockReason(kai_hakai), "wipe") && window.getNodeState(kai_hakai) == "locked", "saved ownership bypassed the racial wipe lock")
+	player.progression_nodes_owned -= kai_hakai_id
+	player.Kaioshin()
+	player.progression_tree_version = 0
+	player.syncProgressionTrees(silent = TRUE)
+	player.syncProgressionTrees(silent = TRUE)
+	nexusSmokeAssert(("Kaioshin" in player.Ranks) && player.hasExactProgressionRewardObject(/obj/Hakai) && !player.hasProgressionNode(kai_hakai_id), "rank-granted Hakai was removed or claimed by disabled racial progression")
+	nexusSmokeAssert(player.hasExactProgressionRewardObject(/obj/Attacks/Blast) && player.hasProgressionNode(getProgressionNodeIdForType(/obj/Attacks/Blast)), "the racial wipe policy blocked shared Combat rewards")
+	var/viltrumite_root = getRacialProgressionRootId("Viltrumite Warfare")
+	var/rush_id = getRacialProgressionNodeId("Viltrumite Warfare", /obj/Attacks/NexusMeleeTechnique/Viltrumite/ViltrumiteRush)
+	var/datum/ProgressionNode/rush = progression_node_catalog[rush_id]
+	nexusSmokeAssert(findtext(player.getProgressionNodeLockReason(rush), "Viltrumite Warfare") && !player.purchaseProgressionNode(viltrumite_root), "a Kai accessed the enabled Viltrumite curriculum")
+	del(window)
+	del(player)
+	for(var/race_name in list("Viltrumite", "Half-Viltrumite"))
+		var/mob/NexusSmokeTest/viltrumite = new
+		viltrumite.Race = race_name
+		viltrumite.syncProgressionTrees(silent = TRUE)
+		viltrumite.progression_experience = 10000
+		viltrumite.progression_lifetime_experience = 10000
+		var/datum/NexusProgressionTreeWindow/viltrumite_window = new(viltrumite, "Racial")
+		var/list/entries = viltrumite_window.collectVisibleEntries()
+		var/only_viltrumite_nodes = entries.len > 1
+		for(var/datum/ProgressionNode/entry in entries)
+			if(entry.required_racial_track != "Viltrumite Warfare") only_viltrumite_nodes = FALSE
+		nexusSmokeAssert(viltrumite_window.branch_filter == "Viltrumite Warfare" && only_viltrumite_nodes && findtext(viltrumite_window.buildHtml(), ">RACIAL</a>"), "Viltrumite Warfare is not the sole visible racial curriculum: [race_name]")
+		nexusSmokeAssert(viltrumite.purchaseProgressionNode(viltrumite_root) && viltrumite.purchaseProgressionNode(rush_id) && viltrumite.hasExactProgressionRewardObject(rush.reward_type), "the wipe policy blocked Viltrumite Warfare purchases: [race_name]")
+		del(locate(/obj/Attacks/NexusMeleeTechnique/Viltrumite/ViltrumiteRush) in viltrumite)
+		viltrumite.syncProgressionTrees(silent = TRUE)
+		nexusSmokeAssert(viltrumite.hasExactProgressionRewardObject(rush.reward_type), "sync did not restore an owned Viltrumite racial skill: [race_name]")
+		del(viltrumite_window)
+		del(viltrumite)
+	world.log << "NEXUS_RACIAL_PROGRESSION_WIPE_TESTS_PASSED"
 
 proc/runTechnologyCatalogSmokeTests(soul_contract_count_before)
 	var/list/expected_technology_types = list()

@@ -229,7 +229,13 @@ mob/proc/consumeNexusRareRaceGrant(rare_choice)
 
 proc/nexusRaceIconOptions(race_name)
 	switch(race_name)
-		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin", "Viltrumite", "Half-Viltrumite")
+		if("Viltrumite", "Half-Viltrumite")
+			return list(
+				"viltrumite_m_white" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteMaleWhite.dmi', "viltrumite_m_tan" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteMaleTan.dmi', "viltrumite_m_black" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteMaleBlack.dmi',
+				"viltrumite_f_white" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteFemaleWhite.dmi', "viltrumite_f_tan" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteFemaleTan.dmi', "viltrumite_f_black" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteFemaleBlack.dmi',
+				"viltrumite_bulk_white" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteBulkWhite.dmi', "viltrumite_bulk_tan" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteBulkTan.dmi', "viltrumite_bulk_black" = 'src/Icons/PlayerIcons/BaseIcons/Viltrumite/ViltrumiteBulkBlack.dmi'
+			)
+		if("Human", "Saiyan", "Half Saiyan", "Legendary Saiyan", "Demigod", "Tsujin")
 			return list(
 				"human_m_pale" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanPale.dmi', "human_m_tan" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanTan.dmi', "human_m_dark" = 'src/Icons/PlayerIcons/BaseIcons/NewHumanIconsFromGuppinas/BaseHumanDark.dmi',
 				"human_f_pale" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewPaleFemale.dmi', "human_f_tan" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewTanFemale.dmi', "human_f_dark" = 'src/Icons/PlayerIcons/BaseIcons/ExGenesisHumans/NewBlackFemale.dmi'
@@ -594,7 +600,7 @@ mob/proc/applyNexusStarterClothing(list/selected_ids, list/custom_clothing_icons
 		item.pixel_y = 0
 		item.suffix = "Equipped"
 		item.appearance_managed = TRUE
-		item.appearance_priority = priority
+		item.appearance_priority = max(priority, item.appearance_priority)
 		priority += 10
 	rebuildPlayerAppearance("starter clothing")
 
@@ -1006,7 +1012,7 @@ upForm/NexusCharacterCreator
 				if(clothing_flight_state)
 					var/clothing_flight_alias = src.getClothingPreviewUrl(clothing.icon, clothing_flight_state, direction)
 					direction_entries += "[direction_name]_flight:'[nexusJsString(clothing_flight_alias)]'"
-			clothing_preview_entries += "\"[nexusJsString(clothing_id)]\":{[dd_list2text(direction_entries, ",")]}"
+			clothing_preview_entries += "\"[nexusJsString(clothing_id)]\":{priority:[clothing.appearance_priority],[dd_list2text(direction_entries, ",")]}"
 			var/clothing_alias = src.getClothingPreviewUrl(clothing.icon, clothing.icon_state, SOUTH)
 			var/starter_race_scope = islist(clothing.nexus_starter_races) ? dd_list2text(clothing.nexus_starter_races, ",") : ""
 			clothing_html += "<label class=\"clothing-choice\"><input type=\"checkbox\" data-clothing-id=\"[clothing_id]\" data-starter-races=\"[html_encode(starter_race_scope)]\" onchange=\"updateClothing(this)\"><span><img src=\"[html_encode(clothing_alias)]\"><small>[html_encode(clothing.name)]</small></span></label>"
@@ -1102,7 +1108,8 @@ upForm/NexusCharacterCreator
 			function updateAppearance(){updateHairVisibility();updatePreview();}
 			function loadPreviewImage(url,done){if(!url){done(null);return;}var cached=previewImageCache\[url\];if(cached&&cached.complete){done(cached);return;}var image=new Image();previewImageCache\[url\]=image;image.onload=function(){done(image);};image.onerror=function(){done(null);};image.src=url;}
 			function composePreview(urls){var generation=++previewRenderGeneration,loaded=new Array(urls.length),remaining=urls.length;if(!remaining)return;for(var i=0;i<urls.length;i++)(function(index){loadPreviewImage(urls\[index\],function(image){loaded\[index\]=image;if(--remaining||generation!=previewRenderGeneration)return;var body=loaded\[0\],canvas=document.getElementById('previewCanvas');if(!body||!canvas)return;var width=32,height=32;canvas.width=width;canvas.height=height;var context=canvas.getContext('2d');context.imageSmoothingEnabled=false;context.clearRect(0,0,width,height);for(var layer=0;layer<loaded.length;layer++)if(loaded\[layer\])context.drawImage(loaded\[layer\],0,0,width,height);});})(i);}
-			function updatePreview(){var dir=previewDirections\[previewDirection\],bodyId=checkedValue('body_icon_id'),body=bodyPreviews\[bodyId\];if(body&&previewFlight&&!body.canFlight)previewFlight=false;var pose=previewFlight?'_flight':'',urls=\[body?(body\[dir+pose\]||body\[dir\]):''\],ids=selectedClothing();for(var i=0;i<ids.length;i++){var data=clothingPreviews\[ids\[i\]\];if(data)urls.push(data\[dir+pose\]||data\[dir\]);}var hairId=checkedValue('hair_id'),hair=hairPreviews\[hairId\];if(hair&&document.getElementById('hairSection').style.display!='none')urls.push(hair\[dir+pose\]||hair\[dir\]);composePreview(urls);var flightButton=document.querySelector('.preview-controls button:nth-child(2)'),canFlight=body&&body.canFlight;flightButton.disabled=!canFlight;flightButton.title=canFlight?'Toggle between ground and flight poses':'This body icon has no Flight state';document.getElementById('previewState').textContent=dir.charAt(0).toUpperCase()+dir.slice(1)+' / '+(previewFlight?'Flight':'Ground')+(canFlight?'':' (Flight unavailable)');}
+			function previewClothingOrder(){var ids=selectedClothing(),ordered=\[\];for(var i=0;i<ids.length;i++){var data=clothingPreviews\[ids\[i\]\]||{};ordered.push({id:ids\[i\],priority:Math.max(500+i*10,data.priority||500),index:i});}ordered.sort(function(a,b){return a.priority-b.priority||a.index-b.index;});var result=\[\];for(var j=0;j<ordered.length;j++)result.push(ordered\[j\].id);return result;}
+			function updatePreview(){var dir=previewDirections\[previewDirection\],bodyId=checkedValue('body_icon_id'),body=bodyPreviews\[bodyId\];if(body&&previewFlight&&!body.canFlight)previewFlight=false;var pose=previewFlight?'_flight':'',urls=\[body?(body\[dir+pose\]||body\[dir\]):''\],ids=previewClothingOrder();for(var i=0;i<ids.length;i++){var data=clothingPreviews\[ids\[i\]\];if(data)urls.push(data\[dir+pose\]||data\[dir\]);}var hairId=checkedValue('hair_id'),hair=hairPreviews\[hairId\];if(hair&&document.getElementById('hairSection').style.display!='none')urls.push(hair\[dir+pose\]||hair\[dir\]);composePreview(urls);var flightButton=document.querySelector('.preview-controls button:nth-child(2)'),canFlight=body&&body.canFlight;flightButton.disabled=!canFlight;flightButton.title=canFlight?'Toggle between ground and flight poses':'This body icon has no Flight state';document.getElementById('previewState').textContent=dir.charAt(0).toUpperCase()+dir.slice(1)+' / '+(previewFlight?'Flight':'Ground')+(canFlight?'':' (Flight unavailable)');}
 			function rotatePreview(delta){previewDirection=(previewDirection+delta+previewDirections.length)%previewDirections.length;updatePreview();}
 			function toggleFlight(){var body=bodyPreviews\[checkedValue('body_icon_id')\];if(!body||!body.canFlight)return;previewFlight=!previewFlight;updatePreview();}
 			function updateFrostPreviews(){for(var form=2;form<=5;form++){var select=document.getElementsByName('frost_form_'+form)\[0\],image=document.getElementById('frostPreview'+form);if(!select||!image)continue;var data=bodyPreviews\[select.value\];if(data)image.src=data.south;}}

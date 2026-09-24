@@ -1,5 +1,7 @@
 # Player Mechanics
 
+`Looting.dm` shares `getInjureLootError()`, `getInjureLootChoices()` and `stealInjureLoot()` between Injure/Steal and the legacy knockout loot clicks. Both paths require the current victim, proximity, KO and the same victim-WP threshold: below 30, or at most 70 for a Heran attacker. One selected item is transferred per interaction, including equipped weapons, armor, gloves, masks, weights, scouters and clothes regardless of legacy `Stealable` flags. Bound/installed items, force fields, trade-locked offers, stale ownership and a full inventory are rejected. Native equipment toggles remove stat modifiers and equipment references before `Move()` updates inventory/hotbars; a failed move restores equipped state. Appearance is rebuilt for both owners. Legacy resource looting retains its existing balance transfer behind the same WP validation. Humiliate/Mercy only record RP outcomes pending the future alignment system.
+
 `catalog_test_only` is unsaved object metadata for automated fixtures and retired test content. Learnable skills, Combat/Racial progression registration and Science rewards reject the initial flag, including inherited values. `getTestProgressionRewardTypes()` caches those types without constructing them. `removeTestProgressionContent()` runs before the inventory index in `syncProgressionTrees()`: it removes test skills and the retired TestBlast shell from the character, and clears exact test skill/Science node IDs without changing real unlocks or XP. Physical test items are not deleted. No progression version bump or legacy XP migration is required.
 
 `getNormalizedScienceBlueprintList()` drops flagged test blueprints even when a saved list contains a noncanonical object. `canUnlockTechnology()` and `canAccessTechnology()` reject them before evaluating level, specialization or saved global/individual grants.
@@ -11,7 +13,7 @@
 ## Overview
 Player state, progression, roleplay combat, and character lifecycle mechanics.
 
-The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost for eligible races and grants at most one full-Health/full-Energy second wind per continuous combat cycle. Scheduled calming removes the power boost without rearming that recovery; leaving combat or suffering a real KO starts a new cycle. Androids, Legendary Saiyans, and Jiren/Apex Aliens do not possess or gain Anger; stale saved values are normalized to the neutral `100` baseline and never provide an Anger multiplier or KO recovery. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick list in the same interface. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
+The former cumulative KO counter is deprecated. Casual defeats recover automatically; lethal defeats enter RP Mode, drain Willpower, and require `willpowerGetUp()` after the recovery delay. Reaching zero Willpower now causes a real KO before RP Mode is applied. RP Mode owns an input lock plus damage/attack/displacement immunity, releases existing grabs, and cannot be selected by normal, tail, fallback, or extended-arm grabs. `applyRegenerationHealth()` drains 0.25 Willpower per Health restored only under tracked lethal pressure; casual combat does not spend Willpower, auto-repair can opt out, and Nanite Repair remains exempt. Anger grows through `gainAngerFromDamage()` as health is lost for eligible races and grants at most one full-Health/full-Energy second wind per combat round. A real KO rearms the defeated character; defeating every tracked opponent rearms the undefeated winner for the next round. Calming or the ordinary combat timeout alone never rearms recovery. Abandoned rounds require five minutes without incoming or outgoing combat and full Health/Energy for the character and every tracked standing opponent. Consumption and the activity timestamp persist across reloads. Androids, Legendary Saiyans, and Jiren/Apex Aliens do not possess or gain Anger; stale saved values are normalized to the neutral `100` baseline and never provide an Anger multiplier or KO recovery. Science, Magic, Mining, Smithing, Combat, and Racial progression use persistent trees; Milestones use an independent-pick shop in the same window. Basic Science fabrication uses Normal Sword, War Hammer, Gloves, and Mask modular subclasses, while the generic DU types remain available only for compatibility; Copper is the first material upgrade. `Grab()` supplements its directional combat targeting with a one-tile pixel-bounds radius for Resources, items, and Modules, so vector-positioned pickups do not require exact tile alignment.
 
 Instant Transmission retains its long-range signature targeting and now also exposes eight directional combat warps. These use the Zanzoken movement path at eight-tile range but spend 0.25% maximum Energy per warp instead of Stamina.
 
@@ -62,7 +64,7 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 - `canGrabMovable(target)` is the shared normal/fallback/extended-grab gate and rejects RP Mode targets.
 - `willpowerGetUp(force)` spends the remaining combat state to rise at Health equal to current Willpower.
 - `syncMilestoneProgression(silent)` grants the five-point migration budget and one point per later game year.
-- `purchaseMilestone(milestone_id)` validates cost/rank and persists the purchased rank.
+- `purchaseMilestone(milestone_id)` validates cost, rank and exclusive-group ownership before spending MP and persisting the purchased rank. `getMilestoneExclusiveChoice(definition)` supplies the same chosen definition to purchase validation and the shop; Momentum, Precision and Fortified Damage share one slot.
 - `ensureMilestoneCombatRewards()` restores the active Fire Fist, Bleeding Edge, Thundering Blows, Venomous Intent, and Crushing Resolve technique objects for owned integrated combat Milestones.
 - `tryApplyMilestoneHitStances(target)` resolves Venomous Intent and Crushing Resolve only after a hit reduced target Health, respecting KO, Safezone, RP Mode, poison immunity, lethal-mode, resource-reserve, chance, and internal-cooldown gates.
 - `getMilestoneMeleeDamageMultiplier()`, `getMilestoneMeleeDelayMultiplier()`, `getMilestoneOutgoingDamageMultiplier()`, and the projectile helpers adapt integrated talent effects to the canonical Nexus combat calculations.
@@ -74,7 +76,7 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 - `normalizeIndividualScienceItems()` repairs a character's saved Science grants after deserialization, preventing an additional recipe from appearing on each relog.
 - `refreshTechnologyUnlocks(announce)` normalizes existing grants before adding science items allowed by level and selected path.
 - The integrated Milestone port includes the profession talents plus 24 combat talents grouped into Martial Arts, Weapon, Ki, Survival, and Fire list filters.
-- `refreshCombatStatusOverlays()` keeps the imported Lethal and RP Mode character icons synchronized with the action HUD.
+- `refreshCombatStatusOverlays()` removes all previous Lethal/RP Mode images by resource and recreates exactly one indicator for each active mode, keeping the action HUD synchronized. It repairs orphaned saved/copied images and missing overlays even when temporary handles survived; rebuilding appearance calls it after equipment and injuries. `getCombatStatusAppearances()` identifies these derived images so `mob/Write()` excludes them from saves and restores the live visuals afterward.
 
 ### src/Code/PlayerMechanics/Aging.dm
 
@@ -830,7 +832,7 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 - Inputs: None
 - Purpose: Normalize an Angerless archetype to the neutral Anger baseline.
 - Returns: false.
-- Side effects: resets current/maximum Anger, its timestamp, KO recovery lock, and stored reasons.
+- Side effects: resets current/maximum Anger, its timestamp and stored reasons while preserving the consumed round recovery.
 
 #### mob/proc/can_anger
 - Signature: `mob/proc/can_anger()`
@@ -850,15 +852,15 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 - Signature: `mob/proc/canUseAngerHealthRecovery()`
 - Inputs: None
 - Purpose: Return whether the mob may use its Anger second wind in the current combat cycle.
-- Returns: false for an ineligible archetype, an already-consumed cycle, power transfer, or an active Anger lockout; otherwise true.
-- Side effects: none expected.
+- Returns: false for an ineligible archetype, KO, an already-consumed round, power transfer, or an active Anger lockout; otherwise true.
+- Side effects: checks and clears a fully recovered, mutually rested round when eligible.
 
 #### mob/proc/triggerAngerHealthRecovery
 - Signature: `mob/proc/triggerAngerHealthRecovery(reason = "being pushed to the brink")`
 - Inputs: recovery reason.
 - Purpose: Apply the eligible mob's one-use Anger second wind.
 - Returns: true when recovery triggers; otherwise false.
-- Side effects: records the reason, fills Anger, Health, and Energy, refreshes combat state/HUD, and locks further recovery until combat ends or a real KO occurs.
+- Side effects: records the reason, fills Anger, Health, and Energy, refreshes combat state/HUD, and locks further recovery until real defeat, victory over all tracked opponents, or fully recovered mutual rest. `scheduleAngerCalm(delay_ticks = 800)` scopes boost expiry to its generation so older rounds cannot cancel a newer boost.
 
 #### mob/proc/anger
 - Signature: `mob/proc/anger(anger_mult=1,ssj_possible=1,reason) if(can_anger())`
@@ -870,9 +872,9 @@ Super Explosive Wave now depends on learned Shockwave in Ki progression. The Sur
 #### mob/proc/Calm
 - Signature: `mob/proc/Calm()`
 - Inputs: None
-- Purpose: End the current Anger power boost without rearming a second wind during active combat.
+- Purpose: End the current Anger power boost; rearm only if the separate mutual-rest conditions are satisfied.
 - Returns: none (implicit).
-- Side effects: restores baseline Anger/BP and clears the second-wind lock only when the mob is out of combat.
+- Side effects: restores baseline Anger/BP, invalidates older Calm callbacks, and checks the five-minute fully recovered mutual-rest gate. The ordinary out-of-combat timeout alone does not clear the recovery lock.
 
 #### mob/proc/Drop_Rsc
 - Signature: `mob/proc/Drop_Rsc(n=0) if(n)`
@@ -3368,7 +3370,7 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - Inputs: attacker, Anger gate, already-handled flag, victim, and optional snapshotted Casual/Lethal disposition.
 - Purpose: Resolve the knockout, start a new Anger second-wind cycle, and forward an explicit delayed-damage disposition when supplied.
 - Returns: none (implicit).
-- Side effects: applies KO state, clears the consumed Anger recovery lock, stops active actions/transformations, and records Casual/Lethal combat recovery.
+- Side effects: applies KO state, resolves the defeated character and eligible winners' Anger rounds, stops active actions/transformations, and records Casual/Lethal combat recovery.
 
 #### mob/proc/UnKO
 - Signature: `mob/proc/UnKO() if(KO)`
@@ -3378,6 +3380,9 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - Side effects: see implementation.
 
 ### src/Code/PlayerMechanics/Ranks.dm
+
+- `giveDemonRank(rank_name, admin)` grants Famine, War, Pestilence or Death to a Demon, with the matching teachable `obj/DemonBuff` skill and Rank Chat. Repeated grants do not duplicate the rank or skill. The four ranks appear in Give Rank -> Hell and participate in existing automatic-rank eligibility, occupancy and alignment rules.
+- `canUseSoulContract()` requires a Demon with the existing `Daimao` rank (Demon Lord). `syncDemonRankSkills()` runs on login/new-character setup, removes old Soul Contract skill grants from other characters, repairs the Lord's skill metadata, and restores missing Horseman rank skills. It preserves existing contracted souls and taught aura skills. Soul Contract is excluded from teaching, wishes and the racial progression package; saved progression cannot regrant it.
 
 #### mob/proc/Give_Rank
 - Signature: `mob/proc/Give_Rank(mob/A)`
@@ -4198,13 +4203,14 @@ Feats are disabled by default. While `feats_on` is false, `GiveFeat()` grants no
 - `initializeProgressionTreeCatalog()` derives Science from registered technology and Combat from an explicit combat-skill whitelist, then assigns real predecessor paths across tier frontiers. Rank, module, milestone, magic, crafting, transformation, quest, and utility objects are not registered in Combat.
 - `disperseProgressionScienceTierFive()` cost-orders each specialization's former level-five catalog and distributes it evenly through Technology Levels 5-8 before Science nodes and prerequisites are generated.
 - `syncProgressionTrees(silent)` migrates the legacy Experience balance and already-owned skills/research/profession access without charging the player.
+- For the current wipe, `NEXUS_VILTRUMITE_ONLY_RACIAL_PROGRESSION` is `TRUE`: `isRacialProgressionTrackEnabled()` permits only Viltrumite Warfare, shared by Viltrumites and Half-Viltrumites. Set the flag to `FALSE` to restore the other racial curricula in a future build. Their catalog definitions, prerequisites and saved ownership remain intact. `isProgressionNodeEnabledForWipe()` gates purchase validation, direct progression rewards, legacy migration and recurring synchronization; disabled racial nodes cannot grant or reclaim skills from inventory. Existing inventory skills and rank grants remain usable, including shared Combat rewards. `NexusProgressionTreeWindow.getAvailableCategories()` hides Racial for other races, rejects category navigation and falls back to Combat when opening a stale Racial window; branch enumeration and search also exclude disabled nodes.
 - `gainProgressionExperience(amount, source, announce)` is the authoritative award path for qualified roleplay sessions, hourly online/offline time, milestones, crafting, wishes, and admin grants. `getScaledProgressionExperience(amount)` applies the shared 10x presentation scale to authored costs and gameplay rewards.
 - `awardProgressionFromCommunication(message, source, weight)` records local IC contributions into an automatic session instead of paying per message. A session pays once after 30 minutes, six contributions, 120 words, and reciprocal activity from another account; OOC, Global, duplicate text, and solo spam do not qualify.
 - `updatePassiveProgression(announce)` pays every complete elapsed real-time hour, including hours accumulated while the character is offline. The base award is 20 XP/hour on the 10x scale; Patient Growth increases the hourly amount without changing the one-hour accounting boundary. `progression_last_passive_realtime` advances only by paid complete hours, retaining fractional time for the next login.
 - `migrateProgressionExperienceScale()` converts the four persisted Progression XP totals to the 10x display scale once. `getProgressionTierLifetimeRequirement(tier)` gates tiers 1-10 at 0/60/180/420/720/1050/1500/2100/2700/3300 lifetime XP independently from the spendable balance. `purchaseProgressionNode(node_id)` validates this lifetime gate, prerequisites, exclusive branches, maximum rank, external-only sources, and available Progression XP before granting a reward.
 - `configureProgressionFoundationPaths()` authors the shared five-tier Combat curriculum containing Power Control, Blast, Lunge, Fly, Shield, Meditate Level 2, Charge, Shockwave, Dash Attack, Zanzoken, Custom Buff, Beam, and Sokidan.
 - `hasExactProgressionRewardObject(reward_type)` distinguishes an exact Custom Buff reward from preset subclasses during grants and legacy ownership migration.
-- `showProgressionTrees(category, branch)` renders horizontally tiered bronze native-HUD graphs for Science, Magic, Mining, Smithing, Combat (Foundation, Buffs, Ki, Beam, Physical, Unarmed, Weapon), and the owner-specific Racial curriculum. Real technique sprites are retained when available; text fallbacks avoid generated category artwork. Every node, including roots and cross-branch ancestors, remains inside its declared branch lane. Each semantic prerequisite is drawn as its own smooth Bézier curve directly between the visible 58px node frames, without shared orthogonal channels or square endpoint markers; hovering or focusing a node emphasizes only its incoming and outgoing connections. Nodes show their XP cost as a badge attached to the sprite and list every prerequisite by name; for example, Big Bang Attack visibly requires only Kienzan. `toggleProgressionTrees()` closes the matching Progression or Milestones surface when its active top icon is pressed again. Milestones render as one searchable, uncategorized list of bolted cards without branch tabs or category badges; Combat defaults to Foundation.
+- `showProgressionTrees(category, branch)` renders horizontally tiered bronze native-HUD graphs for Science, Magic, Mining, Smithing, Combat (Foundation, Buffs, Ki, Beam, Physical, Unarmed, Weapon), and the owner-specific Racial curriculum. Real technique sprites are retained when available; text fallbacks avoid generated category artwork. Every node, including roots and cross-branch ancestors, remains inside its declared branch lane. Each semantic prerequisite is drawn as its own smooth Bézier curve directly between the visible 58px node frames, without shared orthogonal channels or square endpoint markers; hovering or focusing a node emphasizes only its incoming and outgoing connections. Nodes show their XP cost as a badge attached to the sprite and list every prerequisite by name; for example, Big Bang Attack visibly requires only Kienzan. `toggleProgressionTrees()` controls only the Progression window. Milestones have a separate `NexusMilestoneShopWindow`, `NexusMilestones` browser and `showMilestoneShop()` / `toggleMilestoneShop()` entry points. Each top icon controls its own window; neither screen links to or handles purchases for the other. Milestones use the shared bronze pixel HUD, with a category sidebar, search and a buyable-only filter. Cards select a detail panel; its purchase button spends MP and retains the current selection, filters and catalog scroll after the server responds. Combat defaults to Foundation.
 - The browser renders only the selected branch and its prerequisite ancestors. Category-wide search returns matching nodes plus their ancestry. The graph viewport hides conventional scrollbars and pans horizontally or vertically by click-dragging; arrow keys and tier jump controls remain available, and the last pan position is retained per category/branch in `sessionStorage`. Client/global icon caches prevent repeated DMI conversion and `browse_rsc` transfers on every refresh.
 - Combat -> Buffs has authored Focus, physical, tactical, and arcane routes. Godspeed, High Tension, Bestial Wrath, Fists of Fury, Arcane Power, and Bushido are mutually exclusive tier-five capstones; legacy `ub_*` milestones migrate to the matching progression node.
 - `isProgressionCombatSkillType()` and `isProgressionCombatTreeExcluded()` keep the Combat catalog limited to concrete attacks and approved buffs. Cyber Charge, Cyber Laser, Overdrive, and Combat Mathematics are module-only; Fire Fist, Bleeding Edge, and Thundering Blows are Milestone-only.
@@ -4229,3 +4235,13 @@ SSj_Hair delegates variant selection to VisualEffects/TransformationHair.dm. Tai
 SSJ1 uses `NexusSsjAwakening.playSequence` for its default opening (220 deciseconds at zero mastery, shortening to 6 deciseconds at full mastery). Configured custom openings remain supported. Interrupted default openings reset `ssj` and `transing` before applying SSJ1 multipliers.
 
 The default SSJ1 opening is now mastery-dependent: 22 seconds on first awakening, shortening towards a quiet 0.6-second transition at full mastery. Both `ssjdrain >= max_ss_mastery` and the Full Power unlock select the mastered visual treatment.
+
+### Milestone Shop
+
+Source: `src/Code/UI/MilestoneShop.dm` and `src/Code/UI/Browser/MilestoneShop.css` / `MilestoneShop.js`.
+
+- `buildMilestoneShopData()` serializes the live catalog, MP balance and lifetime cap, current ranks, authoritative lock reasons, selected exclusive choices and a distinct 96px emblem for every Milestone. Presentation categories do not introduce prerequisites.
+- `buildMilestoneShopHtml()` loads `getNexusHudBrowserCss("bronze")` and static shop resources, then safely encodes the snapshot. Its scoped Segoe UI/Tahoma/Arial typography overrides the shared pixel font only in this window. Cards show complete 14px descriptions, 17px titles, separated cost/rank/status rows and 64px artwork; the detail panel separates effect paragraphs and shows an 80px emblem. `getMilestoneShopCategoryIconKind()` retains the shared HUD category icons. The Milestones window can resize; the catalog and detail content scroll independently while the purchase action stays visible.
+- `getMilestoneShopIcon(id)` reads the packaged `src/Images/Milestones/MilestoneIcons.json` index and crops the matching 96px tile from `MilestoneIcons.png`, converting top-down atlas rows to BYOND coordinates. `getMilestoneShopIconResource(viewer, id)` caches the cropped PNG and sends it once per client. Rebuild the authored vector emblems with `node tools/BuildMilestoneArtwork.cjs`; the editable atlas is in `ArtSource/Milestones/MilestoneIcons.svg`.
+- `purchaseMilestoneShopEntry(id, expected_rank)` is reached through the owner-checked window `Topic`. It rejects missing or stale rank snapshots before calling `purchaseMilestone()`, preventing a delayed double click from buying another rank. The server recalculates cost, ownership and exclusivity on every purchase.
+- Momentum Damage adds 25% Speed to physical and Ki source stats; Precision adds 25% Offense; Fortified adds 20% Endurance to physical and 20% Resistance to Ki. Only one of these existing styles can be purchased. Other Milestones remain independently combinable. The shop introduces no Legacy currency or reincarnation rewards.

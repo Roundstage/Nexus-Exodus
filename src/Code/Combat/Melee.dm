@@ -240,6 +240,7 @@ mob/proc/TakeDamage(dmg = 0, stun_damage_mod = 0.6, knockback = 0, mob/attacker,
 
 	dmg *= racialDamageTakenMult()
 	dmg *= getNexusBlockIncomingDamageMultiplier(damage_attacker)
+	if(dmg > 0) recordAngerCombatOpponent(damage_attacker)
 
 	if(Shielding())
 		var/shield_drain = dmg * ShieldDamageReduction() * (max_ki/100/(Eff**shield_exponent))*Generator_reduction(is_melee=1)
@@ -1290,6 +1291,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	if(ismob(target) && ki_shield)
 		var/shield_drain = dmg * target.ShieldDamageReduction() * (target.max_ki/100/(target.Eff**shield_exponent))*target.Generator_reduction(is_melee=1)
 		if(target.Ki>=shield_drain)
+			target.recordAngerCombatOpponent(src)
 			target.Ki-=shield_drain
 			Play_Melee_Sound(sound_range=10,origin=target,sound_file=pick('Meleemiss1.ogg',\
 			'Meleemiss2.ogg','Meleemiss3.ogg'),sound_volume=20)

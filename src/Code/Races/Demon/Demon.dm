@@ -3,7 +3,7 @@ mob/proc/Demon(interactive_options=1)
 	incline_age=12
 	incline_mod=0.4
 	if(interactive_options) alert(src,"Demons are born in hell and are the enemy of the Kais. Demons can live forever as long \
-	as they periodicly visit hell, which will replenish their youth. High demon ranks are given the \
+	as they periodicly visit hell, which will replenish their youth. Only the Demon Lord (Daimao) is given the \
 	Soul Contract ability, which can take the souls of other players and have much control over them.")
 	Zombie_Immune=1
 	Gravity_Mod=1.2

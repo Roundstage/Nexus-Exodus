@@ -1,8 +1,11 @@
 mob/var/tmp/list/Lootables
+mob/var/tmp/mob/injure_loot_target
 
 obj/Cancel_Loot
 	name="Cancel"
-	Click() usr.Lootables=null
+	Click()
+		usr.Lootables = null
+		usr.injure_loot_target = null
 
 mob/proc/DisplayItemCost(obj/o)
 	set waitfor=0
@@ -26,37 +29,10 @@ client/Click(obj/A, location, control, params)
 	if(nexus_build_window && nexus_build_window.consumesMapClick(A,location,control)) return
 	if(player.isTechnologyReferenceClick(A))
 		mob.DisplayItemCost(A)
-	else if(mob.Lootables&&mob&&isobj(A)&&(A in mob.Lootables)&&!istype(A,/obj/Cancel_Loot)) for(var/mob/B in view(1,mob)) if(A.loc==B)
-		if(!B.KO)
-			usr<<"They are no longer knocked out"
-			mob.Lootables=null
-			return
-		if(!(A in B.item_list)&&!istype(A,/obj/Resources))
-			usr<<"Someone has already taken it"
-			mob.Lootables-=A
-			return
-		if(!(B in oview(1,mob)))
-			usr<<"You are not near them"
-			mob.Lootables=null
-		mob.Lootables-=A
-		if(istype(A,/obj/Resources))
-			var/obj/Resources/C=A
-			player_view(15,mob)<<"[mob] ([mob.displaykey]) steals [Commas(C.Value)] resources from [B]"
-			mob.gainNexusResources(C.Value, "stolen resources")
-			C.Value=0
-			C.Update_value()
-		else
-			if(A==B.Scouter) B.Scouter=null
-			player_view(15,mob)<<"[mob] ([mob.displaykey]) steals [A] from [B]"
-			B.overlays-=A.icon
-			if(A.suffix)
-				if(istype(A,/obj/items/Sword)) B.Apply_Sword(A)
-				if(istype(A,/obj/items/Armor)) B.Apply_Armor(A)
-			A.Move(mob)
-			if(A.suffix=="Equipped") A.suffix=null
-			if(B)
-				B.rebuildPlayerAppearance("item stolen")
-				B.Restore_hotbar_from_IDs()
+	else if(mob && mob.Lootables && isobj(A) && (A in mob.Lootables) && !istype(A, /obj/Cancel_Loot))
+		mob.stealInjureLoot(mob.injure_loot_target, A)
+		mob.Lootables = null
+		mob.injure_loot_target = null
 	else if(A in Alien_Icons) A:Choose(usr)
 	else if(A in Demon_Icons) A:Choose(usr)
 	else . = ..()
@@ -106,7 +82,7 @@ mob/proc/Charging_or_Streaming()
 
 obj/var/tmp/last_use = 0
 
-turf/Click(turf/T) if(isturf(T))
+turf/Click(turf/T, control, params) if(isturf(T))
 	if(usr.Disabled()) return
 	if(usr.move)
 		if(usr.client.eye!=usr) return
@@ -138,6 +114,8 @@ turf/Click(turf/T) if(isturf(T))
 				//if(usr.Dash_Attack(T)) return
 				for(var/obj/Attacks/At in usr.ki_attacks) if(At.charging||At.streaming||At.Using) return
 				if(T.z == usr.z && get_dist(T, usr) <= 20 && viewable(usr, T))
+					var/list/click_offsets = usr.getZanzokenClickOffsets(T, params)
+					if(!click_offsets) return
 					A.Skill_Increase(1,usr)
 
 					usr.AddStamina(-stam_drain)
@@ -154,7 +132,7 @@ turf/Click(turf/T) if(isturf(T))
 					if(getdist(usr,T)>6) distance_mod+=(getdist(usr,T)-6)*0.15
 					if(usr.senzu_overload) distance_mod++
 					var/old_t=src
-					usr.SafeTeleport(T)
+					usr.teleportToZanzokenClick(T, click_offsets)
 					usr.last_input_move = world.time
 					usr.Check_if_kiting(old_t)
 					usr.dir=OldDir
@@ -182,19 +160,21 @@ mob/Click()
 	if(src != usr && playerCharacter && (client || empty_player) && KO && (src in view(1, usr)))
 		if(usr.promptNexusPlanetControlSeizure(src)) return
 	if(client&&KO&&src!=usr&&(src in view(1)))
-		if(usr.tournament_override(fighters_can=0)) return
-		if(alignment_on&&both_good(src,usr))
-			usr<<"You can not steal from other good people"
+		var/error = usr.getInjureActionError(src, "Steal")
+		if(error)
+			usr << error
 			return
-		if(Same_league_cant_kill(src,usr))
-			usr<<"You can not steal from fellow league members"
-			return
-		if(!usr.Lootables) usr.Lootables=new/list
-		usr.Lootables+=new/obj/Cancel_Loot
-		if(GetResourceObject()) usr.Lootables += GetResourceObject()
-		for(var/obj/A in src) if(A.Stealable) usr.Lootables+=A
-		while(src&&usr&&getdist(src,usr)<=1&&KO&&!usr.KO) sleep(4)
-		if(usr) usr.Lootables=null
+		var/list/loot_session = usr.getInjureLootChoices(src, include_resources = TRUE)
+		if(!loot_session.len) return
+		var/obj/Cancel_Loot/cancel = new
+		loot_session += cancel
+		usr.Lootables = loot_session
+		usr.injure_loot_target = src
+		while(src && usr && usr.Lootables == loot_session && !usr.getInjureActionError(src, "Steal")) sleep(4)
+		if(usr && usr.Lootables == loot_session)
+			usr.Lootables = null
+			usr.injure_loot_target = null
+		del(cancel)
 		return
 	if(Class!="Legendary Saiyan"&&!ssj&&SSj4Able&&!usr.selected_target&&src==usr&&!transing&&!KO)
 		SSj4()

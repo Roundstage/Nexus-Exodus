@@ -7,9 +7,8 @@ mob/proc/ChangeIcerFormIcon(form = 1)
 	if(!i || !isicon(i) || IconTooBig(i))
 		return
 	if(form == 1)
-		icon = i
 		Form1Icon = i
-		CenterIcon(src)
+		setNexusAppearanceIcon(i, center = TRUE)
 	if(form == 2)
 		Form2Icon = i
 	if(form == 3)

@@ -1556,7 +1556,14 @@ atom/proc/Enlarge_Icon(X=64,Y=64)
 	CenterIcon(src)
 
 atom/proc/Enlarge_Overlays(X=64,Y=64)
+	var/list/status_appearances = list()
+	if(ismob(src))
+		var/mob/character = src
+		character.refreshCombatStatusOverlays()
+		status_appearances = character.getCombatStatusAppearances()
 	for(var/O in overlays) if(O&&O:icon)
+		// Keep mode indicators recognizable and removable instead of baking them into new icons.
+		if(O in status_appearances) continue
 		var/icon/A=new(O:icon,O:icon_state)
 		A.Scale(X,Y)
 		overlays-=O

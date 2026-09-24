@@ -899,24 +899,30 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 
 ### src/Code/Combat/Injuries.dm
 
+`Injure` uses the victim's absolute Willpower and rechecks the action after every prompt. Temporary wounds and Humiliate require less than 60 WP; permanent wounds, Delimb Arm/Leg and tail removal require less than 50 WP. Kill requires exactly 0 WP. Steal requires less than 30 WP, except a Heran attacker can steal at 70 WP or less. Mercy has no WP threshold. Other characters must remain knocked out and adjacent; the actor must be able to act. Existing tournament, alignment and league restrictions remain, with Mercy treated as non-hostile. Majin immunity applies to physical wounds and limb removal, not theft or RP outcomes.
+
+`getInjureActionError(target, action, permanent)` owns these checks. `getInjureOptions(target)` exposes only currently eligible choices; `applyInjureAction()` is the authoritative mutation path. Kill calls ordinary `Death(actor)` without forced death, retaining death regeneration and other protections; safezones, captivity, cloning and body-swap victims are rejected before execution. Temporary wounds last half a game year. Delimb sets persistent `Injuries.delimbed` metadata on the existing Arm/Leg injury types, retaining their current penalties, art and regeneration/healing. At the two-limb cap it upgrades one eligible wound instead of adding a third. Delayed injury registration uses set membership to avoid duplicate list entries.
+
+`recordInjureOutcome(target, action, message)` announces and chat-logs the outcome. Humiliate and Mercy currently change no WP, combat state or alignment; this is the integration point for their future alignment consequences.
+
 #### mob/verb/Injure
 - Signature: `mob/verb/Injure()`
 - Inputs: None
-- Purpose: Handle injure.
+- Purpose: Open the WP-gated injury, dismemberment, theft, execution and RP outcome menu for the character in front, or self-injury when nobody is there.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Injury_Options
 - Signature: `Injury_Options(mob/P)`
 - Inputs: mob/P
-- Purpose: Handle injury options.
+- Purpose: Offer eligible action categories and body-part/item choices; revalidate at application after the prompts return.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Inflict_Injury
 - Signature: `Inflict_Injury(mob/P,obj/Injuries/I)`
 - Inputs: mob/P, obj/Injuries/I
-- Purpose: Handle inflict injury.
+- Purpose: Legacy prompt adapter to `applyInjureAction()`; releases its provisional injury object and uses the same server-side limits.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -4642,6 +4648,10 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 - Side effects: none expected.
 
 ### Progression preset buffs and presentation
+
+- The Four Horsemen use `obj/DemonBuff/{Famine,War,Pestilence,Death}` in `Combat/DemonBuffs.dm`, independent of `obj/Buff`. `toggleDemonBuff()` owns the separate slot; each aura excludes the other three, Mystic and Majin, while ordinary custom/preset buffs stay active. All four are teachable like Mystic (100 student points; no race restriction on students) and excluded from Combat purchases. They retain the original Four Horsemen stat bonuses: Famine +0.4 additive BP/x1.3 Regen/x1.4 Recovery; War +0.4 BP/x1.3 Strength and Force/x1.25 Offense; Pestilence +0.4 BP/x1.4 Endurance and Defense; Death +0.7 BP. The source is Roleplay-Tenkaichi `Code/Skills/Four Horsemen.dm`: Famine was labeled FungalPlague, and Pestilence's defensive definition was commented out. No obsolete commented injury-immunity descriptions are treated as implemented effects.
+- `applyDemonBuffStats()` applies/reverses fixed type defaults without the custom-buff point cap or editor. `revertDemonBuff()` also runs on skill deletion and `Revert_All()`. `drainDemonBuff()` consumes 0.5% maximum Energy each second and reverts at zero; `normalizeDemonBuff()` resumes the loop after login without reapplying saved modifiers. The HUD and action bar read `active_demon_buff` independently of `current_buff`.
+- `Soul_Contract()` requires an owned skill and `canUseSoulContract()` (Demon race plus Daimao rank), including a second check after the recipient's acceptance dialog. Soul Contract is no longer teachable or self-learnable.
 
 - Combat Foundation is the default combat-progression branch. Its universal curriculum moves from ki regulation/basic attacks into meditation, radial Shockwave, aerial movement, defense and approach tools, then Zanzoken, Custom Buff and Beam, with Sokidan as the guided-energy capstone. Dash Attack is foundational mobility rather than an Unarmed capstone; the strongest dedicated Unarmed attacks remain at tier five.
 - `obj/Buff/Preset` defines fixed, non-editable buffs. Combat Mathematics is module-only and Bleeding Edge is Milestone-only; neither is registered as a Combat-tree purchase.

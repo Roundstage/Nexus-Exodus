@@ -149,6 +149,7 @@ datum/PlayerAppearanceManager
 			owner.overlays += entry.rendered
 			rendered_appearances += entry.rendered
 		owner.Add_Injury_Overlays()
+		owner.refreshCombatStatusOverlays()
 		rebuild_generation++
 		rebuilding = FALSE
 
@@ -165,6 +166,12 @@ obj/items/var
 	appearance_priority = APPEARANCE_PRIORITY_BODY
 
 mob/var/tmp/datum/PlayerAppearanceManager/player_appearance_manager
+
+mob/Read(savefile/save_file)
+	. = ..()
+	// Read can reuse a lobby/body mob. Its previous tmp manager must not own the loaded outfit.
+	player_appearance_manager = null
+	rebuildPlayerAppearance("character load")
 
 mob/var/tmp
 	list/nexus_character_visual_scale_sources
@@ -229,6 +236,19 @@ mob/proc/ensurePlayerAppearanceManager()
 mob/proc/rebuildPlayerAppearance(reason = "state change")
 	var/datum/PlayerAppearanceManager/manager = ensurePlayerAppearanceManager()
 	manager.rebuild(reason)
+
+atom/proc/setNexusAppearanceIcon(new_icon, new_icon_state = null, center = FALSE)
+	var/mob/character
+	if(ismob(src)) character = src
+	else if(istype(src, /obj/items) && ismob(loc))
+		character = loc
+		var/datum/PlayerAppearanceManager/manager = character.ensurePlayerAppearanceManager()
+		// Clean the old signature before replacing it, even when login lost the manager handles.
+		manager.removeLegacyEquipmentAppearances()
+	icon = new_icon
+	if(!isnull(new_icon_state)) icon_state = new_icon_state
+	if(center) CenterIcon(src)
+	if(character) character.rebuildPlayerAppearance("icon change")
 
 mob/proc/setEquipmentAppearancePriority(obj/items/item, priority)
 	if(!item || item.loc != src) return

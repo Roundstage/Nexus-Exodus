@@ -101,7 +101,7 @@ obj/proc/getClassicSkillState(mob/user)
 	else if(!user.isNexusHotkeyObjectAvailable(src) || user.KO || user.input_disabled)
 		state = "unavailable"
 		label = "Unavailable"
-	else if(user.current_buff == src || (istype(src, /obj/Giant_Form) && user.using_giant_form) || (classicNumericVar(src, "using")))
+	else if(user.current_buff == src || (istype(src, /obj/DemonBuff) && user.active_demon_buff == type) || (istype(src, /obj/Giant_Form) && user.using_giant_form) || (classicNumericVar(src, "using")))
 		state = "active"
 		label = "Active"
 	else if(classicNumericVar(src, "charging"))
@@ -268,6 +268,7 @@ mob/proc/classicBarChanged()
 	Hotkey_server_backup_save()
 	if(client.nexus_classic_hud)
 		client.nexus_classic_hud.dirty = TRUE
+		client.nexus_classic_hud.pollViewport(TRUE)
 		client.nexus_classic_hud.refresh()
 
 mob/proc/buildClassicSlotKeyMap()
@@ -421,8 +422,8 @@ mob/proc/createClassicBar()
 	fitClassicBar(id)
 	if(client && client.nexus_classic_hud)
 		var/list/new_bar_geometry = nexus_classic_layout[id]
-		new_bar_geometry["x"] = max(0, round((client.nexus_classic_hud.viewport_width - new_bar_geometry["w"]) / 2))
-		new_bar_geometry["y"] = max(0, client.nexus_classic_hud.viewport_height - new_bar_geometry["h"] - (nexus_classic_bars.len - 1) * (new_bar_geometry["h"] + 2))
+		new_bar_geometry["x"] = max(0, round((client.nexus_classic_hud.reference_width - new_bar_geometry["w"]) / 2))
+		new_bar_geometry["y"] = max(0, client.nexus_classic_hud.reference_height - new_bar_geometry["h"] - (nexus_classic_bars.len - 1) * (new_bar_geometry["h"] + 2))
 		client.nexus_classic_hud.applyGeometry(id)
 	classicBarChanged()
 	return id
@@ -484,5 +485,5 @@ mob/proc/fitClassicBar(id = "bar")
 	var/list/state = nexus_classic_layout[id].Copy()
 	state["w"] = columns * (bar["size"] + 3) + 25
 	state["h"] = max(52, 8 + round((indexes.len + columns - 1) / columns) * (bar["size"] + 3))
-	nexus_classic_layout[id] = normalizeClassicGeometry(state, id, client.nexus_classic_hud.viewport_width, client.nexus_classic_hud.viewport_height)
+	nexus_classic_layout[id] = normalizeClassicGeometry(state, id, client.nexus_classic_hud.reference_width, client.nexus_classic_hud.reference_height)
 	client.nexus_classic_hud.setOpen(id, TRUE)
