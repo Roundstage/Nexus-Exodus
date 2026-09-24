@@ -2040,7 +2040,95 @@ proc/runNexusActionCycleSmoke()
 	text_test.dd_list2text_test()
 	del(text_test)
 
+mob/NexusSmokeTest/RoyalGrantProbe
+	var/royal_granted = FALSE
+
+	hasNexusRareRaceGrant(rare_choice)
+		if(rare_choice == "Royal Blood") return royal_granted
+		return ..()
+
+proc/runArgalBloodlineSmokeTests()
+	var/old_royal_limit = viltrumite_royal_online_limit
+	viltrumite_royal_online_limit = 0
+	var/mob/NexusSmokeTest/RoyalGrantProbe/candidate = new
+	candidate.viltrumite_royal_candidate = FALSE
+	var/list/traits = nexusRaceTraitOptions("Viltrumite", candidate)
+	nexusSmokeAssert(!traits["viltrumite_royal"], "Royal Blood was exposed without natural eligibility or an account grant")
+	candidate.royal_granted = TRUE
+	traits = nexusRaceTraitOptions("Viltrumite", candidate)
+	nexusSmokeAssert(traits["viltrumite_royal"] && !candidate.viltrumite_royal_candidate, "Royal Blood grant did not bypass both the failed rare roll and the population limit")
+	candidate.royal_granted = FALSE
+	candidate.viltrumite_royal_candidate = TRUE
+	nexusSmokeAssert(!candidate.canSelectViltrumiteRoyal(), "ungranted Royal Blood bypassed the population limit")
+	viltrumite_royal_online_limit = 99999
+	nexusSmokeAssert(candidate.canSelectViltrumiteRoyal(), "natural Royal Blood eligibility stopped working")
+	viltrumite_royal_online_limit = old_royal_limit
+	del(candidate)
+
+	var/mob/NexusSmokeTest/character = new
+	character.Viltrumite()
+	character.playerCharacter = TRUE
+	character.Savable = TRUE
+	character.base_bp = 123456
+	character.Str = 654
+	character.Points = 0
+	character.Max_Points = 38
+	character.progression_experience = 321
+	character.character_mutations = list("adaptive_musculature" = 7)
+	var/obj/Resources/resources = new(character)
+	resources.Value = 456
+	nexusSmokeAssert(character.unlockArgalBloodline(), "completed standard Viltrumite could not unlock Argal Bloodline")
+	var/obj/Redo_Stats/respec = locate(/obj/Redo_Stats) in character
+	nexusSmokeAssert(character.Class == "Royal Blood" && character.viltrumite_lineage == "royal" && character.isScourgeImmune(), "Argal conversion did not apply Royal lineage benefits")
+	nexusSmokeAssert(respec && respec.Last_Redo + 5 <= Year, "Argal conversion did not grant an immediately available stat redistribution")
+	nexusSmokeAssert(character.base_bp == 123456 && character.Str == 654 && character.Points == 0 && character.Max_Points == 38 && character.progression_experience == 321 && character.character_mutations["adaptive_musculature"] == 7 && resources.loc == character && resources.Value == 456, "Argal conversion reset progress, attributes, mutations, allocation, or inventory before the player's respec")
+	nexusSmokeAssert(!character.unlockArgalBloodline() && (locate(/obj/Redo_Stats) in character) == respec, "repeated Argal conversion granted another respec")
+	var/savefile/royal_save = new
+	character.Write(royal_save)
+	var/mob/NexusSmokeTest/loaded = new
+	loaded.Read(royal_save)
+	loaded.normalizeViltrumiteLineage()
+	var/obj/Redo_Stats/loaded_respec = locate(/obj/Redo_Stats) in loaded
+	nexusSmokeAssert(loaded.viltrumite_lineage == "royal" && loaded.Class == "Royal Blood" && loaded.isScourgeImmune() && loaded_respec && loaded_respec.Last_Redo + 5 <= Year, "Royal conversion or its unused free respec did not survive character saving")
+	del(loaded)
+	del(character)
+
+	var/mob/NexusSmokeTest/existing_respec_character = new
+	existing_respec_character.Viltrumite()
+	existing_respec_character.playerCharacter = TRUE
+	existing_respec_character.Savable = TRUE
+	var/obj/Redo_Stats/existing_respec = new(existing_respec_character)
+	existing_respec.Last_Redo = Year
+	nexusSmokeAssert(existing_respec_character.unlockArgalBloodline() && (locate(/obj/Redo_Stats) in existing_respec_character) == existing_respec && existing_respec.Last_Redo + 5 <= Year, "conversion did not refresh the existing respec cooldown")
+	existing_respec_character.Racial_Stats(Start_Redo_Stats = 0, modless_check = 0)
+	nexusSmokeAssert(existing_respec_character.Points == 52 && existing_respec_character.Max_Points == 52 && existing_respec_character.getViltrumiteCreationStatCap("Strength") == 2.7, "converted Royal Blood did not receive its full stat budget and caps when rebuilding stats")
+	nexusSmokeAssertNear(existing_respec_character.strmod, 1.4, 0.0001, "converted Royal Blood did not receive its innate Strength build")
+	del(existing_respec_character)
+
+	for(var/rejected_case in list("Human", "Half-Viltrumite", "Royal Blood", "Grand Regent", "Lobby", "Respec", "Unsavable", "No Respec", "Creation Commit"))
+		var/mob/NexusSmokeTest/rejected = new
+		rejected.Viltrumite()
+		rejected.playerCharacter = TRUE
+		rejected.Savable = TRUE
+		switch(rejected_case)
+			if("Human", "Half-Viltrumite") rejected.Race = rejected_case
+			if("Royal Blood") rejected.applyViltrumiteRoyalLineage()
+			if("Grand Regent") rejected.applyGrandRegentLineage(TRUE)
+			if("Lobby") rejected.playerCharacter = FALSE
+			if("Respec") rejected.Redoing_Stats = TRUE
+			if("Unsavable") rejected.Savable = FALSE
+			if("No Respec") rejected.can_redo_stats = FALSE
+			if("Creation Commit") rejected.character_creation_committing = TRUE
+		var/previous_class = rejected.Class
+		nexusSmokeAssert(!rejected.unlockArgalBloodline() && rejected.Class == previous_class && !(locate(/obj/Redo_Stats) in rejected), "Argal conversion accepted an ineligible character: [rejected_case]")
+		del(rejected)
+	initializeNexusAdminActions()
+	var/datum/NexusAdminAction/unlock_action = nexus_admin_action_catalog["unlock_argal"]
+	nexusSmokeAssert(unlock_action && unlock_action.minimum_level == 3 && unlock_action.requires_target, "Argal admin action is missing its permission or selected-player requirement")
+	world.log << "NEXUS_ARGAL_BLOODLINE_TESTS_PASSED"
+
 proc/runViltrumiteStartupSmokeTests()
+	runArgalBloodlineSmokeTests()
 	var/list/expected_budgets = list(
 		"Viltrumite|viltrumite_warrior" = 38,
 		"Viltrumite|viltrumite_royal" = 52,

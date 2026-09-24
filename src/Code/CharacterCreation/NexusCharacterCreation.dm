@@ -208,7 +208,7 @@ mob/proc/hasNexusRareRaceGrant(rare_choice)
 	return rare_choice in account_grants
 
 mob/proc/grantNexusRareRace(rare_choice)
-	if(!(rare_choice in list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent"))) return FALSE
+	if(!(rare_choice in list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent", "Royal Blood"))) return FALSE
 	var/account_key = getNexusRareRaceGrantKey(src)
 	if(!account_key) return FALSE
 	var/list/account_grants = nexus_rare_race_grants[account_key]
@@ -687,6 +687,7 @@ mob/proc/commitNexusCharacter(selected_race, requested_name, gender_choice, alig
 	if(selected_race == "Frost Lord") src.consumeNexusRareRaceGrant("Frost Lord")
 	if(race_trait == "frost_cooler") src.consumeNexusRareRaceGrant("Cooler")
 	if(race_trait == "viltrumite_grand_regent") src.consumeNexusRareRaceGrant("Grand Regent")
+	if(race_trait == "viltrumite_royal") src.consumeNexusRareRaceGrant("Royal Blood")
 	// StuffThatRunsIfYouClickNewOrLoad() is asynchronous. Mark the transition complete
 	// before the creator is deleted so its close fallback cannot reopen character selection.
 	src.playerCharacter = TRUE

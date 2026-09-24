@@ -77,12 +77,29 @@ mob/proc/applyGrandRegentLineage(nonunique = FALSE)
 	return TRUE
 
 mob/proc/canSelectViltrumiteRoyal()
+	if(hasNexusRareRaceGrant("Royal Blood")) return TRUE
 	if(viltrumite_royal_candidate < 0) viltrumite_royal_candidate = prob(viltrumite_royal_creation_chance)
 	if(!viltrumite_royal_candidate) return FALSE
 	var/royal_count
 	for(var/mob/player in players)
 		if(player.Race == "Viltrumite" && player.Class == "Royal Blood") royal_count++
 	return royal_count < viltrumite_royal_online_limit
+
+mob/proc/canUnlockArgalBloodline()
+	if(Race != "Viltrumite" || !playerCharacter || !can_redo_stats || dbz_character) return FALSE
+	if(!Savable || Redoing_Stats || character_creation_committing) return FALSE
+	if(Class && Class != "Viltrumite") return FALSE
+	if(viltrumite_lineage && viltrumite_lineage != "standard") return FALSE
+	return !grand_regent_nonunique && !isDesignatedGrandRegent()
+
+mob/proc/unlockArgalBloodline()
+	if(!canUnlockArgalBloodline()) return FALSE
+	applyViltrumiteRoyalLineage()
+	// The player chooses their Royal allocation through the existing progression-preserving respec.
+	var/obj/Redo_Stats/respec = locate(/obj/Redo_Stats) in src
+	if(!respec) respec = new /obj/Redo_Stats(src)
+	respec.Last_Redo = Year - 5
+	return TRUE
 
 mob/proc/canSelectGrandRegent()
 	return all_rare_races_common || hasNexusRareRaceGrant("Grand Regent") || !viltrumite_grand_regent_account

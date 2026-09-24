@@ -25,7 +25,8 @@ Administrative commands and management flows. Administrators receive a searchabl
 
 - `giveMutation(character)` grants or updates one mutation at 1% through 30% for a playable character.
 - `rollMutations(character)` replaces the target's live mutation modifiers using either the natural rarity roll or a forced rarity.
-- `giveRareRace(player)` grants Legendary Saiyan, Frost Lord, Cooler, Grand Regent, or all four to the selected account. Each grant survives lobby reconnects in server memory and is consumed only after that rare option is successfully created.
+- `giveRareRace(player)` grants Legendary Saiyan, Frost Lord, Cooler, Grand Regent, Royal Blood (Argal), or all five to the selected account. Each grant survives lobby reconnects in server memory (not server restarts) and is consumed only after that rare option is successfully created. Royal Blood grants bypass its natural roll and online population limit.
+- `unlockArgalBloodlineForPlayer(player)` is the level-3 **Unlock Argal Bloodline** action in the Character section of the Admin Panel. **Character Creation** grants the same one-use Royal Blood access and refreshes an open creator. **Current Character** converts a completed standard Viltrumite, immediately saves Royal lineage/immunity, and grants or refreshes **Other > Redo Stats** without its five-year cooldown. The player must use that respec to apply the Royal innate attributes and allocate the 52-point budget; conversion itself preserves their existing stats, progress, mutations, and inventory. Existing Royals, hybrids, Grand Regents, and characters in a creation/respec transition are rejected. Both modes recheck administrator level and target after prompts and write the admin audit log.
 
 ### src/Code/Admin/AdminPanel.dm
 
