@@ -27,6 +27,8 @@ The Alien specialization keeps a sticky `remaining / 100 AP` indicator visible w
 
 Each stage owns a fixed, contained layout. The Lineage panels remain in one grid row, Attributes is the sole vertical scrolling surface for its stage, and Appearance contains oversized DMI layers inside the composed preview without allowing their intrinsic sheet size to collapse the clothing column. Clothing uses fixed 80px grid rows and hard-clamped 42px thumbnails, so selecting a full-tile outfit cannot stretch an implicit row or push the remaining catalog into blank scroll space. The review summary and `Begin Journey` action are centered independently of the shared inline HUD-button rule.
 
+The hidden race radio inputs are anchored inside their labels. Selecting a lower entry such as Viltrumite keeps native focus within `.race-scroll`, preserving the list position and fixed Lineage heading instead of scrolling the outer panel. `node tools/TestCharacterCreationScroll.cjs` reproduces native label clicks with production markup/CSS and the race handler, covering lower-list selection, keyboard arrows and scrolling back to the first race at three viewport sizes.
+
 Race setup is dispatched directly through `InitializeRaceTemplate(..., interactive_options=0, ...)`, so the creator does not open initializer prompts. `Racial_Stats()` remains the owner of race builds and stat construction, but the Nexus path supplies the player's complete manual allocation.
 
 ## Current Proc Signatures
