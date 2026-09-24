@@ -57,10 +57,11 @@ mob/Admin3/verb/giveRareRace(mob/player in players)
 	set name = "Give Rare Race"
 	set category = "Admin"
 	if(AdminLevel() < 3 || !player || !player.client) return
-	var/list/choices = list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent", "All Rares")
+	var/list/choices = list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent", "Royal Blood", "All Rares")
 	var/rare_choice = input(src, "Grant which rare character-creation option to [player]? The grant is consumed when that option is successfully created.", "Give Rare Race") as null|anything in choices
 	if(isnull(rare_choice)) return
-	var/list/granted = rare_choice == "All Rares" ? list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent") : list(rare_choice)
+	if(AdminLevel() < 3 || !player || !player.client) return
+	var/list/granted = rare_choice == "All Rares" ? list("Legendary Saiyan", "Frost Lord", "Cooler", "Grand Regent", "Royal Blood") : list(rare_choice)
 	for(var/grant in granted) player.grantNexusRareRace(grant)
 	var/grant_text = jointext(granted, ", ")
 	admin_blame(src, "[key] granted [player.key] rare character creation access: [grant_text]")
@@ -69,6 +70,31 @@ mob/Admin3/verb/giveRareRace(mob/player in players)
 	if(player.nexus_character_creator)
 		if("Cooler" in granted) player.nexus_character_creator.cooler_available = TRUE
 		player.nexus_character_creator.RefreshPage()
+
+mob/Admin3/verb/unlockArgalBloodlineForPlayer(mob/player in players)
+	set name = "Unlock Argal Bloodline"
+	set category = "Admin"
+	if(AdminLevel() < 3 || !player || !player.client) return
+	var/unlock_mode = input(src, "Unlock Royal Blood (Argal) for [player]. Creation access is used once. Converting a current standard Viltrumite grants the lineage and a free Redo Stats to apply the Royal stat build.", "Unlock Argal Bloodline") as null|anything in list("Character Creation", "Current Character")
+	if(isnull(unlock_mode)) return
+	if(AdminLevel() < 3 || !player || !player.client) return
+	if(unlock_mode == "Character Creation")
+		if(!player.grantNexusRareRace("Royal Blood")) return
+		admin_blame(src, "[key] granted [player.key] Royal Blood (Argal) character creation access.")
+		src << "[player] can now select Viltrumite > Royal Blood (Rare) for one character creation."
+		player << "An administrator unlocked Royal Blood (Argal) for your next Royal Blood character creation. Choose Viltrumite > Royal Blood (Rare)."
+		if(player.nexus_character_creator) player.nexus_character_creator.RefreshPage()
+		return
+	if(unlock_mode != "Current Character") return
+	if(!player.canUnlockArgalBloodline())
+		src << "Choose a completed standard Viltrumite who is not already redistributing stats. Royal Blood, Half-Viltrumites, and Grand Regents cannot be converted with this command."
+		return
+	if(alert(src, "Convert [player] to Royal Blood (Argal)? They will receive Royal lineage benefits immediately and must use Other > Redo Stats to apply the Royal attributes and choose their allocation. Their current progress and inventory are preserved.", "Unlock Argal Bloodline", "Convert", "Cancel") != "Convert") return
+	if(AdminLevel() < 3 || !player || !player.client || !player.unlockArgalBloodline()) return
+	admin_blame(src, "[key] converted [player] ([player.key], slot [player.active_character_slot]) to Royal Blood (Argal) and granted a free stat redistribution.")
+	player.save()
+	src << "[player] is now Royal Blood (Argal). They can use Other > Redo Stats to apply the Royal stat build."
+	player << "An administrator unlocked Royal Blood (Argal) for this character. Use Other > Redo Stats now to apply your Royal attributes and choose your larger stat allocation."
 
 mob/Admin2/verb/bugLogs()
 	set name = "Bug Logs"
