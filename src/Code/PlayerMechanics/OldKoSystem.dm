@@ -36,6 +36,7 @@ mob/proc/ShouldAnger(mob/target)
 	return target && target.canUseAngerHealthRecovery()
 
 mob/proc/TryToCauseAnger(mob/Attacker, mob/Victim)
+	if(Victim) Victim.recordAngerCombatOpponent(Attacker)
 	if(!ShouldAnger(Victim) || Attacker == Victim) return FALSE
 	var/ko_reason = "being pushed to the brink"
 	if(ismob(Attacker))
@@ -97,6 +98,7 @@ mob/proc/TryToKoNPC(mob/Attacker, mob/Victim)
 	// Frozen is the NPC equivalent of being KO'd.
 	// It's a state where the NPC is unable to move or attack.
 	if(!Victim.Frozen)
+		Victim.finishAngerCombatRound()
 		if(istype(Victim, /mob/new_troll))
 			if("KO" in icon_states(icon)) 
 				Victim.icon_state = "KO"
@@ -153,6 +155,7 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 		Victim.FullHeal()
 		return
 
+	Victim.recordAngerCombatOpponent(Attacker)
 	if(allow_anger && TryToCauseAnger(Attacker, Victim))
 		return
 
@@ -160,7 +163,7 @@ mob/proc/KO(mob/Attacker, allow_anger=TRUE, combat_ko_handled = FALSE, mob/Victi
 	give_tier(Attacker)
 
 	Victim.KO = TRUE
-	Victim.has_angered_before_ko = FALSE
+	Victim.finishAngerCombatRound()
 	Victim.icon_state = "KO"
 	Victim.CheckTriggerUltraInstinct()
 

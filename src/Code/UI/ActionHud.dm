@@ -384,7 +384,7 @@ obj/NexusHud/ShortcutButton
 			if("inventory") owner.toggleClassicWidget("inventory")
 			if("skills") owner.toggleClassicWidget("skills")
 			if("progression") owner.toggleProgressionTrees()
-			if("milestones") owner.toggleProgressionTrees("Milestones")
+			if("milestones") owner.toggleMilestoneShop()
 			if("build") owner.ToggleBuildMenu()
 			if("sense") owner.toggleNexusPlayerMenu("sense")
 			if("world") owner.showClassicWidget("menu", "world")
@@ -416,7 +416,7 @@ obj/NexusHud/ShortcutButton
 		desc = "Progression Trees"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_progression_tree && character.client.nexus_progression_tree.category != "Milestones"
+			return character.client && character.client.nexus_progression_tree
 
 	Milestones
 		action_id = "milestones"
@@ -424,7 +424,7 @@ obj/NexusHud/ShortcutButton
 		desc = "Milestones"
 
 		isActive(mob/character)
-			return character.client && character.client.nexus_progression_tree && character.client.nexus_progression_tree.category == "Milestones"
+			return character.client && character.client.nexus_milestone_shop
 
 	Build
 		action_id = "build"
@@ -1053,6 +1053,15 @@ datum/NexusPlayerMenu
 		if(embedded_widget) return "window=mapwindow.classic_[embedded_widget]"
 		return "window=NexusPlayerMenu;size=760x680;can_resize=false;can_close=true"
 
+	proc/getEmbeddedScaleScript()
+		if(!embedded_widget || !owner || !owner.client || !owner.client.nexus_classic_hud) return ""
+		var/list/state = owner.nexus_classic_layout[embedded_widget]
+		if(!islist(state)) return ""
+		return {"<script>
+		function nexusFitEmbeddedDetail(){if(!document.body)return;var scale=window.innerWidth/[state["w"]];document.body.style.zoom=scale;document.body.style.width=(document.documentElement.clientWidth/scale)+'px';}
+		window.addEventListener('load',nexusFitEmbeddedDetail);window.addEventListener('resize',nexusFitEmbeddedDetail);window.classicUpdate=nexusFitEmbeddedDetail;
+		</script>"}
+
 	proc/returnToEmbeddedWidget()
 		if(!embedded_widget || !owner || !owner.client || !owner.client.nexus_classic_hud) return FALSE
 		var/return_widget = embedded_widget
@@ -1068,6 +1077,7 @@ datum/NexusPlayerMenu
 		var/html = {"<!doctype html><html><head><meta charset='utf-8'><title>[html_encode(title)]</title><style>
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:12px 'Courier New',monospace}.shell{padding:12px}.header{display:flex;gap:12px;align-items:center;border:2px solid #755a36;background:#21190f;padding:10px}.header h1{margin:0;color:#f0d79e;font-size:18px}.header p{margin:4px 0 0;color:#b9a37c}.header-copy{flex:1}.back{padding:7px 10px}.body{margin-top:8px;border:2px solid #684e2f;background:#21190f;padding:10px}.description{padding:10px;border:1px solid #624b30;background:#2a2117;color:#d9c49a;line-height:1.5}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.details div{min-height:68px;padding:8px;border:2px solid #624b30;background:#2a2117}.details small,.details b{display:block}.details small{color:#c69c57}.details b{margin-top:7px;color:#ead7ad;line-height:1.35}.notice{margin-top:8px;padding:8px;border-left:3px solid #d6aa5d;color:#b9a37c}.item-icon{width:56px;height:56px;flex:0 0 56px;border:2px solid #59452d;background:#15110c;display:flex;align-items:center;justify-content:center;image-rendering:pixelated;overflow:hidden}.item-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.item-icon.missing{color:#826d4d;font-size:18px}
 		[getNexusHudBrowserCss("bronze")]</style>[getNexusLiveBrowserScript(src, last_scroll_y)]</head><body class='nexus-hud'><div class='shell hud-shell'><div class='header hud-frame'>[icon_html]<div class='header-copy'><h1 class='hud-title'>[html_encode(title)]</h1><p class='hud-muted'>[html_encode(subtitle)]</p></div><a class='back hud-button' href='byond://?src=\ref[src]&action=back'>BACK</a></div><div class='body hud-frame'>[body_html]</div></div></body></html>"}
+		html = replacetext(html, "</head>", "[getEmbeddedScaleScript()]</head>")
 		owner << browse(html, getBrowserOptions())
 
 	proc/showItemExamine(obj/items/item)

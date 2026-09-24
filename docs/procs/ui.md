@@ -1,6 +1,10 @@
 # UI
 
 ## Overview
+
+Progression Trees and Milestones are independent windows, opened from their respective HUD icons or verbs. Progression Trees has no Milestones tab, and the Milestone shop has no Progression Trees link. Their client references, close actions, active-icon states and purchase handlers are separate.
+
+`buildMilestoneShopHtml()` decodes BYOND form-encoded JSON by restoring spaces before decoding percent escapes. Names, descriptions, categories and notices retain their spacing, while literal bonus signs such as `+10%` remain unchanged.
 Runtime HUD, browser-based character/admin interfaces, hotkeys, and other client-facing presentation systems. Players can persistently choose the compact classic chat overlay or a split side layout that stacks configurable native tabs above a smaller four-channel chat and CMD bar. The detailed Character sheet is opened from the top-right action HUD. A compact pixel-icon strip exposes Inventory, Skills, Progression, Milestones, Build, Sense, World, Chat, Hotkeys, and a searchable command/information menu; only Admin remains permission-gated. The experimental Planet Map is available only through an admin verb. Inventory and Skills retain their toggle behavior and detailed Examine actions. Sense opens persistent, independent Sense/target monitors; Menu and World select a category in the compact command panel.
 
 The compact lower-left vitals panel starts flush at the bottom-left edge and renders labeled Willpower, Health, Energy, and Stamina rows; Energy uses `(ki) percentage%`. Say text renders above Typing, and Typing renders above the character. Beneath the character, thin bars are ordered Willpower, Health, and Energy from top to bottom, with the Sense power percentage locked below the Energy row. Player-attached bars, speech/typing feedback, fixed vitals, and overlay chat reset inherited transforms so Giant Form, Return to Larva, and other character scaling never resize the interface. Players can persistently reposition that lower stack and either drag or numerically position the main panel. The top-right action controls repair their own `client.screen` registration during normal HUD updates.
@@ -25,6 +29,8 @@ These references are intentional and must not be removed, renamed, replaced with
 - Bronze chrome (`#201810`, `#715735`, `#9a7440`, `#d2aa61`) belongs to player surfaces and chat. Blue chrome (`#080d14`, `#304456`, `#405a70`, `#72c6eb`) belongs to admin/development surfaces. Both use square corners, hard inset edges, black pixel shadows, and no gradients in structural frames.
 
 ## Classic combat HUD (2026-09-07)
+
+- Responsive layout (2026-09-23): `classicHudScale()` and `scaleClassicGeometry()` project all embedded panels from a single saved reference canvas with a common uniform scale. Frames, text, icons, and hit areas scale together; window resizing never changes hotbar columns or overwrites logical geometry. Edge-relative positions account for different aspect ratios. `unscaleClassicGeometry()` converts explicit pixel drag/resize operations back into logical coordinates, retaining original dimensions on a move to avoid rounding drift. `migrateClassicLayout()` restores legacy `preferred` placements from before automatic rearrangement and persists `reference_w`/`reference_h` inside the existing account viewport setting. `pollViewport()` ignores minimized sizes and reapplies display geometry without rearranging panels or moving native vitals. The browser transforms its complete logical shell and adapts immediately to native resize events; item/skill detail pages use `getEmbeddedScaleScript()`. Native screen objects keep BYOND's existing map scaling.
 
 - Runtime optimization (2026-09-11): `shouldRefreshWidget()` skips periodic work for collapsed widgets, refreshes bars/target every 5 ticks and other panels every 10 ticks; explicit refreshes and first payloads bypass this gate. `queueChatRefresh()` coalesces message bursts over one tick. `refreshChat()` compares the client history revision, channel, text size and geometry before rebuilding up to 300 messages; reopening forces a fresh payload. Both history append paths increment `nexus_chat_revision`. Menus enumerate owned verbs only for Actions, Playtest and Admin, while command execution still revalidates ownership. `buildClassicSlotKeyMap()` scans shortcuts once per bar render instead of once per slot and does not retain stale bindings across renders.
 
@@ -295,7 +301,7 @@ These references are intentional and must not be removed, renamed, replaced with
 #### mob/proc/getNexusActiveHudModifiers
 - Signature: `mob/proc/getNexusActiveHudModifiers()`
 - Inputs: None.
-- Purpose: Aggregate active transformations, Mystic, preset/custom buffs, Ultimate Buffs, Kaioken, Limit Breaker, Giant/Great Ape, Third Eye, Majin, Overdrive, Fire Fist, and steroids using their authoritative balance variables. Additive BP changes become one effective ratio instead of being multiplied together.
+- Purpose: Aggregate active transformations, Mystic, the four demon rank auras, preset/custom buffs, Ultimate Buffs, Kaioken, Limit Breaker, Giant/Great Ape, Third Eye, Majin, Overdrive, Fire Fist, and steroids using their authoritative balance variables. Additive BP changes become one effective ratio instead of being multiplied together.
 - Returns: an associative list containing ordered active names and combined stat multipliers.
 - Side effects: none.
 

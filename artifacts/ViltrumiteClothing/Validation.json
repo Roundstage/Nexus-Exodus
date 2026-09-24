@@ -1,0 +1,21 @@
+{
+  "bulkSilhouettePreserved": true,
+  "results": [
+    {
+      "file": "src/Icons/PlayerIcons/Clothes/Viltrumite/ViltrumiteBulkJumpsuit.dmi",
+      "frames": 45,
+      "states": 9,
+      "sha256": "155633848fbcf3954970f20579abbca70881265742693a04f89be4bed129a506",
+      "metadataPreserved": true,
+      "allFramesNonempty": true
+    },
+    {
+      "file": "src/Icons/PlayerIcons/Clothes/Viltrumite/ViltrumiteSkirtUniform.dmi",
+      "frames": 78,
+      "states": 9,
+      "sha256": "23c2d1a38f8ca34e1ddcafc29767a3b56c6aaf69772ed986fe7c203ee8fc0863",
+      "metadataPreserved": true,
+      "allFramesNonempty": true
+    }
+  ]
+}

@@ -12,8 +12,14 @@ const css = fs.readFileSync(path.join(root, 'src/Code/UI/Browser/ClassicHud.css'
 const js = fs.readFileSync(path.join(root, 'src/Code/UI/Browser/ClassicHud.js'), 'utf8');
 const output = path.join(root, 'artifacts/ClassicHud');
 fs.mkdirSync(output, { recursive: true });
-async function mount(page, id, width, height) {
+async function mount(page, id, width, height, scale = 0) {
+  // A native browse() navigation replaces timers/listeners from the old document.
+  await page.goto('about:blank');
   const config = { id, kind:id.startsWith('bar_')?'bar':id, ref: 'fixture', generation: '1', geometry: { x: 0, y: 0, w: width, h: height }, viewport: { w: 1366, h: 768 } };
+  if (scale) {
+    Object.assign(config.geometry, { scale, content_w: width, content_h: height, w: Math.ceil(width * scale), h: Math.ceil(height * scale) });
+    width = config.geometry.w; height = config.geometry.h;
+  }
   await page.setViewportSize({ width, height });
   await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body><script>window.classicConfig=${JSON.stringify(config)};window.sent=[];window.classicTestTransport=u=>sent.push(u);</script><script>${js}</script>`);
 }
@@ -46,6 +52,21 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     const geometry = await page.evaluate(() => classicGeometryForTest());
     assert(geometry.w > 420 && geometry.h > 230, 'Corner drag did not resize');
     assert(await page.evaluate(() => sent.some(url => url.includes('action=geometry'))), 'Drag geometry was not persisted');
+    // Adopt rounded server geometry even when it arrives during the drag guard.
+    await update(page, { channel: 'all', messages, geometry: { x: 24, y: 60, w: 420, h: 230 } });
+    await page.waitForFunction(() => classicGeometryForTest().x === 24 && classicGeometryForTest().y === 60);
+    for (const width of [638, 360, 240, 638]) {
+      await page.setViewportSize({ width, height: 220 });
+      await page.waitForFunction(() => {
+        const node = document.querySelector('.messages');
+        return node.scrollHeight - node.clientHeight - node.scrollTop < 12;
+      });
+      assert(await page.locator('.messages').evaluate(node => node.scrollWidth <= node.clientWidth), `Chat overflow at ${width}px`);
+      for (const control of await page.locator('.footer button, .channels button').all()) {
+        const box = await control.boundingBox();
+        assert(box.x >= 0 && box.x + box.width <= width && box.y + box.height <= 220, `Chat control clipped at ${width}px`);
+      }
+    }
     await mount(page, 'bar', 490, 70);
     assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor), 'rgba(0, 0, 0, 0)', 'Hotbar document root is not transparent');
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgba(0, 0, 0, 0)', 'Hotbar document body is not transparent');
@@ -57,6 +78,80 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     assert(await page.evaluate(() => sent.some(url => url.includes('action=use') && url.includes('value=2'))));
     await page.locator('.slot').nth(0).dragTo(page.locator('.slot').nth(2));
     assert(await page.evaluate(() => sent.some(url => url.includes('action=swap') && url.includes('from=1'))), 'Slot drag did not preserve slot identity');
+    await mount(page, 'bar', 541, 94);
+    const wrappedSlots = [...slots, { ...slots[0], slot: 13, name: 'Last skill', state: 'ready' }];
+    await update(page, { slots: wrappedSlots, columns: 12, size: 40 });
+    // Resize the native control without another payload: the grid must reflow now.
+    for (const [width, height, columns] of [[541, 94, 12], [240, 137, 5], [68, 567, 1], [541, 94, 12]]) {
+      await page.setViewportSize({ width, height });
+      await page.waitForFunction(expected => getComputedStyle(document.querySelector('.slots')).gridTemplateColumns.split(' ').length === expected, columns);
+      assert(await page.locator('.slots').evaluate(node => node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight), `Hotbar clips at ${width}x${height}`);
+      const last = await page.locator('.slot').last().boundingBox();
+      assert(last.y + last.height <= height, `Last slot is hidden at ${width}x${height}`);
+    }
+    await page.locator('.slot').last().click();
+    assert(await page.evaluate(() => sent.some(url => url.includes('action=use') && url.includes('value=13'))), 'Reflow changed slot identity');
+    await page.setViewportSize({ width: 240, height: 94 });
+    await page.locator('.slot').last().scrollIntoViewIfNeeded();
+    assert(await page.locator('.slots').evaluate(node => node.scrollWidth <= node.clientWidth), 'Scrollbar forced horizontal slot clipping');
+    await page.setViewportSize({ width: 80, height: 160 });
+    await page.locator('.slot').last().scrollIntoViewIfNeeded();
+    assert(await page.locator('.slots').evaluate(node => node.scrollWidth <= node.clientWidth), 'Minimum vertical bar clipped a slot beside its scrollbar');
+    await page.locator('.slot').last().click();
+    await mount(page, 'bar', 541, 94, 1);
+    await update(page, { slots: wrappedSlots, columns: 12, size: 40 });
+    for (const scale of [0.75, 0.5, 1]) {
+      const width = Math.ceil(541 * scale), height = Math.ceil(94 * scale);
+      await page.setViewportSize({ width, height });
+      // Native resize arrives before the next data payload. Keep all twelve
+      // logical columns and shrink their pixels instead of wrapping the grid.
+      await page.waitForFunction(expected => Math.abs(document.querySelector('.slot').getBoundingClientRect().width - expected) < 1, 40 * scale);
+      await update(page, { slots: wrappedSlots, columns: 12, size: 40, geometry: { x: 0, y: 0, w: width, h: height, scale, content_w: 541, content_h: 94 } });
+      assert.equal(await page.locator('.slots').evaluate(node => getComputedStyle(node).gridTemplateColumns.split(' ').length), 12, 'Window scaling changed hotbar columns');
+      const last = await page.locator('.slot').last().boundingBox();
+      assert(last.x + last.width <= width && last.y + last.height <= height, 'Scaled hotbar clipped its final slot');
+      await page.locator('.slot').last().click();
+      assert(await page.evaluate(() => sent.some(url => url.includes('action=use') && url.includes('value=13'))), 'Scaled shortcut lost its click target');
+    }
+    await mount(page, 'chat', 550, 318, 0.5);
+    await update(page, { channel: 'all', messages, fontSize: 13 });
+    assert.equal(await page.locator('.shell').evaluate(node => node.clientWidth), 542, 'Scaled chat changed its logical content width');
+    const head = await page.locator('.head').boundingBox();
+    await page.mouse.move(head.x + 15, head.y + 5); await page.mouse.down();
+    await page.mouse.move(head.x + 45, head.y + 25); await page.mouse.up();
+    const scaledDrag = await page.evaluate(() => classicGeometryForTest());
+    assert.equal(scaledDrag.x, 30); assert.equal(scaledDrag.y, 20);
+    assert.equal(scaledDrag.content_w, 550, 'Scaled drag resized the content');
+    for (const control of await page.locator('.footer button, .channels button').all()) {
+      const box = await control.boundingBox();
+      assert(box.x + box.width <= 275 && box.y + box.height <= 159, 'Scaled chat clipped a button');
+    }
+    await page.locator('.footer').getByRole('button', { name: 'OOC', exact: true }).click();
+    assert(await page.evaluate(() => sent.some(url => url.includes('action=chat') && url.includes('value=ooc'))), 'Scaled chat button lost its action');
+    const scaledGrip = await page.locator('.grip.se').boundingBox();
+    const gripX = scaledGrip.x + scaledGrip.width / 2, gripY = scaledGrip.y + scaledGrip.height / 2;
+    await page.mouse.move(gripX, gripY); await page.mouse.down();
+    await page.mouse.move(gripX + 20, gripY + 10); await page.mouse.up();
+    const scaledResize = await page.evaluate(() => classicGeometryForTest());
+    assert.equal(scaledResize.w, 295); assert.equal(scaledResize.h, 169);
+    assert.equal(scaledResize.content_w, 590); assert.equal(scaledResize.content_h, 338);
+    await page.setViewportSize({ width: 275, height: 13 });
+    await update(page, { channel: 'all', messages, geometry: { x: 0, y: 0, w: 275, h: 13, scale: 0.5, content_w: 550, content_h: 26, collapsed: true } });
+    await page.waitForFunction(() => document.body.classList.contains('collapsed'));
+    assert(await page.locator('.footer').isHidden(), 'Scaled collapsed chat kept its footer');
+    await page.locator('.head').getByRole('button', { name: '×', exact: true }).click();
+    assert(await page.evaluate(() => sent.some(url => url.includes('action=close'))), 'Scaled collapsed header cannot be closed');
+    // Exercise the production scaling script used when an embedded list is
+    // replaced by item/skill details, including resizing with no data refresh.
+    const detailSource = fs.readFileSync(path.join(root, 'src/Code/UI/ActionHud.dm'), 'utf8');
+    const detailScript = detailSource.match(/function nexusFitEmbeddedDetail\(\)[\s\S]*?window\.classicUpdate=nexusFitEmbeddedDetail;/)[0].replace(/\[state\["w"\]\]/g, '460');
+    await page.goto('about:blank');
+    await page.setViewportSize({ width: 230, height: 340 });
+    await page.setContent(`<html><head><script>${detailScript}</script></head><body style="margin:0"><button style="width:80px;height:30px">BACK</button><div style="height:900px">Details</div></body></html>`);
+    assert.equal((await page.getByRole('button').boundingBox()).width, 40, 'Embedded details did not scale');
+    await page.setViewportSize({ width: 460, height: 680 });
+    await page.waitForFunction(() => document.querySelector('button').getBoundingClientRect().width === 80);
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), 'Embedded details overflow horizontally');
     await mount(page, 'menu', 380, 430);
     await update(page, { sections: { actions: 'Actions / Other', playtest: 'Playtest', factions: 'Factions', sagas: 'Sagas' }, section: 'actions', commands: [{ label: 'Playtest rewards', value: 'Playtest', token: 'test' }, { label: 'Other command', value: 'Other', token: 'other' }] });
     assert.equal(await page.locator('.grip').count(), 0, 'Fixed menu still exposes resize grips');

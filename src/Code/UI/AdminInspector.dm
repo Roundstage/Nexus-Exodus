@@ -66,12 +66,16 @@ datum/NexusAdminInspector
 		var/original = target.vars[variable_name]
 		var/value_type = input(owner, "Edit [variable_name] on [target]", "Admin Inspector") as null|anything in list("Number", "Text", "File", "Empty List", "Nothing")
 		if(!value_type) return
+		var/new_value
 		switch(value_type)
-			if("Nothing") target.vars[variable_name] = null
-			if("Text") target.vars[variable_name] = input(owner, "New text value", variable_name, target.vars[variable_name]) as text
-			if("Number") target.vars[variable_name] = input(owner, "New numeric value", variable_name, target.vars[variable_name]) as num
-			if("File") target.vars[variable_name] = input(owner, "New file value", variable_name, target.vars[variable_name]) as file
-			if("Empty List") target.vars[variable_name] = new/list
+			if("Nothing") new_value = null
+			if("Text") new_value = input(owner, "New text value", variable_name, target.vars[variable_name]) as text
+			if("Number") new_value = input(owner, "New numeric value", variable_name, target.vars[variable_name]) as num
+			if("File") new_value = input(owner, "New file value", variable_name, target.vars[variable_name]) as file
+			if("Empty List") new_value = new/list
+		if(!canUse()) return
+		if(variable_name == "icon") target.setNexusAppearanceIcon(new_value)
+		else target.vars[variable_name] = new_value
 		owner.admin_blame(owner, "[owner.key] edited [variable_name] from [original] to [target.vars[variable_name]] on [target]")
 
 	proc/editMutation(mutation_id)

@@ -127,6 +127,7 @@ mob/proc
 						m.Knowledge = Knowledge
 				else
 					var/obj/s = l[o]
+					if(!s || !s.teachable || s.loc != src || !CanTeachSkillTo(m, s)) return
 					if(!m.HasEnoughStudentPointsFrom(s, src)) return
 
 					m.student_points[ckey] = m.student_points[ckey] - m.StudentPointCost(s)
@@ -158,11 +159,11 @@ mob/proc
 		return 1
 
 	CanTeachSkillTo(mob/m, obj/o)
-		if(!m) return
+		if(!m || !o) return
+		if(istype(o, /obj/Demon_Contract)) return
 		if(o.type == /obj/Buff && m.Buff_count() >= max_buffs) return
 		if(Race != m.Race && o.race_teach_only) return
 		if(o.type == /obj/Teleport && m.Race != "Kai") return
-		if(o.type == /obj/Demon_Contract && m.Race != "Demon") return
 		if(o.type == /obj/Unlock_Potential && !RaceCanHaveUnlockPotential(m.Race)) return
 		if(o.type == /obj/Attacks/Piercer && m.Race != "Namekian") return
 

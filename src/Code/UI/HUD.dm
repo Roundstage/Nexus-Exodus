@@ -348,6 +348,17 @@ mob/proc/getNexusActiveHudModifiers()
 		addNexusHudModifier(modifiers, "SPD", 1.1)
 		addNexusHudModifier(modifiers, "PWR", 1.2)
 		if(ssj && Class != "Legendary Saiyan") addNexusHudModifier(modifiers, "BP", 1.15)
+	if(ispath(active_demon_buff, /obj/DemonBuff))
+		var/buff_type = active_demon_buff
+		addNexusHudModifierName(names, initial(buff_type:name))
+		active_bp_addition += initial(buff_type:bp_bonus)
+		addNexusHudModifier(modifiers, "STR", initial(buff_type:strength_mult))
+		addNexusHudModifier(modifiers, "FOR", initial(buff_type:force_mult))
+		addNexusHudModifier(modifiers, "OFF", initial(buff_type:offense_mult))
+		addNexusHudModifier(modifiers, "END", initial(buff_type:endurance_mult))
+		addNexusHudModifier(modifiers, "DEF", initial(buff_type:defense_mult))
+		addNexusHudModifier(modifiers, "REGEN", initial(buff_type:regeneration_mult))
+		addNexusHudModifier(modifiers, "REC", initial(buff_type:recovery_mult))
 	if(current_buff && current_buff.suffix)
 		addNexusHudModifierName(names, current_buff.name)
 		active_bp_addition += current_buff.buff_bp - 1
@@ -498,12 +509,16 @@ mob/proc/setNexusMainVitalsPosition(new_x, new_y)
 		client.main_vitals_hud.setScreenPosition(nexus_main_vitals_x, nexus_main_vitals_y, FALSE)
 
 mob/Write(savefile/save_file)
+	// These are derived from saved mode flags, never persistent character cosmetics.
+	var/list/status_appearances = getCombatStatusAppearances()
+	overlays -= status_appearances
 	var/list/detached_hud = list()
 	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in list(overhead_health_hud, overhead_energy_hud, overhead_willpower_hud))
 		if(hud_bar && (hud_bar in vis_contents))
 			vis_contents -= hud_bar
 			detached_hud += hud_bar
 	. = ..()
+	overlays += status_appearances
 	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in detached_hud)
 		if(hud_bar) vis_contents += hud_bar
 

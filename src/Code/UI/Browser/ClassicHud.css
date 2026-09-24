@@ -19,3 +19,4 @@ html,body{font-family:NexusPixel,'Fixedsys','Courier New',monospace}
 .chat-entry{margin-bottom:6px!important;padding:2px 3px!important;border-left:2px solid #6f522d}
 .chat .footer{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:4px 5px}.chat .footer button{min-width:0;padding:4px 2px}.menu .grip{display:none}
 .panel-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}.panel-row>.value{display:none}.panel-actions{display:flex;gap:3px}.panel-actions button{padding:3px 5px;font-size:9px}.inventory .body,.skills .body{padding:5px;background:#15110c}.inventory .head,.skills .head{background:#392816}
+.chat.collapsed .footer{display:none}

@@ -30,15 +30,74 @@ proc/normalizeClassicGeometry(list/state, id, width = 1366, height = 768)
 		default_x = max(0, round((width - panel_width) / 2))
 		default_y = height - panel_height
 	if(id == "target") default_x = max(8, width - panel_width - 300)
-	return list("x" = round(Clamp(classicNumber(state["x"], default_x), 0, width - panel_width)), "y" = round(Clamp(classicNumber(state["y"], default_y), 0, max(0, height - (state["collapsed"] ? 26 : panel_height)))), "w" = panel_width, "h" = panel_height, "collapsed" = !!state["collapsed"], "open" = ("open" in state) ? !!state["open"] : (id in list("chat", "bar")))
+	var/list/result = list("x" = round(Clamp(classicNumber(state["x"], default_x), 0, width - panel_width)), "y" = round(Clamp(classicNumber(state["y"], default_y), 0, max(0, height - (state["collapsed"] ? 26 : panel_height)))), "w" = panel_width, "h" = panel_height, "collapsed" = !!state["collapsed"], "open" = ("open" in state) ? !!state["open"] : (id in list("chat", "bar")))
+	return result
 
-proc/resizeClassicGeometry(list/state, id, old_width, old_height, new_width, new_height)
-	if(!islist(state)) state = normalizeClassicGeometry(null, id, old_width, old_height)
-	state = state.Copy()
-	// Preserve the distance from the nearest screen edge when the map changes size.
-	if(state["x"] + state["w"] / 2 > old_width / 2) state["x"] += new_width - old_width
-	if(state["y"] + state["h"] / 2 > old_height / 2) state["y"] += new_height - old_height
-	return normalizeClassicGeometry(state, id, new_width, new_height)
+// Persist one logical canvas. Only the browser control and its contents are scaled.
+proc/classicHudScale(reference_width, reference_height, width, height)
+	return min(width / max(1, reference_width), height / max(1, reference_height))
+
+proc/scaleClassicGeometry(list/state, reference_width, reference_height, width, height)
+	var/scale = classicHudScale(reference_width, reference_height, width, height)
+	var/list/result = state.Copy()
+	result["scale"] = scale
+	result["content_w"] = state["w"]
+	result["content_h"] = state["collapsed"] ? 26 : state["h"]
+	result["w"] = min(width, ceil(state["w"] * scale))
+	result["h"] = min(height, ceil(result["content_h"] * scale))
+	// Preserve each panel's position between the edges when the aspect ratio changes.
+	result["x"] = round(Clamp(state["x"] / max(1, reference_width - state["w"]), 0, 1) * (width - result["w"]))
+	result["y"] = round(Clamp(state["y"] / max(1, reference_height - result["content_h"]), 0, 1) * (height - result["h"]))
+	return result
+
+proc/unscaleClassicGeometry(list/display, list/state, id, reference_width, reference_height, width, height)
+	var/list/previous = scaleClassicGeometry(state, reference_width, reference_height, width, height)
+	var/scale = previous["scale"]
+	var/list/result = state.Copy()
+	// A move must not turn rounded display pixels into a gradual size change.
+	if(display["w"] != previous["w"]) result["w"] = display["w"] / scale
+	if(!state["collapsed"] && display["h"] != previous["h"]) result["h"] = display["h"] / scale
+	var/content_height = state["collapsed"] ? 26 : result["h"]
+	result["x"] = display["x"] / max(1, width - display["w"]) * max(0, reference_width - result["w"])
+	result["y"] = display["y"] / max(1, height - display["h"]) * max(0, reference_height - content_height)
+	return normalizeClassicGeometry(result, id, reference_width, reference_height)
+
+proc/classicBarContentHeight(list/bar, width)
+	var/slot_size = Clamp(classicNumber(bar["size"], 40), 32, 64)
+	var/columns = max(1, min(classicNumber(bar["columns"], 12), round((width - 25) / (slot_size + 3))))
+	var/list/slots = bar["slots"]
+	return max(52, 8 + round((max(1, slots.len) + columns - 1) / columns) * (slot_size + 3))
+
+proc/migrateClassicLayout(list/layout, list/viewport)
+	if(!islist(viewport)) viewport = list("w" = 1366, "h" = 768)
+	var/width = max(240, classicNumber(viewport["w"], 1366))
+	var/height = max(160, classicNumber(viewport["h"], 768))
+	if(viewport["reference_w"] && viewport["reference_h"]) return viewport.Copy()
+	var/reference_width = width
+	var/reference_height = height
+	for(var/id in layout)
+		var/list/state = layout[id]
+		if(!islist(state)) continue
+		var/list/preferred = state["preferred"]
+		if(!islist(preferred)) continue
+		reference_width = max(reference_width, classicNumber(preferred["viewport_w"], width))
+		reference_height = max(reference_height, classicNumber(preferred["viewport_h"], height))
+	for(var/id in layout)
+		var/list/state = layout[id]
+		if(!islist(state))
+			layout[id] = normalizeClassicGeometry(null, id, reference_width, reference_height)
+			continue
+		var/list/preferred = state["preferred"]
+		var/source_width = islist(preferred) ? classicNumber(preferred["viewport_w"], width) : width
+		var/source_height = islist(preferred) ? classicNumber(preferred["viewport_h"], height) : height
+		var/list/restored = islist(preferred) ? preferred.Copy() : state.Copy()
+		// Recover the placement from before the superseded automatic rearrangement.
+		if(restored["x"] + restored["w"] / 2 > source_width / 2) restored["x"] += reference_width - source_width
+		if(restored["y"] + restored["h"] / 2 > source_height / 2) restored["y"] += reference_height - source_height
+		restored["open"] = state["open"]
+		restored["collapsed"] = state["collapsed"]
+		layout[id] = normalizeClassicGeometry(restored, id, reference_width, reference_height)
+	return list("w" = width, "h" = height, "reference_w" = reference_width, "reference_h" = reference_height)
 
 mob/proc/initializeClassicHud()
 	if(!client || !playerCharacter) return
@@ -82,6 +141,8 @@ datum/ClassicHud
 		loop_running = FALSE
 		viewport_width = 1366
 		viewport_height = 768
+		reference_width = 1366
+		reference_height = 768
 		last_viewport_poll = -100
 		last_menu_refresh = -100
 		last_saved = 0
@@ -91,15 +152,22 @@ datum/ClassicHud
 	New(mob/new_owner)
 		owner = new_owner
 		if(!islist(owner.nexus_classic_layout)) owner.nexus_classic_layout = list()
-		if(islist(owner.nexus_classic_viewport))
-			viewport_width = max(240, classicNumber(owner.nexus_classic_viewport["w"], viewport_width))
-			viewport_height = max(160, classicNumber(owner.nexus_classic_viewport["h"], viewport_height))
-		owner.initializeClassicBars(viewport_width, viewport_height)
-		pollViewport()
+		owner.nexus_classic_viewport = migrateClassicLayout(owner.nexus_classic_layout, owner.nexus_classic_viewport)
+		viewport_width = owner.nexus_classic_viewport["w"]
+		viewport_height = owner.nexus_classic_viewport["h"]
+		reference_width = owner.nexus_classic_viewport["reference_w"]
+		reference_height = owner.nexus_classic_viewport["reference_h"]
+		owner.initializeClassicBars(reference_width, reference_height)
 		for(var/id in list("chat", "sense", "target", "bar", "menu", "stats", "inventory", "skills"))
-			owner.nexus_classic_layout[id] = normalizeClassicGeometry(owner.nexus_classic_layout[id], id, viewport_width, viewport_height)
+			owner.nexus_classic_layout[id] = normalizeClassicGeometry(owner.nexus_classic_layout[id], id, reference_width, reference_height)
 		for(var/bar_id in owner.nexus_classic_bars)
-			if(!islist(owner.nexus_classic_layout[bar_id])) owner.nexus_classic_layout[bar_id] = normalizeClassicGeometry(null, bar_id, viewport_width, viewport_height)
+			if(!islist(owner.nexus_classic_layout[bar_id])) owner.nexus_classic_layout[bar_id] = normalizeClassicGeometry(null, bar_id, reference_width, reference_height)
+			var/list/state = owner.nexus_classic_layout[bar_id]
+			var/list/bar = owner.nexus_classic_bars[bar_id]
+			state["w"] = max(state["w"], bar["size"] + 40)
+			state["h"] = max(state["h"], classicBarContentHeight(bar, state["w"]))
+			owner.nexus_classic_layout[bar_id] = normalizeClassicGeometry(state, bar_id, reference_width, reference_height)
+		pollViewport()
 		startLoop()
 
 	Del()
@@ -149,28 +217,33 @@ datum/ClassicHud
 		payloads -= id
 		applyLayout()
 
-	proc/pollViewport()
+	proc/displayGeometry(id)
+		return scaleClassicGeometry(owner.nexus_classic_layout[id], reference_width, reference_height, viewport_width, viewport_height)
+
+	proc/pollViewport(force_layout = FALSE)
 		if(!owner || !owner.client) return
 		var/list/size_parts = splittext(winget(owner, "mapwindow.map", "size"), "x")
 		if(size_parts.len != 2) return
-		var/new_width = max(240, text2num(size_parts[1]))
-		var/new_height = max(160, text2num(size_parts[2]))
-		owner.nexus_classic_viewport = list("w" = new_width, "h" = new_height)
-		if(new_width == viewport_width && new_height == viewport_height) return
-		for(var/id in owner.nexus_classic_layout)
-			owner.nexus_classic_layout[id] = resizeClassicGeometry(owner.nexus_classic_layout[id], id, viewport_width, viewport_height, new_width, new_height)
-			if(windows[id]) applyGeometry(id)
+		var/new_width = text2num(size_parts[1])
+		var/new_height = text2num(size_parts[2])
+		// Do not save the transient zero size of a minimized or hidden map.
+		if(new_width < 240 || new_height < 160) return
+		if(!force_layout && new_width == viewport_width && new_height == viewport_height) return
 		viewport_width = new_width
 		viewport_height = new_height
+		owner.nexus_classic_viewport = list("w" = new_width, "h" = new_height, "reference_w" = reference_width, "reference_h" = reference_height)
+		for(var/id in windows)
+			if(isVisible(id)) applyGeometry(id)
+		payloads = list()
 		dirty = TRUE
 
 	proc/applyGeometry(id)
-		var/list/state = owner.nexus_classic_layout[id]
-		winset(owner, control(id), "pos=[state["x"]],[state["y"]];size=[state["w"]]x[state["collapsed"] ? 26 : state["h"]];is-visible=true")
+		var/list/state = displayGeometry(id)
+		winset(owner, control(id), "pos=[state["x"]],[state["y"]];size=[state["w"]]x[state["h"]];is-visible=true")
 
 	proc/applyLayout()
 		if(!owner || !owner.client) return
-		pollViewport()
+		pollViewport(TRUE)
 		for(var/id in owner.nexus_classic_layout)
 			if(!isVisible(id))
 				if(windows[id])
@@ -197,13 +270,13 @@ datum/ClassicHud
 				owner << browse(buildHtml(id), "window=[control(id)]")
 
 	proc/buildHtml(id)
-		var/list/config = list("id" = id, "kind" = isClassicBarId(id) ? "bar" : id, "ref" = "\ref[src]", "generation" = windows[id], "geometry" = owner.nexus_classic_layout[id], "viewport" = list("w" = viewport_width, "h" = viewport_height))
+		var/list/config = list("id" = id, "kind" = isClassicBarId(id) ? "bar" : id, "ref" = "\ref[src]", "generation" = windows[id], "geometry" = displayGeometry(id), "viewport" = list("w" = viewport_width, "h" = viewport_height))
 		var/encoded_config = url_encode(json_encode(config))
 		return {"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='stylesheet' href='ClassicHud.css'></head><body><script>window.classicConfig=JSON.parse(decodeURIComponent('[encoded_config]'));</script><script src='ClassicHud.js'></script></body></html>"}
 
 	proc/push(id, list/data)
 		if(!ready[id] || !windows[id]) return
-		data["geometry"] = owner.nexus_classic_layout[id]
+		data["geometry"] = displayGeometry(id)
 		data["viewport"] = list("w" = viewport_width, "h" = viewport_height)
 		var/payload = json_encode(data)
 		if(payloads[id] == payload) return
@@ -215,7 +288,7 @@ datum/ClassicHud
 		if(loop_running) return
 		loop_running = TRUE
 		while(src && owner && owner.client && owner.playerCharacter)
-			if(world.time - last_viewport_poll >= 20)
+			if(world.time - last_viewport_poll >= 10)
 				pollViewport()
 				last_viewport_poll = world.time
 			refresh(TRUE)
@@ -350,20 +423,23 @@ datum/ClassicHud
 			if(isClassicBarId(id) && owner.nexus_classic_bars[id]["locked"])
 				applyGeometry(id)
 				return
-			var/list/state = owner.nexus_classic_layout[id].Copy()
-			for(var/key in list("x", "y")) state[key] = text2num(href_list[key])
+			var/list/display = displayGeometry(id)
+			for(var/key in list("x", "y")) display[key] = text2num(href_list[key])
 			if(!(id in list("menu", "inventory", "skills")))
-				for(var/key in list("w", "h")) state[key] = text2num(href_list[key])
-			if(isClassicBarId(id)) state["w"] = max(state["w"], owner.nexus_classic_bars[id]["size"] + 28)
-			owner.nexus_classic_layout[id] = normalizeClassicGeometry(state, id, viewport_width, viewport_height)
-			applyGeometry(id)
+				for(var/key in list("w", "h")) display[key] = text2num(href_list[key])
+			var/list/state = unscaleClassicGeometry(display, owner.nexus_classic_layout[id], id, reference_width, reference_height, viewport_width, viewport_height)
+			if(isClassicBarId(id))
+				state["w"] = max(state["w"], owner.nexus_classic_bars[id]["size"] + 40)
+				state["h"] = max(state["h"], classicBarContentHeight(owner.nexus_classic_bars[id], state["w"]))
+			owner.nexus_classic_layout[id] = normalizeClassicGeometry(state, id, reference_width, reference_height)
+			pollViewport(TRUE)
 			dirty = TRUE
 		else if(action == "close")
 			setOpen(id, FALSE)
 			return
 		else if(action == "collapse")
 			owner.nexus_classic_layout[id]["collapsed"] = !owner.nexus_classic_layout[id]["collapsed"]
-			applyGeometry(id)
+			pollViewport(TRUE)
 			dirty = TRUE
 		else if(action == "channel" && id == "chat")
 			chat_channel = normalizeNexusChatChannel(href_list["value"])
@@ -382,10 +458,10 @@ datum/ClassicHud
 		else if(action == "legacy" && id == "menu") showLegacy()
 		else if(action == "reset" && id == "menu")
 			for(var/widget in owner.nexus_classic_layout)
-				var/list/state = normalizeClassicGeometry(null, widget, viewport_width, viewport_height)
+				var/list/state = normalizeClassicGeometry(null, widget, reference_width, reference_height)
 				state["open"] = isOpen(widget)
 				owner.nexus_classic_layout[widget] = state
-				if(windows[widget]) applyGeometry(widget)
+			pollViewport(TRUE)
 			dirty = TRUE
 		else if(action == "widget" && id == "menu")
 			var/widget = href_list["value"]

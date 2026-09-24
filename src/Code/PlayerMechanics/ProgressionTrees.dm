@@ -1,4 +1,6 @@
 #define NEXUS_PROGRESSION_VERSION 4
+// This wipe uses ranks for the other racial curricula; retain their catalog for future wipes.
+#define NEXUS_VILTRUMITE_ONLY_RACIAL_PROGRESSION TRUE
 #define NEXUS_PROGRESSION_EXPERIENCE_SCALE 10
 #define NEXUS_PROGRESSION_EXPERIENCE_SCALE_VERSION 1
 #define NEXUS_PASSIVE_PROGRESSION_INTERVAL 36000
@@ -98,6 +100,14 @@ proc/getRacialProgressionRootId(racial_track)
 	if(!racial_track) return null
 	return "racial_[md5("[racial_track]")]_root"
 
+proc/isRacialProgressionTrackEnabled(racial_track)
+	return racial_track && (!NEXUS_VILTRUMITE_ONLY_RACIAL_PROGRESSION || racial_track == "Viltrumite Warfare")
+
+proc/isProgressionNodeEnabledForWipe(datum/ProgressionNode/node)
+	if(!node) return FALSE
+	if(node.category == "Racial") return isRacialProgressionTrackEnabled(node.required_racial_track)
+	return TRUE
+
 mob/proc/getRacialProgressionTrack()
 	switch(Race)
 		if("Human") return "Earth Guardian"
@@ -154,7 +164,7 @@ proc/getRacialProgressionSkillPackages()
 			/obj/Attacks/Spin_Blast, /obj/Attacks/Sokidan, /obj/Attacks/Piercer, /obj/Self_Destruct,
 			/obj/Attacks/Genocide, /obj/Fly, /obj/Shield, /obj/SplitForm, /obj/MakeAmulet,
 			/obj/Keep_Body, /obj/Majin, /obj/Restore_Youth, /obj/Materialization, /obj/Bind,
-			/obj/Make_Fruit, /obj/Demon_Contract, /obj/Kaio_Revive, /obj/Attacks/Kienzan,
+			/obj/Make_Fruit, /obj/Kaio_Revive, /obj/Attacks/Kienzan,
 			/obj/Attacks/Shockwave, /obj/Make_Holy_Pendant, /obj/Telepathy, /obj/Observe,
 			/obj/Attacks/Attack_Barrier, /obj/Reincarnation, /obj/Sense, /obj/Advanced_Sense,
 			/obj/Meditate_Level_2, /obj/Shadow_Spar, /obj/Giant_Form, /obj/Hakai),
@@ -284,6 +294,7 @@ proc/getProgressionCombatExcludedSkillTypes()
 
 proc/isProgressionCombatTreeExcluded(skill_type)
 	if(!skill_type) return TRUE
+	if(ispath(skill_type, /obj/DemonBuff)) return TRUE
 	if(initial(skill_type:catalog_test_only)) return TRUE
 	if(skill_type in getProgressionCombatExcludedSkillTypes()) return TRUE
 	if(ispath(skill_type, /obj/MilestoneTechnique)) return TRUE
@@ -831,6 +842,7 @@ mob/proc/getProgressionRequiredLevel(datum/ProgressionNode/node)
 
 mob/proc/getProgressionNodeLockReason(datum/ProgressionNode/node)
 	if(!node) return "Unknown node."
+	if(!isProgressionNodeEnabledForWipe(node)) return "This racial curriculum is unavailable during this wipe; its skills remain available through ranks."
 	if(getProgressionNodeRank(node.id) >= node.max_rank) return null
 	if(node.required_racial_track && getRacialProgressionTrack() != node.required_racial_track)
 		return "Restricted to the [node.required_racial_track] racial curriculum."
@@ -856,7 +868,8 @@ mob/proc/getProgressionNodeLockReason(datum/ProgressionNode/node)
 	return null
 
 mob/proc/applyProgressionNodeReward(datum/ProgressionNode/node, announce = TRUE, list/reward_types)
-	if(!node) return FALSE
+	if(!isProgressionNodeEnabledForWipe(node)) return FALSE
+	if(ispath(node.reward_type, /obj/Demon_Contract)) return FALSE
 	var/inventory_count_before = contents.len
 	var/reward_granted = FALSE
 	switch(node.reward_kind)
@@ -1026,6 +1039,7 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 			Experience = 0
 		for(var/node_id in progression_node_catalog)
 			var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+			if(!isProgressionNodeEnabledForWipe(node)) continue
 			if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type, reward_types)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
 			else if(node.reward_kind == "magic")
 				if((node.reward_value in magic_nodes_unlocked) || magic_level >= node.required_level) progression_nodes_owned[node.id] = 1
@@ -1047,6 +1061,7 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 		if(!silent) src << "Your legacy Skill Points and learned abilities were migrated to Progression Trees."
 	for(var/node_id in progression_node_catalog)
 		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+		if(!isProgressionNodeEnabledForWipe(node)) continue
 		if(node.reward_kind == "skill" && node.reward_type && hasExactProgressionRewardObject(node.reward_type, reward_types)) progression_nodes_owned[node.id] = max(1, getProgressionNodeRank(node.id))
 		if(hasProgressionNode(node.id)) applyProgressionNodeReward(node, announce = FALSE, reward_types = reward_types)
 	if(progression_last_passive_realtime <= 0) progression_last_passive_realtime = world.realtime
@@ -1084,8 +1099,8 @@ datum/NexusProgressionTreeWindow
 	New(mob/new_owner, initial_category = "Combat", initial_branch = "Foundation")
 		. = ..()
 		owner = new_owner
-		category = initial_category
-		branch_filter = initial_category == "Combat" ? initial_branch : getDefaultBranch(initial_category)
+		category = (initial_category in getAvailableCategories()) ? initial_category : "Combat"
+		branch_filter = category == "Combat" ? initial_branch : getDefaultBranch(category)
 
 	Del()
 		if(owner && owner.client)
@@ -1097,7 +1112,13 @@ datum/NexusProgressionTreeWindow
 	proc/canUse()
 		return owner && owner.client && owner.playerCharacter && usr == owner
 
+	proc/getAvailableCategories()
+		var/list/categories = list("Science", "Magic", "Mining", "Smithing", "Combat", "Racial")
+		if(!owner || !isRacialProgressionTrackEnabled(owner.getRacialProgressionTrack())) categories -= "Racial"
+		return categories
+
 	proc/getNodeState(datum/ProgressionNode/node)
+		if(!isProgressionNodeEnabledForWipe(node)) return "locked"
 		var/rank = owner.getProgressionNodeRank(node.id)
 		if(rank >= node.max_rank) return "owned"
 		if(owner.getProgressionNodeLockReason(node)) return "locked"
@@ -1135,40 +1156,13 @@ datum/NexusProgressionTreeWindow
 		var/prerequisite_html = prerequisite_names.len ? "<span class='node-requirements' title='Requires: [html_encode(prerequisite_text)]'>REQ: [html_encode(uppertext(prerequisite_text))]</span>" : ""
 		return "<a class='tree-node [state] [capstone_class]' data-node-id='[html_encode(node.id)]' style='left:[node_x]px;top:[node_y]px' href='[action]'><span class='node-tier hud-panel'>T[node.tier]</span><span class='node-icon hud-sprite'>[buildNodeIcon(node)]</span><span class='node-cost hud-panel'>[node.cost] XP</span><b>[html_encode(node.name)]</b><span class='node-meta'>RANK [rank]/[node.max_rank]</span>[prerequisite_html]<span class='node-tip hud-panel'><strong>[html_encode(node.name)]</strong><small>[html_encode(node.description)]</small><em>Requires: [html_encode(prerequisite_text)]</em><em>[html_encode(requirement)]</em></span></a>"
 
-	proc/buildMilestoneGraphNode(datum/MilestoneDefinition/milestone, node_x, node_y)
-		var/rank = owner.getMilestoneRank(milestone.id)
-		var/state = rank >= milestone.max_rank ? "owned" : "available"
-		var/reason = owner.getMilestoneLockReason(milestone)
-		if(reason) state = "locked"
-		var/action = state == "available" ? "byond://?src=\ref[src]&action=milestone&node=[url_encode(milestone.id)]" : "#"
-		var/status_text = reason
-		if(!status_text) status_text = state == "owned" ? "Completed" : "Ready to unlock"
-		return "<a class='tree-node [state]' style='left:[node_x]px;top:[node_y]px' href='[action]'><span class='node-tier hud-panel'>T[milestone.tier]</span><span class='node-icon hud-sprite'><span class='fallback'>M</span></span><b>[html_encode(milestone.name)]</b><span class='node-meta'>[rank]/[milestone.max_rank] · [milestone.cost] MP</span><span class='node-tip hud-panel'><strong>[html_encode(milestone.name)]</strong><small>[html_encode(milestone.description)]</small><em>[html_encode(status_text)]</em></span></a>"
-
-	proc/buildMilestoneList()
-		var/list/entries = collectVisibleEntries()
-		if(!entries.len) return "<div class='empty'>No milestones matched this category or search.</div>"
-		var/list_html = "<div class='milestone-list'>"
-		for(var/datum/MilestoneDefinition/milestone in entries)
-			var/rank = owner.getMilestoneRank(milestone.id)
-			var/state = rank >= milestone.max_rank ? "owned" : "available"
-			var/reason = owner.getMilestoneLockReason(milestone)
-			if(reason) state = "locked"
-			var/action = state == "available" ? "byond://?src=\ref[src]&action=milestone&node=[url_encode(milestone.id)]" : "#"
-			var/status_text = reason ? reason : (state == "owned" ? "Completed" : "Ready to unlock")
-			list_html += "<a class='milestone-card hud-card [state]' href='[action]'><strong>[html_encode(milestone.name)]</strong><small>[html_encode(milestone.description)]</small><span class='milestone-status'>[rank]/[milestone.max_rank] · [milestone.cost] MP · [html_encode(status_text)]</span></a>"
-		list_html += "</div>"
-		return list_html
-
 	proc/getAvailableBranches(category_name = null)
 		if(!category_name) category_name = category
 		var/list/branches = list()
-		if(category_name == "Milestones")
-			return branches
-		else if(category_name == "Racial")
+		if(category_name == "Racial")
 			initializeProgressionTreeCatalog()
 			var/racial_track = owner ? owner.getRacialProgressionTrack() : null
-			if(racial_track)
+			if(isRacialProgressionTrackEnabled(racial_track))
 				for(var/node_id in progression_node_catalog)
 					var/datum/ProgressionNode/node = progression_node_catalog[node_id]
 					if(node.category == "Racial" && node.branch == racial_track)
@@ -1203,25 +1197,18 @@ datum/NexusProgressionTreeWindow
 	proc/collectVisibleEntries()
 		var/list/all_entries = list()
 		var/list/all_entry_ids = list()
-		if(category == "Milestones")
-			initializeMilestoneCatalog()
-			for(var/milestone_id in milestone_catalog)
-				all_entry_ids += milestone_id
-				all_entries[milestone_id] = milestone_catalog[milestone_id]
-		else
-			initializeProgressionTreeCatalog()
-			for(var/node_id in progression_node_catalog)
-				var/datum/ProgressionNode/node = progression_node_catalog[node_id]
-				if(node.category != category) continue
-				if(category == "Racial" && node.required_racial_track != owner.getRacialProgressionTrack()) continue
-				all_entry_ids += node.id
-				all_entries[node.id] = node
+		initializeProgressionTreeCatalog()
+		for(var/node_id in progression_node_catalog)
+			var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+			if(node.category != category) continue
+			if(!isProgressionNodeEnabledForWipe(node)) continue
+			if(category == "Racial" && node.required_racial_track != owner.getRacialProgressionTrack()) continue
+			all_entry_ids += node.id
+			all_entries[node.id] = node
 		var/list/included_ids = list()
 		for(var/entry_id in all_entry_ids)
 			var/datum/entry = all_entries[entry_id]
-			if(category == "Milestones" && !search_query)
-				included_ids[entry_id] = TRUE
-			else if(search_query)
+			if(search_query)
 				if(entryMatchesSearch(entry)) included_ids[entry_id] = TRUE
 			else if("[entry:branch]" == branch_filter)
 				included_ids[entry_id] = TRUE
@@ -1250,13 +1237,12 @@ datum/NexusProgressionTreeWindow
 		var/clear_search = search_query ? "<a class='clear-search hud-button' href='byond://?src=\ref[src]&action=search&q='>CLEAR</a>" : ""
 		var/search_status
 		if(search_query)
-			search_status = category == "Milestones" ? "Searching every Milestone for <b>[html_encode(search_query)]</b>" : "Searching every [html_encode(category)] branch for <b>[html_encode(search_query)]</b>"
+			search_status = "Searching every [html_encode(category)] branch for <b>[html_encode(search_query)]</b>"
 		else
-			search_status = category == "Milestones" ? "Showing every Milestone in one list" : "Showing <b>[html_encode(branch_filter)]</b>; choose another branch without rebuilding the whole catalog"
+			search_status = "Showing <b>[html_encode(branch_filter)]</b>; choose another branch without rebuilding the whole catalog"
 		var/tier_html = ""
 		var/tier_label = "JUMP"
-		if(category == "Milestones") tier_label = "ALL MILESTONES"
-		else for(var/tier_number = 1, tier_number <= 10, tier_number++) tier_html += "<a class='hud-button' href='#' onclick='jumpTier([tier_number]);return false'>T[tier_number]</a>"
+		for(var/tier_number = 1, tier_number <= 10, tier_number++) tier_html += "<a class='hud-button' href='#' onclick='jumpTier([tier_number]);return false'>T[tier_number]</a>"
 		var/branch_navigation = branch_html ? "<div class='branch-tabs'>[branch_html]</div>" : ""
 		return "<div class='tree-tools'><form onsubmit='return runTreeSearch()'><input id='tree-search' maxlength='60' value='[html_encode(search_query)]' placeholder='Search skills, research or branch...'><button class='hud-button' type='submit'>SEARCH</button>[clear_search]</form><div class='tier-jumps'><span>[tier_label]</span>[tier_html]</div><div class='search-status hud-muted'>[search_status]</div></div>[branch_navigation]"
 
@@ -1312,8 +1298,6 @@ datum/NexusProgressionTreeWindow
 		)
 
 	proc/buildGraph()
-		var/is_milestone_graph = category == "Milestones"
-		if(is_milestone_graph) return buildMilestoneList()
 		var/list/entries = collectVisibleEntries()
 		if(!entries.len) return "<div class='empty'>No progression nodes matched this branch or search.</div>"
 
@@ -1340,15 +1324,9 @@ datum/NexusProgressionTreeWindow
 			var/entry_id = "[entry:id]"
 			var/list/entry_position = positions[entry_id]
 			var/list/entry_prerequisites = entry:prerequisites
-			var/entry_state
-			if(is_milestone_graph)
-				var/datum/MilestoneDefinition/milestone = entry
-				entry_state = owner.getMilestoneRank(milestone.id) >= milestone.max_rank ? "owned" : (owner.getMilestoneLockReason(milestone) ? "locked" : "available")
-				node_html += buildMilestoneGraphNode(milestone, entry_position["x"], entry_position["y"])
-			else
-				var/datum/ProgressionNode/node = entry
-				entry_state = getNodeState(node)
-				node_html += buildProgressionGraphNode(node, entry_position["x"], entry_position["y"])
+			var/datum/ProgressionNode/node = entry
+			var/entry_state = getNodeState(node)
+			node_html += buildProgressionGraphNode(node, entry_position["x"], entry_position["y"])
 			if(!islist(entry_prerequisites)) continue
 			for(var/prerequisite_id in entry_prerequisites)
 				var/list/parent_position = positions["[prerequisite_id]"]
@@ -1365,17 +1343,20 @@ datum/NexusProgressionTreeWindow
 
 	proc/buildHtml()
 		owner.updatePassiveProgression()
+		if(!(category in getAvailableCategories()))
+			category = "Combat"
+			branch_filter = getDefaultBranch(category)
+			search_query = ""
 		var/tabs = ""
-		for(var/tab in list("Science", "Magic", "Mining", "Smithing", "Combat", "Racial", "Milestones"))
+		for(var/tab in getAvailableCategories())
 			var/tab_state = tab == category ? "active" : ""
 			tabs += "<a class='tab hud-tab [tab_state]' href='byond://?src=\ref[src]&action=category&id=[tab]'>[uppertext(tab)]</a>"
-		var/currency_label = category == "Milestones" ? "[owner.milestone_points] MILESTONE POINTS" : "[round(owner.progression_experience, 0.1)] PROGRESSION XP"
+		var/currency_label = "[round(owner.progression_experience, 0.1)] PROGRESSION XP"
 		var/tree_navigation = buildTreeNavigation()
 		return {"<!doctype html><html><head><meta charset='utf-8'><title>Progression Trees</title><style>
 		*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#070a0e;color:#e8edf2;font:12px Arial,sans-serif}body{background:radial-gradient(circle at 50% -10%,#26303b 0,#10161d 38%,#080b0f 72%);background-attachment:fixed}.shell{min-height:100vh}.header{position:sticky;top:0;z-index:5;border-bottom:1px solid #536170;background:rgba(8,12,17,.97);box-shadow:0 6px 18px #000;padding:12px 16px}.top{display:flex;align-items:center;gap:10px}.title{margin-right:auto}.title b{display:block;font:22px Georgia,serif;letter-spacing:2px;color:#f2f5f8}.title small{color:#8090a1;letter-spacing:.8px}.currency{padding:8px 12px;border:1px solid #d7a83e;background:#241c0b;color:#ffd970;font-weight:bold}.close{padding:8px 11px;border:1px solid #70474c;color:#ffaaa5;text-decoration:none}.tabs,.subtabs{display:flex;gap:5px;margin-top:10px}.tab,.subtab{padding:8px 12px;border:1px solid #354454;background:#101923;color:#8192a4;text-decoration:none;font-weight:bold}.tab.active,.subtab.active{border-color:#e0b341;background:#392b0c;color:#ffde79;box-shadow:inset 0 -2px #f4c64e}.subtabs{justify-content:center}.subtab{min-width:120px;text-align:center}.source{margin-top:9px;color:#718194;font-size:10px}.trees{display:flex;align-items:flex-start;justify-content:center;gap:18px;padding:20px;overflow-x:auto}.branch{min-width:270px;max-width:330px;flex:1}.branch h2{margin:0 0 12px;padding:10px;text-align:center;border:1px solid #556474;background:linear-gradient(#1b2530,#10171f);color:#d9e3ec;font:15px Georgia,serif;letter-spacing:1px}.rail{position:relative;padding:0 0 20px}.rail:before{content:'';position:absolute;left:38px;top:20px;bottom:40px;width:4px;background:linear-gradient(#e6b640,#9d6b17 70%,#343b42);box-shadow:0 0 8px #bd861f}.node{position:relative;display:grid;grid-template-columns:60px 1fr auto;gap:8px;min-height:92px;margin:0 0 14px;padding:9px 9px 9px 8px;border:1px solid #4d5a67;background:linear-gradient(135deg,#17212b,#0d131a);color:#dce5ed;text-decoration:none;box-shadow:0 4px 10px #000}.node:before{content:'';position:absolute;left:28px;top:-15px;width:22px;height:15px;border-left:4px solid #d9a62e;border-bottom:4px solid #d9a62e}.node:first-child:before{display:none}.node.available{border-color:#e2b33e;box-shadow:0 0 12px rgba(239,183,49,.34),0 4px 10px #000}.node.available:hover{background:linear-gradient(135deg,#29384a,#121c27);transform:translateY(-1px)}.node.owned{border-color:#d9ad3d;background:linear-gradient(135deg,#3a2d0d,#151612)}.node.locked{filter:grayscale(1);opacity:.53}.icon{position:relative;z-index:2;width:56px;height:56px;display:flex;align-items:center;justify-content:center;border:2px solid #be9131;background:#05070a;box-shadow:0 0 7px #000;overflow:hidden}.icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.fallback{font:bold 20px Georgia,serif;color:#e6bb54}.copy{min-width:0}.copy b,.copy small,.copy em{display:block}.copy b{color:#ffe091;font-size:13px}.copy small{margin-top:5px;color:#aebac6;line-height:1.3;max-height:34px;overflow:hidden}.copy em{margin-top:6px;color:#7f91a2;font-size:9px;font-style:normal}.rank{align-self:start;padding:3px 5px;background:#05070a;color:#f2c34f;font-size:9px}.cost{position:absolute;right:7px;bottom:6px;color:#c99f3b;font-size:9px}.tier{position:absolute;left:72px;top:-7px;padding:1px 5px;background:#0a0e13;color:#6f8090;font-size:8px}.empty{padding:70px;text-align:center;color:#728191}@media(max-width:850px){.trees{justify-content:flex-start}.branch{min-width:280px}.tab{padding:7px 8px;font-size:10px}}
 		.graph-stage{position:relative}.graph-wrap{height:calc(100vh - 210px);min-height:520px;padding:18px;overflow:hidden;cursor:move;user-select:none;-webkit-user-select:none}.graph-wrap.dragging{cursor:grabbing}.graph-wrap:focus{outline:1px solid #d2aa61;outline-offset:-3px}.pan-hint{position:absolute;z-index:40;right:28px;top:26px;padding:5px 8px;color:#d2aa61;font-size:9px;letter-spacing:1px;pointer-events:none}.graph-canvas{position:relative;margin:0 auto;border:1px solid #35414d;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),radial-gradient(circle at 35% 15%,rgba(50,75,93,.28),transparent 48%),#090d12;background-size:24px 24px,24px 24px,auto,auto;box-shadow:0 12px 32px #000}.branch-lane{position:absolute;z-index:0;left:8px;right:8px;border:1px solid rgba(91,112,130,.23);border-radius:18px;background:linear-gradient(90deg,rgba(27,39,49,.55),rgba(12,18,24,.2))}.branch-lane span{position:absolute;left:12px;top:8px;color:#667a8d;font:bold 10px Arial,sans-serif;letter-spacing:1.3px;text-transform:uppercase}.tier-marker{position:absolute;z-index:3;top:14px;width:122px;text-align:center;color:#708295;font:bold 9px Arial,sans-serif;letter-spacing:1.5px}.connections{position:absolute;z-index:1;left:0;top:0;overflow:visible;pointer-events:none}.link{fill:none;stroke:#3a4653;stroke-width:3;stroke-linecap:round;opacity:.72;transition:opacity .12s,stroke-width .12s}.link.locked{stroke:#2d353e}.link.available{stroke:#d8a938}.link.owned{stroke:#48c98c}.link.dimmed{opacity:.08}.link.focused{opacity:1;stroke-width:5;filter:drop-shadow(0 0 3px currentColor)}.tree-node{position:absolute;z-index:4;width:122px;min-height:[NEXUS_PROGRESSION_NODE_HEIGHT]px;text-align:center;color:#dce5ed;text-decoration:none}.node-icon{position:relative;display:flex;align-items:center;justify-content:center;width:58px;height:58px;margin:0 auto 9px;border:3px solid #485663;border-radius:50%;background:radial-gradient(circle,#1d2934,#05070a 72%);box-shadow:0 4px 10px #000;overflow:hidden}.node-icon img{max-width:52px;max-height:52px;image-rendering:pixelated}.node-cost{position:absolute;z-index:5;left:50%;top:47px;transform:translateX(-50%);min-width:45px;padding:2px 4px;border:1px solid #9a7440;color:#ffe091;font-size:10px;font-weight:bold;line-height:12px;white-space:nowrap}.tree-node b{display:block;height:28px;padding:0 2px;overflow:hidden;color:#d9e3ec;font-size:11px;line-height:13px;text-shadow:0 2px 2px #000}.node-meta{display:block;margin-top:1px;color:#9bafc1;font-size:9px}.node-requirements{display:block;margin:2px auto 0;max-width:118px;overflow:hidden;color:#d2aa61;font-size:8px;line-height:10px;text-overflow:ellipsis;white-space:nowrap}.node-tier{position:absolute;z-index:2;left:72px;top:-3px;padding:2px 5px;border:1px solid #485663;border-radius:8px;background:#080b0f;color:#8b9bad;font:bold 8px Arial,sans-serif}.tree-node.locked{filter:grayscale(1);opacity:.45}.tree-node.available .node-icon{border-color:#e0b341;box-shadow:0 0 13px rgba(224,179,65,.52),0 4px 10px #000}.tree-node.available:hover .node-icon{transform:scale(1.07);background:radial-gradient(circle,#3a321a,#080a0d 72%)}.tree-node.owned .node-icon{border-color:#48c98c;box-shadow:0 0 13px rgba(72,201,140,.45),0 4px 10px #000}.tree-node.owned .node-tier{border-color:#48c98c;color:#7fe9b7}.tree-node.capstone .node-icon{border-color:#ff4e9a;background:radial-gradient(circle,#4a1831,#09070b 72%);box-shadow:0 0 18px rgba(255,78,154,.65),0 4px 10px #000}.tree-node.capstone .node-tier{border-color:#ff4e9a;color:#ff86bb}.node-tip{display:none;position:absolute;z-index:30;left:126px;top:-8px;width:240px;padding:10px;border:1px solid #a78336;background:rgba(5,8,11,.98);box-shadow:0 8px 22px #000;text-align:left;pointer-events:none}.tree-node:hover{z-index:25}.tree-node:hover .node-tip{display:block}.node-tip strong,.node-tip small,.node-tip em{display:block}.node-tip strong{color:#ffe091;font-size:12px}.node-tip small{margin-top:6px;color:#b2bec9;line-height:1.35}.node-tip em{margin-top:7px;color:#d0a83e;font-size:10px;font-style:normal}
 		.tree-tools{display:grid;grid-template-columns:minmax(360px,1fr) auto;gap:8px 14px;margin-top:10px;padding-top:9px;border-top:1px solid #2d3843}.tree-tools form{display:flex;gap:5px}.tree-tools input{width:100%;min-width:220px;padding:7px 9px}.tree-tools button,.clear-search{padding:7px 10px;text-decoration:none}.search-status{grid-column:1/-1;color:#8798a8;font-size:10px}.tier-jumps{display:flex;align-items:center;gap:3px}.tier-jumps span{margin-right:4px;color:#718194;font-size:9px}.tier-jumps a{padding:5px 6px;border:1px solid #3e4c59;background:#111922;color:#9eafbe;text-decoration:none;font-size:9px}.branch-tabs{display:flex;gap:5px;margin-top:8px;overflow-x:auto;padding-bottom:2px}.branch-tab{flex:0 0 auto;padding:6px 10px;border:1px solid #354454;background:#101923;color:#8192a4;text-decoration:none;font-size:10px;font-weight:bold}.branch-tab.active{border-color:#e0b341;background:#392b0c;color:#ffde79}.tree-node.capstone .node-tip{left:auto;right:126px}
-		.milestone-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:20px}.milestone-card{position:relative;min-height:142px;padding:14px 14px 34px;border:1px solid #4d5a67;background:linear-gradient(135deg,#17212b,#0d131a);color:#dce5ed;text-decoration:none;box-shadow:0 4px 10px #000}.milestone-card strong,.milestone-card small,.milestone-card .milestone-status{display:block}.milestone-card strong{color:#ffe091;font:16px Georgia,serif}.milestone-card small{margin-top:9px;color:#aebac6;line-height:1.4}.milestone-status{position:absolute;left:14px;right:14px;bottom:12px;color:#d0a83e;font-size:10px}.milestone-card.available{border-color:#e2b33e;box-shadow:0 0 12px rgba(239,183,49,.25),0 4px 10px #000}.milestone-card.available:hover{background:linear-gradient(135deg,#29384a,#121c27);transform:translateY(-1px)}.milestone-card.owned{border-color:#48c98c;background:linear-gradient(135deg,#173328,#101916)}.milestone-card.locked{filter:grayscale(1);opacity:.55}
 		.branch-lane{border-radius:0!important}.node-icon{border-radius:0!important;box-shadow:0 4px 10px #000!important}.node-tier{border-radius:0!important}.tree-node.available .node-icon{outline-color:#e0b341!important;box-shadow:0 0 0 2px #e0b341,3px 3px 0 #000!important}.tree-node.owned .node-icon{outline-color:#48c98c!important;box-shadow:0 0 0 2px #48c98c,3px 3px 0 #000!important}.tree-node.capstone .node-icon{outline-color:#ff4e9a!important;box-shadow:0 0 0 2px #ff4e9a,3px 3px 0 #000!important}.node-tip{box-shadow:4px 4px 0 #000!important}.node-tip small{color:#b2bec9!important}.graph-canvas{border:2px solid #120d08;outline:1px solid #715735;background-color:#100d09}.header{margin:8px;padding:12px 16px}.currency{padding:8px 12px}.source{color:#bca47c}.tree-tools{border-top-color:#715735}
 		[getNexusHudBrowserCss("bronze")]</style><script>
 		var nexusGraphWrap=null,nexusPanActive=false,nexusPanMoved=false,nexusPanSuppressClick=false,nexusPanStartX=0,nexusPanStartY=0,nexusPanScrollX=0,nexusPanScrollY=0,nexusPanKey='nexusProgressionPan_[md5("[category]|[branch_filter]")]';
@@ -1406,7 +1387,7 @@ datum/NexusProgressionTreeWindow
 		if(!canUse()) return
 		switch(href_list["action"])
 			if("category")
-				if(href_list["id"] in list("Science", "Magic", "Mining", "Smithing", "Combat", "Racial", "Milestones"))
+				if(href_list["id"] in getAvailableCategories())
 					category = href_list["id"]
 					branch_filter = getDefaultBranch(category)
 					search_query = ""
@@ -1418,7 +1399,6 @@ datum/NexusProgressionTreeWindow
 				var/new_query = href_list["q"]
 				search_query = copytext("[new_query]", 1, 61)
 			if("purchase") owner.purchaseProgressionNode(href_list["node"])
-			if("milestone") owner.purchaseMilestone(href_list["node"])
 			if("close")
 				del(src)
 				return
@@ -1427,7 +1407,6 @@ datum/NexusProgressionTreeWindow
 mob/proc/showProgressionTrees(initial_category = "Combat", initial_branch = "Foundation")
 	if(!client || !playerCharacter) return
 	syncProgressionTrees(silent = TRUE)
-	syncMilestoneProgression(silent = TRUE)
 	if(client.nexus_progression_tree) del(client.nexus_progression_tree)
 	client.nexus_progression_tree = new /datum/NexusProgressionTreeWindow(src, initial_category, initial_branch)
 	client.nexus_progression_tree.show()
@@ -1436,11 +1415,8 @@ mob/proc/toggleProgressionTrees(initial_category = "Combat", initial_branch = "F
 	if(!client || !playerCharacter) return
 	var/datum/NexusProgressionTreeWindow/current_window = client.nexus_progression_tree
 	if(current_window)
-		var/current_is_milestones = current_window.category == "Milestones"
-		var/request_is_milestones = initial_category == "Milestones"
-		if(current_is_milestones == request_is_milestones)
-			del(current_window)
-			return
+		del(current_window)
+		return
 	showProgressionTrees(initial_category, initial_branch)
 
 mob/verb/progressionTrees()
@@ -1449,6 +1425,7 @@ mob/verb/progressionTrees()
 	showProgressionTrees()
 
 #undef NEXUS_PASSIVE_PROGRESSION_INTERVAL
+#undef NEXUS_VILTRUMITE_ONLY_RACIAL_PROGRESSION
 #undef NEXUS_PASSIVE_PROGRESSION_BASE_REWARD
 #undef NEXUS_PROGRESSION_EXPERIENCE_SCALE
 #undef NEXUS_PROGRESSION_EXPERIENCE_SCALE_VERSION

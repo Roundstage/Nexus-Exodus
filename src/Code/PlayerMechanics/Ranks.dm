@@ -63,11 +63,15 @@ mob/proc/Give_Rank(mob/A)
 				if("South/East/West Kaio") A.Cardinal_Kai(src)
 				if("Kaio Helper") A.Kaio_Helper(src)
 		if("Hell")
-			Ranks.Add("Cancel","Daimao","Demon Master")
+			Ranks.Add("Cancel","Daimao","Demon Master","Famine","War","Pestilence","Death")
 			switch(input(src,"What Rank?") in Ranks)
 				if("Cancel") return
 				if("Daimao") A.Daimaou(src)
 				if("Demon Master") A.Demon_Master(src)
+				if("Famine") A.giveDemonRank("Famine", src)
+				if("War") A.giveDemonRank("War", src)
+				if("Pestilence") A.giveDemonRank("Pestilence", src)
+				if("Death") A.giveDemonRank("Death", src)
 		if("Android Skill Master") A.Android_Skill_Master(src)
 	for(var/obj/O in A) if(O.Mastery<100) O.Mastery=100
 	//A.Remove_Duplicate_Moves()
@@ -90,12 +94,12 @@ mob/var/list/Ranks=new
 
 mob/proc/Rank_Check()
 	if(!Auto_Rank||src.Ranks.len||world.time<5*600) return
-	var/list/rank_tags=list("Elder","Daimao","Cardinal Kai","North Kai","Kaioshin","Yardrat","Namekian Teacher",\
+	var/list/rank_tags=list("Elder","Daimao","Famine","War","Pestilence","Death","Cardinal Kai","North Kai","Kaioshin","Yardrat","Namekian Teacher",\
 	"Crane","Turtle","Korin","Popo","Guardian")
 	if(alignment_on)
 		if(alignment=="Evil") rank_tags.Remove("Elder","Cardinal Kai","North Kai","Kaioshin","Turtle",\
 			"Korin","Popo","Guardian")
-		if(alignment=="Good") rank_tags.Remove("Daimao")
+		if(alignment=="Good") rank_tags.Remove("Daimao","Famine","War","Pestilence","Death")
 	for(var/V in rank_tags) if(!src.Ranks.len&&!Rank_taken(V)&&Race_can_have_rank(V))
 		switch(alert(src,"Do you want the [V] rank? Nobody else online has it so you have been offered",\
 		"options","Yes","No"))
@@ -104,6 +108,7 @@ mob/proc/Rank_Check()
 				else
 					switch(V)
 						if("Daimao") Daimaou()
+						if("Famine", "War", "Pestilence", "Death") giveDemonRank(V)
 						if("Cardinal Kai") Cardinal_Kai()
 						if("North Kai") North_Kai()
 						if("Kaioshin") Kaioshin()
@@ -120,6 +125,7 @@ mob/proc/Rank_Check()
 					for(var/obj/RankChat/RC in src) del(RC)
 
 mob/proc/Race_can_have_rank(rank)
+	if(getDemonRankBuffType(rank)) return Race == "Demon"
 	switch(rank)
 		if("Daimao") if(Race!="Demon") return
 		if("Cardinal Kai") if(Race!="Kai") return
@@ -134,6 +140,36 @@ mob/proc/Race_can_have_rank(rank)
 		if("Popo") if(z!=1) return
 		if("Guardian") if(z!=1) return
 	return 1
+
+mob/proc/giveDemonRank(rank_name, mob/admin)
+	var/buff_type = getDemonRankBuffType(rank_name)
+	if(!buff_type || !Race_can_have_rank(rank_name))
+		if(admin) admin << "Only demons can receive the Four Horsemen ranks."
+		return FALSE
+	if(admin) Log(admin, "[admin.key] gave [key] [rank_name]")
+	Can_Remake = FALSE
+	Ranks |= rank_name
+	if(!(locate(buff_type) in src)) contents += new buff_type(src)
+	if(!(locate(/obj/RankChat) in src)) contents += new /obj/RankChat(src)
+	src << "<font color=yellow>You were given the [rank_name] rank and its teachable demon aura."
+	return TRUE
+
+mob/proc/canUseSoulContract()
+	return Race == "Demon" && ("Daimao" in Ranks)
+
+mob/proc/syncDemonRankSkills()
+	// Remove the old racial grant from saved characters without destroying contracted souls.
+	if(!canUseSoulContract())
+		for(var/obj/Demon_Contract/skill in src) del(skill)
+	else
+		var/obj/Demon_Contract/skill = locate(/obj/Demon_Contract) in src
+		if(!skill) skill = new /obj/Demon_Contract(src)
+		skill.teachable = FALSE
+		skill.Cost_To_Learn = 0
+	if(Race == "Demon")
+		for(var/rank_name in Ranks)
+			var/buff_type = getDemonRankBuffType(rank_name)
+			if(buff_type && !(locate(buff_type) in src)) contents += new buff_type(src)
 
 mob/proc/give_hbtc_key()
 	var/obj/items/Door_Pass/D = new

@@ -674,14 +674,14 @@ mob/var/CollectedSouls = 0
 
 obj/Demon_Contract
 	name="Soul Contract"
-	desc="You can offer someone a soul contract. If they accept, their soul will belong to you, and you will \
+	desc="Only the Demon Lord (Daimao) can offer someone a soul contract. If they accept, their soul will belong to you, and you will \
 	get certain powers over them."
-	teachable=1
+	teachable=0
 	race_teach_only=1
 	Skill=1
 	Teach_Timer=24
 	student_point_cost = 100
-	Cost_To_Learn=70
+	Cost_To_Learn=0
 	clonable=0
 	var/tmp/Offering
 
@@ -690,6 +690,9 @@ obj/Demon_Contract
 		usr.Soul_Contract(src)
 
 mob/proc/Soul_Contract(obj/Demon_Contract/SC)
+	if(!SC || SC.loc != src || !canUseSoulContract())
+		src << "Only the Demon Lord (Daimao) can offer soul contracts."
+		return
 	if(SC.Offering)
 		src<<"You must either wait until they accept, deny, or until 20 seconds \
 		has passed."
@@ -714,6 +717,9 @@ mob/proc/Soul_Contract(obj/Demon_Contract/SC)
 		different ways, completely destroying your character. They will have your soul even if you remake. The only way out is if they destroy the contract or they die.","Options","Deny","Accept SOUL CONTRACT"))
 			if("Deny") player_view(15,P)<<"[P] has denied the soul contract from [src]"
 			if("Accept SOUL CONTRACT")
+				if(!SC || SC.loc != src || !canUseSoulContract())
+					if(SC) SC.Offering = FALSE
+					return
 				player_view(15,P)<<"[P] has accepted the soul contract from [src], their soul now belongs to [src]"
 				var/obj/Contract_Soul/C=new
 				contents+=C
@@ -2950,6 +2956,7 @@ obj/Imitation
 			usr.overlays+=imitatoroverlays
 			usr.icon=imitatoricon
 			imitatoroverlays=new/list
+		usr.refreshCombatStatusOverlays()
 
 obj/Invisibility
 	desc="You can use this to make yourself invisible. Some people with very good senses will still \
@@ -3112,6 +3119,9 @@ obj/Mystic
 
 	verb/Mystic()
 		set category="Skills"
+		if(usr.active_demon_buff)
+			usr << "Deactivate your demon aura before using Mystic."
+			return
 		if(usr.Redoing_Stats)
 			usr<<"You can not use this while choosing stat mods"
 			return
@@ -3313,6 +3323,9 @@ obj/Majin
 
 	verb/Majin()
 		set category="Skills"
+		if(usr.active_demon_buff)
+			usr << "Deactivate your demon aura before using Majin."
+			return
 		if(usr.Redoing_Stats)
 			usr<<"You can not use this while choosing stat mods"
 			return

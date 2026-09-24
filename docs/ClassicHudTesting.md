@@ -2,6 +2,14 @@
 
 Implemented on 2026-09-07 from `ClassicCombatHudPlan.md`.
 
+## Responsive window layout (2026-09-23)
+
+Chat, hotbars, and the other embedded HUD panels scale proportionally with the map window. One saved reference canvas holds their logical sizes and positions; a common scale shrinks frames, text, icons, and click targets together. Window resizing preserves each hotbar's columns and chat's logical text layout. Positions retain their relationship to the screen edges when the aspect ratio changes. Only explicit movement/resizing edits the saved layout. Native screen objects continue to use BYOND's map scaling.
+
+Startup regression tests cover proportional dimensions, bounds, separation, exact restoration, scaled drag/resize, collapsed headers, and settings serialization at 1003×625, 800×600, 640×480, 1920×1080, and 2560×1080. Migration recovers the saved placement from before the earlier automatic rearrangement. Browser tests check 100%, 75%, and 50% hotbars, unchanged columns, the final shortcut's click target, half-sized chat controls and dragging, explicit manual resizing, scrolling, and browser errors. Embedded item/skill detail pages use the same scaling as their parent panel.
+
+Manual verification remains with the user: reduce and maximize the game window with horizontal and vertical bars open. Check that the entire HUD shrinks, panels retain their arrangement, the final shortcut is clickable, and maximizing restores the reference layout. Repeat with chat collapsed/closed, with a manual panel drag/resize while small, after reconnecting, and while viewing an embedded item/skill detail page. Proportional scaling also makes text and click targets smaller in very small windows.
+
 ## Player controls
 
 - **Menu**: searchable Actions / Other, Playtest, Sagas, Factions, Stats and contextual information. World/Admin retain permission checks. **All native tabs** opens the existing Info pane, including original atom context menus.

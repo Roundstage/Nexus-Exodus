@@ -37,6 +37,7 @@ mob
 			if(z == Z_LEVEL_BATTLEGROUNDS && current_area && current_area.type == /area/Battlegrounds) return 1
 
 		BattlegroundDefeat(mob/defeater)
+			finishAngerCombatRound()
 			SafeTeleport(battleground_spawn)
 			FullHeal()
 			last_battleground_defeat = world.time

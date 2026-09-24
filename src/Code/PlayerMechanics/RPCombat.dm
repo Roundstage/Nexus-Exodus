@@ -13,21 +13,25 @@ mob/var/tmp
 	image/rp_mode_status_overlay
 	rp_mode_input_lock = FALSE
 
+mob/proc/getCombatStatusAppearances()
+	var/list/status_appearances = list()
+	for(var/appearance_value in overlays)
+		if(appearance_value:icon == 'src/Icons/UI/LethalHud.dmi' || appearance_value:icon == 'src/Icons/UI/RPModeHud.dmi')
+			status_appearances += appearance_value
+	return status_appearances
+
 mob/proc/refreshCombatStatusOverlays()
+	// Overlays survive serialization and copied transformation appearances; tmp handles do not.
+	// Remove every old status image by resource, including differently offset legacy copies.
+	overlays -= getCombatStatusAppearances()
+	lethal_intent_status_overlay = null
+	rp_mode_status_overlay = null
 	if(sparring_mode == LETHAL_COMBAT)
-		if(!lethal_intent_status_overlay)
-			lethal_intent_status_overlay = image('src/Icons/UI/LethalHud.dmi', layer = 25)
-			overlays += lethal_intent_status_overlay
-	else if(lethal_intent_status_overlay)
-		overlays -= lethal_intent_status_overlay
-		lethal_intent_status_overlay = null
+		lethal_intent_status_overlay = image('src/Icons/UI/LethalHud.dmi', layer = 25)
+		overlays += lethal_intent_status_overlay
 	if(rp_mode)
-		if(!rp_mode_status_overlay)
-			rp_mode_status_overlay = image('src/Icons/UI/RPModeHud.dmi', layer = 25)
-			overlays += rp_mode_status_overlay
-	else if(rp_mode_status_overlay)
-		overlays -= rp_mode_status_overlay
-		rp_mode_status_overlay = null
+		rp_mode_status_overlay = image('src/Icons/UI/RPModeHud.dmi', layer = 25)
+		overlays += rp_mode_status_overlay
 	refreshActionHud()
 
 mob/proc/getMaxWillpower()
@@ -82,6 +86,7 @@ mob/proc/forceWillpowerBreakKnockout()
 		if(client) KO(last_attacker, allow_anger = FALSE, combat_ko_handled = TRUE)
 		else
 			KO = TRUE
+			finishAngerCombatRound()
 			icon_state = "KO"
 			move = 0
 			attacking = 0

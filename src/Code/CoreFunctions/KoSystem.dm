@@ -3,8 +3,52 @@ mob/var/tmp
 	has_healing_modifier_changed = FALSE
 	is_waiting_for_healing = FALSE
 	last_combat_timeout_message = 0
-	has_angered_before_ko = FALSE
 	is_healing_something = FALSE
+	list/anger_combat_opponents
+
+// Saved with the character so reconnecting cannot immediately rearm Anger.
+mob/var
+	has_angered_before_ko = FALSE
+	anger_last_combat_at = 0
+
+var/const/ANGER_ROUND_REST_TIME = 5 * 60 * 10
+
+mob/proc/canRestAngerCombatRound()
+	return !KO && Health >= 100 && Ki >= max_ki && world.realtime - anger_last_combat_at >= ANGER_ROUND_REST_TIME
+
+mob/proc/tryResetAngerAfterRest()
+	if(!has_angered_before_ko && !length(anger_combat_opponents)) return FALSE
+	if(!anger_last_combat_at || !canRestAngerCombatRound()) return FALSE
+	for(var/mob/opponent in anger_combat_opponents)
+		if(!opponent.KO && !opponent.canRestAngerCombatRound()) return FALSE
+	for(var/mob/opponent in anger_combat_opponents)
+		opponent.anger_combat_opponents -= src
+	anger_combat_opponents = null
+	has_angered_before_ko = FALSE
+	return TRUE
+
+mob/proc/recordAngerCombatOpponent(mob/opponent)
+	if(!ismob(opponent) || opponent == src || KO || opponent.KO) return
+	tryResetAngerAfterRest()
+	opponent.tryResetAngerAfterRest()
+	if(!anger_combat_opponents) anger_combat_opponents = list()
+	if(!opponent.anger_combat_opponents) opponent.anger_combat_opponents = list()
+	anger_combat_opponents |= opponent
+	opponent.anger_combat_opponents |= src
+	anger_last_combat_at = world.realtime
+	opponent.anger_last_combat_at = world.realtime
+
+mob/proc/finishAngerCombatRound()
+	// A real defeat ends this character's round and removes them from every rival's round.
+	// A rival still fighting someone else keeps their consumed second wind.
+	for(var/mob/opponent in anger_combat_opponents)
+		opponent.anger_combat_opponents -= src
+		if(!length(opponent.anger_combat_opponents))
+			opponent.has_angered_before_ko = FALSE
+			opponent.Calm()
+	anger_combat_opponents = null
+	has_angered_before_ko = FALSE
+	Calm()
 
 mob/proc/Cause_Combat_KO(mob/victim, mob/attacker, combat_mode_override)
 	if(!victim) victim = src

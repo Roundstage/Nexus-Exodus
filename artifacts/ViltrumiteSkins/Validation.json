@@ -1,0 +1,228 @@
+{
+  "variants": [
+    {
+      "name": "ViltrumiteMaleWhite.dmi",
+      "body": "Male",
+      "tone": "White",
+      "sourceSha256": "2c1b04242ccccb16efb60a296d48b09503e8e51259ac86f14f8fe9fb149dec37",
+      "sha256": "0ac8d1fc44bc0ab36169a654a3fd360fc57a2b8d7dd6826d9486dbc5e32490d7",
+      "stateCount": 9,
+      "frameCount": 66,
+      "sheet": [
+        288,
+        256
+      ],
+      "paletteChanges": {
+        "663300": "0000cc",
+        "996600": "0099ff"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteMaleTan.dmi",
+      "body": "Male",
+      "tone": "Tan",
+      "sourceSha256": "2c1b04242ccccb16efb60a296d48b09503e8e51259ac86f14f8fe9fb149dec37",
+      "sha256": "462bd1eebc131c110a414aa8f89a8968db87fa552221814ee88ee3b5f26bd213",
+      "stateCount": 9,
+      "frameCount": 66,
+      "sheet": [
+        288,
+        256
+      ],
+      "paletteChanges": {
+        "663300": "0000cc",
+        "996600": "0099ff",
+        "ffe2c7": "edc59f",
+        "f7c5ae": "dfac8b",
+        "efa895": "ce9273",
+        "e79886": "c08365",
+        "df8877": "b47659",
+        "b86b5e": "985d49",
+        "904e44": "744235",
+        "5f312c": "4f2b26"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteMaleBlack.dmi",
+      "body": "Male",
+      "tone": "Black",
+      "sourceSha256": "2c1b04242ccccb16efb60a296d48b09503e8e51259ac86f14f8fe9fb149dec37",
+      "sha256": "2471cb0afe89828d468c031385be1f35b5357a6126cb7053b60396ca2f6fd9f7",
+      "stateCount": 9,
+      "frameCount": 66,
+      "sheet": [
+        288,
+        256
+      ],
+      "paletteChanges": {
+        "663300": "0000cc",
+        "996600": "0099ff",
+        "ffe2c7": "b5805e",
+        "f7c5ae": "9e6849",
+        "efa895": "885638",
+        "e79886": "77472f",
+        "df8877": "683c29",
+        "b86b5e": "512e23",
+        "904e44": "3f231d",
+        "5f312c": "301b19"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteFemaleWhite.dmi",
+      "body": "Female",
+      "tone": "White",
+      "sourceSha256": "ea50fac223c5d9f4f9d71731f2f9a4c19f3340e5f3c7df483ffda4273f1eb79b",
+      "sha256": "1be1c1a3e5721b9a13c9d27414134461c214b6e97a93d739a17817c05751edf6",
+      "stateCount": 9,
+      "frameCount": 78,
+      "sheet": [
+        288,
+        288
+      ],
+      "paletteChanges": {
+        "392920": "0099ff",
+        "4c3325": "0000cc"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteFemaleTan.dmi",
+      "body": "Female",
+      "tone": "Tan",
+      "sourceSha256": "ea50fac223c5d9f4f9d71731f2f9a4c19f3340e5f3c7df483ffda4273f1eb79b",
+      "sha256": "d2984037a78922034025ffad8d8b972f0bcc6fbe934bdbd7771b601db9f6fdf9",
+      "stateCount": 9,
+      "frameCount": 78,
+      "sheet": [
+        288,
+        288
+      ],
+      "paletteChanges": {
+        "392920": "0099ff",
+        "4c3325": "0000cc",
+        "ffe2c7": "edc59f",
+        "f7c5ae": "dfac8b",
+        "efa895": "ce9273",
+        "e79886": "c08365",
+        "df8877": "b47659",
+        "b86b5e": "985d49",
+        "5f312c": "4f2b26"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteFemaleBlack.dmi",
+      "body": "Female",
+      "tone": "Black",
+      "sourceSha256": "ea50fac223c5d9f4f9d71731f2f9a4c19f3340e5f3c7df483ffda4273f1eb79b",
+      "sha256": "4bda210d33519357d4a8c2c277eae6308ddae04f61ebb0c62e5a01eac5572707",
+      "stateCount": 9,
+      "frameCount": 78,
+      "sheet": [
+        288,
+        288
+      ],
+      "paletteChanges": {
+        "392920": "0099ff",
+        "4c3325": "0000cc",
+        "ffe2c7": "b5805e",
+        "f7c5ae": "9e6849",
+        "efa895": "885638",
+        "e79886": "77472f",
+        "df8877": "683c29",
+        "b86b5e": "512e23",
+        "5f312c": "301b19"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteBulkWhite.dmi",
+      "body": "Bulk",
+      "tone": "White",
+      "sourceSha256": "d9a09d3742e75f7039e668dabc79d2d3de5572bf1382ed9fb6b655e4e9a3aa0b",
+      "sha256": "f4424d87b8b7474b60969b12f6ef3f128bb3a87f2c28cc4720f8745052b23d97",
+      "stateCount": 9,
+      "frameCount": 45,
+      "sheet": [
+        224,
+        224
+      ],
+      "paletteChanges": {
+        "330000": "0000cc",
+        "663300": "0099ff"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteBulkTan.dmi",
+      "body": "Bulk",
+      "tone": "Tan",
+      "sourceSha256": "d9a09d3742e75f7039e668dabc79d2d3de5572bf1382ed9fb6b655e4e9a3aa0b",
+      "sha256": "77a793e73b2f59ee9455b4e907e484e9c546e2fd0c23239142c5f0438df1acc5",
+      "stateCount": 9,
+      "frameCount": 45,
+      "sheet": [
+        224,
+        224
+      ],
+      "paletteChanges": {
+        "330000": "0000cc",
+        "663300": "0099ff",
+        "ffe2c7": "edc59f",
+        "f7c5ae": "dfac8b",
+        "efa895": "ce9273",
+        "e79886": "c08365",
+        "df8877": "b47659",
+        "b86b5e": "985d49",
+        "904e44": "744235"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    },
+    {
+      "name": "ViltrumiteBulkBlack.dmi",
+      "body": "Bulk",
+      "tone": "Black",
+      "sourceSha256": "d9a09d3742e75f7039e668dabc79d2d3de5572bf1382ed9fb6b655e4e9a3aa0b",
+      "sha256": "85bb6a9a65ac090c1b765da26026c6088513aad8af5ee3ada322dc5665aecb4e",
+      "stateCount": 9,
+      "frameCount": 45,
+      "sheet": [
+        224,
+        224
+      ],
+      "paletteChanges": {
+        "330000": "0000cc",
+        "663300": "0099ff",
+        "ffe2c7": "b5805e",
+        "f7c5ae": "9e6849",
+        "efa895": "885638",
+        "e79886": "77472f",
+        "df8877": "683c29",
+        "b86b5e": "512e23",
+        "904e44": "3f231d"
+      },
+      "unchangedPixelIndices": true,
+      "unchangedTransparency": true,
+      "unchangedDmiMetadata": true
+    }
+  ]
+}

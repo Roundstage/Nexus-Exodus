@@ -8,6 +8,40 @@ mob/var/tmp
 	obj/Shunkan_Ido/instant_transmission_obj
 
 mob/proc
+	getZanzokenClickOffsets(turf/target, params)
+		if(!isturf(target)) return
+		var/list/mouse_params = params2list(params)
+		// BYOND supplies icon coordinates before map scaling; do not scale them again.
+		var/click_x = world.icon_size / 2 + 1
+		var/click_y = world.icon_size / 2 + 1
+		if(mouse_params["icon-x"] || mouse_params["icon-y"])
+			click_x = text2num(mouse_params["icon-x"])
+			click_y = text2num(mouse_params["icon-y"])
+			if(!isnum(click_x) || !isnum(click_y)) return
+			if(click_x < 1 || click_x > world.icon_size || click_y < 1 || click_y > world.icon_size) return
+		var/offset_x = round(click_x - 1 - bound_x - bound_width / 2)
+		var/offset_y = round(click_y - 1 - bound_y - bound_height / 2)
+		var/left = target.Px(0) + offset_x + bound_x
+		var/bottom = target.Py(0) + offset_y + bound_y
+		if(left < 1 || bottom < 1 || left + bound_width > world.maxx * world.icon_size + 1 || bottom + bound_height > world.maxy * world.icon_size + 1) return
+		// A click near a tile edge can place part of the character on a neighboring tile.
+		for(var/atom/obstacle in bounds(left, bottom, bound_width, bound_height, target.z))
+			if(obstacle == src) continue
+			if(obstacle.density || istype(obstacle, /obj/Turfs/Door)) return
+			if(isturf(obstacle))
+				var/turf/ground = obstacle
+				if(ground.Water && !Flying) return
+		return list(offset_x, offset_y)
+
+	teleportToZanzokenClick(turf/target, list/click_offsets)
+		if(!isturf(target) || !islist(click_offsets) || click_offsets.len != 2) return FALSE
+		SafeTeleport(target)
+		// Surface-boundary redirects keep their own arrival placement.
+		if(loc == target)
+			step_x = click_offsets[1]
+			step_y = click_offsets[2]
+		return TRUE
+
 	getInstantTransmissionSkill()
 		if(instant_transmission_obj && instant_transmission_obj.loc == src) return instant_transmission_obj
 		instant_transmission_obj = locate(/obj/Shunkan_Ido) in src

@@ -351,7 +351,7 @@ obj/items/Dragon_Ball
 		if(WishPower>1500) Choices+="Restore Planet"
 		if(WishPower>3000) Choices+="Restore Galaxy"
 		Choices.Add("Money","Progression XP","Knowledge","Time chamber key","Deadzone immunity",\
-		"Learn soul contract","Learn God_Fist","Learn Genki Dama","Learn Majin","Learn Mystic",\
+		"Learn God_Fist","Learn Genki Dama","Learn Majin","Learn Mystic",\
 		"Learn Kai Teleport","Learn Materialize","Learn Regenerate","Learn Giant Form","Learn Unlock Potential","Learn Makankosappo")
 		if(db_vampire_incurable) Choices+="Make vampirism curable again"
 		else Choices+="Make vampirism incurable"
@@ -434,12 +434,6 @@ obj/items/Dragon_Ball
 					Alter_wishes()
 					player_view(15,usr)<<"[usr] wished for the materialize ability"
 					usr.contents+=new/obj/Materialization
-					usr.wish_count++
-				if("Learn soul contract") if(Wishes)
-					if(!DBs_Gathered()) return
-					Alter_wishes()
-					player_view(15,usr)<<"[usr] wished for the soul contract ability"
-					usr.contents+=new/obj/Demon_Contract
 					usr.wish_count++
 				if("Learn absorb") if(Wishes)
 					if(!DBs_Gathered()) return

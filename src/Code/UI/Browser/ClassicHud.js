@@ -16,6 +16,13 @@
   head.appendChild(title); head.appendChild(button('–', 'collapse')); head.appendChild(button('×', 'close')); shell.appendChild(head);
   var toolbar = el('nav', 'toolbar'), body = el('section', 'body'), footer = el('nav', 'footer');
   shell.appendChild(toolbar); shell.appendChild(body); shell.appendChild(footer); document.body.appendChild(shell);
+  function applyContentScale(resizing) {
+    if (!geometry.scale) return;
+    var width = geometry.content_w, height = geometry.content_h;
+    var scale = resizing ? Math.min(window.innerWidth / width, window.innerHeight / height) : geometry.scale;
+    shell.style.width = width + 'px'; shell.style.height = height + 'px';
+    shell.style.transformOrigin = '0 0'; shell.style.transform = 'scale(' + scale + ')';
+  }
   var query, section, latest, channels;
   if (id === 'menu' || id === 'sense' || id === 'stats') {
     query = el('input'); query.type = 'search'; query.placeholder = id === 'sense' ? 'Find a signature…' : 'Find a command or information…'; query.setAttribute('aria-label', query.placeholder);
@@ -106,7 +113,7 @@
     var close = el('button', '', '×'); close.onclick = function () { menu.remove(); }; menu.appendChild(close); shell.appendChild(menu);
   }
   function renderSlots(slots) {
-    var columns = Math.max(1, Math.min(data.columns || 12, Math.floor((document.body.clientWidth - 25) / ((data.size || 40) + 3)) || 1));
+    var columns = Math.max(1, Math.min(data.columns || 12, Math.floor((body.clientWidth - 3) / ((data.size || 40) + 3)) || 1));
     body.style.gridTemplateColumns = 'repeat(' + columns + ',' + (data.size || 40) + 'px)';
     body.style.setProperty('--slot-size', (data.size || 40) + 'px');
     lockButton.textContent = data.locked ? 'L' : 'U'; lockButton.title = data.locked ? 'Unlock bar' : 'Lock bar'; lockButton.classList.toggle('active', !!data.locked);
@@ -145,6 +152,7 @@
     if (!dragging && !pendingGeometry && data.geometry) geometry = data.geometry;
     if (data.viewport) viewport = data.viewport;
     document.body.classList.toggle('collapsed', !!geometry.collapsed);
+    applyContentScale(false);
     if (id === 'chat') { body.style.fontSize = (data.fontSize || 13) + 'px'; renderChat(); }
     else if (id === 'bar') renderSlots(data.slots || []);
     else {
@@ -157,13 +165,15 @@
     }
   };
   function clampGeometry(g, edge) {
-    var minW = id === 'bar' ? (data.size || 40) + 28 : 240, minH = id === 'bar' ? 52 : 120;
-    g.w = Math.max(minW, Math.min(viewport.w, g.w)); g.h = Math.max(minH, Math.min(viewport.h, g.h));
-    g.x = Math.max(0, Math.min(viewport.w - g.w, g.x)); g.y = Math.max(0, Math.min(viewport.h - (g.collapsed ? 26 : g.h), g.y));
+    var scale = g.scale || 1;
+    var minW = (id === 'bar' ? (data.size || 40) + 40 : 240) * scale, minH = (id === 'bar' ? 52 : 120) * scale;
+    g.w = Math.max(minW, Math.min(viewport.w, g.w)); g.h = g.collapsed ? Math.ceil(26 * scale) : Math.max(minH, Math.min(viewport.h, g.h));
+    g.x = Math.max(0, Math.min(viewport.w - g.w, g.x)); g.y = Math.max(0, Math.min(viewport.h - (g.collapsed ? Math.ceil(26 * scale) : g.h), g.y));
     ['x', 'y', 'w', 'h'].forEach(function (key) { g[key] = Math.round(g[key]); }); return g;
   }
   function applyGeometry() {
-    navigate('byond://winset?id=mapwindow.classic_' + widgetId + '&pos=' + geometry.x + ',' + geometry.y + '&size=' + geometry.w + 'x' + (geometry.collapsed ? 26 : geometry.h));
+    applyContentScale(false);
+    navigate('byond://winset?id=mapwindow.classic_' + widgetId + '&pos=' + geometry.x + ',' + geometry.y + '&size=' + geometry.w + 'x' + (geometry.collapsed ? Math.ceil(26 * (geometry.scale || 1)) : geometry.h));
     if (window.classicTestGeometry) window.classicTestGeometry(geometry);
   }
   function startDrag(event, edge) {
@@ -176,18 +186,38 @@
     if (!dragging) return; var deltaX = event.screenX - dragging.x, deltaY = event.screenY - dragging.y, g = Object.assign({}, dragging.initial), edge = dragging.edge;
     if (edge === 'move') { g.x += deltaX; g.y += deltaY; }
     else { if (edge.indexOf('e') !== -1) g.w += deltaX; if (edge.indexOf('s') !== -1) g.h += deltaY; if (edge === 'w') { g.w -= deltaX; g.x += deltaX; } }
-    geometry = clampGeometry(g, edge); applyGeometry();
+    geometry = clampGeometry(g, edge);
+    if (geometry.scale && edge !== 'move') {
+      geometry.content_w = geometry.w / geometry.scale;
+      geometry.content_h = geometry.collapsed ? 26 : geometry.h / geometry.scale;
+    }
+    applyGeometry();
   }
   function endDrag() {
     if (!dragging) return; dragging = null; if (document.releaseCapture) document.releaseCapture();
-    pendingGeometry = true; topic('geometry', geometry); setTimeout(function () { pendingGeometry = false; }, 500);
+    pendingGeometry = true; topic('geometry', geometry); setTimeout(function () {
+      pendingGeometry = false;
+      if (!dragging && data.geometry) {
+        geometry = data.geometry;
+        document.body.classList.toggle('collapsed', !!geometry.collapsed);
+        applyContentScale(false);
+      }
+    }, 500);
   }
   var down = window.PointerEvent ? 'pointerdown' : 'mousedown', move = window.PointerEvent ? 'pointermove' : 'mousemove', up = window.PointerEvent ? 'pointerup' : 'mouseup';
   head.addEventListener(down, function (event) { startDrag(event, 'move'); });
   if (['menu', 'inventory', 'skills'].indexOf(id) === -1) ['e', 'w', 's', 'se'].forEach(function (edge) { var grip = el('div', 'grip ' + edge); grip.setAttribute('aria-label', 'Resize'); grip.addEventListener(down, function (event) { startDrag(event, edge); }); shell.appendChild(grip); });
   document.addEventListener(move, moveDrag); document.addEventListener(up, endDrag); window.addEventListener('blur', endDrag);
   document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && document.activeElement !== query) focusMap(); });
+  // Native BROWSER resize does not wait for the next gameplay payload.
+  window.addEventListener('resize', function () {
+    applyContentScale(true);
+    if (id === 'bar') renderSlots(data.slots || []);
+    if (id === 'chat' && following) body.scrollTop = body.scrollHeight;
+  });
   // Apply local geometry immediately; server updates are only needed after the drag ends.
   window.classicGeometryForTest = function () { return geometry; };
+  document.body.classList.toggle('collapsed', !!geometry.collapsed);
+  applyContentScale(false);
   topic('ready');
 }());

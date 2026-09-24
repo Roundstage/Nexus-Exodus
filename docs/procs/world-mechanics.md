@@ -212,7 +212,7 @@ Planetary control is persistent per canonical planet. A rank 7 League leader may
 - Inputs: mob/defeater
 - Purpose: Handle battleground defeat.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: resolves the defeated character and eligible winners' Anger rounds before teleporting and healing the loser.
 
 #### mob/proc/FindNewBattlegroundMaster
 - Signature: `FindNewBattlegroundMaster(mob/new_master)`

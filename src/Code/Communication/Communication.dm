@@ -180,6 +180,7 @@ mob/proc/queueNexusCombatDamage(mob/attacker, amount, attack_name = "Attack", re
 
 mob/proc/applyNexusCombatShieldDamage(amount, mob/attacker, attack_name = "Attack")
 	if(!isnum(amount) || amount <= 0) return 0
+	recordAngerCombatOpponent(attacker)
 	var/ki_before = Ki
 	Ki -= amount
 	var/applied_damage = ki_before - Ki

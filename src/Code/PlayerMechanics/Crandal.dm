@@ -84,13 +84,15 @@ mob/proc/Colorize(obj/O)
 			var/blue = input(src,"Blue") as num
 			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 			var/color_value = rgb(red, green, blue)
-			if(color_mode == "Add") O.icon += color_value
-			else O.icon -= color_value
+			var/icon/colored_icon = icon(O.icon)
+			if(color_mode == "Add") colored_icon += color_value
+			else colored_icon -= color_value
+			O.setNexusAppearanceIcon(colored_icon)
 
 atom/proc/Multiply_Color(B)
 	var/icon/A=new(icon)
 	if(B&&A) A.MapColors(B,"#ffffff","#000000")
-	icon=A
+	setNexusAppearanceIcon(A)
 
 proc/MultiplyIconColor(icon/i, c = rgb(255,255,255))
 	var/icon/i2 = icon(i)
@@ -146,6 +148,7 @@ obj/Crandal
 		var/Y_Offset=input("Choose pixel_y offset") as num
 		var/image/A=image(icon=I,icon_state=State,pixel_x=X_Offset,pixel_y=Y_Offset)
 		usr.overlays+=A
+		usr.rebuildPlayerAppearance("custom overlay added")
 	/*verb/Send_File(M as mob in players,F as file)
 		set src=usr.contents
 		set category="Other"
@@ -206,9 +209,7 @@ obj/Crandal
 			new_icon_state = input("Icon State?") as text
 			if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
 		if(!canContinueNexusSelectedTargetMutation(O, original_location, original_owner)) return
-		O.icon=I
-		if(!ismob(O)) O.icon_state=new_icon_state
-		CenterIcon(O)
+		O.setNexusAppearanceIcon(I, new_icon_state, center = TRUE)
 
 	verb/Rename(atom/movable/O in usr.Player_Rename_List())
 		set src=usr.contents
@@ -268,8 +269,7 @@ obj/Crandal
 		if(usr.dbz_character)
 			usr << "This does not work with Wish Orbs characters"
 			return
-		usr.icon=A.icon
-		CenterIcon(usr)
+		usr.setNexusAppearanceIcon(A.icon, center = TRUE)
 
 obj/Sonku_Planet
 	var/X
