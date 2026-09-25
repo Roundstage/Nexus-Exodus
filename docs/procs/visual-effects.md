@@ -54,6 +54,7 @@ Managed equipment appearances carry an explicit copy of the character body matri
 
 ### mob/Read(save_file)
 - Purpose: Rebuild the character appearance immediately after deserialization, including migration of orphaned combat indicators from older saves.
+- Communication: clears typing and Say actors before and after the read, covering reused mobs and orphaned balloons in legacy saves without touching unrelated visual contents.
 - Side effects: replaces any temporary appearance manager inherited from the destination mob, reconstructs equipped items and status images, and preserves saved combat-mode flags. Normal login transformation normalization still runs afterward.
 
 ### atom/proc/setNexusAppearanceIcon(new_icon, new_icon_state, center)

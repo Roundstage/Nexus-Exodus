@@ -278,6 +278,7 @@ mob/var/tmp/obj/Effect/NexusTypingIndicator/nexus_typing_indicator
 
 obj/Effect/NexusTypingIndicator
 	name = "typing"
+	reallyDelete = TRUE
 	icon = 'src/Icons/VFX/KhunTyping.dmi'
 	mouse_opacity = 0
 	density = 0
@@ -298,10 +299,13 @@ mob/proc/Say_Spark()
 	sleep(50)
 
 mob/proc/Remove_Say_Spark()
-	if(!nexus_typing_indicator) return
-	vis_contents -= nexus_typing_indicator
-	del(nexus_typing_indicator)
+	var/list/indicators = list()
+	for(var/obj/Effect/NexusTypingIndicator/indicator in vis_contents) indicators += indicator
+	if(nexus_typing_indicator) indicators |= nexus_typing_indicator
 	nexus_typing_indicator = null
+	for(var/obj/Effect/NexusTypingIndicator/indicator in indicators)
+		vis_contents -= indicator
+		del(indicator)
 
 var/OOC=1
 
@@ -323,6 +327,7 @@ mob/var/tmp
 
 obj/Effect/NexusSayText
 	name = "speech"
+	reallyDelete = TRUE
 	mouse_opacity = 0
 	density = 0
 	Grabbable = 0
@@ -332,6 +337,26 @@ obj/Effect/NexusSayText
 	maptext_width = 256
 	maptext_height = 128
 	pixel_x = -112
+
+mob/proc/getNexusCommunicationEffects()
+	var/list/effects = list()
+	for(var/obj/Effect/effect in vis_contents)
+		if(istype(effect, /obj/Effect/NexusTypingIndicator) || istype(effect, /obj/Effect/NexusSayText)) effects += effect
+	return effects
+
+mob/proc/clearNexusSayText()
+	var/list/bubbles = list()
+	for(var/obj/Effect/NexusSayText/bubble in vis_contents) bubbles += bubble
+	if(nexus_say_text) bubbles |= nexus_say_text
+	nexus_say_text = null
+	for(var/obj/Effect/NexusSayText/bubble in bubbles)
+		vis_contents -= bubble
+		del(bubble)
+
+mob/proc/clearNexusCommunicationEffects()
+	// Saved vis_contents can retain actors after their tmp handles and timers are lost.
+	End_Say()
+	clearNexusSayText()
 
 proc/countNexusWords(raw_text)
 	raw_text = "[raw_text]"
@@ -350,9 +375,7 @@ proc/countNexusWords(raw_text)
 mob/proc/showNexusSayText(message)
 	var/word_count = countNexusWords(message)
 	if(!word_count || word_count > 50) return FALSE
-	if(nexus_say_text)
-		vis_contents -= nexus_say_text
-		del(nexus_say_text)
+	clearNexusSayText()
 	var/obj/Effect/NexusSayText/bubble = new
 	nexus_say_text = bubble
 	var/safe_color = nexusIsValidRichTextColor(TextColor) ? TextColor : "#f1e4c3"
@@ -364,13 +387,11 @@ mob/proc/showNexusSayText(message)
 	bubble.pixel_y = start_pixel_y
 	vis_contents += bubble
 	spawn(max(35, min(100, word_count * 2)))
-		if(src && nexus_say_text == bubble)
+		if(src && bubble && nexus_say_text == bubble)
 			animate(bubble, pixel_y = start_pixel_y + 12, alpha = 0, time = 10)
 			sleep(10)
-			if(src && nexus_say_text == bubble)
-				vis_contents -= bubble
-				nexus_say_text = null
-				del(bubble)
+			if(src && bubble && nexus_say_text == bubble)
+				clearNexusSayText()
 	return TRUE
 
 mob/proc/Spam_Check(var/Message)

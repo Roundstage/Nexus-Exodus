@@ -1302,7 +1302,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/Login
 - Signature: `mob/Login() if(client)`
 - Inputs: None
-- Purpose: Handle client login setup.
+- Purpose: Clear transient typing/Say feedback and handle client login setup.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1316,14 +1316,14 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/Logout
 - Signature: `mob/Logout(body_swap_user)`
 - Inputs: body_swap_user
-- Purpose: Handle client logout cleanup.
+- Purpose: Clear transient typing/Say feedback before all logout paths, including reconnect handoff, then handle client logout cleanup.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Other_Load_Stuff
 - Signature: `mob/proc/Other_Load_Stuff()`
 - Inputs: None
-- Purpose: Normalize loaded character state and start player systems.
+- Purpose: Clear stale typing/Say actors, normalize loaded character state and start player systems.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

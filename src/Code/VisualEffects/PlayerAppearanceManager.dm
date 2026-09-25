@@ -170,7 +170,9 @@ obj/items/var
 mob/var/tmp/datum/PlayerAppearanceManager/player_appearance_manager
 
 mob/Read(savefile/save_file)
+	clearNexusCommunicationEffects()
 	. = ..()
+	clearNexusCommunicationEffects()
 	// Read can reuse a lobby/body mob. Its previous tmp manager must not own the loaded outfit.
 	player_appearance_manager = null
 	rebuildPlayerAppearance("character load")

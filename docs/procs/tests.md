@@ -1,5 +1,7 @@
 # Tests
 
+`runCommunicationLifecycleSmokeTests()` covers saving with active typing/Say feedback, live feedback preservation, legacy balloon migration, reused-mob reads, overwriting contaminated savefiles, early reconnect logout, missing temporary handles, repeated cleanup, and actual replacement/expiry callbacks. Unrelated visual contents must survive every cleanup.
+
 `runPowerControlSmokeTests()` covers a rank granting Power Control to a character who already has it, active powerup preservation during duplicate cleanup, commands from duplicate objects, actual BP increase/decrease through hotbar actions, missing/foreign reference recovery, save/load and removal of the last controller.
 
 `BuffAndContextSmoke.dm` covers Materialize's four allowed outputs and Normal equipment, stale ownership, preset and Horseman effect activation/rebuild/cleanup, Focus save/load, Majin/Mystic x1.5 BP and legacy Majin normalization. Context tests exercise owned Souls and items, references outside the displayed panel, invalid actions, admin permission filtering, and command target binding. `node tools/TestClassicHud.cjs` also exercises right-click routing across all Classic row widgets, scaled menu bounds, escaped names, selection and dismissal of delayed responses.

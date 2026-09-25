@@ -405,7 +405,7 @@ These references are intentional and must not be removed, renamed, replaced with
 #### mob/Write
 - Signature: `mob/Write(savefile/save_file)`
 - Inputs: destination savefile.
-- Purpose: Temporarily detach the runtime-only overhead HUD during all mob serialization.
+- Purpose: Temporarily detach the runtime-only overhead HUD and all typing/Say actors during mob serialization, preserving the live feedback after saving.
 - Returns: parent serialization result.
 - Side effects: removes and restores the visual around the write operation.
 

@@ -509,6 +509,8 @@ mob/proc/setNexusMainVitalsPosition(new_x, new_y)
 		client.main_vitals_hud.setScreenPosition(nexus_main_vitals_x, nexus_main_vitals_y, FALSE)
 
 mob/Write(savefile/save_file)
+	var/list/detached_communication = getNexusCommunicationEffects()
+	vis_contents -= detached_communication
 	// These are derived from saved mode flags, never persistent character cosmetics.
 	var/list/status_appearances = getCombatStatusAppearances()
 	overlays -= status_appearances
@@ -518,6 +520,7 @@ mob/Write(savefile/save_file)
 			vis_contents -= hud_bar
 			detached_hud += hud_bar
 	. = ..()
+	vis_contents += detached_communication
 	overlays += status_appearances
 	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in detached_hud)
 		if(hud_bar) vis_contents += hud_bar

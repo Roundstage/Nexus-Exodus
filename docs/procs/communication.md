@@ -152,7 +152,16 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 - Side effects: replaces `nexus_typing_indicator` in `vis_contents` and sleeps briefly.
 
 ### mob/proc/Remove_Say_Spark()
-- Purpose: Remove and delete the current typing actor.
+- Purpose: Remove and delete all typing actors, including orphaned entries in `vis_contents` whose temporary handle was lost on reload.
+
+### mob/proc/getNexusCommunicationEffects()
+- Purpose: Collect only attached typing and Say actors so `mob/Write()` can exclude them from persistence without interrupting their live duration or touching unrelated visuals.
+
+### mob/proc/clearNexusSayText()
+- Purpose: Clear the current speech handle and delete both tracked and orphaned Say actors. These actors and typing indicators are destroyed rather than entering the generic effect cache.
+
+### mob/proc/clearNexusCommunicationEffects()
+- Purpose: Re-enable speech and clear typing and Say feedback at login, logout, reconnect handoff and character load. `mob/Read()` calls it before and after deserialization to clean the previous body and migrate legacy saves with orphaned balloons.
 
 ### mob/proc/End_Say()
 - Purpose: Re-enable speech and immediately clear typing feedback after submission or cancellation.
@@ -166,6 +175,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 - Purpose: Display local Say text of up to 50 words above the speaking character as a temporary, following maptext actor positioned clear of all three overhead vitals rows.
 - Returns: true when the text is displayed, otherwise false.
 - Side effects: replaces the speaker's previous overhead text and fades it after a duration based on message length.
+- Lifecycle: replacement also removes orphaned text; deferred fade/removal requires a surviving actor still owned by the speaker, so an old callback cannot affect later speech.
 
 ### mob/proc/Spam_Check(Message)
 - Purpose: Rate-limit OOC/LOOC/chat to prevent spam.

@@ -1,3 +1,87 @@
+proc/runCommunicationLifecycleSmokeTests()
+	var/mob/NexusSmokeTest/speaker = new
+	var/obj/cosmetic = new
+	cosmetic.name = "persistent communication test cosmetic"
+	speaker.vis_contents += cosmetic
+	speaker.Say_Spark()
+	speaker.showNexusSayText("Save while speaking")
+	var/obj/Effect/NexusTypingIndicator/live_typing = speaker.nexus_typing_indicator
+	var/obj/Effect/NexusSayText/live_speech = speaker.nexus_say_text
+	var/savefile/character_save = new
+	speaker.Write(character_save)
+	nexusSmokeAssert(speaker.nexus_typing_indicator == live_typing && speaker.nexus_say_text == live_speech && speaker.vis_contents.len == 3, "saving interrupted live typing or speech feedback")
+	var/list/saved_visuals
+	character_save["vis_contents"] >> saved_visuals
+	nexusSmokeAssert(length(saved_visuals) == 1 && !(locate(/obj/Effect/NexusSayText) in saved_visuals) && !(locate(/obj/Effect/NexusTypingIndicator) in saved_visuals), "character serialization persisted transient communication actors")
+	for(var/obj/saved_visual in saved_visuals)
+		saved_visual.reallyDelete = TRUE
+		del(saved_visual)
+	var/mob/NexusSmokeTest/loaded = new
+	loaded.Read(character_save)
+	nexusSmokeAssert(!loaded.nexus_typing_indicator && !loaded.nexus_say_text && loaded.vis_contents.len == 1, "speech or typing survived a character save/load round trip")
+	var/obj/loaded_cosmetic = loaded.vis_contents[1]
+	nexusSmokeAssert(loaded_cosmetic.name == cosmetic.name, "communication save filtering removed unrelated visual contents")
+	del(loaded_cosmetic)
+
+	// Reproduce old saves: vis_contents was serialized but tmp handles and workers were not.
+	character_save["vis_contents"] << speaker.vis_contents
+	loaded.Say_Spark()
+	loaded.showNexusSayText("Previous body speech")
+	var/obj/Effect/NexusTypingIndicator/previous_typing = loaded.nexus_typing_indicator
+	var/obj/Effect/NexusSayText/previous_speech = loaded.nexus_say_text
+	loaded.can_say = FALSE
+	loaded.Read(character_save)
+	nexusSmokeAssert(!previous_typing && !previous_speech, "reading into an existing mob orphaned its previous communication actors")
+	nexusSmokeAssert(!loaded.nexus_typing_indicator && !loaded.nexus_say_text && loaded.vis_contents.len == 1 && loaded.can_say, "legacy save cleanup retained orphaned balloons or disabled speech")
+	nexusSmokeAssert(speaker.nexus_typing_indicator == live_typing && speaker.nexus_say_text == live_speech, "legacy cleanup affected another character's live feedback")
+	loaded_cosmetic = loaded.vis_contents[1]
+	del(loaded_cosmetic)
+	// A reused savefile must also overwrite the previous serialized balloons.
+	speaker.Write(character_save)
+	loaded.Read(character_save)
+	nexusSmokeAssert(loaded.vis_contents.len == 1, "rewriting a legacy save retained its previous communication actors")
+	loaded_cosmetic = loaded.vis_contents[1]
+	del(loaded_cosmetic)
+	// Saving an empty visual list must replace an old entry as well.
+	character_save["vis_contents"] << speaker.vis_contents
+	speaker.vis_contents -= cosmetic
+	speaker.Write(character_save)
+	character_save["vis_contents"] >> saved_visuals
+	nexusSmokeAssert(!length(saved_visuals), "an empty visual save retained old serialized balloons")
+	speaker.vis_contents += cosmetic
+	del(loaded)
+
+	// The early reconnect logout path must clean both kinds of feedback before returning.
+	speaker.nexus_reconnect_handoff = TRUE
+	speaker.can_say = FALSE
+	speaker.Logout()
+	nexusSmokeAssert(!live_typing && !live_speech && !speaker.nexus_typing_indicator && !speaker.nexus_say_text && speaker.vis_contents.len == 1 && speaker.can_say, "reconnect logout left communication actors attached")
+	speaker.Say_Spark()
+	var/obj/Effect/NexusTypingIndicator/orphan_typing = speaker.nexus_typing_indicator
+	speaker.nexus_typing_indicator = null
+	speaker.Remove_Say_Spark()
+	nexusSmokeAssert(!orphan_typing && speaker.vis_contents.len == 1, "typing cleanup depended on its lost temporary handle")
+	speaker.showNexusSayText("Orphan speech")
+	var/obj/Effect/NexusSayText/orphan_speech = speaker.nexus_say_text
+	speaker.nexus_say_text = null
+	speaker.showNexusSayText("First timed speech")
+	nexusSmokeAssert(!orphan_speech && speaker.vis_contents.len == 2, "new speech failed to replace an orphaned balloon")
+	var/obj/Effect/NexusSayText/first_speech = speaker.nexus_say_text
+	sleep(20)
+	speaker.showNexusSayText("Replacement speech")
+	var/obj/Effect/NexusSayText/replacement_speech = speaker.nexus_say_text
+	nexusSmokeAssert(!first_speech, "replaced speech actor entered the generic effect cache")
+	sleep(30)
+	nexusSmokeAssert(replacement_speech && speaker.nexus_say_text == replacement_speech && replacement_speech.alpha == 255 && (replacement_speech in speaker.vis_contents), "an old speech callback removed or faded the replacement balloon")
+	sleep(20)
+	nexusSmokeAssert(!replacement_speech && !speaker.nexus_say_text && speaker.vis_contents.len == 1 && (cosmetic in speaker.vis_contents), "replacement speech failed to expire or removed an unrelated visual")
+	speaker.clearNexusCommunicationEffects()
+	speaker.clearNexusCommunicationEffects()
+	nexusSmokeAssert(speaker.vis_contents.len == 1, "repeated communication cleanup removed an unrelated visual")
+	del(cosmetic)
+	del(speaker)
+	world.log << "NEXUS_COMMUNICATION_LIFECYCLE_TESTS_PASSED: save/load, legacy balloons, reconnect logout, replacement and expiry"
+
 proc/runZanzokenClickSmokeTests()
 	var/list/original_turfs = list()
 	for(var/turf/original in block(locate(439, 9, 2), locate(441, 11, 2)))
@@ -2292,6 +2376,7 @@ proc/runEnergyRecoveryStartupSmokeTests()
 	del(energy_recovery_test)
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	runCommunicationLifecycleSmokeTests()
 	runDemonRanksSmokeTests()
 	runPowerControlSmokeTests()
 	runClassicContextSmokeTests()
