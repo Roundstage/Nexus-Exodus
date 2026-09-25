@@ -686,6 +686,10 @@ proc/initializeProgressionMagicCatalog()
 				var/icon_type = formula && formula.construct_type ? formula.construct_type : magic_node.reward_type
 				node.icon_file = initial(icon_type:icon)
 				node.icon_state = initial(icon_type:icon_state)
+				var/icon/arcane_preview = getArcaneItemPreviewIcon(icon_type)
+				if(arcane_preview)
+					node.icon_file = arcane_preview
+					node.icon_state = ""
 				current_tier += node_id
 			if(current_tier.len) previous_tier = current_tier
 

@@ -553,12 +553,50 @@ obj/ArcanePortal
 
 mob/var/tmp/last_arcane_portal_use = 0
 
+// These RPT appearances include a tint or a second tile beyond the base state.
+proc/getArcaneItemPreviewIcon(item_type)
+	if(!(item_type in list(/obj/items/ArcaneOrbOfMastery, /obj/items/ArcaneElixir/Merriment, /obj/items/ArcaneSatchel/Bookcase))) return null
+	var/icon/preview = icon(initial(item_type:icon), initial(item_type:icon_state), SOUTH)
+	if(item_type == /obj/items/ArcaneOrbOfMastery) preview.Blend(rgb(100, 0, 0), ICON_SUBTRACT)
+	else if(item_type == /obj/items/ArcaneElixir/Merriment) preview.Blend(rgb(25, 25, 25), ICON_ADD)
+	else
+		preview.Crop(1, 1, 32, 64)
+		preview.Blend(icon('src/Icons/NexusIntegrated/Magic/RTLab.dmi', "BooksTop"), ICON_OVERLAY, 1, 33)
+	return preview
+
+obj/items/Read(savefile/save_file)
+	. = ..()
+	restoreArcaneItemAppearance()
+
+obj/items/proc/restoreArcaneItemAppearance()
+	// Repair only the former placeholders, preserving customized saved artwork.
+	var/restore_appearance = FALSE
+	if(istype(src, /obj/items/ArcaneBook) || istype(src, /obj/items/SpellBook))
+		restore_appearance = icon == 'src/Icons/PlayerIcons/Clothes/ClothesBook.dmi'
+	else if(istype(src, /obj/items/ArcaneElixir))
+		restore_appearance = icon == 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi' && !icon_state
+	else if(type == /obj/items/ManaPylon)
+		restore_appearance = icon == 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
+	else if(type in list(/obj/items/ArcaneSatchel/Bookcase, /obj/items/Simulator/ArcaneCrystal, /obj/items/MagicVault, /obj/items/ArcaneLocator, /obj/items/CrystalBall, /obj/items/ArcaneOrbOfMastery))
+		restore_appearance = icon == 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi' && (icon_state in list("ArcanOrb", "PhiloStone"))
+	if(!restore_appearance) return FALSE
+	icon = initial(icon)
+	icon_state = initial(icon_state)
+	if(type == /obj/items/ArcaneOrbOfMastery) icon -= rgb(100, 0, 0)
+	else if(type == /obj/items/ArcaneElixir/Merriment) icon += rgb(25, 25, 25)
+	else if(type == /obj/items/ArcaneSatchel/Bookcase)
+		overlays.Cut()
+		overlays += image(icon = icon, icon_state = "BooksTop", layer = layer, pixel_y = 32)
+	return TRUE
+
 obj/items/Sword/Forged/ArcaneSword
-	forged_material_id = "copper"
-	forged_style_id = "flame"
+	icon = 'src/Icons/Objects/Swords/RTSwordTrunks.dmi'
+	forged_material_id = "normal"
+	forged_style_id = "trunks"
 
 obj/items/Sword/Forged/MagicHammer
-	forged_material_id = "copper"
+	icon = 'src/Icons/Objects/Swords/RTHammer.dmi'
+	forged_material_id = "normal"
 	forged_style_id = "hammer"
 
 obj/items/Armor/Forged/ArcaneArmor
@@ -568,7 +606,7 @@ obj/items/Armor/Forged/ArcaneArmor
 obj/items/ManaPylon
 	name = "Mana Pylon"
 	desc = "A stationary focus that increases nearby Arcane Essence gathering by 25%."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicCircle.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTManaPylon.dmi'
 	icon_state = ""
 	Cost = 0
 	Savable = 1
@@ -578,7 +616,8 @@ obj/items/ManaPylon
 obj/items/SpellBook
 	name = "Spell Book"
 	desc = "A grimoire that catalogs every spell and formula unlocked in the Magic progression tree."
-	icon = 'src/Icons/PlayerIcons/Clothes/ClothesBook.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
+	icon_state = "BoTS"
 	Cost = 0
 	Savable = 1
 
@@ -587,10 +626,10 @@ obj/items/SpellBook
 		usr.showProgressionTrees("Magic")
 
 obj/items/ArcaneFocusGauntlets
-	name = "Magic Gauntlets"
-	desc = "Enchanted gauntlets that increase Magic XP gains by 5% while carried."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
-	icon_state = "ArcanOrb"
+	parent_type = /obj/items/Gloves/Forged
+	icon = 'src/Icons/PlayerIcons/Clothes/ClothesGloves.dmi'
+	forged_material_id = "normal"
+	forged_style_id = "classic"
 	Cost = 0
 	Savable = 1
 
@@ -607,6 +646,10 @@ obj/items/ArcaneOrbOfMastery
 	icon_state = "PhiloStone"
 	Cost = 0
 	Savable = 1
+
+	New()
+		. = ..()
+		icon -= rgb(100, 0, 0)
 
 obj/items/ArcaneSatchel
 	name = "Utility Belt"
@@ -653,21 +696,27 @@ obj/items/ArcaneSatchel
 	Bookcase
 		name = "Book Case"
 		desc = "A portable enchanted book case with thirty storage slots."
+		icon = 'src/Icons/NexusIntegrated/Magic/RTLab.dmi'
+		icon_state = "Books"
 		capacity = 30
+
+		New()
+			. = ..()
+			overlays += image(icon = icon, icon_state = "BooksTop", layer = layer, pixel_y = 32)
 
 obj/items/Simulator/ArcaneCrystal
 	name = "Simulation Crystal"
 	desc = "A crystal-bound version of the native simulator, adapted from Nexus."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
-	icon_state = "ArcanOrb"
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicEffects.dmi'
+	icon_state = "crystal sim"
 	Cost = 0
 	science = 0
 
 obj/items/MagicVault
 	name = "Magic Vault"
 	desc = "A password-protected vault for storing Arcane Essence."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
-	icon_state = "PhiloStone"
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicItems.dmi'
+	icon_state = "magic vault"
 	Cost = 0
 	Savable = 1
 	density = 1
@@ -770,8 +819,8 @@ obj/items/MagicVault
 obj/items/ArcaneLocator
 	name = "Locator"
 	desc = "A divination compass that reveals the direction and distance of a character in the same realm."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
-	icon_state = "ArcanOrb"
+	icon = 'src/Icons/Objects/Technology/CellPhone.dmi'
+	icon_state = ""
 	Cost = 0
 	Savable = 1
 
@@ -931,8 +980,8 @@ obj/items/ArcaneUpgradeKit
 obj/items/CrystalBall
 	name = "Crystal Ball"
 	desc = "Observe a visible character in the same realm for ten seconds."
-	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
-	icon_state = "ArcanOrb"
+	icon = 'src/Icons/NexusIntegrated/Magic/RTMagicItems.dmi'
+	icon_state = "crystal ball"
 	Cost = 0
 	Savable = 1
 
@@ -965,6 +1014,8 @@ obj/items/ArcaneElixir
 
 	Health
 		name = "Elixir of Health"
+		icon = 'src/Icons/NexusIntegrated/Magic/RTHealthPotion.dmi'
+		icon_state = ""
 		desc = "Triples natural regeneration for five minutes."
 		effect_id = "elixir_health"
 		applyEffect(mob/user)
@@ -974,6 +1025,7 @@ obj/items/ArcaneElixir
 
 	Replenishment
 		name = "Elixir of Replenishment"
+		icon_state = "BPRES+"
 		desc = "Doubles natural energy recovery for five minutes."
 		effect_id = "elixir_replenishment"
 		applyEffect(mob/user)
@@ -982,14 +1034,19 @@ obj/items/ArcaneElixir
 
 	Merriment
 		name = "Elixir of Merriment"
+		icon_state = "BPRES+"
 		desc = "Increases Progression XP earned from roleplay and chat by 25% for ten minutes."
 		effect_id = "elixir_merriment"
+		New()
+			. = ..()
+			icon += rgb(25, 25, 25)
 		applyEffect(mob/user)
 			user.arcane_merriment_until = max(user.arcane_merriment_until, world.time + 6000)
 			return TRUE
 
 	Life
 		name = "Elixir of Life"
+		icon_state = "PoM1"
 		desc = "Permanently extends the drinker's decline age by 25 years. One effective dose per character."
 		effect_id = "elixir_life"
 		applyEffect(mob/user)
@@ -1001,6 +1058,7 @@ obj/items/ArcaneElixir
 
 	Empowerment
 		name = "Elixir of Empowerment"
+		icon_state = "BPSTR++"
 		desc = "Fully restores the drinker and grants 400 Progression XP. One effective dose per character."
 		effect_id = "elixir_empowerment"
 		applyEffect(mob/user)
@@ -1013,6 +1071,7 @@ obj/items/ArcaneElixir
 
 	Reformation
 		name = "Elixir of Reformation"
+		icon_state = "PoMM+"
 		desc = "Clear character mutations and reopen the native stat-allocation process. One effective dose per character."
 		effect_id = "elixir_reformation"
 		applyEffect(mob/user)
@@ -1027,7 +1086,7 @@ obj/items/ArcaneElixir
 			return TRUE
 
 obj/items/ArcaneBook
-	icon = 'src/Icons/PlayerIcons/Clothes/ClothesBook.dmi'
+	icon = 'src/Icons/NexusIntegrated/Magic/RTEnchantmentItems.dmi'
 	Cost = 0
 	Savable = 1
 	var/effect_id
@@ -1041,6 +1100,7 @@ obj/items/ArcaneBook
 
 	Ages
 		name = "Book of Ages"
+		icon_state = "BoG"
 		desc = "Age five years and gain one Milestone Point. One effective reading per character."
 		effect_id = "book_ages"
 		applyEffect(mob/user)
@@ -1055,6 +1115,7 @@ obj/items/ArcaneBook
 
 	Fortitude
 		name = "Book of Fortitude"
+		icon_state = "BoEW"
 		desc = "Reduces damage taken by 15% for ten minutes. One effective reading per character."
 		effect_id = "book_fortitude"
 		applyEffect(mob/user)
@@ -1064,6 +1125,7 @@ obj/items/ArcaneBook
 
 	Lessons
 		name = "Book of Lessons"
+		icon_state = "BoTT"
 		desc = "Grants 750 Progression XP from the recorded lessons of the past. One effective reading per character."
 		effect_id = "book_lessons"
 		applyEffect(mob/user)
@@ -1073,6 +1135,7 @@ obj/items/ArcaneBook
 
 	Power
 		name = "Book of Power"
+		icon_state = "BoTW"
 		desc = "Permanently increases BP growth by 5% and current base BP by 10%. One effective reading per character."
 		effect_id = "book_power"
 		applyEffect(mob/user)
