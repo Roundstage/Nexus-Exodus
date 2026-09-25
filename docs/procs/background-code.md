@@ -671,8 +671,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/proc/Power_Control_Loop
 - Signature: `mob/proc/Power_Control_Loop(obj/Power_Control/A)`
-- Inputs: obj/Power_Control/A
-- Purpose: Handle power control loop.
+- Inputs: Legacy optional controller argument; resolves the owner's canonical Power Control before starting.
+- Purpose: Run BP changes on the owned controller, sharing one loop even when rank grants leave duplicate skills.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

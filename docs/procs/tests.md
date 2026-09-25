@@ -1,5 +1,7 @@
 # Tests
 
+`runPowerControlSmokeTests()` covers a rank granting Power Control to a character who already has it, active powerup preservation during duplicate cleanup, commands from duplicate objects, actual BP increase/decrease through hotbar actions, missing/foreign reference recovery, save/load and removal of the last controller.
+
 `BuffAndContextSmoke.dm` covers Materialize's four allowed outputs and Normal equipment, stale ownership, preset and Horseman effect activation/rebuild/cleanup, Focus save/load, Majin/Mystic x1.5 BP and legacy Majin normalization. Context tests exercise owned Souls and items, references outside the displayed panel, invalid actions, admin permission filtering, and command target binding. `node tools/TestClassicHud.cjs` also exercises right-click routing across all Classic row widgets, scaled menu bounds, escaped names, selection and dismissal of delayed responses.
 
 `runArcaneEquipmentSmokeTests()` covers paid arcane weapon crafting, parity with Normal Science equipment, equipping Magic Gauntlets without the old XP bonus, retired cooking/fishing recipes and stale Science grants, RPT item/preview DMI states, and restoring an old elixir appearance through a savefile round trip.

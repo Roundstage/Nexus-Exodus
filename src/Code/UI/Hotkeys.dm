@@ -388,7 +388,7 @@ obj/Power_Up
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		if(!usr.powerup_obj)
+		if(!usr.getPowerControl())
 			usr<<"You have not yet learned this ability"
 			return
 		usr.Power_up()
@@ -399,7 +399,7 @@ obj/Power_Down
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		if(!usr.powerup_obj)
+		if(!usr.getPowerControl())
 			usr<<"You have not yet learned this ability"
 			return
 		usr.powerup_obj.Power_Down()

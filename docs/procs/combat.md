@@ -3467,24 +3467,31 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/proc/getPowerControl
+- Signature: `mob/proc/getPowerControl(obj/Power_Control/excluded)`
+- Inputs: Optional object being deleted, which must not be selected.
+- Purpose: Return the owned Power Control controller, repairing a missing or foreign cached reference from inventory.
+- Returns: The surviving owned skill, or null when none remains.
+- Side effects: Updates `powerup_obj`; preserves an already valid controller when ranks add duplicate skills.
+
 #### mob/proc/Power_up
 - Signature: `mob/proc/Power_up()`
 - Inputs: None
-- Purpose: Handle power up.
+- Purpose: Resolve the owned Power Control controller, then start/stop powering up or advance forms.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### obj/Power_Control/New
 - Signature: `New()`
 - Inputs: None
-- Purpose: Initialize object state and register references.
+- Purpose: Resolve the owner's controller after inventory insertion without replacing an existing Power Control or its active loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### obj/Power_Control/Del
 - Signature: `Del()`
 - Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Purpose: Stop the deleted controller and rebind to a surviving owned copy when needed. Removing an unused rank duplicate preserves the existing powerup and BP.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3505,7 +3512,7 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 #### verb/Power_Down
 - Signature: `verb/Power_Down()`
 - Inputs: None
-- Purpose: Handle power down.
+- Purpose: Resolve the owned Power Control controller and stop powering up, begin powering down or revert. Commands exposed by duplicate skills share the same controller.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

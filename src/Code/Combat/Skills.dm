@@ -2082,8 +2082,17 @@ mob/proc/PowerUpGoNextForm()
 	PowerUpToSSBlue()
 	Frost_Lord_Forms()
 
+mob/proc/getPowerControl(obj/Power_Control/excluded)
+	if(powerup_obj && powerup_obj.loc == src && powerup_obj != excluded) return powerup_obj
+	powerup_obj = null
+	for(var/obj/Power_Control/control in src)
+		if(control == excluded) continue
+		powerup_obj = control
+		break
+	return powerup_obj
+
 mob/proc/Power_up()
-	if(!powerup_obj) return
+	if(!getPowerControl()) return
 	if(KO) return
 
 	if(God_Fist_obj && God_Fist_obj.Using)
@@ -2132,11 +2141,15 @@ obj/Power_Control
 	New()
 		spawn if(ismob(loc))
 			var/mob/M=loc
-			M.powerup_obj=src
+			// Ranks can grant a second copy; keep the existing controller and its loop.
+			M.getPowerControl()
 
 	Del()
 		var/mob/m=loc
-		if(m && ismob(m)) m.Stop_Powering_Up()
+		Powerup = 0
+		if(ismob(m) && m.powerup_obj == src)
+			m.Stop_Powering_Up()
+			m.getPowerControl(src)
 		. = ..()
 
 	verb/Hotbar_use()
@@ -2150,21 +2163,23 @@ obj/Power_Control
 
 	verb/Power_Down()
 		set category="Skills"
+		var/obj/Power_Control/control = usr.getPowerControl()
+		if(!control) return
 		if(usr.KO) return
 		if(usr.God_Fist_obj && usr.God_Fist_obj.Using)
 			if(!usr.God_Fist_level) usr.Revert()
 			usr.God_FistStop()
 			usr.Aura_Overlays()
 			return
-		if(Powerup==-1)
+		if(control.Powerup==-1)
 			usr.Revert()
-		else if(Powerup)
-			Powerup=0
+		else if(control.Powerup)
+			control.Powerup=0
 			usr<<"You stop powering up"
 		else
-			Powerup=-1
+			control.Powerup=-1
 			usr<<"You begin powering down"
-			usr.Power_Control_Loop(src)
+			usr.Power_Control_Loop(control)
 			if(usr) usr.Aura_Overlays()
 
 proc/CenterIcon(obj/O,Icon,x_only)

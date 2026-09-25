@@ -866,6 +866,7 @@
 #include "src\Code\Tests\ClassicHudSmoke.dm"
 #include "src\Code\Tests\BuffAndContextSmoke.dm"
 #include "src\Code\Tests\DemonRanksSmoke.dm"
+#include "src\Code\Tests\PowerControlSmoke.dm"
 #include "src\Code\Tests\EarthCitySmoke.dm"
 #include "src\Code\Tests\EarthNaturalLandmarksSmoke.dm"
 #include "src\Code\Tests\EarthTerrainGenerationSmoke.dm"

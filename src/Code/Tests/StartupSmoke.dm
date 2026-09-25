@@ -2293,6 +2293,7 @@ proc/runEnergyRecoveryStartupSmokeTests()
 
 proc/runStartupSmokeTests(soul_contract_count_before)
 	runDemonRanksSmokeTests()
+	runPowerControlSmokeTests()
 	runClassicContextSmokeTests()
 	runMaterializeBuffSmokeTests()
 	runAppearanceRebuildSmokeTests()

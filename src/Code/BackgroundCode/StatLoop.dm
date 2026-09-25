@@ -1430,8 +1430,7 @@ mob/proc/PowerUpStandingLoop(obj/Power_Control/A)
 mob/proc/Power_Control_Loop(obj/Power_Control/A)
 	set waitfor=0
 	var/Amount=1
-	if(powerup_obj&&!A) A=powerup_obj
-	if(!A) for(var/obj/Power_Control/O in src) A=O
+	A = getPowerControl()
 	if(!A) return
 	if(A.PC_Loop_Active) return
 	A.PC_Loop_Active=1
