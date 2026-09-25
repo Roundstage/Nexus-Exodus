@@ -2,6 +2,7 @@
   'use strict';
   var config = window.classicConfig, id = config.kind || config.id, widgetId = config.id, data = {}, geometry = config.geometry, viewport = config.viewport;
   var dragging = null, pendingGeometry = false, lastRows = '', lastMessages = [], lastChannel = '', following = true;
+  var contextToken = null, contextPoint = null;
   function el(tag, cls, text) { var node = document.createElement(tag); if (cls) node.className = cls; if (text != null) node.textContent = text; return node; }
   function navigate(url) { if (window.classicTestTransport) window.classicTestTransport(url); else window.location.href = url; }
   function topic(action, values) {
@@ -37,7 +38,7 @@
     query.onkeydown = function (event) { if (event.key === 'Escape') { query.blur(); focusMap(); } event.stopPropagation(); };
   }
   if (id === 'menu') {
-    section = el('select'); section.setAttribute('aria-label', 'Category'); section.onchange = function () { topic('section', { value: section.value }); lastRows = ''; };
+    section = el('select'); section.setAttribute('aria-label', 'Category'); section.onchange = function () { closeContext(); topic('section', { value: section.value }); lastRows = ''; };
     var categoryToolbar = el('nav', 'toolbar'); categoryToolbar.appendChild(section); shell.insertBefore(categoryToolbar, toolbar);
     footer.appendChild(button('Appearance / Clothes', 'settings')); footer.appendChild(button('Ki Settings', 'ki_settings'));
     footer.appendChild(button('Inventory', 'inventory')); footer.appendChild(button('Skills', 'skills'));
@@ -82,6 +83,15 @@
       var item = el(row.token && !panelActions ? 'button' : 'div', 'row' + (row.token ? ' action' : '') + (panelActions ? ' panel-row' : ''));
       item.appendChild(el('span', 'label', row.label)); item.appendChild(el('span', 'value', row.value));
       if (row.token && !panelActions) { item.type = 'button'; item.onclick = function () { topic(command ? 'command' : 'row', { value: row.token }); }; }
+      if (row.token && !command) {
+        item.oncontextmenu = function (event) {
+          event.preventDefault(); event.stopPropagation(); closeContext();
+          contextToken = row.token;
+          var bounds = shell.getBoundingClientRect(), scale = bounds.width / shell.offsetWidth || 1;
+          contextPoint = { x: (event.clientX - bounds.left) / scale, y: (event.clientY - bounds.top) / scale };
+          topic('context', { value: row.token });
+        };
+      }
       if (panelActions) { var actions = el('span', 'panel-actions'); actions.appendChild(button('USE', 'panel_use', row.token)); actions.appendChild(button('BAR', 'panel_bar', row.token)); actions.appendChild(button('EXAMINE', 'panel_examine', row.token)); item.appendChild(actions); }
       if (command && row.token) { item.draggable = true; item.title = 'Drag this verb to the hotbar'; item.ondragstart = function(event) { event.dataTransfer.setData('text/plain', 'classic-command:' + row.token); }; }
       body.appendChild(item);
@@ -116,6 +126,29 @@
     menu.appendChild(button('Hotkeys', 'hotkeys', slot)); if (!data.locked) { menu.appendChild(button('Assign', 'assign', slot)); menu.appendChild(button('Clear', 'clear', slot)); }
     var close = el('button', '', '×'); close.onclick = function () { menu.remove(); }; menu.appendChild(close); shell.appendChild(menu);
   }
+  function closeContext() {
+    var old = document.querySelector('.context'); if (old) old.remove();
+    contextToken = null; contextPoint = null;
+  }
+  window.classicContext = function (payload) {
+    var response; try { response = typeof payload === 'string' ? JSON.parse(payload) : payload; } catch (_) { return; }
+    if (!contextToken || response.token !== contextToken) return;
+    var old = document.querySelector('.context'); if (old) old.remove();
+    var menu = el('div', 'context row-context'); menu.setAttribute('role', 'menu');
+    menu.appendChild(el('b', 'context-title', response.label));
+    (response.options || []).forEach(function (option) {
+      var node = el('button', '', option.label); node.type = 'button'; node.setAttribute('role', 'menuitem');
+      node.onclick = function (event) { event.stopPropagation(); topic('context_action', { value: response.token, option: option.id }); closeContext(); };
+      menu.appendChild(node);
+    });
+    if (!(response.options || []).length) menu.appendChild(el('span', '', 'No actions available.'));
+    shell.appendChild(menu);
+    menu.style.left = Math.max(0, Math.min(contextPoint.x, shell.clientWidth - menu.offsetWidth)) + 'px';
+    menu.style.top = Math.max(0, Math.min(contextPoint.y, shell.clientHeight - menu.offsetHeight)) + 'px';
+    var first = menu.querySelector('button'); if (first) first.focus();
+  };
+  document.addEventListener('mousedown', function (event) { if (!event.target.closest('.context')) closeContext(); });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeContext(); });
   function renderSlots(slots) {
     var columns = Math.max(1, Math.min(data.columns || 12, Math.floor((body.clientWidth - 3) / ((data.size || 40) + 3)) || 1));
     body.style.gridTemplateColumns = 'repeat(' + columns + ',' + (data.size || 40) + 'px)';

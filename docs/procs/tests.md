@@ -1,5 +1,7 @@
 # Tests
 
+`BuffAndContextSmoke.dm` covers Materialize's four allowed outputs and Normal equipment, stale ownership, preset and Horseman effect activation/rebuild/cleanup, Focus save/load, Majin/Mystic x1.5 BP and legacy Majin normalization. Context tests exercise owned Souls and items, references outside the displayed panel, invalid actions, admin permission filtering, and command target binding. `node tools/TestClassicHud.cjs` also exercises right-click routing across all Classic row widgets, scaled menu bounds, escaped names, selection and dismissal of delayed responses.
+
 `runArcaneEquipmentSmokeTests()` covers paid arcane weapon crafting, parity with Normal Science equipment, equipping Magic Gauntlets without the old XP bonus, retired cooking/fishing recipes and stale Science grants, RPT item/preview DMI states, and restoring an old elixir appearance through a savefile round trip.
 
 Classic-only UI regression coverage loads an old `side_tabs` setting, normalizes it without changing saved geometry, exercises legacy entry points, rejects native stat output outside a capture, and checks that Interface Settings and Menu no longer offer tabs. Existing Classic snapshot tests keep validating Skills, Stats, World and owned item/soul actions. Browser coverage checks mixed-case Arial message text and the configured font size while preserving chat controls, scrolling, wrapping and resize behavior.

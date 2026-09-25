@@ -114,6 +114,7 @@ mob
 mob/var/tmp/last_bp_get_time = 0
 mob/var/tmp/last_bp_get_stored = 0
 mob/proc/get_bp(factor_powerup=1)
+	normalizeMajinBPMultiplier()
 	if(world.time - last_bp_get_time < 10)
 		return last_bp_get_stored
 
@@ -154,6 +155,8 @@ mob/proc/get_bp(factor_powerup=1)
 		//n *= DropkickBPDebuff()
 		if(world.time - last_ki_hit_zero < zero_ki_bp_debuff_duration * 10)
 			n *= zero_ki_bp_mult
+		if(ismystic) n *= mystic_skill_bp_mult
+		if(ismajin) n *= majin_skill_bp_mult
 		if(n < 1) n = 1
 		last_bp_get_stored = n
 		return n
@@ -191,7 +194,6 @@ mob/proc/get_bp(factor_powerup=1)
 
 		//bp/=weights()**0.3
 		bp /= weights()
-		if(ismystic && ssj && Class != "Legendary Saiyan") bp *= 1.15
 
 		var/shikonMod = 1
 		for(var/obj/items/Shikon_Jewel/S in shikon_jewels) if(S.loc==src) shikonMod += S.bp_mult - 1
@@ -260,6 +262,8 @@ mob/proc/get_bp(factor_powerup=1)
 		if(world.realtime - lastGreatApeRevert < 600)
 			bp *= 0.5
 
+		if(ismystic) bp *= mystic_skill_bp_mult
+		if(ismajin) bp *= majin_skill_bp_mult
 		if(bp<1) bp=1
 		last_bp_get_stored = bp
 		return bp

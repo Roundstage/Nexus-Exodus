@@ -9,7 +9,9 @@ mob/proc/classicStatPanel(panel_name)
 
 mob/proc/classicStat(label, value)
 	if(nexus_classic_capture)
-		if(args.len == 1) nexus_classic_capture.add(null, label)
+		// DM includes omitted formal parameters in args.len. A missing value means
+		// the legacy one-argument stat(object/list/text) form, not a text-only label.
+		if(isnull(value)) nexus_classic_capture.add(null, label)
 		else nexus_classic_capture.add(label, value)
 		return
 

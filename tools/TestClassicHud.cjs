@@ -199,6 +199,28 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     }
     assert.equal(await page.locator('.grip').count(), 0, 'Fixed menu still exposes resize grips');
     await mount(page, 'bar', 526, 82);
+    // Every object row uses the same context protocol; right-click never activates the row.
+    for (const widget of ['menu', 'inventory', 'skills', 'sense', 'stats', 'target']) {
+      await mount(page, widget, 460, 430, 0.75);
+      await update(page, { sections: { souls: 'Souls', world: 'World' }, section: 'souls', rows: [{ label: '<Contracted Soul>', token: 'soul-ref' }] });
+      await page.evaluate(() => { sent.length = 0; });
+      await page.locator('.row').click({ button: 'right' });
+      assert.deepEqual(await page.evaluate(() => sent.map(url => new URL(url).searchParams.get('action'))), ['context'], `${widget}: right-click activated a row`);
+      await page.evaluate(() => classicContext({ token: 'wrong-ref', options: [{ id: 'soul', label: 'Wrong soul' }] }));
+      assert.equal(await page.getByRole('menu').count(), 0, `${widget}: accepted a stale response`);
+      await page.evaluate(() => classicContext({ token: 'soul-ref', label: '<Contracted Soul>', options: [{ id: 'soul', label: 'Manage Soul' }, { id: 'admin', label: 'Manage Player' }] }));
+      assert.equal(await page.locator('.context-title').textContent(), '<Contracted Soul>', 'Context names were treated as markup');
+      const menuBox = await page.getByRole('menu').boundingBox(), viewport = page.viewportSize();
+      assert(menuBox.x >= 0 && menuBox.y >= 0 && menuBox.x + menuBox.width <= viewport.width + 1 && menuBox.y + menuBox.height <= viewport.height + 1, `${widget}: context menu clipped at HUD scale`);
+      await page.getByRole('menuitem', { name: 'Manage Soul' }).click();
+      assert(await page.evaluate(() => sent.some(url => url.includes('action=context_action') && url.includes('value=soul-ref') && url.includes('option=soul'))), `${widget}: context action lost the selected soul`);
+      assert.equal(await page.getByRole('menu').count(), 0, 'Context menu did not close after selection');
+      await page.locator('.row').click({ button: 'right' });
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => classicContext({ token: 'soul-ref', options: [{ id: 'soul', label: 'Manage Soul' }] }));
+      assert.equal(await page.getByRole('menu').count(), 0, 'Dismissed context reopened on a delayed response');
+    }
+    await mount(page, 'bar', 526, 82);
     await update(page, { slots, columns: 12, size: 40, locked: false });
     const commandDrag = await page.evaluateHandle(() => { const d = new DataTransfer(); d.setData('text/plain', 'classic-command:owned-verb'); return d; });
     await page.locator('.slot').nth(2).dispatchEvent('drop', { dataTransfer: commandDrag });

@@ -22,6 +22,7 @@ datum/PlayerAppearanceEntry
 		result.pixel_y = pixel_y
 		result.color = color
 		result.alpha = alpha
+		if(category == "preset_buff") result.layer = MOB_LAYER + 1
 		// Keep equipment on the exact same transform as the body. Some clients detached item
 		// appearances from the parent transform, leaving forged swords, masks and armor at 32px.
 		// RESET_TRANSFORM prevents a second parent multiplication after applying the body matrix.
@@ -143,6 +144,7 @@ datum/PlayerAppearanceManager
 		last_rebuild_reason = reason
 		removeRenderedAppearances()
 		syncEquipment()
+		syncPresetBuffs()
 		var/list/ordered_entries = sortedEntries()
 		for(var/datum/PlayerAppearanceEntry/entry in ordered_entries)
 			entry.rendered = entry.createRenderedAppearance(owner.transform)

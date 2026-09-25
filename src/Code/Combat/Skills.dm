@@ -3055,7 +3055,7 @@ obj/Materialization
 	Mastery=100
 	hotbar_type="Support"
 	can_hotbar=1
-	desc="This ability lets you create weighted clothes to accelerate training and also create swords. \
+	desc="Create weights, Normal armor, a Normal sword or Normal gauntlets (tier 0). \
 	Your energy mod will improve the quality of weights you make."
 	var
 		weight_tier=1 //can go as high as someone wants
@@ -3067,34 +3067,26 @@ obj/Materialization
 
 	verb/Materialize()
 		set category="Skills"
-		var/max_weight=(usr.max_weight()/4)*weight_tier*(usr.Eff**0.3)*1.1
-		switch(input("") in list("Make Weights","Make Sword","Make Armor","Learn new weight tier"))
-			if("Learn new weight tier")
-				while(usr)
-					usr.syncProgressionTrees(silent = TRUE)
-					var/sp_cost = getScaledProgressionExperience(10)
-					if(usr.progression_experience<sp_cost)
-						usr<<"You need at least [sp_cost] Progression XP to do this"
-						return
-					switch(alert(usr,"increase the tier of weights you can make? this will cost [sp_cost] \
-						Progression XP","options","Yes","No"))
-						if("No") return
-						if("Yes")
-							if(usr.progression_experience<sp_cost) return
-							usr.progression_experience-=sp_cost
-							weight_tier+=0.5
+		if(loc != usr) return
+		var/choice = input(usr, "What do you want to materialize?", "Materialize") as null|anything in list("Make Weights", "Make Armor", "Make Sword", "Make Gauntlets")
+		materializeEquipment(usr, choice)
+
+	proc/materializeEquipment(mob/user, choice)
+		if(!user || loc != user) return
+		var/turf/destination = get_step(user, user.dir)
+		if(!destination) return
+		switch(choice)
 			if("Make Weights")
-				var/obj/items/Weights/A=new(Get_step(usr,usr.dir))
-				A.weight=max_weight
+				var/obj/items/Weights/A = new(destination)
+				A.weight = (user.max_weight()/4)*weight_tier*(user.Eff**0.3)*1.1
 				A.weight_name()
+				return A
 			if("Make Armor")
-				new/obj/items/Armor(Get_step(usr,usr.dir))
+				return new /obj/items/Armor/Forged(destination)
 			if("Make Sword")
-				var/list/Swords=new
-				for(var/A in typesof(/obj/items/Sword)) Swords+=new A
-				var/obj/items/Sword/A=input("What kind of sword?") in Swords
-				A.SafeTeleport(Get_step(usr,usr.dir))
-				Swords=null
+				return new /obj/items/Sword/Forged/Science(destination)
+			if("Make Gauntlets")
+				return new /obj/items/Gloves/Forged/Science(destination)
 
 obj/Mystic
 	teachable=1
@@ -3111,7 +3103,7 @@ obj/Mystic
 		1.1x speed<br>\
 		20% faster power up rate<br>\
 		30% less drain from ki attacks<br>\
-		15% BP increase while in a Super Saiyan form (excluding LSSj)<br>\
+		1.5x BP in every compatible form, including base form<br>\
 		15% anger boost decrease<br>\
 		No drain from Super Saiyan 1+2<br>\
 		[(1 - lssj_mystic_drain_reduction)*100]% less drain from Legendary Super Saiyan form<br>\
@@ -3149,6 +3141,7 @@ obj/Mystic
 		if(!usr.ismystic)
 			Last_Use=Year
 			usr.ismystic=1
+			usr.last_bp_get_time = -100
 			usr.Spd*=1.1
 			usr.spdmod*=1.1
 			usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
@@ -3167,6 +3160,7 @@ obj/Mystic
 		else usr.Mystic_Revert()
 mob/proc/Mystic_Revert() if(ismystic)
 	ismystic=0
+	last_bp_get_time = -100
 	Spd/=1.1
 	spdmod/=1.1
 	src<<"You have stopped using mystic"
@@ -3316,7 +3310,7 @@ obj/Majin
 	can_change_icon=1
 	desc="\
 	Majin does the following:<br>\
-	20% BP increase<br>\
+	1.5x BP<br>\
 	20% stronger anger<br>\
 	x1.5 drain from all attacks<br>\
 	Decreased delay between lunge attacks<br>\
@@ -3329,6 +3323,7 @@ obj/Majin
 
 	verb/Majin()
 		set category="Skills"
+		usr.normalizeMajinBPMultiplier()
 		if(usr.active_demon_buff)
 			usr << "Deactivate your demon aura before using Majin."
 			return
@@ -3342,7 +3337,7 @@ obj/Majin
 			usr.attacking=1
 			if(!usr.ismajin)
 				usr.ismajin=1
-				usr.bp_mult += majin_skill_bp_add
+				usr.last_bp_get_time = -100
 				usr.max_anger *= majin_skill_anger_mult
 				usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
 				usr.overlays-='src/Icons/Ki/Electricity/Elec.dmi'
@@ -3355,15 +3350,26 @@ obj/Majin
 			if(usr) usr.attacking=0
 
 var
-	majin_skill_bp_add = 0.2
+	majin_skill_bp_mult = 1.5
+	mystic_skill_bp_mult = 1.5
 	majin_skill_anger_mult = 1.2
 
+mob/var/majin_bp_version = 0
+
+mob/proc/normalizeMajinBPMultiplier()
+	if(majin_bp_version >= 1) return
+	// Old saves baked the former additive bonus into bp_mult while Majin was active.
+	if(ismajin) bp_mult -= 0.2
+	majin_bp_version = 1
+	last_bp_get_time = -100
+
 mob/proc/Majin_Revert() if(ismajin)
+	normalizeMajinBPMultiplier()
 	for(var/obj/Majin/M in src)
-		bp_mult 			-= majin_skill_bp_add
 		max_anger 			/= majin_skill_anger_mult
 		overlays-=M.icon
 		ismajin=0
+		last_bp_get_time = -100
 		src<<"You have stopped using majin"
 		//Revert()
 		break

@@ -98,6 +98,7 @@ mob/proc/toggleDemonBuff(obj/DemonBuff/skill)
 		return FALSE
 	active_demon_buff = skill.type
 	applyDemonBuffStats(active_demon_buff, TRUE)
+	rebuildPlayerAppearance("demon aura enabled")
 	runDemonBuffDrain()
 	if(client) showNexusTechniqueAnnouncement(skill.name, skill.aura_color, null, 30)
 	src << "You are now using the [skill.name] buff."
@@ -126,6 +127,7 @@ mob/proc/revertDemonBuff()
 	var/buff_type = active_demon_buff
 	active_demon_buff = null
 	applyDemonBuffStats(buff_type, FALSE)
+	rebuildPlayerAppearance("demon aura disabled")
 	src << "You have stopped using your demon aura."
 
 mob/proc/drainDemonBuff()

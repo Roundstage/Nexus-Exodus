@@ -440,6 +440,8 @@ datum/ClassicHud
 			section = href_list["value"]
 			payloads -= "menu"
 		else if(action == "command" && id == "menu") runCommand(href_list["value"])
+		else if(action == "context") showContextMenu(id, href_list["value"])
+		else if(action == "context_action") runContextAction(id, href_list["value"], href_list["option"])
 		else if(action == "settings" && id == "menu") owner.Settings()
 		else if(action == "ki_settings" && id == "menu") owner.kiSettings()
 		else if(action == "inventory" && id == "menu") setOpen("inventory", TRUE)
