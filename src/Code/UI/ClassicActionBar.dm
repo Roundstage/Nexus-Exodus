@@ -1,4 +1,4 @@
-// Actions belong to character slots; keys activate a slot even when its action changes.
+// Slot keys follow their slot; direct hotkeys stay independent of bar contents.
 mob/var
 	list/nexus_classic_slots
 	list/nexus_classic_bars
@@ -129,6 +129,15 @@ mob/proc/classicBindingForObject(obj/skill)
 	if(!skill.hotbar_id) skill.hotbar_id = Assign_hotbar_ID()
 	return list("kind" = "object", "object id" = skill.hotbar_id, "object type" = skill.type, "display name" = "[skill]")
 
+proc/isClassicDefaultBarObject(obj/skill)
+	return isobj(skill) && !skill.is_for_moving && !istype(skill, /obj/Meditate) && !istype(skill, /obj/Train)
+
+mob/proc/hasNexusDirectHotkeyForObject(obj/skill)
+	for(var/key in nexus_hotkey_bindings)
+		var/list/binding = nexus_hotkey_bindings[key]
+		if(islist(binding) && binding["direct"] && binding["kind"] == "object" && resolveNexusHotkeyObject(binding) == skill) return TRUE
+	return FALSE
+
 mob/proc/initializeClassicSlots()
 	nexus_classic_bar_rows = Clamp(round(classicNumber(nexus_classic_bar_rows, 1)), 1, 3)
 	nexus_classic_bar_columns = max(1, round(classicNumber(nexus_classic_bar_columns, 12)))
@@ -149,15 +158,15 @@ mob/proc/initializeClassicSlots()
 	for(var/combination in nexus_hotkey_bindings)
 		if(index >= nexus_classic_slots.len) break
 		var/list/binding = nexus_hotkey_bindings[combination]
-		if(!islist(binding) || binding["kind"] == "slot") continue
+		if(!islist(binding) || binding["kind"] == "slot" || binding["direct"]) continue
 		var/obj/skill = resolveNexusHotkeyBinding(combination)
-		if(!isobj(skill) || skill.is_for_moving || (skill in used)) continue
+		if(!isClassicDefaultBarObject(skill) || (skill in used)) continue
 		nexus_classic_slots[++index] = binding.Copy()
 		used += skill
 		if(index >= nexus_classic_slots.len) break
 	if(index < nexus_classic_slots.len)
 		for(var/obj/skill in src)
-			if(!isNexusHotkeyObjectAvailable(skill) || skill.is_for_moving || !hascall(skill, "Hotbar_use") || (skill in used)) continue
+			if(!isNexusHotkeyObjectAvailable(skill) || !isClassicDefaultBarObject(skill) || hasNexusDirectHotkeyForObject(skill) || !hascall(skill, "Hotbar_use") || (skill in used)) continue
 			nexus_classic_slots[++index] = classicBindingForObject(skill)
 			if(index >= nexus_classic_slots.len) break
 
@@ -172,9 +181,9 @@ mob/proc/populateClassicDefaultSlots()
 	var/list/used = list()
 	for(var/base_key in keys)
 		var/list/binding = nexus_hotkey_bindings[base_key]
-		if(!islist(binding) || binding["kind"] == "slot") continue
+		if(!islist(binding) || binding["kind"] == "slot" || binding["direct"]) continue
 		var/obj/hotkey_object = resolveNexusHotkeyBinding(base_key)
-		if(!isobj(hotkey_object) || hotkey_object.is_for_moving || (hotkey_object in used)) continue
+		if(!isClassicDefaultBarObject(hotkey_object) || (hotkey_object in used)) continue
 		nexus_classic_slots[++index] = binding.Copy()
 		used += hotkey_object
 		if(index >= nexus_classic_slots.len) break
@@ -263,6 +272,23 @@ mob/proc/clearClassicSlot(index)
 		nexus_classic_slots[index] = null
 		classicBarChanged()
 
+mob/proc/moveClassicSlotToDirectHotkeys(index)
+	if(!isnum(index) || index != round(index) || !islist(nexus_classic_slots) || index < 1 || index > nexus_classic_slots.len) return FALSE
+	var/list/binding = nexus_classic_slots[index]
+	if(!islist(binding) || !resolveClassicBinding(binding)) return FALSE
+	var/list/slot_keys = list()
+	for(var/key in nexus_hotkey_bindings)
+		var/list/current = nexus_hotkey_bindings[key]
+		if(islist(current) && current["kind"] == "slot" && current["slot"] == index) slot_keys += key
+	if(!slot_keys.len) return FALSE
+	for(var/key in slot_keys)
+		var/list/direct_binding = binding.Copy()
+		direct_binding["direct"] = TRUE
+		nexus_hotkey_bindings[key] = direct_binding
+	nexus_classic_slots[index] = null
+	classicBarChanged()
+	return TRUE
+
 mob/proc/classicBarChanged()
 	if(!client) return
 	client.syncNexusHotkeyMacros()
@@ -295,9 +321,10 @@ mob/proc/migrateClassicSlotKeys(list/only_combinations)
 	for(var/combination in nexus_hotkey_bindings)
 		if(islist(only_combinations) && !(combination in only_combinations)) continue
 		var/list/binding = nexus_hotkey_bindings[combination]
-		if(!islist(binding) || binding["kind"] == "slot") continue
+		if(!islist(binding) || binding["kind"] == "slot" || binding["direct"]) continue
 		var/resolved = resolveNexusHotkeyBinding(combination)
 		if(!resolved) continue
+		if(istype(resolved, /obj/Meditate) || istype(resolved, /obj/Train)) continue
 		for(var/index in 1 to nexus_classic_slots.len)
 			if(resolveClassicSlot(index) != resolved) continue
 			nexus_hotkey_bindings[combination] = list("kind" = "slot", "slot" = index)
@@ -367,6 +394,17 @@ mob/proc/classicBindingFromToken(token)
 				binding["object id"] = object.hotbar_id
 				binding["object type"] = "[object.type]"
 			if(resolveClassicVerbSource(binding)) return binding
+
+mob/proc/classicTokenForBinding(list/binding)
+	if(!islist(binding)) return ""
+	if(binding["kind"] == "action") return "classic-action:[binding["action id"]]"
+	if(binding["kind"] == "object")
+		var/obj/object = resolveNexusHotkeyObject(binding)
+		if(object) return "classic-skill:\ref[object]"
+	if(binding["kind"] == "verb")
+		var/atom/source = resolveClassicVerbSource(binding)
+		if(source) return "classic-command:[md5("\ref[source]|[binding["verb"]]")]"
+	return ""
 
 mob/proc/buildClassicActionCatalog()
 	var/list/result = list()

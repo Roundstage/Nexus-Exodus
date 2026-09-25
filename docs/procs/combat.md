@@ -86,6 +86,8 @@ Combat Teams are temporary groups of up to five players managed through the `Tea
 
 ### src/Code/Application/Combat/SkillEngine.dm
 
+The engine no longer emits routine diagnostic messages for loop lifecycle, actor ticks, skill paths/casters, or Sokidan/Kienzan casts and blocked attempts. Player-facing gameplay messages (such as beam cooldowns and overhead obstacles) and runtime error reporting remain available; combat execution and cooldown checks are unchanged.
+
 #### proc/initializeSkillEngine
 - Signature: `initializeSkillEngine()`
 - Inputs: None

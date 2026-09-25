@@ -158,6 +158,34 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await page.locator('input').fill('Playtest');
     assert.equal(await page.locator('.row:visible').count(), 1, 'Command search lost category matching');
     assert.equal(await page.locator('.row:visible').getAttribute('draggable'), 'true', 'Commands cannot be dragged to hotbar');
+    // BYOND skin dimensions and the embedded browser's CSS viewport need not
+    // match (display/browser scaling or a resize still in flight). A routine
+    // payload must never enlarge the contents beyond the actual control.
+    const menuData = { sections: { actions: 'Actions / Other', factions: 'Factions' }, section: 'actions', commands: Array.from({ length: 40 }, (_, i) => ({ label: 'Command ' + i, token: 'command-' + i, group: 'Other' })) };
+    for (const nativeScale of [0.75, 1, 1.35]) {
+      await mount(page, 'menu', 460, 680, nativeScale);
+      const nativeGeometry = await page.evaluate(() => ({ ...classicConfig.geometry }));
+      for (const browserScale of [1, 1.25, 1.5, 2]) {
+        const width = Math.floor(nativeGeometry.w / browserScale), height = Math.floor(nativeGeometry.h / browserScale);
+        await page.setViewportSize({ width, height });
+        // Repeat a server update after local fitting: this used to restore
+        // the larger native scale and crop both edges of the menu again.
+        await update(page, { ...menuData, geometry: nativeGeometry });
+        await update(page, { ...menuData, geometry: nativeGeometry });
+        for (const control of await page.locator('.head button, .footer button, select').all()) {
+          const box = await control.boundingBox();
+          assert(box.x >= 0 && box.y >= 0 && box.x + box.width <= width + 0.1 && box.y + box.height <= height + 0.1, `Menu control clipped after refresh at native ${nativeScale}, browser ${browserScale}`);
+        }
+        await page.evaluate(() => { sent.length = 0; });
+        await page.locator('.row').last().scrollIntoViewIfNeeded();
+        await page.locator('.row').last().click();
+        await page.getByRole('button', { name: 'Reset HUD', exact: true }).click();
+        await page.locator('.head').getByRole('button', { name: '×', exact: true }).click();
+        assert(await page.evaluate(() => sent.some(u => u.includes('action=command') && u.includes('value=command-39')) && sent.some(u => u.includes('action=reset')) && sent.some(u => u.includes('action=close'))), 'Fitted menu lost command/footer/header click targets');
+        assert.equal(await page.evaluate(() => classicGeometryForTest().scale), nativeScale, 'Local browser fitting changed persisted native geometry');
+        if (nativeScale === 1 && browserScale === 1.25) await page.screenshot({ path: path.join(output, 'MenuViewportFit.png') });
+      }
+    }
     await mount(page, 'inventory', 460, 680);
     await update(page, { rows: [{ label: 'ITEMS CARRIED', value: '2', token: '' }, { label: 'Viltrumite Soldier Robe', value: 'Equipped', token: 'item-ref' }] });
     assert.equal(await page.locator('.panel-actions').count(), 1, 'Inventory item actions are missing');
@@ -192,6 +220,7 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     const editorCss = fs.readFileSync(path.join(root, 'src/Code/UI/Browser/HotbarEditor.css'), 'utf8');
     const editorJs = fs.readFileSync(path.join(root, 'src/Code/UI/Browser/HotbarEditor.js'), 'utf8');
     const editorConfig = {ref:'fixture', selected:2, bar:'bar_15',bars:[{id:'bar_15',name:'Combat',count:49},{id:'bar_16',name:'Support',count:5},{id:'bar_17',name:'Items',count:7},{id:'bar_18',name:'Other',count:1}], page:1,pages:5,count:49,name:'Combat',slots:mmoSlots.slice(0,12), actions:[{token:'classic-command:meditate',name:'Meditate',group:'Other'},{token:'classic-skill:punch',name:'Pressure Punch',group:'Melee'}], bindings:[{key:'CTRL+SHIFT+Q',name:'Manual Attack',slot:0,fingerprint:'expected-owner'}], keys:['Q','R','1','2','Space','F1','F2','F4'],columns:12,size:40,locked:false};
+    editorConfig.bindings.push({key:'J',name:'Meditate',slot:2,fingerprint:'slot-two'});
     await page.setViewportSize({width:860,height:620});
     await page.setContent(`<!doctype html><html><head><style>${css}${editorCss}</style></head><body><script>window.hotbarConfig=${JSON.stringify(editorConfig)};window.sent=[];window.hotbarTestTransport=u=>sent.push(u);</script><script>${editorJs}</script></body></html>`);
     await page.getByRole('button', {name:'Capture key',exact:true}).click();
@@ -220,7 +249,38 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await page.getByRole('button',{name:'Capture key',exact:true}).click();
     await page.keyboard.press('Escape');
     assert.equal(await page.getByRole('button',{name:'Capture key',exact:true}).count(),1,'Escape did not cancel key capture');
+    await page.setViewportSize({width:860,height:620});
+    await page.getByRole('button',{name:'Hotkeys only',exact:true}).click();
+    assert(await page.locator('.editor-slots').isHidden(),'Independent hotkeys still require selecting a bar slot');
+    assert(await page.getByRole('button',{name:'Capture key',exact:true}).isDisabled(),'Direct capture is enabled without choosing an action');
+    await page.getByRole('searchbox').fill('Meditate');
+    await page.locator('.action-card:visible').click();
+    await page.evaluate(()=>{window.sent=[];});
+    await page.getByRole('button',{name:'Capture key',exact:true}).click();
+    await page.keyboard.press('Control+Shift+Q');
+    assert(await page.locator('.conflict').isVisible(),'Direct binding skipped a conflicting key');
+    assert.equal(await page.evaluate(()=>sent.length),0);
+    await page.getByRole('button',{name:'Replace binding',exact:true}).click();
+    assert(await page.evaluate(()=>sent.some(u=>{const q=new URL(u).searchParams;return q.get('action')==='bind'&&q.get('mode')==='direct'&&q.get('token')==='classic-command:meditate'&&q.get('replace')==='expected-owner';})),'Direct binding lost its action or conflict acknowledgement');
+    await page.getByRole('combobox',{name:'Key',exact:true}).selectOption('R');
+    await page.getByLabel('Double tap',{exact:true}).check();
+    await page.getByRole('button',{name:'Bind',exact:true}).click();
+    assert(await page.evaluate(()=>sent.some(u=>{const q=new URL(u).searchParams;return q.get('mode')==='direct'&&q.get('key')==='R'&&q.get('double')==='1';})),'Manual independent double-tap binding failed');
+    assert(!await page.evaluate(()=>sent.some(u=>new URL(u).searchParams.get('action')==='assign')),'Direct binding assigned an action to a bar');
+    await page.locator('.other-bindings').getByRole('button',{name:'Unbind',exact:true}).click();
+    assert(await page.evaluate(()=>sent.some(u=>new URL(u).searchParams.get('action')==='unbind')),'Independent shortcut cannot be removed');
+    await page.screenshot({path:path.join(output,'IndependentHotkeys.png')});
+    for(const width of [600,380]) { await page.setViewportSize({width,height:620}); assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Independent editor overflow at '+width); }
+    await page.getByRole('button',{name:'Bar slots',exact:true}).click();
+    await page.getByRole('button',{name:'Move to hotkeys only',exact:true}).click();
+    assert(await page.evaluate(()=>sent.some(u=>{const q=new URL(u).searchParams;return q.get('action')==='detach_slot'&&q.get('slot')==='2';})),'Cannot remove a bar action while keeping its keys');
+    const noBarConfig={...editorConfig,mode:'direct',pendingAction:'classic-command:meditate',bar:'',bars:[],slots:[],bindings:[]};
+    await page.goto('about:blank');
+    await page.setContent(`<!doctype html><html><head><style>${css}${editorCss}</style></head><body><script>window.hotbarConfig=${JSON.stringify(noBarConfig)};window.sent=[];window.hotbarTestTransport=u=>sent.push(u);</script><script>${editorJs}</script></body></html>`);
+    await page.getByRole('button',{name:'Capture key',exact:true}).click();
+    await page.keyboard.press('R');
+    assert(await page.evaluate(()=>sent.some(u=>{const q=new URL(u).searchParams;return q.get('action')==='bind'&&q.get('mode')==='direct'&&q.get('token')==='classic-command:meditate';})),'Independent hotkeys require an existing bar');
     assert.equal(errors.length, 0, errors.join('\n'));
-    console.log('PASS: chat reflow/history, resize, cooldowns, reorder, verb drops, lock, editor search/drag, modifier capture/conflicts, responsive layouts and JS errors.');
+    console.log('PASS: chat reflow/history, resize, browser viewport fitting/clicks, cooldowns, reorder, verb drops, lock, editor search/drag, independent hotkeys, modifier capture/conflicts, responsive layouts and JS errors.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

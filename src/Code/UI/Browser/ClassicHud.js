@@ -16,10 +16,14 @@
   head.appendChild(title); head.appendChild(button('–', 'collapse')); head.appendChild(button('×', 'close')); shell.appendChild(head);
   var toolbar = el('nav', 'toolbar'), body = el('section', 'body'), footer = el('nav', 'footer');
   shell.appendChild(toolbar); shell.appendChild(body); shell.appendChild(footer); document.body.appendChild(shell);
-  function applyContentScale(resizing) {
+  function applyContentScale() {
     if (!geometry.scale) return;
     var width = geometry.content_w, height = geometry.content_h;
-    var scale = resizing ? Math.min(window.innerWidth / width, window.innerHeight / height) : geometry.scale;
+    // Native skin pixels can differ from browser CSS pixels. Always fit the
+    // actual viewport, including after payloads and while native resize catches
+    // up, or the close buttons, footer and scrollbar can be clipped again.
+    var scale = Math.min(window.innerWidth / width, window.innerHeight / height);
+    if (!(scale > 0) || !isFinite(scale)) return;
     shell.style.width = width + 'px'; shell.style.height = height + 'px';
     shell.style.transformOrigin = '0 0'; shell.style.transform = 'scale(' + scale + ')';
   }
@@ -152,7 +156,7 @@
     if (!dragging && !pendingGeometry && data.geometry) geometry = data.geometry;
     if (data.viewport) viewport = data.viewport;
     document.body.classList.toggle('collapsed', !!geometry.collapsed);
-    applyContentScale(false);
+    applyContentScale();
     if (id === 'chat') { body.style.fontSize = (data.fontSize || 13) + 'px'; renderChat(); }
     else if (id === 'bar') renderSlots(data.slots || []);
     else {
@@ -172,7 +176,7 @@
     ['x', 'y', 'w', 'h'].forEach(function (key) { g[key] = Math.round(g[key]); }); return g;
   }
   function applyGeometry() {
-    applyContentScale(false);
+    applyContentScale();
     navigate('byond://winset?id=mapwindow.classic_' + widgetId + '&pos=' + geometry.x + ',' + geometry.y + '&size=' + geometry.w + 'x' + (geometry.collapsed ? Math.ceil(26 * (geometry.scale || 1)) : geometry.h));
     if (window.classicTestGeometry) window.classicTestGeometry(geometry);
   }
@@ -200,7 +204,7 @@
       if (!dragging && data.geometry) {
         geometry = data.geometry;
         document.body.classList.toggle('collapsed', !!geometry.collapsed);
-        applyContentScale(false);
+        applyContentScale();
       }
     }, 500);
   }
@@ -211,13 +215,13 @@
   document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && document.activeElement !== query) focusMap(); });
   // Native BROWSER resize does not wait for the next gameplay payload.
   window.addEventListener('resize', function () {
-    applyContentScale(true);
+    applyContentScale();
     if (id === 'bar') renderSlots(data.slots || []);
     if (id === 'chat' && following) body.scrollTop = body.scrollHeight;
   });
   // Apply local geometry immediately; server updates are only needed after the drag ends.
   window.classicGeometryForTest = function () { return geometry; };
   document.body.classList.toggle('collapsed', !!geometry.collapsed);
-  applyContentScale(false);
+  applyContentScale();
   topic('ready');
 }());

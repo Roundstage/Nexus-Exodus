@@ -314,10 +314,7 @@ mob/proc/resolveNexusHotkeyBinding(combination)
 	var/list/binding_info = nexus_hotkey_bindings[combination]
 	if(!islist(binding_info)) return
 	if(binding_info["kind"] == "slot") return resolveClassicSlot(binding_info["slot"])
-	if(binding_info["kind"] == "action")
-		var/datum/NexusHotkeyAction/action = getNexusHotkeyAction(binding_info["action id"])
-		if(action && action.isAvailable(src)) return action
-	if(binding_info["kind"] == "object") return resolveNexusHotkeyObject(binding_info)
+	return resolveClassicBinding(binding_info)
 
 mob/proc/canUseLegacyHotkeyFallback()
 	return nexus_hotkey_version < 3
@@ -455,6 +452,7 @@ mob/proc/getNexusBindingDisplayName(list/binding_info)
 		var/obj/hotkey_object = resolveNexusHotkeyObject(binding_info)
 		if(hotkey_object) return "[hotkey_object]"
 		if(binding_info["display name"]) return binding_info["display name"]
+	if(binding_info["kind"] == "verb" && binding_info["display name"]) return binding_info["display name"]
 	return "Unavailable action"
 
 mob/proc/bindNexusHotkey(combination, list/binding_info)
@@ -554,8 +552,9 @@ mob/proc/buildNexusHotkeyEditorHtml(datum/NexusHotkeyEditor/editor)
 	var/list/bindings = list()
 	for(var/combination in nexus_hotkey_bindings)
 		var/list/binding = nexus_hotkey_bindings[combination]
-		bindings += list(list("key" = combination, "fingerprint" = md5(json_encode(binding)), "name" = getNexusBindingDisplayName(binding), "slot" = binding["kind"] == "slot" ? binding["slot"] : 0))
+		bindings += list(list("key" = combination, "fingerprint" = md5(json_encode(binding)), "name" = getNexusBindingDisplayName(binding), "slot" = binding["kind"] == "slot" ? binding["slot"] : 0, "token" = classicTokenForBinding(binding)))
 	var/list/config = list("ref" = "\ref[editor]", "selected" = editor.selected_slot, "pendingAction" = editor.pending_action, "bar" = editor.bar_id, "bars" = bars, "page" = editor.page, "pages" = max(1, round((indexes.len + 11) / 12)), "count" = indexes.len, "slots" = buildClassicActionBar(FALSE, editor.bar_id, editor.page), "actions" = buildClassicActionCatalog(), "bindings" = bindings, "keys" = nexus_hotkey_base_keys, "columns" = islist(bar) ? bar["columns"] : 1, "size" = islist(bar) ? bar["size"] : 40, "locked" = islist(bar) ? bar["locked"] : FALSE, "name" = islist(bar) ? bar["name"] : "", "notice" = editor.notice)
+	config["mode"] = editor.binding_mode
 	var/encoded_config = url_encode(json_encode(config))
 	return {"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='stylesheet' href='ClassicHud.css'><link rel='stylesheet' href='HotbarEditor.css'></head><body><script>window.hotbarConfig=JSON.parse(decodeURIComponent('[encoded_config]'));</script><script src='HotbarEditor.js'></script></body></html>"}
 
@@ -565,6 +564,7 @@ datum/NexusHotkeyEditor
 	var/tmp/bar_id = "bar"
 	var/tmp/page = 1
 	var/tmp/pending_action = ""
+	var/tmp/binding_mode = "slot"
 	var/tmp/notice = ""
 
 	New(mob/new_owner)
@@ -575,6 +575,35 @@ datum/NexusHotkeyEditor
 		if(!owner || !owner.client) return
 		owner << browse(owner.buildNexusHotkeyEditorHtml(src), "window=NexusHotkeys;size=860x620;can_resize=true;can_close=false")
 
+	proc/bindKey(list/request)
+		if(!owner || !islist(request)) return FALSE
+		var/combination = canonicalNexusHotkey(request["key"], request["ctrl"] == "1", request["shift"] == "1", request["alt"] == "1", request["double"] == "1" ? 2 : 1)
+		if(!combination || (getNexusHotkeyBase(combination) in list("F1", "F2")) || getNexusHotkeyTriggerCombination(combination) == "ALT+F4")
+			notice = "This key is reserved or unsupported."
+			return FALSE
+		var/list/binding
+		if(binding_mode == "direct")
+			binding = owner.classicBindingFromToken(request["token"])
+			if(!islist(binding) || !owner.resolveClassicBinding(binding))
+				notice = "Choose an available action from the list first."
+				return FALSE
+			binding["direct"] = TRUE
+			pending_action = request["token"]
+		else
+			var/list/bar = owner.nexus_classic_bars[bar_id]
+			if(!islist(bar) || !(selected_slot in bar["slots"]))
+				notice = "Select a bar slot first."
+				return FALSE
+			binding = list("kind" = "slot", "slot" = selected_slot)
+		var/list/current = owner.nexus_hotkey_bindings[combination]
+		// Confirm the exact previous assignment, including changes since the page was rendered.
+		if(islist(current) && md5(json_encode(current)) != md5(json_encode(binding)) && request["replace"] != md5(json_encode(current)))
+			notice = "[combination] is already assigned to [owner.getNexusBindingDisplayName(current)]. Select it again to confirm replacement."
+			return FALSE
+		if(!owner.bindNexusHotkey(combination, binding)) return FALSE
+		notice = binding_mode == "direct" ? "[combination] activates [owner.getNexusBindingDisplayName(binding)] without a bar slot." : "[combination] activates slot [selected_slot]."
+		return TRUE
+
 	Topic(href, list/href_list)
 		if(!owner || usr != owner || !owner.client || !owner.nexus_hotkey_editor_open) return
 		owner.initializeClassicBars()
@@ -582,12 +611,22 @@ datum/NexusHotkeyEditor
 		var/list/bar = owner.nexus_classic_bars[bar_id]
 		var/list/indexes = islist(bar) ? bar["slots"] : list()
 		var/index = text2num(href_list["slot"])
-		if(isnum(index) && index == round(index) && index >= 1 && index <= 36) selected_slot = index
+		if(isnum(index) && index == round(index) && (index in indexes)) selected_slot = index
+		binding_mode = href_list["mode"] == "direct" ? "direct" : "slot"
+		if(href_list["token"]) pending_action = href_list["token"]
 		notice = ""
 		switch(href_list["action"])
 			if("assign") owner.assignClassicSlot(selected_slot, href_list["token"])
 			if("swap") owner.swapClassicSlots(selected_slot, text2num(href_list["from"]))
 			if("clear_slot") owner.clearClassicSlot(selected_slot)
+			if("detach_slot")
+				if(!(selected_slot in indexes)) return
+				var/action_token = owner.classicTokenForBinding(owner.nexus_classic_slots[selected_slot])
+				if(owner.moveClassicSlotToDirectHotkeys(selected_slot))
+					binding_mode = "direct"
+					pending_action = action_token
+					notice = "Action removed from the bar. Its hotkeys still work."
+				else notice = "Select an available action with at least one slot hotkey."
 			if("select_bar")
 				page = 1
 				selected_slot = 0
@@ -607,18 +646,7 @@ datum/NexusHotkeyEditor
 				page = max(1, round((indexes.len + 11) / 12))
 			if("remove_slot") owner.removeClassicBarSlot(bar_id, selected_slot)
 			if("bind")
-				if(!(selected_slot in indexes)) return
-				var/combination = canonicalNexusHotkey(href_list["key"], href_list["ctrl"] == "1", href_list["shift"] == "1", href_list["alt"] == "1", href_list["double"] == "1" ? 2 : 1)
-				if(!combination || (getNexusHotkeyBase(combination) in list("F1", "F2")) || getNexusHotkeyTriggerCombination(combination) == "ALT+F4")
-					notice = "This key is reserved or unsupported."
-				else
-					var/list/current = owner.nexus_hotkey_bindings[combination]
-					// The client must acknowledge the exact binding it saw, including concurrent changes.
-					if(islist(current) && !(current["kind"] == "slot" && current["slot"] == selected_slot) && href_list["replace"] != md5(json_encode(current)))
-						notice = "[combination] is already assigned to [owner.getNexusBindingDisplayName(current)]. Select it again to confirm replacement."
-					else
-						owner.bindNexusHotkey(combination, list("kind" = "slot", "slot" = selected_slot))
-						notice = "[combination] activates slot [selected_slot]."
+				bindKey(href_list)
 			if("unbind") owner.unbindNexusHotkey(href_list["key"])
 			if("layout")
 				if(!islist(bar)) return
@@ -651,6 +679,7 @@ mob/proc/showNexusHotkeyEditor(selected_slot = 1, bar_id, action_token)
 	initializeClassicBars()
 	if(bar_id && islist(nexus_classic_bars[bar_id])) editor.bar_id = bar_id
 	editor.pending_action = action_token
+	if(action_token || bar_id) editor.binding_mode = "slot"
 	editor.selected_slot = selected_slot
 	editor.page = 1
 	editor.show()

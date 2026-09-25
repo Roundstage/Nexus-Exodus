@@ -90,8 +90,10 @@ proc/runStarterHotkeySmokeTests()
 	early.HandleKeyDown("J")
 	nexusSmokeAssert(!("J" in early.nexus_hotkey_bindings) && !early.last_hotkey_action, "removed modern hotkey was restored or executed through the legacy fallback")
 	var/list/train_binding = early.nexus_hotkey_bindings["K"]
-	nexusSmokeAssert(train_binding["kind"] == "slot", "starter Train key did not migrate onto its existing bar slot")
-	early.clearClassicSlot(train_binding["slot"])
+	nexusSmokeAssert(train_binding["kind"] == "object", "starter Train key unnecessarily occupies a bar slot")
+	early.nexus_classic_slots[1] = early.classicBindingForObject(train)
+	early.bindNexusHotkey("K", list("kind" = "slot", "slot" = 1))
+	early.clearClassicSlot(1)
 	early.hotbar[keys.Find("K")] = train
 	early.last_hotkey_action = null
 	early.HandleKeyDown("K")
@@ -106,6 +108,9 @@ proc/runStarterHotkeySmokeTests()
 	fresh.initializeNexusHotkeys()
 	nexusSmokeAssert(istype(fresh.resolveNexusHotkeyBinding("J"), /obj/Meditate) && istype(fresh.resolveNexusHotkeyBinding("K"), /obj/Train) && istype(fresh.resolveNexusHotkeyBinding("Space"), /obj/Manual_Attack) && istype(fresh.resolveNexusHotkeyBinding("W"), /obj/Move_Up), "new character without a legacy table did not receive its default basic keys")
 	nexusSmokeAssert(fresh.nexus_classic_slots.len == 12 && fresh.nexus_hotkey_version == 3, "starter initialization overflowed the first bar or did not finish migration")
+	for(var/index in 1 to fresh.nexus_classic_slots.len)
+		var/action = fresh.resolveClassicSlot(index)
+		nexusSmokeAssert(!istype(action, /obj/Meditate) && !istype(action, /obj/Train), "starter bar was populated with Meditate or Train")
 	nexusSmokeAssert(!fresh.resolveNexusHotkeyBinding("R") && !(locate(/obj/Fly) in fresh), "installing starter keys granted an unlearned skill")
 	var/obj/Fly/fly = new(fresh)
 	nexusSmokeAssert(fresh.resolveNexusHotkeyBinding("R") == fly, "a reserved default key did not activate after its skill was learned")
@@ -124,7 +129,7 @@ proc/runStarterHotkeySmokeTests()
 	partial.hotbar_ids = list("custom-legacy-train" = list("hotbar position" = keys.Find("C"), "object type" = /obj/Train))
 	var/bar_before = json_encode(partial.nexus_classic_slots)
 	partial.initializeNexusHotkeys()
-	nexusSmokeAssert(partial.nexus_hotkey_bindings["J"]["kind"] == "slot" && partial.nexus_hotkey_bindings["J"]["slot"] == 1 && istype(partial.resolveNexusHotkeyBinding("J"), /obj/Meditate), "repair did not attach missing J to Meditate's existing slot")
+	nexusSmokeAssert(partial.nexus_hotkey_bindings["J"]["kind"] == "object" && istype(partial.resolveNexusHotkeyBinding("J"), /obj/Meditate), "repair did not create an independent J shortcut for Meditate")
 	nexusSmokeAssert(partial.nexus_hotkey_bindings["K"]["slot"] == 2 && !partial.resolveNexusHotkeyBinding("K") && partial.resolveNexusHotkeyBinding("CTRL+North") == getNexusHotkeyAction("cycle_target") && json_encode(partial.nexus_classic_slots) == bar_before, "starter repair overwrote a custom shortcut, empty slot, or saved bar")
 	nexusSmokeAssert(istype(partial.resolveNexusHotkeyBinding("C"), /obj/Train), "partial modern bindings prevented migration of a custom legacy shortcut")
 	del(partial)
@@ -223,8 +228,74 @@ proc/runNexusMenuActionsSmokeTests()
 	nexusSmokeAssert(!("mapwindow.map" in browser_targets) && !("mainwindow" in browser_targets) && !("NexusCharacterSelect" in browser_targets) && !("InvisBrowser" in browser_targets), "reconnect cleanup targeted the game map, login selector, or resolution browser")
 	world.log << "NEXUS_MENU_ACTIONS_TESTS_PASSED"
 
+proc/runIndependentHotkeySmokeTests()
+	var/mob/NexusSmokeTest/StarterHotkeyProbe/owner = new
+	owner.playerCharacter = TRUE
+	owner.Add_hotbar_proxies()
+	owner.initializeNexusHotkeys()
+	owner.initializeClassicBars()
+	var/obj/Meditate/meditate = locate(/obj/Meditate) in owner
+	var/obj/Train/train = locate(/obj/Train) in owner
+	var/datum/NexusHotkeyEditor/editor = new(owner)
+	editor.binding_mode = "direct"
+	var/bar_before = json_encode(owner.nexus_classic_slots)
+	var/list/request = list("key" = "F6", "ctrl" = "1", "shift" = "1", "token" = "classic-skill:\ref[meditate]")
+	nexusSmokeAssert(editor.bindKey(request) && owner.resolveNexusHotkeyBinding("CTRL+SHIFT+F6") == meditate && json_encode(owner.nexus_classic_slots) == bar_before, "independent binding failed or added its action to a bar")
+	owner.nexusHotkeyDown("CTRL+SHIFT+F6", "F6")
+	nexusSmokeAssert(owner.last_hotkey_action == meditate, "independent modifier hotkey did not dispatch through gameplay input")
+	owner.nexusHotkeyUp("F6")
+	var/list/meditate_binding = owner.nexus_hotkey_bindings["CTRL+SHIFT+F6"]
+	var/old_fingerprint = md5(json_encode(meditate_binding))
+	request["token"] = "classic-skill:\ref[train]"
+	nexusSmokeAssert(!editor.bindKey(request) && owner.resolveNexusHotkeyBinding("CTRL+SHIFT+F6") == meditate, "direct binding silently replaced an existing shortcut")
+	request["replace"] = "stale-fingerprint"
+	nexusSmokeAssert(!editor.bindKey(request), "direct binding accepted a stale conflict acknowledgement")
+	request["replace"] = old_fingerprint
+	nexusSmokeAssert(editor.bindKey(request) && owner.resolveNexusHotkeyBinding("CTRL+SHIFT+F6") == train, "direct binding refused a confirmed replacement")
+	request = list("key" = "F7", "double" = "1", "token" = "classic-action:cycle_target")
+	nexusSmokeAssert(editor.bindKey(request) && owner.resolveNexusHotkeyBinding("DOUBLE:F7") == getNexusHotkeyAction("cycle_target"), "independent double-tap action was not bound")
+	owner.verbs += /mob/verb/Settings
+	request = list("key" = "F8", "token" = "classic-command:[md5("\ref[owner]|/mob/verb/Settings")]")
+	nexusSmokeAssert(editor.bindKey(request) && istype(owner.resolveNexusHotkeyBinding("F8"), /datum/NexusHotkeyAction/ClassicVerb), "independent native command could not resolve")
+	owner.verbs -= /mob/verb/Settings
+	nexusSmokeAssert(!owner.resolveNexusHotkeyBinding("F8"), "independent native command retained a revoked verb")
+	request["key"] = "F1"
+	nexusSmokeAssert(!editor.bindKey(request), "direct editor accepted a reserved key")
+	var/mob/NexusSmokeTest/stranger = new
+	var/obj/Train/foreign_train = new(stranger)
+	request = list("key" = "F9", "token" = "classic-skill:\ref[foreign_train]")
+	nexusSmokeAssert(!editor.bindKey(request) && !("F9" in owner.nexus_hotkey_bindings), "direct editor accepted another character's action")
+	owner.nexus_classic_slots[1] = owner.classicBindingForObject(meditate)
+	owner.bindNexusHotkey("J", list("kind" = "slot", "slot" = 1))
+	owner.bindNexusHotkey("ALT+J", list("kind" = "slot", "slot" = 1))
+	nexusSmokeAssert(owner.moveClassicSlotToDirectHotkeys(1) && !owner.nexus_classic_slots[1] && owner.resolveNexusHotkeyBinding("J") == meditate && owner.resolveNexusHotkeyBinding("ALT+J") == meditate, "moving a bar action to independent hotkeys lost its keys or kept the slot occupied")
+	owner.nexus_classic_slots[1] = owner.classicBindingForObject(train)
+	owner.nexus_classic_slot_keys_version = 0
+	owner.migrateClassicSlotKeys()
+	nexusSmokeAssert(owner.nexus_hotkey_bindings["J"]["direct"] && owner.resolveNexusHotkeyBinding("J") == meditate && owner.nexus_hotkey_bindings["CTRL+SHIFT+F6"]["direct"], "slot migration recaptured an independent shortcut")
+	owner.clearClassicSlot(1)
+	var/savefile/backup = new
+	backup["bindings"] << owner.nexus_hotkey_bindings
+	owner.nexus_hotkey_bindings = null
+	backup["bindings"] >> owner.nexus_hotkey_bindings
+	owner.initializeNexusHotkeys()
+	nexusSmokeAssert(owner.resolveNexusHotkeyBinding("J") == meditate && owner.resolveNexusHotkeyBinding("CTRL+SHIFT+F6") == train && owner.nexus_hotkey_bindings["J"]["direct"], "independent shortcuts did not survive save/reload and initialization")
+	owner.removeClassicBar("bar")
+	nexusSmokeAssert(owner.resolveNexusHotkeyBinding("J") == meditate, "deleting a bar also deleted an independent hotkey")
+	request = list("key" = "F9", "token" = "classic-skill:\ref[meditate]")
+	nexusSmokeAssert(editor.bindKey(request) && owner.nexus_classic_bars.len == 0, "binding a direct key requires or recreates a visible bar")
+	owner.unbindNexusHotkey("F9")
+	owner.initializeNexusHotkeys()
+	nexusSmokeAssert(!owner.resolveNexusHotkeyBinding("F9"), "initialization restored an explicitly removed direct hotkey")
+	del(foreign_train)
+	del(stranger)
+	del(editor)
+	del(owner)
+	world.log << "NEXUS_INDEPENDENT_HOTKEY_TESTS_PASSED"
+
 proc/runClassicHudSmokeTests()
 	runStarterHotkeySmokeTests()
+	runIndependentHotkeySmokeTests()
 	runNexusMenuActionsSmokeTests()
 	runClassicResponsiveLayoutSmokeTests()
 	runSkillArtworkSmokeTests()
@@ -317,7 +388,7 @@ proc/runClassicHudSmokeTests()
 		"Space" = default_bar_user.classicBindingForObject(default_attack),
 		"J" = default_bar_user.classicBindingForObject(default_meditate))
 	default_bar_user.populateClassicDefaultSlots()
-	nexusSmokeAssert(default_bar_user.resolveClassicSlot(1) == default_attack && default_bar_user.resolveClassicSlot(2) == default_meditate, "Classic default bar omitted Space Attack or J Meditate")
+	nexusSmokeAssert(default_bar_user.resolveClassicSlot(1) == default_attack && !default_bar_user.resolveClassicSlot(2) && default_bar_user.resolveNexusHotkeyBinding("J") == default_meditate, "Classic default bar omitted Space Attack or forced Meditate onto a slot")
 	var/list/preserved_default_binding = default_bar_user.nexus_classic_slots[1]
 	default_bar_user.nexus_hotkey_bindings["B"] = default_bar_user.classicBindingForObject(default_meditate)
 	default_bar_user.populateClassicDefaultSlots()

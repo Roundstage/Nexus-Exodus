@@ -1,7 +1,5 @@
 var/global/datum/SkillRegistry/skill_registry = new
 var/global/datum/SkillEngine/skill_engine = new
-var/global/skill_engine_debug = 1
-var/global/skill_engine_debug_interval = 50
 
 proc/initializeSkillEngine()
 	if(skill_engine)
@@ -64,7 +62,6 @@ datum/SkillEngine
 		list/active_actors
 		loop_running = 0
 		loop_delay = 0
-		last_debug_time = 0
 
 	New()
 		registry = skill_registry
@@ -101,18 +98,15 @@ datum/SkillEngine
 	proc/startLoop()
 		if(loop_running) return
 		loop_running = 1
-		debugLog("SkillEngine loop started.")
 		spawn() engineLoop()
 
 	proc/stopLoop()
 		loop_running = 0
-		debugLog("SkillEngine loop stopped.")
 
 	proc/engineLoop()
 		while(loop_running)
 			if(!active_actors || !active_actors.len)
 				loop_running = 0
-				debugLog("SkillEngine loop parked: no active actors.")
 				return
 			tickActors()
 			sleep(loop_delay || world.tick_lag)
@@ -130,9 +124,6 @@ datum/SkillEngine
 
 	proc/tickActors()
 		if(!active_actors || !active_actors.len) return
-		if(skill_engine_debug && world.time >= last_debug_time + skill_engine_debug_interval)
-			debugLog("SkillEngine tick actors=[active_actors.len].")
-			last_debug_time = world.time
 		var/list/to_remove = list()
 		for(var/datum/SkillActor/actor in active_actors)
 			if(!actor)
@@ -352,7 +343,6 @@ datum/SkillEngine
 
 	proc/castSkill(mob/user, obj/skill_obj)
 		if(!user || !skill_obj) return 0
-		debugLog("SkillEngine cast [skill_obj.type] for [user.key].", user)
 		var/path = skill_obj.type
 		if(isBeamSkill(path)) return castBeam(user, skill_obj)
 		if(ispath(path, /obj/Attacks/Blast)) return castBlast(user, skill_obj)
@@ -1262,13 +1252,10 @@ datum/SkillEngine
 	proc/castSokidan(mob/user, obj/skill_obj)
 		if(!user || !skill_obj) return 0
 		if(world.time - user.lastSokidan < 20)
-			debugLog("Sokidan blocked: cooldown.", user)
 			return 0
 		if(user.cant_blast())
-			debugLog("Sokidan blocked: cant_blast.", user)
 			return 0
 		if(!user.move || user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1))
-			debugLog("Sokidan blocked: move or Ki.", user)
 			return 0
 		var/turf/t = Get_step(user, NORTH)
 		if(t)
@@ -1279,7 +1266,6 @@ datum/SkillEngine
 			if(t.density) obstacle = 1
 			if(obstacle)
 				user << "You can not use this here because there is an obstacle above you"
-				debugLog("Sokidan blocked: obstacle.", user)
 				return 0
 		skill_obj.Using = 1
 		user.attacking = 3
@@ -1325,16 +1311,13 @@ datum/SkillEngine
 		skill_obj.Using = 0
 		user.attacking = 0
 		user.lastSokidan = world.time
-		debugLog("Sokidan fired.", user)
 		return 1
 
 	proc/castKienzan(mob/user, obj/skill_obj)
 		if(!user || !skill_obj) return 0
 		if(user.cant_blast())
-			debugLog("Kienzan blocked: cant_blast.", user)
 			return 0
 		if(!user.move || user.Ki < user.GetSkillDrain(mod = skill_obj.Drain, is_energy = 1))
-			debugLog("Kienzan blocked: move or Ki.", user)
 			return 0
 		var/turf/t = Get_step(user, NORTH)
 		if(t)
@@ -1345,7 +1328,6 @@ datum/SkillEngine
 			if(t.density) obstacle = 1
 			if(obstacle)
 				user << "You can not use this here because there is an obstacle above you"
-				debugLog("Kienzan blocked: obstacle.", user)
 				return 0
 		skill_obj.Using = 1
 		user.attacking = 3
@@ -1386,12 +1368,4 @@ datum/SkillEngine
 			if(!controlled && A && A.z) A.startKiProjectileWalk(A.dir)
 		skill_obj.Using = 0
 		if(user) user.attacking = 0
-		debugLog("Kienzan fired.", user)
 		return 1
-
-	proc/debugLog(message, mob/receiver)
-		if(!skill_engine_debug) return
-		if(receiver && receiver.client)
-			receiver << message
-		else
-			world.log << message
