@@ -4855,7 +4855,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(typesof(/obj/Peebag).len >= 10, "integrated Nexus Punching Bag or Magic Goo tiers are incomplete")
 	nexusSmokeAssert(magic_research_catalog["magic_goo_4"] && magic_research_catalog["transmutation_circle"] && magic_research_catalog["philosophers_stone"], "Nexus Alchemy research is incomplete")
 	initializeArcaneFormulaCatalog()
-	nexusSmokeAssert(arcane_formula_catalog.len == 42, "the complete Nexus arcane formula catalog was not registered")
+	nexusSmokeAssert(arcane_formula_catalog.len == 40, "the active Nexus arcane formula catalog was not registered")
+	runArcaneEquipmentSmokeTests()
 	for(var/arcane_formula_id in arcane_formula_catalog)
 		nexusSmokeAssert(magic_research_catalog[arcane_formula_id], "an arcane formula has no Magic progression node: [arcane_formula_id]")
 	var/datum/MagicResearchNode/shikon_research_node = magic_research_catalog["shikon_jewel"]
@@ -6026,6 +6027,65 @@ proc/runRacialProgressionWipeSmokeTests()
 		del(viltrumite_window)
 		del(viltrumite)
 	world.log << "NEXUS_RACIAL_PROGRESSION_WIPE_TESTS_PASSED"
+
+proc/runArcaneEquipmentSmokeTests()
+	var/mob/NexusSmokeTest/crafter = new(locate(1, 1, 2))
+	crafter.progression_tree_version = NEXUS_PROGRESSION_VERSION
+	crafter.arcane_essence = 1000
+	var/list/weapon_formulas = list("magic_sword" = /obj/items/Sword/Forged/Science, "magic_hammer" = /obj/items/Sword/Forged/ScienceHammer, "magic_gauntlets" = /obj/items/Gloves/Forged/Science)
+	for(var/formula_id in weapon_formulas)
+		var/datum/ArcaneFormula/formula = arcane_formula_catalog[formula_id]
+		crafter.progression_nodes_owned["magic_[formula_id]"] = 1
+		var/obj/items/Ore/catalyst = crafter.addMinedOre(formula.ore_type, formula.ore_cost)
+		if(!(catalyst in crafter.item_list)) crafter.item_list += catalyst
+		var/essence_before = crafter.arcane_essence
+		nexusSmokeAssert(crafter.craftArcaneFormula(formula_id), "arcane equipment ritual failed: [formula_id]")
+		var/obj/items/created = locate(formula.construct_type) in crafter
+		if(created && !(created in crafter.item_list)) crafter.item_list += created
+		var/science_type = weapon_formulas[formula_id]
+		var/obj/items/equivalent = new science_type
+		nexusSmokeAssert(created && created.name == equivalent.name && created.icon == equivalent.icon && created:forged_material_id == equivalent:forged_material_id, "arcane equipment differs from its Normal Science counterpart: [formula_id]")
+		nexusSmokeAssert(crafter.arcane_essence == essence_before - formula.essence_cost && !crafter.countOre(formula.ore_type), "arcane weapon did not charge its ritual costs: [formula_id]")
+		nexusSmokeAssert(created:forged_attack_bp_bonus == equivalent:forged_attack_bp_bonus, "arcane equipment has different attack BP reinforcement: [formula_id]")
+		if(istype(created, /obj/items/Sword/Forged))
+			nexusSmokeAssert(created:Damage == equivalent:Damage && created:Style == equivalent:Style, "arcane weapon has different damage or damage type: [formula_id]")
+		else
+			var/obj/items/Gloves/Forged/gloves = created
+			crafter.applyForgedGloves(gloves)
+			nexusSmokeAssert(crafter.usingForgedGloves() == gloves, "Magic Gauntlets cannot equip as ordinary forged gloves")
+			var/expected_magic_xp = 10 * crafter.getMagicPotential() * (1 + crafter.getMilestoneRank("arcane_memory") * 0.1)
+			nexusSmokeAssertNear(crafter.gainMagicExperience(10, "arcane equipment smoke"), expected_magic_xp, 0.001, "Magic Gauntlets still grant their old passive XP bonus")
+			crafter.applyForgedGloves(gloves)
+		del(equivalent)
+		del(created)
+	for(var/retired_id in list("cooking_bag", "magic_fishing_lure"))
+		crafter.progression_nodes_owned["magic_[retired_id]"] = 1
+		nexusSmokeAssert(!magic_research_catalog[retired_id] && !arcane_formula_catalog[retired_id] && !progression_node_catalog["magic_[retired_id]"] && !crafter.craftArcaneFormula(retired_id), "retired cooking/fishing item remains researchable or craftable: [retired_id]")
+	for(var/retired_type in list(/obj/items/ArcaneSatchel/CookingBag, /obj/items/MagicFishingLure))
+		var/obj/items/retired_item = new retired_type
+		retired_item.science = TRUE
+		crafter.individual_science_items += retired_item
+		nexusSmokeAssert(isRetiredScienceEquipment(retired_item) && !crafter.canUnlockTechnology(retired_item) && !crafter.canAccessTechnology(retired_item), "saved Science grants restored a retired cooking/fishing item")
+		del(retired_item)
+	// Check actual DMI states and composed previews, including the already-correct stone.
+	for(var/formula_id in list("elixir_health", "elixir_replenishment", "elixir_merriment", "elixir_life", "elixir_empowerment", "elixir_reformation", "spell_book", "book_ages", "book_fortitude", "book_lessons", "book_power", "book_case", "philosophers_stone", "simulation_crystal", "orb_of_mastery", "mana_pylon", "magic_vault", "locator", "crystal_ball"))
+		var/datum/ArcaneFormula/formula = arcane_formula_catalog[formula_id]
+		var/obj/items/artifact = new formula.construct_type
+		// BYOND canonicalizes the empty state of a single-frame DMI to null.
+		nexusSmokeAssert(artifact.icon && ("[artifact.icon_state]" in icon_states(artifact.icon)), "RPT item has no matching DMI state: [formula_id]")
+		var/datum/ProgressionNode/node = progression_node_catalog["magic_[formula_id]"]
+		nexusSmokeAssert(node && node.icon_file && ("[node.icon_state]" in icon_states(node.icon_file)), "RPT research preview has no matching DMI state: [formula_id]")
+		del(artifact)
+	var/obj/items/ArcaneElixir/Life/old_elixir = new
+	old_elixir.icon_state = ""
+	var/savefile/appearance_save = new
+	appearance_save["elixir"] << old_elixir
+	var/obj/items/ArcaneElixir/Life/loaded_elixir
+	appearance_save["elixir"] >> loaded_elixir
+	nexusSmokeAssert(loaded_elixir.icon_state == "PoM1", "loading an old elixir did not restore its RPT icon state")
+	del(loaded_elixir)
+	del(old_elixir)
+	del(crafter)
 
 proc/runTechnologyCatalogSmokeTests(soul_contract_count_before)
 	var/list/expected_technology_types = list()

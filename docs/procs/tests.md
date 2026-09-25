@@ -1,5 +1,7 @@
 # Tests
 
+`runArcaneEquipmentSmokeTests()` covers paid arcane weapon crafting, parity with Normal Science equipment, equipping Magic Gauntlets without the old XP bonus, retired cooking/fishing recipes and stale Science grants, RPT item/preview DMI states, and restoring an old elixir appearance through a savefile round trip.
+
 Classic-only UI regression coverage loads an old `side_tabs` setting, normalizes it without changing saved geometry, exercises legacy entry points, rejects native stat output outside a capture, and checks that Interface Settings and Menu no longer offer tabs. Existing Classic snapshot tests keep validating Skills, Stats, World and owned item/soul actions. Browser coverage checks mixed-case Arial message text and the configured font size while preserving chat controls, scrolling, wrapping and resize behavior.
 
 `tools/TestClassicHud.cjs` verifies that native HUD dimensions can differ from the browser's CSS viewport without clipping interactive controls. Menu fixtures combine native scales of 0.75/1/1.35 with viewport ratios of 1/1.25/1.5/2, repeat ordinary server payloads, check header/footer/category bounds, and click the last scrolled command, Reset HUD and Close. It also confirms that fitting does not rewrite native geometry. This reproduces the former refresh bug at a 1.25 ratio and captures the corrected menu in `artifacts/ClassicHud/MenuViewportFit.png`; actual Dream Seeker/display settings remain a manual check.

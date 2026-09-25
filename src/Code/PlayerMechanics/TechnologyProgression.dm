@@ -38,6 +38,7 @@ mob/proc/getTechnologyPathSlots()
 
 proc/isRetiredScienceEquipment(obj/technology)
 	if(!technology) return FALSE
+	if(istype(technology, /obj/items/ArcaneSatchel/CookingBag) || istype(technology, /obj/items/MagicFishingLure)) return TRUE
 	return technology.type in list(/obj/items/Sword, /obj/items/Armor, /obj/items/Shikon_Jewel)
 
 proc/scienceBlueprintListContainsType(list/blueprints, blueprint_type)
@@ -86,6 +87,7 @@ mob/proc/normalizeIndividualScienceItems()
 mob/proc/canUnlockTechnology(obj/technology)
 	if(!istype(technology, /obj) || !technology.science) return FALSE
 	if(initial(technology.catalog_test_only)) return FALSE
+	if(isRetiredScienceEquipment(technology)) return FALSE
 	var/required_level = technology.science_level
 	if(!required_level) required_level = 1
 	required_level = max(1, required_level)
