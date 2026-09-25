@@ -14,8 +14,9 @@ html.bar,body.bar,.bar .shell,.bar .body{background:transparent!important}
 .bar .shell{padding-left:4px}
 /* Keep the chrome and chat visually consistent with the game's pixel HUD. */
 html,body{font-family:NexusPixel,'Fixedsys','Courier New',monospace}
-.messages{font-family:NexusPixel,'Fixedsys','Courier New',monospace;line-height:1.45}
-.messages *{font-family:NexusPixel,'Fixedsys','Courier New',monospace!important;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.messages{font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+.messages,.messages *{font-family:Arial,Helvetica,sans-serif!important;font-variant:normal!important;text-transform:none!important}
+.messages *{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .chat-entry{margin-bottom:6px!important;padding:2px 3px!important;border-left:2px solid #6f522d}
 .chat .footer{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:4px 5px}.chat .footer button{min-width:0;padding:4px 2px}.menu .grip{display:none}
 .panel-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}.panel-row>.value{display:none}.panel-actions{display:flex;gap:3px}.panel-actions button{padding:3px 5px;font-size:9px}.inventory .body,.skills .body{padding:5px;background:#15110c}.inventory .head,.skills .head{background:#392816}

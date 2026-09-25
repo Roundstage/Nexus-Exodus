@@ -65,8 +65,8 @@ mob/verb/Settings()
 		//if(Fullscreen) Choices+="Fullscreen Off"
 		//else Choices+="Fullscreen On"
 
-		Choices.Add("Interface Layout","Choose Hair","Choose Clothes","Choose Aura Icon","Choose Blast Icons",\
-		"Choose 'charging ki' Icon","Manage Visual Layers","View Visual Layers","Text Size","Text Color","Map Size","Tabs Font Size","View Update Logs","View Guides")
+		Choices.Add("Interface Settings","Choose Hair","Choose Clothes","Choose Aura Icon","Choose Blast Icons",\
+		"Choose 'charging ki' Icon","Manage Visual Layers","View Visual Layers","Text Size","Text Color","Map Size","View Update Logs","View Guides")
 
 		if(feats_on) Choices+="Feats & Accomplishments"
 
@@ -107,7 +107,7 @@ mob/verb/Settings()
 			if("Cancel")
 				save_player_settings()
 				return
-			if("Interface Layout")
+			if("Interface Settings")
 				showNexusInterfaceSettings()
 				return
 
@@ -173,10 +173,6 @@ mob/verb/Settings()
 			if("View Update Logs") View_update_logs()
 			if("Fullscreen On") Fullscreen_Toggle()
 			if("Fullscreen Off") Fullscreen_Toggle()
-			if("Tabs Font Size")
-				tab_font_size=input(src,"Set the font size you want for the stat tabs","Options",tab_font_size) as num
-				tab_font_size=Clamp(tab_font_size,1,30)
-				Set_tab_font_size(tab_font_size)
 			if("Turn Sagas Tab On") sagas_tab=1
 			if("Turn Sagas Tab Off") sagas_tab=0
 			if("Set Precog Chance")

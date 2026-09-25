@@ -110,6 +110,7 @@ var/list/nexus_classic_command_catalog = list(
 	"/mob/Admin3/verb/setGlobalScienceTabItems" = list("Set Global Science Tab Items", "Admin", FALSE),
 	"/mob/Admin3/verb/testNexusCombatEffects" = list("Test Combat Effects", "Admin", FALSE),
 	"/mob/Admin3/verb/testNexusSmithing" = list("Test Nexus Smithing", "Admin", FALSE),
+	"/mob/Admin3/verb/unlockArgalBloodlineForPlayer" = list("Unlock Argal Bloodline", "Admin", FALSE),
 	"/mob/Admin3/verb/warper" = list("Warper", "Admin", FALSE),
 	"/mob/Admin4/verb/adminAutoAttack" = list("AdminAutoAttack", "Admin", FALSE),
 	"/mob/Admin4/verb/allowBanVotes" = list("Allow Ban Votes", "Admin", FALSE),

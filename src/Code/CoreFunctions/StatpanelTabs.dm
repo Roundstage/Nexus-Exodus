@@ -1,57 +1,8 @@
-//mob/var/tmp/stat_sleep_time_this_frame = 0
 mob/var/tmp/last_logon = 0 //world.time
 
-var
-	tabStartupDelay = 10
-
+// Native tabs are retired; Classic panels capture the Stat_* data on demand.
 mob/Stat()
-	//stat_sleep_time_this_frame = 0
-
-	//when you load, all the tabs loading in at once seems to crash me, and others too, too much data at once
-	if(world.time - last_logon < tabStartupDelay)
-		return
-
-	if(!client) sleep(100)
-	else if((!client.nexus_classic_hud || !client.nexus_classic_hud.legacy_open) && (!Tabs || tabs_hidden || normalizeNexusInterfaceLayout(nexus_interface_layout) != "side_tabs")) sleep(20) //Native tabs only refresh in the configured side layout.
-	else
-		RefreshAllTabs()
-		//SleepTabs()
-
-		if(client && client.inactivity > 1200) sleep(TickMult(30))
-		else sleep(TickMult(4.5))
-
-mob/proc/RefreshAllTabsNoWait()
-	set waitfor=0
-	RefreshAllTabs()
-
-mob/proc/RefreshAllTabs()
-	if(Lootables)
-		if(classicStatPanel("Looting")) classicStat(Lootables)
-	else
-		if(client.inactivity >= 1200) client.statpanel = "Other"
-		var/startTime = world.time - (last_logon + tabStartupDelay)
-		if(startTime > 2)
-			if(isNexusLegacyTabEnabled("world"))
-				Stat_Admin()
-				Stat_Nav()
-				Stat_Ship()
-		if(startTime > 3)
-			if(isNexusLegacyTabEnabled("items")) Stat_Items()
-			if(isNexusLegacyTabEnabled("other"))
-				Stat_Stat()
-				Stat_Modules()
-				Stat_Souls()
-		if(startTime > 4)
-			if(isNexusLegacyTabEnabled("other"))
-				Stat_Vampire()
-				Stat_Scouter()
-				Stat_Radar()
-		if(startTime > 5)
-			if(isNexusLegacyTabEnabled("other"))
-				Stat_Sense()
-				Stat_Sense_Tab()
-				Stat_leagues()
-				saga_tab()
+	sleep(100)
 
 //Resetinactivity() handles instant refreshing upon changing tabs now, so this proc is a lot simple than its previous version
 mob/proc/SleepTab(timer = 0)

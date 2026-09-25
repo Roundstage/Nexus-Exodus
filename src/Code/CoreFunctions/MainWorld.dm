@@ -112,7 +112,7 @@ mob/Login() if(client)
 	//else Get_Packs(delay = 20)
 	if(client)
 		client.show_map=1
-		client.show_verb_panel=1
+		hideNexusNativeTabs()
 	//DetermineViewSize()
 	Get_chaser_from_key()
 

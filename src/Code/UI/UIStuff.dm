@@ -466,7 +466,7 @@ mob/proc
 		while(HelpAlertShowing()) sleep(10) //just wait for any other potential interfering alerts to go away before beginning
 		HelpAlert("Alerts such as this will sometimes appear to help you. Press Escape to get rid of them.", 1.#INF)
 		while(HelpAlertShowing()) sleep(10)
-		if(!classic_ui) HelpAlert("Use F1 through F5 to toggle the Chatbox, Stats Overlay, Tabs Overlay, Health Bars, and Hotkeys Menu", 1.#INF)
+		if(!classic_ui) HelpAlert("Use F1 through F5 to toggle the Chat, Stats, Character, Health Bars, and Hotkeys", 1.#INF)
 		while(HelpAlertShowing()) sleep(10)
 		if(!classic_ui) HelpAlert("Press Escape to view the Main Menu where you can adjust settings and exit the game", 1.#INF)
 		else HelpAlert("Press Escape to view the Main Menu where you can adjust settings", 1.#INF)

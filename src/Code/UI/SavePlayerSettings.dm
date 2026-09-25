@@ -26,11 +26,6 @@ mob/proc
 		f["nexus_interface_layout"] << normalizeNexusInterfaceLayout(nexus_interface_layout)
 		f["nexus_classic_layout"] << nexus_classic_layout
 		f["nexus_classic_viewport"] << nexus_classic_viewport
-		f["nexus_legacy_tab_skills"] << nexus_legacy_tab_skills
-		f["nexus_legacy_tab_other"] << nexus_legacy_tab_other
-		f["nexus_legacy_tab_items"] << nexus_legacy_tab_items
-		f["nexus_legacy_tab_world"] << nexus_legacy_tab_world
-		f["nexus_legacy_tab_admin"] << nexus_legacy_tab_admin
 		f["nexus_overhead_vitals_offset_x"] << normalizeNexusHudOffset(nexus_overhead_vitals_offset_x)
 		f["nexus_overhead_vitals_offset_y"] << normalizeNexusHudOffset(nexus_overhead_vitals_offset_y)
 		f["nexus_main_vitals_x"] << max(0, round(nexus_main_vitals_x))
@@ -41,7 +36,6 @@ mob/proc
 		//	f["hotbar_ids"]<<hotbar_ids
 		Hotkey_server_backup_save()
 
-		f["tab_font_size"]<<tab_font_size
 		client.Export(f)
 
 	load_player_settings()
@@ -71,17 +65,11 @@ mob/proc
 		f["ignore_contracts"]>>ignore_contracts
 		f["TextSize"]>>TextSize
 		f["TextColor"]>>TextColor
-		if("tab_font_size" in f) f["tab_font_size"]>>tab_font_size
 		if("sort_sense_by" in f) f["sort_sense_by"]>>sort_sense_by
 		if("block_music" in f) f["block_music"] >> block_music
 		if("nexus_interface_layout" in f) f["nexus_interface_layout"] >> nexus_interface_layout
 		if("nexus_classic_layout" in f) f["nexus_classic_layout"] >> nexus_classic_layout
 		if("nexus_classic_viewport" in f) f["nexus_classic_viewport"] >> nexus_classic_viewport
-		if("nexus_legacy_tab_skills" in f) f["nexus_legacy_tab_skills"] >> nexus_legacy_tab_skills
-		if("nexus_legacy_tab_other" in f) f["nexus_legacy_tab_other"] >> nexus_legacy_tab_other
-		if("nexus_legacy_tab_items" in f) f["nexus_legacy_tab_items"] >> nexus_legacy_tab_items
-		if("nexus_legacy_tab_world" in f) f["nexus_legacy_tab_world"] >> nexus_legacy_tab_world
-		if("nexus_legacy_tab_admin" in f) f["nexus_legacy_tab_admin"] >> nexus_legacy_tab_admin
 		if("nexus_overhead_vitals_offset_x" in f) f["nexus_overhead_vitals_offset_x"] >> nexus_overhead_vitals_offset_x
 		if("nexus_overhead_vitals_offset_y" in f) f["nexus_overhead_vitals_offset_y"] >> nexus_overhead_vitals_offset_y
 		if("nexus_main_vitals_x" in f) f["nexus_main_vitals_x"] >> nexus_main_vitals_x
@@ -101,4 +89,4 @@ mob/proc
 		Fullscreen_Check()
 
 		Restore_hotbar_from_IDs()
-		Set_tab_font_size(tab_font_size)
+		hideNexusNativeTabs()

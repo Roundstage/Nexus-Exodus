@@ -495,19 +495,12 @@ mob/proc/showNexusCommandPrompt()
 	if(!client || !playerCharacter) return
 	if(!client.nexus_chat_hud) initializeNexusChatHud()
 	else if(!client.nexus_chat_hud.is_visible) client.nexus_chat_hud.setVisible(TRUE)
-	if(nexus_interface_layout == "side_tabs")
-		winset(src, "nexuschatwindow.command", "focus=true")
-		return
 	var/command_text = input(src, "Enter the same command you would type in the CMD bar.", "CMD") as text|null
 	if(command_text) winset(src, null, "command=[command_text]")
 
 mob/verb/focusNexusCommand()
 	set hidden = TRUE
 	if(!client || !playerCharacter) return
-	if(nexus_interface_layout == "side_tabs")
-		if(winget(src, "nexuschatwindow.command", "focus") == "true") winset(src, "mapwindow.map", "focus=true")
-		else showNexusCommandPrompt()
-		return
 	showNexusCommandPrompt()
 
 datum/NexusPlayerMenu

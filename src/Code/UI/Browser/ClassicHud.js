@@ -41,7 +41,7 @@
     var categoryToolbar = el('nav', 'toolbar'); categoryToolbar.appendChild(section); shell.insertBefore(categoryToolbar, toolbar);
     footer.appendChild(button('Appearance / Clothes', 'settings')); footer.appendChild(button('Ki Settings', 'ki_settings'));
     footer.appendChild(button('Inventory', 'inventory')); footer.appendChild(button('Skills', 'skills'));
-    footer.appendChild(button('All native tabs', 'legacy')); footer.appendChild(button('Reset HUD', 'reset'));
+    footer.appendChild(button('Reset HUD', 'reset'));
     ['stats', 'sense', 'target', 'bar', 'chat'].forEach(function (widget) { footer.appendChild(button(widget.toUpperCase(), 'widget', widget)); });
   }
   if (id === 'target') { toolbar.remove(); footer.remove(); }

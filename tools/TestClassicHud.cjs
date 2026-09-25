@@ -115,6 +115,8 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     }
     await mount(page, 'chat', 550, 318, 0.5);
     await update(page, { channel: 'all', messages, fontSize: 13 });
+    const chatTypography = await page.locator('.chat-entry span').first().evaluate(node => ({ font: getComputedStyle(node).fontFamily, transform: getComputedStyle(node).textTransform, size: getComputedStyle(node).fontSize, text: node.textContent }));
+    assert(chatTypography.font.startsWith('Arial') && chatTypography.transform === 'none' && chatTypography.size === '13px' && chatTypography.text.includes('short readable text'), 'Chat no longer preserves mixed case in a readable font');
     assert.equal(await page.locator('.shell').evaluate(node => node.clientWidth), 542, 'Scaled chat changed its logical content width');
     const head = await page.locator('.head').boundingBox();
     await page.mouse.move(head.x + 15, head.y + 5); await page.mouse.down();
@@ -153,6 +155,7 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await page.waitForFunction(() => document.querySelector('button').getBoundingClientRect().width === 80);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), 'Embedded details overflow horizontally');
     await mount(page, 'menu', 380, 430);
+    assert.equal(await page.getByRole('button', { name: 'All native tabs', exact: true }).count(), 0, 'Menu still exposes retired native tabs');
     await update(page, { sections: { actions: 'Actions / Other', playtest: 'Playtest', factions: 'Factions', sagas: 'Sagas' }, section: 'actions', commands: [{ label: 'Playtest rewards', value: 'Playtest', token: 'test' }, { label: 'Other command', value: 'Other', token: 'other' }] });
     assert.equal(await page.locator('.grip').count(), 0, 'Fixed menu still exposes resize grips');
     await page.locator('input').fill('Playtest');

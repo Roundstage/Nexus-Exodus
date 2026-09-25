@@ -1950,12 +1950,7 @@ proc/runNexusKiWeaponSmoke()
 	var/obj/KiWeaponTechnique/KiSword/ki_sword_test = new(ki_weapon_user)
 	var/obj/KiWeaponTechnique/KiHammer/ki_hammer_test = new(ki_weapon_user)
 	var/obj/KiWeaponTechnique/SpiritSword/spirit_sword_test = new(ki_weapon_user)
-	nexusSmokeAssert(ki_weapon_user.nexus_interface_layout == "side_tabs", "Side + Tabs is not the default interface layout")
-	var/datum/NexusChatHud/chat_font_contract = new
-	chat_font_contract.owner = ki_weapon_user
-	ki_weapon_user.TextSize = 2
-	nexusSmokeAssert(findtext(chat_font_contract.buildHtml(), "font-size:13px!important"), "Nexus chat does not map the default text preference to a readable font size")
-	del(chat_font_contract)
+	nexusSmokeAssert(ki_weapon_user.nexus_interface_layout == "overlay", "Classic panels are not the default interface")
 	nexusSmokeAssert(/obj/KiWeaponTechnique/verb/Toggle_Ki_Weapon in ki_fist_test.verbs, "Ki Weapons are not exposed as clickable commands in the native Skills tab")
 	nexusSmokeAssert(ki_fist_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiFist.dmi' && ki_sword_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiSword.dmi' && ki_hammer_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTKiHammer.dmi' && spirit_sword_test.icon == 'src/Icons/NexusIntegrated/Attacks/Weapons/RTSpiritSword.dmi', "Ki Weapons are not using their dedicated Roleplay Tenkaichi appearance assets")
 	nexusSmokeAssert(ki_fist_test.force_share == 0.3 && !ki_fist_test.counts_as_weapon && ki_fist_test.allows_physical_weapon, "Ki Fist lost its glove-compatible 30% Force contract")
@@ -2963,7 +2958,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(nexus_live_browser_refresh_ticks == 10 && nexus_live_browser_heartbeat_milliseconds == 1000 && nexus_live_browser_scroll_idle_ticks == 20 && findtext(live_browser_script_test, "action:'heartbeat'") && findtext(live_browser_script_test, "nexusLiveRestoreScrollY=37") && findtext(live_browser_script_test, "sessionStorage") && findtext(live_browser_script_test, "nexusLiveOnScroll") && findtext(live_browser_script_test, "setTimeout(nexusPublishLiveScroll,80)") && findtext(live_browser_script_test, "beforeunload") && findtext(getNexusLiveBrowserScript(null, nexus_live_browser_scroll_placeholder), nexus_live_browser_scroll_placeholder), "live browser refresh cadence, immediate scroll handoff, stateful restoration, or heartbeat is missing")
 	nexusSmokeAssert(text2path("/mob/verb/focusNexusCommand"), "Return-key CMD routing verb is missing")
 	nexusSmokeAssert(!text2path("/mob/proc/Stat_NexusSkills") && !text2path("/mob/proc/Stat_NexusOther") && !text2path("/mob/proc/Stat_NexusAdmin"), "synthetic statpanels duplicate native Skills, Other, or Admin tabs")
-	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "side_tabs" && normalizeNexusInterfaceLayout("overlay") == "overlay" && normalizeNexusInterfaceLayout("invalid") == "side_tabs", "interface layout normalization is invalid")
+	nexusSmokeAssert(normalizeNexusInterfaceLayout("side_tabs") == "overlay" && normalizeNexusInterfaceLayout("overlay") == "overlay" && normalizeNexusInterfaceLayout("invalid") == "overlay" && normalizeNexusInterfaceLayout(null) == "overlay", "interface layout normalization is invalid")
 	nexusSmokeAssert(text2path("/obj/Effect/NexusSayText") && text2path("/obj/Effect/NexusTypingIndicator"), "short Say messages or typing feedback are missing their overhead actors")
 	var/mob/NexusSmokeTest/overhead_layout_test = new
 	overhead_layout_test.icon = 'src/Icons/UI/Healthbar.dmi'
@@ -4080,25 +4075,10 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(vitals_panel.screen_loc == "LEFT:92,BOTTOM:62" && vitals_owner.nexus_main_vitals_x == 92 && vitals_owner.nexus_main_vitals_y == 62, "main vitals HUD drag positioning is not retained by its owner")
 	var/datum/NexusInterfaceSettings/interface_settings_contract = new(vitals_owner)
 	nexusSmokeAssert(findtext(interface_settings_contract.buildHtml(), "action=hud_move") && findtext(interface_settings_contract.buildHtml(), "action=hud_set"), "interface settings are missing HUD position controls")
+	var/interface_settings_html = interface_settings_contract.buildHtml()
+	nexusSmokeAssert(!findtext(interface_settings_html, "action=layout") && !findtext(interface_settings_html, "action=toggle") && !findtext(interface_settings_html, "SIDE + TABS") && !findtext(interface_settings_html, "LEGACY TAB"), "interface settings still offer native tabs")
+
 	del(interface_settings_contract)
-	var/mob/NexusSmokeTest/chat_contract_owner = new
-	chat_contract_owner.nexus_interface_layout = "side_tabs"
-	var/datum/NexusChatHud/chat_hud_contract = new(chat_contract_owner)
-	var/obj/HudWindow/chat_transform_contract = new
-	nexusSmokeAssert(chat_transform_contract.appearance_flags & RESET_TRANSFORM, "overlay chat elements inherit Giant or Larva character scaling")
-	del(chat_transform_contract)
-	var/chat_panel_html = chat_hud_contract.buildHtml()
-	var/chat_output_fixture = "<span data-test='a&b;c'>Message &amp; combat; log</span>"
-	var/chat_output_payload = encodeNexusBrowserFunctionArgument(chat_output_fixture)
-	nexusSmokeAssert(!findtext(chat_output_payload, "<span") && !findtext(chat_output_payload, "&b;") && json_decode(url_decode(chat_output_payload)) == chat_output_fixture, "side chat JavaScript payload exposes raw HTML argument delimiters or cannot round-trip safely")
-	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() == 36 && findtext(chat_panel_html, "action=channel&id=all") && !findtext(chat_panel_html, "CMD BAR BELOW") && !findtext(chat_panel_html, "ENTER TO FOCUS OR RETURN TO MAP"), "side chat panel is missing paging/channels or retained the obsolete CMD hint")
-	var/chat_footer_source_position = findtext(chat_panel_html, "<nav class='footer'>")
-	var/chat_messages_source_position = findtext(chat_panel_html, "<section class='hud-panel messages'")
-	nexusSmokeAssert(findtext(chat_panel_html, ".footer{order:4}") && findtext(chat_panel_html, ".footer .hud-button{display:flex;flex:1 1 25%;width:25%") && findtext(chat_panel_html, ".messages{order:3;") && findtext(chat_panel_html, ".nexus-hud .messages,.nexus-hud .messages *{font-family:'Courier New',monospace!important;") && findtext(chat_panel_html, "font-variant:normal!important;text-transform:none!important}") && findtext(chat_panel_html, ".chat-entry{display:block;width:100%") && chat_footer_source_position && chat_messages_source_position && chat_footer_source_position < chat_messages_source_position && findtext(chat_panel_html, "body.className='nexus-hud'") && findtext(chat_panel_html, "function updateMessages(payload)") && findtext(chat_panel_html, "JSON.parse(payload)") && !findtext(chat_panel_html, "<img"), "side chat controls are not isolated from message markup, safely updateable, lowercase-readable, or evenly distributed")
-	chat_contract_owner.nexus_interface_layout = "overlay"
-	nexusSmokeAssert(chat_hud_contract.getVisibleMessageCount() >= 4, "overlay chat visible message calculation is invalid")
-	del(chat_hud_contract)
-	del(chat_contract_owner)
 	nexusSmokeAssert(vitals_panel.vis_contents.len == 9 && vitals_panel.alpha == 255, "main vitals HUD composition is incomplete")
 	var/icon/main_vitals_icon = getVitalsPanelIcon()
 	var/icon/main_vitals_bar = getVitalsBarIcon(50, "#46d369")
