@@ -1033,8 +1033,11 @@ These references are intentional and must not be removed, renamed, replaced with
 - Current actions: eight Zanzoken directions available only while the player owns `/obj/Zanzoken`, eight universal Short Dash directions categorized as defensive actions, the universal `cycle_target` targeting action, and the universal `toggle_walk` movement action for precise positioning.
 
 #### mob/proc/initializeNexusHotkeys
-- Purpose: Migrate positional legacy bindings, normalize the saved keyboard profile, initialize tap state, and rebuild client-local dynamic macros.
-- Side effects: updates binding version and client macros.
+- Purpose: Migrate positional legacy bindings, seed missing starter shortcuts, normalize the saved keyboard profile, initialize tap state, and rebuild client-local dynamic macros. Version 3 waits for a loaded character with Meditate/Train proxies before completing migration, so an early settings/HUD initialization cannot consume the migration before defaults exist.
+- Defaults: the shared `getNexusStarterHotkeyTypes()` map retains the basic legacy keys (including J Meditate, K Train, Space Attack and WASD); Ctrl plus each of the eight arrow directions binds its universal Short Dash action. Unlearned skills are referenced without being granted and become usable when acquired.
+- Existing saves: `addNexusStarterHotkeyBindings()` adds only absent keys once. Occupied keys, intentionally empty keyed slots, and actions already rebound to another key are preserved. Newly added keys attach to matching existing bar slots without replacing the bar layout. The existing account backup persists version 3, preventing later reconnects from undoing unbinds.
+- Legacy migration merges missing positional shortcuts even when modern bindings already exist, while modern assignments take precedence. Editing an individual key before character loading finishes does not complete migration. Explicit `Restore_starter_hotbar()` resets the modern bindings through `importLegacyNexusHotkeys()` as well, restoring the shared defaults and directional Dashes.
+- Side effects: updates binding version, saves the upgraded account bindings and rebuilds client macros. Once version 3 is active, gameplay dispatch treats modern bindings as authoritative; missing bindings and empty slots cannot execute stale legacy actions.
 
 #### mob/proc/getNexusHotkeyBindingIdForPress
 - Signature: `getNexusHotkeyBindingIdForPress(trigger_combination, was_held = FALSE, press_time = world.time)`
@@ -1482,6 +1485,13 @@ The Nexus HUD, HudLib windows, overhead vitals, damage numbers, and Nexus techni
 - Purpose: Initialize object state and register references.
 - Returns: none (implicit).
 - Side effects: see implementation.
+
+### Inventory, souls, and reconnect recovery
+
+- `useNexusInventoryItem()` validates direct inventory ownership and the active trade offer before using `executeNexusHotkeyAction()`. Both standalone and embedded Inventory USE buttons now reach an item's `Hotbar_use()` (including the Dead Zone amulet and power fruit), with `Click()` retained only for items without that handler.
+- `NexusPlayerMenu.buildSouls()` lists the owner's online and offline soul contracts under Souls. MANAGE delegates through `manageNexusSoulContract()` to the existing contract actions after rechecking ownership. Soul Contract itself supports Skills USE and hotbar assignment; `syncDemonRankSkills()` repairs saved Daimao skill metadata without changing rank eligibility.
+- `clearNexusGameplayInterface()` tears down active gameplay HUDs before reconnect handoff and before showing the character selector. `getNexusLobbyBrowserTargets()` includes fixed widgets, dynamic `mapwindow.classic_*` controls discovered from the client's skin, and retained Nexus browser windows. It preserves the map, selector, and resolution browser; saved layout and key bindings are not reset. Classic/chat layout application is blocked outside a player character, and closed Classic widgets are hidden even when their runtime window registry is empty.
+- Manual verification: reconnect with chat, native tabs, Inventory, and an extra hotbar open; only the login selector should remain over the lobby. Enter a character and confirm its saved layout returns. Use a carried amulet in a valid location and consume a power fruit from Inventory; open Souls, manage an owned contract, and confirm Soul Contract can be used from Skills. Gameplay restrictions, cooldowns, and contract rules still apply.
 
 ### Skill artwork
 

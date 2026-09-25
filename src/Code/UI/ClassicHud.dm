@@ -193,6 +193,7 @@ datum/ClassicHud
 		return owner && islist(owner.nexus_classic_layout) && islist(owner.nexus_classic_layout[id]) && owner.nexus_classic_layout[id]["open"]
 
 	proc/isVisible(id)
+		if(!owner || !owner.client || !owner.playerCharacter) return FALSE
 		if(!isOpen(id)) return FALSE
 		if(isClassicBarId(id) && !islist(owner.nexus_classic_bars[id])) return FALSE
 		if(id == "chat") return owner.nexus_interface_layout == "overlay" && owner.client.nexus_chat_hud && owner.client.nexus_chat_hud.is_visible
@@ -242,10 +243,11 @@ datum/ClassicHud
 		winset(owner, control(id), "pos=[state["x"]],[state["y"]];size=[state["w"]]x[state["h"]];is-visible=true")
 
 	proc/applyLayout()
-		if(!owner || !owner.client) return
+		if(!owner || !owner.client || !owner.playerCharacter) return
 		pollViewport(TRUE)
 		for(var/id in owner.nexus_classic_layout)
 			if(!isVisible(id))
+				winset(owner, control(id), "is-visible=false")
 				if(windows[id])
 					owner << browse(null, "window=[control(id)]")
 					winset(owner, control(id), "is-visible=false")
@@ -476,6 +478,8 @@ datum/ClassicHud
 					owner.setSelectedTarget(subject, FALSE)
 					owner.Target = subject // Sense can inspect signatures beyond combat selection range.
 					setOpen("target", TRUE)
+				else if(istype(subject, /obj/items)) owner.useNexusInventoryItem(subject)
+				else if(istype(subject, /obj/Contract_Soul)) owner.manageNexusSoulContract(subject)
 				else subject.Click(null, "classic", "left=1")
 		else if((action == "panel_use" || action == "panel_bar" || action == "panel_examine") && (id == "inventory" || id == "skills"))
 			var/datum/ClassicSnapshot/panel_snapshot = owner.captureClassicData(id)
@@ -484,6 +488,7 @@ datum/ClassicHud
 			if(subject)
 				if(action == "panel_use")
 					if(id == "skills") owner.executeNexusHotkeyAction(subject)
+					else if(istype(subject, /obj/items)) owner.useNexusInventoryItem(subject)
 					else subject.Click(null, "classic", "left=1")
 				else if(action == "panel_bar" && owner.isNexusHotkeyObjectAvailable(subject)) owner.showNexusHotkeyEditor(0, null, "classic-skill:\ref[subject]")
 				else if(action == "panel_examine")

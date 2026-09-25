@@ -147,6 +147,7 @@ mob/proc/initializeClassicSlots()
 		var/default_object = resolveClassicBinding(default_binding)
 		if(isobj(default_object)) used += default_object
 	for(var/combination in nexus_hotkey_bindings)
+		if(index >= nexus_classic_slots.len) break
 		var/list/binding = nexus_hotkey_bindings[combination]
 		if(!islist(binding) || binding["kind"] == "slot") continue
 		var/obj/skill = resolveNexusHotkeyBinding(combination)
@@ -287,11 +288,12 @@ mob/proc/getClassicSlotKeys(index)
 		if(islist(binding) && binding["kind"] == "slot" && binding["slot"] == index) result += combination
 	return jointext(result, " / ")
 
-mob/proc/migrateClassicSlotKeys()
-	if(nexus_classic_slot_keys_version || !nexus_hotkey_bindings.len) return
+mob/proc/migrateClassicSlotKeys(list/only_combinations)
+	if((nexus_classic_slot_keys_version && !islist(only_combinations)) || !nexus_hotkey_bindings.len) return
 	initializeClassicSlots()
 	// Convert only bindings whose actions are on this character's bar. Preserve all others.
 	for(var/combination in nexus_hotkey_bindings)
+		if(islist(only_combinations) && !(combination in only_combinations)) continue
 		var/list/binding = nexus_hotkey_bindings[combination]
 		if(!islist(binding) || binding["kind"] == "slot") continue
 		var/resolved = resolveNexusHotkeyBinding(combination)

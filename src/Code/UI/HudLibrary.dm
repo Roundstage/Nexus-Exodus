@@ -580,7 +580,7 @@ datum/NexusChatHud
 
 	proc/applyLayout()
 		clearElements()
-		if(!owner || !owner.client) return
+		if(!owner || !owner.client || !owner.playerCharacter) return
 		owner.nexus_interface_layout = normalizeNexusInterfaceLayout(owner.nexus_interface_layout)
 		if(!is_visible)
 			if(owner.nexus_interface_layout == "side_tabs" && owner.hasEnabledNexusLegacyTabs()) attachTabsOnly()

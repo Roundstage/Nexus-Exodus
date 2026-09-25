@@ -30,6 +30,15 @@ proc/isNexusTechniqueObject(obj/candidate)
 	if(!candidate || istype(candidate, /obj/items)) return FALSE
 	return candidate.Skill == 1
 
+mob/proc/useNexusInventoryItem(obj/items/item)
+	if(!istype(item) || !item.canUseAfterNexusTradeYield(src)) return FALSE
+	return executeNexusHotkeyAction(item)
+
+mob/proc/manageNexusSoulContract(obj/Contract_Soul/contract)
+	if(!istype(contract) || contract.loc != src) return FALSE
+	contract.Click()
+	return TRUE
+
 proc/getNexusActionButtonIcon(active, accent_color)
 	var/cache_key = "[active]-[accent_color]"
 	if(nexus_action_button_icon_cache[cache_key]) return nexus_action_button_icon_cache[cache_key]
@@ -539,6 +548,9 @@ datum/NexusPlayerMenu
 		if(!isOwnedSkill(skill)) return FALSE
 		return owner.executeNexusHotkeyAction(skill)
 
+	proc/useOwnedItem(obj/items/item)
+		return owner && owner.useNexusInventoryItem(item)
+
 	proc/dropOwnedItem(obj/items/item)
 		if(!item || !item.canUseAfterNexusTradeYield(owner)) return FALSE
 		return item.dropFromInventory(owner)
@@ -706,11 +718,11 @@ datum/NexusPlayerMenu
 			del(src)
 
 	proc/normalizeSection(requested_section)
-		if(requested_section in list("inventory", "skills", "sense", "world")) return requested_section
+		if(requested_section in getSections()) return requested_section
 		return "inventory"
 
 	proc/getSections()
-		var/list/sections = list("inventory", "skills", "sense", "world")
+		var/list/sections = list("inventory", "skills", "souls", "sense", "world")
 		return sections
 
 	proc/getBrowserIcon(atom/subject)
@@ -725,6 +737,7 @@ datum/NexusPlayerMenu
 		switch(menu_section)
 			if("inventory") return "Carried gear and currencies"
 			if("skills") return "Techniques ready for action"
+			if("souls") return "Your contracted souls and their available actions"
 			if("sense") return "Energy signatures in the current area"
 			if("world") return "World and connected character overview"
 		return "Character menu"
@@ -1164,6 +1177,16 @@ datum/NexusPlayerMenu
 		if(!item_count) html += "<div class='empty'>This character is not carrying any items.</div>"
 		return html
 
+	proc/buildSouls()
+		var/html = ""
+		for(var/obj/Contract_Soul/contract in owner)
+			var/is_online = contract.observed_mob && contract.observed_mob.client
+			var/status_text = is_online ? "Online" : "Offline"
+			var/action_text = is_online ? "Manage this soul's contract." : "Only contract removal is available while this soul is offline."
+			html += "<div class='card hud-card with-icon with-actions'>[buildIcon(contract, "[contract]")]<div class='card-copy'><span class='hud-label'>[status_text]</span><b>[html_encode("[contract]")]</b><small>[action_text]</small></div><div class='card-actions'><a class='hud-button' href='byond://?src=\ref[src]&action=manage_soul&subject=\ref[contract]'>MANAGE</a></div></div>"
+		if(!length(html)) html = "<div class='empty'>This character has no contracted souls.</div>"
+		return html
+
 	proc/buildSkills()
 		var/html = ""
 		var/skill_count = 0
@@ -1227,6 +1250,7 @@ datum/NexusPlayerMenu
 		switch(section)
 			if("inventory") return buildInventory()
 			if("skills") return buildSkills()
+			if("souls") return buildSouls()
 			if("sense") return buildSense()
 			if("world") return buildWorld()
 		return ""
@@ -1271,7 +1295,10 @@ datum/NexusPlayerMenu
 				section = normalizeSection(href_list["id"])
 			if("use_item")
 				var/obj/items/item = locate(href_list["item"])
-				if(item && item in owner.item_list && !item.isNexusTradeOfferedBy(owner)) item.Click()
+				useOwnedItem(item)
+			if("manage_soul")
+				var/obj/Contract_Soul/contract = locate(href_list["subject"])
+				if(istype(contract)) owner.manageNexusSoulContract(contract)
 			if("drop_item")
 				var/obj/items/dropped_item = locate(href_list["item"])
 				dropOwnedItem(dropped_item)

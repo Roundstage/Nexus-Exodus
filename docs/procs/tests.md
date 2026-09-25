@@ -1,5 +1,7 @@
 # Tests
 
+`runStarterHotkeySmokeTests()` in `ClassicHudSmoke.dm` covers initialization before basic actions/legacy keys exist, new characters without legacy tables, J/K dispatch, all eight Ctrl+direction Short Dashes, version-2 partial backup repair, existing bar/key preservation, actions rebound elsewhere, repeat initialization, unlearned-skill availability, and suppression of stale legacy fallbacks after unbinding or clearing a slot. It runs in both clean and versioned startup environments.
+
 `runAngerRecoverySmokeTests()` and `runAngerRoundSmokeTests()` in `StartupSmoke.dm` cover the single full-Health/full-Energy recovery, long-fight pauses, healing without a round reset, saved consumption across reloads, actual KO and recovery, and Angerless archetypes. Multi-opponent fixtures verify that only the last opponent's defeat rearms an undefeated winner, a rejected KO cannot end a round, and the same fighters can start another round. Rest requires five minutes without incoming or outgoing combat plus full Health/Energy for all tracked standing opponents. Actual deferred callbacks also verify that an old round's Calm cannot cancel a newer Anger and that the current timer still expires without rearming recovery.
 
 `runAppearanceRebuildSmokeTests()` in `AppearanceRebuildSmoke.dm` exercises real save/load round trips for all four Lethal/RP Mode combinations, strips derived indicators from new saves, migrates orphaned/offset indicators in legacy saves, and verifies reused-mob reads, login rebuilds and independently disabling either mode. It preserves hair, custom cosmetics and equipment; restores cleared indicators despite surviving temporary handles; and checks body/hair icon changes, resizing without baking status indicators, equipped-item replacement/recoloring without a manager handle, and subsequent unequipping.
@@ -342,6 +344,8 @@ explanatory comment; an editor save treated that comment as the block boundary
 and removed the protected map includes.
 
 ### Classic HUD runtime work
+
+`runNexusMenuActionsSmokeTests()` exercises the Inventory dispatch using amulet and fruit probes, preserves the ordinary-click fallback, and rejects stale ownership and items in a trade offer. It checks the Souls navigation/list, escaped names, offline contracts, owned-contract interaction, and rejection after transfer. Reconnect target discovery covers retained named browsers and a dynamic hotbar absent from the server's current layout while excluding the map, selector, and resolution browser. `runDemonRanksSmokeTests()` also checks saved Soul Contract hotbar metadata repair. Native window visibility and final gameplay interaction remain manual Dream Seeker checks for the user.
 
 `runClassicHudSmokeTests()` also validates periodic refresh intervals, immediate explicit refresh, collapsed-widget skipping, first-payload restoration, and per-render shortcut lookup after binding removal. Its temporary HUD uses a separate mob so initialization does not alter legacy slot-migration fixtures.
 
