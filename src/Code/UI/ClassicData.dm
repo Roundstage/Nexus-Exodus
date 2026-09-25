@@ -1,19 +1,17 @@
-// The native tabs and the Classic HUD share the same visibility and data rules.
+// Reuse legacy stat data and visibility rules inside Classic panels only.
 mob/var/tmp/datum/ClassicSnapshot/nexus_classic_capture
 
 mob/proc/classicStatPanel(panel_name)
 	if(nexus_classic_capture)
 		nexus_classic_capture.group = "[panel_name]"
 		return TRUE
-	return statpanel(panel_name)
+	return FALSE
 
 mob/proc/classicStat(label, value)
 	if(nexus_classic_capture)
 		if(args.len == 1) nexus_classic_capture.add(null, label)
 		else nexus_classic_capture.add(label, value)
 		return
-	if(args.len == 1) stat(label)
-	else stat(label, value)
 
 datum/ClassicSnapshot
 	var/list/rows = list()
@@ -65,7 +63,6 @@ mob/proc/captureClassicData(section)
 				// Inspect is administrative object access, not public target information.
 				for(var/list/row in snapshot.rows.Copy())
 					if(row["group"] == "Inspect") snapshot.rows -= list(row)
-				// Keep the complete native snapshot available through All native tabs.
 				// The combat frame prioritizes vitals and the full readable stat build.
 				var/list/compact_labels = list("Power", "Health", "Energy", "Strength:", "Durability:", "Speed:", "Force:", "Resistance:", "Accuracy:", "Reflex:", "Regeneration:", "Recovery:")
 				for(var/list/row in snapshot.rows.Copy())

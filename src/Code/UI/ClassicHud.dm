@@ -120,9 +120,7 @@ mob/proc/toggleClassicWidget(id, requested_section)
 
 mob/verb/closeClassicLegacy()
 	set hidden = TRUE
-	if(client && client.nexus_classic_hud) client.nexus_classic_hud.legacy_open = FALSE
-	winset(src, "classiclegacy", "is-visible=false")
-	winset(src, "classiclegacy.body", "left=")
+	hideNexusNativeTabs()
 	if(client && client.nexus_chat_hud) client.nexus_chat_hud.applyLayout()
 
 datum/ClassicHud
@@ -137,7 +135,6 @@ datum/ClassicHud
 		list/command_entries = list()
 		section = "actions"
 		chat_channel = "all"
-		legacy_open = FALSE
 		loop_running = FALSE
 		viewport_width = 1366
 		viewport_height = 768
@@ -196,7 +193,7 @@ datum/ClassicHud
 		if(!owner || !owner.client || !owner.playerCharacter) return FALSE
 		if(!isOpen(id)) return FALSE
 		if(isClassicBarId(id) && !islist(owner.nexus_classic_bars[id])) return FALSE
-		if(id == "chat") return owner.nexus_interface_layout == "overlay" && owner.client.nexus_chat_hud && owner.client.nexus_chat_hud.is_visible
+		if(id == "chat") return owner.client.nexus_chat_hud && owner.client.nexus_chat_hud.is_visible
 		return TRUE
 
 	proc/setOpen(id, value)
@@ -395,16 +392,6 @@ datum/ClassicHud
 		var/command = replacetext(entry["name"], " ", "-")
 		winset(owner, null, list2params(list("command" = command)))
 
-	proc/showLegacy()
-		legacy_open = TRUE
-		// Move the existing default Info pane; BYOND cannot reliably swap default Info controls.
-		winset(owner, "rpane.rpanewindow", "left=")
-		winset(owner, "classiclegacy.body", "left=infowindow;splitter=100")
-		winset(owner, "infowindow", "is-visible=true")
-		winset(owner, "classiclegacy", "is-visible=true")
-		owner.client.show_verb_panel = TRUE
-		owner.RefreshAllTabsNoWait()
-
 	Topic(href, list/href_list)
 		if(!owner || !owner.client || usr != owner || !owner.playerCharacter) return
 		var/id = href_list["widget"]
@@ -457,7 +444,6 @@ datum/ClassicHud
 		else if(action == "ki_settings" && id == "menu") owner.kiSettings()
 		else if(action == "inventory" && id == "menu") setOpen("inventory", TRUE)
 		else if(action == "skills" && id == "menu") setOpen("skills", TRUE)
-		else if(action == "legacy" && id == "menu") showLegacy()
 		else if(action == "reset" && id == "menu")
 			for(var/widget in owner.nexus_classic_layout)
 				var/list/state = normalizeClassicGeometry(null, widget, reference_width, reference_height)

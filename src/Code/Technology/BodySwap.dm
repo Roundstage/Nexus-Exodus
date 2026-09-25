@@ -50,7 +50,7 @@ proc/Switch_Bodies(mob/A,mob/P,save_override)
 		A.key=Key2
 
 	if(P&&P.client)
-		P.client.show_verb_panel=1
+		P.hideNexusNativeTabs()
 		P.Savable_NPC=0
 		P.Tabs=2
 		P.LoadFeats()
@@ -62,7 +62,7 @@ proc/Switch_Bodies(mob/A,mob/P,save_override)
 		P.Restore_hotbar_from_IDs()
 
 	if(A&&A.client)
-		P.client.show_verb_panel=1
+		A.hideNexusNativeTabs()
 		A.Savable_NPC=0
 		A.Tabs=2
 		A.LoadFeats()

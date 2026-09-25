@@ -266,9 +266,7 @@ mob/proc
 		Mate_Check()
 		if(!dbz_character) Born_Vampire_Check()
 		if(base_bp<1) base_bp=1
-		spawn(20) Tabs = 1 //i didnt want the tabs to try to load in at the exact same time the map is trying to load in. it crashes people maybe. too much
-		spawn(40) if(client) client.show_verb_panel = 1
-			//data at once
+		hideNexusNativeTabs()
 		era=era_resets
 
 		if(OnRestrictedMap()) GoToDeathSpawn()

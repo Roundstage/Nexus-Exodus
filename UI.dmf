@@ -327,11 +327,6 @@ menu "menu"
 		category = "Customization"
 		saved-params = "is-checked"
 	elem 
-		name = "&Reset Map/Info"
-		command = ".winset \"mpanewindow.right=infowindow\""
-		category = "Customization"
-		saved-params = "is-checked"
-	elem 
 		name = ""
 		command = ""
 		category = "Customization"
@@ -1898,7 +1893,7 @@ window "mpane"
 		background-color = #2c2c2c
 		saved-params = "splitter"
 		left = "mapwindow"
-		right = "infowindow"
+		right = ""
 		is-vert = false
 		splitter = 80
 
@@ -2212,8 +2207,8 @@ window "rpane"
 		text-color = #c0c0c0
 		background-color = #373737
 		saved-params = "is-checked"
-		text = "Info"
-		command = ".winset \"rpanewindow.left=infowindow\""
+		text = "Menu"
+		command = ".Toggle_tabs"
 		group = "rpanemode"
 		button-type = pushbox
 	elem "Chatb"

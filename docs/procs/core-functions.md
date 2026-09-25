@@ -4784,23 +4784,9 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/Stat
 - Signature: `mob/Stat()`
 - Inputs: None
-- Purpose: Handle stat.
+- Purpose: Keep the retired native tab loop idle. Classic panels capture the individual `Stat_*` data procedures on demand.
 - Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/RefreshAllTabsNoWait
-- Signature: `mob/proc/RefreshAllTabsNoWait()`
-- Inputs: None
-- Purpose: Handle refresh all tabs no wait.
-- Returns: none (implicit).
-- Side effects: see implementation.
-
-#### mob/proc/RefreshAllTabs
-- Signature: `mob/proc/RefreshAllTabs()`
-- Inputs: None
-- Purpose: Handle refresh all tabs.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: sleeps without generating native tabs; the old `RefreshAllTabs` entry points have been removed.
 
 #### mob/proc/SleepTab
 - Signature: `mob/proc/SleepTab(timer = 0)`

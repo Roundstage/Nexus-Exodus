@@ -294,6 +294,19 @@ proc/runIndependentHotkeySmokeTests()
 	world.log << "NEXUS_INDEPENDENT_HOTKEY_TESTS_PASSED"
 
 proc/runClassicHudSmokeTests()
+	var/mob/NexusSmokeTest/legacy_layout_owner = new
+	legacy_layout_owner.nexus_classic_layout = list("chat" = list("x" = 123, "y" = 45, "w" = 540, "h" = 480, "open" = TRUE))
+	var/layout_before_migration = json_encode(legacy_layout_owner.nexus_classic_layout)
+	var/savefile/legacy_layout_save = new
+	legacy_layout_save["nexus_interface_layout"] << "side_tabs"
+	legacy_layout_save["nexus_interface_layout"] >> legacy_layout_owner.nexus_interface_layout
+	legacy_layout_owner.hideNexusNativeTabs()
+	nexusSmokeAssert(legacy_layout_owner.nexus_interface_layout == "overlay" && legacy_layout_owner.tabs_hidden && json_encode(legacy_layout_owner.nexus_classic_layout) == layout_before_migration, "legacy tab preference migration lost the saved Classic layout or kept tabs enabled")
+	legacy_layout_owner.Toggle_tabs()
+	legacy_layout_owner.Update_tab_button_text(TRUE)
+	legacy_layout_owner.closeClassicLegacy()
+	nexusSmokeAssert(legacy_layout_owner.tabs_hidden && legacy_layout_owner.nexus_interface_layout == "overlay" && !legacy_layout_owner.classicStatPanel("Other"), "legacy entry points re-enabled native tab output")
+	del(legacy_layout_owner)
 	runStarterHotkeySmokeTests()
 	runIndependentHotkeySmokeTests()
 	runNexusMenuActionsSmokeTests()
