@@ -1,4 +1,4 @@
-#define NEXUS_HOTKEY_VERSION 2
+#define NEXUS_HOTKEY_VERSION 3
 #define NEXUS_HOTKEY_DOUBLE_PREFIX "DOUBLE:"
 #define NEXUS_HOTKEY_DOUBLE_TAP_WINDOW 4
 
@@ -319,6 +319,9 @@ mob/proc/resolveNexusHotkeyBinding(combination)
 		if(action && action.isAvailable(src)) return action
 	if(binding_info["kind"] == "object") return resolveNexusHotkeyObject(binding_info)
 
+mob/proc/canUseLegacyHotkeyFallback()
+	return nexus_hotkey_version < 3
+
 mob/proc/executeNexusHotkeyAction(hotkey_action)
 	if(client && client.nexus_classic_typing) return 0
 	if(istype(hotkey_action, /datum/NexusHotkeyAction))
@@ -347,7 +350,7 @@ mob/proc/nexusHotkeyActionRepeats(hotkey_action)
 
 mob/proc/migrateLegacyHotkeyBindings()
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
-	if(nexus_hotkey_bindings.len || !islist(hotbar_ids)) return
+	if(!islist(hotbar_ids)) return
 	for(var/hotbar_id in hotbar_ids)
 		if(!istext(hotbar_id)) continue
 		var/list/legacy_info = hotbar_ids[hotbar_id]
@@ -356,11 +359,47 @@ mob/proc/migrateLegacyHotkeyBindings()
 		if(istext(list_position)) list_position = text2num(list_position)
 		if(!isnum(list_position) || list_position < 1 || list_position > keys.len) continue
 		var/base_key = keys[list_position]
+		if(base_key in nexus_hotkey_bindings) continue
 		nexus_hotkey_bindings[base_key] = list(\
 			"kind" = "object",\
 			"object id" = hotbar_id,\
 			"object type" = legacy_info["object type"],\
 			"display name" = "Legacy action")
+
+mob/proc/hasNexusHotkeyForAction(list/action_binding)
+	for(var/combination in nexus_hotkey_bindings)
+		var/list/binding = nexus_hotkey_bindings[combination]
+		if(!islist(binding)) continue
+		if(binding["kind"] == "slot")
+			var/index = binding["slot"]
+			if(!islist(nexus_classic_slots) || !isnum(index) || index != round(index) || index < 1 || index > nexus_classic_slots.len) continue
+			binding = nexus_classic_slots[index]
+		if(!islist(binding) || binding["kind"] != action_binding["kind"]) continue
+		if(binding["kind"] == "object" && "[binding["object type"]]" == "[action_binding["object type"]]") return TRUE
+		if(binding["kind"] == "action" && binding["action id"] == action_binding["action id"]) return TRUE
+	return FALSE
+
+mob/proc/addNexusStarterHotkeyBindings()
+	var/list/added = list()
+	var/list/starter_types = getNexusStarterHotkeyTypes()
+	for(var/base_key in starter_types)
+		if(base_key in nexus_hotkey_bindings) continue
+		var/object_type = starter_types[base_key]
+		var/obj/skill = locate(object_type) in src
+		var/list/binding = skill ? classicBindingForObject(skill) : list("kind" = "object", "object type" = object_type, "display name" = initial(object_type:name))
+		if(!islist(binding) || hasNexusHotkeyForAction(binding)) continue
+		nexus_hotkey_bindings[base_key] = binding
+		added += base_key
+	for(var/direction_name in list("North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"))
+		var/combination = canonicalNexusHotkey(direction_name, use_ctrl = TRUE)
+		if(combination in nexus_hotkey_bindings) continue
+		var/action_id = "short_dash_[lowertext(direction_name)]"
+		var/datum/NexusHotkeyAction/action = getNexusHotkeyAction(action_id)
+		var/list/binding = list("kind" = "action", "action id" = action_id, "display name" = action.display_name)
+		if(hasNexusHotkeyForAction(binding)) continue
+		nexus_hotkey_bindings[combination] = binding
+		added += combination
+	return added
 
 mob/proc/initializeNexusHotkeys()
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
@@ -368,12 +407,19 @@ mob/proc/initializeNexusHotkeys()
 	if(!islist(active_nexus_hotkey_combinations)) active_nexus_hotkey_combinations = list()
 	if(!islist(nexus_hotkey_last_press_times)) nexus_hotkey_last_press_times = list()
 	nexus_keyboard_layout = normalizeNexusKeyboardLayout(nexus_keyboard_layout)
-	if(nexus_hotkey_version < NEXUS_HOTKEY_VERSION)
+	var/list/added_bindings
+	var/upgraded = FALSE
+	// Settings and the HUD can initialize before character loading has added the basic actions.
+	if(nexus_hotkey_version < NEXUS_HOTKEY_VERSION && playerCharacter && (locate(/obj/Meditate) in src) && (locate(/obj/Train) in src))
 		migrateLegacyHotkeyBindings()
+		added_bindings = addNexusStarterHotkeyBindings()
 		nexus_hotkey_version = NEXUS_HOTKEY_VERSION
+		upgraded = TRUE
 	initializeClassicSlots()
 	populateClassicDefaultSlots()
 	migrateClassicSlotKeys()
+	if(length(added_bindings)) migrateClassicSlotKeys(added_bindings)
+	if(upgraded) Hotkey_server_backup_save()
 	if(client) client.syncNexusHotkeyMacros()
 
 mob/proc/getNexusHotkeyBindingIdForPress(trigger_combination, was_held = FALSE, press_time = world.time)
@@ -416,7 +462,6 @@ mob/proc/bindNexusHotkey(combination, list/binding_info)
 	if(getNexusHotkeyTriggerCombination(combination) == "ALT+F4") return 0
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
 	nexus_hotkey_bindings[combination] = binding_info.Copy()
-	nexus_hotkey_version = NEXUS_HOTKEY_VERSION
 	Hotkey_server_backup_save()
 	if(client) client.syncNexusHotkeyMacros()
 	return 1
@@ -430,9 +475,10 @@ mob/proc/unbindNexusHotkey(combination)
 mob/proc/importLegacyNexusHotkeys()
 	nexus_hotkey_bindings = list()
 	migrateLegacyHotkeyBindings()
-	nexus_hotkey_version = NEXUS_HOTKEY_VERSION
+	nexus_hotkey_version = 0
+	nexus_classic_slot_keys_version = 0
+	initializeNexusHotkeys()
 	Hotkey_server_backup_save()
-	if(client) client.syncNexusHotkeyMacros()
 
 client/proc/clearNexusHotkeyMacros()
 	if(!islist(generated_nexus_hotkey_macros)) generated_nexus_hotkey_macros = list()

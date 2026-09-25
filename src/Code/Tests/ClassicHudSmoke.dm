@@ -48,7 +48,184 @@ proc/runClassicResponsiveLayoutSmokeTests()
 	reference = migrateClassicLayout(old_layout, json_decode(json_encode(reference)))
 	nexusSmokeAssert(reference["reference_w"] == 1920 && old_layout["chat"]["x"] == 1360, "Classic settings reload lost its scaling reference")
 
+mob/NexusSmokeTest/StarterHotkeyProbe
+	var/tmp/last_hotkey_action
+
+	executeNexusHotkeyAction(hotkey_action)
+		last_hotkey_action = hotkey_action
+		return TRUE
+
+proc/runStarterHotkeySmokeTests()
+	// Reproduce settings/HUD initialization before legacy defaults and basic proxy objects exist.
+	var/mob/NexusSmokeTest/StarterHotkeyProbe/early = new
+	early.initializeNexusHotkeys()
+	nexusSmokeAssert(early.nexus_hotkey_version < 3, "early HUD initialization consumed the pending starter hotkey migration")
+	early.bindNexusHotkey("ALT+F6", list("kind" = "action", "action id" = "cycle_target"))
+	nexusSmokeAssert(early.nexus_hotkey_version < 3, "an early custom key consumed the pending starter hotkey migration")
+	early.playerCharacter = TRUE
+	early.Add_hotbar_proxies()
+	early.Generate_starter_hotbar()
+	early.initializeNexusHotkeys()
+	var/obj/Meditate/meditate = locate(/obj/Meditate) in early
+	var/obj/Train/train = locate(/obj/Train) in early
+	nexusSmokeAssert(early.resolveNexusHotkeyBinding("J") == meditate && early.resolveNexusHotkeyBinding("K") == train, "late-loaded starter defaults did not bind J Meditate and K Train")
+	early.HandleKeyDown("J")
+	nexusSmokeAssert(early.last_hotkey_action == meditate, "J did not dispatch the Meditate action through the gameplay key handler")
+	early.HandleKeyDown("K")
+	nexusSmokeAssert(early.last_hotkey_action == train, "K did not dispatch the Train action through the gameplay key handler")
+	var/list/directions = list("North" = NORTH, "Northeast" = NORTHEAST, "East" = EAST, "Southeast" = SOUTHEAST, "South" = SOUTH, "Southwest" = SOUTHWEST, "West" = WEST, "Northwest" = NORTHWEST)
+	for(var/direction_name in directions)
+		var/combination = "CTRL+[direction_name]"
+		var/datum/NexusHotkeyAction/DefensiveDash/dash = early.resolveNexusHotkeyBinding(combination)
+		nexusSmokeAssert(istype(dash) && dash.dash_direction == directions[direction_name], "starter Ctrl direction did not bind the correct Short Dash: [combination]")
+		early.nexusHotkeyDown(combination, direction_name)
+		nexusSmokeAssert(early.last_hotkey_action == dash, "Ctrl directional hotkey did not dispatch its Short Dash: [combination]")
+		early.nexusHotkeyUp(direction_name)
+	// Once migrated, a removed binding must stay removed even if the old table still contains it.
+	early.hotbar.len = keys.len
+	early.hotbar[keys.Find("J")] = meditate
+	early.unbindNexusHotkey("J")
+	early.initializeNexusHotkeys()
+	early.last_hotkey_action = null
+	early.HandleKeyDown("J")
+	nexusSmokeAssert(!("J" in early.nexus_hotkey_bindings) && !early.last_hotkey_action, "removed modern hotkey was restored or executed through the legacy fallback")
+	var/list/train_binding = early.nexus_hotkey_bindings["K"]
+	nexusSmokeAssert(train_binding["kind"] == "slot", "starter Train key did not migrate onto its existing bar slot")
+	early.clearClassicSlot(train_binding["slot"])
+	early.hotbar[keys.Find("K")] = train
+	early.last_hotkey_action = null
+	early.HandleKeyDown("K")
+	nexusSmokeAssert(!early.last_hotkey_action, "an empty modern bar slot executed its previous legacy action")
+	early.Restore_starter_hotbar()
+	nexusSmokeAssert(early.resolveNexusHotkeyBinding("J") == meditate && early.resolveNexusHotkeyBinding("K") == train && early.resolveNexusHotkeyBinding("CTRL+North") == getNexusHotkeyAction("short_dash_north") && !("ALT+F6" in early.nexus_hotkey_bindings), "explicit starter reset did not restore modern basic/dash keys")
+	del(early)
+
+	var/mob/NexusSmokeTest/fresh = new
+	fresh.playerCharacter = TRUE
+	fresh.Add_hotbar_proxies()
+	fresh.initializeNexusHotkeys()
+	nexusSmokeAssert(istype(fresh.resolveNexusHotkeyBinding("J"), /obj/Meditate) && istype(fresh.resolveNexusHotkeyBinding("K"), /obj/Train) && istype(fresh.resolveNexusHotkeyBinding("Space"), /obj/Manual_Attack) && istype(fresh.resolveNexusHotkeyBinding("W"), /obj/Move_Up), "new character without a legacy table did not receive its default basic keys")
+	nexusSmokeAssert(fresh.nexus_classic_slots.len == 12 && fresh.nexus_hotkey_version == 3, "starter initialization overflowed the first bar or did not finish migration")
+	nexusSmokeAssert(!fresh.resolveNexusHotkeyBinding("R") && !(locate(/obj/Fly) in fresh), "installing starter keys granted an unlearned skill")
+	var/obj/Fly/fly = new(fresh)
+	nexusSmokeAssert(fresh.resolveNexusHotkeyBinding("R") == fly, "a reserved default key did not activate after its skill was learned")
+	del(fresh)
+
+	// Repair a version-2 partial backup without changing an existing bar or an occupied key.
+	var/mob/NexusSmokeTest/partial = new
+	partial.playerCharacter = TRUE
+	partial.Add_hotbar_proxies()
+	partial.nexus_hotkey_version = 2
+	partial.nexus_classic_slot_keys_version = 1
+	partial.nexus_classic_slots = list()
+	partial.nexus_classic_slots.len = 2
+	partial.nexus_classic_slots[1] = partial.classicBindingForObject(locate(/obj/Meditate) in partial)
+	partial.nexus_hotkey_bindings = list("K" = list("kind" = "slot", "slot" = 2), "CTRL+North" = list("kind" = "action", "action id" = "cycle_target"))
+	partial.hotbar_ids = list("custom-legacy-train" = list("hotbar position" = keys.Find("C"), "object type" = /obj/Train))
+	var/bar_before = json_encode(partial.nexus_classic_slots)
+	partial.initializeNexusHotkeys()
+	nexusSmokeAssert(partial.nexus_hotkey_bindings["J"]["kind"] == "slot" && partial.nexus_hotkey_bindings["J"]["slot"] == 1 && istype(partial.resolveNexusHotkeyBinding("J"), /obj/Meditate), "repair did not attach missing J to Meditate's existing slot")
+	nexusSmokeAssert(partial.nexus_hotkey_bindings["K"]["slot"] == 2 && !partial.resolveNexusHotkeyBinding("K") && partial.resolveNexusHotkeyBinding("CTRL+North") == getNexusHotkeyAction("cycle_target") && json_encode(partial.nexus_classic_slots) == bar_before, "starter repair overwrote a custom shortcut, empty slot, or saved bar")
+	nexusSmokeAssert(istype(partial.resolveNexusHotkeyBinding("C"), /obj/Train), "partial modern bindings prevented migration of a custom legacy shortcut")
+	del(partial)
+
+	var/mob/NexusSmokeTest/rebound = new
+	rebound.playerCharacter = TRUE
+	rebound.Add_hotbar_proxies()
+	rebound.nexus_hotkey_version = 2
+	rebound.nexus_hotkey_bindings = list("ALT+J" = rebound.classicBindingForObject(locate(/obj/Meditate) in rebound), "ALT+K" = rebound.classicBindingForObject(locate(/obj/Train) in rebound), "ALT+East" = list("kind" = "action", "action id" = "short_dash_east"))
+	rebound.initializeNexusHotkeys()
+	nexusSmokeAssert(!("J" in rebound.nexus_hotkey_bindings) && !("K" in rebound.nexus_hotkey_bindings) && !("CTRL+East" in rebound.nexus_hotkey_bindings) && istype(rebound.resolveNexusHotkeyBinding("ALT+J"), /obj/Meditate) && istype(rebound.resolveNexusHotkeyBinding("ALT+K"), /obj/Train) && rebound.resolveNexusHotkeyBinding("ALT+East") == getNexusHotkeyAction("short_dash_east"), "starter repair rebound actions that the player had already moved to other keys")
+	var/bindings_before = json_encode(rebound.nexus_hotkey_bindings)
+	rebound.initializeNexusHotkeys()
+	nexusSmokeAssert(json_encode(rebound.nexus_hotkey_bindings) == bindings_before, "starter hotkey initialization changed an already migrated keymap")
+	del(rebound)
+	world.log << "NEXUS_STARTER_HOTKEY_TESTS_PASSED"
+
+obj/items/Amulet/NexusMenuUseProbe
+	catalog_test_only = TRUE
+	var/use_count = 0
+	var/mob/last_user
+	Use()
+		use_count++
+		last_user = usr
+	Click()
+		CRASH("Inventory USE dispatched Amulet.Click instead of Amulet.Use")
+
+obj/items/Fruit/NexusMenuUseProbe
+	catalog_test_only = TRUE
+	var/use_count = 0
+	Use()
+		use_count++
+	Click()
+		CRASH("Inventory USE dispatched Fruit.Click instead of Fruit.Use")
+
+obj/items/NexusMenuClickProbe
+	catalog_test_only = TRUE
+	var/use_count = 0
+	Click()
+		use_count++
+
+obj/Contract_Soul/NexusMenuSoulProbe
+	catalog_test_only = TRUE
+	var/use_count = 0
+	Click()
+		use_count++
+
+proc/runNexusMenuActionsSmokeTests()
+	var/mob/previous_usr = usr
+	var/mob/NexusSmokeTest/owner = new
+	var/mob/NexusSmokeTest/stranger = new
+	usr = owner
+	var/obj/items/Amulet/NexusMenuUseProbe/amulet = new(owner)
+	var/obj/items/Fruit/NexusMenuUseProbe/fruit = new(owner)
+	var/obj/items/NexusMenuClickProbe/click_item = new(owner)
+	owner.item_list |= list(amulet, fruit, click_item)
+	var/datum/NexusPlayerMenu/menu = new(owner)
+	nexusSmokeAssert(menu.useOwnedItem(amulet) && amulet.use_count == 1 && amulet.last_user == owner, "Inventory USE did not execute the owned amulet's portal action with the correct user")
+	nexusSmokeAssert(owner.useNexusInventoryItem(fruit) && fruit.use_count == 1, "embedded Inventory USE did not execute the fruit's use action")
+	nexusSmokeAssert(menu.useOwnedItem(click_item) && click_item.use_count == 1, "Inventory lost the ordinary click fallback for items without Hotbar_use")
+	amulet.loc = stranger
+	nexusSmokeAssert(!menu.useOwnedItem(amulet) && amulet.use_count == 1, "a stale inventory reference executed an item transferred to another character")
+	amulet.loc = owner
+	var/datum/NexusTradeSmokeSession/trade = new(owner, stranger, FALSE)
+	trade.invitation_accepted = TRUE
+	trade.phase = "offer"
+	nexusSmokeAssert(trade.addItem(owner, fruit), "menu test could not offer a fruit for trade")
+	nexusSmokeAssert(!menu.useOwnedItem(fruit) && fruit.use_count == 1, "Inventory USE consumed a fruit locked in a trade offer")
+	trade.removeItem(owner, fruit)
+	del(trade)
+	var/obj/Contract_Soul/NexusMenuSoulProbe/soul = new(owner)
+	soul.name = "<Contracted Soul>"
+	var/obj/Contract_Soul/NexusMenuSoulProbe/foreign_soul = new(stranger)
+	foreign_soul.name = "Foreign Soul"
+	menu.section = menu.normalizeSection("souls")
+	var/souls_html = menu.buildContent()
+	nexusSmokeAssert(menu.section == "souls" && findtext(menu.buildNavigation(), "id=souls"), "the replacement player menu does not expose its Souls section")
+	nexusSmokeAssert(findtext(souls_html, "&lt;Contracted Soul&gt;") && findtext(souls_html, "Offline") && findtext(souls_html, "action=manage_soul") && !findtext(souls_html, "Foreign Soul"), "Souls omitted an offline contract or exposed another character's contract")
+	nexusSmokeAssert(owner.manageNexusSoulContract(soul) && soul.use_count == 1, "Souls MANAGE did not reach the owned contract's actions")
+	nexusSmokeAssert(!owner.manageNexusSoulContract(foreign_soul) && foreign_soul.use_count == 0, "Souls allowed interaction with another character's contract")
+	soul.loc = stranger
+	nexusSmokeAssert(!owner.manageNexusSoulContract(soul) && soul.use_count == 1, "Souls executed a stale contract reference after ownership changed")
+	nexusSmokeAssert(findtext(menu.buildSouls(), "no contracted souls"), "Souls retained a stale row after losing its last contract")
+	del(soul)
+	del(foreign_soul)
+	del(menu)
+	del(amulet)
+	del(fruit)
+	del(click_item)
+	del(owner)
+	del(stranger)
+	usr = previous_usr
+	var/list/map_properties = params2list("mapwindow.is-visible=true;mapwindow.map.is-visible=true;mapwindow.classic_chat.is-visible=true;mapwindow.classic_bar_87.is-visible=true")
+	var/list/browser_targets = getNexusLobbyBrowserTargets(map_properties, list("mainwindow", "NexusPlayerMenu", "NexusHotkeys", "NexusCharacterSelect", "InvisBrowser"))
+	nexusSmokeAssert(("mapwindow.classic_bar_87" in browser_targets) && ("mapwindow.classic_chat" in browser_targets) && ("NexusPlayerMenu" in browser_targets) && ("NexusHotkeys" in browser_targets), "reconnect cleanup missed restored browsers or an orphaned dynamic hotbar")
+	nexusSmokeAssert(!("mapwindow.map" in browser_targets) && !("mainwindow" in browser_targets) && !("NexusCharacterSelect" in browser_targets) && !("InvisBrowser" in browser_targets), "reconnect cleanup targeted the game map, login selector, or resolution browser")
+	world.log << "NEXUS_MENU_ACTIONS_TESTS_PASSED"
+
 proc/runClassicHudSmokeTests()
+	runStarterHotkeySmokeTests()
+	runNexusMenuActionsSmokeTests()
 	runClassicResponsiveLayoutSmokeTests()
 	runSkillArtworkSmokeTests()
 	runNexusVitalsLayoutSmokeTests()

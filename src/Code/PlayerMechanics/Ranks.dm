@@ -166,6 +166,8 @@ mob/proc/syncDemonRankSkills()
 		if(!skill) skill = new /obj/Demon_Contract(src)
 		skill.teachable = FALSE
 		skill.Cost_To_Learn = 0
+		skill.can_hotbar = TRUE
+		skill.hotbar_type = "Support"
 	if(Race == "Demon")
 		for(var/rank_name in Ranks)
 			var/buff_type = getDemonRankBuffType(rank_name)

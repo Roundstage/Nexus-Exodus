@@ -12,6 +12,17 @@ mob/proc/LoadCharacterHotkeyThing()
 	sleep(20)
 	Restore_hotbar_from_IDs()*/
 
+proc/getNexusStarterHotkeyTypes()
+	return list("Space" = /obj/Manual_Attack, "A" = /obj/Move_Left, "B" = /obj/World_chat,\
+		"D" = /obj/Move_Right, "E" = /obj/Use_object, "F" = /obj/Attacks/Blast,\
+		"G" = /obj/Power_Up, "H" = /obj/Power_Down, "I" = /obj/Injure,\
+		"J" = /obj/Meditate, "K" = /obj/Train, "L" = /obj/Play_Music,\
+		"M" = /obj/Build_Menu, "N" = /obj/Emote, "O" = /obj/Lethal_toggle,\
+		"P" = /obj/Shadow_Spar, "Q" = /obj/Countdown, "R" = /obj/Fly,\
+		"S" = /obj/Move_Down, "T" = /obj/Grab, "U" = /obj/Dig_for_resources,\
+		"V" = /obj/Local_chat, "W" = /obj/Move_Up, "X" = /obj/Learn,\
+		"Y" = /obj/Auto_Attack, "Z" = /obj/Teach)
+
 mob/proc
 	Has_hotkey_server_backup()
 		if(!client) return
@@ -568,6 +579,7 @@ mob/verb/Restore_starter_hotbar()
 	hotbar_ids=new/list
 	starter_hotbar_generated=0
 	Generate_starter_hotbar()
+	importLegacyNexusHotkeys()
 	Refresh_hotbar_grids()
 
 mob/proc/Generate_starter_hotbar()
@@ -576,42 +588,11 @@ mob/proc/Generate_starter_hotbar()
 	starter_hotbar_generated=1
 	hotbar=new/list
 	hotbar_ids=new/list
+	var/list/starter_types = getNexusStarterHotkeyTypes()
 	var/index=0
 	for(var/k in keys)
 		index++
-		var/object_type
-		switch(k)
-			if("Space") object_type=/obj/Manual_Attack
-			//if("A") object_type=/obj/Attacks/Shockwave
-			if("A") object_type=/obj/Move_Left
-			if("B") object_type=/obj/World_chat
-			if("C")
-			//if("D") object_type=/obj/Attacks/Charge
-			if("D") object_type=/obj/Move_Right
-			if("E") object_type=/obj/Use_object
-			if("F") object_type=/obj/Attacks/Blast
-			if("G") object_type=/obj/Power_Up
-			if("H") object_type=/obj/Power_Down
-			if("I") object_type=/obj/Injure
-			if("J") object_type=/obj/Meditate
-			if("K") object_type=/obj/Train
-			if("L") object_type=/obj/Play_Music
-			if("M") object_type=/obj/Build_Menu
-			if("N") object_type=/obj/Emote
-			if("O") object_type=/obj/Lethal_toggle
-			if("P") object_type=/obj/Shadow_Spar
-			if("Q") object_type=/obj/Countdown
-			if("R") object_type=/obj/Fly
-			//if("S") object_type=/obj/Attacks/Beam
-			if("S") object_type=/obj/Move_Down
-			if("T") object_type=/obj/Grab
-			if("U") object_type=/obj/Dig_for_resources
-			if("V") object_type=/obj/Local_chat
-			//if("W") object_type=/obj/Block
-			if("W") object_type=/obj/Move_Up
-			if("X") object_type=/obj/Learn
-			if("Y") object_type=/obj/Auto_Attack
-			if("Z") object_type=/obj/Teach
+		var/object_type = starter_types[k]
 		if(object_type)
 			Register_hotbar_ID(object_type,Assign_hotbar_ID(),index)
 	Restore_hotbar_from_IDs()

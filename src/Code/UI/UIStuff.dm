@@ -151,6 +151,44 @@ proc/getNexusApplicationIconSkinValue()
 
 mob/var/tmp/nexus_reconnect_handoff = FALSE
 
+// Skin/browser controls survive a Dream Seeker reconnect even when their datums do not.
+proc/getNexusLobbyBrowserTargets(list/map_properties, list/window_ids)
+	var/list/targets = list("nexuschatwindow.chat")
+	for(var/id in list("chat", "bar", "sense", "target", "menu", "stats", "inventory", "skills"))
+		targets |= "mapwindow.classic_[id]"
+	for(var/property in map_properties)
+		if(findtext(property, "mapwindow.classic_") != 1) continue
+		var/suffix_start = length(property) - length(".is-visible") + 1
+		if(copytext(property, suffix_start) == ".is-visible") targets |= copytext(property, 1, suffix_start)
+	for(var/window_id in window_ids)
+		if(findtext(lowertext(window_id), "nexus") == 1 && window_id != "NexusCharacterSelect") targets |= window_id
+	return targets
+
+client/proc/clearNexusGameplayInterface()
+	var/mob/previous_mob = mob
+	var/list/map_properties = params2list(winget(src, "mapwindow.*", "is-visible"))
+	var/list/window_ids = params2list(winget(src, null, "windows"))
+	if(mob != previous_mob) return
+	if(mob) mob.removeVitalsHud()
+	for(var/datum/panel in list(nexus_chat_hud, nexus_build_window, nexus_planet_map, nexus_description_editor, nexus_interface_settings, nexus_hud_window, nexus_hotkey_editor))
+		if(panel) del(panel)
+	nexus_chat_hud = null
+	nexus_build_window = null
+	nexus_planet_map = null
+	nexus_description_editor = null
+	nexus_interface_settings = null
+	nexus_hud_window = null
+	nexus_hotkey_editor = null
+	nexus_classic_typing = FALSE
+	for(var/browser_id in getNexusLobbyBrowserTargets(map_properties, window_ids))
+		src << browse(null, "window=[browser_id]")
+		winset(src, browser_id, "is-visible=false")
+	winset(src, "mapwindow", "macro=macro")
+	winset(src, "classiclegacy.body", "left=")
+	winset(src, "mainwindow.mainvsplit", "left=mapwindow;right=;splitter=100")
+	for(var/window_id in list("classiclegacy", "Bars", "statsOverlay", "settingsButtons", "rpane", "infowindow", "nexuschatwindow", "outputwindow", "chat", "chat2", "chat3", "inputWindow"))
+		winset(src, window_id, "is-visible=false")
+
 mob/proc/isNexusReconnectCharacter()
 	return playerCharacter && loc
 
@@ -175,6 +213,7 @@ mob/proc/prepareNexusReconnectHandoff()
 client/proc/returnToNexusReconnectLobby()
 	var/mob/reconnected_character = mob
 	if(!reconnected_character || !reconnected_character.prepareNexusReconnectHandoff()) return FALSE
+	clearNexusGameplayInterface()
 	var/mob/login_mob = new /mob
 	mob = login_mob
 	if(reconnected_character && reconnected_character != mob) del(reconnected_character)
@@ -489,6 +528,8 @@ mob/proc
 		while(!can_login || world.time < 100) sleep(10)
 		ensureNexusCharacterSlots()
 		if(!client) return
+		client.clearNexusGameplayInterface()
+		if(!client || playerCharacter) return
 		if(client.nexus_character_select) del(client.nexus_character_select)
 		client.nexus_character_select = new /datum/NexusCharacterSelect(src)
 		client.nexus_character_select.show()

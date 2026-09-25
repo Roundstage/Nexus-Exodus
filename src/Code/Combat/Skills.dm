@@ -674,6 +674,8 @@ mob/var/CollectedSouls = 0
 
 obj/Demon_Contract
 	name="Soul Contract"
+	hotbar_type="Support"
+	can_hotbar=1
 	desc="Only the Demon Lord (Daimao) can offer someone a soul contract. If they accept, their soul will belong to you, and you will \
 	get certain powers over them."
 	teachable=0
@@ -684,6 +686,10 @@ obj/Demon_Contract
 	Cost_To_Learn=0
 	clonable=0
 	var/tmp/Offering
+
+	verb/Hotbar_use()
+		set hidden=1
+		Soul_Contract()
 
 	verb/Soul_Contract()
 		set category="Skills"

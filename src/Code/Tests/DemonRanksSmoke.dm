@@ -94,6 +94,10 @@ proc/runDemonRanksSmokeTests()
 	nexusSmokeAssert(teacher.canUseSoulContract() && (locate(/obj/Demon_Contract) in teacher), "Demon Lord rank did not grant Soul Contract")
 	var/obj/Demon_Contract/lord_contract = locate(/obj/Demon_Contract) in teacher
 	nexusSmokeAssert(!lord_contract.teachable && !lord_contract.Cost_To_Learn, "Soul Contract can be acquired outside its rank")
+	lord_contract.can_hotbar = FALSE
+	lord_contract.hotbar_type = null
+	teacher.syncDemonRankSkills()
+	nexusSmokeAssert(teacher.isNexusHotkeyObjectAvailable(lord_contract) && hascall(lord_contract, "Hotbar_use") && lord_contract.hotbar_type == "Support", "saved Demon Lord Soul Contract cannot be used from Skills or a hotbar")
 	teacher.Ranks -= "Daimao"
 	nexusSmokeAssert(!teacher.canUseSoulContract(), "removed Demon Lord rank still authorizes Soul Contract")
 	teacher.syncDemonRankSkills()

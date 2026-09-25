@@ -133,7 +133,7 @@ mob/proc/HotbarUseHandler(d, held_key, was_key_held = FALSE)
 	if(!held_key) held_key = d
 	var/binding_id = getNexusHotkeyBindingIdForPress(d, was_key_held)
 	var/hotkey_action = resolveNexusHotkeyBinding(binding_id)
-	if(!hotkey_action && binding_id == d) hotkey_action = Get_hotbar_obj_by_key_pressed(d)
+	if(!hotkey_action && binding_id == d && canUseLegacyHotkeyFallback()) hotkey_action = Get_hotbar_obj_by_key_pressed(d)
 	if(!hotkey_action) return
 	active_nexus_hotkey_actions[held_key] = hotkey_action
 	active_nexus_hotkey_combinations[held_key] = binding_id
