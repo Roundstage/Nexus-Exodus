@@ -686,6 +686,10 @@ proc/initializeProgressionMagicCatalog()
 				var/icon_type = formula && formula.construct_type ? formula.construct_type : magic_node.reward_type
 				node.icon_file = initial(icon_type:icon)
 				node.icon_state = initial(icon_type:icon_state)
+				var/icon/arcane_preview = getArcaneItemPreviewIcon(icon_type)
+				if(arcane_preview)
+					node.icon_file = arcane_preview
+					node.icon_state = ""
 				current_tier += node_id
 			if(current_tier.len) previous_tier = current_tier
 
@@ -701,16 +705,17 @@ proc/initializeProgressionScienceCatalog()
 	disperseProgressionScienceTierFive()
 	for(var/branch in list("Foundation", "Engineering", "Robotics", "Genetics"))
 		var/list/previous_tier = list(branch == "Foundation" ? "science_foundation" : "science_path_[lowertext(branch)]")
-		for(var/required_level = 1, required_level <= technology_level_thresholds.len, required_level++)
+		for(var/tier = 2, tier <= 10, tier++)
 			var/list/current_tier = list()
 			for(var/obj/technology in tech_list)
-				if(!technology.science || initial(technology.catalog_test_only)) continue
+				if(!technology.science || initial(technology.catalog_test_only) || isRetiredScienceEquipment(technology)) continue
 				var/technology_branch = technology.science_path ? technology.science_path : "Foundation"
-				if(technology_branch != branch || max(1, technology.science_level) != required_level) continue
+				if(technology_branch != branch || getScienceProgressionTier(technology) != tier) continue
+				var/required_level = max(1, technology.science_level)
 				var/node_id = getProgressionScienceNodeIdForType(technology.type)
 				var/parent_id = previous_tier[((current_tier.len) % previous_tier.len) + 1]
 				var/description = technology.desc ? "[technology.desc]" : "Unlock the [technology.name] design."
-				var/datum/ProgressionNode/node = createProgressionNode(node_id, "[technology.name]", description, "Science", branch, required_level + 1, max(2, required_level * 3), list(parent_id))
+				var/datum/ProgressionNode/node = createProgressionNode(node_id, "[technology.name]", description, "Science", branch, tier, max(2, required_level * 3), list(parent_id))
 				node.reward_kind = "technology"
 				node.reward_type = technology.type
 				node.required_track = "Technology"
@@ -1046,6 +1051,7 @@ mob/proc/syncProgressionTrees(silent = TRUE)
 			else if(node.reward_kind == "technology")
 				for(var/obj/technology in tech_list)
 					if(technology.type != node.reward_type) continue
+					if(isTierTenScienceEquipment(technology)) break // These designs must be researched in the tier-10 tree.
 					if(scienceBlueprintListContainsType(GLOBAL_SCIENCE_TAB_ITEMS, technology.type) || scienceBlueprintListContainsType(individual_science_items, technology.type) || canUnlockTechnology(technology)) progression_nodes_owned[node.id] = 1
 					break
 			else if(node.category == "Mining" && node.branch == "Prospecting" && mining_level >= node.required_level)
@@ -1153,8 +1159,8 @@ datum/NexusProgressionTreeWindow
 			var/datum/ProgressionNode/prerequisite = progression_node_catalog[prerequisite_id]
 			prerequisite_names += prerequisite ? prerequisite.name : "[prerequisite_id]"
 		var/prerequisite_text = prerequisite_names.len ? jointext(prerequisite_names, " + ") : "None"
-		var/prerequisite_html = prerequisite_names.len ? "<span class='node-requirements' title='Requires: [html_encode(prerequisite_text)]'>REQ: [html_encode(uppertext(prerequisite_text))]</span>" : ""
-		return "<a class='tree-node [state] [capstone_class]' data-node-id='[html_encode(node.id)]' style='left:[node_x]px;top:[node_y]px' href='[action]'><span class='node-tier hud-panel'>T[node.tier]</span><span class='node-icon hud-sprite'>[buildNodeIcon(node)]</span><span class='node-cost hud-panel'>[node.cost] XP</span><b>[html_encode(node.name)]</b><span class='node-meta'>RANK [rank]/[node.max_rank]</span>[prerequisite_html]<span class='node-tip hud-panel'><strong>[html_encode(node.name)]</strong><small>[html_encode(node.description)]</small><em>Requires: [html_encode(prerequisite_text)]</em><em>[html_encode(requirement)]</em></span></a>"
+		var/prerequisite_html = prerequisite_names.len ? "<span class='node-requirements' title='Requires: [encodeNexusHtmlAttribute(prerequisite_text)]'>REQ: [html_encode(uppertext(prerequisite_text))]</span>" : ""
+		return "<a class='tree-node [state] [capstone_class]' data-node-id='[encodeNexusHtmlAttribute(node.id)]' style='left:[node_x]px;top:[node_y]px' href='[action]'><span class='node-tier hud-panel'>T[node.tier]</span><span class='node-icon hud-sprite'>[buildNodeIcon(node)]</span><span class='node-cost hud-panel'>[node.cost] XP</span><b>[html_encode(node.name)]</b><span class='node-meta'>RANK [rank]/[node.max_rank]</span>[prerequisite_html]<span class='node-tip hud-panel'><strong>[html_encode(node.name)]</strong><small>[html_encode(node.description)]</small><em>Requires: [html_encode(prerequisite_text)]</em><em>[html_encode(requirement)]</em></span></a>"
 
 	proc/getAvailableBranches(category_name = null)
 		if(!category_name) category_name = category
@@ -1244,7 +1250,7 @@ datum/NexusProgressionTreeWindow
 		var/tier_label = "JUMP"
 		for(var/tier_number = 1, tier_number <= 10, tier_number++) tier_html += "<a class='hud-button' href='#' onclick='jumpTier([tier_number]);return false'>T[tier_number]</a>"
 		var/branch_navigation = branch_html ? "<div class='branch-tabs'>[branch_html]</div>" : ""
-		return "<div class='tree-tools'><form onsubmit='return runTreeSearch()'><input id='tree-search' maxlength='60' value='[html_encode(search_query)]' placeholder='Search skills, research or branch...'><button class='hud-button' type='submit'>SEARCH</button>[clear_search]</form><div class='tier-jumps'><span>[tier_label]</span>[tier_html]</div><div class='search-status hud-muted'>[search_status]</div></div>[branch_navigation]"
+		return "<div class='tree-tools'><form onsubmit='return runTreeSearch()'><input id='tree-search' maxlength='60' value='[encodeNexusHtmlAttribute(search_query)]' placeholder='Search skills, research or branch...'><button class='hud-button' type='submit'>SEARCH</button>[clear_search]</form><div class='tier-jumps'><span>[tier_label]</span>[tier_html]</div><div class='search-status hud-muted'>[search_status]</div></div>[branch_navigation]"
 
 	proc/buildGraphLayout(list/entries)
 		var/list/branches = list()

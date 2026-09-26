@@ -3,6 +3,9 @@ mob/var
 	InflictsBurn            = 0 // If the mob inflicts burn
 	isBurning               = 0 // Is burning?
 	tmp/burn_effect_running = FALSE
+	tmp/burn_next_tick = 0
+	tmp/mob/burn_source
+	tmp/burn_combat_mode = CASUAL_COMBAT
 	AsphyxiationStack       = 0 // Asphyxiation effect count
 	InflictsAsphyxiation    = 0 // If the mob inflicts asphyxiation
 	isAsphyxiating          = 0 // Is asphyxiating?

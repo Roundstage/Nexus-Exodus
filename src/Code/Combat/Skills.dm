@@ -154,7 +154,7 @@ obj/Limit_Breaker
 			usr.limit_breaker_on = 1
 			player_view(10,usr)<<sound('Aura3.ogg',volume=20)
 			usr.last_anger=world.time
-			usr.overlays+=icon
+			usr.rebuildPlayerAppearance("Limit Breaker enabled")
 			usr.bp_mult+=0.5
 			usr.regen*=3
 			usr.recov*=3
@@ -167,6 +167,7 @@ mob/var/tmp/obj/Limit_Breaker/lb_obj
 mob/proc/Limit_Revert() if(limit_breaker_on)
 	if(lb_obj) overlays-=lb_obj.icon
 	limit_breaker_on = 0
+	rebuildPlayerAppearance("Limit Breaker revert")
 	bp_mult-=0.5
 	regen/=3
 	recov/=3
@@ -2082,8 +2083,17 @@ mob/proc/PowerUpGoNextForm()
 	PowerUpToSSBlue()
 	Frost_Lord_Forms()
 
+mob/proc/getPowerControl(obj/Power_Control/excluded)
+	if(powerup_obj && powerup_obj.loc == src && powerup_obj != excluded) return powerup_obj
+	powerup_obj = null
+	for(var/obj/Power_Control/control in src)
+		if(control == excluded) continue
+		powerup_obj = control
+		break
+	return powerup_obj
+
 mob/proc/Power_up()
-	if(!powerup_obj) return
+	if(!getPowerControl()) return
 	if(KO) return
 
 	if(God_Fist_obj && God_Fist_obj.Using)
@@ -2132,11 +2142,15 @@ obj/Power_Control
 	New()
 		spawn if(ismob(loc))
 			var/mob/M=loc
-			M.powerup_obj=src
+			// Ranks can grant a second copy; keep the existing controller and its loop.
+			M.getPowerControl()
 
 	Del()
 		var/mob/m=loc
-		if(m && ismob(m)) m.Stop_Powering_Up()
+		Powerup = 0
+		if(ismob(m) && m.powerup_obj == src)
+			m.Stop_Powering_Up()
+			m.getPowerControl(src)
 		. = ..()
 
 	verb/Hotbar_use()
@@ -2150,21 +2164,23 @@ obj/Power_Control
 
 	verb/Power_Down()
 		set category="Skills"
+		var/obj/Power_Control/control = usr.getPowerControl()
+		if(!control) return
 		if(usr.KO) return
 		if(usr.God_Fist_obj && usr.God_Fist_obj.Using)
 			if(!usr.God_Fist_level) usr.Revert()
 			usr.God_FistStop()
 			usr.Aura_Overlays()
 			return
-		if(Powerup==-1)
+		if(control.Powerup==-1)
 			usr.Revert()
-		else if(Powerup)
-			Powerup=0
+		else if(control.Powerup)
+			control.Powerup=0
 			usr<<"You stop powering up"
 		else
-			Powerup=-1
+			control.Powerup=-1
 			usr<<"You begin powering down"
-			usr.Power_Control_Loop(src)
+			usr.Power_Control_Loop(control)
 			if(usr) usr.Aura_Overlays()
 
 proc/CenterIcon(obj/O,Icon,x_only)
@@ -2244,6 +2260,7 @@ var/image/super_God_Fist_aura
 proc/InitSuperGod_FistAura()
 	if(!super_God_Fist_aura)
 		super_God_Fist_aura = image(icon = 'src/Icons/Ki/Auras/AuraSuperKaioken.dmi')
+		super_God_Fist_aura.layer = PLAYER_POWERUP_LAYER
 		super_God_Fist_aura.pixel_x = Icon_Center_X(super_God_Fist_aura.icon)
 
 mob/proc/ShouldUseSuperGod_Fist()
@@ -2271,11 +2288,12 @@ mob/proc/Aura_Overlays(remove_only)
 		overlays -= Auras.Old
 		underlays -= Auras.Old
 		underlays -= super_God_Fist_aura
+		overlays -= super_God_Fist_aura
 		clearNexusAuraGlow()
 		Add_Sparks()
 
 	else
-		var/image/I=image(icon=Auras.icon)
+		var/image/I=image(icon=Auras.icon, layer=PLAYER_POWERUP_LAYER)
 		//var/obj/Transform/T=locate(/obj/Transform) in src
 		//if(T&&T.aura&&T.Active) I.icon=T.aura
 		if(Class=="Legendary Saiyan")
@@ -2326,16 +2344,12 @@ mob/proc/Aura_Overlays(remove_only)
 		overlays-=Auras.Old
 		underlays-=Auras.Old
 
-		if(super_God_Fist && is_ssj_blue)
-			underlays -= super_God_Fist_aura
-			underlays += super_God_Fist_aura
+		underlays -= super_God_Fist_aura
+		overlays -= super_God_Fist_aura
+		if(super_God_Fist && is_ssj_blue) overlays += super_God_Fist_aura
 
-		if(is_gold_form) underlays += I
 		overlays += I
 		updateNexusAuraGlow()
-
-		if(ultra_instinct) underlays += I
-		//overlays += I
 
 		Auras.Old=I
 		Add_Sparks()
@@ -2992,9 +3006,9 @@ mob/proc/precog_loop()
 		precogs=ToOne(6*Clamp(def_share(),0.5,1))
 
 mob/proc/Observe_List()
-	var/list/L=new
-	for(var/mob/A in players) L+=A
-	for(var/mob/m in trollbots) L += m
+	var/list/L=list(src)
+	for(var/mob/A in players) if(getObserveEye(A)) L |= A
+	for(var/mob/m in trollbots) if(getObserveEye(m)) L |= m
 	for(var/obj/A in view(40,src)) L+=A
 	for(var/mob/A in view(10,src)) L+=A
 	for(var/turf/A in view(10,src)) L+=A
@@ -3011,39 +3025,56 @@ obj/Observe
 	Teach_Timer=1
 	student_point_cost = 5
 
-	verb/Hotbar_use()
+	verb/Hotbar_use(mob/user)
 		set waitfor=0
 		set hidden=1
-		Observe()
+		if(!user) user = usr
+		if(!user || loc != user) return
+		var/atom/target = selectObserveTarget(user)
+		observeTarget(user, target)
+
+	proc/selectObserveTarget(mob/user)
+		return input(user, "Choose a target to observe, or yourself to return.", "Observe") as null|anything in user.Observe_List()
 
 	verb/Observe(atom/A in usr.Observe_List())
 		set src=usr.contents
 		set category="Skills"
-		if(!usr.adminObserve)
-			if(ismob(A))
-				var/mob/m=A
-				if(m.hiding_energy && m != usr)
-					usr <<"You can not observe them because they are hiding their energy."
-					return
-				if(m.Is_Cybernetic()&&m!=usr)
-					usr<<"You can not observe cyborgs/androids because their energy is unsenseable."
-					return
-				if(!(m.Mob_ID in usr.SI_List))
-					src << "You do not know their energy. To know someone's energy you must have been near them a certain \
-					amount of time."
-					return
-		usr.Get_Observe(A)
+		observeTarget(usr, A)
+
+	proc/observeTarget(mob/user, atom/target)
+		if(!user || loc != user || !user.getObserveEye(target)) return FALSE
+		if(!(target in user.Observe_List())) return FALSE
+		if(!user.adminObserve && ismob(target) && target != user)
+			var/mob/observed = target
+			if(observed.hiding_energy)
+				user << "You can not observe them because they are hiding their energy."
+				return FALSE
+			if(observed.Is_Cybernetic())
+				user << "You can not observe cyborgs/androids because their energy is unsenseable."
+				return FALSE
+			if(!(observed.Mob_ID in user.SI_List))
+				user << "You do not know their energy. To know someone's energy you must have been near them a certain amount of time."
+				return FALSE
+		return user.Get_Observe(target)
 
 mob/Admin1/verb/observe(atom/A in Observe_List())
 	set category="Admin"
 	set name="Admin Observe"
 	Get_Observe(A)
 
-mob/proc/Get_Observe(mob/M) if(client)
-	if(M==src)
-		if(Ship) client.eye=Ship
-		else client.eye=src
-	else client.eye=M
+mob/proc/getObserveEye(atom/target)
+	if(target == src && Ship && getNexusLightTurf(Ship)) return Ship
+	if(!target || !getNexusLightTurf(target)) return null
+	return target
+
+mob/proc/Get_Observe(atom/target)
+	if(!client) return FALSE
+	var/atom/observe_eye = getObserveEye(target)
+	if(!observe_eye) return FALSE
+	client.perspective = EYE_PERSPECTIVE
+	client.eye = observe_eye
+	client.syncNexusLighting(observe_eye.get_area())
+	return TRUE
 obj/Materialization
 	name = "Materialize"
 	teachable=1
@@ -3055,7 +3086,7 @@ obj/Materialization
 	Mastery=100
 	hotbar_type="Support"
 	can_hotbar=1
-	desc="This ability lets you create weighted clothes to accelerate training and also create swords. \
+	desc="Create weights, Normal armor, a Normal sword or Normal gauntlets (tier 0). \
 	Your energy mod will improve the quality of weights you make."
 	var
 		weight_tier=1 //can go as high as someone wants
@@ -3067,34 +3098,26 @@ obj/Materialization
 
 	verb/Materialize()
 		set category="Skills"
-		var/max_weight=(usr.max_weight()/4)*weight_tier*(usr.Eff**0.3)*1.1
-		switch(input("") in list("Make Weights","Make Sword","Make Armor","Learn new weight tier"))
-			if("Learn new weight tier")
-				while(usr)
-					usr.syncProgressionTrees(silent = TRUE)
-					var/sp_cost = getScaledProgressionExperience(10)
-					if(usr.progression_experience<sp_cost)
-						usr<<"You need at least [sp_cost] Progression XP to do this"
-						return
-					switch(alert(usr,"increase the tier of weights you can make? this will cost [sp_cost] \
-						Progression XP","options","Yes","No"))
-						if("No") return
-						if("Yes")
-							if(usr.progression_experience<sp_cost) return
-							usr.progression_experience-=sp_cost
-							weight_tier+=0.5
+		if(loc != usr) return
+		var/choice = input(usr, "What do you want to materialize?", "Materialize") as null|anything in list("Make Weights", "Make Armor", "Make Sword", "Make Gauntlets")
+		materializeEquipment(usr, choice)
+
+	proc/materializeEquipment(mob/user, choice)
+		if(!user || loc != user) return
+		var/turf/destination = get_step(user, user.dir)
+		if(!destination) return
+		switch(choice)
 			if("Make Weights")
-				var/obj/items/Weights/A=new(Get_step(usr,usr.dir))
-				A.weight=max_weight
+				var/obj/items/Weights/A = new(destination)
+				A.weight = (user.max_weight()/4)*weight_tier*(user.Eff**0.3)*1.1
 				A.weight_name()
+				return A
 			if("Make Armor")
-				new/obj/items/Armor(Get_step(usr,usr.dir))
+				return new /obj/items/Armor/Forged(destination)
 			if("Make Sword")
-				var/list/Swords=new
-				for(var/A in typesof(/obj/items/Sword)) Swords+=new A
-				var/obj/items/Sword/A=input("What kind of sword?") in Swords
-				A.SafeTeleport(Get_step(usr,usr.dir))
-				Swords=null
+				return new /obj/items/Sword/Forged/Science(destination)
+			if("Make Gauntlets")
+				return new /obj/items/Gloves/Forged/Science(destination)
 
 obj/Mystic
 	teachable=1
@@ -3111,7 +3134,7 @@ obj/Mystic
 		1.1x speed<br>\
 		20% faster power up rate<br>\
 		30% less drain from ki attacks<br>\
-		15% BP increase while in a Super Saiyan form (excluding LSSj)<br>\
+		1.5x BP in every compatible form, including base form<br>\
 		15% anger boost decrease<br>\
 		No drain from Super Saiyan 1+2<br>\
 		[(1 - lssj_mystic_drain_reduction)*100]% less drain from Legendary Super Saiyan form<br>\
@@ -3149,6 +3172,7 @@ obj/Mystic
 		if(!usr.ismystic)
 			Last_Use=Year
 			usr.ismystic=1
+			usr.last_bp_get_time = -100
 			usr.Spd*=1.1
 			usr.spdmod*=1.1
 			usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
@@ -3167,6 +3191,7 @@ obj/Mystic
 		else usr.Mystic_Revert()
 mob/proc/Mystic_Revert() if(ismystic)
 	ismystic=0
+	last_bp_get_time = -100
 	Spd/=1.1
 	spdmod/=1.1
 	src<<"You have stopped using mystic"
@@ -3183,8 +3208,9 @@ obj/FireFist
 		desc="\
 		Fire Fist does the following:<br>\
 		20% melee damage addition<br>\
-		40% chance that make your enermy burn<br>\
-		Burning effect nerfs regeneration by 30%<br>\
+		40% chance to inflict Burn on damaging melee hits<br>\
+		Each Burn stack deals 3 Health damage after 2 seconds<br>\
+		Burn reduces Health regeneration by 30% while active<br>\
 		Consumes energy over time<br>\
 		"
 
@@ -3208,7 +3234,7 @@ obj/FireFist
 		if(!usr.isFireFist)
 			Last_Use=Year
 			usr.isFireFist=1
-			usr.overlays+='src/Icons/VFX/FlamingFists.dmi'
+			usr.rebuildPlayerAppearance("Fire Fist enabled")
 			player_view(10,usr) << sound('FogoNaMao.mp3',volume=100)
 			usr << "You are now using the FireFist buff"
 			usr.FireFistLoop();
@@ -3284,7 +3310,7 @@ obj/SaiyanPower
 			usr.Eff *= 1.5
 			usr.max_ki *= 1.5
 			usr.Ki *= 1.5
-			usr.overlays+='src/Icons/VFX/SaiyanPower.dmi'
+			usr.rebuildPlayerAppearance("Saiyan Power enabled")
 			usr << "You are now using the Saiyan Power"
 		else usr.SaiyanPower_Revert()
 
@@ -3316,7 +3342,7 @@ obj/Majin
 	can_change_icon=1
 	desc="\
 	Majin does the following:<br>\
-	20% BP increase<br>\
+	1.5x BP<br>\
 	20% stronger anger<br>\
 	x1.5 drain from all attacks<br>\
 	Decreased delay between lunge attacks<br>\
@@ -3329,6 +3355,7 @@ obj/Majin
 
 	verb/Majin()
 		set category="Skills"
+		usr.normalizeMajinBPMultiplier()
 		if(usr.active_demon_buff)
 			usr << "Deactivate your demon aura before using Majin."
 			return
@@ -3342,12 +3369,12 @@ obj/Majin
 			usr.attacking=1
 			if(!usr.ismajin)
 				usr.ismajin=1
-				usr.bp_mult += majin_skill_bp_add
+				usr.last_bp_get_time = -100
 				usr.max_anger *= majin_skill_anger_mult
 				usr.overlays-='src/Icons/Ki/Auras/SSjAura.dmi'
 				usr.overlays-='src/Icons/Ki/Electricity/Elec.dmi'
 				usr.overlays-='src/Icons/Ki/Electricity/ElectricBlue.dmi'
-				usr.overlays+=icon
+				usr.rebuildPlayerAppearance("Majin enabled")
 				usr << desc
 				usr<<"You are now using the Majin buff"
 			else usr.Majin_Revert()
@@ -3355,15 +3382,27 @@ obj/Majin
 			if(usr) usr.attacking=0
 
 var
-	majin_skill_bp_add = 0.2
+	majin_skill_bp_mult = 1.5
+	mystic_skill_bp_mult = 1.5
 	majin_skill_anger_mult = 1.2
 
+mob/var/majin_bp_version = 0
+
+mob/proc/normalizeMajinBPMultiplier()
+	if(majin_bp_version >= 1) return
+	// Old saves baked the former additive bonus into bp_mult while Majin was active.
+	if(ismajin) bp_mult -= 0.2
+	majin_bp_version = 1
+	last_bp_get_time = -100
+
 mob/proc/Majin_Revert() if(ismajin)
+	normalizeMajinBPMultiplier()
 	for(var/obj/Majin/M in src)
-		bp_mult 			-= majin_skill_bp_add
 		max_anger 			/= majin_skill_anger_mult
 		overlays-=M.icon
 		ismajin=0
+		rebuildPlayerAppearance("Majin revert")
+		last_bp_get_time = -100
 		src<<"You have stopped using majin"
 		//Revert()
 		break
@@ -3474,4 +3513,4 @@ obj/RankChat
 	verb/RankChat(A as text)
 		set category="Other"
 		for(var/mob/B in players) if(locate(/obj/RankChat) in B)
-			B<<"<font size=[B.TextSize]>(Rank)<font color=[usr.TextColor]>[usr.name]: [html_encode(A)]"
+			B<<"<font size=[normalizeNexusChatTextSize(B.TextSize)]>(Rank)<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]>[html_encode(usr.name)]: [html_encode(A)]"

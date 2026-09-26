@@ -32,11 +32,11 @@ mob/proc/rollCharacterMutations(forced_rarity)
 
 	var/rarity = forced_rarity
 	if(isnull(rarity))
-		var/roll = rand(1, 100000)
+		var/roll = rand(1, 100)
 		if(roll <= 1) rarity = "Anomaly"
-		else if(roll <= 10) rarity = "Rare"
+		else if(roll <= 15) rarity = "Rare"
 		else if(roll <= 50) rarity = "Uncommon"
-		else if(roll <= 250) rarity = "Common"
+		else rarity = "Common"
 	if(!(rarity in list("Common", "Uncommon", "Rare", "Anomaly")))
 		src.mutation_save_version = CHARACTER_MUTATION_SAVE_VERSION
 		return

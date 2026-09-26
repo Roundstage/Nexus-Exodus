@@ -53,7 +53,6 @@ mob/proc/Alien_Stuff()
 	"Breath in space (10 AP)"=10,\
 	"Split form (10 AP)"=10,\
 	"Elite Alien +[Commas(Starting_BP)] BP (20 AP)"=20,
-	"Stretchy arms (10 AP)"=10,\
 	"Better blast homing (12 AP)"=12,\
 	"Less bp loss from low ki (10 AP)"=10,\
 	"Less bp loss from low health (10 AP)"=10,\
@@ -117,15 +116,6 @@ mob/proc/Alien_Stuff()
 						if("No")
 							goto retry
 					blast_homing_mod*=1.5
-					Alien_points-=L[choice]
-				if("Stretchy arms (10 AP)")
-					switch(alert(src, "This allows you to press the Grab button (T) and if anything is in the direction you are facing, a stretchy arm will shoot out and grab it", "Options", "Yes", "No"))
-						if("No")
-							goto retry
-					arm_stretch=1
-					arm_stretch_icon='src/Icons/Unsorted/GenericArm.dmi'
-					arm_stretch_range=150
-					Auto_color_arm_stretch_icon()
 					Alien_points-=L[choice]
 				if("Genius (25 AP)")
 					switch(alert(src, "Technology you create is now much cheaper and better quality", "Options", "Yes", "No"))

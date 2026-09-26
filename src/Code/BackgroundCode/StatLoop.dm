@@ -114,6 +114,7 @@ mob
 mob/var/tmp/last_bp_get_time = 0
 mob/var/tmp/last_bp_get_stored = 0
 mob/proc/get_bp(factor_powerup=1)
+	normalizeMajinBPMultiplier()
 	if(world.time - last_bp_get_time < 10)
 		return last_bp_get_stored
 
@@ -154,6 +155,8 @@ mob/proc/get_bp(factor_powerup=1)
 		//n *= DropkickBPDebuff()
 		if(world.time - last_ki_hit_zero < zero_ki_bp_debuff_duration * 10)
 			n *= zero_ki_bp_mult
+		if(ismystic) n *= mystic_skill_bp_mult
+		if(ismajin) n *= majin_skill_bp_mult
 		if(n < 1) n = 1
 		last_bp_get_stored = n
 		return n
@@ -191,7 +194,6 @@ mob/proc/get_bp(factor_powerup=1)
 
 		//bp/=weights()**0.3
 		bp /= weights()
-		if(ismystic && ssj && Class != "Legendary Saiyan") bp *= 1.15
 
 		var/shikonMod = 1
 		for(var/obj/items/Shikon_Jewel/S in shikon_jewels) if(S.loc==src) shikonMod += S.bp_mult - 1
@@ -260,6 +262,8 @@ mob/proc/get_bp(factor_powerup=1)
 		if(world.realtime - lastGreatApeRevert < 600)
 			bp *= 0.5
 
+		if(ismystic) bp *= mystic_skill_bp_mult
+		if(ismajin) bp *= majin_skill_bp_mult
 		if(bp<1) bp=1
 		last_bp_get_stored = bp
 		return bp
@@ -874,7 +878,7 @@ mob/proc/Regenerator_loop(obj/items/Regenerator/r)
 				else
 					src.set_healing_modifier(KO_SYSTEM_REGENERATOR_MODIFIER, reason = "entering regenerator", victim = src)
 					
-				if(Ki<max_ki && r.Recovers_Energy)
+				if(Ki<max_ki && r.Recovers_Energy && !isTailGrabbed())
 					Ki+= 2 * (max_ki / 50) * recov * N * Server_Recovery
 					if(Ki>max_ki) Ki=max_ki
 				if(prob(5*N) && r.Heals_Injuries) for(var/obj/Injuries/I in injury_list)
@@ -1028,7 +1032,7 @@ mob/proc
 		return 1
 
 	Can_recover_ki(ki_limit=1.#INF)
-		if(destruction_aura_active) return
+		if(destruction_aura_active || isTailGrabbed()) return
 
 		if(Race=="Makyo" && Makyo_Star && Ki<ki_limit && !KO && !Regen_Active() && \
 		!Giving_Power && !buffed_with_bp() && !buff_transform_bp && !God_Fist_level) return 1
@@ -1131,6 +1135,7 @@ mob/proc/RegenMod()
 	if(arcane_regeneration_until > world.time) regen_mult *= 3
 	regen_mult *= getScientificHealingMultiplier()
 	regen_mult *= getNexusFireRegenerationMultiplier()
+	regen_mult *= getBurnRegenerationMultiplier()
 	return regen_mult
 
 mob/proc
@@ -1426,8 +1431,7 @@ mob/proc/PowerUpStandingLoop(obj/Power_Control/A)
 mob/proc/Power_Control_Loop(obj/Power_Control/A)
 	set waitfor=0
 	var/Amount=1
-	if(powerup_obj&&!A) A=powerup_obj
-	if(!A) for(var/obj/Power_Control/O in src) A=O
+	A = getPowerControl()
 	if(!A) return
 	if(A.PC_Loop_Active) return
 	A.PC_Loop_Active=1

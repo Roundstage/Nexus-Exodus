@@ -111,7 +111,6 @@ proc/nexusAlienOptionDefinitions()
 		"lungs" = list("name" = "Breathe in Space", "cost" = 10, "description" = "Survive without air."),
 		"split_form" = list("name" = "Split Form", "cost" = 10, "description" = "Grants Split Form."),
 		"elite_bp" = list("name" = "Elite Alien BP", "cost" = 20, "description" = "Adds one era-scaled starting BP package."),
-		"stretchy_arms" = list("name" = "Stretchy Arms", "cost" = 10, "description" = "Adds 150-pixel stretchy arms."),
 		"blast_homing" = list("name" = "Blast Homing", "cost" = 12, "description" = "1.5x blast homing."),
 		"low_ki_resistance" = list("name" = "Low-Ki Resistance", "cost" = 10, "description" = "One-third BP loss from low Ki."),
 		"low_health_resistance" = list("name" = "Low-Health Resistance", "cost" = 10, "description" = "One-third BP loss from low Health."),
@@ -125,7 +124,7 @@ proc/nexusAlienPresetOptions(profile)
 	switch(profile)
 		if("alien_scholar") return list("genius", "time_freeze", "materialize", "mastery", "lungs", "split_form", "blast_homing")
 		if("alien_predator") return list("absorb", "precognition", "death_regeneration", "zenkai", "meditation")
-		if("alien_shifter") return list("alien_transform", "giant_form", "imitate", "low_ki_resistance", "low_health_resistance", "stretchy_arms", "blast_homing", "materialize", "lungs", "mastery")
+		if("alien_shifter") return list("alien_transform", "giant_form", "imitate", "low_ki_resistance", "low_health_resistance", "blast_homing", "materialize", "lungs", "mastery")
 		if("alien_anomaly") return list("apex_genome", "unlock_potential", "death_regeneration")
 	return list()
 
@@ -304,7 +303,7 @@ proc/nexusRaceTraitOptions(race_name, mob/player, cooler_available = 0)
 		if("Alien")
 			traits["alien_scholar"] = nexusTrait("Scholar", "Technology, mastery, materialization, and control abilities.")
 			traits["alien_predator"] = nexusTrait("Predator", "Recovery, precognition, absorption, and combat growth.")
-			traits["alien_shifter"] = nexusTrait("Shifter", "Transformations, imitation, stretchy limbs, and utility.")
+			traits["alien_shifter"] = nexusTrait("Shifter", "Transformations, imitation, and utility.")
 			traits["alien_anomaly"] = nexusTrait("Apex Genome", "Extreme innate power with regeneration and unlocked potential.")
 		if("Android")
 			traits["android_chassis"] = nexusTrait("Synthetic Chassis", "A visibly mechanical body designed for modular upgrades.")
@@ -531,10 +530,6 @@ mob/proc/applyNexusAlienOptions(list/selected_options)
 			if("lungs") src.Lungs = 1
 			if("split_form") src.contents += new /obj/SplitForm
 			if("elite_bp") src.hbtc_bp += starting_bp
-			if("stretchy_arms")
-				src.arm_stretch = 1
-				src.arm_stretch_icon = 'src/Icons/Unsorted/GenericArm.dmi'
-				src.arm_stretch_range = 150
 			if("blast_homing") src.blast_homing_mod *= 1.5
 			if("low_ki_resistance") src.bp_loss_from_low_ki /= 3
 			if("low_health_resistance") src.bp_loss_from_low_hp /= 3
@@ -745,8 +740,21 @@ upForm/NexusCharacterCreator
 			[src.window_params & UPFORM_CANNOT_MINIMIZE ? "&can_minimize=0" : ""]\
 			[src.window_params & UPFORM_NO_TITLEBAR ? "&titlebar=0" : ""]"
 
+	UpdatePage(body_text, js_text)
+		..(body_text, js_text)
+		// The shared legacy form wrapper has no doctype and enters quirks mode.
+		body = "<!doctype html>[body]"
+		body = replacetext(body, "<head>", "<head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>")
+
 	New(client/owner, datum/host, list/viewers)
 		var/mob/player = host
+		if(owner)
+			var/list/window_dimensions = splittext(winget(owner, "mainwindow", "size"), "x")
+			if(window_dimensions.len == 2)
+				var/available_width = text2num(window_dimensions[1])
+				var/available_height = text2num(window_dimensions[2])
+				if(available_width >= 360 && available_height >= 360)
+					window_size = "[min(1180, available_width - 32)]x[min(760, available_height - 64)]"
 		cooler_available = all_rare_races_common || (player && player.hasNexusRareRaceGrant("Cooler")) || prob(1)
 		hair_options = list()
 		custom_clothing_icons = list(null, null, null, null)
@@ -1081,6 +1089,41 @@ upForm/NexusCharacterCreator
 			.race-entry{position:relative}.race-entry>input{left:2px;top:2px;width:1px;height:1px;margin:0}
 		"}
 
+		// One bounded wizard with a scrollable content region and permanent navigation.
+		// Compact layouts use natural panel heights; clothing cannot consume the identity row.
+		css += {"
+			html,body{height:100%;min-height:0;overflow:hidden}#creatorForm{height:100%;min-height:0}
+			.menu-frame{display:flex;flex-direction:column;gap:8px;height:calc(100% - 20px);min-height:0;margin:10px auto;overflow:hidden}
+			.menu-title{flex:0 0 auto;min-height:42px;height:auto;gap:8px;flex-wrap:wrap}.menu-title span{font-size:16px}.menu-title em{font-size:10px;letter-spacing:0}
+			.stage-strip{flex:0 0 auto;height:auto;margin:0;min-width:0}.stage-strip span{min-width:0;overflow-wrap:anywhere}
+			.wizard-content{flex:1 1 0;min-height:0;height:auto;margin:0;overflow:auto;padding:2px}
+			.wizard-nav{flex:0 0 38px;height:auto;align-items:center;gap:8px}.wizard-nav button{min-height:32px}
+			.wizard-stage,.wizard-stage .menu-columns{min-height:0}.stage-lineage{grid-template-columns:minmax(170px,250px) minmax(0,1fr)}
+			.appearance-layout{grid-template-columns:minmax(190px,230px) minmax(0,1fr) minmax(240px,300px);overflow:visible}
+			.appearance-layout>.panel{grid-column:auto}.appearance-layout .character-menu{display:flex;flex-direction:column;overflow:hidden;padding-bottom:6px}
+			.appearance-layout .character-menu>h2{flex:0 0 auto}.appearance-layout .character-menu>.stage-scroll{flex:1 1 0;height:auto;min-height:0;padding:8px 2px}
+			.preview-panel{display:flex;flex-direction:column}.preview-panel>h2{flex:0 0 auto}.preview-shell{flex:1 1 160px;height:auto;min-height:100px;margin:6px}
+			.preview-shell canvas{width:192px!important;height:192px!important;max-width:90%;max-height:90%;object-fit:contain}.preview-controls{flex:0 0 auto;flex-wrap:wrap;padding:6px 4px}
+			.identity-grid{grid-template-columns:minmax(0,1fr) 72px}.portrait-grid{grid-template-columns:repeat(auto-fill,minmax(42px,1fr))}.hair-grid{grid-template-columns:repeat(auto-fill,minmax(38px,1fr))}
+			.section-heading{flex-wrap:wrap}.clothing-panel>.clothing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.custom-upload-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+			.attributes-menu{max-height:none}.review-panel{overflow:auto}.review-panel .journey-button{max-width:calc(100% - 24px)}
+			@media(max-width:1100px){
+				.wizard-stage .appearance-layout{display:flex;flex-direction:column;height:auto;gap:10px;overflow:visible}
+				.appearance-layout>.panel{height:auto;flex:none;min-height:0;grid-column:auto}
+				.appearance-layout .character-menu{order:0;overflow:visible}.appearance-layout .character-menu>.stage-scroll{flex:none;height:auto;overflow:visible}
+				.appearance-layout .preview-panel{order:1}.appearance-layout .preview-shell{flex:none;height:180px}.preview-note{display:none}
+				.appearance-layout .clothing-panel{order:2}.clothing-panel>.clothing-grid{flex:none;height:280px!important;min-height:0}
+			}
+			@media(max-width:600px){
+				.menu-frame{width:calc(100% - 10px);height:calc(100% - 10px);margin:5px auto;padding:6px;gap:6px}.menu-title{padding:6px 9px}.menu-title span{font-size:12px}.menu-title em{font-size:8px}
+				.stage-strip span{font-size:8px;padding:7px 2px}.wizard-stage .stage-lineage{display:flex;flex-direction:column;height:auto;gap:10px}
+				.stage-lineage .race-menu{height:250px;flex:none}.stage-lineage .character-menu{height:auto;min-height:180px;overflow:visible;padding-bottom:12px}
+				.option-grid,.frost-form-grid{grid-template-columns:minmax(0,1fr)}.stage-scroll{padding:8px}.stat-legend{grid-template-columns:1fr}
+				.stat-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat-name{grid-column:1/-1}.stat-cell,.stat-allocator{min-height:48px}
+				.level-strip{flex-wrap:wrap;gap:6px}.review-panel #reviewSummary{width:calc(100% - 20px)!important;margin:12px auto!important;padding:10px;overflow-wrap:anywhere}
+			}
+		"}
+
 		var/pending_custom_js = nexusJsString(pending_custom_selection)
 		var/js = {"
 			var profiles={[dd_list2text(profile_entries, ",")]};
@@ -1120,9 +1163,9 @@ upForm/NexusCharacterCreator
 			function toggleFlight(){var body=bodyPreviews\[checkedValue('body_icon_id')\];if(!body||!body.canFlight)return;previewFlight=!previewFlight;updatePreview();}
 			function updateFrostPreviews(){for(var form=2;form<=5;form++){var select=document.getElementsByName('frost_form_'+form)\[0\],image=document.getElementById('frostPreview'+form);if(!select||!image)continue;var data=bodyPreviews\[select.value\];if(data)image.src=data.south;}}
 			function validateStage(){if(currentStage==1&&checkedValue('selected_race')=='Alien'&&parseInt(document.getElementById('alienPoints').textContent)<0){alert('Alien choices can cost at most 100 AP.');return false;}if(currentStage==2&&!document.querySelector('input\[name="character_name"\]').value.trim()){alert('Enter a character name.');return false;}if(currentStage==3&&parseInt(document.getElementById('pointsRemaining').textContent)!=0){alert('Spend every attribute point before continuing.');return false;}return true;}
-			function buildReview(){var clothing=selectedClothing().length,alienSpent=100-parseInt(document.getElementById('alienPoints').textContent||100),summary='<h3>'+document.querySelector('input\[name="character_name"\]').value+'</h3><p><b>Lineage:</b> '+checkedValue('selected_race')+' / '+checkedValue('race_trait')+'</p><p><b>Body:</b> '+checkedValue('body_icon_id')+'</p><p><b>Starting clothes:</b> '+clothing+'</p>';if(checkedValue('selected_race')=='Alien')summary+='<p><b>Alien AP spent:</b> '+alienSpent+' / 100</p>';document.getElementById('reviewSummary').innerHTML=summary;}
+			function buildReview(){var clothing=selectedClothing().length,alienSpent=100-parseInt(document.getElementById('alienPoints').textContent||100),summary=document.getElementById('reviewSummary');summary.textContent='';var heading=document.createElement('h3');heading.textContent=document.querySelector('input\[name="character_name"\]').value;summary.appendChild(heading);function row(label,value){var paragraph=document.createElement('p'),title=document.createElement('b');title.textContent=label+': ';paragraph.appendChild(title);paragraph.appendChild(document.createTextNode(String(value)));summary.appendChild(paragraph);}row('Lineage',checkedValue('selected_race')+' / '+checkedValue('race_trait'));row('Body',checkedValue('body_icon_id'));row('Starting clothes',clothing);if(checkedValue('selected_race')=='Alien')row('Alien AP spent',alienSpent+' / 100');}
 			function showStage(){var stages=document.querySelectorAll('.wizard-stage'),steps=document.querySelectorAll('.stage-strip span');for(var i=0;i<stages.length;i++)stages\[i\].className='wizard-stage'+(i==currentStage?' active':'');for(var j=0;j<steps.length;j++)steps\[j\].className='hud-tab'+(j==currentStage?' active':'');document.getElementById('stageTitle').textContent=(currentStage+1)+' / 5 - '+stageNames\[currentStage\].toUpperCase();document.getElementById('backButton').style.visibility=currentStage?'visible':'hidden';document.getElementById('nextButton').style.display=currentStage==4?'none':'block';if(currentStage==4)buildReview();}
-			function goStage(delta){if(delta>0&&!validateStage())return;currentStage=Math.max(0,Math.min(4,currentStage+delta));showStage();saveCreatorState();}
+			function goStage(delta){if(delta>0&&!validateStage()){if(currentStage==2){var nameInput=document.getElementsByName('character_name')\[0\];nameInput.scrollIntoView({block:'center'});nameInput.focus();}return;}currentStage=Math.max(0,Math.min(4,currentStage+delta));showStage();document.querySelector('.wizard-content').scrollTop=0;saveCreatorState();}
 			function saveCreatorState(){try{var controls=document.querySelectorAll('#creatorForm input,#creatorForm select'),state={stage:currentStage,direction:previewDirection,flight:previewFlight,controls:\[\]};for(var i=0;i<controls.length;i++){var control=controls\[i\];if(control.name=='src'||control.name=='action')continue;state.controls.push({name:control.name||'',clothing:control.getAttribute('data-clothing-id')||'',owner:control.getAttribute('data-owner-race')||'',type:control.type||'',value:control.value,checked:!!control.checked});}sessionStorage.setItem(creatorStorageKey,JSON.stringify(state));}catch(error){}}
 			function restoreCreatorState(){try{var raw=sessionStorage.getItem(creatorStorageKey);if(!raw)return false;var state=JSON.parse(raw),controls=document.querySelectorAll('#creatorForm input,#creatorForm select');for(var i=0;i<controls.length;i++){var control=controls\[i\],controlOwner=control.getAttribute('data-owner-race')||'';for(var j=0;j<state.controls.length;j++){var saved=state.controls\[j\],sameOwner=(saved.owner||'')==controlOwner,matches=sameOwner&&((saved.clothing&&saved.clothing==control.getAttribute('data-clothing-id'))||(!saved.clothing&&saved.name&&saved.name==control.name&&((control.type!='radio'&&control.type!='checkbox')||saved.value==control.value)));if(!matches)continue;if(control.type=='radio'||control.type=='checkbox')control.checked=!!saved.checked;else control.value=saved.value;break;}}currentStage=Math.max(0,Math.min(4,parseInt(state.stage||0)));previewDirection=Math.max(0,Math.min(3,parseInt(state.direction||0)));previewFlight=!!state.flight;return true;}catch(error){return false;}}
 			function applyPendingCustomSelection(){if(!pendingCustomSelection)return;if(pendingCustomSelection=='body'){var bodies=document.getElementsByName('body_icon_id'),race=checkedValue('selected_race');for(var i=0;i<bodies.length;i++)if(bodies\[i\].value=='custom_body'&&bodies\[i\].getAttribute('data-owner-race')==race){bodies\[i\].checked=true;break;}}else if(pendingCustomSelection.indexOf('clothing_')==0){var clothing=document.querySelector('input\[data-clothing-id="custom_'+pendingCustomSelection+'"\]');if(clothing)clothing.checked=true;}else if(pendingCustomSelection.indexOf('frost_')==0){var form=pendingCustomSelection.split('_')\[1\],select=document.getElementsByName('frost_form_'+form)\[0\];if(select)select.value='custom_frost_'+form;}}

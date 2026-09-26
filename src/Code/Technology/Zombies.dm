@@ -964,7 +964,7 @@ mob/Enemy/Zombie
 obj/items/T_Virus_Injection
 	Cost=5000000
 	makes_toxic_waste=1
-	science = 1
+	science = 0
 	science_level = 6
 	science_path = "Genetics"
 	icon='src/Icons/Objects/Technology/TVirus.dmi'

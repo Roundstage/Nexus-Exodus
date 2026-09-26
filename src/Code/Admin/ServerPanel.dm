@@ -81,7 +81,7 @@ datum/NexusServerPanel
 			category_index++
 			var/is_active = category_name == category
 			html += "<a class='tab[is_active ? " active" : ""]' href='byond://?src=[source_ref]&action=category:[category_index]'>[uppertext(category_name)]</a>"
-		html += "</nav><form class='search' action='byond://' method='get'><input type='hidden' name='src' value='[source_ref]'><input type='hidden' name='action' value='search'><input type='search' name='query' value='[html_encode(search_query)]' placeholder='Search names or values in [html_encode(category)]...' autofocus><button type='submit'>SEARCH</button></form><section class='table'><div class='row labels'><span>VARIABLE</span><span>CURRENT VALUE</span></div>"
+		html += "</nav><form class='search' action='byond://' method='get'><input type='hidden' name='src' value='[source_ref]'><input type='hidden' name='action' value='search'><input type='search' name='query' value='[encodeNexusHtmlAttribute(search_query)]' placeholder='Search names or values in [encodeNexusHtmlAttribute(category)]...' autofocus><button type='submit'>SEARCH</button></form><section class='table'><div class='row labels'><span>VARIABLE</span><span>CURRENT VALUE</span></div>"
 		var/start_index = (page - 1) * page_size + 1
 		var/end_index = min(visible_setting_names.len, start_index + page_size - 1)
 		if(!visible_setting_names.len)
@@ -128,7 +128,7 @@ datum/NexusServerPanel
 			return
 		var/current_value = settings_model.getFormVar("admin", setting_name)
 		if(islist(current_value))
-			editListSetting(setting_name, current_value)
+			if(editListSetting(setting_name, current_value)) saveNexusServerSettings()
 			del(settings_model)
 			return
 		var/new_value

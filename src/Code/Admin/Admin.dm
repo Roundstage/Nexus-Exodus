@@ -410,14 +410,19 @@ var/majin_auto_learn=1
 var/imitate_allowed=1
 
 mob/Admin4/verb/invisBrowser()
-	set name = "Invis Browser"
+	set name = "Open Website for Everyone"
 	set category="Admin"
-	var/url = input(src,"Put a URL and everyone will have it open in an invisible browser for like streaming music etc") as text
+	var/url = input(src,"Open an HTTP or HTTPS URL in everyone's external browser.") as text
+	url = normalizeNexusBrowserUrl(url)
+	if(!url)
+		src << "Enter a valid HTTP or HTTPS URL."
+		return
 	var/list/ips = new
 	for(var/mob/m in players) if(m.client)
 		if(!(m.client.address in ips))
 			ips += m.client.address
-			m << browse("<script>window.location='[url]';</script>", "window=InvisBrowser.invisbrowser")
+			// Remote HTML must not run inside a browser with access to the game bridge.
+			m << link(url)
 
 var/list/override_spawn = list(0,0,0)
 mob/Admin4/verb/overrideAllSpawns()
@@ -1064,8 +1069,8 @@ mob/verb/View_Server_Details()
 	Average BP of all players: [Commas(Average_BP_of_Players())]<br>
 	Year: [Year] ([Year_Speed]x Year Speed)<br>"}
 	if(bp_soft_cap) T+="BP soft cap set to [Commas(bp_soft_cap)] x bp mod<br>"
-	if(Head_Admin) T+="Head Admin: [Head_Admin]<br>"
-	if(RP_President) T+="RP President: [RP_President]<br>"
+	if(Head_Admin) T+="Head Admin: [html_encode("[Head_Admin]")]<br>"
+	if(RP_President) T+="RP President: [html_encode("[RP_President]")]<br>"
 	if(Auto_Rank) T+="Auto Ranking is on<br>"
 	if(KO_Time!=1) T+="KO Time is [KO_Time]x default<br>"
 	if(Server_Regeneration!=1) T+="Health Regeneration is [Server_Regeneration]x default<br>"
@@ -1835,7 +1840,7 @@ mob/Admin4/verb/errors()
 	set category="Admin"
 	if(fexists("Errors.log"))
 		//src<<browse(file("Errors.log"))
-		src << browse(file("Errors.log"), "window=Errors,size=800x600")
+		src << browse("<html><head><meta charset='utf-8'></head><body><pre>[html_encode(file2text(file("Errors.log")))]</pre></body></html>", "window=Errors,size=800x600")
 
 /*mob/Admin5/verb/DeleteErrors()
 	set category="Admin"
@@ -1933,14 +1938,26 @@ mob/Admin4/verb/playFile(S as file)
 		if("All Near You") for(var/mob/A in player_view(30,src)) if(A.client) A.Play_File(S,Repeat)
 	admin_blame(src, "[key] has played [S] for [Repeat?"everyone":"everyone near them"].")
 
+proc/getNexusAdminMediaKind(file_name)
+	var/list/parts = splittext(lowertext("[file_name]"), ".")
+	if(parts.len < 2) return null
+	var/extension = parts[parts.len]
+	if(extension in list("bmp", "png", "jpg", "jpeg", "gif")) return "image"
+	if(extension in list("ogg", "wav", "mp3", "mid", "midi", "mod", "s3m", "xm", "it", "wma", "aiff", "aif")) return "sound"
+	return null
+
 mob/proc/Play_File(S as file,Repeat=0)
-	if(Find_Text("[S]",list(".bmp",".png",".jpg",".gif"))) src<<browse(S)
-	else if(findtext("[S]",".mp3"))
-		src<<sound(0)
-		src<<browse(sound(S,Repeat))
-	else
-		src<<sound(0)
-		src<<sound(S,Repeat)
+	if(!S || !client) return
+	switch(getNexusAdminMediaKind("[S]"))
+		if("image")
+			// An uploaded file is an image subresource, never an HTML document.
+			var/list/parts = splittext(lowertext("[S]"), ".")
+			var/resource_name = "NexusAdminMedia.[parts[parts.len]]"
+			src << browse_rsc(S, resource_name)
+			src << browse("<!doctype html><html><head><meta charset='utf-8'></head><body><img src='[resource_name]' alt='Admin media'></body></html>", "window=NexusAdminMedia")
+		if("sound")
+			src << sound(0)
+			src << sound(S, Repeat)
 
 mob/Admin1/verb/displayPlayerAges()
 	set name = "Display Player Ages"
@@ -2534,18 +2551,18 @@ proc/Admin_Msg(Text,Optional=0)
 		for(var/mob/P in players) 
 			if(P.IsAdmin()) 
 				if(!Optional||P.AdminOn)
-					P << "<font size=[P.TextSize]><span style='color: cyan;'>\[admin\]</span> [Text]</font>"
+					P << "<font size=[normalizeNexusChatTextSize(P.TextSize)]><span style='color: cyan;'>\[admin\]</span> [Text]</font>"
 mob/Admin1/verb
 	chat(msg as text)
 		set name = "Chat"
 		set category="Admin"
-		Admin_Msg("<font color=[TextColor]>[key]: [msg]",1)
+		Admin_Msg("<font color=[normalizeNexusHtmlColor(TextColor, "#ffffff")]>[key]: [msg]",1)
 
 	announce(msg as message)
 		set category="Admin"
 		set name="Announce to everyone"
 		set instant=1
-		for(var/mob/M in players) M<<"<font size=[M.TextSize]><font color=white> <font color=[TextColor]>[key]: <font color=white>[html_encode(msg)]"
+		for(var/mob/M in players) M<<"<font size=[normalizeNexusChatTextSize(M.TextSize)]><font color=white> <font color=[normalizeNexusHtmlColor(TextColor, "#ffffff")]>[key]: <font color=white>[html_encode(msg)]"
 		admin_blame(src, "[key] has announced [msg]")
 
 mob/Admin1/verb

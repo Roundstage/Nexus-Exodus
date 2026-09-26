@@ -49,13 +49,15 @@ obj/Effect/NexusTechniqueText
 mob/proc/showNexusTechniqueAnnouncement(technique_name, text_color = "#ffd166", sound_file, sound_volume = 30)
 	set waitfor = 0
 	if(!technique_name || !loc) return
+	technique_name = html_encode("[technique_name]")
+	text_color = normalizeNexusHtmlColor(text_color, "#ffd166")
 	var/obj/Effect/NexusTechniqueText/announcement = new(loc)
 	announcement.maptext = "<center><span style='font-family:Arial;font-size:12pt;font-weight:bold;color:[text_color];text-shadow:1px 1px #000000'>[technique_name]</span></center>"
 	announcement.pixel_x = pixel_x - 80
 	announcement.pixel_y = pixel_y + (icon ? max(38, GetHeight(icon)) : 38)
 	animate(announcement, pixel_y = announcement.pixel_y + 8, transform = matrix() * 1.08, time = 2, easing = CUBIC_EASING)
 	animate(announcement, pixel_y = announcement.pixel_y + 24, alpha = 0, time = 8, easing = SINE_EASING)
-	player_view(15, src) << "<font color=[text_color]><b>[src]</b> uses <b>[technique_name]</b>!"
+	player_view(15, src) << "<font color=[text_color]><b>[html_encode("[src]")]</b> uses <b>[technique_name]</b>!"
 	if(sound_file) Play_Melee_Sound(sound_range = 12, origin = src, sound_file = sound_file, sound_volume = sound_volume)
 	sleep(10)
 	if(announcement) del(announcement)
@@ -367,14 +369,14 @@ obj/Attacks/NexusMeleeTechnique
 			if(!attacker.canHitNexusTechniqueTarget(secondary_target)) continue
 			secondary_count++
 			showImpact(secondary_target)
-			attacker.applyNexusTechniqueDamage(secondary_target, damage * splash_damage_multiplier, name)
+			attacker.applyNexusTechniqueDamage(secondary_target, damage * splash_damage_multiplier, name, melee_hit = TRUE)
 			if(secondary_target && knockback_multiplier > 1) secondary_target.Knockback(attacker, max(1, round(knockback_multiplier)))
 		if(extra_hits > 0) spawn()
 			for(var/hit_index = 1, hit_index <= extra_hits, hit_index++)
 				sleep(extra_hit_delay)
 				if(!target || target.Health <= 0 || getdist(attacker, target) > 1) break
 				showImpact(target)
-				attacker.applyNexusTechniqueDamage(target, damage * extra_hit_multiplier, name)
+				attacker.applyNexusTechniqueDamage(target, damage * extra_hit_multiplier, name, melee_hit = TRUE)
 				if(hit_index == extra_hits && target)
 					var/finisher_knockback = getComboFinisherKnockbackDistance()
 					if(finisher_knockback) target.Knockback(attacker, finisher_knockback, bypass_immunity = 1)
@@ -392,17 +394,18 @@ obj/Attacks/NexusMeleeTechnique
 			for(var/mob/line_target in line_turf)
 				if(line_target == primary_target || !attacker.canHitNexusTechniqueTarget(line_target)) continue
 				showImpact(line_target)
-				attacker.applyNexusTechniqueDamage(line_target, damage * 0.75, name)
+				attacker.applyNexusTechniqueDamage(line_target, damage * 0.75, name, melee_hit = TRUE)
 
 mob/proc/canHitNexusTechniqueTarget(mob/target)
 	if(!target || target == src || target.rp_mode || target.Safezone) return FALSE
 	return TRUE
 
-mob/proc/applyNexusTechniqueDamage(mob/target, damage, attack_name = "Nexus Technique")
+mob/proc/applyNexusTechniqueDamage(mob/target, damage, attack_name = "Nexus Technique", melee_hit = FALSE)
 	if(!canHitNexusTechniqueTarget(target) || damage <= 0) return FALSE
 	var/health_before = target.Health
 	target.TakeDamage(damage, attacker = src, attack_name = attack_name)
 	if(target.Health < health_before)
+		if(melee_hit) tryApplyFireFistBurn(target)
 		tryApplyNexusGuardBreak(target)
 		tryApplyMilestoneHitStances(target)
 	if(target && target.Health <= 0)
@@ -423,7 +426,7 @@ mob/proc/resolveNexusTechniqueHit(mob/target, obj/Attacks/NexusMeleeTechnique/te
 			return FALSE
 		damage_multiplier *= 0.23
 	var/damage = get_melee_damage(target) * technique.damage_multiplier * damage_multiplier
-	if(damage > 0 && !applyNexusTechniqueDamage(target, damage, technique.name)) return FALSE
+	if(damage > 0 && !applyNexusTechniqueDamage(target, damage, technique.name, melee_hit = TRUE)) return FALSE
 	technique.showImpact(target)
 	if(technique.bleed_fraction > 0) target.BleedDamage(damage * technique.bleed_fraction, src, "[technique.name] Bleed")
 	if(technique.stun_ticks > 0) target.ApplyStun(time = technique.stun_ticks, stun_power = 1.5)

@@ -120,7 +120,7 @@ obj/items/Nuke
 		return src in view(1,user)
 	Cost=30000000
 	science = 1
-	science_level = 6
+	science_level = 8
 	science_path = "Engineering"
 	takes_gradual_damage=1
 	desc="This bomb can cause extreme damage over a large distance. It can be mounted to other objects \

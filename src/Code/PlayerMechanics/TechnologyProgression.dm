@@ -38,7 +38,16 @@ mob/proc/getTechnologyPathSlots()
 
 proc/isRetiredScienceEquipment(obj/technology)
 	if(!technology) return FALSE
-	return technology.type in list(/obj/items/Sword, /obj/items/Armor, /obj/items/Shikon_Jewel)
+	if(istype(technology, /obj/items/ArcaneSatchel/CookingBag) || istype(technology, /obj/items/MagicFishingLure)) return TRUE
+	return technology.type in list(/obj/items/Sword, /obj/items/Armor, /obj/items/Shikon_Jewel, /obj/items/T_Virus_Injection, /obj/items/EMP_Mine, /obj/items/Land_Mine, /obj/Orbital_Cannon, /obj/Drivable_Car, /obj/Module/Extendo_arm)
+
+proc/isTierTenScienceEquipment(obj/technology)
+	if(!technology) return FALSE
+	return technology.type in list(/obj/items/Nuke, /obj/Ki_Field_Generator, /obj/Brain_Scrambler, /obj/Resource_Destroyer)
+
+proc/getScienceProgressionTier(obj/technology)
+	if(isTierTenScienceEquipment(technology)) return 10
+	return max(1, technology.science_level) + 1
 
 proc/scienceBlueprintListContainsType(list/blueprints, blueprint_type)
 	if(!islist(blueprints) || !blueprint_type) return FALSE
@@ -86,6 +95,12 @@ mob/proc/normalizeIndividualScienceItems()
 mob/proc/canUnlockTechnology(obj/technology)
 	if(!istype(technology, /obj) || !technology.science) return FALSE
 	if(initial(technology.catalog_test_only)) return FALSE
+	if(isRetiredScienceEquipment(technology)) return FALSE
+	if(isTierTenScienceEquipment(technology))
+		// Saved blueprints may still carry the old level and specialization.
+		if(progression_lifetime_experience < getProgressionTierLifetimeRequirement(10)) return FALSE
+		technology = getCanonicalScienceBlueprint(technology.type)
+		if(!technology) return FALSE
 	var/required_level = technology.science_level
 	if(!required_level) required_level = 1
 	required_level = max(1, required_level)
@@ -97,6 +112,7 @@ mob/proc/canAccessTechnology(obj/technology)
 	if(!istype(technology, /obj)) return FALSE
 	if(initial(technology.catalog_test_only)) return FALSE
 	if(isRetiredScienceEquipment(technology)) return FALSE
+	if(isTierTenScienceEquipment(technology)) return canUnlockTechnology(technology) && hasProgressionReward(technology.type)
 	if(scienceBlueprintListContainsType(GLOBAL_SCIENCE_TAB_ITEMS, technology.type)) return TRUE
 	if(scienceBlueprintListContainsType(individual_science_items, technology.type)) return TRUE
 	if(progression_tree_version >= NEXUS_PROGRESSION_VERSION) return hasProgressionReward(technology.type)

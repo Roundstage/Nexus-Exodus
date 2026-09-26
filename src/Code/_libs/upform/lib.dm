@@ -289,6 +289,7 @@ upForm
 
 	Topic(href, list/href_list)
 		// ensure a valid viewer is sending a link
+		if(!usr || !usr.client) return
 		var/client/C = usr.client
 		if(!isViewer(C)) return
 
@@ -616,7 +617,7 @@ function upF_check(input) {
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  [form_type >= UPFORM_WINDOW ? "<title> [src.window_title] </title>" : ""]
+  [form_type >= UPFORM_WINDOW ? "<title> [html_encode(src.window_title)] </title>" : ""]
   <style type="text/css"> [global_css] [page_css] </style>
   <script language="javascript">
 	[predef_js] [page_js] [jsText]

@@ -87,8 +87,9 @@ obj/Module
 		body_swap_ver = 0
 
 	Extendo_arm
+		science = 0
 		Cost=200000
-		desc="A mechanical arm that shoots out to grab and attack things"
+		desc="A mechanical arm that shoots out to grab and attack things. Unavailable during this wipe."
 
 	BP_Scanner
 		Cost=1000000
@@ -315,6 +316,7 @@ obj/Module
 	var/paralysis_immunity=0
 
 	proc/Enable_Module(mob/P)
+		if(istype(src, /obj/Module/Extendo_arm)) return
 		if(suffix) return
 		if(loc != P) return
 
@@ -393,6 +395,9 @@ obj/Module
 
 	Click() if(src in usr)
 		if(!suffix)
+			if(istype(src, /obj/Module/Extendo_arm))
+				usr << "Extendo Arm is unavailable during this wipe."
+				return
 
 			if(Requires_Password&&!Password)
 				usr<<"You can not install this module until you activate it. Do so by right clicking \

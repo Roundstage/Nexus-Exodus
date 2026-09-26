@@ -1,3 +1,87 @@
+proc/runCommunicationLifecycleSmokeTests()
+	var/mob/NexusSmokeTest/speaker = new
+	var/obj/cosmetic = new
+	cosmetic.name = "persistent communication test cosmetic"
+	speaker.vis_contents += cosmetic
+	speaker.Say_Spark()
+	speaker.showNexusSayText("Save while speaking")
+	var/obj/Effect/NexusTypingIndicator/live_typing = speaker.nexus_typing_indicator
+	var/obj/Effect/NexusSayText/live_speech = speaker.nexus_say_text
+	var/savefile/character_save = new
+	speaker.Write(character_save)
+	nexusSmokeAssert(speaker.nexus_typing_indicator == live_typing && speaker.nexus_say_text == live_speech && speaker.vis_contents.len == 3, "saving interrupted live typing or speech feedback")
+	var/list/saved_visuals
+	character_save["vis_contents"] >> saved_visuals
+	nexusSmokeAssert(length(saved_visuals) == 1 && !(locate(/obj/Effect/NexusSayText) in saved_visuals) && !(locate(/obj/Effect/NexusTypingIndicator) in saved_visuals), "character serialization persisted transient communication actors")
+	for(var/obj/saved_visual in saved_visuals)
+		saved_visual.reallyDelete = TRUE
+		del(saved_visual)
+	var/mob/NexusSmokeTest/loaded = new
+	loaded.Read(character_save)
+	nexusSmokeAssert(!loaded.nexus_typing_indicator && !loaded.nexus_say_text && loaded.vis_contents.len == 1, "speech or typing survived a character save/load round trip")
+	var/obj/loaded_cosmetic = loaded.vis_contents[1]
+	nexusSmokeAssert(loaded_cosmetic.name == cosmetic.name, "communication save filtering removed unrelated visual contents")
+	del(loaded_cosmetic)
+
+	// Reproduce old saves: vis_contents was serialized but tmp handles and workers were not.
+	character_save["vis_contents"] << speaker.vis_contents
+	loaded.Say_Spark()
+	loaded.showNexusSayText("Previous body speech")
+	var/obj/Effect/NexusTypingIndicator/previous_typing = loaded.nexus_typing_indicator
+	var/obj/Effect/NexusSayText/previous_speech = loaded.nexus_say_text
+	loaded.can_say = FALSE
+	loaded.Read(character_save)
+	nexusSmokeAssert(!previous_typing && !previous_speech, "reading into an existing mob orphaned its previous communication actors")
+	nexusSmokeAssert(!loaded.nexus_typing_indicator && !loaded.nexus_say_text && loaded.vis_contents.len == 1 && loaded.can_say, "legacy save cleanup retained orphaned balloons or disabled speech")
+	nexusSmokeAssert(speaker.nexus_typing_indicator == live_typing && speaker.nexus_say_text == live_speech, "legacy cleanup affected another character's live feedback")
+	loaded_cosmetic = loaded.vis_contents[1]
+	del(loaded_cosmetic)
+	// A reused savefile must also overwrite the previous serialized balloons.
+	speaker.Write(character_save)
+	loaded.Read(character_save)
+	nexusSmokeAssert(loaded.vis_contents.len == 1, "rewriting a legacy save retained its previous communication actors")
+	loaded_cosmetic = loaded.vis_contents[1]
+	del(loaded_cosmetic)
+	// Saving an empty visual list must replace an old entry as well.
+	character_save["vis_contents"] << speaker.vis_contents
+	speaker.vis_contents -= cosmetic
+	speaker.Write(character_save)
+	character_save["vis_contents"] >> saved_visuals
+	nexusSmokeAssert(!length(saved_visuals), "an empty visual save retained old serialized balloons")
+	speaker.vis_contents += cosmetic
+	del(loaded)
+
+	// The early reconnect logout path must clean both kinds of feedback before returning.
+	speaker.nexus_reconnect_handoff = TRUE
+	speaker.can_say = FALSE
+	speaker.Logout()
+	nexusSmokeAssert(!live_typing && !live_speech && !speaker.nexus_typing_indicator && !speaker.nexus_say_text && speaker.vis_contents.len == 1 && speaker.can_say, "reconnect logout left communication actors attached")
+	speaker.Say_Spark()
+	var/obj/Effect/NexusTypingIndicator/orphan_typing = speaker.nexus_typing_indicator
+	speaker.nexus_typing_indicator = null
+	speaker.Remove_Say_Spark()
+	nexusSmokeAssert(!orphan_typing && speaker.vis_contents.len == 1, "typing cleanup depended on its lost temporary handle")
+	speaker.showNexusSayText("Orphan speech")
+	var/obj/Effect/NexusSayText/orphan_speech = speaker.nexus_say_text
+	speaker.nexus_say_text = null
+	speaker.showNexusSayText("First timed speech")
+	nexusSmokeAssert(!orphan_speech && speaker.vis_contents.len == 2, "new speech failed to replace an orphaned balloon")
+	var/obj/Effect/NexusSayText/first_speech = speaker.nexus_say_text
+	sleep(20)
+	speaker.showNexusSayText("Replacement speech")
+	var/obj/Effect/NexusSayText/replacement_speech = speaker.nexus_say_text
+	nexusSmokeAssert(!first_speech, "replaced speech actor entered the generic effect cache")
+	sleep(30)
+	nexusSmokeAssert(replacement_speech && speaker.nexus_say_text == replacement_speech && replacement_speech.alpha == 255 && (replacement_speech in speaker.vis_contents), "an old speech callback removed or faded the replacement balloon")
+	sleep(20)
+	nexusSmokeAssert(!replacement_speech && !speaker.nexus_say_text && speaker.vis_contents.len == 1 && (cosmetic in speaker.vis_contents), "replacement speech failed to expire or removed an unrelated visual")
+	speaker.clearNexusCommunicationEffects()
+	speaker.clearNexusCommunicationEffects()
+	nexusSmokeAssert(speaker.vis_contents.len == 1, "repeated communication cleanup removed an unrelated visual")
+	del(cosmetic)
+	del(speaker)
+	world.log << "NEXUS_COMMUNICATION_LIFECYCLE_TESTS_PASSED: save/load, legacy balloons, reconnect logout, replacement and expiry"
+
 proc/runZanzokenClickSmokeTests()
 	var/list/original_turfs = list()
 	for(var/turf/original in block(locate(439, 9, 2), locate(441, 11, 2)))
@@ -2008,6 +2092,7 @@ proc/runNexusKiWeaponSmoke()
 	del(ki_weapon_user)
 
 proc/runNexusActionCycleSmoke()
+	runNexusStatScalingSmokeTests()
 	var/mob/NexusSmokeTest/action_cycle_player = new
 	action_cycle_player.Spd = 10
 	var/low_stat_move_pixels = action_cycle_player.GetVectorMovePixels(NORTH)
@@ -2292,8 +2377,15 @@ proc/runEnergyRecoveryStartupSmokeTests()
 	del(energy_recovery_test)
 
 proc/runStartupSmokeTests(soul_contract_count_before)
+	runNexusHtmlSafetySmokeTests()
+	runGrabWipeBalanceSmokeTests()
+	runCommunicationLifecycleSmokeTests()
 	runDemonRanksSmokeTests()
+	runPowerControlSmokeTests()
+	runClassicContextSmokeTests()
+	runMaterializeBuffSmokeTests()
 	runAppearanceRebuildSmokeTests()
+	runBurnEffectsSmokeTests()
 	runZanzokenClickSmokeTests()
 	runClassicHudSmokeTests()
 	runMilestoneShopSmokeTests()
@@ -2733,7 +2825,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(findtext(chat_separator_html, "<hr") && findtext(chat_separator_html, "width:100%") && !findtext(chat_separator_html, "----------"), "chat messages do not use a full-width horizontal separator")
 	var/legacy_chat_markup_html = closeNexusLegacyChatMarkup("<font color=#FFFF00><b>Legacy system notice")
 	var/legacy_chat_entry_html = getNexusChatEntryHtml("<font color=#FFFF00><b>Legacy system notice")
-	nexusSmokeAssert(legacy_chat_markup_html == "<font color=#FFFF00><b>Legacy system notice</b></font>" && closeNexusLegacyChatMarkup("<font color=#FFFF00><b>Balanced</b></font>") == "<font color=#FFFF00><b>Balanced</b></font>" && legacy_chat_entry_html == "<div class='chat-entry'><font color=#FFFF00><b>Legacy system notice</b></font></div>", "legacy chat formatting markup can leak beyond its entry into later HUD controls")
+	nexusSmokeAssert(legacy_chat_markup_html == "<font color='#ffff00'><b>Legacy system notice</b></font>" && closeNexusLegacyChatMarkup("<font color='#ffff00'><b>Balanced</b></font>") == "<font color='#ffff00'><b>Balanced</b></font>" && legacy_chat_entry_html == "<div class='chat-entry'><font color='#ffff00'><b>Legacy system notice</b></font></div>", "legacy chat formatting markup can leak beyond its entry into later HUD controls")
 	nexusSmokeAssert(text2path("/datum/NexusChatHud") && text2path("/obj/HudWindow"), "HudLib chat types are missing")
 	nexusSmokeAssert(text2path("/datum/NexusCharacterSelect"), "three-slot character selector is missing")
 	nexusSmokeAssert(NEXUS_CHARACTER_SLOT_LIMIT == 3, "character slot limit is not three")
@@ -4855,7 +4947,8 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(typesof(/obj/Peebag).len >= 10, "integrated Nexus Punching Bag or Magic Goo tiers are incomplete")
 	nexusSmokeAssert(magic_research_catalog["magic_goo_4"] && magic_research_catalog["transmutation_circle"] && magic_research_catalog["philosophers_stone"], "Nexus Alchemy research is incomplete")
 	initializeArcaneFormulaCatalog()
-	nexusSmokeAssert(arcane_formula_catalog.len == 42, "the complete Nexus arcane formula catalog was not registered")
+	nexusSmokeAssert(arcane_formula_catalog.len == 40, "the active Nexus arcane formula catalog was not registered")
+	runArcaneEquipmentSmokeTests()
 	for(var/arcane_formula_id in arcane_formula_catalog)
 		nexusSmokeAssert(magic_research_catalog[arcane_formula_id], "an arcane formula has no Magic progression node: [arcane_formula_id]")
 	var/datum/MagicResearchNode/shikon_research_node = magic_research_catalog["shikon_jewel"]
@@ -5184,6 +5277,7 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert((/mob/Admin1/verb/teleport in admin_verb_test.verbs) && (/mob/Admin2/verb/giveItem in admin_verb_test.verbs) && (/mob/Admin3/verb/edit in admin_verb_test.verbs) && (/mob/Admin3/verb/giveRareRace in admin_verb_test.verbs) && (/mob/Admin4/verb/serverControlPanel in admin_verb_test.verbs) && (/mob/Admin4/verb/pwipe in admin_verb_test.verbs), "legacy admin verbs, including rare-race grants and pwipe, are not retained cumulatively for CMD and the Admin tab")
 	del(admin_verb_test)
 	var/list/server_setting_categories = getNexusServerSettingCategories()
+	runServerSettingsPersistenceSmokeTests()
 	nexusSmokeAssert(server_setting_categories.len == 6 && server_setting_categories["Progression"] == /upForm/admin_gains && server_setting_categories["Science"] == /upForm/admin_science, "HUD Server Panel categories are incomplete")
 	var/upForm/headless_server_settings = new /upForm/admin_gains(null, profession_test, list(), TRUE)
 	var/list/headless_progression_settings = headless_server_settings.form_vars["admin"]
@@ -5679,15 +5773,18 @@ proc/runStartupSmokeTests(soul_contract_count_before)
 	nexusSmokeAssert(bio_sustainable_bp > 33 && bio_sustainable_bp < 33.2, "Bio-Android sustainable progression escaped the Exceptional target")
 	nexusSmokeAssert(majin_sustainable_bp > 33 && majin_sustainable_bp < 33.2, "Majin sustainable progression escaped the Exceptional target")
 	var/list/alien_definitions = nexusAlienOptionDefinitions()
-	nexusSmokeAssert(alien_definitions.len == 23, "Alien point-buy catalog is incomplete")
+	nexusSmokeAssert(alien_definitions.len == 22 && !alien_definitions["stretchy_arms"], "Alien point-buy catalog includes retired Stretchy Arms or is incomplete")
+	nexusSmokeAssert(!nexusValidateAlienOptions(list("stretchy_arms" = TRUE)), "Alien point-buy accepted retired Stretchy Arms from a stale form")
 	nexusSmokeAssert(nexusValidateAlienOptions(nexusAlienPresetOptions("alien_scholar")) && nexusValidateAlienOptions(nexusAlienPresetOptions("alien_predator")) && nexusValidateAlienOptions(nexusAlienPresetOptions("alien_shifter")) && nexusValidateAlienOptions(nexusAlienPresetOptions("alien_anomaly")), "an Alien preset exceeds its 100 AP budget")
 	nexusSmokeAssert(!nexusValidateAlienOptions(list("genius" = TRUE, "time_freeze" = TRUE, "precognition" = TRUE, "apex_genome" = TRUE)), "Alien point-buy accepted more than 100 AP")
 	var/mob/NexusSmokeTest/alien_point_buy_test = new
 	alien_point_buy_test.Alien(interactive_options = 0)
 	alien_point_buy_test.bp_loss_from_low_ki = 1
 	alien_point_buy_test.bp_loss_from_low_hp = 1
-	alien_point_buy_test.applyNexusAlienOptions(list("genius", "limit_breaker", "stretchy_arms", "low_ki_resistance", "low_health_resistance"))
-	nexusSmokeAssert(alien_point_buy_test.Intelligence == 1 && (locate(/obj/Limit_Breaker) in alien_point_buy_test) && alien_point_buy_test.arm_stretch, "Alien point-buy effects were not applied")
+	alien_point_buy_test.applyNexusAlienOptions(list("genius", "limit_breaker", "low_ki_resistance", "low_health_resistance"))
+	nexusSmokeAssert(alien_point_buy_test.Intelligence == 1 && (locate(/obj/Limit_Breaker) in alien_point_buy_test), "Alien point-buy effects were not applied")
+	alien_point_buy_test.applyNexusAlienOptions(list("stretchy_arms"))
+	nexusSmokeAssert(!alien_point_buy_test.arm_stretch && !alien_point_buy_test.canUseArmStretch(), "a legacy Alien option still grants arm stretch during this wipe")
 	nexusSmokeAssert(alien_point_buy_test.bp_loss_from_low_ki == 1 / 3 && alien_point_buy_test.bp_loss_from_low_hp == 1 / 3, "Alien low-resource resistance was not applied")
 	var/mob/NexusSmokeTest/apex_alien_anger_test = new
 	apex_alien_anger_test.Alien(interactive_options = 0)
@@ -6027,7 +6124,221 @@ proc/runRacialProgressionWipeSmokeTests()
 		del(viltrumite)
 	world.log << "NEXUS_RACIAL_PROGRESSION_WIPE_TESTS_PASSED"
 
+proc/runGrabWipeBalanceSmokeTests()
+	var/mob/NexusSmokeTest/grabber = new
+	var/mob/NexusSmokeTest/victim = new
+	victim.Ki = 50
+	victim.max_ki = 100
+	victim.Tail = TRUE
+	victim.tail_level = 1
+	grabber.grabbedObject = victim
+	victim.grabber = grabber
+	nexusSmokeAssert(victim.Can_recover_ki(), "an ordinary grab incorrectly blocked energy recovery")
+	victim.grabbed_from_behind = TRUE
+	nexusSmokeAssert(!victim.Can_recover_ki(), "a tail grab still allows energy recovery")
+	var/old_makyo_star = Makyo_Star
+	Makyo_Star = TRUE
+	victim.Race = "Makyo"
+	nexusSmokeAssert(!victim.Can_recover_ki(), "Makyo Star bypassed the tail-grab energy recovery lock")
+	Makyo_Star = old_makyo_star
+	victim.Grabbed_by_tail()
+	nexusSmokeAssertNear(victim.Ki, 49, 0.0001, "tail grab did not drain 1% maximum energy")
+	victim.Grabbed_by_tail()
+	nexusSmokeAssertNear(victim.Ki, 49, 0.0001, "restarting tail grab stacked its drain worker")
+	grabber.ReleaseGrab()
+	nexusSmokeAssert(!victim.isTailGrabbed() && victim.Can_recover_ki(), "releasing the tail left energy recovery blocked")
+	grabber.grabbedObject = victim
+	victim.grabber = grabber
+	victim.grabbed_from_behind = TRUE
+	victim.Grabbed_by_tail()
+	nexusSmokeAssertNear(victim.Ki, 49, 0.0001, "rapid release/regrab stacked tail energy drain")
+	sleep(11)
+	nexusSmokeAssertNear(victim.Ki, 48, 0.0001, "tail grab did not retain a single one-second drain")
+	victim.Tail = FALSE
+	nexusSmokeAssert(victim.Can_recover_ki(), "losing the held tail left energy recovery blocked")
+	sleep(11)
+	nexusSmokeAssert(!victim.tail_grab_loop_running && victim.Ki == 48, "tail drain continued after the tail was removed")
+	victim.Tail = TRUE
+	victim.tail_level = 2
+	victim.Grabbed_by_tail()
+	nexusSmokeAssertNear(victim.Ki, 47.5, 0.0001, "tail training no longer reduces the small drain")
+	grabber.ReleaseGrab()
+	sleep(11)
+	grabber.grabbedObject = victim
+	victim.grabber = grabber
+	victim.grabbed_from_behind = TRUE
+	victim.tail_level = 0
+	victim.Ki = 0.5
+	victim.Grabbed_by_tail()
+	nexusSmokeAssert(victim.Ki == 0, "tail drain underflowed energy or failed with a legacy zero tail level")
+	grabber.ReleaseGrab()
+
+	var/obj/Module/Extendo_arm/extendo = new(grabber)
+	extendo.Enable_Module(grabber)
+	nexusSmokeAssert(!extendo.suffix && !(extendo in grabber.active_modules), "retired Extendo Arm could still be installed")
+	// Simulate an installed module and racial stretch flags restored from an old save.
+	extendo.suffix = "Installed"
+	grabber.active_modules += extendo
+	for(var/race_name in list("Android", "Bio-Android", "Namekian", "Alien"))
+		grabber.Race = race_name
+		grabber.arm_stretch = TRUE
+		nexusSmokeAssert(!grabber.Extendo_module() && !grabber.canUseArmStretch() && !grabber.CanExtendoGrab(victim) && !grabber.GetArmStretchTarget(500) && !grabber.Stretch_arm_to(victim, 500), "saved Extendo Arm access survived the wipe lock: [race_name]")
+		nexusSmokeAssert(grabber.canGrabMovable(victim), "Extendo Arm removal blocked ordinary grabs: [race_name]")
+	grabber.Race = "Majin"
+	nexusSmokeAssert(grabber.canUseArmStretch() && grabber.CanExtendoGrab(victim), "wipe restrictions disabled Majin's natural arm stretch")
+	grabber.arm_stretch = FALSE
+	nexusSmokeAssert(!grabber.canUseArmStretch(), "an old installed Extendo Arm restored mechanical stretching")
+	extendo.suffix = null
+	grabber.active_modules -= extendo
+	del(extendo)
+	del(grabber)
+	del(victim)
+	world.log << "NEXUS_GRAB_WIPE_BALANCE_TESTS_PASSED"
+
+proc/runTierTenScienceSmokeTests()
+	var/mob/NexusSmokeTest/researcher = new
+	researcher.player_tech_level = 8
+	researcher.player_tech_paths = list("Engineering")
+	researcher.progression_tree_version = NEXUS_PROGRESSION_VERSION
+	researcher.migrateProgressionExperienceScale()
+	researcher.progression_experience = 10000
+	var/list/old_global_blueprints = GLOBAL_SCIENCE_TAB_ITEMS
+	var/datum/NexusBuildWindow/science_window = new(researcher)
+	for(var/blueprint_type in list(/obj/items/Nuke, /obj/Ki_Field_Generator, /obj/Brain_Scrambler, /obj/Resource_Destroyer))
+		var/obj/canonical = getCanonicalScienceBlueprint(blueprint_type)
+		var/node_id = getProgressionScienceNodeIdForType(blueprint_type)
+		var/datum/ProgressionNode/node = progression_node_catalog[node_id]
+		nexusSmokeAssert(canonical && canonical.science && node && node.tier == 10 && node.required_level == 8, "planet-threatening Science design is missing or not tier 10: [blueprint_type]")
+		if(!node) continue
+		for(var/parent_id in node.prerequisites)
+			var/datum/ProgressionNode/parent = progression_node_catalog[parent_id]
+			nexusSmokeAssert(parent && parent.tier == 9, "tier-10 Science design does not follow tier 9: [blueprint_type]")
+			researcher.progression_nodes_owned[parent_id] = 1
+		var/obj/saved_blueprint = new blueprint_type
+		saved_blueprint.referenceObject = TRUE
+		saved_blueprint.science_level = 1
+		saved_blueprint.science_path = null
+		GLOBAL_SCIENCE_TAB_ITEMS = list(saved_blueprint)
+		researcher.individual_science_items = list(saved_blueprint)
+		researcher.progression_lifetime_experience = getProgressionTierLifetimeRequirement(10) - 1
+		nexusSmokeAssert(!researcher.purchaseProgressionNode(node_id), "tier-10 Science purchased below its lifetime XP threshold: [blueprint_type]")
+		researcher.progression_nodes_owned[node_id] = 1
+		nexusSmokeAssert(!researcher.canUnlockTechnology(saved_blueprint) && !researcher.canAccessTechnology(saved_blueprint) && !researcher.canAccessTechnology(canonical) && !researcher.isTechnologyReferenceClick(saved_blueprint), "saved grants or ownership bypassed tier-10 Science: [blueprint_type]")
+		nexusSmokeAssert(!scienceBlueprintListContainsType(science_window.getScienceBlueprints(), blueprint_type), "tier-10 design leaked into the build panel below its XP threshold: [blueprint_type]")
+		researcher.progression_nodes_owned -= node_id
+		researcher.progression_lifetime_experience++
+		nexusSmokeAssert(!researcher.canAccessTechnology(saved_blueprint), "a saved grant bypassed tier-10 research: [blueprint_type]")
+		nexusSmokeAssert(researcher.purchaseProgressionNode(node_id) && researcher.canAccessTechnology(canonical) && researcher.isTechnologyReferenceClick(saved_blueprint), "tier-10 Science could not be researched and used at its exact XP threshold: [blueprint_type]")
+		nexusSmokeAssert(scienceBlueprintListContainsType(science_window.getScienceBlueprints(), blueprint_type), "researched tier-10 Science did not appear in the build panel: [blueprint_type]")
+		researcher.player_tech_level = 7
+		nexusSmokeAssert(!researcher.canAccessTechnology(saved_blueprint), "old blueprint level bypassed the tier-10 Technology requirement: [blueprint_type]")
+		researcher.player_tech_level = 8
+		researcher.player_tech_paths = list()
+		nexusSmokeAssert(!researcher.canAccessTechnology(saved_blueprint), "old blueprint bypassed the tier-10 Engineering requirement: [blueprint_type]")
+		researcher.player_tech_paths = list("Engineering")
+		// Legacy migration must not silently grant these capstones from level or old blueprints.
+		researcher.progression_nodes_owned -= node_id
+		researcher.progression_tree_version = 0
+		researcher.syncProgressionTrees(silent = TRUE)
+		nexusSmokeAssert(!researcher.hasProgressionNode(node_id) && !researcher.canAccessTechnology(canonical), "legacy migration automatically granted tier-10 Science: [blueprint_type]")
+		del(saved_blueprint)
+	GLOBAL_SCIENCE_TAB_ITEMS = old_global_blueprints
+	del(science_window)
+	del(researcher)
+	world.log << "NEXUS_TIER_TEN_SCIENCE_TESTS_PASSED"
+
+proc/runRetiredScienceBlueprintSmokeTests()
+	var/mob/NexusSmokeTest/researcher = new
+	researcher.player_tech_level = 8
+	researcher.player_tech_paths = list("Engineering", "Genetics", "Robotics")
+	researcher.progression_tree_version = NEXUS_PROGRESSION_VERSION
+	var/list/old_global_blueprints = GLOBAL_SCIENCE_TAB_ITEMS
+	var/list/retired_types = list(/obj/items/T_Virus_Injection, /obj/items/EMP_Mine, /obj/items/Land_Mine, /obj/Orbital_Cannon, /obj/Drivable_Car, /obj/Module/Extendo_arm)
+	var/datum/NexusBuildWindow/science_window = new(researcher)
+	for(var/retired_type in retired_types)
+		var/obj/canonical = getCanonicalScienceBlueprint(retired_type)
+		nexusSmokeAssert(canonical && !canonical.science, "retired technology is still registered for Science: [retired_type]")
+		nexusSmokeAssert(!progression_node_catalog[getProgressionScienceNodeIdForType(retired_type)], "retired technology still has a research node: [retired_type]")
+		var/obj/saved_blueprint = new retired_type
+		saved_blueprint.referenceObject = TRUE
+		saved_blueprint.science = TRUE
+		researcher.progression_nodes_owned[getProgressionScienceNodeIdForType(retired_type)] = 1
+		GLOBAL_SCIENCE_TAB_ITEMS = list(saved_blueprint)
+		researcher.individual_science_items = list(saved_blueprint)
+		nexusSmokeAssert(!researcher.canAccessTechnology(canonical) && !researcher.canAccessTechnology(saved_blueprint) && !researcher.canUnlockTechnology(saved_blueprint), "saved grants restored retired Science access: [retired_type]")
+		nexusSmokeAssert(!researcher.isTechnologyReferenceClick(saved_blueprint), "retired Science reference can still dispatch a craft: [retired_type]")
+		nexusSmokeAssert(!scienceBlueprintListContainsType(science_window.getScienceBlueprints(), retired_type), "saved grants exposed retired technology in the Science panel: [retired_type]")
+		del(saved_blueprint)
+	var/obj/sonic_bomb = getCanonicalScienceBlueprint(/obj/items/Nuke/Sonic_Bomb)
+	GLOBAL_SCIENCE_TAB_ITEMS = list(sonic_bomb)
+	researcher.individual_science_items = list()
+	nexusSmokeAssert(sonic_bomb && sonic_bomb.science && researcher.canUnlockTechnology(sonic_bomb) && researcher.canAccessTechnology(sonic_bomb) && scienceBlueprintListContainsType(science_window.getScienceBlueprints(), sonic_bomb.type), "tier-10 Nuke restrictions also removed the separate Sonic Bomb design")
+	GLOBAL_SCIENCE_TAB_ITEMS = old_global_blueprints
+	del(science_window)
+	del(researcher)
+
+proc/runArcaneEquipmentSmokeTests()
+	var/mob/NexusSmokeTest/crafter = new(locate(1, 1, 2))
+	crafter.progression_tree_version = NEXUS_PROGRESSION_VERSION
+	crafter.arcane_essence = 1000
+	var/list/weapon_formulas = list("magic_sword" = /obj/items/Sword/Forged/Science, "magic_hammer" = /obj/items/Sword/Forged/ScienceHammer, "magic_gauntlets" = /obj/items/Gloves/Forged/Science)
+	for(var/formula_id in weapon_formulas)
+		var/datum/ArcaneFormula/formula = arcane_formula_catalog[formula_id]
+		crafter.progression_nodes_owned["magic_[formula_id]"] = 1
+		var/obj/items/Ore/catalyst = crafter.addMinedOre(formula.ore_type, formula.ore_cost)
+		if(!(catalyst in crafter.item_list)) crafter.item_list += catalyst
+		var/essence_before = crafter.arcane_essence
+		nexusSmokeAssert(crafter.craftArcaneFormula(formula_id), "arcane equipment ritual failed: [formula_id]")
+		var/obj/items/created = locate(formula.construct_type) in crafter
+		if(created && !(created in crafter.item_list)) crafter.item_list += created
+		var/science_type = weapon_formulas[formula_id]
+		var/obj/items/equivalent = new science_type
+		nexusSmokeAssert(created && created.name == equivalent.name && created.icon == equivalent.icon && created:forged_material_id == equivalent:forged_material_id, "arcane equipment differs from its Normal Science counterpart: [formula_id]")
+		nexusSmokeAssert(crafter.arcane_essence == essence_before - formula.essence_cost && !crafter.countOre(formula.ore_type), "arcane weapon did not charge its ritual costs: [formula_id]")
+		nexusSmokeAssert(created:forged_attack_bp_bonus == equivalent:forged_attack_bp_bonus, "arcane equipment has different attack BP reinforcement: [formula_id]")
+		if(istype(created, /obj/items/Sword/Forged))
+			nexusSmokeAssert(created:Damage == equivalent:Damage && created:Style == equivalent:Style, "arcane weapon has different damage or damage type: [formula_id]")
+		else
+			var/obj/items/Gloves/Forged/gloves = created
+			crafter.applyForgedGloves(gloves)
+			nexusSmokeAssert(crafter.usingForgedGloves() == gloves, "Magic Gauntlets cannot equip as ordinary forged gloves")
+			var/expected_magic_xp = 10 * crafter.getMagicPotential() * (1 + crafter.getMilestoneRank("arcane_memory") * 0.1)
+			nexusSmokeAssertNear(crafter.gainMagicExperience(10, "arcane equipment smoke"), expected_magic_xp, 0.001, "Magic Gauntlets still grant their old passive XP bonus")
+			crafter.applyForgedGloves(gloves)
+		del(equivalent)
+		del(created)
+	for(var/retired_id in list("cooking_bag", "magic_fishing_lure"))
+		crafter.progression_nodes_owned["magic_[retired_id]"] = 1
+		nexusSmokeAssert(!magic_research_catalog[retired_id] && !arcane_formula_catalog[retired_id] && !progression_node_catalog["magic_[retired_id]"] && !crafter.craftArcaneFormula(retired_id), "retired cooking/fishing item remains researchable or craftable: [retired_id]")
+	for(var/retired_type in list(/obj/items/ArcaneSatchel/CookingBag, /obj/items/MagicFishingLure))
+		var/obj/items/retired_item = new retired_type
+		retired_item.science = TRUE
+		crafter.individual_science_items += retired_item
+		nexusSmokeAssert(isRetiredScienceEquipment(retired_item) && !crafter.canUnlockTechnology(retired_item) && !crafter.canAccessTechnology(retired_item), "saved Science grants restored a retired cooking/fishing item")
+		del(retired_item)
+	// Check actual DMI states and composed previews, including the already-correct stone.
+	for(var/formula_id in list("elixir_health", "elixir_replenishment", "elixir_merriment", "elixir_life", "elixir_empowerment", "elixir_reformation", "spell_book", "book_ages", "book_fortitude", "book_lessons", "book_power", "book_case", "philosophers_stone", "simulation_crystal", "orb_of_mastery", "mana_pylon", "magic_vault", "locator", "crystal_ball"))
+		var/datum/ArcaneFormula/formula = arcane_formula_catalog[formula_id]
+		var/obj/items/artifact = new formula.construct_type
+		// BYOND canonicalizes the empty state of a single-frame DMI to null.
+		nexusSmokeAssert(artifact.icon && ("[artifact.icon_state]" in icon_states(artifact.icon)), "RPT item has no matching DMI state: [formula_id]")
+		var/datum/ProgressionNode/node = progression_node_catalog["magic_[formula_id]"]
+		nexusSmokeAssert(node && node.icon_file && ("[node.icon_state]" in icon_states(node.icon_file)), "RPT research preview has no matching DMI state: [formula_id]")
+		del(artifact)
+	var/obj/items/ArcaneElixir/Life/old_elixir = new
+	old_elixir.icon_state = ""
+	var/savefile/appearance_save = new
+	appearance_save["elixir"] << old_elixir
+	var/obj/items/ArcaneElixir/Life/loaded_elixir
+	appearance_save["elixir"] >> loaded_elixir
+	nexusSmokeAssert(loaded_elixir.icon_state == "PoM1", "loading an old elixir did not restore its RPT icon state")
+	del(loaded_elixir)
+	del(old_elixir)
+	del(crafter)
+
 proc/runTechnologyCatalogSmokeTests(soul_contract_count_before)
+	runRetiredScienceBlueprintSmokeTests()
+	runTierTenScienceSmokeTests()
 	var/list/expected_technology_types = list()
 	for(var/technology_type in typesof(/obj))
 		if(initial(technology_type:catalog_test_only)) continue

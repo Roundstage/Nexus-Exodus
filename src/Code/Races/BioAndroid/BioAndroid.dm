@@ -19,7 +19,7 @@ mob/proc/Bio(interactive_options=1)
 	med_mod=1
 	zenkai_mod=2
 	gravity_mastered=25
-	arm_stretch=1
+	arm_stretch=0 // Unavailable during this wipe; runtime checks also cover old saves.
 	arm_stretch_icon='src/Icons/Unsorted/GenericArm.dmi'
 	arm_stretch_range=500
 	if(START_WITH_RACIAL_SKILLS)

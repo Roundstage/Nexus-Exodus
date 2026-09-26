@@ -11,7 +11,7 @@
 ## Architecture
 The RPG-style login selector registers up to three independent characters per account and binds the chosen slot before creation or loading. `mob/proc/ClickMakeNewCharacter()` then delegates to `openNexusCharacterCreator()`. The creator is a server-rendered `/upForm/NexusCharacterCreator`; it does not use the legacy sequence of blocking race, skin, hair, and stat prompts. `GenerateBody()` emits one backend form presented as five browser stages. `Link()` handles the final `action=create` plus validated custom body, clothing-layer, and Frost-form imports; `commitNexusCharacter()` still revalidates the complete submission before mutating the player mob.
 
-The 1180x760 window cannot be closed or minimized through `upForm`. Its five stages are:
+The creator's `UpdatePage()` adds an HTML5 doctype and viewport metadata to its own generated document; other legacy forms retain their existing wrapper. The window starts at up to 1180x760, capped to the main game window with room for native borders, and remains resizable. It cannot be closed or minimized through `upForm`. Its five stages are:
 
 - **Lineage:** race and lineage trait/preset.
 - **Race specialization:** Alien 100-AP point buy or independent Frost Lord form slots.
@@ -25,9 +25,9 @@ The Viltrumite clothing catalog also includes a white/gray Bulk Jumpsuit tailore
 
 The Alien specialization keeps a sticky `remaining / 100 AP` indicator visible while its perk catalog scrolls. It updates after every selection or preset change and enters an explicit red over-budget state before navigation is rejected.
 
-Each stage owns a fixed, contained layout. The Lineage panels remain in one grid row, Attributes is the sole vertical scrolling surface for its stage, and Appearance contains oversized DMI layers inside the composed preview without allowing their intrinsic sheet size to collapse the clothing column. Clothing uses fixed 80px grid rows and hard-clamped 42px thumbnails, so selecting a full-tile outfit cannot stretch an implicit row or push the remaining catalog into blank scroll space. The review summary and `Begin Journey` action are centered independently of the shared inline HUD-button rule.
+The wizard uses a bounded flex frame with permanent stage/navigation controls and a scrollable content region. Above 1100 CSS pixels Appearance has three columns; at smaller widths it stacks Identity & Body first, then Preview and Clothing at natural heights. Clothing keeps a bounded list with fixed 80px rows and 42px thumbnails. Below 600 pixels Lineage stacks its panels and attribute cards split into two columns. Review scrolls independently so `Begin Journey` stays reachable. Advancing stages resets the content scroll; empty-name validation scrolls to and focuses the name field. Browser resizing preserves form values.
 
-The hidden race radio inputs are anchored inside their labels. Selecting a lower entry such as Viltrumite keeps native focus within `.race-scroll`, preserving the list position and fixed Lineage heading instead of scrolling the outer panel. `node tools/TestCharacterCreationScroll.cjs` reproduces native label clicks with production markup/CSS and the race handler, covering lower-list selection, keyboard arrows and scrolling back to the first race at three viewport sizes.
+The hidden race radio inputs are anchored inside their labels. Selecting a lower entry such as Viltrumite keeps native focus within `.race-scroll`, preserving the list position and fixed Lineage heading instead of scrolling the outer panel. `node tools/TestCharacterCreationScroll.cjs` covers lower-list selection, keyboard arrows and wheel recovery, plus navigation through all five stages, empty-name recovery, clothing selection, attribute allocation, submission and resizing across nine viewports down to 360x640 and 640x360. Browser fixtures exercise production markup, CSS and navigation functions; in-game visual review remains manual.
 
 Race setup is dispatched directly through `InitializeRaceTemplate(..., interactive_options=0, ...)`, so the creator does not open initializer prompts. `Racial_Stats()` remains the owner of race builds and stat construction, but the Nexus path supplies the player's complete manual allocation.
 
@@ -218,7 +218,7 @@ Each race has its own panel and only IDs returned by `nexusRaceTraitOptions()` a
 | Legendary Saiyan | `legendary_berserker` | Legendary Berserker | Standard Legendary Saiyan initializer. |
 | Alien | `alien_scholar` | Scholar | Intelligence and control/utility profile. |
 | Alien | `alien_predator` | Predator | Absorption, precognition, regeneration, and combat-growth profile. |
-| Alien | `alien_shifter` | Shifter | Transformation, imitation, arm-stretch, and utility profile. |
+| Alien | `alien_shifter` | Shifter | Transformation, imitation, and utility profile. |
 | Alien | `alien_anomaly` | Anomaly | `jirenAlien`, regeneration, and Unlock Potential profile. |
 | Android | `android_chassis` | Synthetic Chassis | Requires a non-`android_human_*` body. |
 | Android | `android_infiltrator` | Infiltrator Shell | Requires an `android_human_*` body. |
@@ -236,14 +236,14 @@ Each race has its own panel and only IDs returned by `nexusRaceTraitOptions()` a
 
 Elite Saiyan eligibility requires world time greater than 3000 ticks, at least ten Saiyans, and a current Elite-to-Saiyan ratio below `elite_chance / 100` (`elite_chance` is currently 8). The commit backend regenerates this trait map, so an Elite option that became illegal after rendering is rejected. Cooler availability is held on the server-side form datum and is passed directly to the backend rather than read from an href field.
 
-Alien population promotion is independent of the selected AP options. After five minutes of world uptime, if at least one connected Alien exists and the connected Alien population has no Elite or is below 4% Elite, the new Alien becomes `Class = "Elite"` and receives `max(round(Avg_Base * bp_mod), 6000)` in `hbtc_bp`. The Scholar, Predator, Shifter, and Apex Genome buttons mark the legacy-equivalent 98/100/96/100 AP presets, after which every checkbox remains editable. Unspent AP is legal; unknown IDs and totals above 100 are rejected. Starting SP and paid Elite BP now charge their displayed 10/20 AP instead of preserving the old free-cost bug.
+Alien population promotion is independent of the selected AP options. After five minutes of world uptime, if at least one connected Alien exists and the connected Alien population has no Elite or is below 4% Elite, the new Alien becomes `Class = "Elite"` and receives `max(round(Avg_Base * bp_mod), 6000)` in `hbtc_bp`. The Scholar, Predator, Shifter, and Apex Genome buttons mark 98/100/86/100 AP presets, after which every checkbox remains editable. Stretchy Arms is unavailable for this wipe: it is absent from the 22-option catalog and Shifter preset, rejected in stale form submissions, and no longer granted by `applyNexusAlienOptions()`. Unspent AP is legal; unknown IDs and totals above 100 are rejected. Starting SP and paid Elite BP now charge their displayed 10/20 AP instead of preserving the old free-cost bug.
 
 | Trait | Applied state |
 | --- | --- |
 | `alien_scholar` | Sets Intelligence to 1; grants Time Stop (the Alien Time Freeze path), Materialization, and Split Form; multiplies mastery by 5 and blast homing by 1.5; enables lungs. |
 | `alien_predator` | Grants Absorb and precognition; adds 0.5 regeneration; sets `zenkai_mod` and `alien_zenkai` to 1; multiplies meditation by 2.5. |
 | `alien_anomaly` | Sets the normalized Standard-tier `jirenAlien` package (`0.95x` combat BP, `1x` incoming damage, `0.75x` powerup limit, `0.8x` knockback, `1.25x` stun resistance), removes Anger, grants Unlock Potential, and adds 0.5 regeneration. |
-| `alien_shifter` | Creates the non-teachable Alien transform buff; grants Giant Form, Imitation, and Materialization; divides low-ki and low-HP BP loss by 3; enables arm stretch and lungs; multiplies blast homing by 1.5 and mastery by 5. |
+| `alien_shifter` | Creates the non-teachable Alien transform buff; grants Giant Form, Imitation, and Materialization; divides low-ki and low-HP BP loss by 3; enables lungs; multiplies blast homing by 1.5 and mastery by 5. |
 
 ## Manual Stat Allocation
 `NEXUS_CREATION_STATS` defines all eleven submitted stats in this order:
@@ -330,15 +330,14 @@ The chosen body icon is assigned directly from the validated resource catalog or
 | `volatile_potential` | Anger |
 
 ### Internal Roll Distribution
-An unforced roll uses `rand(1, 100000)` and the following exact internal distribution:
+An unforced roll uses `rand(1, 100)` and the following exact internal distribution. Every new natural roll produces a mutation package; completed saved rolls remain unchanged. Admin natural rerolls use the same distribution.
 
 | Roll | Internal result | Probability | Count | Percentage per selected stat |
 | --- | --- | ---: | ---: | ---: |
-| `251..100000` | None | 99.75% | 0 | N/A |
-| `51..250` | Common | 0.20% | 1 | 1% to 10% |
-| `11..50` | Uncommon | 0.04% | 1 | 1% to 20% |
-| `2..10` | Rare | 0.009% | 2 or 3, chosen by `rand(2, 3)` | 1% to 20% |
-| `1` | Anomaly | 0.001% | All 11 | 1% to 30% |
+| `51..100` | Common | 50% | 1 | 1% to 10% |
+| `16..50` | Uncommon | 35% | 1 | 1% to 20% |
+| `2..15` | Rare | 14% | 2 or 3, chosen by `rand(2, 3)` | 1% to 20% |
+| `1` | Anomaly | 1% | All 11 | 1% to 30% |
 
 Selected IDs are distinct because each pick is removed from a temporary list. Angerless archetypes omit `volatile_potential` from the available pool, discard it during legacy normalization, and reject later attempts to assign it. Consequently, their Anomaly roll contains every eligible mutation rather than all eleven catalog entries. `forced_rarity` is used by internal tests; any value outside the four named tiers, including `"None"`, records the current version with no entries.
 

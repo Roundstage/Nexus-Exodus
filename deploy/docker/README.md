@@ -78,6 +78,12 @@ atualize o repositório e reconstrua a imagem; não é necessário compilar ou
 copiar artefatos manualmente. Nunca publique a imagem no Docker Hub ou em outro
 registry público.
 
+As alterações no **Server Control Panel** são gravadas imediatamente nos arquivos
+`Misc`, `GAIN`, `Year` e `Votes`, dentro do volume `/srv/nexus`. Não dependem do
+autosave do mundo, cujo intervalo é de 72 minutos. Essa correção exige reconstruir
+a imagem; configurações que já voltaram ao padrão devem ser reaplicadas depois
+da atualização. Reinícios e recriações devem continuar usando o mesmo volume.
+
 O entrypoint também inicia um inspetor binário local antes do DreamDaemon.
 Ele valida WEBP/WEBM enviados para perfis por assinatura, dimensões, tamanho e
 SHA-1 dentro do mesmo volume privado; nenhum arquivo ou URL é enviado a um
@@ -86,6 +92,10 @@ Nos logs, as linhas `Profile media inspector is ready.` e
 `Persistent runtime directories are ready.` confirmam as duas precondições.
 
 ## Investigar CPU alta na VPS
+
+O build também oferece telemetria interna com rotação e capturas do profiler
+pelo comando de admin **CPU Diagnostics**. Veja [o procedimento completo](../../docs/CpuDiagnostics.md).
+O coletor do host descrito abaixo funciona imediatamente, sem reconstruir a imagem.
 
 O campo `Processor` do jogo exibe `world.cpu`: a fração do tick usada por procs
 e envio de informações do mapa, conforme a [referência do BYOND](https://www.byond.com/docs/ref/#/world/var/cpu).

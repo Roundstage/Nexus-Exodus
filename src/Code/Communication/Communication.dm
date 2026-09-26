@@ -40,6 +40,8 @@ mob/proc
 
 	ChatLog(info,the_key, channel = "all")
 		if(!client) return
+		info = sanitizeNexusHtml(info)
+		the_key = html_encode("[the_key]")
 		if(!last_chatlog_write) last_chatlog_write = world.time
 		channel = normalizeNexusChatChannel(channel)
 		
@@ -278,6 +280,7 @@ mob/var/tmp/obj/Effect/NexusTypingIndicator/nexus_typing_indicator
 
 obj/Effect/NexusTypingIndicator
 	name = "typing"
+	reallyDelete = TRUE
 	icon = 'src/Icons/VFX/KhunTyping.dmi'
 	mouse_opacity = 0
 	density = 0
@@ -298,10 +301,13 @@ mob/proc/Say_Spark()
 	sleep(50)
 
 mob/proc/Remove_Say_Spark()
-	if(!nexus_typing_indicator) return
-	vis_contents -= nexus_typing_indicator
-	del(nexus_typing_indicator)
+	var/list/indicators = list()
+	for(var/obj/Effect/NexusTypingIndicator/indicator in vis_contents) indicators += indicator
+	if(nexus_typing_indicator) indicators |= nexus_typing_indicator
 	nexus_typing_indicator = null
+	for(var/obj/Effect/NexusTypingIndicator/indicator in indicators)
+		vis_contents -= indicator
+		del(indicator)
 
 var/OOC=1
 
@@ -323,6 +329,7 @@ mob/var/tmp
 
 obj/Effect/NexusSayText
 	name = "speech"
+	reallyDelete = TRUE
 	mouse_opacity = 0
 	density = 0
 	Grabbable = 0
@@ -332,6 +339,26 @@ obj/Effect/NexusSayText
 	maptext_width = 256
 	maptext_height = 128
 	pixel_x = -112
+
+mob/proc/getNexusCommunicationEffects()
+	var/list/effects = list()
+	for(var/obj/Effect/effect in vis_contents)
+		if(istype(effect, /obj/Effect/NexusTypingIndicator) || istype(effect, /obj/Effect/NexusSayText)) effects += effect
+	return effects
+
+mob/proc/clearNexusSayText()
+	var/list/bubbles = list()
+	for(var/obj/Effect/NexusSayText/bubble in vis_contents) bubbles += bubble
+	if(nexus_say_text) bubbles |= nexus_say_text
+	nexus_say_text = null
+	for(var/obj/Effect/NexusSayText/bubble in bubbles)
+		vis_contents -= bubble
+		del(bubble)
+
+mob/proc/clearNexusCommunicationEffects()
+	// Saved vis_contents can retain actors after their tmp handles and timers are lost.
+	End_Say()
+	clearNexusSayText()
 
 proc/countNexusWords(raw_text)
 	raw_text = "[raw_text]"
@@ -350,9 +377,7 @@ proc/countNexusWords(raw_text)
 mob/proc/showNexusSayText(message)
 	var/word_count = countNexusWords(message)
 	if(!word_count || word_count > 50) return FALSE
-	if(nexus_say_text)
-		vis_contents -= nexus_say_text
-		del(nexus_say_text)
+	clearNexusSayText()
 	var/obj/Effect/NexusSayText/bubble = new
 	nexus_say_text = bubble
 	var/safe_color = nexusIsValidRichTextColor(TextColor) ? TextColor : "#f1e4c3"
@@ -364,13 +389,11 @@ mob/proc/showNexusSayText(message)
 	bubble.pixel_y = start_pixel_y
 	vis_contents += bubble
 	spawn(max(35, min(100, word_count * 2)))
-		if(src && nexus_say_text == bubble)
+		if(src && bubble && nexus_say_text == bubble)
 			animate(bubble, pixel_y = start_pixel_y + 12, alpha = 0, time = 10)
 			sleep(10)
-			if(src && nexus_say_text == bubble)
-				vis_contents -= bubble
-				nexus_say_text = null
-				del(bubble)
+			if(src && bubble && nexus_say_text == bubble)
+				clearNexusSayText()
 	return TRUE
 
 mob/proc/Spam_Check(var/Message)
@@ -453,7 +476,7 @@ mob/verb
 		if(name == displaykey) ooc_name = name
 
 		for(var/mob/M in players) if(M.OOCon)
-			var/ooc_message = "<span style='font-size:[M.TextSize + 8]pt;color:[TextColor]'><b>[html_encode(ooc_name)]:</b> <span style='color:white'>[html_encode(msg)]</span></span>"
+			var/ooc_message = "<span style='font-size:[normalizeNexusChatTextSize(M.TextSize) + 8]pt;color:[normalizeNexusHtmlColor(TextColor, "#ffffff")]'><b>[html_encode(ooc_name)]:</b> <span style='color:white'>[html_encode(msg)]</span></span>"
 			M.receiveNexusChatMessage(ooc_message, "ooc", key)
 		awardProgressionFromCommunication(msg, "global chat", 0.25)
 
@@ -472,7 +495,7 @@ mob/verb
 		if(!msg) msg = input("Type a message for the Local OOC", "LOOC") as null|text
 
 		if(msg)
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'><span style='color: white;'>(LOOC)</span> [html_encode(name)]: <span style='color: white;'>[html_encode(msg)]</span></span>"
+			var/t = "<span style='font-size:10pt;color:[normalizeNexusHtmlColor(TextColor, "#ffffff")];font-family:Walk The Moon'><span style='color: white;'>(LOOC)</span> [html_encode(name)]: <span style='color: white;'>[html_encode(msg)]</span></span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
@@ -493,7 +516,7 @@ mob/verb
 		if(!msg||msg=="") msg=input("Type a message that people in sight can see") as text
 		if(msg)
 			for(var/mob/M in Say_Recipients())
-				M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
+				M.receiveNexusChatMessage("<span style='font-size:[normalizeNexusChatTextSize(M.TextSize) + 8]pt'>-[html_encode(name)] whispers something...</span>", "ic", key, FALSE)
 				if(getdist(src,M)<=2)
 					var/t = formatNexusSpokenMessage(M, msg, "whispers")
 					M.receiveNexusChatMessage(t, "ic", key)
@@ -538,7 +561,7 @@ mob/verb
 		if(!msg) msg = input("What is your character thinking?", "Local Chat") as null|text
 		if(msg)
 
-			var/t = "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'>[html_encode(name)] thinks, <i>[html_encode(msg)]</i></span>"
+			var/t = "<span style='font-size:10pt;color:[normalizeNexusHtmlColor(TextColor, "#ffffff")];font-family:Walk The Moon'>[html_encode(name)] thinks, <i>[html_encode(msg)]</i></span>"
 			for(var/mob/m in Say_Recipients())
 				if(m.last_drone_msg != msg || !drone_module)
 					if(lowertext(msg) == "stop" && m != src && client && m && m.client)
@@ -593,10 +616,10 @@ obj/Telepathy
 					src << "You do not know their energy. To know someone's energy you must have been near them a certain \
 					amount of time."
 					return
-				var/msg="(Telepathy)<font color=[usr.TextColor]>[usr]: [html_encode(message)]"
+				var/msg="(Telepathy)<font color='[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]'>[html_encode("[usr]")]: [html_encode(copytext(message, 1, 1001))]"
 				msg=copytext(msg,1,1000)
-				M.receiveNexusChatMessage("<span style='font-size:[M.TextSize + 8]pt'>[msg]</span>", "ic", usr.key)
-				usr.receiveNexusChatMessage("<span style='font-size:[usr.TextSize + 8]pt'>[msg]</span>", "ic", usr.key)
+				M.receiveNexusChatMessage("<span style='font-size:[normalizeNexusChatTextSize(M.TextSize) + 8]pt'>[msg]</span>", "ic", usr.key)
+				usr.receiveNexusChatMessage("<span style='font-size:[normalizeNexusChatTextSize(usr.TextSize) + 8]pt'>[msg]</span>", "ic", usr.key)
 		else usr<<"They have their telepathy turned off."
 
 mob/verb/Who()
@@ -614,11 +637,11 @@ mob/verb/Who()
 	for(var/mob/A in a)
 		Amount+=1
 		if(IsAdmin()) 
-			Who+="<br>[A.displaykey] ([A.name]) - [A.Race]"
+			Who+="<br>[html_encode(A.displaykey)] ([html_encode(A.name)]) - [html_encode(A.Race)]"
 		else
 			if(SHOW_CHAR_NAME_ON_WHO)
-				Who+="<br>[A.displaykey] ( [A.name] )"
+				Who+="<br>[html_encode(A.displaykey)] ( [html_encode(A.name)] )"
 			else
-				Who+="<br>[A.displaykey]"
+				Who+="<br>[html_encode(A.displaykey)]"
 	Who+="<br>Amount: [Amount]"
 	src<<browse(Who,"window=Who;size=600x600")

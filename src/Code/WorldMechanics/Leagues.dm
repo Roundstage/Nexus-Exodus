@@ -148,7 +148,7 @@ obj/League
 		var/safe_league_name = html_encode(normalizeNexusLeagueInlineText(name, NEXUS_LEAGUE_NAME_LIMIT))
 		var/safe_speaker_name = html_encode(copytext("[usr]", 1, 81))
 		for(var/mob/m in players) if(is_league_member(m))
-			m<<"<font size=[m.TextSize]>([safe_league_name])<font color=[usr.TextColor]>[safe_speaker_name]: [msg]"
+			m<<"<font size=[normalizeNexusChatTextSize(m.TextSize)]>([safe_league_name])<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]>[safe_speaker_name]: [msg]"
 	Click() if(src in usr)
 		var/list/options=list("cancel","leave league","read league notes","send resources")
 		if(league_rank>=2) options+="invite someone"

@@ -9,7 +9,9 @@ mob/proc/classicStatPanel(panel_name)
 
 mob/proc/classicStat(label, value)
 	if(nexus_classic_capture)
-		if(args.len == 1) nexus_classic_capture.add(null, label)
+		// DM includes omitted formal parameters in args.len. A missing value means
+		// the legacy one-argument stat(object/list/text) form, not a text-only label.
+		if(isnull(value)) nexus_classic_capture.add(null, label)
 		else nexus_classic_capture.add(label, value)
 		return
 
@@ -47,7 +49,7 @@ mob/proc/captureClassicData(section)
 				if(resources)
 					resources.Update_value()
 					snapshot.add(null, resources)
-				for(var/obj/items/item in item_list) snapshot.add(null, item)
+				for(var/obj/items/item in item_list) snapshot.add(item.getNexusInventoryStatus(), item)
 			if("skills")
 				classicStatPanel("Skills")
 				for(var/obj/skill in src)
@@ -77,7 +79,7 @@ mob/proc/captureClassicData(section)
 				classicStat("Area", "[get_area()]")
 				classicStat("Players online", players.len)
 				for(var/mob/player in players)
-					if(player.client) classicStat(null, player)
+					if(player.client) classicStat("Account: [player.key]", player)
 			if("admin") if(IsAdmin()) Stat_Admin()
 			if("modules") Stat_Modules()
 			if("souls") Stat_Souls()

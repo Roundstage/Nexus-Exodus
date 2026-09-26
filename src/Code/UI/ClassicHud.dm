@@ -37,6 +37,9 @@ proc/normalizeClassicGeometry(list/state, id, width = 1366, height = 768)
 proc/classicHudScale(reference_width, reference_height, width, height)
 	return min(width / max(1, reference_width), height / max(1, reference_height))
 
+proc/classicGeometryOverlaps(list/first, list/second)
+	return first["x"] < second["x"] + second["w"] && first["x"] + first["w"] > second["x"] && first["y"] < second["y"] + second["h"] && first["y"] + first["h"] > second["y"]
+
 proc/scaleClassicGeometry(list/state, reference_width, reference_height, width, height)
 	var/scale = classicHudScale(reference_width, reference_height, width, height)
 	var/list/result = state.Copy()
@@ -131,6 +134,9 @@ datum/ClassicHud
 		list/payloads = list()
 		list/last_widget_refresh = list()
 		chat_signature
+		chat_generation
+		chat_sent_channel
+		chat_last_id = 0
 		chat_refresh_pending = FALSE
 		list/command_entries = list()
 		section = "actions"
@@ -237,7 +243,15 @@ datum/ClassicHud
 
 	proc/applyGeometry(id)
 		var/list/state = displayGeometry(id)
-		winset(owner, control(id), "pos=[state["x"]],[state["y"]];size=[state["w"]]x[state["h"]];is-visible=true")
+		// Separate native browser controls have no CSS stacking relationship.
+		// Temporarily hide intersecting bars without changing their saved open state.
+		var/covered = FALSE
+		if(isClassicBarId(id))
+			for(var/panel_id in owner.nexus_classic_layout)
+				if(!isClassicBarId(panel_id) && isVisible(panel_id) && classicGeometryOverlaps(state, displayGeometry(panel_id)))
+					covered = TRUE
+					break
+		winset(owner, control(id), "pos=[state["x"]],[state["y"]];size=[state["w"]]x[state["h"]];is-visible=[covered ? "false" : "true"]")
 
 	proc/applyLayout()
 		if(!owner || !owner.client || !owner.playerCharacter) return
@@ -267,6 +281,9 @@ datum/ClassicHud
 				owner << browse_rsc('src/Code/UI/Browser/ClassicHud.js', "ClassicHud.js")
 				applyGeometry(id)
 				owner << browse(buildHtml(id), "window=[control(id)]")
+		// browse() can show a newly loaded control; reapply occlusion after loading.
+		for(var/id in windows)
+			if(isVisible(id)) applyGeometry(id)
 
 	proc/buildHtml(id)
 		var/list/config = list("id" = id, "kind" = isClassicBarId(id) ? "bar" : id, "ref" = "\ref[src]", "generation" = windows[id], "geometry" = displayGeometry(id), "viewport" = list("w" = viewport_width, "h" = viewport_height))
@@ -287,6 +304,8 @@ datum/ClassicHud
 		if(loop_running) return
 		loop_running = TRUE
 		while(src && owner && owner.client && owner.playerCharacter)
+			// Expire every channel even while the chat panel is closed or collapsed.
+			owner.client.pruneNexusChatHistory()
 			if(world.time - last_viewport_poll >= 10)
 				pollViewport()
 				last_viewport_poll = world.time
@@ -302,7 +321,7 @@ datum/ClassicHud
 		set waitfor = FALSE
 		if(chat_refresh_pending) return
 		chat_refresh_pending = TRUE
-		sleep(1)
+		sleep(2)
 		if(!src) return
 		chat_refresh_pending = FALSE
 		if(owner && owner.nexus_classic_layout["chat"]["collapsed"] && payloads["chat"]) return
@@ -310,13 +329,19 @@ datum/ClassicHud
 
 	proc/refreshChat()
 		if(!owner || !owner.client || !ready["chat"] || !isVisible("chat")) return
-		var/signature = json_encode(list(owner.client.nexus_chat_revision, chat_channel, owner.TextSize, owner.nexus_classic_layout["chat"], viewport_width, viewport_height))
-		if(payloads["chat"] && chat_signature == signature) return
 		owner.client.initializeNexusChatHistory()
-		var/list/entries = owner.client.nexus_chat_history[chat_channel]
-		var/list/messages = list()
-		for(var/entry in entries) messages += getNexusChatEntryHtml(entry)
-		push("chat", list("channel" = chat_channel, "messages" = messages, "fontSize" = Clamp(round(owner.TextSize + 11), 12, 21)))
+		var/datum/NexusChatBuffer/buffer = owner.client.nexus_chat_history[chat_channel]
+		buffer.prune()
+		var/signature = json_encode(list(buffer.revision, chat_channel, owner.TextSize, owner.nexus_classic_layout["chat"], viewport_width, viewport_height))
+		var/reset = chat_generation != windows["chat"] || chat_sent_channel != chat_channel
+		if(!reset && payloads["chat"] && chat_signature == signature) return
+		var/list/update = buffer.buildUpdate(chat_last_id, reset)
+		update["channel"] = chat_channel
+		update["fontSize"] = normalizeNexusChatTextSize(owner.TextSize) + 11
+		push("chat", update)
+		chat_generation = windows["chat"]
+		chat_sent_channel = chat_channel
+		chat_last_id = buffer.next_id
 		chat_signature = signature
 
 	proc/shouldRefreshWidget(id, periodic = FALSE)
@@ -375,6 +400,14 @@ datum/ClassicHud
 			if(!(section in list("actions", "playtest", "admin"))) continue
 			commands += list(list("token" = token, "label" = entry["name"], "value" = entry["category"], "group" = entry["category"]))
 		var/datum/ClassicSnapshot/snapshot = owner.captureClassicData(section)
+		if(section == "world")
+			for(var/list/row in snapshot.rows)
+				var/mob/player = snapshot.subjects[row["token"]]
+				if(!ismob(player)) continue
+				var/list/actions = list()
+				for(var/list/option in contextOptions(player))
+					actions += list(list("id" = option["id"], "label" = option["label"]))
+				row["actions"] = actions
 		var/list/result = list("sections" = catalog, "section" = section, "rows" = snapshot.rows, "commands" = commands)
 		del(snapshot)
 		return result
@@ -403,6 +436,7 @@ datum/ClassicHud
 		if(action == "ready")
 			ready[id] = TRUE
 			payloads -= id
+			if(id == "chat") chat_generation = null
 		else if(action == "typing")
 			owner.client.nexus_classic_typing = href_list["value"] == "1"
 			if(owner.client.nexus_classic_typing)
@@ -433,6 +467,11 @@ datum/ClassicHud
 		else if(action == "channel" && id == "chat")
 			chat_channel = normalizeNexusChatChannel(href_list["value"])
 			owner.client.nexus_chat_hud.active_channel = chat_channel
+		else if(action == "chat_sync" && id == "chat")
+			chat_generation = null
+			payloads -= "chat"
+		else if(action == "clear_chat" && id == "chat")
+			owner.client.clearNexusChatHistory()
 		else if(action == "chat" && id == "chat")
 			var/chat_action = href_list["value"]
 			if(chat_action in list("say", "ooc", "emote", "logs", "cmd")) owner.client.nexus_chat_hud.handleAction(chat_action)
@@ -440,6 +479,8 @@ datum/ClassicHud
 			section = href_list["value"]
 			payloads -= "menu"
 		else if(action == "command" && id == "menu") runCommand(href_list["value"])
+		else if(action == "context") showContextMenu(id, href_list["value"])
+		else if(action == "context_action") runContextAction(id, href_list["value"], href_list["option"])
 		else if(action == "settings" && id == "menu") owner.Settings()
 		else if(action == "ki_settings" && id == "menu") owner.kiSettings()
 		else if(action == "inventory" && id == "menu") setOpen("inventory", TRUE)

@@ -399,6 +399,7 @@ mob/proc/addNexusStarterHotkeyBindings()
 	return added
 
 mob/proc/initializeNexusHotkeys()
+	ensureNexusHotkeyBackupLoaded()
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
 	if(!islist(active_nexus_hotkey_actions)) active_nexus_hotkey_actions = list()
 	if(!islist(active_nexus_hotkey_combinations)) active_nexus_hotkey_combinations = list()
@@ -458,6 +459,7 @@ mob/proc/getNexusBindingDisplayName(list/binding_info)
 mob/proc/bindNexusHotkey(combination, list/binding_info)
 	if(!canonicalNexusHotkey(getNexusHotkeyBase(combination))) return 0
 	if(getNexusHotkeyTriggerCombination(combination) == "ALT+F4") return 0
+	ensureNexusHotkeyBackupLoaded()
 	if(!islist(nexus_hotkey_bindings)) nexus_hotkey_bindings = list()
 	nexus_hotkey_bindings[combination] = binding_info.Copy()
 	Hotkey_server_backup_save()
@@ -465,12 +467,14 @@ mob/proc/bindNexusHotkey(combination, list/binding_info)
 	return 1
 
 mob/proc/unbindNexusHotkey(combination)
+	ensureNexusHotkeyBackupLoaded()
 	if(!islist(nexus_hotkey_bindings) || !(combination in nexus_hotkey_bindings)) return
 	nexus_hotkey_bindings -= combination
 	Hotkey_server_backup_save()
 	if(client) client.syncNexusHotkeyMacros()
 
 mob/proc/importLegacyNexusHotkeys()
+	ensureNexusHotkeyBackupLoaded()
 	nexus_hotkey_bindings = list()
 	migrateLegacyHotkeyBindings()
 	nexus_hotkey_version = 0

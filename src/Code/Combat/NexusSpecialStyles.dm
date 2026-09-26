@@ -262,10 +262,7 @@ obj/Effect/NexusFlameField
 				owner.applyNexusTechniqueDamage(target, damage, "Wall of Flame")
 				if(target)
 					target.ApplyStun(time = 4, stun_power = 1.5)
-					target.BurnStack++
-					if(!target.isBurning)
-						target.isBurning = TRUE
-						target.try_applying_burn_effect()
+					target.applyBurnEffect(owner)
 			sleep(2)
 		if(src) del(src)
 

@@ -1,5 +1,7 @@
 # Combat
 
+`showNexusTechniqueAnnouncement()` HTML-encodes renamed techniques and actor names, and validates its display color before producing maptext/chat markup. Shared legacy chat sanitization provides a second boundary; see [HTML input security](../HtmlInputSecurity.md).
+
 `refreshNexusSenseReadouts()` computes the observer's power magnitude once per batch. `updateNexusSenseReadoutAppearance()` rewrites maptext only when the percentage changes or the image is uninitialized, and offsets only when their values change. Per-target power state is cleared with the readout, including clientless cleanup. Reconciliation advances the regular readout deadline to avoid another full refresh in the same tick. `UpdateSenseArrowPositions()` shares observer coordinates for its batch, and unchanged arrow scale skips redundant transform operations. Visibility checks, target coverage, percentage rules and regular update intervals remain unchanged.
 
 `Lunge_Graphic/Lunge_go()` scopes animation, attachment and disposal to one `deferred_delete_generation`. `Lunge_stick_to()` exits after release/reuse or replacement of the animation; the pool invalidates deferred work before recycling. `reallyDelete` removes the graphic from its pool and delegates actual destruction.
@@ -2388,10 +2390,10 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 - Side effects: see implementation.
 
 #### mob/proc/GetCriticalChance
-- Signature: `mob/proc/GetCriticalChance()`
-- Inputs: None
-- Purpose: Return Critical Chance.
-- Returns: computed value (see implementation).
+- Signature: `mob/proc/GetCriticalChance(mob/target)`
+- Inputs: Optional target for forged armor critical resistance.
+- Purpose: Convert effective Offense's share of the raw seven-stat build to critical chance with `(1 + rating) * 0.04`, then add Milestone, equipment and stance bonuses and subtract target armor resistance. Equal raw stats give 4.04%; concentrating raw Offense approaches 28.04% before effective-stat modifiers and flat bonuses. The old absolute-stat thresholds and their discontinuity are removed.
+- Returns: final critical percentage clamped to 0-100, shared by combat and the Stats display. Uniform stat growth alone never increases it.
 - Side effects: none expected.
 
 ### src/Code/Combat/Melee/DragonRush.dm
@@ -3467,24 +3469,31 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 - Returns: none (implicit).
 - Side effects: see implementation.
 
+#### mob/proc/getPowerControl
+- Signature: `mob/proc/getPowerControl(obj/Power_Control/excluded)`
+- Inputs: Optional object being deleted, which must not be selected.
+- Purpose: Return the owned Power Control controller, repairing a missing or foreign cached reference from inventory.
+- Returns: The surviving owned skill, or null when none remains.
+- Side effects: Updates `powerup_obj`; preserves an already valid controller when ranks add duplicate skills.
+
 #### mob/proc/Power_up
 - Signature: `mob/proc/Power_up()`
 - Inputs: None
-- Purpose: Handle power up.
+- Purpose: Resolve the owned Power Control controller, then start/stop powering up or advance forms.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### obj/Power_Control/New
 - Signature: `New()`
 - Inputs: None
-- Purpose: Initialize object state and register references.
+- Purpose: Resolve the owner's controller after inventory insertion without replacing an existing Power Control or its active loop.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### obj/Power_Control/Del
 - Signature: `Del()`
 - Inputs: None
-- Purpose: Cleanup before deletion and return pooled objects if needed.
+- Purpose: Stop the deleted controller and rebind to a surviving owned copy when needed. Removing an unused rank duplicate preserves the existing powerup and BP.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3505,7 +3514,7 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 #### verb/Power_Down
 - Signature: `verb/Power_Down()`
 - Inputs: None
-- Purpose: Handle power down.
+- Purpose: Resolve the owned Power Control controller and stop powering up, begin powering down or revert. Commands exposed by duplicate skills share the same controller.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -3588,6 +3597,7 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 
 #### mob/proc/Aura_Overlays
 - Signature: `mob/proc/Aura_Overlays(remove_only)`
+- Rendering: powerup auras use `PLAYER_POWERUP_LAYER`, above managed buffs and transformation overlays. Removal clears both current foreground images and legacy underlay copies, including Super God Fist; Golden and Ultra Instinct auras no longer add duplicate underlays.
 - Inputs: remove_only
 - Purpose: Synchronize legacy aura overlays with an independent attack-colored lighting emitter; removal clears only the aura layer and preserves transformation/action lights.
 - Returns: none (implicit).
@@ -3785,23 +3795,21 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 #### mob/proc/Observe_List
 - Signature: `mob/proc/Observe_List()`
 - Inputs: None
-- Purpose: Handle observe list.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: List self, placed player/bot targets and nearby objects/mobs/turfs. Unplaced lobby characters are excluded.
+- Returns: target list.
+- Side effects: none.
 
 #### verb/Hotbar_use
-- Signature: `verb/Hotbar_use()`
-- Inputs: None
-- Purpose: Handle hotbar use.
+- Signature: `obj/Observe/verb/Hotbar_use(mob/user)`
+- Inputs: owning user (falls back to `usr`).
+- Purpose: Prompt for an Observe target, then revalidate it through `observeTarget()`.
 - Returns: none (implicit).
-- Side effects: see implementation.
+- Side effects: target picker; camera change only for a valid selection.
 
 #### verb/Observe
 - Signature: `verb/Observe(atom/A in usr.Observe_List())`
-- Inputs: atom/A in usr.Observe_List(
-- Purpose: Handle observe.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Delegate to `obj/Observe.observeTarget(user, target)`, which revalidates ownership, target placement/list membership and energy restrictions. Self is always allowed as the return target.
+- `obj/Observe.Hotbar_use(mob/user)` explicitly opens `selectObserveTarget(user)` before applying a target; cancelling leaves the current camera unchanged.
 
 #### mob/Admin1/verb/observe
 - Signature: `mob/Admin1/verb/observe(atom/A in Observe_List())`
@@ -3811,11 +3819,10 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 - Side effects: see implementation.
 
 #### mob/proc/Get_Observe
-- Signature: `mob/proc/Get_Observe(mob/M) if(client)`
-- Inputs: mob/M
-- Purpose: Return Observe.
-- Returns: computed value (see implementation).
-- Side effects: none expected.
+- Signature: `mob/proc/Get_Observe(atom/target)`
+- Purpose: Resolve a placed camera through `getObserveEye(target)`; accept mobs, objects and turfs, and return to the pilot's placed ship when observing self. Null/unplaced targets are rejected without changing the camera.
+- Returns: success flag.
+- Side effects: set `EYE_PERSPECTIVE`, switch `client.eye` and synchronize ambient lighting to the viewed area.
 
 #### verb/Hotbar_use
 - Signature: `verb/Hotbar_use()`
@@ -3875,6 +3882,7 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 
 #### verb/FireFist
 - Signature: `verb/FireFist()`
+- Rendering: activation and reversion rebuild the managed buff slot above clothing/armor and below powerup auras. Save/load and later equipment changes retain that order. Saiyan Power, Majin, Limit Breaker and custom buff overlays use the same managed layer.
 - Inputs: None
 - Purpose: Handle fire fist.
 - Returns: none (implicit).
@@ -4004,9 +4012,18 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 #### mob/proc/Speed_delay_mult
 - Signature: `mob/proc/Speed_delay_mult(severity = 1)`
 - Inputs: severity = 1
-- Purpose: Handle speed delay mult.
-- Returns: none (implicit).
-- Side effects: see implementation.
+- Purpose: Apply the existing cadence curve to effective Speed's build rating instead of its accumulated raw value. Uniform stat growth preserves melee, movement, Flash Step and other speed-based action delays. Effective Milestone bonuses, electric/Wing Clip penalties and final Accelerate multipliers remain active.
+- Returns: delay multiplier, including the server's `speedDelayMultMod` setting.
+- Side effects: none.
+
+### src/Code/Combat/StatScaling.dm
+
+#### mob/proc/getNexusBuildStatRating
+- Signature: `mob/proc/getNexusBuildStatRating(stat_value)`
+- Inputs: Effective Speed or Offense for a rate calculation.
+- Purpose: Return `700 * stat_value / (Swordless_strength() + End + Spd + Pow + Res + Off + Def)`, counting only nonnegative denominator stats. Each raw stat in an equal build rates 100; a single raw stat's share cannot exceed 700. The denominator uses the character's current raw build, excludes sword damage reinforcement, and is independent of other players and `Stat_Record`. Effective-only bonuses/debuffs remain in the numerator; buffs that mutate raw stats change the build proportions, while uniform raw-stat buffs preserve the rates.
+- Returns: a rating calculated by dividing through the largest stat before summing, avoiding overflow for large finite saves. Invalid/nonpositive inputs or denominators return zero.
+- Side effects: none. Does not rewrite saved stats, cap training gains, enable `Base_Stat_Gain`, or change raw damage/accuracy scaling.
 
 ### src/Code/Combat/SplitForms.dm
 
@@ -4651,6 +4668,10 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 
 ### Progression preset buffs and presentation
 
+- `Materialization.materializeEquipment(user, choice)` accepts only weights, Normal forged armor, the Normal Science sword and Normal Science gloves/gauntlets. Gear starts at tier 0 (`normal`, no Masterwork); arbitrary sword subtypes and weight-tier purchases are no longer offered. Existing weight quality is preserved. Ownership is checked again after the choice prompt.
+- Majin and Mystic each multiply effective BP by 1.5 in compatible forms, including base form. The existing mutual exclusions, secondary bonuses and costs remain. `normalizeMajinBPMultiplier()` removes the old +0.2 baked into active legacy saves exactly once; toggles invalidate the BP cache and the HUD reports the current multiplier.
+- `getPresetBuffAppearances()` and `PlayerAppearanceManager.syncPresetBuffs()` supply sustained RPT DMI effects for Focus, preset/Ultimate buffs and the Four Horsemen. They restore active effects after load or appearance rebuild, discard serialized duplicate layers, and remove the effect on disable/deletion/exhaustion. These character effects are separate from skill artwork and activation bursts; source mappings and reused art are documented in `src/Icons/NexusIntegrated/Buffs/README.md`.
+
 - The Four Horsemen use `obj/DemonBuff/{Famine,War,Pestilence,Death}` in `Combat/DemonBuffs.dm`, independent of `obj/Buff`. `toggleDemonBuff()` owns the separate slot; each aura excludes the other three, Mystic and Majin, while ordinary custom/preset buffs stay active. All four are teachable like Mystic (100 student points; no race restriction on students) and excluded from Combat purchases. They retain the original Four Horsemen stat bonuses: Famine +0.4 additive BP/x1.3 Regen/x1.4 Recovery; War +0.4 BP/x1.3 Strength and Force/x1.25 Offense; Pestilence +0.4 BP/x1.4 Endurance and Defense; Death +0.7 BP. The source is Roleplay-Tenkaichi `Code/Skills/Four Horsemen.dm`: Famine was labeled FungalPlague, and Pestilence's defensive definition was commented out. No obsolete commented injury-immunity descriptions are treated as implemented effects.
 - `applyDemonBuffStats()` applies/reverses fixed type defaults without the custom-buff point cap or editor. `revertDemonBuff()` also runs on skill deletion and `Revert_All()`. `drainDemonBuff()` consumes 0.5% maximum Energy each second and reverts at zero; `normalizeDemonBuff()` resumes the loop after login without reapplying saved modifiers. The HUD and action bar read `active_demon_buff` independently of `current_buff`.
 - `Soul_Contract()` requires an owned skill and `canUseSoulContract()` (Demon race plus Daimao rank), including a second check after the recipient's acceptance dialog. Soul Contract is no longer teachable or self-learnable.
@@ -4679,6 +4700,7 @@ The engine no longer emits routine diagnostic messages for loop lifecycle, actor
 - Pressure Punch uses `pressure_punch_charge_ticks = 10` and `pressure_punch_cooldown_ticks = 90`, halving its charge and reducing its old twelve-second cooldown to nine seconds.
 - Versatile Training and Unencumbered Combatant feed effective combat-stat helpers without changing saved base stats. Momentum, Precision, and Fortified Damage are mutually exclusive secondary source-stat choices. Sweeping Impact, Echoing Assault, and Keen Edge add three-tile splash, bounded double attacks, and critical chance to ordinary melee.
 - Fire Lord reads the struck target's Burn stacks and only amplifies attacks whose resolved name is fire-, flame-, or burn-based.
+- `tryApplyFireFistBurn(target)` rolls the existing 40% chance after a melee hit actually reduces Health. Ordinary melee and Nexus melee-technique primary, extra, splash, and line hits use the same application path; the shared `applyNexusTechniqueDamage(..., melee_hit = FALSE)` helper requires explicit melee opt-in so ranged techniques do not inherit Fire Fist. Burn uses RPT's animated status art, 3 Health per stack every two seconds, and a non-compounding 30% reduction to effective Health regeneration. Smolder and Wall of Flame use the same attributed Burn lifecycle.
 
 ### Open combat asset library
 

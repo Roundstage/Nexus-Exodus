@@ -1,4 +1,13 @@
 proc/runClassicResponsiveLayoutSmokeTests()
+	var/list/panel = list("x" = 8, "y" = 8, "w" = 460, "h" = 680)
+	var/list/bar = list("x" = 0, "y" = 650, "w" = 700, "h" = 52)
+	nexusSmokeAssert(classicGeometryOverlaps(bar, panel), "overlapping hotbar was not covered by the panel")
+	panel["h"] = 26
+	nexusSmokeAssert(!classicGeometryOverlaps(bar, panel), "collapsed panel continued hiding an unobstructed hotbar")
+	panel["y"] = 702
+	nexusSmokeAssert(!classicGeometryOverlaps(bar, panel), "touching panel edges counted as hotbar overlap")
+	panel["y"] = 680
+	nexusSmokeAssert(classicGeometryOverlaps(bar, panel), "collapsed header overlapping the hotbar was ignored")
 	var/list/layout = list(
 		"chat" = list("x" = 1360, "y" = 520, "w" = 550, "h" = 450, "open" = TRUE),
 		"bar" = list("x" = 680, "y" = 986, "w" = 541, "h" = 94, "open" = TRUE),
@@ -293,7 +302,212 @@ proc/runIndependentHotkeySmokeTests()
 	del(owner)
 	world.log << "NEXUS_INDEPENDENT_HOTKEY_TESTS_PASSED"
 
+// Use the real savefile format and initialization order without a Dream Seeker client.
+mob/NexusSmokeTest/HotkeyBackupProbe
+	var/tmp/savefile/backup
+	var/tmp/backup_load_count = 0
+
+	Has_hotkey_server_backup()
+		return !!backup
+
+	Hotkey_server_backup_load()
+		backup_load_count++
+		return readNexusHotkeyBackup(backup)
+
+proc/runHotkeyReconnectSmokeTests()
+	var/mob/NexusSmokeTest/HotkeyBackupProbe/original = new
+	original.playerCharacter = TRUE
+	original.character_made_time = 12345
+	original.Add_hotbar_proxies()
+	original.Generate_starter_hotbar()
+	original.initializeNexusHotkeys()
+	original.initializeClassicBars()
+	var/list/direct_binding = original.classicBindingForObject(locate(/obj/Train) in original)
+	direct_binding["direct"] = TRUE
+	original.bindNexusHotkey("ALT+F6", direct_binding)
+	original.bindNexusHotkey("DOUBLE:CTRL+Space", list("kind" = "action", "action id" = "cycle_target", "direct" = TRUE))
+	original.unbindNexusHotkey("G")
+	original.nexus_keyboard_layout = "br"
+	var/savefile/character_save = new
+	character_save["character"] << original
+	// A bar edit after the last character save must also survive reconnection.
+	original.createClassicBar()
+	var/savefile/backup = new
+	nexusSmokeAssert(original.writeNexusHotkeyBackup(backup), "initialized character could not write its hotkey backup")
+	var/bindings_before = json_encode(original.nexus_hotkey_bindings)
+	var/slots_before = json_encode(original.nexus_classic_slots)
+	var/bars_before = json_encode(original.nexus_classic_bars)
+	var/mob/NexusSmokeTest/HotkeyBackupProbe/reconnected
+	character_save["character"] >> reconnected
+	reconnected.backup = backup
+	nexusSmokeAssert(!length(reconnected.nexus_hotkey_bindings) && !reconnected.nexus_hotkey_backup_loaded, "character save retained temporary hotkey state")
+	// Older login paths can populate legacy defaults before the HUD restores modern keys.
+	reconnected.starter_hotbar_generated = FALSE
+	reconnected.Generate_starter_hotbar()
+	nexusSmokeAssert(length(reconnected.hotbar_ids), "reconnect fixture did not populate the legacy table before modern initialization")
+	reconnected.playerCharacter = FALSE
+	reconnected.initializeNexusHotkeys()
+	nexusSmokeAssert(!reconnected.backup_load_count && !reconnected.writeNexusHotkeyBackup(backup), "title-screen initialization read or overwrote character hotkeys")
+	reconnected.playerCharacter = TRUE
+	nexusSmokeAssert(!reconnected.writeNexusHotkeyBackup(backup), "a character overwrote its hotkeys before restoring the backup")
+	reconnected.initializeNexusHotkeys()
+	nexusSmokeAssert(reconnected.backup_load_count == 1 && json_encode(reconnected.nexus_hotkey_bindings) == bindings_before, "reconnect with populated legacy hotbar reset the modern keymap")
+	nexusSmokeAssert(json_encode(reconnected.nexus_classic_slots) == slots_before && json_encode(reconnected.nexus_classic_bars) == bars_before && reconnected.nexus_keyboard_layout == "br", "reconnect lost the latest bar layout or keyboard layout")
+	nexusSmokeAssert(istype(reconnected.resolveNexusHotkeyBinding("ALT+F6"), /obj/Train) && reconnected.resolveNexusHotkeyBinding("DOUBLE:CTRL+Space") == getNexusHotkeyAction("cycle_target") && !("G" in reconnected.nexus_hotkey_bindings), "reconnect lost direct/modifier/double-tap hotkeys or restored an intentional unbind")
+	reconnected.unbindNexusHotkey("ALT+F6")
+	reconnected.initializeNexusHotkeys()
+	nexusSmokeAssert(reconnected.backup_load_count == 1 && !("ALT+F6" in reconnected.nexus_hotkey_bindings), "repeated initialization reloaded stale hotkeys over current edits")
+	// An intentionally empty modern keymap is valid and must not regain defaults.
+	reconnected.nexus_hotkey_bindings = list()
+	nexusSmokeAssert(reconnected.writeNexusHotkeyBackup(backup), "empty modern keymap could not be saved")
+	reconnected.nexus_hotkey_backup_loaded = FALSE
+	reconnected.nexus_hotkey_version = 0
+	reconnected.initializeNexusHotkeys()
+	nexusSmokeAssert(!length(reconnected.nexus_hotkey_bindings) && reconnected.nexus_hotkey_version == original.nexus_hotkey_version, "reconnect repopulated an intentionally empty modern keymap")
+	var/mob/NexusSmokeTest/HotkeyBackupProbe/legacy = new
+	legacy.playerCharacter = TRUE
+	legacy.Add_hotbar_proxies()
+	legacy.backup = new
+	legacy.backup["hotbar_ids"] << list("legacy-train" = list("hotbar position" = keys.Find("C"), "object type" = /obj/Train))
+	legacy.initializeNexusHotkeys()
+	nexusSmokeAssert(legacy.backup_load_count == 1 && istype(legacy.resolveNexusHotkeyBinding("C"), /obj/Train), "legacy-only backup no longer migrates its custom bindings")
+	del(legacy)
+	del(reconnected)
+	del(original)
+	world.log << "NEXUS_HOTKEY_RECONNECT_TESTS_PASSED"
+
+mob/NexusSmokeTest/ObserveProbe
+	var/tmp/atom/observed_eye
+	var/tmp/observe_calls = 0
+
+	Get_Observe(atom/target)
+		observe_calls++
+		var/atom/new_eye = getObserveEye(target)
+		if(!new_eye) return FALSE
+		observed_eye = new_eye
+		return TRUE
+
+obj/Observe/NexusObserveProbe
+	catalog_test_only = TRUE
+	var/tmp/atom/selected_target
+	var/tmp/prompt_count = 0
+
+	selectObserveTarget(mob/user)
+		prompt_count++
+		return selected_target
+
+proc/runObserveCameraSmokeTests()
+	var/turf/origin = locate(100, 100, 1)
+	var/mob/NexusSmokeTest/ObserveProbe/owner = new(origin)
+	var/mob/NexusSmokeTest/target = new(origin)
+	target.Mob_ID = "observe-smoke"
+	players |= target
+	var/obj/Observe/NexusObserveProbe/skill = new(owner)
+	owner.observed_eye = owner
+	// Cancellation must never assign a null camera, including through Hotbar_use.
+	skill.Hotbar_use(owner)
+	nexusSmokeAssert(skill.prompt_count == 1 && !owner.observe_calls && owner.observed_eye == owner, "Observe hotkey skipped selection or changed the camera on cancellation")
+	skill.selected_target = target
+	skill.Hotbar_use(owner)
+	nexusSmokeAssert(!owner.observe_calls, "Observe bypassed the known-energy requirement")
+	owner.SI_List = list(target.Mob_ID)
+	skill.Hotbar_use(owner)
+	nexusSmokeAssert(owner.observed_eye == target && owner.observe_calls == 1, "Observe hotkey did not use its selected valid target")
+	target.hiding_energy = TRUE
+	nexusSmokeAssert(!skill.observeTarget(owner, target) && owner.observe_calls == 1, "Observe bypassed hidden-energy restrictions")
+	owner.adminObserve = TRUE
+	nexusSmokeAssert(skill.observeTarget(owner, target), "admin Observe lost its energy-rule bypass")
+	owner.adminObserve = FALSE
+	owner.SI_List = list()
+	nexusSmokeAssert(skill.observeTarget(owner, owner) && owner.observed_eye == owner, "Observe could not return to self without knowing its own energy")
+	var/obj/marker = new(origin)
+	nexusSmokeAssert(owner.getObserveEye(marker) == marker && owner.getObserveEye(origin) == origin, "Observe rejected a valid object or turf camera")
+	marker.loc = null
+	nexusSmokeAssert(!owner.getObserveEye(marker) && !owner.getObserveEye(null), "Observe accepted a null or unplaced camera")
+	target.loc = null
+	nexusSmokeAssert(!(target in owner.Observe_List()) && !skill.observeTarget(owner, target), "Observe accepted a target removed while the picker was open")
+	var/obj/Ships/Ship/NexusControlSmoke/ship = new(origin)
+	owner.Ship = ship
+	nexusSmokeAssert(owner.getObserveEye(owner) == ship, "Observe return lost the pilot's ship camera")
+	ship.loc = null
+	nexusSmokeAssert(owner.getObserveEye(owner) == owner, "Observe return used an unplaced ship")
+	owner.Ship = null
+	del(ship)
+	del(marker)
+	del(skill)
+	players -= target
+	del(target)
+	del(owner)
+	world.log << "NEXUS_OBSERVE_CAMERA_TESTS_PASSED"
+
+proc/runInventoryStatusSmokeTests()
+	var/mob/NexusSmokeTest/owner = new
+	var/obj/items/item = new(owner)
+	owner.item_list = list(item)
+	for(var/status in list("Equipped", "Installed", ""))
+		item.suffix = status
+		var/expected = status ? status : "Carried"
+		var/datum/ClassicSnapshot/snapshot = owner.captureClassicData("inventory")
+		var/found = FALSE
+		for(var/list/row in snapshot.rows)
+			if(row["token"] == "\ref[item]") found = row["value"] == expected
+		nexusSmokeAssert(found, "Inventory did not expose the current [expected] item state")
+		del(snapshot)
+	var/obj/items/Gun/gun = new(owner)
+	gun.Ammo = 7
+	gun.Equipped = TRUE
+	nexusSmokeAssert(gun.getNexusInventoryStatus() == "Equipped (Ammo: 7)", "Inventory lost the gun's equipped state or ammunition")
+	gun.Equipped = FALSE
+	nexusSmokeAssert(gun.getNexusInventoryStatus() == "Carried (Ammo: 7)", "Inventory retained an equipped gun marker after unequipping")
+	del(gun)
+	del(item)
+	del(owner)
+	world.log << "NEXUS_INVENTORY_STATUS_TESTS_PASSED"
+
+proc/runChatHistorySmokeTests()
+	var/datum/NexusChatBuffer/buffer = new
+	for(var/index in 1 to 1200) buffer.appendMessage("<b>Repeated message", 0)
+	nexusSmokeAssert(buffer.entries.len == 300, "chat history exceeded its message cap")
+	var/list/update = buffer.buildUpdate(0, TRUE)
+	var/list/messages = update["messages"]
+	nexusSmokeAssert(messages.len == 300 && update["firstId"] == 901 && update["lastId"] == 1200, "chat snapshot lost ordering after overflow")
+	var/list/first_entry = messages[1]
+	nexusSmokeAssert(first_entry["html"] == "<b>Repeated message</b>", "chat did not contain legacy markup when buffering")
+	buffer.appendMessage("<b>Repeated message", 600)
+	update = buffer.buildUpdate(1200)
+	messages = update["messages"]
+	nexusSmokeAssert(messages.len == 1 && !update["reset"] && update["firstId"] == 902 && update["lastId"] == 1201, "chat resent old text or lost identical consecutive messages")
+	update = buffer.buildUpdate(1201)
+	messages = update["messages"]
+	nexusSmokeAssert(!messages.len, "unchanged chat sent message bodies again")
+	buffer.prune(36000)
+	nexusSmokeAssert(buffer.entries.len == 1, "idle chat did not expire old entries while preserving recent text")
+	buffer.prune(36600)
+	update = buffer.buildUpdate(1201)
+	nexusSmokeAssert(!buffer.entries.len && !buffer.text_bytes && update["firstId"] == 1202, "empty chat did not release text or advance the browser prune boundary")
+	var/long_message = "x"
+	for(var/index in 1 to 13) long_message += long_message
+	for(var/index in 1 to 40) buffer.appendMessage(long_message, 37000)
+	nexusSmokeAssert(buffer.text_bytes <= buffer.max_bytes && buffer.entries.len == 32, "large chat messages bypassed the text memory budget")
+	var/total_bytes = 0
+	for(var/list/entry in buffer.entries) total_bytes += length(entry["html"])
+	nexusSmokeAssert(buffer.text_bytes == total_bytes, "chat text accounting drifted during eviction")
+	var/previous_id = buffer.next_id
+	buffer.clearHistory()
+	nexusSmokeAssert(!buffer.entries.len && !buffer.text_bytes && buffer.next_id == previous_id, "clearing chat retained text or reused message IDs")
+	buffer.appendMessage("After clear", 37000)
+	update = buffer.buildUpdate(previous_id)
+	messages = update["messages"]
+	nexusSmokeAssert(messages.len == 1 && update["firstId"] == previous_id + 1, "chat failed to resume after clear")
+	long_message += long_message
+	long_message += long_message
+	buffer.appendMessage("[long_message]x", 37000)
+	var/list/oversized_entry = buffer.entries[buffer.entries.len]
+	nexusSmokeAssert(findtext(oversized_entry["html"], "Open LOGS") && length(oversized_entry["html"]) < 200, "oversized chat markup was parsed or retained in the live preview")
+	del(buffer)
+
 proc/runClassicHudSmokeTests()
+	runChatHistorySmokeTests()
 	var/mob/NexusSmokeTest/legacy_layout_owner = new
 	legacy_layout_owner.nexus_classic_layout = list("chat" = list("x" = 123, "y" = 45, "w" = 540, "h" = 480, "open" = TRUE))
 	var/layout_before_migration = json_encode(legacy_layout_owner.nexus_classic_layout)
@@ -309,6 +523,9 @@ proc/runClassicHudSmokeTests()
 	del(legacy_layout_owner)
 	runStarterHotkeySmokeTests()
 	runIndependentHotkeySmokeTests()
+	runHotkeyReconnectSmokeTests()
+	runObserveCameraSmokeTests()
+	runInventoryStatusSmokeTests()
 	runNexusMenuActionsSmokeTests()
 	runClassicResponsiveLayoutSmokeTests()
 	runSkillArtworkSmokeTests()

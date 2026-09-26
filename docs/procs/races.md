@@ -1,6 +1,8 @@
 # Races
 
 ## Overview
+`Alien_Stuff()` no longer offers or grants Stretchy Arms during this wipe. The modern creator follows the same restriction, and `canUseArmStretch()` rejects saved Alien stretch flags while keeping ordinary grabs available.
+
 The initializer identities below reflect the current modular race source. The existing supplementary proc reference remains a first-pass summary of legacy race mechanics. Android, Legendary Saiyan, Grand Regent, and the Jiren/Apex Alien specialization initialize without Anger; all other races retain the standard Anger system.
 
 ## Files

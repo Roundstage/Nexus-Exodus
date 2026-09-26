@@ -9,7 +9,7 @@ var/mob/WritingNotes
 mob/Admin1/verb/notes()
 	set name = "Notes"
 	set category="Admin"
-	usr<<browse(Notes,"window= ;size=700x600")
+	usr<<browse(buildNexusSafeDocument(Notes),"window= ;size=700x600")
 
 mob/Admin1/verb/editNotes()
 	set name = "EditNotes"
@@ -27,7 +27,7 @@ var/mob/WritingStory
 
 mob/verb/Story()
 	//set category="Other"
-	usr<<browse(Story,"window= ;size=700x600")
+	usr<<browse(buildNexusSafeDocument(Story),"window= ;size=700x600")
 
 mob/Admin3/verb/editStory()
 	set name = "EditStory"
@@ -45,7 +45,7 @@ var/mob/WritingRanks
 
 /*mob/verb/Ranks()
 	set category="Other"
-	usr<<browse(rank_window,"window= ;size=700x600")*/
+	usr<<browse(buildNexusSafeDocument(rank_window),"window= ;size=700x600")*/
 
 mob/Admin3/verb/editRanks()
 	set name = "EditRanks"
@@ -62,7 +62,7 @@ mob/Admin3/verb/editRanks()
 var/mob/WritingJobs
 
 mob/proc/Admin_Guide()
-	usr<<browse(Jobs,"window= ;size=700x600")
+	usr<<browse(buildNexusSafeDocument(Jobs),"window= ;size=700x600")
 
 mob/Admin4/verb/editJobs()
 	set name = "EditJobs"
@@ -80,7 +80,7 @@ var/mob/WritingRules
 
 mob/verb/View_Rules()
 	set category="Other"
-	usr<<browse(Rules,"window= ;size=700x600")
+	usr<<browse(buildNexusSafeDocument(Rules),"window= ;size=700x600")
 
 mob/Admin3/verb/editRules()
 	set name = "EditRules"

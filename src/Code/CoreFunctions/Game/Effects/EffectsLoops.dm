@@ -2,26 +2,55 @@ var/list/nexus_status_effect_mobs = list()
 var/const/nexus_status_time_epsilon = 0.001
 
 mob/proc/try_applying_burn_effect()
-	set waitfor = 0
-	if(!isBurning || burn_effect_running) return
+	// Resume saved stacks through the shared scheduler; never overwrite the base regen stat.
+	if(!isBurning && BurnStack <= 0) return
+	if(KO || rp_mode || Safezone || BurnStack <= 0)
+		clearBurnEffect()
+		return
+	if(burn_effect_running) return
+	isBurning = TRUE
 	burn_effect_running = TRUE
-	var/regen_before_effect = regen
-	var/regen_after_effect = regen_before_effect * 0.7
+	burn_next_tick = world.time + 20
+	registerNexusStatusEffects()
+	refreshBurnOverlay()
 
-	while(src && BurnStack > 0)
-		src << "You are burning!"
-		Health -= 3
-		regen = regen_after_effect
-		BurnStack--
+mob/proc/applyBurnEffect(mob/source, stacks = 1)
+	if(KO || rp_mode || Safezone || stacks <= 0) return FALSE
+	var/was_burning = isBurning
+	BurnStack = max(0, BurnStack) + stacks
+	isBurning = TRUE
+	burn_source = source
+	burn_combat_mode = getNexusStatusCombatMode(source)
+	try_applying_burn_effect()
+	if(!was_burning) src << "You are burning! Your Health regeneration is reduced by 30%."
+	return TRUE
 
-		if(Health == 0) KO("You have been knockout by the Burns, ouch!", allow_anger = 1)
-		sleep(20)
+mob/proc/clearBurnEffect()
+	BurnStack = 0
+	isBurning = FALSE
+	burn_effect_running = FALSE
+	burn_next_tick = 0
+	burn_source = null
+	burn_combat_mode = CASUAL_COMBAT
+	refreshBurnOverlay()
+	if(!hasNexusStatusEffects()) unregisterNexusStatusEffects()
 
-	if(src)
-		regen = regen_before_effect
-		src << "You aren't burning anymore."
-		isBurning = FALSE
-		burn_effect_running = FALSE
+mob/proc/getBurnRegenerationMultiplier()
+	return isBurning && BurnStack > 0 && !KO && !rp_mode && !Safezone ? 0.7 : 1
+
+mob/proc/refreshBurnOverlay()
+	// RPT Debuff.dm uses this animated Burning state while periodic damage is active.
+	var/list/stale_overlays = list()
+	for(var/appearance_value in overlays)
+		if(appearance_value:icon == 'src/Icons/NexusIntegrated/Attacks/Effects/RTStatusEffects.dmi' && appearance_value:icon_state == "Burning")
+			stale_overlays += appearance_value
+	overlays -= stale_overlays
+	if(getBurnRegenerationMultiplier() < 1)
+		overlays += image('src/Icons/NexusIntegrated/Attacks/Effects/RTStatusEffects.dmi', icon_state = "Burning", layer = MOB_LAYER + 1)
+
+mob/proc/tryApplyFireFistBurn(mob/target)
+	if(!isFireFist || !ismob(target) || !prob(40)) return FALSE
+	return target.applyBurnEffect(src)
 
 mob/proc/getNexusMaximumHealth()
 	return 100
@@ -36,7 +65,7 @@ proc/getNexusStatusCombatMode(mob/source)
 	return source && source.sparring_mode == LETHAL_COMBAT ? LETHAL_COMBAT : CASUAL_COMBAT
 
 mob/proc/hasNexusStatusEffects()
-	return nexus_fire_dot_until > 0 || nexus_electric_dot_until > 0 || nexus_poison_dot_until > 0
+	return isBurning || BurnStack > 0 || nexus_fire_dot_until > 0 || nexus_electric_dot_until > 0 || nexus_poison_dot_until > 0
 
 mob/proc/registerNexusStatusEffects()
 	if(!(src in nexus_status_effect_mobs)) nexus_status_effect_mobs += src
@@ -81,6 +110,7 @@ mob/proc/applyNexusPoisonDot(mob/source, duration_ticks = 120, damage_percent = 
 	return TRUE
 
 mob/proc/clearNexusStatusEffects()
+	clearBurnEffect()
 	nexus_fire_dot_until = 0
 	nexus_fire_dot_next_tick = 0
 	nexus_fire_dot_percent = 0
@@ -117,6 +147,16 @@ mob/proc/processNexusStatusEffects(current_time_override)
 		clearNexusStatusEffects()
 		return
 	var/current_time = isnum(current_time_override) ? current_time_override : world.time
+	if(isBurning || BurnStack > 0)
+		try_applying_burn_effect()
+		while(!KO && BurnStack > 0 && current_time + nexus_status_time_epsilon >= burn_next_tick)
+			burn_next_tick += 20
+			BurnStack--
+			applyNexusStatusDamage(3, burn_source, "Burn", burn_combat_mode)
+		if(KO || BurnStack <= 0)
+			clearBurnEffect()
+			if(!KO) src << "You are no longer burning."
+	if(KO) return
 	if(nexus_fire_dot_until > 0)
 		while(!KO && nexus_fire_dot_next_tick <= nexus_fire_dot_until + nexus_status_time_epsilon && current_time + nexus_status_time_epsilon >= nexus_fire_dot_next_tick)
 			nexus_fire_dot_next_tick += 20

@@ -1,5 +1,9 @@
 # Admin
 
+`invisBrowser()` is presented as **Open Website for Everyone** and validates HTTP/HTTPS URLs before opening the external browser. It no longer loads remote documents in the embedded game browser. `getNexusAdminMediaKind()` accepts exact final image/audio extensions; `Play_File()` embeds image resources in a fixed wrapper and sends audio through `sound()`, never browsing uploaded documents. Bug/runtime log viewers and editable documents use the HTML safety boundaries described in [HTML input security](../HtmlInputSecurity.md).
+
+Admin level 5 can use `CPU Diagnostics` in the Admin category to inspect telemetry status, capture a bounded native proc profile, or arm/disarm automatic spike profiles. The Legacy Verb Finder also finds its path when searching `cpuDiagnostics`. Permission is checked again after the input dialog. See `docs/CpuDiagnostics.md`; the implementation lives in `CoreFunctions/CpuDiagnostics.dm` with the sampler service.
+
 `getAdminSpawnChoices()` excludes object types with initial `catalog_test_only` metadata from both GiveItem and Make. Automated fixtures remain directly constructible by the smoke suite.
 
 `spawnAdminMeteors(amount)` collects the 40-tile-radius spawn locations once, chooses one debris type before requesting an object from `getAdminMeteor(type_path)`, and spawns at most 500 objects. It yields every ten objects or at 80% tick usage and returns the actual count for the admin log. The list anchors placement to the command's initial location; invalid inputs/origins allocate nothing. The factory proc allows smoke tests to verify allocation counts without launching debris AI.
@@ -44,6 +48,7 @@ Administrative commands and management flows. Administrators receive a searchabl
 - `datum/NexusServerPanel/render()` provides six category tabs, a persistent text search input, pagination, and direct editing for every setting bound by the existing administration models. Each clickable row renders the variable name and current value in separate labeled columns so the edited setting is always identifiable. Race settings include the persisted `all_rare_races_common` switch, which exposes Legendary Saiyan, population-limited Frost Lord, Cooler, and non-exclusive Grand Regent creation to everyone. Combat settings include `speedDelayMultMod`, the global movement-speed delay multiplier; larger values make movement and speed-based combat actions slower.
 - `createSettingsModel()` uses a headless upForm model only for its complete setting bindings and validation; no legacy browser window is created.
 - Number and text settings retain their legacy conversion and validation. List settings use dedicated add/remove controls, and every mutation is written to the admin audit log.
+- Successful settings commits in all six administration models and HUD list edits call `saveNexusServerSettings()` immediately. The existing `Misc`, `GAIN`, `Year`, and `Votes` files are flushed before returning, so external restarts do not depend on the 72-minute world autosave. Form commits recheck level-4 authority and reject changes while a full wipe is pending. The two Sense display switches bind to their own values independently.
 
 ### src/Code/Admin/Admin.dm
 

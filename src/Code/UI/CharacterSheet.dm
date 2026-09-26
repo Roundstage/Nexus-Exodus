@@ -28,7 +28,7 @@ mob/proc/buildCharacterSkillCards()
 		var/obj/skill = skills_by_name[skill_name]
 		var/mastery_text = nexusIsFiniteNumber(skill.Mastery) ? "Mastery [round(skill.Mastery, 0.1)]%" : "Learned"
 		var/icon_resource = getNexusBrowserAtomIconResource(src, skill)
-		var/icon_html = icon_resource ? "<div class='skill-icon hud-sprite'><img src='[icon_resource]' alt='[html_encode("[skill]")]'></div>" : "<div class='skill-icon hud-sprite missing'>--</div>"
+		var/icon_html = icon_resource ? "<div class='skill-icon hud-sprite'><img src='[icon_resource]' alt='[encodeNexusHtmlAttribute("[skill]")]'></div>" : "<div class='skill-icon hud-sprite missing'>--</div>"
 		html += "<div class='skill-card hud-panel'>[icon_html]<div class='skill-copy'><b>[html_encode("[skill]")]</b><span class='hud-label'>[html_encode("[skill.hotbar_type]")]</span><em>[mastery_text]</em></div></div>"
 	if(!html) html = "<p class='empty'>No techniques registered on this character.</p>"
 	return html

@@ -496,7 +496,7 @@ mob/proc/showNexusCommandPrompt()
 	if(!client.nexus_chat_hud) initializeNexusChatHud()
 	else if(!client.nexus_chat_hud.is_visible) client.nexus_chat_hud.setVisible(TRUE)
 	var/command_text = input(src, "Enter the same command you would type in the CMD bar.", "CMD") as text|null
-	if(command_text) winset(src, null, "command=[command_text]")
+	if(command_text) winset(src, null, list2params(list("command" = command_text)))
 
 mob/verb/focusNexusCommand()
 	set hidden = TRUE
@@ -723,8 +723,8 @@ datum/NexusPlayerMenu
 
 	proc/buildIcon(atom/subject, alt_text)
 		var/resource_name = getBrowserIcon(subject)
-		if(!resource_name) return "<div class='item-icon hud-sprite missing' aria-label='[html_encode(alt_text)]'>--</div>"
-		return "<div class='item-icon hud-sprite'><img src='[resource_name]' alt='[html_encode(alt_text)]'></div>"
+		if(!resource_name) return "<div class='item-icon hud-sprite missing' aria-label='[encodeNexusHtmlAttribute(alt_text)]'>--</div>"
+		return "<div class='item-icon hud-sprite'><img src='[resource_name]' alt='[encodeNexusHtmlAttribute(alt_text)]'></div>"
 
 	proc/getSectionSubtitle(menu_section)
 		switch(menu_section)
@@ -1088,7 +1088,7 @@ datum/NexusPlayerMenu
 
 	proc/showItemExamine(obj/items/item)
 		var/description_text = item.desc ? "[item.desc]" : "No description available."
-		var/details = buildDetailRow("STATUS", item.suffix ? item.suffix : "Carried")
+		var/details = buildDetailRow("STATUS", item.getNexusInventoryStatus())
 		details += buildDetailRow("TYPE", item.type)
 		var/item_level = getNumericObjectVar(item, "Level")
 		var/item_durability = getNumericObjectVar(item, "Durability")
@@ -1161,7 +1161,7 @@ datum/NexusPlayerMenu
 		var/item_count = 0
 		for(var/obj/items/item in owner.item_list)
 			item_count++
-			var/status_text = item.suffix ? "[item.suffix]" : "Carried"
+			var/status_text = item.getNexusInventoryStatus()
 			var/description_text = item.desc ? "[item.desc]" : "No description available."
 			var/use_url = "byond://?src=\ref[src]&action=use_item&item=\ref[item]"
 			var/examine_url = "byond://?src=\ref[src]&action=examine_item&item=\ref[item]"

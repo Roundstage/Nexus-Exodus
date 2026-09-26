@@ -3,7 +3,7 @@ obj/items
 		icon = 'src/Icons/Objects/Technology/Weapons.dmi'
 		icon_state = "mine item"
 		Cost=50000000
-		science = 1
+		science = 0
 		science_level = 6
 		science_path = "Engineering"
 		hotbar_type="Combat item"

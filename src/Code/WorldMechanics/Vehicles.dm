@@ -86,7 +86,7 @@ obj/Drivable_Car
 	desc="A car with shit handling that busts thru every fucking thing"
 	Cost=100000000
 	Health=1
-	science = 1
+	science = 0
 	science_level = 6
 	science_path = "Engineering"
 	icon='src/Icons/Unsorted/Car.dmi'

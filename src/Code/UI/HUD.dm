@@ -347,7 +347,7 @@ mob/proc/getNexusActiveHudModifiers()
 		addNexusHudModifierName(names, "Mystic")
 		addNexusHudModifier(modifiers, "SPD", 1.1)
 		addNexusHudModifier(modifiers, "PWR", 1.2)
-		if(ssj && Class != "Legendary Saiyan") addNexusHudModifier(modifiers, "BP", 1.15)
+		addNexusHudModifier(modifiers, "BP", mystic_skill_bp_mult)
 	if(ispath(active_demon_buff, /obj/DemonBuff))
 		var/buff_type = active_demon_buff
 		addNexusHudModifierName(names, initial(buff_type:name))
@@ -390,7 +390,7 @@ mob/proc/getNexusActiveHudModifiers()
 		addNexusHudModifier(modifiers, "MASTERY", thirdEyeMasteryMult)
 	if(ismajin)
 		addNexusHudModifierName(names, "Majin")
-		active_bp_addition += majin_skill_bp_add
+		addNexusHudModifier(modifiers, "BP", majin_skill_bp_mult)
 		addNexusHudModifier(modifiers, "ANGER", majin_skill_anger_mult)
 	if(isFireFist)
 		addNexusHudModifierName(names, "Fire Fist")
@@ -509,6 +509,8 @@ mob/proc/setNexusMainVitalsPosition(new_x, new_y)
 		client.main_vitals_hud.setScreenPosition(nexus_main_vitals_x, nexus_main_vitals_y, FALSE)
 
 mob/Write(savefile/save_file)
+	var/list/detached_communication = getNexusCommunicationEffects()
+	vis_contents -= detached_communication
 	// These are derived from saved mode flags, never persistent character cosmetics.
 	var/list/status_appearances = getCombatStatusAppearances()
 	overlays -= status_appearances
@@ -518,6 +520,7 @@ mob/Write(savefile/save_file)
 			vis_contents -= hud_bar
 			detached_hud += hud_bar
 	. = ..()
+	vis_contents += detached_communication
 	overlays += status_appearances
 	for(var/obj/NexusHud/OverheadHealthBar/hud_bar in detached_hud)
 		if(hud_bar) vis_contents += hud_bar

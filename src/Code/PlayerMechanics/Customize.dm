@@ -276,9 +276,11 @@ mob/proc
 			seetelepathy=1*/
 	Text_Size()
 		TextSize=input(src,"Enter a size for the text you will see on your screen, between 1 and 10","Options",TextSize) as num
+		TextSize = normalizeNexusChatTextSize(TextSize)
 
 	Text_Color()
 		TextColor=input(src,"Choose a color for OOC and Say.") as color
+		TextColor = normalizeNexusHtmlColor(TextColor, "#ffffff")
 
 mob/var
 	ViewX = 0

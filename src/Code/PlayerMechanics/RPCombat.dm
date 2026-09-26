@@ -18,6 +18,8 @@ mob/proc/getCombatStatusAppearances()
 	for(var/appearance_value in overlays)
 		if(appearance_value:icon == 'src/Icons/UI/LethalHud.dmi' || appearance_value:icon == 'src/Icons/UI/RPModeHud.dmi')
 			status_appearances += appearance_value
+		else if(appearance_value:icon == 'src/Icons/NexusIntegrated/Attacks/Effects/RTStatusEffects.dmi' && appearance_value:icon_state == "Burning")
+			status_appearances += appearance_value
 	return status_appearances
 
 mob/proc/refreshCombatStatusOverlays()
@@ -32,6 +34,7 @@ mob/proc/refreshCombatStatusOverlays()
 	if(rp_mode)
 		rp_mode_status_overlay = image('src/Icons/UI/RPModeHud.dmi', layer = 25)
 		overlays += rp_mode_status_overlay
+	refreshBurnOverlay()
 	refreshActionHud()
 
 mob/proc/getMaxWillpower()

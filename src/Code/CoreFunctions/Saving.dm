@@ -216,6 +216,7 @@ proc/initialize()
 	if(world.params["nexus_smoke_tests"])
 		runViltrumiteStartupSmokeTests()
 		runEnergyRecoveryStartupSmokeTests()
+		runNexusCpuDiagnosticsSmokeTests()
 		runStartupSmokeTests(smoke_soul_contract_count)
 	Fill_Hair_List()
 	world<<"Hair added"
@@ -292,6 +293,7 @@ proc/initialize()
 	world << "Started new KO System"
 	world << "Started Effect System"
 	world << "Started Energy System"
+	startNexusCpuMonitoring()
 	if(world.params["nexus_smoke_tests"])
 		world.log << "NEXUS_INITIALIZATION_COMPLETE"
 
@@ -467,6 +469,15 @@ proc
 		var/savefile/s = new("CustomDecors")
 		s >> customDecors
 		DeleteSpamCustomDecors()
+
+// Panel changes must reach disk before an external restart; no map save is needed.
+proc/saveNexusServerSettings()
+	if(nexus_full_wipe_pending) return FALSE
+	saveMisc()
+	saveGain()
+	saveYear()
+	saveVote()
+	return TRUE
 
 proc/saveMisc()
 	saveCustomDecors()
@@ -724,6 +735,22 @@ proc/saveMisc()
 	s["melee_delay_severity"] 						<< melee_delay_severity
 	s["GLOBAL_MELEE_SPEED_OFFSET"] 					<< GLOBAL_MELEE_SPEED_OFFSET
 	s["GLOBAL_ACCURACY_EXPONENT"] 					<< GLOBAL_ACCURACY_EXPONENT
+	s["defaultScreenSize"] << defaultScreenSize
+	s["CAN_BREAK_TURFS"] << CAN_BREAK_TURFS
+	s["battleground_master_bp_mult"] << battleground_master_bp_mult
+	s["START_WITH_RACIAL_SKILLS"] << START_WITH_RACIAL_SKILLS
+	s["force_32_pix_movement"] << force_32_pix_movement
+	s["demon_hell_boost"] << demon_hell_boost
+	s["kai_heaven_boost"] << kai_heaven_boost
+	s["KO_SYSTEM_FULL_HEAL_IN_SPAR"] << KO_SYSTEM_FULL_HEAL_IN_SPAR
+	s["speedDelayMultMod"] << speedDelayMultMod
+	s["bp_exponent"] << bp_exponent
+	s["one_shot_start"] << one_shot_start
+	s["global_beam_deflect_mod"] << global_beam_deflect_mod
+	s["hakai_cooldown"] << hakai_cooldown
+	s["max_turf_str"] << max_turf_str
+	s.Flush()
+
 proc/loadMisc()
 	loadCustomDecors()
 	if(!fexists("Misc"))
@@ -986,6 +1013,21 @@ proc/loadMisc()
 	if("trainingRestoreHours" in s) s["trainingRestoreHours"] >> trainingRestoreHours
 	if("hostAllowsPacksOnRP" in s) s["hostAllowsPacksOnRP"] >> hostAllowsPacksOnRP
 	if("God_FistMod" in s) s["God_FistMod"] >> God_FistMod
+	// Older saves lack these fields; keep their compiled defaults until first saved.
+	if("defaultScreenSize" in s) s["defaultScreenSize"] >> defaultScreenSize
+	if("CAN_BREAK_TURFS" in s) s["CAN_BREAK_TURFS"] >> CAN_BREAK_TURFS
+	if("battleground_master_bp_mult" in s) s["battleground_master_bp_mult"] >> battleground_master_bp_mult
+	if("START_WITH_RACIAL_SKILLS" in s) s["START_WITH_RACIAL_SKILLS"] >> START_WITH_RACIAL_SKILLS
+	if("force_32_pix_movement" in s) s["force_32_pix_movement"] >> force_32_pix_movement
+	if("demon_hell_boost" in s) s["demon_hell_boost"] >> demon_hell_boost
+	if("kai_heaven_boost" in s) s["kai_heaven_boost"] >> kai_heaven_boost
+	if("KO_SYSTEM_FULL_HEAL_IN_SPAR" in s) s["KO_SYSTEM_FULL_HEAL_IN_SPAR"] >> KO_SYSTEM_FULL_HEAL_IN_SPAR
+	if("speedDelayMultMod" in s) s["speedDelayMultMod"] >> speedDelayMultMod
+	if("bp_exponent" in s) s["bp_exponent"] >> bp_exponent
+	if("one_shot_start" in s) s["one_shot_start"] >> one_shot_start
+	if("global_beam_deflect_mod" in s) s["global_beam_deflect_mod"] >> global_beam_deflect_mod
+	if("hakai_cooldown" in s) s["hakai_cooldown"] >> hakai_cooldown
+	if("max_turf_str" in s) s["max_turf_str"] >> max_turf_str
 	applyNexusServerFeatureDefaultsMigration()
 
 	//offline_gains = 1 //forced on. no more option for admins to turn it off
@@ -1006,6 +1048,7 @@ proc/saveYear()
 	var/savefile/s=new("Year")
 	s["Year"]<<Year
 	s["Speed"]<<Year_Speed
+	s.Flush()
 proc/loadYear() if(fexists("Year"))
 	var/savefile/s=new("Year")
 	s["Year"]>>Year
@@ -1013,6 +1056,7 @@ proc/loadYear() if(fexists("Year"))
 
 proc/saveVote()
 	var/savefile/s=new("Votes");s["Vote Banned"]<<Vote_Banned;s["RP President"]<<RP_President;s["Head Admin"]<<Head_Admin
+	s.Flush()
 
 proc/loadVote() if(fexists("Votes"))
 	var/savefile/s=new("Votes");s["Vote Banned"]>>Vote_Banned;s["RP President"]>>RP_President;s["Head Admin"]>>Head_Admin
@@ -1224,6 +1268,7 @@ proc/loadBan()
 proc/saveGain()
 	var/savefile/s=new("GAIN")
 	s["GAIN"]<<Gain
+	s.Flush()
 proc/loadGain() if(fexists("GAIN"))
 	var/savefile/s=new("GAIN")
 	s["GAIN"]>>Gain

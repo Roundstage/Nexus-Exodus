@@ -125,7 +125,7 @@ datum/NexusBuildWindow
 		var/list/added_types = list()
 		if(islist(GLOBAL_SCIENCE_TAB_ITEMS))
 			for(var/obj/item in GLOBAL_SCIENCE_TAB_ITEMS)
-				if(isRetiredScienceEquipment(item)) continue
+				if(!owner.canAccessTechnology(item)) continue
 				if((item.type in Illegal_Science) || (item.type in added_types)) continue
 				added_types += item.type
 				results += item
@@ -134,7 +134,7 @@ datum/NexusBuildWindow
 			added_types += item.type
 			results += item
 		for(var/obj/item in owner.individual_science_items)
-			if(isRetiredScienceEquipment(item)) continue
+			if(!owner.canAccessTechnology(item)) continue
 			if((item.type in Illegal_Science) || (item.type in added_types)) continue
 			added_types += item.type
 			results += item

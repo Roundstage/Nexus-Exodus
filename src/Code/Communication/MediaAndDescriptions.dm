@@ -80,12 +80,6 @@ proc/getNexusPlayerProfileDisplayName(mob/subject)
 	if(profile_name) return profile_name
 	return normalizeNexusPlayerProfileLine(subject.name, NEXUS_PLAYER_PROFILE_NAME_LIMIT)
 
-proc/encodeNexusHtmlAttribute(value)
-	var/encoded_value = html_encode("[value]")
-	encoded_value = replacetext(encoded_value, "'", "&#39;")
-	encoded_value = replacetext(encoded_value, "\"", "&quot;")
-	return encoded_value
-
 mob/proc/isNexusProfileEditingBlocked()
 	for(var/obj/Imitation/imitation_skill in contents)
 		if(imitation_skill.imitating) return TRUE

@@ -9,6 +9,7 @@ mob/var/tmp
 	is_grabbing
 	grabbed_from_behind
 	last_grab_attack_warning = -1000
+	tail_grab_loop_running = FALSE
 
 mob/proc/isAttackBlockedByGrab(show_message = TRUE)
 	if(!grabber) return FALSE
@@ -131,7 +132,7 @@ mob/verb/Grab()
 					O=m
 					break
 
-		if(!O && (arm_stretch || Extendo_module()))
+		if(!O && canUseArmStretch())
 			O = GetArmStretchTarget(arm_stretch_range)
 
 		if(!canGrabMovable(O)) return
@@ -159,7 +160,7 @@ mob/verb/Grab()
 			is_grabbing=1
 			var/old_state=icon_state
 			if(ismob(O)) icon_state="Attack"
-			if(arm_stretch||Extendo_module())
+			if(canUseArmStretch())
 				move=0
 				O=Stretch_arm_to(O,arm_stretch_range)
 				move=1
@@ -195,11 +196,17 @@ mob/verb/Grab()
 			if(ismob(grabbedObject)) grabbedObject.update_area()
 			Update_grab_loop()
 
+mob/proc/isTailGrabbed()
+	return grabber && grabber.grabbedObject == src && grabbed_from_behind && Tail
+
 mob/proc/Grabbed_by_tail()
 	set waitfor=0
-	while(grabber&&grabbed_from_behind&&Tail)
-		Ki-=max_ki / 2 / tail_level
+	if(tail_grab_loop_running) return
+	tail_grab_loop_running = TRUE
+	while(isTailGrabbed())
+		Ki = max(0, Ki - max_ki * 0.01 / max(1, tail_level))
 		sleep(10)
+	tail_grab_loop_running = FALSE
 
 proc/remove_nulls(list/l)
 	if(!islist(l)) return l
@@ -212,8 +219,13 @@ mob/var
 	arm_stretch_range=100
 
 mob/proc
+	canUseArmStretch()
+		// Disable these races for this wipe, including flags loaded from older saves.
+		if(Race in list("Android", "Bio-Android", "Namekian", "Alien")) return FALSE
+		return arm_stretch || Extendo_module()
+
 	Extendo_module()
-		for(var/obj/Module/Extendo_arm/EA in active_modules) if(EA.suffix) return 1
+		return FALSE // The mechanical Extendo Arm is unavailable during this wipe.
 
 	Extendo_module_range() return 250
 
@@ -221,6 +233,7 @@ mob/proc
 		return max(1, round(range_pixels / world.icon_size + 0.5))
 
 	GetArmStretchTarget(grab_dist = 10)
+		if(!canUseArmStretch()) return null
 		if(Extendo_module()) grab_dist = Extendo_module_range()
 		grab_dist = armStretchRangeTiles(grab_dist)
 
@@ -265,6 +278,7 @@ mob/proc
 		return targets
 
 	CanExtendoGrab(atom/movable/m)
+		if(!canUseArmStretch()) return FALSE
 		if(!canGrabMovable(m)) return
 		if(ismob(m))
 			var/mob/target_mob = m
@@ -328,6 +342,7 @@ mob/proc
 			return pick(Get_step(old_arm,turn(old_arm.dir,90)),Get_step(old_arm,turn(old_arm.dir,-90)))
 
 	Stretch_arm_to(atom/movable/m,grab_dist=10)
+		if(!canUseArmStretch()) return null
 		//var/arm_velocity=Speed_delay_mult(severity=0.3)
 		var/arm_velocity = world.tick_lag * 0.9
 		var/arm_icon=arm_stretch_icon

@@ -285,7 +285,7 @@ instance a Saiyan typically has higher durability than resistance, making energy
 "}
 	verb/View()
 		set src in usr
-		usr<<browse(notes,"window= ;size=700x600")
+		usr<<browse(buildNexusSafeDocument(notes),"window= ;size=700x600")
 
 
 

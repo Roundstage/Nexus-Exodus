@@ -321,11 +321,7 @@ mob/proc/tryApplyMilestoneProjectileEffects(mob/target)
 	if(!target) return FALSE
 	var/applied = tryApplyMilestoneHitStances(target)
 	if(getMilestoneRank("smolder") && target.BurnStack < 5 && prob(35))
-		target.BurnStack++
-		if(!target.isBurning)
-			target.isBurning = TRUE
-			target.try_applying_burn_effect()
-		applied = TRUE
+		if(target.applyBurnEffect(src)) applied = TRUE
 	return applied
 
 mob/proc/tryApplyMilestoneHitStances(mob/target)

@@ -54,11 +54,11 @@ proc/initializeMagicResearchCatalog()
 
 	// Enchantment
 	magic_research_catalog["boxing_gloves"] = new /datum/MagicResearchNode("boxing_gloves", "Boxing Gloves", "Craft enchanted gloves for controlled sparring.", "Enchantment", 2, /obj/Arcane_Crafting)
-	magic_research_catalog["magic_sword"] = new /datum/MagicResearchNode("magic_sword", "Magic Sword", "Forge a copper blade through an arcane ritual.", "Enchantment", 3, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_sword"] = new /datum/MagicResearchNode("magic_sword", "Magic Sword", "Create the same Normal Sword made by Science through an arcane ritual.", "Enchantment", 3, /obj/Arcane_Crafting)
 	magic_research_catalog["magic_armor"] = new /datum/MagicResearchNode("magic_armor", "Magic Armor", "Forge copper armor through an arcane ritual.", "Enchantment", 3, /obj/Arcane_Crafting)
 	magic_research_catalog["door_pass"] = new /datum/MagicResearchNode("door_pass", "Magic Door Pass", "Craft a configurable arcane access token.", "Enchantment", 3, /obj/Arcane_Crafting)
-	magic_research_catalog["magic_hammer"] = new /datum/MagicResearchNode("magic_hammer", "Magic Hammer", "Forge an enchanted war hammer.", "Enchantment", 4, /obj/Arcane_Crafting)
-	magic_research_catalog["magic_gauntlets"] = new /datum/MagicResearchNode("magic_gauntlets", "Magic Gauntlets", "Craft a focus that improves Magic training.", "Enchantment", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_hammer"] = new /datum/MagicResearchNode("magic_hammer", "Magic Hammer", "Create the same Normal War Hammer made by Science through an arcane ritual.", "Enchantment", 4, /obj/Arcane_Crafting)
+	magic_research_catalog["magic_gauntlets"] = new /datum/MagicResearchNode("magic_gauntlets", "Magic Gauntlets", "Create the same Normal Gloves made by Science through an arcane ritual.", "Enchantment", 4, /obj/Arcane_Crafting)
 	magic_research_catalog["empowered_attacks"] = new /datum/MagicResearchNode("empowered_attacks", "Empowered Attacks", "Empower the attacks of nearby allies.", "Enchantment", 5, /obj/ArcaneSpell/EmpoweredAttacks)
 	magic_research_catalog["accelerate"] = new /datum/MagicResearchNode("accelerate", "Accelerate", "Temporarily hasten movement and combat cadence.", "Enchantment", 5, /obj/ArcaneSpell/Accelerate)
 	magic_research_catalog["disguise"] = new /datum/MagicResearchNode("disguise", "Disguise", "Craft a reusable glamour veil.", "Enchantment", 5, /obj/Arcane_Crafting)
@@ -76,7 +76,6 @@ proc/initializeMagicResearchCatalog()
 	magic_research_catalog["spell_book"] = new /datum/MagicResearchNode("spell_book", "Spell Book", "Craft a grimoire linked to the Magic tree.", "Artifacts", 2, /obj/Arcane_Crafting)
 	magic_research_catalog["utility_belt"] = new /datum/MagicResearchNode("utility_belt", "Utility Belt", "Create a compact pocket-space container.", "Artifacts", 3, /obj/Arcane_Crafting)
 	magic_research_catalog["book_case"] = new /datum/MagicResearchNode("book_case", "Book Case", "Create a portable enchanted book case.", "Artifacts", 3, /obj/Arcane_Crafting)
-	magic_research_catalog["cooking_bag"] = new /datum/MagicResearchNode("cooking_bag", "Cooking Bag", "Create an expanded pocket-space cooking bag.", "Artifacts", 4, /obj/Arcane_Crafting)
 	magic_research_catalog["simulation_crystal"] = new /datum/MagicResearchNode("simulation_crystal", "Simulation Crystal", "Bind the native simulator design into a crystal focus.", "Artifacts", 5, /obj/Arcane_Crafting)
 	magic_research_catalog["orb_of_mastery"] = new /datum/MagicResearchNode("orb_of_mastery", "Orb of Mastery", "Craft an artifact that improves Magic training.", "Artifacts", 6, /obj/Arcane_Crafting)
 	magic_research_catalog["book_lessons"] = new /datum/MagicResearchNode("book_lessons", "Book of Lessons", "Record knowledge that grants Progression XP once.", "Artifacts", 7, /obj/Arcane_Crafting)
@@ -88,7 +87,6 @@ proc/initializeMagicResearchCatalog()
 	// Alchemy
 	magic_research_catalog["arcane_crafting"] = new /datum/MagicResearchNode("arcane_crafting", "Arcane Crafting", "Shape Arcane Essence into persistent magical constructs.", "Alchemy", 2, /obj/Arcane_Crafting)
 	magic_research_catalog["magic_goo_1"] = new /datum/MagicResearchNode("magic_goo_1", "Magic Goo I", "Create the first tier of magical sparring construct.", "Alchemy", 3, /obj/Arcane_Crafting)
-	magic_research_catalog["magic_fishing_lure"] = new /datum/MagicResearchNode("magic_fishing_lure", "Magic Fishing Lure", "Distill a lure that draws magic from water.", "Alchemy", 3, /obj/Arcane_Crafting)
 	magic_research_catalog["magic_circle"] = new /datum/MagicResearchNode("magic_circle", "Magic Circle", "Create a portable ritual focus that amplifies Arcane Essence gathering.", "Alchemy", 4, /obj/Arcane_Crafting)
 	magic_research_catalog["elixir_health"] = new /datum/MagicResearchNode("elixir_health", "Elixir of Health", "Brew a temporary regeneration catalyst.", "Alchemy", 4, /obj/Arcane_Crafting)
 	magic_research_catalog["magic_goo_2"] = new /datum/MagicResearchNode("magic_goo_2", "Magic Goo II", "Reinforce Magic Goo with ore and denser essence.", "Alchemy", 5, /obj/Arcane_Crafting)
@@ -128,7 +126,6 @@ proc/getMagicLevelForExperience(experience)
 mob/proc/gainMagicExperience(amount, reason, announce = FALSE)
 	if(amount <= 0) return 0
 	var/gained = amount * getMagicPotential() * (1 + getMilestoneRank("arcane_memory") * 0.1)
-	if(locate(/obj/items/ArcaneFocusGauntlets) in item_list) gained *= 1.05
 	if(locate(/obj/items/ArcaneOrbOfMastery) in item_list) gained *= 1.1
 	magic_experience += gained
 	if(announce) src << "You gained [round(gained, 0.1)] Magic XP from [reason]."

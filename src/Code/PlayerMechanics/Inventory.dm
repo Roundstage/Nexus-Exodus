@@ -1,5 +1,11 @@
 obj/var/can_radar = 1
 
+obj/items/proc/getNexusInventoryStatus()
+	if(istype(src, /obj/items/Gun))
+		var/obj/items/Gun/gun = src
+		return "[gun.Equipped ? "Equipped" : "Carried"] (Ammo: [Commas(gun.Ammo)])"
+	return suffix ? "[suffix]" : "Carried"
+
 var/list/brain_scramblers=new
 obj/Brain_Scrambler
 	can_change_icon=0
@@ -7,7 +13,7 @@ obj/Brain_Scrambler
 	icon_state="green"
 	Cost=25000000
 	science = 1
-	science_level = 7
+	science_level = 8
 	science_path = "Engineering"
 	makes_toxic_waste=1
 	New()
@@ -62,7 +68,7 @@ obj/items/EMP_Mine
 	icon_state="EMP Mine"
 	Cost=500000
 	hotbar_type="Combat item"
-	science = 1
+	science = 0
 	science_level = 5
 	science_path = "Engineering"
 	can_hotbar=1
@@ -260,7 +266,7 @@ obj/Resource_Destroyer
 	can_change_icon=0
 	Cost=25000000
 	science = 1
-	science_level = 7
+	science_level = 8
 	science_path = "Engineering"
 	makes_toxic_waste=1
 	icon='src/Icons/Objects/Technology/DrillRig.dmi'
@@ -431,7 +437,7 @@ obj/Orbital_Cannon
 	repair any damage taken to the cannon"
 	icon='src/Icons/Unsorted/Satellite.dmi'
 	Cost=10000000
-	science = 1
+	science = 0
 	science_level = 7
 	science_path = "Engineering"
 	makes_toxic_waste=1
@@ -584,7 +590,7 @@ obj/Ki_Field_Generator
 	Cost=50000000
 	makes_toxic_waste=1
 	science = 1
-	science_level = 6
+	science_level = 8
 	science_path = "Engineering"
 	New()
 		ki_field_generators+=src
@@ -1693,10 +1699,10 @@ obj/items/Communicator
 		var/rendered_message = usr.renderSpokenLanguageFor(P, msg)
 		for(var/obj/items/Scouter/S in P.item_list)
 			if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]><b>\[[html_encode(language_name)]\]</b> [usr]: [html_encode(rendered_message)]"
+				P<<"<font color=#FFFFFF>(Com)<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]><b>\[[html_encode(language_name)]\]</b> [html_encode("[usr]")]: [html_encode(rendered_message)]"
 		for(var/obj/items/Communicator/S in P.item_list)
 			if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-				P<<"<font color=#FFFFFF>(Com)<font color=[usr.TextColor]><b>\[[html_encode(language_name)]\]</b> [usr]: [html_encode(rendered_message)]"
+				P<<"<font color=#FFFFFF>(Com)<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]><b>\[[html_encode(language_name)]\]</b> [html_encode("[usr]")]: [html_encode(rendered_message)]"
 	verb/Frequency()
 		var/mob/user = usr
 		if(!canUseAfterNexusTradeYield(user)) return
@@ -2911,10 +2917,10 @@ obj/items
 			Transmit(msg as text) for(var/mob/P in players)
 				for(var/obj/items/Scouter/S in P.item_list)
 					if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-						P<<"<font color=#FFFFFF>(Scouter)<font color=[usr.TextColor]>[usr]: [msg]"
+						P<<"<font color=#FFFFFF>(Scouter)<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]>[html_encode("[usr]")]: [html_encode(msg)]"
 				for(var/obj/items/Communicator/S in P.item_list)
 					if(S.suffix&&((!P.Dead&&!usr.Dead)||(P.Dead&&usr.Dead))&&S.Frequency==Frequency)
-						P<<"<font color=#FFFFFF>(Scouter)<font color=[usr.TextColor]>[usr]: [msg]"
+						P<<"<font color=#FFFFFF>(Scouter)<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]>[html_encode("[usr]")]: [html_encode(msg)]"
 			Frequency()
 				var/mob/user = usr
 				if(!canUseAfterNexusTradeYield(user)) return

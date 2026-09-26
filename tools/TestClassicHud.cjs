@@ -23,7 +23,14 @@ async function mount(page, id, width, height, scale = 0) {
   await page.setViewportSize({ width, height });
   await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body><script>window.classicConfig=${JSON.stringify(config)};window.sent=[];window.classicTestTransport=u=>sent.push(u);</script><script>${js}</script>`);
 }
-async function update(page, data) { await page.evaluate(data => classicUpdate(JSON.stringify(data)), data); }
+async function update(page, data) {
+  // Older layout fixtures describe snapshots with strings; live updates use IDs.
+  if (data.messages && typeof data.messages[0] === 'string') {
+    data = { ...data, reset: true, firstId: 1, lastId: data.messages.length,
+      messages: data.messages.map((html, index) => ({ id: index + 1, html })) };
+  }
+  await page.evaluate(data => classicUpdate(JSON.stringify(data)), data);
+}
 (async () => {
   const executablePath = process.env.NEXUS_BROWSER_EXECUTABLE || (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : undefined);
   const browser = await chromium.launch({ executablePath, headless: true });
@@ -38,7 +45,7 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     assert(metrics.height / metrics.line >= 8, 'Minimum chat cannot fit eight short lines');
     assert(!metrics.overflow, 'Chat overflows horizontally');
     await page.locator('.messages').evaluate(node => { node.scrollTop = 25; node.dispatchEvent(new Event('scroll')); });
-    await update(page, { channel: 'all', messages: [...messages, '<b>New combat message</b>'], fontSize: 13 });
+    await update(page, { channel: 'all', firstId: 1, lastId: 21, messages: [{ id: 21, html: '<b>New system message</b>' }], fontSize: 13 });
     assert.equal(await page.locator('.messages').evaluate(node => node.scrollTop), 25, 'New arrivals stole history position');
     assert(await page.locator('.latest').isVisible(), 'Missing new-message indicator');
     await page.locator('.latest').click();
@@ -46,6 +53,54 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await update(page, { channel: 'all', messages: longMessages, fontSize: 13 });
     assert(await page.locator('.messages').evaluate(node => node.scrollWidth <= node.clientWidth), 'Long words overflow');
     await page.screenshot({ path: path.join(output, 'ChatMinimum.png') });
+    await page.getByRole('button', { name: 'CLEAR', exact: true }).click();
+    assert(await page.evaluate(() => sent.some(url => url.includes('action=clear_chat'))), 'Clear chat did not request live-history cleanup');
+    // Repeated text, rolling retention, selection, replay, expiry and long bursts.
+    await mount(page, 'chat', 550, 318);
+    await update(page, { channel: 'all', reset: true, firstId: 1, lastId: 300,
+      messages: Array.from({ length: 300 }, (_, i) => ({ id: i + 1, html: '<span>Identical message text</span>' })) });
+    await page.locator('.messages').evaluate(node => {
+      const anchor = node.children[100]; window.chatAnchor = anchor;
+      node.scrollTop = anchor.offsetTop - node.offsetTop;
+      node.dispatchEvent(new Event('scroll'));
+      window.chatAnchorTop = anchor.getBoundingClientRect().top;
+      const range = document.createRange(); range.selectNodeContents(anchor);
+      window.getSelection().removeAllRanges(); window.getSelection().addRange(range);
+    });
+    const delta = { channel: 'all', firstId: 2, lastId: 301, messages: [{ id: 301, html: '<span>Identical message text</span>' }] };
+    await update(page, delta);
+    assert.equal(await page.locator('.messages > .chat-entry').count(), 300, 'Rolling history exceeded the DOM cap');
+    assert(await page.evaluate(() => chatAnchor.isConnected && Math.abs(chatAnchor.getBoundingClientRect().top - chatAnchorTop) < 1), 'Trimming moved or rebuilt the selected history');
+    assert.equal(await page.evaluate(() => window.getSelection().toString()), 'Identical message text', 'New text destroyed the selection');
+    assert.equal(await page.locator('.messages').evaluate(node => node.lastChild._chatId), 301, 'Repeated message text was mistaken for an old entry');
+    await update(page, delta);
+    assert.equal(await page.locator('.messages > .chat-entry').count(), 300, 'Replayed delta duplicated text');
+    await update(page, { channel: 'all', firstId: 302, lastId: 301, messages: [] });
+    assert.equal(await page.locator('.messages > .chat-entry').count(), 0, 'Idle expiry/clear left text in the DOM');
+    assert(await page.locator('.latest').isHidden(), 'Empty chat kept a stale unread indicator');
+    await update(page, { channel: 'ooc', reset: true, firstId: 1, lastId: 1, messages: [{ id: 1, html: 'OOC only' }] });
+    assert.equal(await page.locator('.messages').innerText(), 'OOC only', 'Channel switch mixed histories');
+    await update(page, { channel: 'all', reset: true, firstId: 302, lastId: 301, messages: [] });
+    const burst = await page.evaluate(() => {
+      const body = document.querySelector('.messages');
+      let peak = 0, created = 0;
+      const create = document.createElement.bind(document);
+      document.createElement = function (...args) { created++; return create(...args); };
+      try {
+        for (let start = 302; start < 10302; start += 50) {
+          classicUpdate({ channel: 'all', firstId: Math.max(302, start + 50 - 300), lastId: start + 49,
+            messages: Array.from({ length: 50 }, (_, i) => ({ id: start + i, html: '<b>Combat burst</b>' })) });
+          peak = Math.max(peak, body.children.length);
+        }
+        return { peak, created, count: body.children.length, first: body.firstChild._chatId, last: body.lastChild._chatId };
+      } finally { document.createElement = create; }
+    });
+    assert.deepEqual(burst, { peak: 300, created: 10000, count: 300, first: 10002, last: 10301 }, 'Chat burst rebuilt old nodes or exceeded its retained window');
+    await mount(page, 'chat', 550, 318);
+    await update(page, { channel: 'all', firstId: 10002, lastId: 10302, messages: [{ id: 10302, html: 'Late delta' }] });
+    assert(await page.evaluate(() => sent.some(url => url.includes('action=chat_sync'))), 'Fresh browser accepted a delta without requesting a snapshot');
+    await update(page, { channel: 'all', reset: true, firstId: 10302, lastId: 10302, messages: [{ id: 10302, html: 'Restored snapshot' }] });
+    assert.equal(await page.locator('.messages').innerText(), 'Restored snapshot', 'Reopened chat failed to restore retained history');
     await mount(page, 'chat', 420, 230);
     await update(page, { channel: 'all', messages, fontSize: 13 });
     await page.mouse.move(415, 225); await page.mouse.down(); await page.mouse.move(500, 290, { steps: 6 }); await page.mouse.up();
@@ -62,7 +117,7 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
         return node.scrollHeight - node.clientHeight - node.scrollTop < 12;
       });
       assert(await page.locator('.messages').evaluate(node => node.scrollWidth <= node.clientWidth), `Chat overflow at ${width}px`);
-      for (const control of await page.locator('.footer button, .channels button').all()) {
+      for (const control of await page.locator('.footer button, .toolbar button').all()) {
         const box = await control.boundingBox();
         assert(box.x >= 0 && box.x + box.width <= width && box.y + box.height <= 220, `Chat control clipped at ${width}px`);
       }
@@ -124,7 +179,7 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     const scaledDrag = await page.evaluate(() => classicGeometryForTest());
     assert.equal(scaledDrag.x, 30); assert.equal(scaledDrag.y, 20);
     assert.equal(scaledDrag.content_w, 550, 'Scaled drag resized the content');
-    for (const control of await page.locator('.footer button, .channels button').all()) {
+    for (const control of await page.locator('.footer button, .toolbar button').all()) {
       const box = await control.boundingBox();
       assert(box.x + box.width <= 275 && box.y + box.height <= 159, 'Scaled chat clipped a button');
     }
@@ -192,12 +247,68 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await mount(page, 'inventory', 460, 680);
     await update(page, { rows: [{ label: 'ITEMS CARRIED', value: '2', token: '' }, { label: 'Viltrumite Soldier Robe', value: 'Equipped', token: 'item-ref' }] });
     assert.equal(await page.locator('.panel-actions').count(), 1, 'Inventory item actions are missing');
+    assert(await page.getByText('Equipped', { exact: true }).isVisible(), 'Inventory hides the equipped item status');
     for (const action of ['USE', 'BAR', 'EXAMINE']) {
       await page.evaluate(() => { sent.length = 0; });
       await page.locator('.panel-actions').getByRole('button', { name: action, exact: true }).click();
       assert(await page.evaluate(expected => sent.some(url => url.includes('action=' + expected)), action === 'USE' ? 'panel_use' : action === 'BAR' ? 'panel_bar' : 'panel_examine'), `Inventory ${action} action was not routed`);
     }
     assert.equal(await page.locator('.grip').count(), 0, 'Fixed menu still exposes resize grips');
+    for (const scale of [1, 0.75, 0.5]) {
+      await mount(page, 'inventory', 460, 680, scale);
+      const item = { label: 'Viltrumite Soldier Robe with a long custom name', value: 'Equipped', token: 'item-ref' };
+      await update(page, { rows: [item] });
+      assert(await page.getByText('Equipped', { exact: true }).isVisible(), `Equipment status hidden at scale ${scale}`);
+      assert(await page.locator('.body').evaluate(node => node.scrollWidth <= node.clientWidth), `Inventory overflows at scale ${scale}`);
+      const status = await page.locator('.item-status').boundingBox();
+      const actions = await page.locator('.panel-actions').boundingBox();
+      assert(status.x + status.width <= actions.x, 'Equipment status overlaps item actions');
+      await update(page, { rows: [{ ...item, value: 'Carried' }] });
+      assert.equal(await page.getByText('Equipped', { exact: true }).count(), 0, 'Unequipping leaves a stale equipped marker');
+      assert(await page.getByText('Carried', { exact: true }).isVisible(), 'Inventory does not refresh the unequipped status');
+    }
+    await mount(page, 'bar', 526, 82);
+    const worldActions = ['Manage Player', 'Teleport', 'Summon', 'AdminHeal', 'Admin Revive', 'Admin Inspector'].map((label, index) => ({ id: 'admin-' + index, label }));
+    for (const scale of [1, 0.65]) {
+      await mount(page, 'menu', 460, 680, scale);
+      const worldRows = [0,1].map(index => ({ label: 'Same Character Name', value: 'Account: Player' + index, token: 'player-' + index, actions: worldActions }));
+      await update(page, { sections: { world: 'World / Who' }, section: 'world', rows: worldRows });
+      const playerRow = page.locator('.world-row').nth(1);
+      assert(await playerRow.getByText('Account: Player1', { exact: true }).isVisible());
+      for (const action of worldActions) {
+        await page.evaluate(() => { sent.length = 0; });
+        await playerRow.getByRole('button', { name: action.label, exact: true }).click();
+        const sentActions = await page.evaluate(() => sent.map(url => Object.fromEntries(new URL(url).searchParams)));
+        assert.equal(sentActions.length, 1, 'World action also triggered its parent row');
+        assert.equal(sentActions[0].action, 'context_action'); assert.equal(sentActions[0].value, 'player-1'); assert.equal(sentActions[0].option, action.id);
+      }
+      await page.locator('input').fill('Player1');
+      assert.equal(await page.locator('.world-row:visible').count(), 1, 'World search cannot find the account name');
+      await page.locator('input').fill('');
+      await update(page, { rows: worldRows.map(row => ({ ...row, actions: [] })) });
+      assert.equal(await page.locator('.world-row button').count(), 0, 'Removed admin permission left actionable buttons');
+    }
+    // Every object row uses the same context protocol; right-click never activates the row.
+    for (const widget of ['menu', 'inventory', 'skills', 'sense', 'stats', 'target']) {
+      await mount(page, widget, 460, 430, 0.75);
+      await update(page, { sections: { souls: 'Souls', world: 'World' }, section: 'souls', rows: [{ label: '<Contracted Soul>', token: 'soul-ref' }] });
+      await page.evaluate(() => { sent.length = 0; });
+      await page.locator('.row').click({ button: 'right' });
+      assert.deepEqual(await page.evaluate(() => sent.map(url => new URL(url).searchParams.get('action'))), ['context'], `${widget}: right-click activated a row`);
+      await page.evaluate(() => classicContext({ token: 'wrong-ref', options: [{ id: 'soul', label: 'Wrong soul' }] }));
+      assert.equal(await page.getByRole('menu').count(), 0, `${widget}: accepted a stale response`);
+      await page.evaluate(() => classicContext({ token: 'soul-ref', label: '<Contracted Soul>', options: [{ id: 'soul', label: 'Manage Soul' }, { id: 'admin', label: 'Manage Player' }] }));
+      assert.equal(await page.locator('.context-title').textContent(), '<Contracted Soul>', 'Context names were treated as markup');
+      const menuBox = await page.getByRole('menu').boundingBox(), viewport = page.viewportSize();
+      assert(menuBox.x >= 0 && menuBox.y >= 0 && menuBox.x + menuBox.width <= viewport.width + 1 && menuBox.y + menuBox.height <= viewport.height + 1, `${widget}: context menu clipped at HUD scale`);
+      await page.getByRole('menuitem', { name: 'Manage Soul' }).click();
+      assert(await page.evaluate(() => sent.some(url => url.includes('action=context_action') && url.includes('value=soul-ref') && url.includes('option=soul'))), `${widget}: context action lost the selected soul`);
+      assert.equal(await page.getByRole('menu').count(), 0, 'Context menu did not close after selection');
+      await page.locator('.row').click({ button: 'right' });
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => classicContext({ token: 'soul-ref', options: [{ id: 'soul', label: 'Manage Soul' }] }));
+      assert.equal(await page.getByRole('menu').count(), 0, 'Dismissed context reopened on a delayed response');
+    }
     await mount(page, 'bar', 526, 82);
     await update(page, { slots, columns: 12, size: 40, locked: false });
     const commandDrag = await page.evaluateHandle(() => { const d = new DataTransfer(); d.setData('text/plain', 'classic-command:owned-verb'); return d; });
@@ -284,6 +395,6 @@ async function update(page, data) { await page.evaluate(data => classicUpdate(JS
     await page.keyboard.press('R');
     assert(await page.evaluate(()=>sent.some(u=>{const q=new URL(u).searchParams;return q.get('action')==='bind'&&q.get('mode')==='direct'&&q.get('token')==='classic-command:meditate';})),'Independent hotkeys require an existing bar');
     assert.equal(errors.length, 0, errors.join('\n'));
-    console.log('PASS: chat reflow/history, resize, browser viewport fitting/clicks, cooldowns, reorder, verb drops, lock, editor search/drag, independent hotkeys, modifier capture/conflicts, responsive layouts and JS errors.');
+    console.log('PASS: bounded/incremental chat (10,000 messages), clear/expiry/resync, selection/history, resize, browser viewport fitting/clicks, cooldowns, reorder, verb drops, lock, editor search/drag, independent hotkeys, modifier capture/conflicts, responsive layouts and JS errors.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

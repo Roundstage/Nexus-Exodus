@@ -48,12 +48,17 @@ Managed equipment appearances carry an explicit copy of the character body matri
 - Purpose: Own player equipment overlay slots, source identity, stable priorities, and isolated rendered images.
 - Behavior: removes legacy raw item icons plus orphaned rendered equipment images by icon state and pixel offset, derives equipped sources, sorts by priority/category/slot, rebuilds once, re-adds injuries above equipment, and reconstructs Lethal/RP Mode indicators from their current flags. Signature cleanup is what makes the manager safe after a relog or a transformation temporarily stores and restores the mob overlay list.
 
+Buff effects use priority 710 and the explicit `PLAYER_BUFF_LAYER` (`MOB_LAYER + 1`), above clothing and armor regardless of equip/rebuild order. `syncPresetBuffs()` restores preset/Ultimate and Horseman effects; `syncSkillBuffs()` restores Fire Fist, Saiyan Power, Majin, Limit Breaker and custom `buff_overlays` from active flags and owned skills. `syncSkillBuffIcon()` removes legacy raw and serialized orphaned buff images before creating owned slots, including colored/uploaded icon datums. Cleanup preserves other explicit layers, including powerup auras that reuse the same resource. Inactive custom buffs only clean the buff layer, preserving unrelated raw cosmetics. Buff images share the body transform used by managed equipment.
+
+`Aura_Overlays()` assigns `PLAYER_POWERUP_LAYER` (`MOB_LAYER + 2`) to ordinary, transformed and God Fist powerup auras. These render above buffs and transformation hair/electricity even when those are added later. Golden/Ultra Instinct auras have one foreground copy, and the additional Blue/Super God Fist aura is removed from both legacy underlays and current overlays when switching or powering down.
+
 ### mob/proc/rebuildPlayerAppearance(reason)
 - Purpose: Reconstruct equipment and combat-status overlays after loading a character, login normalization, icon/equipment changes, body swap, or primary transformation changes.
 - Side effects: removes both current manager-owned images and visually matching stale equipment images, then replaces them with fresh per-player images. Lethal/RP Mode cleanup identifies every old indicator by its resource, even after temporary image references were lost. Hair, custom cosmetics, and unrelated combat effects are preserved.
 
 ### mob/Read(save_file)
 - Purpose: Rebuild the character appearance immediately after deserialization, including migration of orphaned combat indicators from older saves.
+- Communication: clears typing and Say actors before and after the read, covering reused mobs and orphaned balloons in legacy saves without touching unrelated visual contents.
 - Side effects: replaces any temporary appearance manager inherited from the destination mob, reconstructs equipped items and status images, and preserves saved combat-mode flags. Normal login transformation normalization still runs afterward.
 
 ### atom/proc/setNexusAppearanceIcon(new_icon, new_icon_state, center)

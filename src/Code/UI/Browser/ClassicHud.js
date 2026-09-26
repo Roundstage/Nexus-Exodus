@@ -1,7 +1,8 @@
 (function () {
   'use strict';
   var config = window.classicConfig, id = config.kind || config.id, widgetId = config.id, data = {}, geometry = config.geometry, viewport = config.viewport;
-  var dragging = null, pendingGeometry = false, lastRows = '', lastMessages = [], lastChannel = '', following = true;
+  var dragging = null, pendingGeometry = false, lastRows = '', lastMessageId = 0, lastChannel = '', following = true;
+  var contextToken = null, contextPoint = null;
   function el(tag, cls, text) { var node = document.createElement(tag); if (cls) node.className = cls; if (text != null) node.textContent = text; return node; }
   function navigate(url) { if (window.classicTestTransport) window.classicTestTransport(url); else window.location.href = url; }
   function topic(action, values) {
@@ -37,7 +38,7 @@
     query.onkeydown = function (event) { if (event.key === 'Escape') { query.blur(); focusMap(); } event.stopPropagation(); };
   }
   if (id === 'menu') {
-    section = el('select'); section.setAttribute('aria-label', 'Category'); section.onchange = function () { topic('section', { value: section.value }); lastRows = ''; };
+    section = el('select'); section.setAttribute('aria-label', 'Category'); section.onchange = function () { closeContext(); topic('section', { value: section.value }); lastRows = ''; };
     var categoryToolbar = el('nav', 'toolbar'); categoryToolbar.appendChild(section); shell.insertBefore(categoryToolbar, toolbar);
     footer.appendChild(button('Appearance / Clothes', 'settings')); footer.appendChild(button('Ki Settings', 'ki_settings'));
     footer.appendChild(button('Inventory', 'inventory')); footer.appendChild(button('Skills', 'skills'));
@@ -49,6 +50,7 @@
   if (id === 'chat') {
     body.className += ' messages'; channels = el('div', 'channels'); toolbar.appendChild(channels);
     ['all', 'combat', 'ic', 'ooc'].forEach(function (channel) { channels.appendChild(button(channel.toUpperCase(), 'channel', channel)); });
+    var clearChat = button('CLEAR', 'clear_chat'); clearChat.title = 'Clear live chat in all channels. Saved logs are kept.'; toolbar.appendChild(clearChat);
     ['say', 'ooc', 'emote'].forEach(function (action) { footer.appendChild(button(action.toUpperCase(), 'chat', action)); });
     footer.appendChild(button('LOGS', 'chat', 'logs')); footer.appendChild(button('CMD', 'chat', 'cmd'));
     latest = el('button', 'latest', 'New messages ↓'); latest.hidden = true; shell.appendChild(latest);
@@ -79,10 +81,33 @@
     function add(row, command) {
       if (row.group && row.group !== previousGroup && id !== 'target') { body.appendChild(el('div', 'group', row.group)); previousGroup = row.group; }
       var panelActions = (id === 'inventory' || id === 'skills') && row.token;
-      var item = el(row.token && !panelActions ? 'button' : 'div', 'row' + (row.token ? ' action' : '') + (panelActions ? ' panel-row' : ''));
-      item.appendChild(el('span', 'label', row.label)); item.appendChild(el('span', 'value', row.value));
-      if (row.token && !panelActions) { item.type = 'button'; item.onclick = function () { topic(command ? 'command' : 'row', { value: row.token }); }; }
+      var worldRow = id === 'menu' && data.section === 'world' && row.token;
+      var item = el(row.token && !panelActions && !worldRow ? 'button' : 'div', 'row' + (row.token ? ' action' : '') + (panelActions || worldRow ? ' panel-row' : '') + (worldRow ? ' world-row' : ''));
+      if (panelActions || worldRow) {
+        var copy = el('span', 'panel-copy'); copy.appendChild(el('span', 'label', row.label));
+        if (row.value) copy.appendChild(el('span', 'item-status', row.value));
+        item.appendChild(copy);
+      } else { item.appendChild(el('span', 'label', row.label)); item.appendChild(el('span', 'value', row.value)); }
+      if (row.token && !panelActions && !worldRow) { item.type = 'button'; item.onclick = function () { topic(command ? 'command' : 'row', { value: row.token }); }; }
+      if (row.token && !command) {
+        item.oncontextmenu = function (event) {
+          event.preventDefault(); event.stopPropagation(); closeContext();
+          contextToken = row.token;
+          var bounds = shell.getBoundingClientRect(), scale = bounds.width / shell.offsetWidth || 1;
+          contextPoint = { x: (event.clientX - bounds.left) / scale, y: (event.clientY - bounds.top) / scale };
+          topic('context', { value: row.token });
+        };
+      }
       if (panelActions) { var actions = el('span', 'panel-actions'); actions.appendChild(button('USE', 'panel_use', row.token)); actions.appendChild(button('BAR', 'panel_bar', row.token)); actions.appendChild(button('EXAMINE', 'panel_examine', row.token)); item.appendChild(actions); }
+      if (worldRow && row.actions && row.actions.length) {
+        var worldActions = el('span', 'panel-actions');
+        row.actions.forEach(function (option) {
+          var actionButton = el('button', '', option.label); actionButton.type = 'button';
+          actionButton.onclick = function () { topic('context_action', { value: row.token, option: option.id }); };
+          worldActions.appendChild(actionButton);
+        });
+        item.appendChild(worldActions);
+      }
       if (command && row.token) { item.draggable = true; item.title = 'Drag this verb to the hotbar'; item.ondragstart = function(event) { event.dataTransfer.setData('text/plain', 'classic-command:' + row.token); }; }
       body.appendChild(item);
     }
@@ -92,22 +117,31 @@
   }
   function renderChat() {
     var messages = data.messages || [], changedChannel = lastChannel !== data.channel;
-    var same = !changedChannel && JSON.stringify(messages) === JSON.stringify(lastMessages); if (same) return;
+    var reset = !!data.reset;
+    // A fresh document/channel must receive a snapshot before applying deltas.
+    if (changedChannel && !reset) { data.messages = null; topic('chat_sync'); return; }
+    var needsTrim = body.firstChild && body.firstChild._chatId < data.firstId;
+    if (!reset && !needsTrim && !messages.length) return;
     var oldTop = body.scrollTop, oldHeight = body.scrollHeight, wasFollowing = following || changedChannel;
-    // Append overlapping history rather than replacing it: selection and scroll survive arrivals.
-    var overlap = 0;
-    if (!changedChannel) {
-      for (var n = Math.min(lastMessages.length, messages.length); n > 0; n--) {
-        if (lastMessages.slice(lastMessages.length - n).join('\u0000') === messages.slice(0, n).join('\u0000')) { overlap = n; break; }
-      }
+    if (reset) { body.textContent = ''; lastMessageId = 0; }
+    else while (body.firstChild && body.firstChild._chatId < data.firstId) body.removeChild(body.firstChild);
+    var removedHeight = reset ? 0 : oldHeight - body.scrollHeight;
+    var fragment = document.createDocumentFragment(), added = 0;
+    for (var i = 0; i < messages.length; i++) {
+      var message = messages[i];
+      if (message.id <= lastMessageId || message.id < data.firstId) continue;
+      var item = el('div', 'chat-entry'); item._chatId = message.id; item.innerHTML = message.html;
+      fragment.appendChild(item); lastMessageId = message.id; added++;
     }
-    if (!overlap) body.textContent = '';
-    else while (body.children.length > overlap) body.removeChild(body.firstChild);
-    var removedHeight = overlap ? oldHeight - body.scrollHeight : 0;
-    for (var i = overlap; i < messages.length; i++) { var item = el('div', 'chat-entry'); item.innerHTML = messages[i]; body.appendChild(item); }
+    body.appendChild(fragment);
+    // Defense in depth; normal pruning is driven by the server's firstId.
+    while (body.children.length > 300) body.removeChild(body.firstChild);
     if (wasFollowing) { body.scrollTop = body.scrollHeight; latest.hidden = true; }
-    else { body.scrollTop = Math.max(0, oldTop - Math.max(0, removedHeight)); latest.hidden = false; }
-    following = wasFollowing; lastMessages = messages.slice(); lastChannel = data.channel;
+    else { body.scrollTop = Math.max(0, oldTop - Math.max(0, removedHeight)); if (added) latest.hidden = false; }
+    if (!body.children.length) { latest.hidden = true; wasFollowing = true; }
+    following = wasFollowing; lastChannel = data.channel;
+    // The DOM owns displayed text; do not also retain the received HTML payload.
+    data.messages = null;
     Array.prototype.forEach.call(channels.children, function (node) { node.classList.toggle('active', node.textContent.toLowerCase() === data.channel); });
   }
   function openSlotMenu(slot, event) {
@@ -116,6 +150,29 @@
     menu.appendChild(button('Hotkeys', 'hotkeys', slot)); if (!data.locked) { menu.appendChild(button('Assign', 'assign', slot)); menu.appendChild(button('Clear', 'clear', slot)); }
     var close = el('button', '', '×'); close.onclick = function () { menu.remove(); }; menu.appendChild(close); shell.appendChild(menu);
   }
+  function closeContext() {
+    var old = document.querySelector('.context'); if (old) old.remove();
+    contextToken = null; contextPoint = null;
+  }
+  window.classicContext = function (payload) {
+    var response; try { response = typeof payload === 'string' ? JSON.parse(payload) : payload; } catch (_) { return; }
+    if (!contextToken || response.token !== contextToken) return;
+    var old = document.querySelector('.context'); if (old) old.remove();
+    var menu = el('div', 'context row-context'); menu.setAttribute('role', 'menu');
+    menu.appendChild(el('b', 'context-title', response.label));
+    (response.options || []).forEach(function (option) {
+      var node = el('button', '', option.label); node.type = 'button'; node.setAttribute('role', 'menuitem');
+      node.onclick = function (event) { event.stopPropagation(); topic('context_action', { value: response.token, option: option.id }); closeContext(); };
+      menu.appendChild(node);
+    });
+    if (!(response.options || []).length) menu.appendChild(el('span', '', 'No actions available.'));
+    shell.appendChild(menu);
+    menu.style.left = Math.max(0, Math.min(contextPoint.x, shell.clientWidth - menu.offsetWidth)) + 'px';
+    menu.style.top = Math.max(0, Math.min(contextPoint.y, shell.clientHeight - menu.offsetHeight)) + 'px';
+    var first = menu.querySelector('button'); if (first) first.focus();
+  };
+  document.addEventListener('mousedown', function (event) { if (!event.target.closest('.context')) closeContext(); });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeContext(); });
   function renderSlots(slots) {
     var columns = Math.max(1, Math.min(data.columns || 12, Math.floor((body.clientWidth - 3) / ((data.size || 40) + 3)) || 1));
     body.style.gridTemplateColumns = 'repeat(' + columns + ',' + (data.size || 40) + 'px)';

@@ -1,6 +1,12 @@
 #define APPEARANCE_PRIORITY_BACK 300
 #define APPEARANCE_PRIORITY_BODY 500
 #define APPEARANCE_PRIORITY_FRONT 700
+#define APPEARANCE_PRIORITY_BUFF 710
+
+// Explicit layers keep effects above equipment regardless of overlay insertion order.
+var/const
+	PLAYER_BUFF_LAYER = MOB_LAYER + 1
+	PLAYER_POWERUP_LAYER = MOB_LAYER + 2
 
 datum/PlayerAppearanceEntry
 	var/slot_key
@@ -22,6 +28,7 @@ datum/PlayerAppearanceEntry
 		result.pixel_y = pixel_y
 		result.color = color
 		result.alpha = alpha
+		if(category == "preset_buff" || category == "buff") result.layer = PLAYER_BUFF_LAYER
 		// Keep equipment on the exact same transform as the body. Some clients detached item
 		// appearances from the parent transform, leaving forged swords, masks and armor at 32px.
 		// RESET_TRANSFORM prevents a second parent multiplication after applying the body matrix.
@@ -143,6 +150,8 @@ datum/PlayerAppearanceManager
 		last_rebuild_reason = reason
 		removeRenderedAppearances()
 		syncEquipment()
+		syncPresetBuffs()
+		syncSkillBuffs()
 		var/list/ordered_entries = sortedEntries()
 		for(var/datum/PlayerAppearanceEntry/entry in ordered_entries)
 			entry.rendered = entry.createRenderedAppearance(owner.transform)
@@ -168,7 +177,11 @@ obj/items/var
 mob/var/tmp/datum/PlayerAppearanceManager/player_appearance_manager
 
 mob/Read(savefile/save_file)
+	clearNexusCommunicationEffects()
+	clearBurnEffect()
 	. = ..()
+	clearNexusCommunicationEffects()
+	try_applying_burn_effect()
 	// Read can reuse a lobby/body mob. Its previous tmp manager must not own the loaded outfit.
 	player_appearance_manager = null
 	rebuildPlayerAppearance("character load")

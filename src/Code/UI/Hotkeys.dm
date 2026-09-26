@@ -1,8 +1,9 @@
 mob/proc/LoadCharacterHotkeyThing()
 	set waitfor=0
 	sleep(10)
+	ensureNexusHotkeyBackupLoaded()
 	if(Has_hotkey_server_backup())
-		Restore_hotbar_from_IDs() //this automatically loads their hotkey backup if it hasnt been loaded already
+		Restore_hotbar_from_IDs()
 	else
 		Generate_starter_hotbar()
 	initializeNexusHotkeys()
@@ -23,7 +24,15 @@ proc/getNexusStarterHotkeyTypes()
 		"V" = /obj/Local_chat, "W" = /obj/Move_Up, "X" = /obj/Learn,\
 		"Y" = /obj/Auto_Attack, "Z" = /obj/Teach)
 
+mob/var/tmp/nexus_hotkey_backup_loaded = FALSE
+
 mob/proc
+	ensureNexusHotkeyBackupLoaded()
+		if(!playerCharacter || nexus_hotkey_backup_loaded) return
+		// Restore modern bindings before any defaults/migration can overwrite the backup.
+		nexus_hotkey_backup_loaded = TRUE
+		if(Has_hotkey_server_backup()) Hotkey_server_backup_load()
+
 	Has_hotkey_server_backup()
 		if(!client) return
 		if(fexists("data/HotkeyBackups/[ckey]")) return 1
@@ -33,9 +42,14 @@ mob/proc
 			src<<"ERROR: Hotkey backup NOT FOUND"
 			return
 		var/savefile/f=new("data/HotkeyBackups/[ckey]")
-		f["hotbar_ids"] >> hotbar_ids
-		f["nexus_hotkey_bindings"] >> nexus_hotkey_bindings
-		f["nexus_hotkey_version"] >> nexus_hotkey_version
+		readNexusHotkeyBackup(f)
+
+	readNexusHotkeyBackup(savefile/f)
+		if(!f) return FALSE
+		// Earlier legacy setup may have filled this table; modern keys still need restoring.
+		if(!length(hotbar_ids) && ("hotbar_ids" in f)) f["hotbar_ids"] >> hotbar_ids
+		if("nexus_hotkey_bindings" in f) f["nexus_hotkey_bindings"] >> nexus_hotkey_bindings
+		if("nexus_hotkey_version" in f) f["nexus_hotkey_version"] >> nexus_hotkey_version
 		if("nexus_classic_slot_keys_version" in f) f["nexus_classic_slot_keys_version"] >> nexus_classic_slot_keys_version
 		var/list/bar_settings
 		var/bar_key = "nexus_classic_bar_[clampNexusCharacterSlot(active_character_slot)]"
@@ -50,11 +64,16 @@ mob/proc
 			nexus_classic_bar_locked = bar_settings["locked"]
 		if("nexus_keyboard_layout" in f) f["nexus_keyboard_layout"] >> nexus_keyboard_layout
 		nexus_keyboard_layout = normalizeNexusKeyboardLayout(nexus_keyboard_layout)
+		return TRUE
 
 	Hotkey_server_backup_save()
-		if(!client) return
+		if(!client || !playerCharacter || !nexus_hotkey_backup_loaded) return
 		if(client.connection != "seeker") return //i think web connections and such are corrupting their hotkey file and erasing their hotkeys
 		var/savefile/f = new("data/HotkeyBackups/[ckey]")
+		writeNexusHotkeyBackup(f)
+
+	writeNexusHotkeyBackup(savefile/f)
+		if(!f || !playerCharacter || !nexus_hotkey_backup_loaded) return FALSE
 		f["hotbar_ids"] << hotbar_ids
 		f["nexus_hotkey_bindings"] << nexus_hotkey_bindings
 		f["nexus_hotkey_version"] << nexus_hotkey_version
@@ -62,6 +81,7 @@ mob/proc
 		if(islist(nexus_classic_slots))
 			f["nexus_classic_bar_[clampNexusCharacterSlot(active_character_slot)]"] << list("created" = character_made_time, "slots" = nexus_classic_slots, "bars" = nexus_classic_bars, "next_bar" = nexus_classic_next_bar, "rows" = nexus_classic_bar_rows, "columns" = nexus_classic_bar_columns, "size" = nexus_classic_bar_size, "locked" = nexus_classic_bar_locked)
 		f["nexus_keyboard_layout"] << normalizeNexusKeyboardLayout(nexus_keyboard_layout)
+		return TRUE
 
 obj/var/tmp
 	is_for_moving
@@ -388,7 +408,7 @@ obj/Power_Up
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		if(!usr.powerup_obj)
+		if(!usr.getPowerControl())
 			usr<<"You have not yet learned this ability"
 			return
 		usr.Power_up()
@@ -399,7 +419,7 @@ obj/Power_Down
 	verb/Hotbar_use()
 		set waitfor=0
 		set hidden=1
-		if(!usr.powerup_obj)
+		if(!usr.getPowerControl())
 			usr<<"You have not yet learned this ability"
 			return
 		usr.powerup_obj.Power_Down()
@@ -549,7 +569,7 @@ mob/proc/Register_hotbar_ID(t,i,hotbar_pos=1)
 mob/proc/Hotbar_IDs_valid()
 	//if(key=="Tens of DU") src<<"Hotbar_IDs_valid"
 	//if(!hotbar_ids.len) return
-	if(istext(hotbar_ids))
+	if(!islist(hotbar_ids))
 		src << "HOTBAR INFORMATION INVALID. RESETTING"
 		return
 	for(var/v in hotbar_ids) if(istext(v))
@@ -576,6 +596,7 @@ mob/var/starter_hotbar_generated
 mob/verb/Restore_starter_hotbar()
 	set hidden=1
 	set name=".Restore_starter_hotbar"
+	ensureNexusHotkeyBackupLoaded()
 	hotbar_ids=new/list
 	starter_hotbar_generated=0
 	Generate_starter_hotbar()
@@ -602,14 +623,11 @@ mob/proc/Restore_hotbar_from_IDs()
 	if(!client || skip_restore_hotbar) return
 
 	if(!playerCharacter) return //this person is on the title screen and not loaded into a character
+	ensureNexusHotkeyBackupLoaded()
 
 	if(!Hotbar_IDs_valid())
 		hotbar = new/list
 		hotbar_ids = new/list
-
-	if(!hotbar_ids.len && Has_hotkey_server_backup())
-		//src<<"ERROR: Loading hotkeys from backup stored on server. Report this error please."
-		Hotkey_server_backup_load()
 
 	hotbar=new/list
 
@@ -758,7 +776,7 @@ mob/proc/Refresh_hotbar_key_grid()
 				src<<output(getNexusHotbarSkillIcon(o),"hotbar.key_grid")
 
 				winset(src,"hotbar.key_grid","current-cell=3,[cell]")
-				src<<output(o.name,"hotbar.key_grid")
+				src<<output(html_encode(o.name),"hotbar.key_grid")
 
 			else hotbar[cell]=null
 		cell++

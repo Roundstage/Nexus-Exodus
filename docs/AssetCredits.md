@@ -16,6 +16,8 @@
 
 ## Combat effects
 
+- `src/Icons/NexusIntegrated/Attacks/Effects/RTStatusEffects.dmi` is an unchanged copy of Roleplay Tenkaichi's `Icons/Misc Icons/Effects/StatusEffects.dmi`, imported at the user's request on 2026-09-25. Burn uses its animated `Burning` state. The timed damage and overlay lifecycle from RPT's `Code/System/Debuff.dm::BurnDamage` are adapted to Nexus's shared status scheduler, combat attribution, and existing 3-Health/2-second stack balance, with 30% Health regeneration suppression. This records provenance without claiming new authorship or a new license.
+
 - `src/Icons/Effects/AlienInfiniteVoid.dmi` is original pixel-art generated for Nexus Exodus with OpenAI's image-generation tool on 2026-08-05, then chroma-keyed, nearest-neighbor resized, and packaged as a transparent 512x512 BYOND DMI with the explicit `void` state. It depicts an abstract cosmic domain and intentionally contains no character likeness, logo, text, or recognizable anime symbol.
 - `src/Icons/Effects/CC0/SwordSlash.dmi` packages the nine 64x47 frames from [Pixel art sword slash effect](https://opengameart.org/content/pixel-art-sword-slash-effect) by tbbk, released under CC0. The original pixels are unchanged; Nexus Exodus adds BYOND DMI metadata and applies per-technique color at runtime.
 - `src/Sound/SoundEffects/Combat/Weapons/SwordSwing*.ogg` selects four sounds from [Swishes Sound Pack](https://opengameart.org/content/swishes-sound-pack) by artisticdude, released under CC0. The selected 24-bit WAV files were converted to mono Ogg Vorbis for BYOND playback and package size.

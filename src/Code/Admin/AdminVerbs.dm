@@ -100,7 +100,7 @@ mob/Admin2/verb/bugLogs()
 	set name = "Bug Logs"
 	set category="Admin"
 	var/T={"<html><head><body><body bgcolor="#000000"><font size=3><b>"}
-	for(var/V in Bugs) T+="[V]<br>"
+	for(var/V in Bugs) T+="[html_encode("[V]")]<br>"
 	usr<<browse(T,"window= ;size=700x600")
 
 mob/Admin1/verb/viewRpWindow(mob/M in players)

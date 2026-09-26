@@ -328,7 +328,6 @@ mob/proc
 		if(O.buff_aura&&Auras)
 			O.prebuff_aura=Auras.icon
 			Auras.icon=O.buff_aura
-		for(var/V in O.buff_overlays) if(V!="Cancel") overlays+=V
 
 		for(var/v in O.buff_attributes)
 			active_buff_attributes-=v
@@ -364,6 +363,7 @@ mob/proc
 		recov*=O.buff_rec
 
 		current_buff=O
+		rebuildPlayerAppearance("buff enabled")
 		if(!rebuff_timer) Rebuff_timer_countdown()
 		rebuff_timer = 2
 		playPresetBuffVfx(O, TRUE)
@@ -424,6 +424,7 @@ mob/proc
 		src << "<font color=[rgb(0,255,0)]>You have deactivated [O]"
 
 		current_buff=null
+		rebuildPlayerAppearance("buff disabled")
 		if(was_transformation) syncActivePrimaryTransformation("custom transformation revert")
 
 obj/Buff/Focus

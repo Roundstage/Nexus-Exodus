@@ -1319,13 +1319,6 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 	//if(ismob(target) && target.CanMeleeDodge(src)) hit_landed = 0
 
 	if(hit_landed)
-		if(isFireFist && prob(40))
-			target.BurnStack++
-
-			if(!target.isBurning)
-				target << "You are now Burning due to being hit by someone using Fire Fist!"
-				target.isBurning = TRUE
-				target.try_applying_burn_effect()
 		if(prob(GetCriticalChance(target)))
 			dmg*=1.25
 			knockback*=5
@@ -1370,6 +1363,7 @@ mob/proc/Melee(obj/O, from_auto_attack, force_power_attack, lunge_allowed = 0)
 				var/target_health_before = target.Health
 				target.TakeDamage(dmg, attacker = src, attack_name = melee_attack_name)
 				if(target && target.Health < target_health_before)
+					tryApplyFireFistBurn(target)
 					tryApplyNexusGuardBreak(target)
 					tryApplyMilestoneHitStances(target)
 				if(target && !nexus_technique)
@@ -1507,12 +1501,8 @@ mob/proc
 
 mob/proc/GetCriticalChance(mob/target)
 
-	var/crit_chance = (1 + getMilestoneEffectiveOffense()) * 0.1
-	if(crit_chance < 40){
-		crit_chance *= 0.4;
-	}else if (crit_chance < 25){
-		crit_chance *= 0.3;
-	}
+	// Preserve the starter curve without raw-stat inflation or threshold jumps.
+	var/crit_chance = (1 + getNexusBuildStatRating(getMilestoneEffectiveOffense())) * 0.04
 	crit_chance += getMilestoneCriticalChanceBonus()
 	crit_chance += getForgedCriticalChanceBonus()
 	crit_chance += getNexusStanceCriticalChanceBonus()

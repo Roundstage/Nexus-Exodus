@@ -94,7 +94,7 @@ obj/RP_Council
 		set category="Other"
 		var/Tag="Council"
 		if(RP_President==usr.key) Tag="President"
-		RP_Council_Msg("([Tag])<font color=[usr.TextColor]>[usr.key]: [html_encode(A)]")
+		RP_Council_Msg("([Tag])<font color=[normalizeNexusHtmlColor(usr.TextColor, "#ffffff")]>[usr.key]: [html_encode(A)]")
 	verb/Boost()
 		set category="Other"
 		if(world.realtime<Next_Use)

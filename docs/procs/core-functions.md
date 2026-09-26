@@ -1,5 +1,7 @@
 # Core Functions
 
+`CpuDiagnostics.dm` starts one five-second sampler after world initialization. It records UTC engine CPU/map CPU, sampled tick usage, elapsed wall time and existing registry/cache/queue lengths without scanning world contents. Queue counts exclude consumed prefixes. Telemetry rotates around 2 MiB with one previous file; memory history retains 20 samples. Optional native proc profiles run for approximately 30 seconds with a five-minute cooldown and six rotating JSON slots capped at 2 MiB each. Profiling is off by default; admin level 5 `CPU Diagnostics` or startup parameter `nexus_cpu_profile=1` enables captures. `nexus_cpu_monitor=0` disables startup monitoring. Profiles own/reset the native profiler counters and cannot execute during a complete engine stall. See `docs/CpuDiagnostics.md` for collection, interpretation and limitations.
+
 `getSensePowerMagnitude()` contains the existing BP/stat/regen/recovery/efficiency expression. `Sense_Power(mob/A, source_power)` optionally accepts a magnitude computed for the current batch; callers without it still calculate the observer live. KO reduction, denominator floor, rounding and the 999% cap are unchanged. This is not a persistent BP cache.
 
 ## Overview
@@ -15,11 +17,14 @@ Player persistence supports three independent character slots. Live character an
 
 NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds default all three to off. `ServerFeatureDefaults.dm` also performs a one-time migration for pre-versioned `Misc` settings, then preserves later administrator choices. Disabled NPC worlds neither load nor overwrite the persisted `data/NPCs` roster.
 
+`saveNexusServerSettings()` persists panel edits immediately through `saveMisc()`, `saveGain()`, `saveYear()`, and `saveVote()`, with explicit savefile flushing and a pending-wipe guard. It does not trigger a map save or scheduled reboot. `Misc` includes all panel settings assigned there, including screen size, turf destruction/strength limits, battleground BP, starting racial skills, movement speed, spar healing, and combat multipliers. Missing fields in older saves retain their compiled defaults. The existing Docker volume covers these files at the runtime root.
+
 `StatpanelTabs.dm` refreshes supplemental native stat data in Side + Tabs mode or while the Classic All native tabs window is open. Classic captures call the same data procs through classicStat/classicStatPanel without replacing native atom context menus. The Stats tab refreshes through `Stat_Stat()` when the Other legacy category is enabled, alongside Modules and Souls. Skills, Other, and Admin remain BYOND's single native verb-category tabs; no synthetic statpanel with a duplicate name is generated. Items and the admin-only World data retain native atom click and context-menu behavior.
 
 `MainCreation.dm` temporarily maps both `Viltrumite` and `Half-Viltrumite` to the existing Saiyan spawn. Replace that bridge with the Viltrum spawn when the dedicated planet map is added.
 
 ## Files
+- `src/Code/CoreFunctions/CpuDiagnostics.dm`
 - `src/Code/CoreFunctions/DBModeCharacters.dm`
 - `src/Code/CoreFunctions/DBModeCore.dm`
 - `src/Code/CoreFunctions/EnergySystem.dm`
@@ -1302,7 +1307,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/Login
 - Signature: `mob/Login() if(client)`
 - Inputs: None
-- Purpose: Handle client login setup.
+- Purpose: Clear transient typing/Say feedback and handle client login setup.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -1316,14 +1321,14 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/Logout
 - Signature: `mob/Logout(body_swap_user)`
 - Inputs: body_swap_user
-- Purpose: Handle client logout cleanup.
+- Purpose: Clear transient typing/Say feedback before all logout paths, including reconnect handoff, then handle client logout cleanup.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
 #### mob/proc/Other_Load_Stuff
 - Signature: `mob/proc/Other_Load_Stuff()`
 - Inputs: None
-- Purpose: Normalize loaded character state and start player systems.
+- Purpose: Clear stale typing/Say actors, normalize loaded character state and start player systems.
 - Returns: none (implicit).
 - Side effects: see implementation.
 
@@ -5217,9 +5222,15 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 #### mob/proc/try_applying_burn_effect
 - Signature: `mob/proc/try_applying_burn_effect()`
 - Inputs: None
-- Purpose: Start the asynchronous burn drain once; repeated scheduler calls are ignored while the effect is already running.
+- Purpose: Resume saved Burn stacks through the shared status scheduler; repeated player-cycle calls do not reset the next tick or start another worker.
 - Returns: none (implicit).
-- Side effects: Drains health and temporarily reduces regeneration until all burn stacks are consumed.
+- Side effects: Registers the target, starts its first tick two seconds later, and restores the animated RPT Burning overlay.
+
+#### mob/proc/applyBurnEffect, clearBurnEffect, getBurnRegenerationMultiplier, refreshBurnOverlay
+- `applyBurnEffect(source, stacks = 1)` adds pending Burn ticks and snapshots the attacker and Casual/Lethal intent. KO, RP Mode, and safe zones reject application and clear active Burn on the next status cycle.
+- Each stack deals 3 Health through `applyNexusStatusDamage` every two seconds. The shared controller consumes stacks exactly once, reports damage, handles crossing zero Health, and removes the overlay after the final tick.
+- `getBurnRegenerationMultiplier()` supplies 0.7 to `RegenMod()` while Burn is active. Extra stacks extend duration without multiplying the penalty; the saved base `regen` stat is never overwritten. Arcane Fireball retains its separate regeneration multiplier.
+- `refreshBurnOverlay()` restores exactly one RPT `Burning` image after appearance rebuilds. Combat-status save filtering excludes the derived image; saved stacks resume on load. `clearBurnEffect()` removes stacks, timing, attribution, and the overlay without cancelling other statuses.
 
 #### mob/proc/applyNexusFireDot, applyNexusElectricDot, applyNexusPoisonDot
 - Signatures: `applyNexusFireDot(source, duration_ticks, damage_percent)`, `applyNexusElectricDot(source, duration_ticks, damage_percent)`, `applyNexusPoisonDot(source, duration_ticks, damage_percent)`
@@ -5229,7 +5240,7 @@ NPCs, Feats, and automatic Tournaments are opt-in server features. Fresh worlds 
 
 #### mob/proc/processNexusStatusEffects
 - Signature: `processNexusStatusEffects()`
-- Purpose: Process Fire, Electric, and Poison for one registered mob while preserving application-anchored two-second ticks, including the final tick at expiration.
+- Purpose: Process stacked Burn, Fire, Electric, and Poison for one registered mob while preserving application-anchored two-second ticks, including the final tick at expiration.
 - Returns: none (implicit).
 - Side effects: applies maximum-Health damage, electric micro-stun, poison resistance, KO attribution, and clears every Nexus status on KO, RP Mode, or Safezone entry.
 

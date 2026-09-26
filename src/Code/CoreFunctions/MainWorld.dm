@@ -69,6 +69,7 @@ var/list/players=new
 
 //any if(!loc) means it only runs if they are just entering a mob, instead of switching mobs. it stops it from running when theyre only switching mobs
 mob/Login() if(client)
+	clearNexusCommunicationEffects()
 	StopMovement()
 	setSelectedTarget(null, FALSE)
 	client.syncCombatTeamMarkers()
@@ -104,7 +105,7 @@ mob/Login() if(client)
 	//switched from one mob to another. so if they switched mobs we run Get_Packs on the mob they switched to
 	if(!loc)
 		Update_tab_button_text(button_visible=0)
-		src<<browse(Version_Notes,"window= ;size=500x540")
+		src<<browse(buildNexusSafeDocument(Version_Notes),"window= ;size=500x540")
 		//if(src) Server_Info()
 		//src<<"<font color=#FFFF00>[Version]"
 		//src<<"<font color=red>This server is rated [Server_Rating()] by other players."
@@ -134,6 +135,7 @@ mob/var
 	logout_time=0 //realtime
 
 mob/Logout(body_swap_user)
+	clearNexusCommunicationEffects()
 	refreshNexusPlanetControlPresence(persist = TRUE)
 	StopMovement()
 	if(key) leaveCombatTeam("[html_encode(name)] left the combat team after disconnecting.")
@@ -165,7 +167,6 @@ mob/Logout(body_swap_user)
 		if(Ship) Ship.SafeTeleport(base_loc())
 		Pre_Tourny_Locations-=displaykey
 
-	Remove_Say_Spark()
 	//players-=src
 	//players=remove_nulls(players)
 	for(var/obj/Blast/A in all_blast_objs) if(A.Owner==src && A.z) del(A)
@@ -205,7 +206,7 @@ mob/proc/Other_Load_Stuff()
 			nexus_profile_force_sprite = TRUE
 			break
 	last_ssj_revert_or_retrans = world.realtime //stop them from logging out in ss then coming back 20 minutes later and insta-mastering it even though they were logged out the whole time
-	Remove_Say_Spark()
+	clearNexusCommunicationEffects()
 	var/image/A=image(icon='src/Icons/Effects/SaySpark.dmi',pixel_y=6)
 	overlays.Remove('src/Icons/Ki/Electricity/AbsorbSparks.dmi','src/Icons/Effects/TimeFreeze.dmi','src/Icons/Ki/Effects/SBombGivePower.dmi',BlastCharge,A)
 	if(KO)

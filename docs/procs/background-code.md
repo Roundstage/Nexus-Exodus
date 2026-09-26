@@ -1,5 +1,7 @@
 # Background Code
 
+`Can_recover_ki()` rejects an active tail grab before race-specific recovery exceptions, covering passive and meditation recovery. `Regenerator_loop()` applies the same tail check to Energy restoration without changing its Health healing.
+
 `GetCachedObject()` and `CacheObject()` advance `obj.deferred_delete_generation` when reusing/releasing an object. The temporary counter survives `ResetVars()` and invalidates `Timed_Delete()` callbacks from earlier uses. The base `obj/Del()` also advances it. Custom pools must advance it explicitly; this is not an automatic guarantee for every legacy `Del()` override.
 
 ## Overview
@@ -671,8 +673,8 @@ Auto-generated first-pass proc summaries based on signature names. Refine descri
 
 #### mob/proc/Power_Control_Loop
 - Signature: `mob/proc/Power_Control_Loop(obj/Power_Control/A)`
-- Inputs: obj/Power_Control/A
-- Purpose: Handle power control loop.
+- Inputs: Legacy optional controller argument; resolves the owner's canonical Power Control before starting.
+- Purpose: Run BP changes on the owned controller, sharing one loop even when rank grants leave duplicate skills.
 - Returns: none (implicit).
 - Side effects: see implementation.
 

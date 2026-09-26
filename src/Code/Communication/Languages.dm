@@ -218,7 +218,7 @@ mob/proc/getPublicSpokenLanguageText(raw_text)
 mob/proc/formatNexusSpokenMessage(mob/listener, raw_text, speech_verb = "says")
 	var/language_name = getNexusLanguageDisplayName(spoken_language, src)
 	var/rendered_text = renderSpokenLanguageFor(listener, raw_text)
-	return "<span style='font-size:10pt;color:[TextColor];font-family:Walk The Moon'><b>\[[html_encode(language_name)]\]</b> [html_encode(name)] [speech_verb], [html_encode(rendered_text)]</span>"
+	return "<span style='font-size:10pt;color:[normalizeNexusHtmlColor(TextColor, "#ffffff")];font-family:Walk The Moon'><b>\[[html_encode(language_name)]\]</b> [html_encode(name)] [speech_verb], [html_encode(rendered_text)]</span>"
 
 mob/proc/teachNexusLanguage()
 	syncNexusLanguages()

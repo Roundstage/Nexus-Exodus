@@ -166,6 +166,7 @@ datum/NexusPlayerLogViewer
 		var/current_path = getNexusChannelLogPath(owner.ckey, active_channel)
 		if(fexists(file(current_path))) log_html += file2text(file(current_path))
 		log_html += getPendingEntries(active_channel)
+		log_html = sanitizeNexusHtml(log_html)
 		if(!log_html) log_html = "<div class='empty'>No [getNexusChatChannelLabel(active_channel)] entries have been recorded yet.</div>"
 		var/tabs = ""
 		for(var/channel in list("all", "combat", "ic", "ooc"))
@@ -247,11 +248,11 @@ mob
 					if(!File || File=="Cancel") return
 
 					var/emotefile = file2text(file("data/Logs/[path]/[File]"))
-					View += emotefile
+					View += sanitizeNexusHtml(emotefile)
 
 					if(player && overwrite_ckey != "none")
 						for(var/log in unwritten)
-							View += log
+							View += sanitizeNexusHtml(log)
 					View += "</div></body></html>"
 
 					admin << "Viewing [File]"
@@ -336,6 +337,8 @@ mob/var/tmp
 
 mob/proc
 	EmoteLog(info, the_key, type="emotelogs", needs_client = TRUE)
+		info = sanitizeNexusHtml(info)
+		the_key = html_encode("[the_key]")
 		if(!client && needs_client) return
 		if(!last_emotelog_write)
 			last_emotelog_write=world.time //prevent writing unecessarily when someone has just logged in

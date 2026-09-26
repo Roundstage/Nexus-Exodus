@@ -14,10 +14,12 @@ html.bar,body.bar,.bar .shell,.bar .body{background:transparent!important}
 .bar .shell{padding-left:4px}
 /* Keep the chrome and chat visually consistent with the game's pixel HUD. */
 html,body{font-family:NexusPixel,'Fixedsys','Courier New',monospace}
-.messages{font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+.messages{font-family:Arial,Helvetica,sans-serif;line-height:1.45;overflow-anchor:none}
 .messages,.messages *{font-family:Arial,Helvetica,sans-serif!important;font-variant:normal!important;text-transform:none!important}
 .messages *{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .chat-entry{margin-bottom:6px!important;padding:2px 3px!important;border-left:2px solid #6f522d}
 .chat .footer{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:4px 5px}.chat .footer button{min-width:0;padding:4px 2px}.menu .grip{display:none}
-.panel-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}.panel-row>.value{display:none}.panel-actions{display:flex;gap:3px}.panel-actions button{padding:3px 5px;font-size:9px}.inventory .body,.skills .body{padding:5px;background:#15110c}.inventory .head,.skills .head{background:#392816}
+.panel-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px}.panel-copy{min-width:0;overflow-wrap:anywhere}.panel-copy>.label{display:block}.item-status{display:block;margin-top:3px;color:#bce09f;font-size:11px;font-weight:bold}.panel-actions{display:flex;gap:3px}.panel-actions button{padding:3px 5px;font-size:9px}.inventory .body,.skills .body{padding:5px;background:#15110c}.inventory .head,.skills .head{background:#392816}
 .chat.collapsed .footer{display:none}
+.world-row{grid-template-columns:minmax(0,1fr);padding:8px 4px!important}.world-row .panel-actions{flex-wrap:wrap}.world-row .panel-actions button{min-height:26px}.world-row .item-status{font:12px/1.4 Arial,sans-serif;color:#c9b58f}
+.row-context{position:absolute;z-index:100;right:auto;bottom:auto;display:flex;flex-direction:column;gap:3px;max-width:calc(100% - 8px);max-height:calc(100% - 8px);overflow:auto;padding:6px;background:#21180f;border:2px solid #a47c3b;box-shadow:2px 3px 6px #000}.row-context button{text-align:left;white-space:normal}.context-title{padding:4px;color:#f0d49a;overflow-wrap:anywhere}

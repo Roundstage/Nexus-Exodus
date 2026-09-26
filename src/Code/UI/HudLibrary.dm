@@ -345,7 +345,7 @@ datum/NexusHudWindow
 		hud_object.maptext_y = max(1, round((height - font_size - 2) / 2))
 		hud_object.maptext_width = text_alignment == "left" ? width - 16 : width
 		hud_object.maptext_height = height
-		hud_object.maptext = "<div style='font-family:Courier New;font-size:[font_size]px;font-weight:bold;color:[text_color];text-align:[text_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[label]</div>"
+		hud_object.maptext = "<div style='font-family:Courier New;font-size:[font_size]px;font-weight:bold;color:[text_color];text-align:[text_alignment];white-space:nowrap;text-shadow:1px 1px #000'>[sanitizeNexusHtml(label)]</div>"
 		hud_object.mouse_opacity = mouse_enabled ? 2 : 1
 		elements += hud_object
 		owner.client.screen += hud_object
@@ -364,35 +364,7 @@ proc/getNexusChatMessageSeparatorHtml()
 	return "<hr class='nexus-message-separator' size='1' color='#4b3927' style='display:block;width:100%;height:0;margin:5px 0;border:0;border-top:1px dashed #4b3927'>"
 
 proc/closeNexusLegacyChatMarkup(message)
-	var/rendered_message = "[message]"
-	var/lower_message = lowertext(rendered_message)
-	var/list/contained_tags = list("a", "b", "big", "blockquote", "center", "div", "em", "font", "i", "p", "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "u")
-	var/list/open_tags = list()
-	var/search_position = 1
-	while(search_position <= length(lower_message))
-		var/tag_start = findtext(lower_message, "<", search_position)
-		if(!tag_start) break
-		var/tag_end = findtext(lower_message, ">", tag_start + 1)
-		if(!tag_end) break
-		var/name_start = tag_start + 1
-		while(name_start < tag_end && copytext(lower_message, name_start, name_start + 1) in list(" ", "\t", "\n")) name_start++
-		var/is_closing_tag = copytext(lower_message, name_start, name_start + 1) == "/"
-		if(is_closing_tag) name_start++
-		var/name_end = name_start
-		while(name_end < tag_end && findtext("abcdefghijklmnopqrstuvwxyz0123456789", copytext(lower_message, name_end, name_end + 1))) name_end++
-		var/tag_name = copytext(lower_message, name_start, name_end)
-		if(tag_name in contained_tags)
-			if(is_closing_tag)
-				for(var/open_index = open_tags.len, open_index >= 1, open_index--)
-					if(open_tags[open_index] != tag_name) continue
-					open_tags.Cut(open_index, open_index + 1)
-					break
-			else
-				open_tags += tag_name
-		search_position = tag_end + 1
-	for(var/open_index = open_tags.len, open_index >= 1, open_index--)
-		rendered_message += "</[open_tags[open_index]]>"
-	return rendered_message
+	return sanitizeNexusHtml(message)
 
 proc/getNexusChatEntryHtml(message)
 	return "<div class='chat-entry'>[closeNexusLegacyChatMarkup(message)]</div>"
@@ -403,39 +375,23 @@ proc/encodeNexusBrowserFunctionArgument(value)
 proc/nexusChatChannelAppearsInAll(channel)
 	return normalizeNexusChatChannel(channel) != "combat"
 
-client/var/tmp/nexus_chat_revision = 0
-
-client/proc/initializeNexusChatHistory()
-	if(!islist(nexus_chat_history)) nexus_chat_history = list()
-	for(var/channel in list("all", "combat", "ic", "ooc"))
-		if(!islist(nexus_chat_history[channel])) nexus_chat_history[channel] = list()
-
 client/proc/operator<<(out, target, window)
 	if(istext(out) && !window && mob && mob.playerCharacter)
-		initializeNexusChatHistory()
-		var/list/all_entries = nexus_chat_history["all"]
-		all_entries += "<span style='color:#d4ad65'>\[SYSTEM\]</span> [out]"
-		nexus_chat_revision++
-		while(all_entries.len > 300) all_entries.Cut(1, 2)
+		appendNexusChatHistory("<span style='color:#d4ad65'>\[SYSTEM\]</span> [out]", "all")
 		if(nexus_chat_hud)
 			nexus_chat_hud.refreshMessages()
 		mob.ChatLog(out, mob.key, "all")
 		return
+	if(istext(out) && !window) out = sanitizeNexusHtml(out)
 	return ..()
 
 client/proc/receiveNexusHudChatMessage(message, channel = "all")
 	if(!message) return
-	nexus_chat_revision++
-	initializeNexusChatHistory()
 	channel = normalizeNexusChatChannel(channel)
 	if(nexusChatChannelAppearsInAll(channel))
-		var/list/all_entries = nexus_chat_history["all"]
-		all_entries += "<span style='color:#9b815c'>\[[uppertext(channel)]\]</span> [message]"
-		while(all_entries.len > 300) all_entries.Cut(1, 2)
+		appendNexusChatHistory("<span style='color:#9b815c'>\[[uppertext(channel)]\]</span> [message]", "all")
 	if(channel != "all")
-		var/list/channel_entries = nexus_chat_history[channel]
-		channel_entries += message
-		while(channel_entries.len > 300) channel_entries.Cut(1, 2)
+		appendNexusChatHistory(message, channel)
 	if(nexus_chat_hud)
 		nexus_chat_hud.refreshMessages()
 
