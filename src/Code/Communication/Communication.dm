@@ -125,7 +125,7 @@ proc/buildNexusCombatLogMessage(attacker_name, target_name, attack_name, total_d
 		hit_text = "[hit_count] hits / [damage_text] total ([average_damage] average)"
 	var/remaining_label = resource_name == "Energy Shield" ? "[remaining_text] Ki remaining" : "[remaining_text]% Health remaining"
 	var/timestamp = time2text(world.timeofday, "hh:mm:ss")
-	return "<span style='color:#7c8ba1'>([timestamp])</span> <span style='color:#ffd166'><b>[attack_name]</b></span> <span style='color:#dce7f3'>[attacker_name] &rarr; [target_name]</span> <span style='color:#ff7688'><b>[hit_text]</b></span> <span style='color:#91a6bc'>| [resource_name]: [remaining_label]</span>"
+	return "<span style='color:#7c8ba1'>([timestamp])</span> <span style='color:#ffd166'><b>[attack_name]</b></span> <span style='color:#dce7f3'>[attacker_name] -> [target_name]</span> <span style='color:#ff7688'><b>[hit_text]</b></span> <span style='color:#91a6bc'>| [resource_name]: [remaining_label]</span>"
 
 datum/NexusCombatLogBatch
 	var/tmp

@@ -115,6 +115,7 @@ Channel-routed chat, OOC, LOOC, emotes, telepathy, player-visible logs, combat d
 
 ### proc/buildNexusCombatLogMessage(...)
 - Purpose: Format attack, attacker, target, hit count, total/average damage, and remaining Health or Ki for the combat feed using the same hundredth-precision formatter as world-space damage indicators.
+- Formatting: Separate attacker and target with the plain-text arrow `->` so the native combat feed does not display a literal HTML arrow entity.
 
 ### proc/Split_File(the_key)
 - Purpose: Rotate the current chat log if it exceeds ~100 MB.
